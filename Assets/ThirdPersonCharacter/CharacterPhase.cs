@@ -26,7 +26,6 @@ public readonly struct CharacterPhase: IEquatable<CharacterPhase> {
     // -- commands --
     /// does nothing
     private static void NoOp() {
-
     }
 
     // -- IEquatable --

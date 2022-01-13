@@ -334,7 +334,12 @@ MonoBehaviour:
   m_Input:
     cameraReference: {fileID: 963194227}
     UnityPlayerInput: {fileID: 763021050}
+    DesireToJump: 0
+    DesiredPlanarDirection: {x: 0, y: 0, z: 0}
   m_Tunables: {fileID: 11400000, guid: 464c4e2324923b043835841de9c131de, type: 2}
+  m_State:
+    Velocity: {x: 0, y: 0, z: 0}
+    LastTimeGrounded: 0
   PlanarSpeed: 10
   JumpSpeed: 10
 --- !u!114 &763021050
