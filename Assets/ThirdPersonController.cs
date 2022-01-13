@@ -6,35 +6,44 @@ using UnityEngine;
 // CharacterInput(?) - the input, reads raw input, translates into something
 
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// the main third person controller
+[RequireComponent(typeof(CharacterController))]
 public class ThirdPersonController : MonoBehaviour
 {
-    // this is separate
-    [SerializeField] private Camera cameraReference;
+    [SerializeField] private CharacterController m_CharacterController;
 
-    // from this
-    [SerializeField] private CharacterController character;
-    // is this character params?
 
-    // [SerializeField] private CharacterMoveTunables tunables;
+
+    /// the current phase of the movement system
+    /// TODO: is system its own class?
+    [SerializeField] private CharacterInput m_Input;
+    [SerializeField] private CharacterTunables m_Tunables;
+
+    [SerializeField] private CharacterState m_State =  new CharacterState();
+
+    private MovementSystem m_MovementSystem;
+    private Character m_Character;
+
+    private void Awake() {
+        // m_Character = new Character();
+        m_MovementSystem = new MovementSystem(m_Input, m_State, m_Tunables);
+        m_CharacterController = GetComponent<CharacterController>();
+    }
+
     public float PlanarSpeed = 1;
-    public PlayerInput PlayerInput;
+    public float JumpSpeed = 10;
+
+    // JumpSquat => JumpUp => Falling => LandSquat
 
     void FixedUpdate()
     {
         // camera to left/forward movement
-        var forward = Vector3.ProjectOnPlane(
-            cameraReference.transform.forward,
-            Vector3.up).normalized;
-        var right = cameraReference.transform.right;
+        m_Input.Update();
 
-        // this would also be separate
-        var pInput = PlayerInput.currentActionMap["Move"].ReadValue<Vector2>();
-        var input = forward * pInput.y + right * pInput.x;
+        m_MovementSystem.Update();
 
         // this would set the
-        character.Move(input * PlanarSpeed * Time.deltaTime);
+        m_CharacterController.Move(m_State.Velocity * Time.deltaTime);
     }
 }

@@ -231,7 +231,7 @@ GameObject:
   - component: {fileID: 763021045}
   - component: {fileID: 763021050}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -330,10 +330,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbee4fbcb00d71f4aad16e754a74fddc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraReference: {fileID: 963194227}
-  character: {fileID: 763021045}
+  m_CharacterController: {fileID: 763021045}
+  m_Input:
+    cameraReference: {fileID: 963194227}
+    UnityPlayerInput: {fileID: 763021050}
+  m_Tunables: {fileID: 11400000, guid: 464c4e2324923b043835841de9c131de, type: 2}
   PlanarSpeed: 10
-  PlayerInput: {fileID: 763021050}
+  JumpSpeed: 10
 --- !u!114 &763021050
 MonoBehaviour:
   m_ObjectHideFlags: 0
