@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>RandomTBush</author>
+      <authoring_tool>OpenCOLLADA for 3ds Max;  Version: 1.3.1;  Revision: 847M;  Platform: x64;  Configuration: Release_Max2010_static</authoring_tool>
+    </contributor>
+    <created>2018-01-27T19:58:19</created>
+    <modified>2018-01-27T19:58:19</modified>
+    <unit name="inch" meter="0.0254"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_effects>
+    <effect id="CapMT">
+      <profile_COMMON>
+        <newparam sid="Mario64Cap_alb_png-surface">
+          <surface type="2D">
+            <init_from>Mario64Cap_alb_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="Mario64Cap_alb_png-sampler">
+          <sampler2D>
+            <source>Mario64Cap_alb_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <blinn>
+            <emission>
+              <color>0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color>0.588 0.588 0.588 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="Mario64Cap_alb_png-sampler" texcoord="CHANNEL1"/>
+            </diffuse>
+            <specular>
+              <color>0.9 0.9 0.9 1</color>
+            </specular>
+            <shininess>
+              <float>10</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </blinn>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="OpenCOLLADA3dsMax">
+          <extended_shader>
+            <apply_reflection_dimming>0</apply_reflection_dimming>
+            <dim_level>0</dim_level>
+            <falloff_type>0</falloff_type>
+            <index_of_refraction>1.5</index_of_refraction>
+            <opacity_type>0</opacity_type>
+            <reflection_level>3</reflection_level>
+            <wire_size>1</wire_size>
+            <wire_units>0</wire_units>
+          </extended_shader>
+          <shader>
+            <ambient_diffuse_lock>1</ambient_diffuse_lock>
+            <ambient_diffuse_texture_lock>1</ambient_diffuse_texture_lock>
+            <diffuse_specular_lock>0</diffuse_specular_lock>
+            <soften>0.1</soften>
+            <use_self_illum_color>0</use_self_illum_color>
+          </shader>
+        </technique>
+      </extra>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="CapMT-material" name="CapMT">
+      <instance_effect url="#CapMT"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="geom-Mario64_CapThrow" name="Mario64_CapThrow">
+      <mesh>
+        <source id="geom-Mario64_CapThrow-positions">
+          <float_array id="geom-Mario64_CapThrow-positions-array" count="159">-12.05857 -35.12492 0.974926 -21.77289 -45.95123 -2.537975 -32.30597 -11.30535 0.8291674 -2.38419e-6 -53.83981 -2.26305 13.95699 -32.18364 1.980478 21.77289 -45.95123 -2.537975 32.30597 -11.30535 0.8291674 -32.30597 -11.30535 0.8291674 -10.37727 -35.94018 8.831985 -24.12508 -31.74475 29.96615 -2.38419e-6 -41.1302 33.69613 10.37727 -35.94018 8.831985 24.12509 -31.74475 29.96615 32.30597 -11.30535 0.8291674 -21.77289 -45.95123 -2.537975 -10.37727 -35.94018 8.831985 -32.30597 -11.30535 0.8291674 -2.38419e-6 -53.83981 -2.26305 10.37727 -35.94018 8.831985 21.77289 -45.95123 -2.537975 32.30597 -11.30535 0.8291674 -45.33615 -2.78945 15.95384 -38.3966 6.019012 -4.940062 -24.12508 -31.74475 29.96615 -41.7322 19.02726 3.419149 -29.9471 22.6341 -9.62204 -18.25368 41.73767 -12.88723 -14.76078 -14.10282 42.68758 -2.38419e-6 -41.1302 33.69613 -24.29093 26.68066 17.6349 -17.28811 50.92269 -5.562534 18.25368 41.73767 -12.88723 -17.09624 46.80367 9.121078 17.28811 50.92269 -5.562534 17.09624 46.80367 9.121078 41.73221 19.02726 3.419149 29.9471 22.6341 -9.62204 38.3966 6.019012 -4.940062 24.29093 26.68066 17.6349 45.33616 -2.78945 15.95384 24.12509 -31.74475 29.96615 14.76078 -14.10282 42.68758 -12.05857 -35.12492 0.974926 0.04482794 -1.62673 13.39098 13.95699 -32.18364 1.980478 32.30597 -11.30535 0.8291674 -32.30597 -11.30535 0.8291674 38.3966 6.019012 -4.940062 -38.3966 6.019012 -4.940062 29.9471 22.6341 -9.62204 -29.9471 22.6341 -9.62204 18.25368 41.73767 -12.88723 -18.25368 41.73767 -12.88723</float_array>
+          <technique_common>
+            <accessor source="#geom-Mario64_CapThrow-positions-array" count="53" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-Mario64_CapThrow-normals">
+          <float_array id="geom-Mario64_CapThrow-normals-array" count="159">0.1095053 0.1800924 -0.9775354 0.1447515 0.1857549 -0.9718756 0.1842371 0.1507654 -0.9712499 0.003911828 0.2094493 -0.9778118 -0.1428516 0.1937747 -0.9705899 -0.1644061 0.2212426 -0.9612609 -0.2521717 0.1701491 -0.9526062 -0.7686543 -0.6160678 -0.1721366 -0.4772866 -0.8233289 0.3071269 -0.6853375 -0.632898 0.3602122 0 -0.8339813 0.5517928 0.4772866 -0.8233289 0.3071269 0.6853375 -0.632898 0.3602122 0.7686543 -0.6160678 -0.1721366 -0.4482191 -0.3974845 0.8006909 -0.4772866 -0.8233289 0.3071269 -0.7686543 -0.6160679 -0.1721366 0 -0.5866738 0.8098235 0.4772866 -0.8233289 0.3071269 0.4482191 -0.3974845 0.8006909 0.7686543 -0.6160679 -0.1721366 -0.8631102 0.01172808 0.5048795 -0.8824726 -0.1154597 -0.4559728 -0.6853374 -0.632898 0.3602122 -0.8924043 0.4246455 0.152613 -0.7451152 0.3207791 -0.5847257 -0.3469362 0.5996522 -0.7211467 -0.1624805 0.3405989 0.9260629 0 -0.8339813 0.5517928 -0.1800914 0.4832324 0.8567693 -0.2544336 0.9414423 -0.2212466 0.3469362 0.5996522 -0.7211466 -0.1682274 0.6710021 0.7221189 0.2544336 0.9414423 -0.2212466 0.1682274 0.6710021 0.7221189 0.8924043 0.4246455 0.152613 0.7451152 0.3207791 -0.5847257 0.8824726 -0.1154597 -0.4559728 0.1800914 0.4832324 0.8567693 0.8631102 0.01172808 0.5048795 0.6853374 -0.632898 0.3602122 0.1624805 0.3405989 0.9260629 0.1527179 0.2937984 -0.9435887 0.007832232 -0.1487696 -0.9888409 -0.1486908 0.2857458 -0.9466997 -0.3581874 0.01563971 -0.9335188 0.3502031 0.04501521 -0.9355916 -0.3559126 -0.3205788 -0.8778129 0.3540252 -0.3208353 -0.8784822 -0.3486668 -0.381855 -0.8559313 0.3486668 -0.381855 -0.8559313 -0.1096748 -0.4818062 -0.8693873 0.1096748 -0.4818062 -0.8693873</float_array>
+          <technique_common>
+            <accessor source="#geom-Mario64_CapThrow-normals-array" count="53" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-Mario64_CapThrow-map0">
+          <float_array id="geom-Mario64_CapThrow-map0-array" count="159">0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785 0.9960785</float_array>
+          <technique_common>
+            <accessor source="#geom-Mario64_CapThrow-map0-array" count="53" stride="3">
+              <param name="R" type="float"/>
+              <param name="G" type="float"/>
+              <param name="B" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-Mario64_CapThrow-map1">
+          <float_array id="geom-Mario64_CapThrow-map1-array" count="159">0.6809082 0.7064209 0 0.6738281 0.7060852 0 0.6660156 0.7015381 0 0.6899414 0.7078552 0 0.7001953 0.706543 0 0.7060547 0.7060852 0 0.7138672 0.7015381 0 -0.005126953 0.2128906 0 0.3752441 0.3833008 0 0.1914368 0.6697388 0 0.4998779 0.738739 0 0.6245117 0.3833008 0 0.8081055 0.6697388 0 1.004883 0.2128906 0 0.6738281 0.7060852 0 0.6821289 0.7121887 0 0.6660156 0.7015381 0 0.6899414 0.7078552 0 0.6975098 0.7121887 0 0.7060547 0.7060852 0 0.7138672 0.7015381 0 0.65625 0.7106628 0 0.661377 0.6939697 0 0.6721191 0.7264404 0 0.6589355 0.6973267 0 0.6677246 0.6873169 0 0.6762695 0.6811523 0 0.6789551 0.7319946 0 0.6899414 0.7309723 0 0.671875 0.7059631 0 0.677002 0.6845703 0 0.7033691 0.6811523 0 0.6772461 0.6958618 0 0.7026367 0.6845703 0 0.7026367 0.6958618 0 0.7209473 0.6973267 0 0.7121582 0.6873169 0 0.7182617 0.6939697 0 0.7080078 0.7059631 0 0.7233887 0.7106628 0 0.7077637 0.7264404 0 0.7009277 0.7319946 0 0.7001953 0.2788086 0 0.704834 0.2919922 0 0.7099609 0.2797852 0 0.7167969 0.2873535 0 0.6928711 0.2873535 0 0.7189941 0.2929687 0 0.6904297 0.2929687 0 0.7158203 0.2983398 0 0.6936035 0.2983398 0 0.7116699 0.3049316 0 0.697998 0.3049316 0</float_array>
+          <technique_common>
+            <accessor source="#geom-Mario64_CapThrow-map1-array" count="53" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="geom-Mario64_CapThrow-vertices">
+          <input semantic="POSITION" source="#geom-Mario64_CapThrow-positions"/>
+        </vertices>
+        <triangles material="CapMT" count="58">
+          <input semantic="VERTEX" source="#geom-Mario64_CapThrow-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#geom-Mario64_CapThrow-normals" offset="1"/>
+          <input semantic="COLOR" source="#geom-Mario64_CapThrow-map0" offset="2" set="0"/>
+          <input semantic="TEXCOORD" source="#geom-Mario64_CapThrow-map1" offset="3" set="0"/>
+          <p>0 0 0 0 1 1 1 1 2 2 2 2 0 0 0 0 3 3 3 3 1 1 1 1 0 0 0 0 4 4 4 4 3 3 3 3 3 3 3 3 4 4 4 4 5 5 5 5 4 4 4 4 6 6 6 6 5 5 5 5 7 7 7 7 8 8 8 8 9 9 9 9 8 8 8 8 10 10 10 10 9 9 9 9 8 8 8 8 11 11 11 11 10 10 10 10 11 11 11 11 12 12 12 12 10 10 10 10 11 11 11 11 13 13 13 13 12 12 12 12 14 14 14 14 15 15 15 15 16 16 16 16 14 14 14 14 17 17 17 17 15 15 15 15 15 15 15 15 17 17 17 17 18 18 18 18 17 17 17 17 19 19 19 19 18 18 18 18 18 18 18 18 19 19 19 19 20 20 20 20 16 16 16 16 21 21 21 21 22 22 22 22 16 16 16 16 23 23 23 23 21 21 21 21 21 21 21 21 24 24 24 24 22 22 22 22 22 22 22 22 24 24 24 24 25 25 25 25 24 24 24 24 26 26 26 26 25 25 25 25 23 23 23 23 27 27 27 27 21 21 21 21 23 23 23 23 28 28 28 28 27 27 27 27 21 21 21 21 29 29 29 29 24 24 24 24 21 21 21 21 27 27 27 27 29 29 29 29 24 24 24 24 30 30 30 30 26 26 26 26 26 26 26 26 30 30 30 30 31 31 31 31 24 24 24 24 32 32 32 32 30 30 30 30 29 29 29 29 32 32 32 32 24 24 24 24 30 30 30 30 33 33 33 33 31 31 31 31 32 32 32 32 33 33 33 33 30 30 30 30 29 29 29 29 34 34 34 34 32 32 32 32 34 34 34 34 33 33 33 33 32 32 32 32 35 35 35 35 31 31 31 31 33 33 33 33 34 34 34 34 35 35 35 35 33 33 33 33 35 35 35 35 36 36 36 36 31 31 31 31 37 37 37 37 36 36 36 36 35 35 35 35 29 29 29 29 38 38 38 38 34 34 34 34 38 38 38 38 35 35 35 35 34 34 34 34 27 27 27 27 38 38 38 38 29 29 29 29 39 39 39 39 37 37 37 37 35 35 35 35 39 39 39 39 35 35 35 35 38 38 38 38 20 20 20 20 37 37 37 37 39 39 39 39 20 20 20 20 39 39 39 39 40 40 40 40 27 27 27 27 41 41 41 41 38 38 38 38 39 39 39 39 38 38 38 38 41 41 41 41 40 40 40 40 39 39 39 39 41 41 41 41 27 27 27 27 28 28 28 28 41 41 41 41 28 28 28 28 40 40 40 40 41 41 41 41 42 42 42 42 43 43 43 43 44 44 44 44 44 44 44 44 43 43 43 43 45 45 45 45 42 42 42 42 46 46 46 46 43 43 43 43 45 45 45 45 43 43 43 43 47 47 47 47 46 46 46 46 48 48 48 48 43 43 43 43 47 47 47 47 43 43 43 43 49 49 49 49 48 48 48 48 50 50 50 50 43 43 43 43 49 49 49 49 43 43 43 43 51 51 51 51 50 50 50 50 52 52 52 52 43 43 43 43 43 43 43 43 52 52 52 52 51 51 51 51</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers>
+    <controller id="geom-Mario64_CapThrow-skin1">
+      <skin source="#geom-Mario64_CapThrow">
+        <bind_shape_matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</bind_shape_matrix>
+        <source id="geom-Mario64_CapThrow-skin1-joints">
+          <Name_array id="geom-Mario64_CapThrow-skin1-joints-array" count="1">joint0</Name_array>
+          <technique_common>
+            <accessor source="#geom-Mario64_CapThrow-skin1-joints-array" count="1" stride="1">
+              <param name="JOINT" type="name"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-Mario64_CapThrow-skin1-bind_poses">
+          <float_array id="geom-Mario64_CapThrow-skin1-bind_poses-array" count="16">1 0 0 0 0 0 1 0 0 -1 0 0 0 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#geom-Mario64_CapThrow-skin1-bind_poses-array" count="1" stride="16">
+              <param name="TRANSFORM" type="float4x4"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-Mario64_CapThrow-skin1-weights">
+          <float_array id="geom-Mario64_CapThrow-skin1-weights-array" count="1">1</float_array>
+          <technique_common>
+            <accessor source="#geom-Mario64_CapThrow-skin1-weights-array" count="1" stride="1">
+              <param name="WEIGHT" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <joints>
+          <input semantic="JOINT" source="#geom-Mario64_CapThrow-skin1-joints"/>
+          <input semantic="INV_BIND_MATRIX" source="#geom-Mario64_CapThrow-skin1-bind_poses"/>
+        </joints>
+        <vertex_weights count="53">
+          <input semantic="JOINT" source="#geom-Mario64_CapThrow-skin1-joints" offset="0"/>
+          <input semantic="WEIGHT" source="#geom-Mario64_CapThrow-skin1-weights" offset="1"/>
+          <vcount>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</vcount>
+          <v>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</v>
+        </vertex_weights>
+      </skin>
+    </controller>
+  </library_controllers>
+  <library_lights>
+    <light id="EnvironmentAmbientLight" name="EnvironmentAmbientLight">
+      <technique_common>
+        <ambient>
+          <color>0 0 0</color>
+        </ambient>
+      </technique_common>
+    </light>
+  </library_lights>
+  <library_images>
+    <image id="Mario64Cap_alb_png">
+      <init_from>./images/Mario64Cap_alb.png</init_from>
+    </image>
+  </library_images>
+  <library_visual_scenes>
+    <visual_scene id="MaxScene">
+      <node name="EnvironmentAmbientLight">
+        <instance_light url="#EnvironmentAmbientLight"/>
+      </node>
+      <node id="node-nw4f_root" name="nw4f_root">
+        <rotate>-1 0 0 -90</rotate>
+        <node id="node-AllRoot" name="AllRoot">
+          <node id="node-JointRoot" name="JointRoot" sid="joint0" type="JOINT"/>
+        </node>
+      </node>
+      <node id="node-Mario64_CapThrow" name="Mario64_CapThrow">
+        <instance_controller url="#geom-Mario64_CapThrow-skin1">
+          <skeleton>#node-JointRoot</skeleton>
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="CapMT" target="#CapMT-material">
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_controller>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#MaxScene"/>
+  </scene>
+</COLLADA>

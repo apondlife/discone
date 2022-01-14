@@ -1,6 +1,6 @@
 using UnityEngine;
 
-class GravitySystem: CharacterSystem {
+sealed class GravitySystem: CharacterSystem {
     // -- lifetime --
     public GravitySystem(Character character)
         : base(character) {
@@ -17,7 +17,7 @@ class GravitySystem: CharacterSystem {
     );
 
     void Grounded_Update() {
-        if(!m_State.IsGrounded) {
+        if (!m_State.IsGrounded) {
             ChangeTo(Airborne);
         }
 
@@ -32,7 +32,8 @@ class GravitySystem: CharacterSystem {
     );
 
     void Airborne_Update() {
-        if(m_State.IsGrounded) {
+        if (m_State.IsGrounded)
+        {
             ChangeTo(Grounded);
         }
 

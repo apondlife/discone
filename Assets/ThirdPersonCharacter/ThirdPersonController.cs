@@ -1,24 +1,21 @@
 using UnityEngine;
 
-// CharacterState    - the state: pos, speed, heading, etc.
-// CharacterMovement - reads input, runs state machine(s), updates state
-// CharacterCamera   - it's the camera
-// CharacterInput(?) - the input, reads raw input, translates into something
-
 /// the main third person controller
 [RequireComponent(typeof(CharacterController))]
-public class ThirdPersonController : MonoBehaviour
-{
-    [SerializeField] private CharacterController m_CharacterController;
-
-
-
-    /// the current phase of the movement system
-    /// TODO: is system its own class?
+public class ThirdPersonController: MonoBehaviour {
+    // -- fields --
+    [Tooltip("the input wrapper")]
     [SerializeField] private CharacterInput m_Input;
+
+    [Tooltip("the tunables; for tweaking the player's attributes")]
     [SerializeField] private CharacterTunables m_Tunables;
-    // serialized so we can see it
+
+    /// serialized so we can see it
     [SerializeField] private CharacterState m_State;
+
+    [UnityEngine.Serialization.FormerlySerializedAs("m_CharacterController")]
+    [Tooltip("a reference to the underlying character controller")]
+    [SerializeField] private CharacterController m_Controller;
 
     private Character m_Character;
     private CharacterSystem m_GravitySystem;
@@ -26,7 +23,6 @@ public class ThirdPersonController : MonoBehaviour
     private CharacterSystem m_JumpSystem;
 
     private void Awake() {
-        m_State = new CharacterState();
         m_Input.Awake();
 
         // init character
@@ -34,7 +30,7 @@ public class ThirdPersonController : MonoBehaviour
             m_Input,
             m_State,
             m_Tunables,
-            m_CharacterController
+            m_Controller
         );
 
         // init systems
@@ -54,10 +50,10 @@ public class ThirdPersonController : MonoBehaviour
 
         // move the character
         if(m_State.Velocity.magnitude > 0) {
-            m_CharacterController.Move(m_State.Velocity * Time.deltaTime);
+            m_Controller.Move(m_State.Velocity * Time.deltaTime);
         }
 
-        m_State.PlanarVelocity = m_CharacterController.velocity;
-        m_State.VerticalSpeed = m_CharacterController.velocity.y;
+        m_State.PlanarVelocity = m_Controller.velocity;
+        m_State.VerticalSpeed = m_Controller.velocity.y;
     }
 }

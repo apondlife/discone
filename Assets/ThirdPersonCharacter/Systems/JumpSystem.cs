@@ -1,6 +1,6 @@
 using UnityEngine;
 
-class JumpSystem: CharacterSystem {
+sealed class JumpSystem: CharacterSystem {
     // -- lifetime --
     public JumpSystem(Character character)
         : base(character) {

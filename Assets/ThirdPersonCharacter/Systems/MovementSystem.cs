@@ -1,6 +1,6 @@
 using UnityEngine;
 
-class MovementSystem: CharacterSystem {
+sealed class MovementSystem: CharacterSystem {
     // -- lifetime --
     public MovementSystem(Character character)
         : base(character) {
