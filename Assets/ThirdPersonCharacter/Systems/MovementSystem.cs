@@ -1,22 +1,23 @@
 using UnityEngine;
 
-class MovementSystem : CharacterSystem {
+class MovementSystem: CharacterSystem {
     // -- lifetime --
-    public MovementSystem(CharacterInput input, CharacterState state, CharacterTunables tunables)
-        : base(input, state, tunables) {
+    public MovementSystem(Character character)
+        : base(character) {
     }
 
     protected override CharacterPhase InitInitialPhase() {
-      return NotMoving;
+        return NotMoving;
     }
 
     // -- NotMoving --
     CharacterPhase NotMoving => new CharacterPhase(
-        name: "Movement_NotMoving",
+        name: "NotMoving",
         update: NotMoving_Update
     );
 
     void NotMoving_Update() {
+        m_State.PlanarVelocity = Vector3.zero;
         if(m_Input.DesiredPlanarDirection.magnitude > 0) {
             ChangeTo(Moving);
         }
@@ -24,12 +25,12 @@ class MovementSystem : CharacterSystem {
 
     // -- Moving --
     CharacterPhase Moving => new CharacterPhase(
-        name: "Movement_Moving",
+        name: "Moving",
         update: Moving_Update
     );
 
     void Moving_Update() {
-        m_State.Velocity = m_Input.DesiredPlanarDirection * m_Tunables.PlanarSpeed;
+        m_State.PlanarVelocity = m_Input.DesiredPlanarDirection * m_Tunables.PlanarSpeed;
 
         if(m_Input.DesiredPlanarDirection.magnitude == 0) {
             ChangeTo(NotMoving);

@@ -1,5 +1,5 @@
 {
-    "name": "thirdperson",
+    "name": "InputActions",
     "maps": [
         {
             "name": "Player",
@@ -25,6 +25,14 @@
                     "name": "Fire",
                     "type": "Button",
                     "id": "d2bddad8-42c9-4e8f-93b3-d48094bb4752",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "7ccefbfa-e8cc-4d40-89a0-473a077addc8",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -248,6 +256,17 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c8d6f5b5-2167-4d00-b3ab-b2b1b14863e4",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

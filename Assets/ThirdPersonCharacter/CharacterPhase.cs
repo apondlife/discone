@@ -16,7 +16,12 @@ public readonly struct CharacterPhase: IEquatable<CharacterPhase> {
     readonly public Action Exit;
 
     // -- lifetime --
-    public CharacterPhase(string name, Action enter = null, Action update = null, Action exit = null) {
+    public CharacterPhase(
+        string name,
+        Action enter = null,
+        Action update = null,
+        Action exit = null
+    ) {
         Name = name;
         Enter = enter ?? NoOp;
         Update = update ?? NoOp;
@@ -30,17 +35,18 @@ public readonly struct CharacterPhase: IEquatable<CharacterPhase> {
 
     // -- IEquatable --
     public bool Equals(CharacterPhase phase) {
-            UnityEngine.Debug.Log("Comparing phases raw");
         return Name == phase.Name;
     }
 
     override public bool Equals(Object obj) {
         if (obj is CharacterPhase phase) {
-            UnityEngine.Debug.Log("Comparing phases");
             return Equals(phase);
         } else {
-            UnityEngine.Debug.Log("Comparing objects");
             return false;
         }
+    }
+
+    override public int GetHashCode() {
+        return Name.GetHashCode();
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 abstract class CharacterSystem {
     // -- props --
     /// a name for this system
-    private string m_Name;
+    protected string m_Name;
 
     /// the current phase
     protected CharacterPhase m_Phase;
@@ -18,13 +18,17 @@ abstract class CharacterSystem {
     /// a shorthand reference to the character's tunables
     protected CharacterTunables m_Tunables;
 
+    /// the raw unity controller
+    protected CharacterController m_Controller;
+
     // -- lifetime --
     /// create a new system
-    public CharacterSystem(CharacterInput input, CharacterState state, CharacterTunables tunables) {
+    public CharacterSystem(Character character) {
         // set dependencies
-        m_Input = input;
-        m_State = state;
-        m_Tunables = tunables;
+        m_Input = character.Input;
+        m_State = character.State;
+        m_Tunables = character.Tunables;
+        m_Controller = character.Controller;
 
         // set props
         m_Name = this.GetType().Name;
