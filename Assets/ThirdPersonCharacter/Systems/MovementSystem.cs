@@ -56,21 +56,18 @@ sealed class MovementSystem: CharacterSystem {
 
         var vt = m_State.PlanarSpeed;
 
-        // accelerate towards max speed if there's input
+        // if there's input, accelerate towards max speed
         if (hasInput) {
             vt += m_Tunables.Acceleration * dirInput.magnitude * Time.deltaTime;
         }
         // otherwise, decelerate to zero
         else {
-            vt -= m_Tunables.Deceleration * Time.deltaTime; // deceleration
+            vt -= m_Tunables.Deceleration * Time.deltaTime;
         }
 
-        m_State.PlanarSpeed = Mathf.Clamp(
-            vt,
-            0.0f,
-            m_Tunables.MaxPlanarSpeed
-        );
+        m_State.PlanarSpeed = Mathf.Clamp(vt, 0.0f, m_Tunables.MaxPlanarSpeed);
 
+        // once speed is zero, stop moving
         if(m_State.PlanarSpeed == 0.0f) {
             ChangeTo(NotMoving);
         }
