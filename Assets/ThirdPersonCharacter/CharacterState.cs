@@ -20,8 +20,13 @@ public class CharacterState: ScriptableObject {
 
     // -- commands --
     /// sets the facing direction on the xz plane
-    public void SetProjectedFacingDirection(Vector3 velocity) {
-        _facingDirection = Vector3.ProjectOnPlane(velocity, Vector3.up).normalized;
+    public void SetProjectedFacingDirection(Vector3 direction) {
+        var newDirection = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
+
+        // don't set direction to zero vector. if that happens, keep previous direction
+        if(newDirection.sqrMagnitude > 0 ) {
+            _facingDirection = newDirection;
+        }
     }
 
     /// updates the character state from an external velocity

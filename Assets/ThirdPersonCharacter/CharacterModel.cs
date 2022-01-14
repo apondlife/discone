@@ -2,24 +2,27 @@ using UnityEngine;
 
 // needs a reference to ThirdPersonCharacter
 public class CharacterModel: MonoBehaviour {
-    // -- fields --
-    [SerializeField] private CharacterState state;
-    [SerializeField] private Animator animator;
+    // -- props --
+    [Tooltip("the character's current state")]
+    [SerializeField] private CharacterState m_State;
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    [Tooltip("the character's tunables/constants")]
+    [SerializeField] private CharacterTunablesBase m_Tunables;
 
-    }
+    [Tooltip("the character's animator")]
+    [SerializeField] private Animator m_Animator;
 
-    // Update is called once per frame
-    void Update()
-    {
-        var moveSpeed = state.PlanarVelocity.magnitude / 10;
-        animator.SetFloat("MoveSpeed", moveSpeed);
-        
+    // -- lifecycle --
+    void Update() {
+        // set the animation parameters
+        m_Animator.SetBool(
+            "Airborne",
+            !m_State.IsGrounded
+        );
 
-        var airborne = !state.IsGrounded;
-        animator.SetBool("Airborne", airborne);
+        m_Animator.SetFloat(
+            "MoveSpeed",
+            m_State.PlanarSpeed / m_Tunables.MaxPlanarSpeed
+        );
     }
 }

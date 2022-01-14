@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
   m_Name: CharacterTunables
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
-  _planarSpeed: 10
+  _maxPlanarSpeed: 15
+  _timeToMaxSpeed: 0.5
+  _timeToStop: 2
   _turnSpeed: 360
   _gravity: -98
   _initialJumpSpeed: 30
