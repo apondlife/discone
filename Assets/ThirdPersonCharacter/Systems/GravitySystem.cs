@@ -32,8 +32,7 @@ sealed class GravitySystem: CharacterSystem {
     );
 
     void Airborne_Update() {
-        if (m_State.IsGrounded)
-        {
+        if (m_State.IsGrounded) {
             ChangeTo(Grounded);
         }
 

@@ -48,12 +48,14 @@ public class ThirdPersonController: MonoBehaviour {
         m_MovementSystem.Update();
         m_JumpSystem.Update();
 
-        // move the character
+        // update controller state from character state
         if(m_State.Velocity.magnitude > 0) {
             m_Controller.Move(m_State.Velocity * Time.deltaTime);
         }
 
-        m_State.PlanarVelocity = m_Controller.velocity;
-        m_State.VerticalSpeed = m_Controller.velocity.y;
+        transform.forward = m_State.FacingDirection;
+
+        // sync controller state back to character state
+        m_State.SyncExternalVelocity(m_Controller.velocity);
     }
 }
