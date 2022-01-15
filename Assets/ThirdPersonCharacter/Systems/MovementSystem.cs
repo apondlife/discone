@@ -1,8 +1,10 @@
 using UnityEngine;
 
+
 /// the state machine for the character's movement
 sealed class MovementSystem: CharacterSystem {
     // -- lifetime --
+
     public MovementSystem(Character character)
         : base(character) {
     }

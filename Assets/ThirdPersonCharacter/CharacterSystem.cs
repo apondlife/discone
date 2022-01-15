@@ -16,7 +16,7 @@ abstract class CharacterSystem {
     protected CharacterState m_State;
 
     /// a shorthand reference to the character's tunables
-    protected CharacterTunables m_Tunables;
+    protected CharacterTunablesBase m_Tunables;
 
     /// the raw unity controller
     protected CharacterController m_Controller;
@@ -40,7 +40,7 @@ abstract class CharacterSystem {
 
     // -- commands --
     /// update the system's current phase
-    public void Update() {
+    public virtual void Update() {
         m_Phase.Update();
     }
 

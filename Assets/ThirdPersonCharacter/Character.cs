@@ -10,7 +10,7 @@ public readonly struct Character {
     public readonly CharacterState State;
 
     /// the character's tunables/constants
-    public readonly CharacterTunables Tunables;
+    public readonly CharacterTunablesBase Tunables;
 
     /// the raw unity character controller
     public readonly CharacterController Controller;
@@ -20,7 +20,7 @@ public readonly struct Character {
     public Character(
         CharacterInput input,
         CharacterState state,
-        CharacterTunables tunables,
+        CharacterTunablesBase tunables,
         CharacterController controller
     ) {
         Input = input;

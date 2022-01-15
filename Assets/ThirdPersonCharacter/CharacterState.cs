@@ -12,6 +12,9 @@ public class CharacterState: ScriptableObject {
     [Tooltip("if the character is grounded")]
     public bool IsGrounded = false;
 
+    [Tooltip("if the character is in jump squat")]
+    public bool IsInJumpSquat = false;
+
     [Tooltip("the current facing direction")]
     public Vector3 _facingDirection = Vector3.zero;
 

@@ -4,13 +4,20 @@ using UnityEngine.InputSystem;
 [System.Serializable]
 public class CharacterInput { // abstract class / interface
     // -- props --
+    [Header("references")]
+    [Tooltip("the player camera")]
     [SerializeField] private Camera cameraReference;
+
+    [Tooltip("the player camera")]
     [SerializeField] private PlayerInput UnityPlayerInput;
 
-    public bool DesiresToJump ;//{ get; private set; }
-    public Vector3 DesiredPlanarDirection ;//{ get; private set; }
+    public bool IsJumpPressed;
+    public Vector3 DesiredPlanarDirection;
 
+    /// the move input
     InputAction m_Move;
+
+    /// the jump input
     InputAction m_Jump;
 
     // -- lifecycle --
@@ -20,9 +27,11 @@ public class CharacterInput { // abstract class / interface
     }
 
     public void Update() {
-        var forward = Vector3.ProjectOnPlane(
+        var forward = Vector3.Normalize(Vector3.ProjectOnPlane(
             cameraReference.transform.forward,
-            Vector3.up).normalized;
+            Vector3.up
+        ));
+
         var right = cameraReference.transform.right;
 
         // this would also be separate
@@ -30,6 +39,6 @@ public class CharacterInput { // abstract class / interface
         var input = forward * pInput.y + right * pInput.x;
 
         DesiredPlanarDirection = forward * pInput.y + right * pInput.x;
-        DesiresToJump = m_Jump.IsPressed();
+        IsJumpPressed = m_Jump.IsPressed();
     }
 }

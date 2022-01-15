@@ -20,8 +20,6 @@ sealed class GravitySystem: CharacterSystem {
         if (!m_State.IsGrounded) {
             ChangeTo(Airborne);
         }
-
-        AddGravity();
         SetGrounded();
     }
 
@@ -36,15 +34,10 @@ sealed class GravitySystem: CharacterSystem {
             ChangeTo(Grounded);
         }
 
-        AddGravity();
         SetGrounded();
     }
 
     // -- commands --
-    void AddGravity() {
-        m_State.VerticalSpeed += m_Tunables.Gravity * Time.deltaTime;
-    }
-
     void SetGrounded() {
         m_State.IsGrounded = m_Controller.isGrounded;
     }

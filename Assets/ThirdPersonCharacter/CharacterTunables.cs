@@ -26,6 +26,27 @@ public class CharacterTunables : CharacterTunablesBase {
     [SerializeField] private float _initialJumpSpeed;
     public override float InitialJumpSpeed => _initialJumpSpeed;
 
+    [Header("jump system")]
+    [Tooltip("the number of frames jump squat lasts")]
+    [SerializeField] private int _jumpSquatFrames;
+    public override int JumpSquatFrames => _jumpSquatFrames;
+
+    [Tooltip("the minimum jump speed (minimum length jump squat)")]
+    [SerializeField] private float _minJumpSpeed;
+    public override float MinJumpSpeed => _minJumpSpeed;
+
+    [Tooltip("the maximum jump speed (maximum length jump squat)")]
+    [SerializeField] private float _maxJumpSpeed;
+    public override float MaxJumpSpeed => _maxJumpSpeed;
+
+    [Tooltip("how the jump speed changes from holding the squat")]
+    [SerializeField] private AnimationCurve _jumpSpeedCurve;
+    public override AnimationCurve JumpSpeedCurve => _jumpSpeedCurve;
+
+    [Tooltip("the acceleration while holding jump and airborne")]
+    [SerializeField] private float _floatAcceleration;
+    public override float FloatAcceleration => _floatAcceleration;
+
     // -- queries --
     /// the acceleration from 0 to max speed in units
     public override float Acceleration => MaxPlanarSpeed / TimeToMaxSpeed;

@@ -2,13 +2,13 @@ using UnityEngine;
 
 /// the main third person controller
 [RequireComponent(typeof(CharacterController))]
-public class ThirdPersonController: MonoBehaviour {
+public partial class ThirdPerson: MonoBehaviour {
     // -- fields --
     [Tooltip("the input wrapper")]
     [SerializeField] private CharacterInput m_Input;
 
     [Tooltip("the tunables; for tweaking the player's attributes")]
-    [SerializeField] private CharacterTunables m_Tunables;
+    [SerializeField] private CharacterTunablesBase m_Tunables;
 
     /// serialized so we can see it
     [SerializeField] private CharacterState m_State;

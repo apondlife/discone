@@ -14,15 +14,26 @@ public class CharacterModel: MonoBehaviour {
 
     // -- lifecycle --
     void Update() {
-        // set the animation parameters
+        // set move animation params
+        m_Animator.SetFloat(
+            "MoveSpeed",
+            m_State.PlanarSpeed / m_Tunables.MaxPlanarSpeed
+        );
+
+        // set jump animation params
+        m_Animator.SetBool(
+            "JumpSquat",
+            m_State.IsInJumpSquat
+        );
+
         m_Animator.SetBool(
             "Airborne",
             !m_State.IsGrounded
         );
 
         m_Animator.SetFloat(
-            "MoveSpeed",
-            m_State.PlanarSpeed / m_Tunables.MaxPlanarSpeed
+            "VerticalSpeed",
+            m_State.VerticalSpeed
         );
     }
 }
