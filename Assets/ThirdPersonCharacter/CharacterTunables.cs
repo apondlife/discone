@@ -18,6 +18,18 @@ public class CharacterTunables : CharacterTunablesBase {
     [SerializeField] private float _turnSpeed;
     public override float TurnSpeed => _turnSpeed;
 
+    [Tooltip("the pivot speed in radians")]
+    [SerializeField] private float _pivotSpeed;
+    public override float PivotSpeed => _pivotSpeed;
+
+    [Tooltip("the time to finish the pivot deceleration from max speed")]
+    [SerializeField] private float _timeToPivot;
+    public override float TimeToPivot => _timeToPivot;
+
+    [Tooltip("the pivot start threshold, facing • input dir (-1.0, 1.0f)")]
+    [SerializeField] private float _pivotStartThreshold;
+    public override float PivotStartThreshold => _pivotStartThreshold;
+
     [Tooltip("the acceleration due to gravity")]
     [SerializeField] private float _gravity;
     public override float Gravity => _gravity;
@@ -53,4 +65,7 @@ public class CharacterTunables : CharacterTunablesBase {
 
     /// the deceleration from 0 to max speed in units
     public override float Deceleration => MaxPlanarSpeed / TimeToStop;
+
+    /// the deceleration of the character while pivoting
+    public override float PivotDeceleration => MaxPlanarSpeed / TimeToPivot;
 }

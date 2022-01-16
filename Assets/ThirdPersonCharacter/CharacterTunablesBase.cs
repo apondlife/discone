@@ -4,6 +4,10 @@ using UnityEngine;
 public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float MaxPlanarSpeed { get; } //base speed? speed?
     public abstract float TurnSpeed { get; } //base speed? speed?
+    public abstract float PivotSpeed { get; }
+    public abstract float PivotDeceleration { get; }
+    public abstract float PivotStartThreshold { get; }
+    public abstract float TimeToPivot { get; }
     public abstract float Gravity { get; }
     public abstract float TimeToMaxSpeed { get; }
     public abstract float TimeToStop { get; }
