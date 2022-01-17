@@ -1,13 +1,16 @@
 using UnityEngine;
 
 /// the character's shared state
-public class CharacterState: ScriptableObject {
+public class CharacterState : ScriptableObject {
     [Header("fields")]
     [Tooltip("the speed on the xz-plane")]
     public float PlanarSpeed;
 
     [Tooltip("the speed on the y-axis")]
     public float VerticalSpeed = 0;
+
+    [Tooltip("how much the speed changed since last update")]
+    public Vector3 Acceleration;
 
     [Tooltip("the current facing direction")]
     [SerializeField] private Vector3 _facingDirection = Vector3.zero;
@@ -27,7 +30,19 @@ public class CharacterState: ScriptableObject {
     [Tooltip("if the character is in jump squat")]
     public bool IsInJumpSquat = false;
 
+    [Tooltip("how much tilted the character is")]
+    public Quaternion Tilt;
+
+
     // -- commands --
+    /// updates the character state from an external velocity
+    public void UpdateVelocity(Vector3 v0, Vector3 v1) {
+        SetProjectedPlanarDirection(v1);
+        VerticalSpeed = v1.y;
+        PlanarSpeed = v1.XNZ().magnitude;
+        Acceleration = (v1 - v0) / Time.deltaTime;
+    }
+
     /// sets the facing direction on the xz plane
     public void SetProjectedFacingDirection(Vector3 direction) {
         var newDirection = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
@@ -48,13 +63,6 @@ public class CharacterState: ScriptableObject {
         }
     }
 
-    /// updates the character state from an external velocity
-    public void SyncExternalVelocity(Vector3 velocity) {
-        SetProjectedPlanarDirection(velocity);
-        VerticalSpeed = velocity.y;
-        PlanarSpeed = velocity.XNZ().magnitude;
-    }
-
     // -- queries --
     /// the character's calculated velocity on the xz-plane
     public Vector3 PlanarVelocity => PlanarSpeed * PlanarDirection;
@@ -63,4 +71,8 @@ public class CharacterState: ScriptableObject {
     public Vector3 Velocity {
         get => Vector3.up * VerticalSpeed + PlanarVelocity;
     }
+
+    public Vector3 UpTilt => Tilt * Vector3.up;
+    public Vector3 ForwardTilt => Tilt * FacingDirection;
+    public Quaternion LookRotation => Quaternion.LookRotation(ForwardTilt, UpTilt);
 }

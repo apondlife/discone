@@ -1,7 +1,10 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CharacterTunables", menuName = "thirdperson/CharacterTunables", order = 0)]
-public class CharacterTunables : CharacterTunablesBase {
+public class CharacterTunables: CharacterTunablesBase {
+    #region movement system
+    [Header("movement system")]
+
     [Tooltip("the max speed on the xz plane")]
     [SerializeField] private float _maxPlanarSpeed;
     public override float MaxPlanarSpeed => _maxPlanarSpeed;
@@ -37,8 +40,11 @@ public class CharacterTunables : CharacterTunablesBase {
     [Tooltip("the acceleration due to gravity")]
     [SerializeField] private float _initialJumpSpeed;
     public override float InitialJumpSpeed => _initialJumpSpeed;
+    #endregion
 
+    #region jump system
     [Header("jump system")]
+
     [Tooltip("the number of frames jump squat lasts")]
     [SerializeField] private int _jumpSquatFrames;
     public override int JumpSquatFrames => _jumpSquatFrames;
@@ -58,6 +64,35 @@ public class CharacterTunables : CharacterTunablesBase {
     [Tooltip("the acceleration while holding jump and airborne")]
     [SerializeField] private float _floatAcceleration;
     public override float FloatAcceleration => _floatAcceleration;
+    #endregion
+
+    #region model / animation
+    [Header("model / animation")]
+
+    [Tooltip("the angle in degrees character model tilts forward on the start up acceleration")]
+    [SerializeField] private float _tiltForBaseAcceleration;
+    public override float TiltForBaseAcceleration => _tiltForBaseAcceleration;
+
+    [Tooltip("the maximum angle in degrees the character can tilt")]
+    [SerializeField] private float _maxTilt;
+    public override float MaxTilt => _maxTilt;
+
+    [Tooltip("the smoothing on the character tilt")]
+    [SerializeField] private float _tiltSmoothing;
+    public override float TiltSmoothing => _tiltSmoothing;
+    #endregion
+
+    #region camera
+    [Header("camera")]
+
+    [Tooltip("the camera dutch angle (around z-axis) scale applied to the camera's target's rotation")]
+    [SerializeField] private float _dutchScale;
+    public override float DutchScale => _dutchScale;
+
+    [Tooltip("the smoothing on the camera dutch angle (around z-axis)")]
+    [SerializeField] private float _dutchSmoothing;
+    public override float DutchSmoothing => _dutchSmoothing;
+    #endregion
 
     // -- queries --
     /// the acceleration from 0 to max speed in units

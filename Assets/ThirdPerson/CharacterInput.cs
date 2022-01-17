@@ -3,13 +3,14 @@ using UnityEngine.InputSystem;
 
 [System.Serializable]
 public class CharacterInput { // abstract class / interface
-    // -- props --
+    // -- fields --
     [Header("references")]
-    [Tooltip("the player camera")]
-    [SerializeField] private Camera cameraReference;
 
-    [Tooltip("the player camera")]
-    [SerializeField] private PlayerInput UnityPlayerInput;
+    [Tooltip("the transform for the player's look viewpoint")]
+    [SerializeField] private Transform m_Look;
+
+    [Tooltip("the unity player input")]
+    [SerializeField] private PlayerInput m_PlayerInput;
 
     public bool IsJumpPressed;
     public Vector3 DesiredPlanarDirection;
@@ -22,17 +23,17 @@ public class CharacterInput { // abstract class / interface
 
     // -- lifecycle --
     public void Awake() {
-        m_Move = UnityPlayerInput.currentActionMap["Move"];
-        m_Jump = UnityPlayerInput.currentActionMap["Jump"];
+        m_Move = m_PlayerInput.currentActionMap["Move"];
+        m_Jump = m_PlayerInput.currentActionMap["Jump"];
     }
 
     public void Update() {
         var forward = Vector3.Normalize(Vector3.ProjectOnPlane(
-            cameraReference.transform.forward,
+            m_Look.transform.forward,
             Vector3.up
         ));
 
-        var right = cameraReference.transform.right;
+        var right = m_Look.transform.right;
 
         // this would also be separate
         var pInput = m_Move.ReadValue<Vector2>();

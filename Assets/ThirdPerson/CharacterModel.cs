@@ -6,7 +6,7 @@ public class CharacterModel: MonoBehaviour {
     // -- props --
     [Tooltip("the character's current state")]
     [SerializeField] private CharacterState m_State;
-    [SerializeField] private CharacterState m_PreviousState;
+    private CharacterState m_PreviousState;
 
     [Tooltip("the character's tunables/constants")]
     [SerializeField] private CharacterTunablesBase m_Tunables;
@@ -20,13 +20,19 @@ public class CharacterModel: MonoBehaviour {
         m_PreviousState = ScriptableObject.Instantiate(m_State);
     }
 
-    [SerializeField] private float tiltForBaseAcceleration;
-    [SerializeField] private float maxTilt;
-    [SerializeField] private float tiltInterpolation;
-    [SerializeField] private float dutchInterpolation;
-
     // -- lifecycle --
     void FixedUpdate() {
+        // update animator & model
+        SyncAnimator();
+        Tilt();
+
+        // capture current state
+        m_PreviousState = ScriptableObject.Instantiate(m_State);
+    }
+
+    // -- commands --
+    /// sync the animator's params
+    void SyncAnimator() {
         // set move animation params
         m_Animator.SetFloat(
             "MoveSpeed",
@@ -49,26 +55,11 @@ public class CharacterModel: MonoBehaviour {
             m_State.VerticalSpeed
         );
 
+    }
 
-        var acceleration = transform.InverseTransformVector((m_State.PlanarVelocity - m_PreviousState.PlanarVelocity) / Time.deltaTime);
-        var tilt =
-        Mathf.Clamp(
-            (acceleration.magnitude/m_Tunables.Acceleration) * tiltForBaseAcceleration,
-            0,
-            maxTilt);
-
-        transform.localRotation = Quaternion.Slerp(
-            transform.localRotation,
-            Quaternion.AngleAxis(tilt, Vector3.Cross(Vector3.up, acceleration.normalized).normalized),
-            tiltInterpolation
-        );
-
-        m_Camera.m_Lens.Dutch = Mathf.LerpAngle(
-            m_Camera.m_Lens.Dutch,
-            transform.localRotation.eulerAngles.z,
-            dutchInterpolation
-        );
-
-        m_PreviousState = ScriptableObject.Instantiate(m_State);
+    /// tilt the model as a fn of character acceleration
+    void Tilt() {
+        // this is a fundamental misunderstanding of quaternions
+        transform.rotation = m_State.LookRotation;
     }
 }

@@ -15,15 +15,16 @@ public partial class ThirdPerson {
         }
 
         DrawRay(Color.green, m_State.FacingDirection);
+        DrawRay(Color.blue, m_State.Tilt * Vector3.up);
 
         if(m_State.IsInJumpSquat) {
             DrawLabel("JumpSquat", 2.0f);
-            DrawCube(Color.magenta, 2.0f);
+            // DrawCube(Color.magenta, 2.0f);
         }
 
         if(m_State.IsGrounded) {
             DrawLabel("Grounded", 2.0f);
-            DrawCube(Color.red, 2.0f);
+            // DrawCube(Color.red, 2.0f);
         }
     }
 

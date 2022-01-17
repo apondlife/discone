@@ -13,14 +13,11 @@ public partial class ThirdPerson: MonoBehaviour {
     /// serialized so we can see it
     [SerializeField] private CharacterState m_State;
 
-    [UnityEngine.Serialization.FormerlySerializedAs("m_CharacterController")]
     [Tooltip("a reference to the underlying character controller")]
     [SerializeField] private CharacterController m_Controller;
 
     private Character m_Character;
-    private CharacterSystem m_GravitySystem;
-    private CharacterSystem m_MovementSystem;
-    private CharacterSystem m_JumpSystem;
+    private CharacterSystem[] m_Systems;
 
     private void Awake() {
         m_Input.Awake();
@@ -34,19 +31,24 @@ public partial class ThirdPerson: MonoBehaviour {
         );
 
         // init systems
-        m_GravitySystem = new GravitySystem(m_Character);
-        m_MovementSystem = new MovementSystem(m_Character);
-        m_JumpSystem = new JumpSystem(m_Character);
+        m_Systems = new CharacterSystem[] {
+            new GravitySystem(m_Character),
+            new MovementSystem(m_Character),
+            new JumpSystem(m_Character),
+            new TiltSystem(m_Character),
+        };
     }
 
     void FixedUpdate() {
+        var v0 = m_State.Velocity;
+
         // camera to left/forward movement
         m_Input.Update();
 
         // update the character's systems
-        m_GravitySystem.Update();
-        m_MovementSystem.Update();
-        m_JumpSystem.Update();
+        foreach (var system in m_Systems) {
+            system.Update();
+        }
 
         // update controller state from character state
         if(m_State.Velocity.magnitude > 0) {
@@ -56,6 +58,6 @@ public partial class ThirdPerson: MonoBehaviour {
         transform.forward = m_State.FacingDirection;
 
         // sync controller state back to character state
-        m_State.SyncExternalVelocity(m_Controller.velocity);
+        m_State.UpdateVelocity(v0, m_Controller.velocity);
     }
 }

@@ -8,6 +8,10 @@
 - [ ] landing state
 - [ ] coyote time
 
+# housekeeping
+- [ ] big renaming
+- [ ] code reorg after some more complexity
+
 # fun & extra
 - [ ] movement particles
 - [ ] slower in air movement feedback/state

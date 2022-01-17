@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// a character system, a
+/// a character system; may be a state machine
 abstract class CharacterSystem {
     // -- props --
     /// a name for this system
