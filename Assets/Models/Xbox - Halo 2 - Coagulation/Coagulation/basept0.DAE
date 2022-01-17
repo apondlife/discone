@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Shadowth</author>
+      <authoring_tool>3dsMax 11 - Feeling ColladaMax v3.05B.</authoring_tool>
+      <comments>ColladaMax Export Options: ExportNormals=1;ExportEPolyAsTriangles=1;ExportXRefs=1;ExportSelected=0;ExportTangents=0;ExportAnimations=1;SampleAnim=0;ExportAnimClip=0;BakeMatrices=0;ExportRelativePaths=1;AnimStart=0;AnimEnd=3.33333;</comments>
+      <source_data>file:///C:/Users/Shadowth.Kenigirl-PC/Documents/Spriter%27s%20resource/Models/Halo%202/Levels/Coagulation/basept0.max</source_data>
+    </contributor>
+    <created>2009-09-05T19:07:06Z</created>
+    <modified>2009-09-05T19:07:08Z</modified>
+    <unit meter="0.0254" name="inch"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images>
+    <image id="ch_flat_generic_graytech.png" name="ch_flat_generic_graytech_png">
+      <init_from>./Textures/ch_flat_generic_graytech.png</init_from>
+    </image>
+    <image id="ch_flat_generic_graytech_alpha.PNG" name="ch_flat_generic_graytech_alpha_PNG">
+      <init_from>./Textures/ch_flat_generic_graytech%20alpha.PNG</init_from>
+    </image>
+    <image id="ch_flat_generic_graytech_bump.PNG" name="ch_flat_generic_graytech_bump_PNG">
+      <init_from>./Textures/ch_flat_generic_graytech_bump.PNG</init_from>
+    </image>
+    <image id="coag_panel_i.png" name="coag_panel_i_png">
+      <init_from>./Textures/coag_panel_i.png</init_from>
+    </image>
+    <image id="panel_i_bump.PNG" name="panel_i_bump_PNG">
+      <init_from>./Textures/panel_i_bump.PNG</init_from>
+    </image>
+    <image id="flat_dark_scratchy.png" name="flat_dark_scratchy_png">
+      <init_from>./Textures/flat_dark_scratchy.png</init_from>
+    </image>
+    <image id="flat_dark_scratchy_alpha.PNG" name="flat_dark_scratchy_alpha_PNG">
+      <init_from>./Textures/flat_dark_scratchy%20alpha.PNG</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="ch_flat_generic_graytech" name="ch_flat_generic_graytech">
+      <instance_effect url="#ch_flat_generic_graytech-fx"/>
+    </material>
+    <material id="coag_panel_i" name="coag_panel_i">
+      <instance_effect url="#coag_panel_i-fx"/>
+    </material>
+    <material id="flat_dark_scratchy" name="flat_dark_scratchy">
+      <instance_effect url="#flat_dark_scratchy-fx"/>
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="ch_flat_generic_graytech-fx" name="ch_flat_generic_graytech">
+      <profile_COMMON>
+        <newparam sid="ch_flat_generic_graytech_png-surface">
+          <surface type="2D">
+            <init_from>ch_flat_generic_graytech.png</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="ch_flat_generic_graytech_png-sampler">
+          <sampler2D>
+            <source>ch_flat_generic_graytech_png-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <newparam sid="ch_flat_generic_graytech_alpha_PNG-surface">
+          <surface type="2D">
+            <init_from>ch_flat_generic_graytech_alpha.PNG</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="ch_flat_generic_graytech_alpha_PNG-sampler">
+          <sampler2D>
+            <source>ch_flat_generic_graytech_alpha_PNG-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <newparam sid="ch_flat_generic_graytech_bump_PNG-surface">
+          <surface type="2D">
+            <init_from>ch_flat_generic_graytech_bump.PNG</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="ch_flat_generic_graytech_bump_PNG-sampler">
+          <sampler2D>
+            <source>ch_flat_generic_graytech_bump_PNG-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <blinn>
+            <ambient>
+              <color>1 1 1 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="ch_flat_generic_graytech_png-sampler" texcoord="CHANNEL1">
+                <extra>
+                  <technique profile="MAYA">
+                    <mirrorU>0</mirrorU>
+                    <mirrorV>0</mirrorV>
+                    <wrapU>1</wrapU>
+                    <wrapV>1</wrapV>
+                    <repeatU>1</repeatU>
+                    <repeatV>1</repeatV>
+                    <offsetU>0</offsetU>
+                    <offsetV>0</offsetV>
+                    <rotateUV>0</rotateUV>
+                  </technique>
+                  <technique profile="MAX3D">
+                    <amount>1</amount>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color>1 1 1 1</color>
+            </specular>
+            <shininess>
+              <float>1.46862</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <reflectivity>
+              <float>1</float>
+            </reflectivity>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </blinn>
+          <extra>
+            <technique profile="FCOLLADA">
+              <spec_level>
+                <texture texture="ch_flat_generic_graytech_alpha_PNG-sampler" texcoord="CHANNEL1">
+                  <extra>
+                    <technique profile="MAYA">
+                      <mirrorU>0</mirrorU>
+                      <mirrorV>0</mirrorV>
+                      <wrapU>1</wrapU>
+                      <wrapV>1</wrapV>
+                      <repeatU>1</repeatU>
+                      <repeatV>1</repeatV>
+                      <offsetU>0</offsetU>
+                      <offsetV>0</offsetV>
+                      <rotateUV>0</rotateUV>
+                    </technique>
+                    <technique profile="MAX3D">
+                      <amount>1</amount>
+                    </technique>
+                  </extra>
+                </texture>
+              </spec_level>
+              <bump>
+                <texture texture="ch_flat_generic_graytech_bump_PNG-sampler" texcoord="CHANNEL1">
+                  <extra>
+                    <technique profile="MAYA">
+                      <mirrorU>0</mirrorU>
+                      <mirrorV>0</mirrorV>
+                      <wrapU>1</wrapU>
+                      <wrapV>1</wrapV>
+                      <repeatU>1</repeatU>
+                      <repeatV>1</repeatV>
+                      <offsetU>0</offsetU>
+                      <offsetV>0</offsetV>
+                      <rotateUV>0</rotateUV>
+                    </technique>
+                    <technique profile="MAX3D">
+                      <amount>1</amount>
+                    </technique>
+                  </extra>
+                </texture>
+              </bump>
+              <emission_level>
+                <float>0</float>
+              </emission_level>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="MAX3D">
+          <faceted>0</faceted>
+          <double_sided>0</double_sided>
+          <wireframe>0</wireframe>
+          <face_map>0</face_map>
+        </technique>
+      </extra>
+    </effect>
+    <effect id="coag_panel_i-fx" name="coag_panel_i">
+      <profile_COMMON>
+        <newparam sid="coag_panel_i_png-surface">
+          <surface type="2D">
+            <init_from>coag_panel_i.png</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="coag_panel_i_png-sampler">
+          <sampler2D>
+            <source>coag_panel_i_png-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <newparam sid="panel_i_bump_PNG-surface">
+          <surface type="2D">
+            <init_from>panel_i_bump.PNG</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="panel_i_bump_PNG-sampler">
+          <sampler2D>
+            <source>panel_i_bump_PNG-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <blinn>
+            <ambient>
+              <color>1 1 1 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="coag_panel_i_png-sampler" texcoord="CHANNEL1">
+                <extra>
+                  <technique profile="MAYA">
+                    <mirrorU>0</mirrorU>
+                    <mirrorV>0</mirrorV>
+                    <wrapU>1</wrapU>
+                    <wrapV>1</wrapV>
+                    <repeatU>1</repeatU>
+                    <repeatV>1</repeatV>
+                    <offsetU>0</offsetU>
+                    <offsetV>0</offsetV>
+                    <rotateUV>0</rotateUV>
+                  </technique>
+                  <technique profile="MAX3D">
+                    <amount>1</amount>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color>1 1 1 1</color>
+            </specular>
+            <shininess>
+              <float>1.46862</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <reflectivity>
+              <float>1</float>
+            </reflectivity>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </blinn>
+          <extra>
+            <technique profile="FCOLLADA">
+              <spec_level>
+                <float>0</float>
+              </spec_level>
+              <bump>
+                <texture texture="panel_i_bump_PNG-sampler" texcoord="CHANNEL1">
+                  <extra>
+                    <technique profile="MAYA">
+                      <mirrorU>0</mirrorU>
+                      <mirrorV>0</mirrorV>
+                      <wrapU>1</wrapU>
+                      <wrapV>1</wrapV>
+                      <repeatU>1</repeatU>
+                      <repeatV>1</repeatV>
+                      <offsetU>0</offsetU>
+                      <offsetV>0</offsetV>
+                      <rotateUV>0</rotateUV>
+                    </technique>
+                    <technique profile="MAX3D">
+                      <amount>1</amount>
+                    </technique>
+                  </extra>
+                </texture>
+              </bump>
+              <emission_level>
+                <float>0</float>
+              </emission_level>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="MAX3D">
+          <faceted>0</faceted>
+          <double_sided>0</double_sided>
+          <wireframe>0</wireframe>
+          <face_map>0</face_map>
+        </technique>
+      </extra>
+    </effect>
+    <effect id="flat_dark_scratchy-fx" name="flat_dark_scratchy">
+      <profile_COMMON>
+        <newparam sid="flat_dark_scratchy_png-surface">
+          <surface type="2D">
+            <init_from>flat_dark_scratchy.png</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="flat_dark_scratchy_png-sampler">
+          <sampler2D>
+            <source>flat_dark_scratchy_png-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <newparam sid="flat_dark_scratchy_alpha_PNG-surface">
+          <surface type="2D">
+            <init_from>flat_dark_scratchy_alpha.PNG</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="flat_dark_scratchy_alpha_PNG-sampler">
+          <sampler2D>
+            <source>flat_dark_scratchy_alpha_PNG-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <blinn>
+            <ambient>
+              <color>1 1 1 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="flat_dark_scratchy_png-sampler" texcoord="CHANNEL1">
+                <extra>
+                  <technique profile="MAYA">
+                    <mirrorU>0</mirrorU>
+                    <mirrorV>0</mirrorV>
+                    <wrapU>1</wrapU>
+                    <wrapV>1</wrapV>
+                    <repeatU>1</repeatU>
+                    <repeatV>1</repeatV>
+                    <offsetU>0</offsetU>
+                    <offsetV>0</offsetV>
+                    <rotateUV>0</rotateUV>
+                  </technique>
+                  <technique profile="MAX3D">
+                    <amount>1</amount>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color>1 1 1 1</color>
+            </specular>
+            <shininess>
+              <float>1.46862</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <reflectivity>
+              <float>1</float>
+            </reflectivity>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </blinn>
+          <extra>
+            <technique profile="FCOLLADA">
+              <spec_level>
+                <texture texture="flat_dark_scratchy_alpha_PNG-sampler" texcoord="CHANNEL1">
+                  <extra>
+                    <technique profile="MAYA">
+                      <mirrorU>0</mirrorU>
+                      <mirrorV>0</mirrorV>
+                      <wrapU>1</wrapU>
+                      <wrapV>1</wrapV>
+                      <repeatU>1</repeatU>
+                      <repeatV>1</repeatV>
+                      <offsetU>0</offsetU>
+                      <offsetV>0</offsetV>
+                      <rotateUV>0</rotateUV>
+                    </technique>
+                    <technique profile="MAX3D">
+                      <amount>1</amount>
+                    </technique>
+                  </extra>
+                </texture>
+              </spec_level>
+              <emission_level>
+                <float>0</float>
+              </emission_level>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="MAX3D">
+          <faceted>0</faceted>
+          <double_sided>0</double_sided>
+          <wireframe>0</wireframe>
+          <face_map>0</face_map>
+        </technique>
+      </extra>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="__0-mesh" name="__0">
+      <mesh>
+        <source id="__0-mesh-positions">
+          <float_array id="__0-mesh-positions-array" count="24">0.500001 1.32661 -1.98064 -0.500002 -2.5734 -1.98064 -0.499999 1.32661 -1.98064 0.500002 2.5734 1.98064 0.500002 2.5734 1.18064 -0.499998 2.5734 1.18064 -0.499998 2.5734 1.98064 0.499998 -2.5734 -1.98064</float_array>
+          <technique_common>
+            <accessor source="#__0-mesh-positions-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__0-mesh-normals">
+          <float_array id="__0-mesh-normals-array" count="24">0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 1 0 0 1 0 0 1 0 0 1 0</float_array>
+          <technique_common>
+            <accessor source="#__0-mesh-normals-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__0-mesh-map-channel1">
+          <float_array id="__0-mesh-map-channel1-array" count="24">0.25 1.1633 0 0.75 -0.786702 0 0.75 1.1633 0 0.249999 1.49032 0 0.249999 1.09032 0 0.75 1.09032 0 0.75 1.49032 0 0.250001 -0.786702 0</float_array>
+          <technique_common>
+            <accessor source="#__0-mesh-map-channel1-array" count="8" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="__0-mesh-vertices">
+          <input semantic="POSITION" source="#__0-mesh-positions"/>
+        </vertices>
+        <triangles material="ch_flat_generic_graytech" count="4">
+          <input semantic="VERTEX" source="#__0-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#__0-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#__0-mesh-map-channel1" offset="2" set="1"/>
+          <p>0 0 0 1 1 1 2 2 2 1 1 1 0 0 0 7 3 7 3 4 3 4 5 4 5 6 5 3 4 3 5 6 5 6 7 6</p>
+        </triangles>
+      </mesh>
+    </geometry>
+    <geometry id="__1-mesh" name="__1">
+      <mesh>
+        <source id="__1-mesh-positions">
+          <float_array id="__1-mesh-positions-array" count="108">0.500001 0.926598 1.98064 -0.499998 2.5734 1.98064 -0.5 0.926598 1.98064 0.499998 -2.5734 0.480643 -0.5 0.926598 1.98064 -0.500002 -2.5734 0.480642 0.499998 -2.5734 -1.98064 -0.500002 -2.5734 0.480642 -0.500002 -2.5734 -1.98064 -0.499998 2.5734 1.18064 0.500001 1.0266 1.18064 -0.5 1.0266 1.18064 -0.5 1.0266 1.18064 0.5 0.426598 0.880639 -0.5 0.426598 0.880639 -0.5 0.426598 0.880639 0.5 0.426598 0.080638 -0.5 0.426598 0.080638 -0.5 0.426598 0.080638 0.500001 1.0266 0.080638 -0.5 1.0266 0.080638 -0.5 1.0266 0.080638 0.500001 1.32659 -0.219361 -0.499999 1.32659 -0.219361 0.500001 1.32659 -0.219361 -0.499999 1.32661 -1.98064 -0.499999 1.32659 -0.219361 0.500001 1.32661 -1.98064 0.499998 -2.5734 0.480643 0.500001 0.926598 1.98064 0.500002 2.5734 1.98064 0.5 0.426598 0.080638 0.5 0.426598 0.880639 0.500001 1.0266 1.18064 0.500002 2.5734 1.18064 0.500001 1.0266 0.080638</float_array>
+          <technique_common>
+            <accessor source="#__1-mesh-positions-array" count="36" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__1-mesh-normals">
+          <float_array id="__1-mesh-normals-array" count="108">0 0 1 0 0 1 0 0 1 0 0 1 0.000000 -0.393919 0.919145 0.000000 -0.393919 0.919145 0.000000 -0.393919 0.919145 0 -0.393919 0.919145 0.000000 -1 0 0.000000 -1 0 0.000000 -1 0 0.000000 -1 0 0 0 -1 0 0 -1 0 0 -1 0 0.447214 -0.894427 0 0.447214 -0.894427 0 0.447214 -0.894427 0 0 -1 0 0.447214 -0.894427 0 1 0 0 1 0 -0.000000 1 0 -0.000000 1 0 0 0.000000 1 0 0.000000 1 0 0.000000 1 0 0.000000 1 0 0.707113 0.707101 0 0.707113 0.707101 0 0.707113 0.707101 0 0.707113 0.707101 0 1 0.000009 0 1 0.000009 0 1 0.000009 0 1 0.000009</float_array>
+          <technique_common>
+            <accessor source="#__1-mesh-normals-array" count="36" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__1-mesh-map-channel1">
+          <float_array id="__1-mesh-map-channel1-array" count="108">0.782998 2.08133 0 0.013767 2.97707 0 0.013767 2.08133 0 0.782997 -0.638312 0 0.013767 2.08133 0 0.013766 -0.638311 0 0.782997 -1.97707 0 0.013766 -0.638311 0 0.013765 -1.97707 0 0.013767 2.54193 0 0.782998 1.70058 0 0.013767 1.70058 0 0.013767 1.70058 0 0.782998 1.21104 0 0.013766 1.21104 0 0.013766 1.21104 0 0.782998 0.775898 0 0.013766 0.775898 0 0.013766 0.775898 0 0.782998 1.10225 0 0.013766 1.10225 0 0.013766 1.10225 0 0.782998 1.10225 0 0.013767 1.10225 0 0.782998 1.10225 0 0.013767 0.144251 0 0.013767 1.10225 0 0.782998 0.14425 0 0.782997 -0.638312 0 0.782998 2.08133 0 0.782998 2.97707 0 0.782998 0.775898 0 0.782998 1.21104 0 0.782998 1.70058 0 0.782998 2.54193 0 0.782998 1.10225 0</float_array>
+          <technique_common>
+            <accessor source="#__1-mesh-map-channel1-array" count="36" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="__1-mesh-vertices">
+          <input semantic="POSITION" source="#__1-mesh-positions"/>
+        </vertices>
+        <triangles material="coag_panel_i" count="18">
+          <input semantic="VERTEX" source="#__1-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#__1-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#__1-mesh-map-channel1" offset="2" set="1"/>
+          <p>0 0 0 1 1 1 2 2 2 1 1 1 0 0 0 30 3 30 3 4 3 4 5 4 5 6 5 4 5 4 3 4 3 29 7 29 6 8 6 7 9 7 8 10 8 7 9 7 6 8 6 28 11 28 9 12 9 10 13 10 11 14 11 13 15 13 12 16 12 33 17 33 10 13 10 9 12 9 34 18 34 12 16 12 13 15 13 14 19 14 16 20 16 15 21 15 32 22 32 15 21 15 16 20 16 17 23 17 19 24 19 18 25 18 31 26 31 18 25 18 19 24 19 20 27 20 22 28 22 21 29 21 35 30 35 21 29 21 22 28 22 23 31 23 24 32 24 25 33 25 26 34 26 25 33 25 24 32 24 27 35 27</p>
+        </triangles>
+      </mesh>
+    </geometry>
+    <geometry id="__2-mesh" name="__2">
+      <mesh>
+        <source id="__2-mesh-positions">
+          <float_array id="__2-mesh-positions-array" count="66">-0.5 0.426598 0.080638 -0.499999 1.32661 -1.98064 -0.500002 -2.5734 -1.98064 -0.499999 1.32659 -0.219361 -0.499998 2.5734 1.98064 -0.499998 2.5734 1.18064 -0.5 1.0266 1.18064 -0.500002 -2.5734 0.480642 -0.5 0.426598 0.880639 -0.5 1.0266 0.080638 -0.5 0.926598 1.98064 0.499998 -2.5734 -1.98064 0.5 0.426598 0.080638 0.499998 -2.5734 0.480643 0.500001 1.0266 1.18064 0.500002 2.5734 1.98064 0.500001 0.926598 1.98064 0.500002 2.5734 1.18064 0.500001 1.32661 -1.98064 0.500001 1.32659 -0.219361 0.500001 1.0266 0.080638 0.5 0.426598 0.880639</float_array>
+          <technique_common>
+            <accessor source="#__2-mesh-positions-array" count="22" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__2-mesh-normals">
+          <float_array id="__2-mesh-normals-array" count="66">-1 0.000000 -0.000000 -1 0.000000 0 -1 0.000000 0 -1 0.000000 0 -1 0.000000 -0.000001 -1 0.000000 0 -1 0.000000 -0.000000 -1 0 -0.000003 -1 0.000000 0 -1 0.000001 0 -1 0.000001 0 1 -0.000000 0 1 -0.000000 0 1 -0.000000 0 1 -0.000000 0 1 -0.000000 0 1 -0.000000 0 1 -0.000000 0 1 -0.000000 0 1 -0.000000 0 1 -0.000000 0 1 -0.000000 0</float_array>
+          <technique_common>
+            <accessor source="#__2-mesh-normals-array" count="22" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__2-mesh-map-channel1">
+          <float_array id="__2-mesh-map-channel1-array" count="66">0.286703 0.540318 0 -0.163303 -0.490322 0 1.7867 -0.490322 0 -0.163297 0.390318 0 -0.786701 1.49032 0 -0.786701 1.09032 0 -0.013297 1.09032 0 1.7867 0.74032 0 0.286703 0.940318 0 -0.013297 0.540318 0 0.0367 1.49032 0 -0.786701 -0.490322 0 0.713297 0.540318 0 -0.786701 0.74032 0 1.0133 1.09032 0 1.7867 1.49032 0 0.963299 1.49032 0 1.7867 1.09032 0 1.1633 -0.490322 0 1.1633 0.390318 0 1.0133 0.540318 0 0.713297 0.940318 0</float_array>
+          <technique_common>
+            <accessor source="#__2-mesh-map-channel1-array" count="22" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="__2-mesh-vertices">
+          <input semantic="POSITION" source="#__2-mesh-positions"/>
+        </vertices>
+        <triangles material="flat_dark_scratchy" count="18">
+          <input semantic="VERTEX" source="#__2-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#__2-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#__2-mesh-map-channel1" offset="2" set="1"/>
+          <p>0 0 0 1 1 1 2 2 2 0 0 0 2 2 2 7 3 7 0 0 0 7 3 7 8 4 8 8 4 8 7 3 7 6 5 6 0 0 0 3 6 3 1 1 1 3 6 3 0 0 0 9 7 9 6 5 6 7 3 7 10 8 10 4 9 4 5 10 5 6 5 6 4 9 4 6 5 6 10 8 10 11 11 11 12 12 12 13 13 13 13 13 13 12 12 12 21 14 21 13 13 13 21 14 21 14 15 14 18 16 18 12 12 12 11 11 11 19 17 19 12 12 12 18 16 18 12 12 12 19 17 19 20 18 20 13 13 13 14 15 14 16 19 16 14 15 14 15 20 15 16 19 16 17 21 17 15 20 15 14 15 14</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="basept0.max" name="basept0_max">
+      <node id="__0-node" name="__0" type="NODE">
+        <translate>-0.599998 0.033397 -1.00064</translate>
+        <instance_geometry url="#__0-mesh">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="ch_flat_generic_graytech" target="#ch_flat_generic_graytech">
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="1"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+      <node id="__1-node" name="__1" type="NODE">
+        <translate>-0.599998 0.033397 -1.00064</translate>
+        <instance_geometry url="#__1-mesh">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="coag_panel_i" target="#coag_panel_i">
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="1"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+      <node id="__2-node" name="__2" type="NODE">
+        <translate>-0.599998 0.033397 -1.00064</translate>
+        <instance_geometry url="#__2-mesh">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="flat_dark_scratchy" target="#flat_dark_scratchy">
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="1"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+      <extra>
+        <technique profile="FCOLLADA">
+          <start_time>0</start_time>
+          <end_time>3.33333</end_time>
+        </technique>
+      </extra>
+      <extra>
+        <technique profile="MAX3D">
+          <frame_rate>30</frame_rate>
+        </technique>
+      </extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#basept0.max"/>
+  </scene>
+</COLLADA>

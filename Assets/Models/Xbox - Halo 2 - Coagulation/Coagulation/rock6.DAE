@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Shadowth</author>
+      <authoring_tool>3dsMax 11 - Feeling ColladaMax v3.05B.</authoring_tool>
+      <comments>ColladaMax Export Options: ExportNormals=1;ExportEPolyAsTriangles=1;ExportXRefs=1;ExportSelected=0;ExportTangents=0;ExportAnimations=1;SampleAnim=0;ExportAnimClip=0;BakeMatrices=0;ExportRelativePaths=1;AnimStart=0;AnimEnd=3.33333;</comments>
+      <source_data>file:///C:/Users/Shadowth.Kenigirl-PC/Documents/Spriter%27s%20resource/Models/Halo%202/Levels/Coagulation/rock6.max</source_data>
+    </contributor>
+    <created>2009-09-05T20:00:16Z</created>
+    <modified>2009-09-05T20:00:17Z</modified>
+    <unit meter="0.0254" name="inch"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images>
+    <image id="coag_rocks.png" name="coag_rocks_png">
+      <init_from>./Textures/coag_rocks.png</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="coag_rocks" name="coag_rocks">
+      <instance_effect url="#coag_rocks-fx"/>
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="coag_rocks-fx" name="coag_rocks">
+      <profile_COMMON>
+        <newparam sid="coag_rocks_png-surface">
+          <surface type="2D">
+            <init_from>coag_rocks.png</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="coag_rocks_png-sampler">
+          <sampler2D>
+            <source>coag_rocks_png-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <blinn>
+            <ambient>
+              <color>1 1 1 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="coag_rocks_png-sampler" texcoord="CHANNEL1">
+                <extra>
+                  <technique profile="MAYA">
+                    <mirrorU>0</mirrorU>
+                    <mirrorV>0</mirrorV>
+                    <wrapU>1</wrapU>
+                    <wrapV>1</wrapV>
+                    <repeatU>1</repeatU>
+                    <repeatV>1</repeatV>
+                    <offsetU>0</offsetU>
+                    <offsetV>0</offsetV>
+                    <rotateUV>0</rotateUV>
+                  </technique>
+                  <technique profile="MAX3D">
+                    <amount>1</amount>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color>1 1 1 1</color>
+            </specular>
+            <shininess>
+              <float>1.46862</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <reflectivity>
+              <float>1</float>
+            </reflectivity>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </blinn>
+          <extra>
+            <technique profile="FCOLLADA">
+              <spec_level>
+                <float>0</float>
+              </spec_level>
+              <emission_level>
+                <float>0</float>
+              </emission_level>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="MAX3D">
+          <faceted>0</faceted>
+          <double_sided>0</double_sided>
+          <wireframe>0</wireframe>
+          <face_map>0</face_map>
+        </technique>
+      </extra>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="__0-mesh" name="__0">
+      <mesh>
+        <source id="__0-mesh-positions">
+          <float_array id="__0-mesh-positions-array" count="228">0.184336 1.56465 0.837583 1.24064 1.14625 0.837582 1.24064 1.14625 -0.425185 0.184331 1.56465 -0.425184 -1.22879 0.580245 -0.425592 -0.412335 1.4361 0.835873 -0.413376 1.43588 -0.420858 -1.18604 -0.141432 0.839528 -1.6148 -0.203829 -0.428452 -1.5777 -0.77859 -0.425183 -0.372932 -0.837901 0.837583 -0.818936 -0.653081 0.837583 -1.21132 -1.28741 -0.425184 -0.765309 -1.47224 -0.425184 -0.059395 -1.56465 -0.425184 0.3056 -1.516 -0.425184 0.332987 -0.930315 0.837582 1.2681 -0.230146 0.840624 0.865664 -1.15429 -0.425185 0.865664 -1.15429 -0.425185 1.46476 -0.19107 -0.425184 1.2681 -0.230146 0.840624 -0.417433 -0.541882 -1.00892 -1.20013 -0.893038 -0.793801 -1.26501 0.023182 -0.7933 -0.375225 -1.23487 -0.7938 -0.068164 1.26703 -0.794871 0.140807 0.309593 -1.0054 1.23554 0.751788 -0.793801 1.2801 0.212813 -0.795311 1.27222 0.750622 1.00548 -0.045921 1.27396 1.00495 -0.600596 0.141292 1.00789 -0.02068 -0.427186 1.00892 0.972041 -0.026942 1.00746 1.24064 1.14625 -0.425185 1.6148 0.643225 -0.425184 1.23554 0.751788 -0.793801 -0.068164 1.26703 -0.794871 -0.413376 1.43588 -0.420858 -1.26501 0.023182 -0.7933 -1.20013 -0.893038 -0.793801 -1.21132 -1.28741 -0.425184 -0.375225 -1.23487 -0.7938 0.450728 -1.12626 -0.792341 1.2801 0.212813 -0.795311 1.24064 1.14625 0.837582 1.61414 0.644129 0.834589 -0.412335 1.4361 0.835873 0.184336 1.56465 0.837583 -0.818936 -0.653081 0.837583 -1.18604 -0.141432 0.839528 0.332987 -0.930315 0.837582 -0.372932 -0.837901 0.837583 1.2681 -0.230146 0.840624 0.184331 1.56465 -0.425184 1.24064 1.14625 -0.425185 -0.412335 1.4361 0.835873 1.24064 1.14625 0.837582 1.61414 0.644129 0.834589 -1.22879 0.580245 -0.425592 -0.413376 1.43588 -0.420858 -1.6148 -0.203829 -0.428452 -1.5777 -0.77859 -0.425183 -0.818936 -0.653081 0.837583 -1.21132 -1.28741 -0.425184 -0.765309 -1.47224 -0.425184 -0.059395 -1.56465 -0.425184 0.450728 -1.12626 -0.792341 0.3056 -1.516 -0.425184 0.865664 -1.15429 -0.425185 1.46476 -0.19107 -0.425184 1.6148 0.643225 -0.425184 -1.18604 -0.141432 0.839528 -0.02068 -0.427186 1.00892 -0.372932 -0.837901 0.837583</float_array>
+          <technique_common>
+            <accessor source="#__0-mesh-positions-array" count="76" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__0-mesh-normals">
+          <float_array id="__0-mesh-normals-array" count="228">0.082646 0.996579 -0.000000 0.368264 0.929721 -0.000002 0.368265 0.929721 -0.000001 0.945864 0.23927 -0.219297 0.783815 0.583032 -0.213793 0.802367 0.596831 -0.000002 0.296313 0.146977 0.943714 0.248808 0.395137 0.884286 0.07311 0.453494 0.888256 0.019543 0.990529 -0.135907 0.452478 0.022173 0.8915 0.194815 -0.15797 0.968035 -0.090926 0.292094 0.952057 0.984627 0.168232 0.046996 -0.862624 0.50004 0.076424 -0.815429 0.559589 0.148106 -0.723918 0.689886 0.000476 -0.207264 0.954866 -0.212775 -0.210615 0.977569 0.000000 -0.915485 0.00549 0.402315 -0.181172 0.82281 -0.538666 -0.101258 0.452843 -0.885822 -0.515511 0.495147 -0.69934 -0.515511 0.495148 -0.69934 -0.428418 0.133891 -0.893606 -0.963232 0.236019 0.128369 -0.881603 -0.424707 0.205914 -0.712357 -0.512925 0.479016 -0.166675 -0.194013 0.966736 -0.19546 0.020359 0.9805 -0.205214 -0.150914 0.967012 -0.34849 0.173051 0.921199 -0.285349 0.30322 0.909194 -0.06725 -0.094131 0.993286 -0.121 -0.291996 0.948735 -0.214254 -0.844514 0.490808 -0.330719 -0.798084 0.503673 -0.330719 -0.798084 0.503673 -0.231029 -0.936125 0.265132 -0.809541 -0.582899 0.0698 -0.059175 -0.486396 -0.871732 -0.270697 -0.653241 -0.707107 -0.270697 -0.653241 -0.707106 -0.102558 -0.783405 -0.612992 -0.042548 -0.972625 0.228453 0.268733 -0.85962 0.434552 -0.680479 -0.489969 -0.544866 -0.38939 -0.273915 -0.879401 -0.705374 -0.049561 -0.707101 -0.705373 -0.049561 -0.707101 0.369717 -0.911166 0.181894 0.556766 -0.745183 0.367034 0.555551 -0.826905 0.087129 0.843532 -0.524654 0.11486 0.935359 -0.347698 -0.064881 0.898376 -0.420588 0.126594 0.409538 -0.106905 -0.906008 0.600448 -0.373461 -0.707099 0.600448 -0.373461 -0.707099 0.073599 -0.305258 0.949421 0.337848 -0.252249 0.906768 0.031771 -0.302111 0.952743 0.256452 -0.381672 -0.888009 0.449203 -0.695531 -0.560761 -0.059549 -0.102745 -0.992924 0.024738 0.076123 -0.996791 -0.774187 0.382988 -0.503939 0.09342 -0.700911 -0.707104 0.093419 -0.700911 -0.707104 0.363559 0.264732 -0.893164 0.260402 0.657413 -0.707106 0.260403 0.657413 -0.707105 0.672808 0.500461 -0.544856 0.704512 0.060226 -0.707132 0.812282 -0.146085 -0.564674 -0.045922 -0.350793 0.935326</float_array>
+          <technique_common>
+            <accessor source="#__0-mesh-normals-array" count="76" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__0-mesh-map-channel1">
+          <float_array id="__0-mesh-map-channel1-array" count="228">0.453488 0.683812 0 0.189412 0.683812 0 0.189412 0.368121 0 0.453488 0.368121 0 0.35544 0.368121 0 0.141106 0.683812 0 0.141106 0.368121 0 0.536063 0.683812 0 0.550431 0.368121 0 0.694647 0.368121 0 0.407195 0.683812 0 0.295693 0.683812 0 0.197597 0.368121 0 0.309098 0.368121 0 0.485579 0.368121 0 0.576828 0.368121 0 0.583676 0.683812 0 0.817113 0.683812 0 0.716845 0.368121 0 0.211427 0.368121 0 0.452233 0.368121 0 0.442593 0.683812 0 0.604006 0.364577 0 0.799605 0.27674 0 0.815778 0.506935 0 0.593381 0.191283 0 0.515819 0.816732 0 0.464293 0.57735 0 0.190686 0.687946 0 0.179142 0.553144 0 0.816345 0.688315 0 0.491212 0.817101 0 0.346497 0.535556 0 0.495257 0.393205 0 0.746646 0.493059 0 0.786561 0.368121 0 0.660806 0.368121 0 0.687946 0.275967 0 0.515819 0.275967 0 0.603269 0.368121 0 0.493064 0.275967 0 0.72326 0.275967 0 0.821854 0.368121 0 0.406619 0.275967 0 0.61289 0.275967 0 0.553144 0.275967 0 0.810588 0.786561 0 0.904129 0.660806 0 0.396731 0.858894 0 0.546512 0.891163 0 0.295693 0.33673 0 0.2041 0.463937 0 0.583676 0.267421 0 0.407195 0.290525 0 0.817113 0.442593 0 0.453488 0.891163 0 0.189412 0.786561 0 0.603269 0.683812 0 0.786561 0.683812 0 0.660806 0.683812 0 0.805611 0.64456 0 0.603269 0.858894 0 0.904129 0.449569 0 0.893996 0.305353 0 0.66327 0.683812 0 0.802404 0.178146 0 0.690902 0.131941 0 0.514421 0.108837 0 0.38711 0.218774 0 0.423173 0.120999 0 0.283155 0.211427 0 0.133381 0.452232 0 0.09587 0.660806 0 0.2041 0.463937 0 0.495257 0.393205 0 0.407195 0.290525 0</float_array>
+          <technique_common>
+            <accessor source="#__0-mesh-map-channel1-array" count="76" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="__0-mesh-vertices">
+          <input semantic="POSITION" source="#__0-mesh-positions"/>
+        </vertices>
+        <triangles material="coag_rocks" count="68">
+          <input semantic="VERTEX" source="#__0-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#__0-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#__0-mesh-map-channel1" offset="2" set="1"/>
+          <p>0 0 0 1 1 1 2 2 2 36 3 36 35 4 35 58 5 58 30 6 30 46 7 46 49 8 49 2 2 2 3 9 3 0 0 0 46 7 46 30 6 30 47 10 47 47 10 47 30 6 30 34 11 34 49 8 49 31 12 31 30 6 30 58 5 58 59 13 59 36 3 36 4 14 4 5 15 5 6 16 6 3 9 3 39 17 39 57 18 57 5 15 5 4 14 4 7 19 7 38 20 38 39 17 39 3 9 3 57 18 57 0 0 0 3 9 3 26 21 26 60 22 60 61 23 61 60 22 60 26 21 26 24 24 24 8 25 8 9 26 9 7 19 7 64 27 64 7 19 7 9 26 9 50 28 50 32 29 32 51 30 51 73 31 73 32 29 32 48 32 48 4 14 4 8 25 8 7 19 7 31 12 31 48 32 48 32 29 32 50 28 50 33 33 33 32 29 32 33 33 33 50 28 50 53 34 53 10 35 10 11 36 11 12 37 12 12 37 12 13 38 13 10 35 10 9 26 9 42 39 42 64 27 64 25 40 25 66 41 66 65 42 65 43 43 43 14 44 14 13 38 13 13 38 13 14 44 14 16 45 16 41 46 41 42 39 42 9 26 9 23 47 23 63 48 63 62 49 62 65 42 65 23 47 23 25 40 25 16 45 16 10 35 10 13 38 13 14 44 14 15 50 15 16 45 16 17 51 17 16 45 16 18 52 18 15 50 15 18 52 18 16 45 16 19 53 19 20 54 20 21 55 21 29 56 29 71 57 71 70 58 70 34 11 34 52 59 52 54 60 54 52 59 52 34 11 34 74 61 74 70 58 70 68 62 68 29 56 29 44 63 44 18 52 18 15 50 15 22 64 22 23 47 23 24 24 24 62 49 62 24 24 24 23 47 23 22 64 22 25 40 25 23 47 23 27 65 27 22 64 22 24 24 24 40 66 40 8 25 8 4 14 4 27 65 27 68 62 68 22 64 22 68 62 68 25 40 25 22 64 22 67 67 67 25 40 25 68 62 68 68 62 68 69 68 69 67 67 67 27 65 27 29 56 29 68 62 68 28 69 28 29 56 29 27 65 27 26 21 26 27 65 27 24 24 24 26 21 26 28 69 28 27 65 27 55 70 55 28 69 28 26 21 26 28 69 28 55 70 55 56 71 56 35 4 35 36 3 36 37 72 37 72 73 72 29 56 29 28 69 28 36 3 36 20 54 20 45 74 45 30 6 30 31 12 31 32 29 32 30 6 30 32 29 32 34 11 34 32 29 32 33 33 33 34 11 34 48 32 48 31 12 31 49 8 49 52 59 52 74 61 74 75 75 75 47 10 47 34 11 34 54 60 54 59 13 59 21 55 21 20 54 20 20 54 20 36 3 36 59 13 59</p>
+        </triangles>
+      </mesh>
+    </geometry>
+    <geometry id="__1-mesh" name="__1">
+      <mesh>
+        <source id="__1-mesh-positions">
+          <float_array id="__1-mesh-positions-array" count="9">0.702974 0.425543 -0.106688 0.144119 -0.425543 -0.106688 -0.702974 0.143889 0.106689</float_array>
+          <technique_common>
+            <accessor source="#__1-mesh-positions-array" count="3" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__1-mesh-normals">
+          <float_array id="__1-mesh-normals-array" count="9">-0.171057 0.112323 -0.978838 -0.171057 0.112323 -0.978838 -0.171057 0.112323 -0.978838</float_array>
+          <technique_common>
+            <accessor source="#__1-mesh-normals-array" count="3" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="__1-mesh-map-channel1">
+          <float_array id="__1-mesh-map-channel1-array" count="9">0.464293 0.57735 0 0.604006 0.364577 0 0.815778 0.506935 0</float_array>
+          <technique_common>
+            <accessor source="#__1-mesh-map-channel1-array" count="3" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="__1-mesh-vertices">
+          <input semantic="POSITION" source="#__1-mesh-positions"/>
+        </vertices>
+        <triangles material="coag_rocks" count="1">
+          <input semantic="VERTEX" source="#__1-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#__1-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#__1-mesh-map-channel1" offset="2" set="1"/>
+          <p>0 0 0 1 1 1 2 2 2</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="rock6.max" name="rock6_max">
+      <node id="__0-node" name="__0" type="NODE">
+        <translate>-0.019244 0.175454 0.7938</translate>
+        <instance_geometry url="#__0-mesh">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="coag_rocks" target="#coag_rocks">
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="1"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+      <node id="__1-node" name="__1" type="NODE">
+        <translate>-0.025127 0.088444 -4.06807</translate>
+        <instance_geometry url="#__1-mesh">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="coag_rocks" target="#coag_rocks">
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="1"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+      <extra>
+        <technique profile="FCOLLADA">
+          <start_time>0</start_time>
+          <end_time>3.33333</end_time>
+        </technique>
+      </extra>
+      <extra>
+        <technique profile="MAX3D">
+          <frame_rate>30</frame_rate>
+        </technique>
+      </extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#rock6.max"/>
+  </scene>
+</COLLADA>
