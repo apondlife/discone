@@ -21,6 +21,7 @@ public class ThirdPersonCamera : MonoBehaviour {
     }
 
     private void FixedUpdate() {
+        // TODO: this is next
         var tilt = m_State.Tilt.eulerAngles.z;
 
         // map angle from [0, 360] to [-180, 180]
