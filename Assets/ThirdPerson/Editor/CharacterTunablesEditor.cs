@@ -16,6 +16,8 @@ public class LookAtPointEditor: Editor {
         base.OnInspectorGUI();
         EditorGUILayout.LabelField("Acceleration: " + m_Tunables.Acceleration);
         EditorGUILayout.LabelField("Deceleration: " + m_Tunables.Deceleration);
+        EditorGUILayout.LabelField("Jump Height: " + m_Tunables.JumpHeight);
+        EditorGUILayout.LabelField("Jump Duration: " + m_Tunables.JumpDuration);
         EditorGUILayout.LabelField("Pivot Decleration: " + m_Tunables.PivotDeceleration);
     }
 }

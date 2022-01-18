@@ -103,4 +103,9 @@ public class CharacterTunables: CharacterTunablesBase {
 
     /// the deceleration of the character while pivoting
     public override float PivotDeceleration => MaxPlanarSpeed / TimeToPivot;
+
+    /// the deceleration of the character while pivoting
+    public float JumpHeight =>  InitialJumpSpeed * InitialJumpSpeed / ( -2*Gravity);
+    public float JumpDuration =>  -InitialJumpSpeed / Gravity;
+    // public float PivotDeceleration => MaxPlanarSpeed / TimeToPivot;
 }

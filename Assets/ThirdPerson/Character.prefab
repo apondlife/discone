@@ -98,13 +98,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Input:
-    cameraReference: {fileID: 0}
-    UnityPlayerInput: {fileID: 7614967429340073449}
+    m_Look: {fileID: 0}
+    m_PlayerInput: {fileID: 7614967429340073449}
     IsJumpPressed: 0
     DesiredPlanarDirection: {x: 0, y: 0, z: 0}
   m_Tunables: {fileID: 11400000, guid: 464c4e2324923b043835841de9c131de, type: 2}
-  m_State: {fileID: 11400000, guid: 6065e7ea79c83c5449da42690c32a8c6, type: 2}
   m_Controller: {fileID: 7614967429340073446}
+  m_State: {fileID: 11400000, guid: 6065e7ea79c83c5449da42690c32a8c6, type: 2}
   m_ShowGizmos: 0
 --- !u!143 &7614967429340073446
 CharacterController:
@@ -119,7 +119,7 @@ CharacterController:
   serializedVersion: 2
   m_Height: 2
   m_Radius: 0.5
-  m_SlopeLimit: 45
+  m_SlopeLimit: 90
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
@@ -323,11 +323,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_State: {fileID: 11400000, guid: 6065e7ea79c83c5449da42690c32a8c6, type: 2}
-  m_PreviousState: {fileID: 0}
   m_Tunables: {fileID: 11400000, guid: 464c4e2324923b043835841de9c131de, type: 2}
   m_Animator: {fileID: 4091336841325098393}
   m_Camera: {fileID: 0}
-  tiltForBaseAcceleration: 20
-  maxTilt: 60
-  tiltInterpolation: 0.1
-  dutchInterpolation: 0.2

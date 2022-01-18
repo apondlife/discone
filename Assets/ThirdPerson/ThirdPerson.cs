@@ -4,26 +4,32 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public partial class ThirdPerson: MonoBehaviour {
     // -- fields --
+    [Header("references")]
+
     [Tooltip("the input wrapper")]
-    [SerializeField] private CharacterInput m_Input;
+    [SerializeField] CharacterInput m_Input;
 
     [Tooltip("the tunables; for tweaking the player's attributes")]
-    [SerializeField] private CharacterTunablesBase m_Tunables;
+    [SerializeField] CharacterTunablesBase m_Tunables;
 
-    /// serialized so we can see it
-    [SerializeField] private CharacterState m_State;
+    [Tooltip("the underlying character controller")]
+    [SerializeField] CharacterController m_Controller;
 
-    [Tooltip("a reference to the underlying character controller")]
-    [SerializeField] private CharacterController m_Controller;
+    /// the character's state
+    [SerializeField] CharacterState m_State;
 
-    private Character m_Character;
+    /// the list of systems acting on this character
     private CharacterSystem[] m_Systems;
 
+    /// the last collision between the character and ground
+    private ControllerColliderHit m_Hit;
+
+    // -- lifecycle --
     private void Awake() {
         m_Input.Awake();
 
         // init character
-        m_Character = new Character(
+        var character = new Character(
             m_Input,
             m_State,
             m_Tunables,
@@ -32,10 +38,10 @@ public partial class ThirdPerson: MonoBehaviour {
 
         // init systems
         m_Systems = new CharacterSystem[] {
-            new GravitySystem(m_Character),
-            new MovementSystem(m_Character),
-            new JumpSystem(m_Character),
-            new TiltSystem(m_Character),
+            new GravitySystem(character),
+            new MovementSystem(character),
+            new JumpSystem(character),
+            new TiltSystem(character),
         };
     }
 
@@ -52,10 +58,19 @@ public partial class ThirdPerson: MonoBehaviour {
 
         // update controller state from character state
         if(m_State.Velocity.magnitude > 0) {
+            m_Hit = null;
             m_Controller.Move(m_State.Velocity * Time.deltaTime);
         }
 
         // sync controller state back to character state
-        m_State.UpdateVelocity(v0, m_Controller.velocity);
+        Debug.Log($"update velocity");
+        m_State.UpdateVelocity(v0, m_Controller.velocity, m_Hit?.normal);
+    }
+
+    // -- events --
+    /// when the controller collider contact something
+    void OnControllerColliderHit(ControllerColliderHit hit) {
+        Debug.Log($"controller hit {hit}");
+        m_Hit = hit;
     }
 }

@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
   m_Name: CharacterTunablesDefault
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
-  _maxPlanarSpeed: 15
+  _maxPlanarSpeed: 25
   _timeToMaxSpeed: 0.3
-  _timeToStop: 0.4
+  _timeToStop: 0.7
   _turnSpeed: 360
   _pivotSpeed: 1080
   _timeToPivot: 0.7
   _pivotStartThreshold: -0.5
-  _gravity: -70
-  _initialJumpSpeed: 30
+  _gravity: -100
+  _initialJumpSpeed: 200
   _jumpSquatFrames: 15
   _minJumpSpeed: 15
   _maxJumpSpeed: 25
@@ -52,5 +52,5 @@ MonoBehaviour:
   _tiltForBaseAcceleration: 30
   _maxTilt: 69
   _tiltSmoothing: 0.1
-  _dutchScale: 0.1
+  _dutchScale: 1
   _dutchSmoothing: 0.2

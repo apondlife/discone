@@ -35,9 +35,15 @@ public class CharacterState : ScriptableObject {
 
     // -- commands --
     /// updates the character state from an external velocity
-    public void UpdateVelocity(Vector3 v0, Vector3 v1) {
+    public void UpdateVelocity(Vector3 v0, Vector3 v1, Vector3? normal) {
+        var v1n = v1;
+        // project velocity towards upward ramps
+        if (normal != null && v1.y > 0) {
+            v1n = Quaternion.FromToRotation(normal.Value, Vector3.up) * v1;
+        }
+
         SetProjectedPlanarDirection(v1);
-        VerticalSpeed = v1.y;
+        VerticalSpeed = v1n.y;
         PlanarSpeed = v1.XNZ().magnitude;
         Acceleration = (v1 - v0) / Time.deltaTime;
     }
