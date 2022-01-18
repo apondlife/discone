@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 /// the state machine for the character's movement
 sealed class MovementSystem: CharacterSystem {
     // -- lifetime --
@@ -19,12 +18,20 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void NotMoving_Update() {
+
+
         // TODO: slowdown
-        // drag
-        m_State.PlanarSpeed = 0;
+        m_State.PlanarVelocity = Vector3.zero;
 
         if(m_Input.DesiredPlanarDirection.magnitude > 0) {
             ChangeTo(Moving);
+            return;
+        }
+
+        // start floating if no longer grounded
+        if (!m_State.IsGrounded) {
+            ChangeTo(Floating);
+            return;
         }
     }
 
@@ -35,7 +42,9 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void Moving_Update() {
+        // start floating if no longer grounded
         if (!m_State.IsGrounded) {
+            ChangeTo(Floating);
             return;
         }
 
@@ -60,23 +69,22 @@ sealed class MovementSystem: CharacterSystem {
             );
 
             m_State.SetProjectedFacingDirection(dirFacing);
-            m_State.SetProjectedPlanarDirection(dirFacing);
         }
 
         // move the character; if there's input, accelerate towards max speed
-        var vt = m_State.PlanarSpeed;
+        var vt = m_State.PlanarVelocity;
         if (hasInput) {
-            vt += m_Tunables.Acceleration * dirInput.magnitude * Time.deltaTime;
+            vt += m_Tunables.Acceleration * dirInput.magnitude * Time.deltaTime * m_State.FacingDirection;
         }
         // otherwise, decelerate to zero
         else {
-            vt -= m_Tunables.Deceleration * Time.deltaTime;
+            vt -= Mathf.Min(vt.magnitude, m_Tunables.Deceleration * Time.deltaTime) * vt.normalized;
         }
 
-        m_State.PlanarSpeed = Mathf.Clamp(vt, 0.0f, m_Tunables.MaxPlanarSpeed);
+        m_State.SetProjectedPlanarVelocity(Vector3.ClampMagnitude(vt, m_Tunables.MaxPlanarSpeed));
 
         // once speed is zero, stop moving
-        if(m_State.PlanarSpeed == 0.0f) {
+        if(vt.sqrMagnitude == 0.0f) {
             ChangeTo(NotMoving);
         }
     }
@@ -96,6 +104,7 @@ sealed class MovementSystem: CharacterSystem {
 
     void Pivot_Update() {
         if (!m_State.IsGrounded) {
+            ChangeTo(Floating);
             return;
         }
 
@@ -111,14 +120,34 @@ sealed class MovementSystem: CharacterSystem {
         m_State.SetProjectedFacingDirection(dirFacing);
 
         // decelerate towards zero to finish pivot
-        var vt = m_State.PlanarSpeed;
-        vt -= m_Tunables.PivotDeceleration * Time.deltaTime;
-        m_State.PlanarSpeed = Mathf.Clamp(vt, 0.0f, m_Tunables.MaxPlanarSpeed);
+        var vt = m_State.PlanarVelocity;
+        vt -= Mathf.Min(vt.magnitude, m_Tunables.PivotDeceleration * Time.deltaTime) * vt.normalized;
+        m_State.SetProjectedPlanarVelocity(Vector3.ClampMagnitude(vt, m_Tunables.MaxPlanarSpeed));
 
         // if the character has stopped, switch to not moving
-        if(m_State.PlanarSpeed == 0.0f) {
+        if(vt.sqrMagnitude == 0.0f) {
             ChangeTo(NotMoving);
             return;
         }
+    }
+
+    // -- Floating --
+    CharacterPhase Floating => new CharacterPhase(
+        name: "Floating",
+        update: Floating_Update
+    );
+
+    void Floating_Update() {
+        if (m_State.IsGrounded) {
+            ChangeTo(Moving);
+            return;
+        }
+
+        //TODO: moving
+        //TODO: turning
+
+        var vt = m_State.PlanarVelocity;
+        vt += m_Input.DesiredPlanarDirection * m_Tunables.FloatAcceleration * Time.deltaTime;
+        m_State.SetProjectedPlanarVelocity(vt);
     }
 }

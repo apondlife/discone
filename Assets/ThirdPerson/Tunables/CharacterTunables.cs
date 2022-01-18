@@ -33,6 +33,14 @@ public class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private float _pivotStartThreshold;
     public override float PivotStartThreshold => _pivotStartThreshold;
 
+    [Tooltip("the planar acceleration while floating")]
+    [SerializeField] private float _floatAcceleration;
+    public override float FloatAcceleration => _floatAcceleration;
+
+    #endregion
+
+    #region jump system
+    [Header("jump system")]
     [Tooltip("the acceleration due to gravity")]
     [SerializeField] private float _gravity;
     public override float Gravity => _gravity;
@@ -40,10 +48,6 @@ public class CharacterTunables: CharacterTunablesBase {
     [Tooltip("the acceleration due to gravity")]
     [SerializeField] private float _initialJumpSpeed;
     public override float InitialJumpSpeed => _initialJumpSpeed;
-    #endregion
-
-    #region jump system
-    [Header("jump system")]
 
     [Tooltip("the number of frames jump squat lasts")]
     [SerializeField] private int _jumpSquatFrames;
@@ -61,9 +65,9 @@ public class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private AnimationCurve _jumpSpeedCurve;
     public override AnimationCurve JumpSpeedCurve => _jumpSpeedCurve;
 
-    [Tooltip("the acceleration while holding jump and airborne")]
-    [SerializeField] private float _floatAcceleration;
-    public override float FloatAcceleration => _floatAcceleration;
+    [Tooltip("the vertical acceleration while holding jump and airborne")]
+    [SerializeField] private float _jumpAcceleration;
+    public override float JumpAcceleration => _jumpAcceleration;
     #endregion
 
     #region model / animation

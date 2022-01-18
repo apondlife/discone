@@ -87,7 +87,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void Jumping_Update() {
         if(m_Input.IsJumpPressed) {
-            m_State.VerticalSpeed += m_Tunables.FloatAcceleration * Time.deltaTime;
+            m_State.VerticalSpeed += m_Tunables.JumpAcceleration * Time.deltaTime;
         }
 
         if (m_State.IsGrounded) {

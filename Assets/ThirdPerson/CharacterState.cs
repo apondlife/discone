@@ -3,8 +3,8 @@ using UnityEngine;
 /// the character's shared state
 public class CharacterState : ScriptableObject {
     [Header("fields")]
-    [Tooltip("the speed on the xz-plane")]
-    public float PlanarSpeed;
+    [Tooltip("the velocity on the xz-plane")]
+    public Vector3 PlanarVelocity;
 
     [Tooltip("the speed on the y-axis")]
     public float VerticalSpeed = 0;
@@ -17,12 +17,6 @@ public class CharacterState : ScriptableObject {
 
     /// the current facing direction
     public Vector3 FacingDirection => _facingDirection;
-
-    [Tooltip("the current planar direction")]
-    [SerializeField] private Vector3 _planarDirection = Vector3.zero;
-
-    /// the current planar direction
-    public Vector3 PlanarDirection => _planarDirection;
 
     [Tooltip("if the character is grounded")]
     public bool IsGrounded = false;
@@ -42,40 +36,40 @@ public class CharacterState : ScriptableObject {
             v1n = Quaternion.FromToRotation(normal.Value, Vector3.up) * v1;
         }
 
-        SetProjectedPlanarDirection(v1);
+        SetProjectedPlanarVelocity(v1);
         VerticalSpeed = v1n.y;
-        PlanarSpeed = v1.XNZ().magnitude;
+        PlanarVelocity = v1.XNZ();
         Acceleration = (v1 - v0) / Time.deltaTime;
     }
 
     /// sets the facing direction on the xz plane
-    public void SetProjectedFacingDirection(Vector3 direction) {
-        var newDirection = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
+    public void SetProjectedFacingDirection(Vector3 dir) {
+        var projected = Vector3.ProjectOnPlane(dir, Vector3.up);
 
-        // don't set direction to zero vector. if that happens, keep previous direction
-        if(newDirection.sqrMagnitude > 0 ) {
-            _facingDirection = newDirection;
+        // if zero, use the original direction
+        if (projected.sqrMagnitude > 0.0f) {
+            _facingDirection = projected.normalized;
         }
     }
 
     /// sets the planar direction on the xz plane
-    public void SetProjectedPlanarDirection(Vector3 direction) {
-        var newDirection = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
+    public void SetProjectedPlanarVelocity(Vector3 dir) {
+        var projected = Vector3.ProjectOnPlane(dir, Vector3.up);
 
-        // don't set direction to zero vector. if that happens, keep previous direction
-        if(newDirection.sqrMagnitude > 0 ) {
-            _planarDirection = newDirection;
+        // if zero, use the original direction
+        if (projected.sqrMagnitude > 0.0f) {
+            PlanarVelocity = projected;
         }
     }
 
     // -- queries --
-    /// the character's calculated velocity on the xz-plane
-    public Vector3 PlanarVelocity => PlanarSpeed * PlanarDirection;
-
     /// the character's calculated velocity in 3d-space
     public Vector3 Velocity {
         get => Vector3.up * VerticalSpeed + PlanarVelocity;
     }
 
-    public Quaternion LookRotation => Tilt * Quaternion.LookRotation(FacingDirection, Vector3.up);
+    /// the characters look rotation (facing & tilt)
+    public Quaternion LookRotation {
+        get => Tilt * Quaternion.LookRotation(FacingDirection, Vector3.up);
+    }
 }

@@ -15,12 +15,15 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float Acceleration { get; }
     public abstract float Deceleration { get; }
 
+    // -- air movement
+
     // -- jump --
     public abstract float InitialJumpSpeed { get; }
     public abstract int JumpSquatFrames { get; }
     public abstract float MinJumpSpeed { get; }
     public abstract float MaxJumpSpeed { get; }
     public abstract AnimationCurve JumpSpeedCurve { get; }
+    public abstract float JumpAcceleration { get; }
     public abstract float FloatAcceleration { get; }
 
     // -- tilt --

@@ -1,6 +1,3 @@
-# principles
-- [ ] preserve momentum, don't stop the player
-
 # necessary
 - [ ] aerial movement, drift
 - [ ] good tuning for m---o
