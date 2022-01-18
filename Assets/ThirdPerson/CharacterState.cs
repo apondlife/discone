@@ -33,7 +33,6 @@ public class CharacterState : ScriptableObject {
     [Tooltip("how much tilted the character is")]
     public Quaternion Tilt;
 
-
     // -- commands --
     /// updates the character state from an external velocity
     public void UpdateVelocity(Vector3 v0, Vector3 v1) {
@@ -72,7 +71,5 @@ public class CharacterState : ScriptableObject {
         get => Vector3.up * VerticalSpeed + PlanarVelocity;
     }
 
-    public Vector3 UpTilt => Tilt * Vector3.up;
-    public Vector3 ForwardTilt => Tilt * FacingDirection;
-    public Quaternion LookRotation => Quaternion.LookRotation(ForwardTilt, UpTilt);
+    public Quaternion LookRotation => Tilt * Quaternion.LookRotation(FacingDirection, Vector3.up);
 }

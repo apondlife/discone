@@ -55,8 +55,6 @@ public partial class ThirdPerson: MonoBehaviour {
             m_Controller.Move(m_State.Velocity * Time.deltaTime);
         }
 
-        transform.forward = m_State.FacingDirection;
-
         // sync controller state back to character state
         m_State.UpdateVelocity(v0, m_Controller.velocity);
     }

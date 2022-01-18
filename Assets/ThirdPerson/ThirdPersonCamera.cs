@@ -21,8 +21,12 @@ public class ThirdPersonCamera : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        // TODO: this is next
-        var tilt = m_State.Tilt.eulerAngles.z;
+        // get angle between tilt up and camera up
+        var tilt = Vector3.SignedAngle(
+            transform.up,
+            Vector3.ProjectOnPlane(m_State.Tilt * Vector3.up, transform.forward),
+            transform.forward
+        );
 
         // map angle from [0, 360] to [-180, 180]
         if (tilt > 180.0f) {
