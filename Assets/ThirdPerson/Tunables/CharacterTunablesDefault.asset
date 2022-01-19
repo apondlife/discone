@@ -19,7 +19,8 @@ MonoBehaviour:
   _pivotSpeed: 1080
   _timeToPivot: 0.7
   _pivotStartThreshold: -0.5
-  _gravity: -100
+  _floatAcceleration: 50
+  _gravity: -70
   _initialJumpSpeed: 200
   _jumpSquatFrames: 15
   _minJumpSpeed: 15
@@ -48,7 +49,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _floatAcceleration: 20
+  _jumpAcceleration: 20
   _tiltForBaseAcceleration: 30
   _maxTilt: 69
   _tiltSmoothing: 0.1
