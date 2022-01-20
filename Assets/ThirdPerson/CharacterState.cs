@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the character's shared state
-public class CharacterState : ScriptableObject {
+sealed class CharacterState: ScriptableObject {
     [Header("fields")]
     [Tooltip("the velocity on the xz-plane")]
     public Vector3 PlanarVelocity;

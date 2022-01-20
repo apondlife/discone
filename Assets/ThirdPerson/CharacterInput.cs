@@ -4,10 +4,9 @@ using UnityEngine.InputSystem;
 namespace ThirdPerson {
 
 [System.Serializable]
-public class CharacterInput { // abstract class / interface
+sealed class CharacterInput {
     // -- fields --
     [Header("references")]
-
     [Tooltip("the transform for the player's look viewpoint")]
     [SerializeField] private Transform m_Look;
 
@@ -24,12 +23,12 @@ public class CharacterInput { // abstract class / interface
     InputAction m_Jump;
 
     // -- lifecycle --
-    public void Awake() {
+    public void Init() {
         m_Move = m_PlayerInput.currentActionMap["Move"];
         m_Jump = m_PlayerInput.currentActionMap["Jump"];
     }
 
-    public void Update() {
+    public void Read() {
         var forward = Vector3.Normalize(Vector3.ProjectOnPlane(
             m_Look.transform.forward,
             Vector3.up

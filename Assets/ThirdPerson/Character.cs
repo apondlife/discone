@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// a container for shuffling around character data
-public readonly struct Character {
+readonly struct Character {
     /// -- props --
     /// the character's input
     public readonly CharacterInput Input;

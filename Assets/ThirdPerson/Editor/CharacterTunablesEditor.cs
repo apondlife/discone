@@ -5,7 +5,7 @@ namespace ThirdPerson {
 
 [CustomEditor(typeof(CharacterTunables))]
 [CanEditMultipleObjects]
-public class LookAtPointEditor: Editor {
+sealed class LookAtPointEditor: Editor {
     // -- statics --
     /// a pattern to add spaces to property names
     private static Regex s_NamePattern;

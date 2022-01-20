@@ -4,7 +4,7 @@ using Cinemachine;
 namespace ThirdPerson {
 
 [RequireComponent(typeof(CinemachineVirtualCamera))]
-public class ThirdPersonCamera : MonoBehaviour {
+sealed class ThirdPersonCamera: MonoBehaviour {
     // -- fields --
     [Header("references")]
 

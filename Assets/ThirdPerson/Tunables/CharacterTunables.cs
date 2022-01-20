@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 [CreateAssetMenu(fileName = "CharacterTunables", menuName = "thirdperson/CharacterTunables", order = 0)]
-public class CharacterTunables: CharacterTunablesBase {
+public sealed class CharacterTunables: CharacterTunablesBase {
     [Header("metadata")]
     [Tooltip("a friendly description for this config")]
     [TextArea(3, 6)]

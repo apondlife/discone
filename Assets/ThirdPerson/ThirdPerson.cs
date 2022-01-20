@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 [RequireComponent(typeof(CharacterController))]
-public partial class ThirdPerson: MonoBehaviour {
+sealed partial class ThirdPerson: MonoBehaviour {
     // -- fields --
     [Header("references")]
 
@@ -28,7 +28,7 @@ public partial class ThirdPerson: MonoBehaviour {
 
     // -- lifecycle --
     private void Awake() {
-        m_Input.Awake();
+        m_Input.Init();
 
         // init character
         var character = new Character(
@@ -51,7 +51,7 @@ public partial class ThirdPerson: MonoBehaviour {
         var v0 = m_State.Velocity;
 
         // camera to left/forward movement
-        m_Input.Update();
+        m_Input.Read();
 
         // update the character's systems
         foreach (var system in m_Systems) {
