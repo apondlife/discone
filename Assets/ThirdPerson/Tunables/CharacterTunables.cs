@@ -2,23 +2,27 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "CharacterTunables", menuName = "thirdperson/CharacterTunables", order = 0)]
 public class CharacterTunables: CharacterTunablesBase {
+    [Header("metadata")]
+    [Tooltip("a friendly description for this config")]
+    [TextArea(3, 6)]
+    [SerializeField] private string m_Description;
+
     #region movement system
     [Header("movement system")]
-
     [Tooltip("the acceleration from 0 to max speed in units")]
     [SerializeField] private float m_Acceleration;
     public override float Acceleration => m_Acceleration;
+
+    /// the deceleration from 0 to max speed in units
+    [Tooltip("the time to stop from max speed")]
+    [SerializeField] private float m_Deceleration;
+    public override float Deceleration => m_Deceleration;
 
     /// the max speed on the xz plane
     public override float MaxPlanarSpeed => Acceleration / Deceleration;
 
     /// the time to to reach max speed from zero.
     public override float TimeToMaxSpeed => TimeToPercentMaxSpeed(0.999f);
-
-    /// the deceleration from 0 to max speed in units
-    [Tooltip("the time to stop from max speed")]
-    [SerializeField] private float m_Deceleration;
-    public override float Deceleration => m_Deceleration;
 
     /// the time to stop from max speed
     public override float TimeToStop => TimeToPercentMaxSpeed(0.999f);
@@ -45,6 +49,10 @@ public class CharacterTunables: CharacterTunablesBase {
 
     /// the deceleration of the character while pivoting
     public override float PivotDeceleration => MaxPlanarSpeed / TimeToPivot;
+
+    [Tooltip("the friciton multiplier when turning (max on 90deg turn) ")]
+    [SerializeField] private float m_TurningFriction;
+    public override float TurningFriction => m_TurningFriction;
 
     [UnityEngine.Serialization.FormerlySerializedAs("_floatAcceleration")]
     [Tooltip("the planar acceleration while floating")]

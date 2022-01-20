@@ -1,5 +1,6 @@
 using UnityEngine;
 
+/// how the character jumps
 sealed class JumpSystem: CharacterSystem {
     // -- props --
     /// the number of frames left in jump squat

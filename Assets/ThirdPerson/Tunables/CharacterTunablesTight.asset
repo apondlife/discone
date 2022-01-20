@@ -10,16 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
-  m_Name: CharacterTunablesDefault
+  m_Name: CharacterTunablesTight
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
-  m_Acceleration: 30
-  m_Deceleration: 2
+  m_Description: high friction, pretty good
+  m_Acceleration: 110
+  m_Deceleration: 10
   m_TurnSpeed: 360
   m_PivotSpeed: 1080
-  m_TimeToPivot: 0.2
+  m_TimeToPivot: 0.8
   m_PivotStartThreshold: -0.5
-  m_FloatAcceleration: 10
-  m_Gravity: -60
+  m_TurningFriction: 0
+  m_FloatAcceleration: 5
+  m_Gravity: -69
   m_MinJumpSquatFrames: 5
   m_MaxJumpSquatFrames: 5
   m_JumpSpeedCurve:
@@ -46,11 +48,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_MinJumpSpeed: 15
-  m_MaxJumpSpeed: 15
+  m_MinJumpSpeed: 20
+  m_MaxJumpSpeed: 20
   m_JumpGravity: -30
   m_FallGravity: -20
-  m_TiltForBaseAcceleration: 30
+  m_TiltForBaseAcceleration: 80
   m_MaxTilt: 69
   m_TiltSmoothing: 0.1
   m_DutchScale: 0.2

@@ -15,6 +15,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float PivotSpeed { get; }
     public abstract float PivotDeceleration { get; }
     public abstract float PivotStartThreshold { get; }
+    public abstract float TurningFriction { get; }
     public abstract float TimeToPivot { get; }
 
     // -- air movement --

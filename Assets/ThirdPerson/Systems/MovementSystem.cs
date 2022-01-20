@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// the state machine for the character's movement
+/// how the character moves on the ground & air
 sealed class MovementSystem: CharacterSystem {
     // -- lifetime --
     public MovementSystem(Character character)
@@ -72,10 +72,12 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // calculate next velocity, integrating input & drag
-        // velocity = current velocity + (input acceleration - drag) * time
+        // vt = v0 + (input acceleration - drag - turning friction) * t
         var v0 = m_State.PlanarVelocity;
         var ai = m_Tunables.Acceleration * dirInput.magnitude * m_State.FacingDirection;
-        var d0 = v0 * m_Tunables.Deceleration;
+        var cf = hasInput ? m_Tunables.TurningFriction * (1.0f - Mathf.Abs(Vector3.Dot(v0.normalized, dirInput.normalized))) : 0.0f;
+        // var f0 = cf * v0.normalized;
+        var d0 = v0 * (m_Tunables.Deceleration + cf);
         var vt = v0 + (ai - d0) * Time.deltaTime;
 
         // update planar velocity

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// the state machine for the character's movement
+/// how the character tilts on the ground
 sealed class TiltSystem : CharacterSystem {
     // -- lifetime --
     public TiltSystem(Character character)

@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEditor;
 using System.Text.RegularExpressions;
 
@@ -23,11 +24,14 @@ public class LookAtPointEditor: Editor {
     }
 
     public override void OnInspectorGUI() {
-        var type = m_Tunables.GetType();
+        // show developer description
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Description"));
 
+        // show tunable properties
+        var type = m_Tunables.GetType();
         foreach (var p in type.GetProperties()) {
             // skip properties from supertypes
-            if (type != p.DeclaringType) {
+            if (p.DeclaringType != type) {
                 continue;
             }
 

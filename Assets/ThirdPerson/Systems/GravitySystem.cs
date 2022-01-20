@@ -1,5 +1,6 @@
 using UnityEngine;
 
+/// how the character is affected by gravity
 sealed class GravitySystem: CharacterSystem {
     // -- lifetime --
     public GravitySystem(Character character)

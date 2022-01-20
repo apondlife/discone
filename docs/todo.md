@@ -6,6 +6,7 @@
 - [ ] coyote time
 
 # housekeeping
+- [ ] make it easier to switch tunables
 - [ ] big renaming
 - [ ] namespace
 - [ ] code reorg after some more complexity
