@@ -1,5 +1,5 @@
-using UnityEditor;
 using System.Text.RegularExpressions;
+using UnityEditor;
 
 namespace ThirdPerson {
 

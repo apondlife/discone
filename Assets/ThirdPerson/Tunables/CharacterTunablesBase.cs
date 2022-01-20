@@ -25,6 +25,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float FloatAcceleration { get; }
 
     // -- jump --
+    public abstract uint JumpBuffer { get; }
     public abstract int MinJumpSquatFrames { get; }
     public abstract int MaxJumpSquatFrames { get; }
     public abstract float MinJumpSpeed { get; }

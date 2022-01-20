@@ -32,7 +32,7 @@ sealed class JumpSystem: CharacterSystem {
     );
 
     void NotJumping_Update() {
-        if (m_State.IsGrounded && m_Input.IsJumpPressed) {
+        if (m_State.IsGrounded && m_Input.IsJumpDown(m_Tunables.JumpBuffer)) {
             ChangeTo(JumpSquat);
             return;
         }

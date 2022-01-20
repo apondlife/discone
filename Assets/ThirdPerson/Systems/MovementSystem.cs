@@ -20,7 +20,7 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void NotMoving_Update() {
-        if(m_Input.DesiredPlanarDirection.magnitude > 0) {
+        if(m_Input.MoveAxis.magnitude > 0) {
             ChangeTo(Moving);
             return;
         }
@@ -57,7 +57,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // get current facing & input direction
         var dirFacing = m_State.FacingDirection;
-        var dirInput = m_Input.DesiredPlanarDirection;
+        var dirInput = m_Input.MoveAxis;
 
         // pivot if direction change was significant
         if (Vector3.Dot(dirFacing, dirInput) < m_Tunables.PivotStartThreshold) {
@@ -105,7 +105,7 @@ sealed class MovementSystem: CharacterSystem {
     Vector3 m_DirPivot;
 
     void Pivot_Enter() {
-        m_DirPivot = m_Input.DesiredPlanarDirection;
+        m_DirPivot = m_Input.MoveAxis;
     }
 
     void Pivot_Update() {
@@ -152,7 +152,7 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         var v0 = m_State.PlanarVelocity;
-        var vt = v0 + m_Input.DesiredPlanarDirection * m_Tunables.FloatAcceleration * Time.deltaTime;
+        var vt = v0 + m_Input.MoveAxis * m_Tunables.FloatAcceleration * Time.deltaTime;
         m_State.SetProjectedPlanarVelocity(vt);
     }
 }

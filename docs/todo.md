@@ -1,8 +1,9 @@
 # necessary
 - [x] aerial movement, drift
 - [x] good tuning for m---o
-- [ ] buffering, input handling (jump)
+- [x] buffering, input handling (jump)
 - [ ] landing state
+  - [ ] jump squat move phase
 - [ ] coyote time
 
 # housekeeping
