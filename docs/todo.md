@@ -8,8 +8,9 @@
 # housekeeping
 - [ ] make it easier to switch tunables
 - [ ] big renaming
-- [ ] namespace
+- [x] namespace
 - [ ] code reorg after some more complexity
+- [ ] consolidate
 
 # fun & extra
 - [ ] aerial turning

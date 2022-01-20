@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 
-/// gizsmos for vizualizing character state
+namespace ThirdPerson {
+
+/// gizmos for vizualizing character state
 public partial class ThirdPerson {
     // -- fields --
     [Header("state")]
@@ -59,4 +61,6 @@ public partial class ThirdPerson {
         Gizmos.color = color;
         Gizmos.DrawCube(transform.position + Vector3.up * offset, Vector3.one * size);
     }
+}
+
 }

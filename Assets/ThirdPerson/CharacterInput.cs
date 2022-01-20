@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+namespace ThirdPerson {
+
 [System.Serializable]
 public class CharacterInput { // abstract class / interface
     // -- fields --
@@ -42,4 +44,6 @@ public class CharacterInput { // abstract class / interface
         DesiredPlanarDirection = forward * pInput.y + right * pInput.x;
         IsJumpPressed = m_Jump.IsPressed();
     }
+}
+
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+namespace ThirdPerson {
 
 /// how the character is affected by gravity
 sealed class GravitySystem: CharacterSystem {
@@ -42,4 +42,6 @@ sealed class GravitySystem: CharacterSystem {
     void SetGrounded() {
         m_State.IsGrounded = m_Controller.isGrounded;
     }
+}
+
 }

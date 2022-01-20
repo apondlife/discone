@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace ThirdPerson {
+
 /// how the character tilts on the ground
 sealed class TiltSystem : CharacterSystem {
     // -- lifetime --
@@ -68,4 +70,6 @@ sealed class TiltSystem : CharacterSystem {
             m_Tunables.TiltSmoothing
         );
     }
+}
+
 }

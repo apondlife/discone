@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace ThirdPerson {
+
 // https://www.patrykgalach.com/2020/01/27/assigning-interface-in-unity-inspector/
 public abstract class CharacterTunablesBase: ScriptableObject {
     // -- gravity --
@@ -45,3 +47,4 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float DutchSmoothing { get; }
 }
 
+}

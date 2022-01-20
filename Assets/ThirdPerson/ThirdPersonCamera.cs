@@ -1,6 +1,8 @@
 using UnityEngine;
 using Cinemachine;
 
+namespace ThirdPerson {
+
 [RequireComponent(typeof(CinemachineVirtualCamera))]
 public class ThirdPersonCamera : MonoBehaviour {
     // -- fields --
@@ -40,5 +42,7 @@ public class ThirdPersonCamera : MonoBehaviour {
             m_Tunables.DutchSmoothing
         );
     }
+
+}
 
 }

@@ -1,6 +1,7 @@
-using UnityEngine;
 using UnityEditor;
 using System.Text.RegularExpressions;
+
+namespace ThirdPerson {
 
 [CustomEditor(typeof(CharacterTunables))]
 [CanEditMultipleObjects]
@@ -25,7 +26,7 @@ public class LookAtPointEditor: Editor {
 
     public override void OnInspectorGUI() {
         // show developer description
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Description"));
+        Field(serializedObject.FindProperty("m_Description"));
 
         // show tunable properties
         var type = m_Tunables.GetType();
@@ -39,12 +40,11 @@ public class LookAtPointEditor: Editor {
 
             // render serialized properties as fields
             if (serialized != null) {
-                EditorGUILayout.PropertyField(serialized);
+                Field(serialized);
             }
             // render everything else as readonly
             else {
-                var label = s_NamePattern.Replace(p.Name, " $1");
-                Row(label, p.GetValue(m_Tunables));
+                Row(s_NamePattern.Replace(p.Name, " $1"), p.GetValue(m_Tunables));
             }
         }
 
@@ -52,10 +52,16 @@ public class LookAtPointEditor: Editor {
     }
 
     // -- commands --
+    void Field(SerializedProperty prop) {
+        EditorGUILayout.PropertyField(prop);
+    }
+
     void Row(string label, object value) {
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel(label);
         EditorGUILayout.LabelField(value.ToString());
         EditorGUILayout.EndHorizontal();
     }
+}
+
 }

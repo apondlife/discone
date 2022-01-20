@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace ThirdPerson {
+
 /// a container for shuffling around character data
 public readonly struct Character {
     /// -- props --
@@ -28,4 +30,6 @@ public readonly struct Character {
         Tunables = tunables;
         Controller = controller;
     }
+}
+
 }

@@ -1,6 +1,8 @@
 using UnityEngine;
 
 /// the main third person controller
+namespace ThirdPerson {
+
 [RequireComponent(typeof(CharacterController))]
 public partial class ThirdPerson: MonoBehaviour {
     // -- fields --
@@ -75,4 +77,6 @@ public partial class ThirdPerson: MonoBehaviour {
     public void OnRestart() {
         UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
+}
+
 }

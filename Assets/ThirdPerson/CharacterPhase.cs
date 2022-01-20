@@ -1,5 +1,7 @@
 using System;
 
+namespace ThirdPerson {
+
 /// a character phase, a composition of an enter, update, and exit action
 public readonly struct CharacterPhase: IEquatable<CharacterPhase> {
     // -- props --
@@ -49,4 +51,6 @@ public readonly struct CharacterPhase: IEquatable<CharacterPhase> {
     override public int GetHashCode() {
         return Name.GetHashCode();
     }
+}
+
 }

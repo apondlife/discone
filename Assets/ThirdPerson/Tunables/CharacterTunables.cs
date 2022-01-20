@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace ThirdPerson {
+
 [CreateAssetMenu(fileName = "CharacterTunables", menuName = "thirdperson/CharacterTunables", order = 0)]
 public class CharacterTunables: CharacterTunablesBase {
     [Header("metadata")]
@@ -160,4 +162,6 @@ public class CharacterTunables: CharacterTunablesBase {
     public float TimeToPercentMaxSpeed(float pct) {
         return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Deceleration;
     }
+}
+
 }

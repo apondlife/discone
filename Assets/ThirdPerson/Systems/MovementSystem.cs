@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace ThirdPerson {
+
 /// how the character moves on the ground & air
 sealed class MovementSystem: CharacterSystem {
     // -- lifetime --
@@ -153,4 +155,6 @@ sealed class MovementSystem: CharacterSystem {
         var vt = v0 + m_Input.DesiredPlanarDirection * m_Tunables.FloatAcceleration * Time.deltaTime;
         m_State.SetProjectedPlanarVelocity(vt);
     }
+}
+
 }

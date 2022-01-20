@@ -1,6 +1,8 @@
 using UnityEngine;
 using Cinemachine;
 
+namespace ThirdPerson {
+
 // needs a reference to ThirdPersonCharacter
 public class CharacterModel: MonoBehaviour {
     // -- props --
@@ -66,4 +68,6 @@ public class CharacterModel: MonoBehaviour {
         // this is a fundamental misunderstanding of quaternions
         transform.rotation = m_State.LookRotation;
     }
+}
+
 }

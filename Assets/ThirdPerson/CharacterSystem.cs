@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace ThirdPerson {
+
 /// a character system; may be a state machine
 abstract class CharacterSystem {
     // -- props --
@@ -60,4 +62,6 @@ abstract class CharacterSystem {
 
         Debug.Log($"{m_Name}: did change  {prev.Name} -> {next.Name}");
     }
+}
+
 }

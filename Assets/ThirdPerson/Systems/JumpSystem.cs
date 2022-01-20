@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace ThirdPerson {
+
 /// how the character jumps
 sealed class JumpSystem: CharacterSystem {
     // -- props --
@@ -140,4 +142,6 @@ sealed class JumpSystem: CharacterSystem {
     void AddGravity() {
         m_State.VerticalSpeed += m_Tunables.Gravity * Time.deltaTime;
     }
+}
+
 }

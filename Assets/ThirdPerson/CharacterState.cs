@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace ThirdPerson {
+
 /// the character's shared state
 public class CharacterState : ScriptableObject {
     [Header("fields")]
@@ -72,4 +74,6 @@ public class CharacterState : ScriptableObject {
     public Quaternion LookRotation {
         get => Tilt * Quaternion.LookRotation(FacingDirection, Vector3.up);
     }
+}
+
 }
