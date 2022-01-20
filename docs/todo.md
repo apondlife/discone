@@ -1,6 +1,6 @@
 # necessary
 - [x] aerial movement, drift
-- [ ] good tuning for m---o
+- [x] good tuning for m---o
 - [ ] buffering, input handling (jump)
 - [ ] landing state
 - [ ] coyote time

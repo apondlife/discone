@@ -52,7 +52,6 @@ abstract class CharacterSystem {
         }
 
         var prev = m_Phase;
-        Debug.Log($"{m_Name}: will change {prev.Name} -> {next.Name}");
 
         // otherwise, run phase change lifecycle
         m_Phase.Exit();

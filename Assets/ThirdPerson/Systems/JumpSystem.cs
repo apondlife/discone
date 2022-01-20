@@ -30,10 +30,14 @@ sealed class JumpSystem: CharacterSystem {
     );
 
     void NotJumping_Update() {
-        if (m_Input.IsJumpPressed && m_State.IsGrounded) {
+        if (m_State.IsGrounded && m_Input.IsJumpPressed) {
             ChangeTo(JumpSquat);
-        } else if (m_State.VerticalSpeed < 0.0f) {
+            return;
+        }
+
+        if (!m_State.IsGrounded && m_State.VerticalSpeed < 0.0f)  {
             ChangeTo(Falling);
+            return;
         }
     }
 
@@ -105,8 +109,12 @@ sealed class JumpSystem: CharacterSystem {
         // transition out of jump
         if (m_State.IsGrounded) {
             ChangeTo(NotJumping);
-        } else if (m_State.VerticalSpeed < 0.0f) {
+            return;
+        }
+
+        if (m_State.VerticalSpeed < 0.0f) {
             ChangeTo(Falling);
+            return;
         }
     }
 

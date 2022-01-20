@@ -36,7 +36,11 @@ public class CharacterModel: MonoBehaviour {
         // set move animation params
         m_Animator.SetFloat(
             "MoveSpeed",
-            m_State.PlanarVelocity.magnitude / m_Tunables.MaxPlanarSpeed
+            Mathf.InverseLerp(
+                m_Tunables.MinPlanarSpeed,
+                m_Tunables.MaxPlanarSpeed,
+                m_State.PlanarVelocity.magnitude
+            )
         );
 
         // set jump animation params

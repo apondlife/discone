@@ -18,6 +18,10 @@ public class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private float m_Deceleration;
     public override float Deceleration => m_Deceleration;
 
+    [Tooltip("the planar speed when the character stops w/o input")]
+    [SerializeField] float m_MinPlanarSpeed;
+    public override float MinPlanarSpeed => m_MinPlanarSpeed;
+
     /// the max speed on the xz plane
     public override float MaxPlanarSpeed => Acceleration / Deceleration;
 
@@ -25,7 +29,7 @@ public class CharacterTunables: CharacterTunablesBase {
     public override float TimeToMaxSpeed => TimeToPercentMaxSpeed(0.999f);
 
     /// the time to stop from max speed
-    public override float TimeToStop => TimeToPercentMaxSpeed(0.999f);
+    public override float TimeToStop => TimeToPercentMaxSpeed(0.001f);
 
     [UnityEngine.Serialization.FormerlySerializedAs("_turnSpeed")]
     [Tooltip("the turn speed in radians")]

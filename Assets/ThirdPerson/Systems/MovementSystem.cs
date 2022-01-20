@@ -18,11 +18,6 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void NotMoving_Update() {
-
-
-        // TODO: slowdown
-        m_State.PlanarVelocity = Vector3.zero;
-
         if(m_Input.DesiredPlanarDirection.magnitude > 0) {
             ChangeTo(Moving);
             return;
@@ -32,6 +27,16 @@ sealed class MovementSystem: CharacterSystem {
         if (!m_State.IsGrounded) {
             ChangeTo(Floating);
             return;
+        }
+
+        // calculate next velocity, integrating drag
+        var v0 = m_State.PlanarVelocity;
+        if (v0.sqrMagnitude != 0.0f) {
+            var d0 = v0 * m_Tunables.Deceleration;
+            var vt = v0 - d0 * Time.deltaTime;
+
+            // update planar velocity
+            m_State.SetProjectedPlanarVelocity(vt);
         }
     }
 
@@ -75,8 +80,7 @@ sealed class MovementSystem: CharacterSystem {
         // vt = v0 + (input acceleration - drag - turning friction) * t
         var v0 = m_State.PlanarVelocity;
         var ai = m_Tunables.Acceleration * dirInput.magnitude * m_State.FacingDirection;
-        var cf = hasInput ? m_Tunables.TurningFriction * (1.0f - Mathf.Abs(Vector3.Dot(v0.normalized, dirInput.normalized))) : 0.0f;
-        // var f0 = cf * v0.normalized;
+        var cf = hasInput ? m_Tunables.TurningFriction * (1.0f - Mathf.Abs(Vector3.Dot(v0.normalized, ai.normalized))) : 0.0f;
         var d0 = v0 * (m_Tunables.Deceleration + cf);
         var vt = v0 + (ai - d0) * Time.deltaTime;
 
@@ -84,7 +88,7 @@ sealed class MovementSystem: CharacterSystem {
         m_State.SetProjectedPlanarVelocity(vt);
 
         // once speed is zero, stop moving
-        if(m_State.PlanarVelocity.sqrMagnitude == 0.0f) {
+        if(!hasInput && m_State.PlanarVelocity.magnitude < m_Tunables.MinPlanarSpeed) {
             ChangeTo(NotMoving);
         }
     }

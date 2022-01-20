@@ -7,6 +7,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
 
     // -- movement --
     public abstract float MaxPlanarSpeed { get; }
+    public abstract float MinPlanarSpeed { get; }
     public abstract float Acceleration { get; }
     public abstract float TimeToMaxSpeed { get; }
     public abstract float Deceleration { get; }
