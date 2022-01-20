@@ -1,15 +1,17 @@
 # necessary
-- [ ] aerial movement, drift
+- [x] aerial movement, drift
 - [ ] good tuning for m---o
-- [ ] buffering, input handling
+- [ ] buffering, input handling (jump)
 - [ ] landing state
 - [ ] coyote time
 
 # housekeeping
 - [ ] big renaming
+- [ ] namespace
 - [ ] code reorg after some more complexity
 
 # fun & extra
+- [ ] aerial turning
 - [ ] movement particles
 - [ ] slower in air movement feedback/state
 - [ ] hitting the ground particles

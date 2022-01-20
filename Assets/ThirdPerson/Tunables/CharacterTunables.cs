@@ -5,111 +5,147 @@ public class CharacterTunables: CharacterTunablesBase {
     #region movement system
     [Header("movement system")]
 
-    [Tooltip("the max speed on the xz plane")]
-    [SerializeField] private float _maxPlanarSpeed;
-    public override float MaxPlanarSpeed => _maxPlanarSpeed;
+    [Tooltip("the acceleration from 0 to max speed in units")]
+    [SerializeField] private float m_Acceleration;
+    public override float Acceleration => m_Acceleration;
 
-    [Tooltip("the time to to reach max speed from zero.")]
-    [SerializeField] private float _timeToMaxSpeed;
-    public override float TimeToMaxSpeed => _timeToMaxSpeed;
+    /// the max speed on the xz plane
+    public override float MaxPlanarSpeed => Acceleration / Deceleration;
 
+    /// the time to to reach max speed from zero.
+    public override float TimeToMaxSpeed => TimeToPercentMaxSpeed(0.999f);
+
+    /// the deceleration from 0 to max speed in units
     [Tooltip("the time to stop from max speed")]
-    [SerializeField] private float _timeToStop;
-    public override float TimeToStop => _timeToStop;
+    [SerializeField] private float m_Deceleration;
+    public override float Deceleration => m_Deceleration;
 
+    /// the time to stop from max speed
+    public override float TimeToStop => TimeToPercentMaxSpeed(0.999f);
+
+    [UnityEngine.Serialization.FormerlySerializedAs("_turnSpeed")]
     [Tooltip("the turn speed in radians")]
-    [SerializeField] private float _turnSpeed;
-    public override float TurnSpeed => _turnSpeed;
+    [SerializeField] private float m_TurnSpeed;
+    public override float TurnSpeed => m_TurnSpeed;
 
+    [UnityEngine.Serialization.FormerlySerializedAs("_pivotSpeed")]
     [Tooltip("the pivot speed in radians")]
-    [SerializeField] private float _pivotSpeed;
-    public override float PivotSpeed => _pivotSpeed;
+    [SerializeField] private float m_PivotSpeed;
+    public override float PivotSpeed => m_PivotSpeed;
 
+    [UnityEngine.Serialization.FormerlySerializedAs("_timeToPivot")]
     [Tooltip("the time to finish the pivot deceleration from max speed")]
-    [SerializeField] private float _timeToPivot;
-    public override float TimeToPivot => _timeToPivot;
+    [SerializeField] private float m_TimeToPivot;
+    public override float TimeToPivot => m_TimeToPivot;
 
+    [UnityEngine.Serialization.FormerlySerializedAs("_pivotStartThreshold")]
     [Tooltip("the pivot start threshold, facing • input dir (-1.0, 1.0f)")]
-    [SerializeField] private float _pivotStartThreshold;
-    public override float PivotStartThreshold => _pivotStartThreshold;
+    [SerializeField] private float m_PivotStartThreshold;
+    public override float PivotStartThreshold => m_PivotStartThreshold;
 
+    /// the deceleration of the character while pivoting
+    public override float PivotDeceleration => MaxPlanarSpeed / TimeToPivot;
+
+    [UnityEngine.Serialization.FormerlySerializedAs("_floatAcceleration")]
     [Tooltip("the planar acceleration while floating")]
-    [SerializeField] private float _floatAcceleration;
-    public override float FloatAcceleration => _floatAcceleration;
+    [SerializeField] private float m_FloatAcceleration;
+    public override float FloatAcceleration => m_FloatAcceleration;
 
     #endregion
 
     #region jump system
     [Header("jump system")]
-    [Tooltip("the acceleration due to gravity")]
-    [SerializeField] private float _gravity;
-    public override float Gravity => _gravity;
 
+    [UnityEngine.Serialization.FormerlySerializedAs("_gravity")]
     [Tooltip("the acceleration due to gravity")]
-    [SerializeField] private float _initialJumpSpeed;
-    public override float InitialJumpSpeed => _initialJumpSpeed;
+    [SerializeField] private float m_Gravity;
+    public override float Gravity => m_Gravity;
 
-    [Tooltip("the number of frames jump squat lasts")]
-    [SerializeField] private int _jumpSquatFrames;
-    public override int JumpSquatFrames => _jumpSquatFrames;
+    [Tooltip("the min number of frames jump squat lasts")]
+    [SerializeField] private int m_MinJumpSquatFrames;
+    public override int MinJumpSquatFrames => m_MinJumpSquatFrames;
+
+    [Tooltip("the max number of frames jump squat lasts")]
+    [SerializeField] private int m_MaxJumpSquatFrames;
+    public override int MaxJumpSquatFrames => m_MaxJumpSquatFrames;
+
+    [UnityEngine.Serialization.FormerlySerializedAs("_jumpSpeedCurve")]
+    [Tooltip("how the jump speed changes from holding the squat")]
+    [SerializeField] private AnimationCurve m_JumpSpeedCurve;
+    public override AnimationCurve JumpSpeedCurve => m_JumpSpeedCurve;
 
     [Tooltip("the minimum jump speed (minimum length jump squat)")]
-    [SerializeField] private float _minJumpSpeed;
-    public override float MinJumpSpeed => _minJumpSpeed;
+    [SerializeField] private float m_MinJumpSpeed;
+    public override float MinJumpSpeed => m_MinJumpSpeed;
+
+    /// the minimum jump speed (1-frame jump)
+    public override float MinJumpHeight {
+        get => MinJumpSpeed * MinJumpSpeed / -(2.0f * Gravity);
+    }
 
     [Tooltip("the maximum jump speed (maximum length jump squat)")]
-    [SerializeField] private float _maxJumpSpeed;
-    public override float MaxJumpSpeed => _maxJumpSpeed;
+    [SerializeField] private float m_MaxJumpSpeed;
+    public override float MaxJumpSpeed => m_MaxJumpSpeed;
 
-    [Tooltip("how the jump speed changes from holding the squat")]
-    [SerializeField] private AnimationCurve _jumpSpeedCurve;
-    public override AnimationCurve JumpSpeedCurve => _jumpSpeedCurve;
+    /// the maximum jump speed (hold jump for duration)
+    public override float MaxJumpHeight {
+        get => MinJumpSpeed * MaxJumpSpeed / -(2.0f * (Gravity + JumpAcceleration));
+    }
 
-    [Tooltip("the vertical acceleration while holding jump and airborne")]
-    [SerializeField] private float _jumpAcceleration;
-    public override float JumpAcceleration => _jumpAcceleration;
+    [Tooltip("the gravity while holding jump and moving up")]
+    [SerializeField] private float m_JumpGravity;
+    public override float JumpGravity => m_JumpGravity;
+
+    /// the vertical acceleration while holding jump and moving up
+    public override float JumpAcceleration {
+        get => m_JumpGravity - m_Gravity;
+    }
+
+    [Tooltip("the gravity while holding jump and falling")]
+    [SerializeField] private float m_FallGravity;
+    public override float FallGravity => m_FallGravity;
+
+    /// the vertical acceleration while holding jump and falling
+    public override float FallAcceleration {
+        get => m_FallGravity - m_Gravity;
+    }
     #endregion
 
     #region model / animation
     [Header("model / animation")]
 
+    [UnityEngine.Serialization.FormerlySerializedAs("_tiltForBaseAcceleration")]
     [Tooltip("the angle in degrees character model tilts forward on the start up acceleration")]
-    [SerializeField] private float _tiltForBaseAcceleration;
-    public override float TiltForBaseAcceleration => _tiltForBaseAcceleration;
+    [SerializeField] private float m_TiltForBaseAcceleration;
+    public override float TiltForBaseAcceleration => m_TiltForBaseAcceleration;
 
+    [UnityEngine.Serialization.FormerlySerializedAs("_maxTilt")]
     [Tooltip("the maximum angle in degrees the character can tilt")]
-    [SerializeField] private float _maxTilt;
-    public override float MaxTilt => _maxTilt;
+    [SerializeField] private float m_MaxTilt;
+    public override float MaxTilt => m_MaxTilt;
 
+    [UnityEngine.Serialization.FormerlySerializedAs("_tiltSmoothing")]
     [Tooltip("the smoothing on the character tilt")]
-    [SerializeField] private float _tiltSmoothing;
-    public override float TiltSmoothing => _tiltSmoothing;
+    [SerializeField] private float m_TiltSmoothing;
+    public override float TiltSmoothing => m_TiltSmoothing;
     #endregion
 
     #region camera
     [Header("camera")]
 
+    [UnityEngine.Serialization.FormerlySerializedAs("_dutchScale")]
     [Tooltip("the camera dutch angle (around z-axis) scale applied to the camera's target's rotation")]
-    [SerializeField] private float _dutchScale;
-    public override float DutchScale => _dutchScale;
+    [SerializeField] private float m_DutchScale;
+    public override float DutchScale => m_DutchScale;
 
+    [UnityEngine.Serialization.FormerlySerializedAs("_dutchSmoothing")]
     [Tooltip("the smoothing on the camera dutch angle (around z-axis)")]
-    [SerializeField] private float _dutchSmoothing;
-    public override float DutchSmoothing => _dutchSmoothing;
+    [SerializeField] private float m_DutchSmoothing;
+    public override float DutchSmoothing => m_DutchSmoothing;
     #endregion
 
     // -- queries --
-    /// the acceleration from 0 to max speed in units
-    public override float Acceleration => MaxPlanarSpeed / TimeToMaxSpeed;
-
-    /// the deceleration from 0 to max speed in units
-    public override float Deceleration => MaxPlanarSpeed / TimeToStop;
-
-    /// the deceleration of the character while pivoting
-    public override float PivotDeceleration => MaxPlanarSpeed / TimeToPivot;
-
-    /// the deceleration of the character while pivoting
-    public float JumpHeight =>  InitialJumpSpeed * InitialJumpSpeed / ( -2*Gravity);
-    public float JumpDuration =>  -InitialJumpSpeed / Gravity;
-    // public float PivotDeceleration => MaxPlanarSpeed / TimeToPivot;
+    public float TimeToPercentMaxSpeed(float pct) {
+        return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Deceleration;
+    }
 }

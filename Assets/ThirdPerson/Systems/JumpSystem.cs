@@ -3,7 +3,7 @@ using UnityEngine;
 sealed class JumpSystem: CharacterSystem {
     // -- props --
     /// the number of frames left in jump squat
-    int m_JumpSquatFrames = 0;
+    int m_JumpSquatFrame = 0;
 
     // -- lifetime --
     public JumpSystem(Character character)
@@ -31,6 +31,8 @@ sealed class JumpSystem: CharacterSystem {
     void NotJumping_Update() {
         if (m_Input.IsJumpPressed && m_State.IsGrounded) {
             ChangeTo(JumpSquat);
+        } else if (m_State.VerticalSpeed < 0.0f) {
+            ChangeTo(Falling);
         }
     }
 
@@ -44,16 +46,24 @@ sealed class JumpSystem: CharacterSystem {
 
     void JumpSquat_Enter() {
         m_State.IsInJumpSquat = true;
-        m_JumpSquatFrames = m_Tunables.JumpSquatFrames;
+        m_JumpSquatFrame = 0;
     }
 
     void JumpSquat_Update() {
-        // count down frames until jump squat ends
-        m_JumpSquatFrames -= 1;
+        var shouldJump = (
+            // if the jump squat finished
+            m_JumpSquatFrame >= m_Tunables.MaxJumpSquatFrames ||
+            // or jump was released after the minimum
+            (!m_Input.IsJumpPressed && m_JumpSquatFrame >= m_Tunables.MinJumpSquatFrames)
+        );
 
-        if (m_JumpSquatFrames <= 0 || !m_Input.IsJumpPressed) {
+        // if jump squat is done, transition to jump
+        if (shouldJump) {
             ChangeTo(Jumping);
         }
+
+        // count jump squat frames
+        m_JumpSquatFrame += 1;
     }
 
     void JumpSquat_Exit() {
@@ -70,9 +80,9 @@ sealed class JumpSystem: CharacterSystem {
     void Jumping_Enter() {
         // get curved percent complete through jump squat
         var pct = Mathf.InverseLerp(
-            m_Tunables.JumpSquatFrames,
-            0,
-            m_JumpSquatFrames
+            m_Tunables.MinJumpSquatFrames,
+            m_Tunables.MaxJumpSquatFrames,
+            m_JumpSquatFrame
         );
 
         pct = m_Tunables.JumpSpeedCurve.Evaluate(pct);
@@ -86,15 +96,38 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void Jumping_Update() {
+        // apply jump acceleration while holding jump
         if(m_Input.IsJumpPressed) {
             m_State.VerticalSpeed += m_Tunables.JumpAcceleration * Time.deltaTime;
         }
 
+        // transition out of jump
+        if (m_State.IsGrounded) {
+            ChangeTo(NotJumping);
+        } else if (m_State.VerticalSpeed < 0.0f) {
+            ChangeTo(Falling);
+        }
+    }
+
+    // -- Falling --
+    CharacterPhase Falling => new CharacterPhase(
+        name: "Falling",
+        update: Falling_Update
+    );
+
+    void Falling_Update() {
+        // apply fall acceleration while holding jump
+        if(m_Input.IsJumpPressed) {
+            m_State.VerticalSpeed += m_Tunables.FallAcceleration * Time.deltaTime;
+        }
+
+        // transition out of jump
         if (m_State.IsGrounded) {
             ChangeTo(NotJumping);
         }
     }
 
+    // -- commands --
     void AddGravity() {
         m_State.VerticalSpeed += m_Tunables.Gravity * Time.deltaTime;
     }

@@ -71,20 +71,18 @@ sealed class MovementSystem: CharacterSystem {
             m_State.SetProjectedFacingDirection(dirFacing);
         }
 
-        // move the character; if there's input, accelerate towards max speed
-        var vt = m_State.PlanarVelocity;
-        if (hasInput) {
-            vt += m_Tunables.Acceleration * dirInput.magnitude * Time.deltaTime * m_State.FacingDirection;
-        }
-        // otherwise, decelerate to zero
-        else {
-            vt -= Mathf.Min(vt.magnitude, m_Tunables.Deceleration * Time.deltaTime) * vt.normalized;
-        }
+        // calculate next velocity, integrating input & drag
+        // velocity = current velocity + (input acceleration - drag) * time
+        var v0 = m_State.PlanarVelocity;
+        var ai = m_Tunables.Acceleration * dirInput.magnitude * m_State.FacingDirection;
+        var d0 = v0 * m_Tunables.Deceleration;
+        var vt = v0 + (ai - d0) * Time.deltaTime;
 
-        m_State.SetProjectedPlanarVelocity(Vector3.ClampMagnitude(vt, m_Tunables.MaxPlanarSpeed));
+        // update planar velocity
+        m_State.SetProjectedPlanarVelocity(vt);
 
         // once speed is zero, stop moving
-        if(vt.sqrMagnitude == 0.0f) {
+        if(m_State.PlanarVelocity.sqrMagnitude == 0.0f) {
             ChangeTo(NotMoving);
         }
     }
@@ -119,10 +117,12 @@ sealed class MovementSystem: CharacterSystem {
 
         m_State.SetProjectedFacingDirection(dirFacing);
 
-        // decelerate towards zero to finish pivot
-        var vt = m_State.PlanarVelocity;
-        vt -= Mathf.Min(vt.magnitude, m_Tunables.PivotDeceleration * Time.deltaTime) * vt.normalized;
-        m_State.SetProjectedPlanarVelocity(Vector3.ClampMagnitude(vt, m_Tunables.MaxPlanarSpeed));
+        // calculate next velocity, decelerating towards zero to finish pivot
+        var v0 = m_State.PlanarVelocity;
+        var vt = v0 - Mathf.Min(v0.magnitude, m_Tunables.PivotDeceleration * Time.deltaTime) * v0.normalized;
+
+        // update planar velociy
+        m_State.SetProjectedPlanarVelocity(vt);
 
         // if the character has stopped, switch to not moving
         if(vt.sqrMagnitude == 0.0f) {
@@ -143,11 +143,8 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        //TODO: moving
-        //TODO: turning
-
-        var vt = m_State.PlanarVelocity;
-        vt += m_Input.DesiredPlanarDirection * m_Tunables.FloatAcceleration * Time.deltaTime;
+        var v0 = m_State.PlanarVelocity;
+        var vt = v0 + m_Input.DesiredPlanarDirection * m_Tunables.FloatAcceleration * Time.deltaTime;
         m_State.SetProjectedPlanarVelocity(vt);
     }
 }

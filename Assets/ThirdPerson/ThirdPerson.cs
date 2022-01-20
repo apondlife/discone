@@ -63,14 +63,16 @@ public partial class ThirdPerson: MonoBehaviour {
         }
 
         // sync controller state back to character state
-        Debug.Log($"update velocity");
         m_State.UpdateVelocity(v0, m_Controller.velocity, m_Hit?.normal);
     }
 
     // -- events --
     /// when the controller collider contact something
     void OnControllerColliderHit(ControllerColliderHit hit) {
-        Debug.Log($"controller hit {hit}");
         m_Hit = hit;
+    }
+
+    public void OnRestart() {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 }
