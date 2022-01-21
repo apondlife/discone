@@ -40,11 +40,14 @@ sealed partial class ThirdPerson: MonoBehaviour {
 
         // init systems
         m_Systems = new CharacterSystem[] {
+            // new WallSystem(character),
             new GravitySystem(character),
             new MovementSystem(character),
             new JumpSystem(character),
             new TiltSystem(character),
         };
+
+        // m_Controller.collisionFlags = COll
     }
 
     void FixedUpdate() {
@@ -59,19 +62,22 @@ sealed partial class ThirdPerson: MonoBehaviour {
         }
 
         // update controller state from character state
-        if(m_State.Velocity.magnitude > 0) {
-            m_Hit = null;
+        if (m_State.Velocity.magnitude > 0) {
+            m_State.Collision = null;
             m_Controller.Move(m_State.Velocity * Time.deltaTime);
         }
 
         // sync controller state back to character state
-        m_State.UpdateVelocity(v0, m_Controller.velocity, m_Hit?.normal);
+        m_State.UpdateVelocity(v0, m_Controller.velocity);
+        frame ++;
     }
 
     // -- events --
     /// when the controller collider contact something
-    void OnControllerColliderHit(ControllerColliderHit hit) {
-        m_Hit = hit;
+    public int frame = 0;
+    void OnCollisionEnter(Collision hit) {
+        Debug.Log("hit frame " + frame + " " + hit.gameObject.name + hit.GetContact(0).normal);
+        m_State.Collision = hit;
     }
 
     public void OnRestart() {

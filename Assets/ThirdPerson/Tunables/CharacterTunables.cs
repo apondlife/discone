@@ -125,6 +125,15 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     }
     #endregion
 
+    #region wall
+    [Header("wall")]
+
+    [Tooltip("the collision layer of what counts as walls for wall sliding")]
+    [SerializeField] private LayerMask m_WallLayer;
+    public override LayerMask WallLayer => m_WallLayer;
+
+    #endregion
+
     #region model / animation
     [Header("model / animation")]
 

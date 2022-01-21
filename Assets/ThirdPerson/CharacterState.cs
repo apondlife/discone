@@ -8,10 +8,16 @@ sealed class CharacterState: ScriptableObject {
     [Tooltip("the velocity on the xz-plane")]
     public Vector3 PlanarVelocity;
 
+    [Tooltip("the previous planar velocity")]
+    public Vector3 PrevPlanarVelocity;
+
+    [Tooltip("the previous vertical speed")]
+    public float PrevVerticalSpeed;
+
     [Tooltip("the speed on the y-axis")]
     public float VerticalSpeed = 0;
 
-    [Tooltip("how much the speed changed since last update")]
+    [Tooltip("how much velocity changed since last update")]
     public Vector3 Acceleration;
 
     [Tooltip("the current facing direction")]
@@ -29,19 +35,36 @@ sealed class CharacterState: ScriptableObject {
     [Tooltip("how much tilted the character is")]
     public Quaternion Tilt;
 
+    [Tooltip("the most recent hit")]
+    public Collision Collision;
+
+    public ContactPoint? Hit => Collision?.contactCount > 0 ? Collision?.GetContact(0) : null;
+
     // -- commands --
     /// updates the character state from an external velocity
-    public void UpdateVelocity(Vector3 v0, Vector3 v1, Vector3? normal) {
-        var v1n = v1;
+    public void UpdateVelocity(Vector3 v0, Vector3 v1) {
+        // capture intended velocity
+        // TODO: buffer of character state
+        PrevPlanarVelocity = PlanarVelocity;
+        PrevVerticalSpeed = VerticalSpeed;
+
         // project velocity towards upward ramps
+        var v1n = v1;
+        var normal = Hit?.normal;
         if (normal != null && v1.y > 0) {
             v1n = Quaternion.FromToRotation(normal.Value, Vector3.up) * v1;
         }
 
+        // update state
         SetProjectedPlanarVelocity(v1);
         VerticalSpeed = v1n.y;
         PlanarVelocity = v1.XNZ();
         Acceleration = (v1 - v0) / Time.deltaTime;
+
+        if (Hit != null && Mathf.Abs(Vector3.Dot(Hit.Value.normal, Vector3.up)) < 0.5f) {
+            Debug.Log($"hit wall: v={v1} n={Hit.Value.normal} v•up={Vector3.Dot(Hit.Value.normal, Vector3.up)}");
+            Debug.Break();
+        }
     }
 
     /// sets the facing direction on the xz plane
