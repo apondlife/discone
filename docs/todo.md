@@ -4,7 +4,7 @@
 - [x] buffering, input handling (jump)
 - [ ] landing state
   - [ ] jump squat move phase
-- [ ] coyote time
+- [x] coyote time
 
 # housekeeping
 - [ ] make it easier to switch tunables

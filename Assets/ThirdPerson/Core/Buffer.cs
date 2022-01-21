@@ -1,7 +1,7 @@
 using System;
 
 /// a circular buffer of n data elements
-public sealed class Buffer<T> {
+sealed class Buffer<T> {
     // -- properties --
     /// the current position in the buffer
     private int m_Head = -1;
