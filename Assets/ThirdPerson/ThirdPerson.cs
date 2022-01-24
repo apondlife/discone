@@ -3,23 +3,24 @@ using UnityEngine;
 /// the main third person controller
 namespace ThirdPerson {
 
-[RequireComponent(typeof(CharacterController))]
 sealed partial class ThirdPerson: MonoBehaviour {
     // -- fields --
-    [Header("references")]
-
-    [Tooltip("the input wrapper")]
-    [SerializeField] CharacterInput m_Input;
+    [Header("data")]
+    [Tooltip("the character's state")]
+    [SerializeField] CharacterState m_State;
 
     [Tooltip("the tunables; for tweaking the player's attributes")]
     [SerializeField] CharacterTunablesBase m_Tunables;
 
+    [Header("children")]
+    [Tooltip("the input wrapper")]
+    // TODO: this should probably be outside of the character, since it needs a reference to a camera.
+    [SerializeField] CharacterInput m_Input;
+
     [Tooltip("the underlying character controller")]
     [SerializeField] CharacterController m_Controller;
 
-    /// the character's state
-    [SerializeField] CharacterState m_State;
-
+    // -- props --
     /// the list of systems acting on this character
     private CharacterSystem[] m_Systems;
 
@@ -28,7 +29,9 @@ sealed partial class ThirdPerson: MonoBehaviour {
 
     // -- lifecycle --
     private void Awake() {
+        // init child objects
         m_Input.Init();
+        m_State.Reset();
 
         // init character
         var character = new Character(
@@ -46,8 +49,6 @@ sealed partial class ThirdPerson: MonoBehaviour {
             new JumpSystem(character),
             new TiltSystem(character),
         };
-
-        // m_Controller.collisionFlags = COll
     }
 
     void FixedUpdate() {
@@ -80,6 +81,7 @@ sealed partial class ThirdPerson: MonoBehaviour {
         m_State.Collision = hit;
     }
 
+    /// when the restart button is pressed, reload the scene
     public void OnRestart() {
         UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
     }

@@ -184,6 +184,7 @@ sealed class JumpSystem: CharacterSystem {
 
     // -- commands --
     void AddGravity() {
+        Debug.Log($"add gravity {m_Tunables.Gravity}");
         m_State.VerticalSpeed += m_Tunables.Gravity * Time.deltaTime;
     }
 }

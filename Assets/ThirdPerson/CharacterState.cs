@@ -11,20 +11,20 @@ sealed class CharacterState: ScriptableObject {
     [Tooltip("the previous planar velocity")]
     public Vector3 PrevPlanarVelocity;
 
-    [Tooltip("the previous vertical speed")]
-    public float PrevVerticalSpeed;
-
     [Tooltip("the speed on the y-axis")]
     public float VerticalSpeed = 0;
+
+    [Tooltip("the previous vertical speed")]
+    public float PrevVerticalSpeed;
 
     [Tooltip("how much velocity changed since last update")]
     public Vector3 Acceleration;
 
     [Tooltip("the current facing direction")]
-    [SerializeField] private Vector3 _facingDirection = Vector3.zero;
+    [SerializeField] private Vector3 m_FacingDirection = Vector3.zero;
 
     /// the current facing direction
-    public Vector3 FacingDirection => _facingDirection;
+    public Vector3 FacingDirection => m_FacingDirection;
 
     [Tooltip("if the character is grounded")]
     public bool IsGrounded = false;
@@ -41,6 +41,20 @@ sealed class CharacterState: ScriptableObject {
     public ContactPoint? Hit => Collision?.contactCount > 0 ? Collision?.GetContact(0) : null;
 
     // -- commands --
+    /// reset to initial state
+    public void Reset() {
+        PlanarVelocity = Vector3.zero;
+        PrevPlanarVelocity = Vector3.zero;
+        VerticalSpeed = 0.0f;
+        PrevVerticalSpeed = 0.0f;
+        Acceleration = Vector3.zero;
+        m_FacingDirection = Vector3.zero;
+        IsGrounded = false;
+        IsInJumpSquat = false;
+        Tilt = Quaternion.identity;
+        Collision = null;
+    }
+
     /// updates the character state from an external velocity
     public void UpdateVelocity(Vector3 v0, Vector3 v1) {
         // capture intended velocity
@@ -73,7 +87,7 @@ sealed class CharacterState: ScriptableObject {
 
         // if zero, use the original direction
         if (projected.sqrMagnitude > 0.0f) {
-            _facingDirection = projected.normalized;
+            m_FacingDirection = projected.normalized;
         }
     }
 
