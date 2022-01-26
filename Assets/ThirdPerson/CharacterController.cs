@@ -39,7 +39,6 @@ sealed class CharacterController {
     // -- commands --
     /// move the character by a position delta
     public void Move(Vector3 delta) {
-        Debug.Log($"move character {delta}");
         // if the move was big enough to fire
         var mag = delta.magnitude;
         if (mag <= m_MinMove) {

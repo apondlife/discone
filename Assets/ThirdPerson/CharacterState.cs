@@ -48,7 +48,7 @@ sealed class CharacterState: ScriptableObject {
         VerticalSpeed = 0.0f;
         PrevVerticalSpeed = 0.0f;
         Acceleration = Vector3.zero;
-        m_FacingDirection = Vector3.zero;
+        m_FacingDirection = Vector3.forward; // TODO: should be pulled from transform
         IsGrounded = false;
         IsInJumpSquat = false;
         Tilt = Quaternion.identity;

@@ -159,6 +159,16 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [Tooltip("the smoothing on the camera dutch angle (around z-axis)")]
     [SerializeField] private float m_DutchSmoothing;
     public override float DutchSmoothing => m_DutchSmoothing;
+
+    [Tooltip("the default da")]
+    [Range(0.0f, 20.0f)]
+    [SerializeField] private float m_Damping;
+    public override float Damping => m_Damping;
+
+    [Tooltip("the yaw damping when holding the recenter button")]
+    [Range(0.0f, 20.0f)]
+    [SerializeField] private float m_FastDamping;
+    public override float FastDamping => m_FastDamping;
     #endregion
 
     // -- queries --

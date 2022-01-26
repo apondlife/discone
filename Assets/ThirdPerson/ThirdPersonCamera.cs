@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Cinemachine;
 
 namespace ThirdPerson {
@@ -7,7 +8,6 @@ namespace ThirdPerson {
 sealed class ThirdPersonCamera: MonoBehaviour {
     // -- fields --
     [Header("references")]
-
     [Tooltip("the cinemachine camera")]
     CinemachineVirtualCamera m_Camera;
 
@@ -17,9 +17,18 @@ sealed class ThirdPersonCamera: MonoBehaviour {
     [Tooltip("the character's tunables/constants")]
     [SerializeField] CharacterTunablesBase m_Tunables;
 
+    // -- props --
+    /// the camera's transposer (the body; controls camera movement)
+    CinemachineTransposer m_Transposer;
+
     // -- lifecycle --
     private void Awake() {
         m_Camera = GetComponent<CinemachineVirtualCamera>();
+        m_Transposer = m_Camera.GetCinemachineComponent<CinemachineTransposer>();
+    }
+
+    private void Start() {
+        SetYawDamping(m_Tunables.Damping);
     }
 
     private void FixedUpdate() {
@@ -43,6 +52,18 @@ sealed class ThirdPersonCamera: MonoBehaviour {
         );
     }
 
+    // -- commands --
+    /// set the camera's yaw damping to control recentering speed (lower is faster)
+    void SetYawDamping(float damping) {
+        m_Transposer.m_YawDamping = damping;
+    }
+
+    // -- events --
+    /// recenter the camera on the player
+    public void OnRecenter(InputAction.CallbackContext ctx) {
+        var pressed = ctx.ReadValueAsButton();
+        SetYawDamping(pressed ? m_Tunables.FastDamping : m_Tunables.Damping);
+    }
 }
 
 }

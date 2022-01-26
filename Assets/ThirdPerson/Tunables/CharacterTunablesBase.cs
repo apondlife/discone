@@ -50,6 +50,8 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     // -- camera --
     public abstract float DutchScale { get; }
     public abstract float DutchSmoothing { get; }
-    }
+    public abstract float Damping { get; }
+    public abstract float FastDamping { get; }
+}
 
 }
