@@ -18,6 +18,8 @@ public class NPCDialogue : MonoBehaviour {
 
   public DialogueManager dm;
 
+  private const string _dialogueTargetTag = "PlayerDialogueTarget";
+
   // Use this for initialization
   void Start () {
     if (talkable) talkable.SetActive(false);
@@ -25,6 +27,7 @@ public class NPCDialogue : MonoBehaviour {
   
   // Update is called once per frame
   void Update () {
+    // TODO: port to new inputsystem
     if (_canTalk && !dm.IsBusy() && Input.GetButtonDown(talkButton)) {
       Debug.Log("start dialog "+dialogueMessage);
 
@@ -33,7 +36,9 @@ public class NPCDialogue : MonoBehaviour {
   }
 
   void OnTriggerEnter(Collider other) {
-    if (other.CompareTag("DialogueTarget") && !dm.IsTalkAvailable() && !dm.IsBusy()) {
+    Debug.Log("TriggerEnter");
+    if (other.CompareTag(_dialogueTargetTag) && !dm.IsTalkAvailable() && !dm.IsBusy()) {
+      Debug.Log("TriggerEnter 2");
       _canTalk = true;
       dm.SetTalkAvailable(true);
       if (talkable) talkable.SetActive(true);
@@ -41,12 +46,10 @@ public class NPCDialogue : MonoBehaviour {
   }
 
   void OnTriggerExit(Collider other) {
-    if (other.CompareTag("DialogueTarget") && _canTalk) {
+    if (other.CompareTag(_dialogueTargetTag) && _canTalk) {
       _canTalk = false;
       dm.SetTalkAvailable(false);
       if (talkable) talkable.SetActive(false);
     }
   }
-
-
 }

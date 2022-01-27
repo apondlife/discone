@@ -14,12 +14,13 @@ public class DialogueManager : MonoBehaviour
 
     private bool _busy;
 
-    private bool _isTalkAvailable = false;
+    private bool _isTalkAvailable;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        _busy = false;
+        _isTalkAvailable = false;
     }
 
     // Update is called once per frame
