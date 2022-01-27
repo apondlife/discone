@@ -27,8 +27,8 @@ public class NPCDialogue : MonoBehaviour {
   
   // Update is called once per frame
   void Update () {
-    // TODO: port to new inputsystem
-    if (_canTalk && !dm.IsBusy() && Input.GetButtonDown(talkButton)) {
+    // TODO: probably get input in a nicer way
+    if (_canTalk && !dm.IsBusy() && Mouse.current.leftButton.isPressed) {
       Debug.Log("start dialog "+dialogueMessage);
 
       dm.StartDialogue(dialogueMessage, characterPreview);
@@ -36,9 +36,7 @@ public class NPCDialogue : MonoBehaviour {
   }
 
   void OnTriggerEnter(Collider other) {
-    Debug.Log("TriggerEnter");
     if (other.CompareTag(_dialogueTargetTag) && !dm.IsTalkAvailable() && !dm.IsBusy()) {
-      Debug.Log("TriggerEnter 2");
       _canTalk = true;
       dm.SetTalkAvailable(true);
       if (talkable) talkable.SetActive(true);

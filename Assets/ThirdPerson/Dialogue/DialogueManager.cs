@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System;
+using Yarn.Unity;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class DialogueManager : MonoBehaviour
    //public Action OnUnfreeze;
 
     public RawImage characterFaceUI; // the panel that shows the person's face as they are speaking
+
+    public DialogueRunner yarnDialogueRunner;
 
     private bool _busy;
 
@@ -36,15 +39,14 @@ public class DialogueManager : MonoBehaviour
       return _isTalkAvailable;
     }
 
-    public void StartDialogue(string fungusMessage, Texture faceTexture) {
+    public void StartDialogue(string yarnDialogueTitle, Texture faceTexture) {
       Freeze();
       _busy = true;
 
       if(characterFaceUI != null) characterFaceUI.texture = faceTexture;
 
-      // Tell fungus dialog to start
-      // Fungus.Flowchart.BroadcastFungusMessage(fungusMessage);
-      // TODO: port to YarnSpinner
+      // Tell Yarn dialogue to start
+      yarnDialogueRunner.StartDialogue(yarnDialogueTitle);
     }
 
     private void Freeze() {
