@@ -28,7 +28,7 @@ sealed class ThirdPersonCamera: MonoBehaviour {
     }
 
     private void Start() {
-        SetYawDamping(m_Tunables.Damping);
+        SetDamping(m_Tunables.Damping);
     }
 
     private void FixedUpdate() {
@@ -54,7 +54,7 @@ sealed class ThirdPersonCamera: MonoBehaviour {
 
     // -- commands --
     /// set the camera's yaw damping to control recentering speed (lower is faster)
-    void SetYawDamping(float damping) {
+    void SetDamping(float damping) {
         m_Transposer.m_YawDamping = damping;
     }
 
@@ -62,7 +62,7 @@ sealed class ThirdPersonCamera: MonoBehaviour {
     /// recenter the camera on the player
     public void OnRecenter(InputAction.CallbackContext ctx) {
         var pressed = ctx.ReadValueAsButton();
-        SetYawDamping(pressed ? m_Tunables.FastDamping : m_Tunables.Damping);
+        SetDamping(pressed ? m_Tunables.FastDamping : m_Tunables.Damping);
     }
 }
 

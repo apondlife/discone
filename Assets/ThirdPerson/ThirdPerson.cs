@@ -63,7 +63,7 @@ sealed partial class ThirdPerson: MonoBehaviour {
         }
 
         // update controller state from character state
-        if (m_State.Velocity.magnitude > 0) {
+        if (m_State.Velocity.sqrMagnitude > 0) {
             m_State.Collision = null;
             m_Controller.Move(m_State.Velocity * Time.deltaTime);
         }

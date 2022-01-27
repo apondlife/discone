@@ -36,6 +36,12 @@ sealed class CharacterController {
     /// if the character is touching the ground
     bool m_IsGrounded;
 
+    /// the last collision ray cast
+    Ray m_DebugRay;
+
+    /// the last collision hit
+    Vector3 m_DebugHit;
+
     // -- commands --
     /// move the character by a position delta
     public void Move(Vector3 delta) {
@@ -47,27 +53,48 @@ sealed class CharacterController {
 
         var t = m_Transform;
 
-        // calculate new position
+        // get position and projected next position
         var p0 = t.position;
-
-        var dir = delta.normalized;
-        var rayOrigin = p0 - dir * m_CastOffset;
-        var len = mag + m_CastOffset;
-        var moveRay = new Ray(rayOrigin, dir * len);
         var p1 = p0 + delta;
 
-        if (Physics.Raycast(moveRay, out var hit, len, m_CollisionMask)) {
-            var pc = hit.point;
-            p1 -= Vector3.Project(p1 - pc, hit.normal);
+        // build collision cast
+        var rayDir = delta.normalized;
+        var rayPos = p0 - rayDir * m_CastOffset;
+        var rayLen = mag + m_CastOffset;
+        var ray = new Ray(rayPos, rayDir * rayLen);
 
-            // set grounded if colliding w/ ground
-            var angle = Vector3.Angle(hit.normal, Vector3.up);
-            m_IsGrounded = angle <= m_MaxGroundAngle;
+        // check for a collision
+        var hit = (RaycastHit)default;
 
-            lastHit = pc;
+        var i = 0;
+        while (true) {
+            var didHit = Physics.Raycast(ray, out hit, rayLen, m_CollisionMask);
+            if (!didHit) {
+                break;
+            }
+
+            // calc vertical overshoot through the collision surface
+            var overshoot = Vector3.Project(p1 - hit.point, hit.normal);
+            if (overshoot == Vector3.zero) {
+                break;
+            }
+
+            if (i > 0) {
+                Debug.Log($"i {i} overshoot {overshoot} mag2 {overshoot} {overshoot == Vector3.zero}");
+            }
+
+            i++;
+
+            // subtract overshoot from next position and store hit point
+            p1 -= overshoot;
         }
 
-        debugRay = moveRay;
+        // set grounded if colliding w/ ground
+        m_IsGrounded = Vector3.Angle(hit.normal, Vector3.up) <= m_MaxGroundAngle;
+
+        // update debug state
+        m_DebugHit = hit.point;
+        m_DebugRay = ray;
 
         // update state
         t.position = p1;
@@ -85,13 +112,12 @@ sealed class CharacterController {
         get => m_IsGrounded;
     }
 
-    private Ray debugRay;
-    private Vector3 lastHit;
+    // -- gizmos --
     public void DrawGizmos() {
         Gizmos.color = Color.green;
-        Gizmos.DrawRay(debugRay);
+        Gizmos.DrawRay(m_DebugRay);
         Gizmos.DrawSphere(m_Transform.position, 0.2f);
-        Gizmos.DrawSphere(lastHit, 0.4f);
+        Gizmos.DrawSphere(m_DebugHit, 0.4f);
     }
 }
 }
