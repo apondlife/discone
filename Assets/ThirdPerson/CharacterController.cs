@@ -73,7 +73,7 @@ sealed class CharacterController {
                 break;
             }
 
-            // calc vertical overshoot through the collision surface
+            // calc overshoot through the collision surface
             var overshoot = Vector3.Project(p1 - hit.point, hit.normal);
             if (overshoot == Vector3.zero) {
                 break;
@@ -82,7 +82,6 @@ sealed class CharacterController {
             if (i > 0) {
                 Debug.Log($"i {i} overshoot {overshoot} mag2 {overshoot} {overshoot == Vector3.zero}");
             }
-
             i++;
 
             // subtract overshoot from next position and store hit point
