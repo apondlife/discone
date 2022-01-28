@@ -49,7 +49,7 @@ sealed partial class ThirdPerson {
     /// draw a label at a vertical offset
     void DrawLabel(string text, float offset = 0.25f) {
         m_LabelOffset += offset;
-        Handles.Label(transform.position + Vector3.up * m_LabelOffset + transform.right*1.0f, text);
+        Handles.Label(transform.position + Vector3.up * m_LabelOffset + transform.right, text);
     }
 
     /// draw a ray in a direction

@@ -43,11 +43,11 @@ sealed class CharacterController {
     /// the normal of the last collision surface
     Vector3 m_LastHitNormal = Vector3.up;
 
-    /// the last collision ray cast
-    List<(Vector3 pos, Vector3 dir, float rad)> m_DebugRay = new List<(Vector3, Vector3, float)>();
-
     /// the last collision hit
-    List<Vector3> m_DebugHit = new List<Vector3>();
+    List<RaycastHit> m_DebugHits = new List<RaycastHit>();
+
+    /// the list of casts this frame
+    List<Capsule.Cast> m_DebugCasts = new List<Capsule.Cast>();
 
     // -- commands --
     /// move the character by a position delta
@@ -58,24 +58,27 @@ sealed class CharacterController {
         }
 
         var t = m_Transform;
+        var c = m_Capsule;
 
         // calculate capsule
-        // TODO: pre-calculate? create a struct?
-        var c = m_Capsule;
-        var cd = (c.height * 0.5f - c.radius) * Vector3.up;
-        var capsulePt1 = c.center - cd;
-        var capsulePt2 = c.center + cd;
+        var capsule = Capsule.From(
+            c.center,
+            c.radius,
+            c.height,
+            t.up
+        );
 
-        // asdf
+        // asdfasdfasdfasdfadsf TODO
         var p0 = t.position;
         var p1 = p0;
-
         var hit = (RaycastHit)default;
 
+        m_DebugCasts.Clear();
+        m_DebugHits.Clear();
         var i = 0;
-        m_DebugRay.Clear();
-        m_DebugHit.Clear();
+
         while (true) {
+            // TODO: is this right?
             var mag = delta.magnitude;
             if (mag <= m_MinMove) {
                 break;
@@ -86,21 +89,26 @@ sealed class CharacterController {
                 break;
             }
 
-            var rayDir = delta.normalized;
-            var rayLen = mag + m_CastOffset;
+            var castDir = delta.normalized;
+            var castLen = mag + m_CastOffset;
+            var castPos = p1 - castDir * m_CastOffset + m_LastHitNormal * 0.01f;
 
-            var rayPos = p1 - rayDir * m_CastOffset + m_LastHitNormal * 0.01f;
-            var rayPt1 = rayPos + capsulePt1;
-            var rayPt2 = rayPos + capsulePt2;
+            var cast = capsule.IntoCast(
+                castPos,
+                castDir,
+                castLen
+            );
+
+            m_DebugCasts.Add(cast);
 
             // check for a collision
             var didHit = Physics.CapsuleCast(
-                rayPt1,
-                rayPt2,
-                c.radius,
-                rayDir,
+                cast.Point1,
+                cast.Point2,
+                cast.Radius,
+                cast.Direction,
                 out hit,
-                rayLen,
+                cast.Length,
                 m_CollisionMask,
                 QueryTriggerInteraction.Ignore
             );
@@ -112,8 +120,7 @@ sealed class CharacterController {
                 break;
             }
 
-            m_DebugRay.Add((rayPt1, rayDir * rayLen, c.radius));
-            m_DebugHit.Add(hit.point);
+            m_DebugHits.Add(hit);
 
             // otherwise, calculate a new delta (TODO: more comment)
             var ch2 = c.height * 0.5f;
@@ -128,10 +135,6 @@ sealed class CharacterController {
 
         // set grounded if colliding w/ ground
         m_IsGrounded = Vector3.Angle(hit.normal, Vector3.up) <= m_MaxGroundAngle;
-
-        // update debug state
-        // m_DebugHit = hit.point;
-        // m_DebugRay = ray;
 
         // update state
         t.position = p1;
@@ -151,24 +154,32 @@ sealed class CharacterController {
 
     // -- gizmos --
     public void DrawGizmos() {
-        foreach (var ray in m_DebugRay) {
-            var p0 = ray.pos;
-            var p1 = p0 + ray.dir;
+        foreach (var cast in m_DebugCasts) {
+            var o1 = cast.Radius * Vector3.up;
+            var o2 = cast.Direction * cast.Length;
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(p0, ray.rad);
-
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawLine(p0, p1);
+            Gizmos.DrawWireSphere(cast.Point2, cast.Radius);
+            Gizmos.DrawLine(cast.Point1 - o1, cast.Point2 + o1);
 
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(p1, ray.rad);
+            Gizmos.DrawWireSphere(cast.Point2 + o2, cast.Radius);
+            Gizmos.DrawLine(cast.Point1 - o1 + o2, cast.Point2 + o1 + o2);
         }
 
-        foreach (var hit in m_DebugHit) {
+        foreach (var hit in m_DebugHits) {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(hit, 0.05f);
+            Gizmos.DrawSphere(hit.point, 0.05f);
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawRay(hit.point, hit.normal * 0.5f);
         }
+
+        UnityEditor.Handles.color = Color.yellow;
+        UnityEditor.Handles.Label(
+            m_Transform.position - m_Transform.right * 1.5f,
+            $"casts: {m_DebugCasts.Count} hits: {m_DebugHits.Count}"
+        );
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawSphere(m_Transform.position, 0.1f);
