@@ -70,6 +70,10 @@ sealed partial class ThirdPerson: MonoBehaviour {
 
         // sync controller state back to character state
         m_State.UpdateVelocity(v0, m_Controller.velocity);
+        var c = GetComponent<CapsuleCollider>();
+        var delta = (c.height / 2.0f - c.radius) * Vector3.up;
+        var p0 = c.center - delta;
+        var p1 = c.center + delta;
         frame ++;
     }
 

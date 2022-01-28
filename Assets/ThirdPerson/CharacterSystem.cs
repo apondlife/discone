@@ -60,7 +60,7 @@ abstract class CharacterSystem {
         m_Phase = next;
         m_Phase.Enter();
 
-        Debug.Log($"{m_Name}: did change  {prev.Name} -> {next.Name}");
+        // Debug.Log($"{m_Name}: did change  {prev.Name} -> {next.Name}");
     }
 }
 
