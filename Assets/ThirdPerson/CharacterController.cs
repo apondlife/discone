@@ -122,9 +122,29 @@ sealed class CharacterController {
 
             m_DebugHits.Add(hit);
 
-            // otherwise, calculate a new delta (TODO: more comment)
             var ch2 = c.height * 0.5f;
-            var p1n = hit.point + ch2 * Vector3.up;
+            var capsuleUp = Vector3.up;
+            var normalDot = Vector3.Dot(hit.normal, capsuleUp);
+            var hitCapsuleCenter = Vector3.zero;
+
+            if(Mathf.Abs(normalDot) > 0.9999f) {
+                hitCapsuleCenter = hit.point + Mathf.Sign(normalDot) * ch2 * capsuleUp;
+            } else {
+                // project normal to capsules's plane (in case it hits the top or bottom)
+                var hitNormal = Vector3.ProjectOnPlane(hit.normal, capsuleUp).normalized;
+                var projectedCenter = hit.point + hitNormal * capsule.Radius;
+
+                // default to bottom of capsule
+                var centerAxis = new Ray(projectedCenter, capsuleUp);
+                var castRay = new Ray(castPos, castDir);
+                if(!castRay.IntersectWith(centerAxis, out hitCapsuleCenter)) {
+                    Debug.LogError("ray and center axis should interect");
+                    // default to bottom of capsule
+                    hitCapsuleCenter = hit.point + ch2 * capsuleUp;
+                }
+            }
+            // otherwise, calculate a new delta (TODO: more comment)
+            var p1n = hitCapsuleCenter;
             delta = Vector3.ProjectOnPlane(pd - p1n, hit.normal);
 
             p1 = p1n;
