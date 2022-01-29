@@ -75,8 +75,9 @@ sealed class CharacterController {
         var moveEnd = moveStart;
         var moveDelta = delta;
 
-        // track the most recent normal
+        // track hit surface state
         var hitNormal = m_HitNormal;
+        var isGrounded = false;
 
         // DEBUG: reset state
         var i = 0;
@@ -133,8 +134,13 @@ sealed class CharacterController {
             // DEBUG: track hit
             m_DebugHits.Add(hit);
 
-            // update hit normal
+            // update hit surface information
             hitNormal = hit.normal;
+
+            // if we touch any ground surface, we're grounded
+            if (!isGrounded && Vector3.Angle(hitNormal, Vector3.up) <= m_MaxGroundAngle) {
+                isGrounded = true;
+            }
 
             // find the center of the capsule relative to the hit
             var hitCapsuleCenter = (Vector3)default;
@@ -177,7 +183,7 @@ sealed class CharacterController {
 
         // update hit state
         m_HitNormal = hitNormal;
-        m_IsGrounded = Vector3.Angle(hitNormal, Vector3.up) <= m_MaxGroundAngle;
+        m_IsGrounded = isGrounded;
 
         // move character
         t.position = moveEnd;
