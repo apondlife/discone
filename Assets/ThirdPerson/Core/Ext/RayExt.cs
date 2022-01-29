@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 static class RayExt {
-    /// get the intersection of two rays; returns false they don't intersect
+    /// get the intersection of two lines; returns false if they don't intersect
     /// see: https://stackoverflow.com/questions/59449628/check-when-two-vector3-lines-intersect-unity3d
     public static bool IntersectWith(
         this Ray a,

@@ -41,7 +41,7 @@ sealed class CharacterController {
     bool m_IsGrounded;
 
     /// the normal of the last collision surface
-    Vector3 m_LastHitNormal = Vector3.up;
+    Vector3 m_HitNormal = Vector3.up;
 
     /// the last collision hit
     List<RaycastHit> m_DebugHits = new List<RaycastHit>();
@@ -53,45 +53,54 @@ sealed class CharacterController {
     /// move the character by a position delta
     public void Move(Vector3 delta) {
         // if the move was big enough to fire
+        // TODO: is this necessary?
         if (delta.magnitude <= m_MinMove) {
             return;
         }
 
+        // capture shorthand
         var t = m_Transform;
-        var c = m_Capsule;
 
         // calculate capsule
-        var capsule = Capsule.From(
+        var c = m_Capsule;
+        var capsule = new Capsule(
             c.center,
             c.radius,
             c.height,
             t.up
         );
 
-        // asdfasdfasdfasdfadsf TODO
-        var p0 = t.position;
-        var p1 = p0;
-        var hit = (RaycastHit)default;
+        // track start and end position to calculate velocity
+        var moveStart = t.position;
+        var moveEnd = moveStart;
+        var moveDelta = delta;
 
+        // track the most recent normal
+        var hitNormal = m_HitNormal;
+
+        // DEBUG: reset state
+        var i = 0;
         m_DebugCasts.Clear();
         m_DebugHits.Clear();
-        var i = 0;
 
+        // while there is any more to move
         while (true) {
-            // TODO: is this right?
-            var mag = delta.magnitude;
-            if (mag <= m_MinMove) {
+            // TODO: is this necessary?
+            var moveMag = moveDelta.magnitude;
+            if (moveMag <= m_MinMove) {
                 break;
             }
 
+            // DEBUG: if we cast an unlikely number of times, stop
             if (i > 5) {
-                Debug.LogError("OOPS");
+                Debug.LogError("cast more than 5 times in a single frame!");
                 break;
             }
 
-            var castDir = delta.normalized;
-            var castLen = mag + m_CastOffset;
-            var castPos = p1 - castDir * m_CastOffset + m_LastHitNormal * 0.01f;
+            // capsule cast the remaining move
+            var castDir = moveDelta.normalized;
+            var castLen = moveMag + m_CastOffset;
+            var castPos = moveEnd - castDir * m_CastOffset + hitNormal * 0.01f;
 
             var cast = capsule.IntoCast(
                 castPos,
@@ -99,6 +108,7 @@ sealed class CharacterController {
                 castLen
             );
 
+            // DEBUG: track cast
             m_DebugCasts.Add(cast);
 
             // check for a collision
@@ -107,58 +117,71 @@ sealed class CharacterController {
                 cast.Point2,
                 cast.Radius,
                 cast.Direction,
-                out hit,
+                out var hit,
                 cast.Length,
                 m_CollisionMask,
                 QueryTriggerInteraction.Ignore
             );
 
-            // if we missed, move in the desired direction
-            var pd = p1 + delta;
+            // if we missed, move to the target position
+            var moveTarget = moveEnd + moveDelta;
             if (!didHit) {
-                p1 = pd;
+                moveEnd = moveTarget;
                 break;
             }
 
+            // DEBUG: track hit
             m_DebugHits.Add(hit);
 
-            var ch2 = c.height * 0.5f;
-            var capsuleUp = Vector3.up;
-            var normalDot = Vector3.Dot(hit.normal, capsuleUp);
-            var hitCapsuleCenter = Vector3.zero;
+            // update hit normal
+            hitNormal = hit.normal;
 
-            if(Mathf.Abs(normalDot) > 0.9999f) {
-                hitCapsuleCenter = hit.point + Mathf.Sign(normalDot) * ch2 * capsuleUp;
-            } else {
-                // project normal to capsules's plane (in case it hits the top or bottom)
-                var hitNormal = Vector3.ProjectOnPlane(hit.normal, capsuleUp).normalized;
-                var projectedCenter = hit.point + hitNormal * capsule.Radius;
+            // find the center of the capsule relative to the hit
+            var hitCapsuleCenter = (Vector3)default;
 
+            // if the hit is colinear with capsule up, the center is half the capsule height
+            // away from the hit (colinear ~ dot product is 1)
+            // TODO: is this actually a special case?
+            var hitDotUp = Vector3.Dot(hitNormal, capsule.Up);
+            if (Mathf.Abs(hitDotUp) > 0.9999f) {
+                hitCapsuleCenter = hit.point + Mathf.Sign(hitDotUp) * capsule.Height * 0.5f * capsule.Up;
+            }
+            // otherwise the center is the intersection of the cast ray and the capsule's
+            // vertical axis (any center + up)
+            else {
+                // project normal onto caspule plane (in case it hits a spherical cap)
+                // TODO: i removed the normalize from this, i think we need the proportion on the plane
+                // to find the center correctly, right (e.g. it's the displacement from the axis)?
+                var axisOffset = Vector3.ProjectOnPlane(hitNormal, capsule.Up) * cast.Radius;
+                var axisCenter = hit.point + axisOffset;
+                var axis = new Ray(axisCenter, capsule.Up);
+
+                // find the intersection between the cast ray and axis
+                if (cast.IntoRay().TryIntersect(axis, out var intersection)) {
+                    hitCapsuleCenter = intersection;
+                }
                 // default to bottom of capsule
-                var centerAxis = new Ray(projectedCenter, capsuleUp);
-                var castRay = new Ray(castPos, castDir);
-                if(!castRay.IntersectWith(centerAxis, out hitCapsuleCenter)) {
+                else {
                     Debug.LogError("ray and center axis should interect");
-                    // default to bottom of capsule
-                    hitCapsuleCenter = hit.point + ch2 * capsuleUp;
+                    hitCapsuleCenter = hit.point + capsule.Height * 0.5f * capsule.Up;
                 }
             }
-            // otherwise, calculate a new delta (TODO: more comment)
-            var p1n = hitCapsuleCenter;
-            delta = Vector3.ProjectOnPlane(pd - p1n, hit.normal);
 
-            p1 = p1n;
-            m_LastHitNormal = hit.normal;
+            // update move state; next move starts from capsule center and remaining distance
+            moveEnd = hitCapsuleCenter;
+            moveDelta = Vector3.ProjectOnPlane(moveTarget - moveEnd, hitNormal);
 
+            // DEBUG: update state
             i++;
         }
 
-        // set grounded if colliding w/ ground
-        m_IsGrounded = Vector3.Angle(hit.normal, Vector3.up) <= m_MaxGroundAngle;
+        // update hit state
+        m_HitNormal = hitNormal;
+        m_IsGrounded = Vector3.Angle(hitNormal, Vector3.up) <= m_MaxGroundAngle;
 
-        // update state
-        t.position = p1;
-        m_Velocity = (p1 - p0) / Time.deltaTime;
+        // move character
+        t.position = moveEnd;
+        m_Velocity = (moveEnd - moveStart) / Time.deltaTime;
     }
 
     // -- queries --
