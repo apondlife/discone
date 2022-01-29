@@ -143,24 +143,30 @@ sealed class CharacterController {
             }
 
             // find the center of the capsule relative to the hit
+            // it should be the intersection of the capsules axis and the cast direction
             var hitCapsuleCenter = (Vector3)default;
 
-            // if the hit is colinear with capsule up, the center is half the capsule height
-            // away from the hit (colinear ~ dot product is 1)
-            // TODO: is this actually a special case?
-            var hitDotUp = Vector3.Dot(hitNormal, capsule.Up);
+
+            // first find the capsules axis:
+            // from the collision point and normal, we get a point on the capsules axis.
+            // the normal will always point to the axis, if its on the sphere, pointing to the spheres center
+            var axisPoint = hit.point + hitNormal * cast.Radius;
+
+            // if the cast is colinear with capsules axis, we cant intersect them
+            var hitDotUp = Vector3.Dot(cast.Direction, capsule.Up);
             if (Mathf.Abs(hitDotUp) > 0.9999f) {
+                // but we know that the hit can only have been on the sphere's surface,
+                // for which the normal will always point towards the center,
+                // meaning axisPoint is the center of the sphere.
+                // therefore finding the capsules center is trivial
                 hitCapsuleCenter = hit.point + Mathf.Sign(hitDotUp) * capsule.Height * 0.5f * capsule.Up;
             }
             // otherwise the center is the intersection of the cast ray and the capsule's
             // vertical axis (any center + up)
             else {
-                // project normal onto caspule plane (in case it hits a spherical cap)
-                // TODO: i removed the normalize from this, i think we need the proportion on the plane
-                // to find the center correctly, right (e.g. it's the displacement from the axis)?
-                var axisOffset = Vector3.ProjectOnPlane(hitNormal, capsule.Up) * cast.Radius;
-                var axisCenter = hit.point + axisOffset;
-                var axis = new Ray(axisCenter, capsule.Up);
+                // the hit is always radius away from the axis and its normal always points towards
+                // the axis
+                var axis = new Ray(axisPoint, capsule.Up);
 
                 // find the intersection between the cast ray and axis
                 if (cast.IntoRay().TryIntersect(axis, out var intersection)) {
