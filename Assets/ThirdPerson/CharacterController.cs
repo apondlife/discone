@@ -26,6 +26,9 @@ sealed class CharacterController {
     [Tooltip("the amount to offset collision casts to avoid precision issues")]
     [SerializeField] float m_CastOffset;
 
+    [Tooltip("the amount to offset ...?????")]
+    [SerializeField] float m_ContactOffset;
+
     [Header("references")]
     [Tooltip("the character's transform")]
     [SerializeField] Transform m_Transform;
@@ -74,9 +77,9 @@ sealed class CharacterController {
         var moveStart = t.position;
         var moveEnd = moveStart;
         var moveDelta = delta;
+        var moveContactOffset = Vector3.zero;
 
         // track hit surface state
-        var hitNormal = m_HitNormal;
         var isGrounded = false;
 
         // DEBUG: reset state
@@ -100,8 +103,8 @@ sealed class CharacterController {
 
             // capsule cast the remaining move
             var castDir = moveDelta.normalized;
-            var castLen = moveMag + m_CastOffset;
-            var castPos = moveEnd - castDir * m_CastOffset + hitNormal * 0.01f;
+            var castLen = moveMag + m_CastOffset + m_ContactOffset;
+            var castPos = moveEnd - castDir * m_CastOffset;
 
             var cast = capsule.IntoCast(
                 castPos,
@@ -128,19 +131,12 @@ sealed class CharacterController {
             var moveTarget = moveEnd + moveDelta;
             if (!didHit) {
                 moveEnd = moveTarget;
+                // TODO: if this is the first cast, we need to clear the normal, we're in the air
                 break;
             }
 
             // DEBUG: track hit
             m_DebugHits.Add(hit);
-
-            // update hit surface information
-            hitNormal = hit.normal;
-
-            // if we touch any ground surface, we're grounded
-            if (!isGrounded && Vector3.Angle(hitNormal, Vector3.up) <= m_MaxGroundAngle) {
-                isGrounded = true;
-            }
 
             // find the center of the capsule relative to the hit
             // it should be the intersection of the capsule's axis and the cast direction
@@ -154,7 +150,7 @@ sealed class CharacterController {
             // :    C    :
             // |'.     .'|
             // |   ‾‾‾   |
-            var axisPoint = hit.point + hitNormal * cast.Radius;
+            var axisPoint = hit.point + hit.normal * cast.Radius;
 
             // if the cast is colinear with capsule's axis, we cant intersect them
             var castDotUp = Vector3.Dot(cast.Direction, capsule.Up);
@@ -184,21 +180,32 @@ sealed class CharacterController {
                 }
             }
 
+            // get the contact offset for this hit
+            var hitContactOffset = hit.normal * m_ContactOffset;
+
             // update move state; next move starts from capsule center and remaining distance
-            moveEnd = hitCapsuleCenter;
-            moveDelta = Vector3.ProjectOnPlane(moveTarget - moveEnd, hitNormal);
+            moveEnd = hitCapsuleCenter + hitContactOffset;
+            moveDelta = Vector3.ProjectOnPlane(moveTarget - moveEnd, hit.normal);
+            moveContactOffset += hitContactOffset;
+
+            // if we touch any ground surface, we're grounded
+            if (!isGrounded && Vector3.Angle(hit.normal, Vector3.up) <= m_MaxGroundAngle) {
+                isGrounded = true;
+            }
+
+            // update hit normal each cast
+            m_HitNormal = hit.normal;
 
             // DEBUG: update state
             i++;
         }
 
-        // update hit state
-        m_HitNormal = hitNormal;
+        // grounded if any cast hit ground
         m_IsGrounded = isGrounded;
 
-        // move character
+        // move character; subtract total contact offset when calculating velocity
         t.position = moveEnd;
-        m_Velocity = (moveEnd - moveStart) / Time.deltaTime;
+        m_Velocity = (moveEnd - moveContactOffset - moveStart) / Time.deltaTime;
     }
 
     // -- queries --

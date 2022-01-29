@@ -9646,7 +9646,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7614967429340073450, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_Controller.m_CastOffset
-      value: 1
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7614967429340073450, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_Controller.m_ContactOffset
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 7614967429340073451, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
