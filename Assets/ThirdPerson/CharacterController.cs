@@ -143,23 +143,27 @@ sealed class CharacterController {
             }
 
             // find the center of the capsule relative to the hit
-            // it should be the intersection of the capsules axis and the cast direction
+            // it should be the intersection of the capsule's axis and the cast direction
             var hitCapsuleCenter = (Vector3)default;
 
-
-            // first find the capsules axis:
-            // from the collision point and normal, we get a point on the capsules axis.
+            // first find the capsule's axis:
+            // from the collision point and normal, we get a point on the capsule's axis.
             // the normal will always point to the axis, if its on the sphere, pointing to the spheres center
+            //     ___
+            //  .'     '.
+            // :    C    :
+            // |'.     .'|
+            // |   ‾‾‾   |
             var axisPoint = hit.point + hitNormal * cast.Radius;
 
-            // if the cast is colinear with capsules axis, we cant intersect them
-            var hitDotUp = Vector3.Dot(cast.Direction, capsule.Up);
-            if (Mathf.Abs(hitDotUp) > 0.9999f) {
+            // if the cast is colinear with capsule's axis, we cant intersect them
+            var castDotUp = Vector3.Dot(cast.Direction, capsule.Up);
+            if (Mathf.Abs(castDotUp) > 0.9999f) {
                 // but we know that the hit can only have been on the sphere's surface,
                 // for which the normal will always point towards the center,
                 // meaning axisPoint is the center of the sphere.
                 // therefore finding the capsules center is trivial
-                hitCapsuleCenter = hit.point + Mathf.Sign(hitDotUp) * capsule.Height * 0.5f * capsule.Up;
+                hitCapsuleCenter = axisPoint - Mathf.Sign(castDotUp) * (capsule.Height * 0.5f - capsule.Radius) * capsule.Up;
             }
             // otherwise the center is the intersection of the cast ray and the capsule's
             // vertical axis (any center + up)
@@ -172,10 +176,11 @@ sealed class CharacterController {
                 if (cast.IntoRay().TryIntersect(axis, out var intersection)) {
                     hitCapsuleCenter = intersection;
                 }
-                // default to bottom of capsule
+                // this should not happen; but if it does abort the collision from the last
+                // successful cast
                 else {
                     Debug.LogError("ray and center axis should interect");
-                    hitCapsuleCenter = hit.point + capsule.Height * 0.5f * capsule.Up;
+                    break;
                 }
             }
 
