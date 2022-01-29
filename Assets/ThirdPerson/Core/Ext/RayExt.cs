@@ -5,12 +5,8 @@ namespace ThirdPerson {
 static class RayExt {
     /// get the intersection of two lines; returns false if they don't intersect
     /// see: https://stackoverflow.com/questions/59449628/check-when-two-vector3-lines-intersect-unity3d
-    public static bool IntersectWith(
-        this Ray a,
-        Ray b,
-        out Vector3 intersection
-    ){
-        Vector3 c = a.origin - b.origin;
+    public static bool TryIntersect(this Ray a, Ray b, out Vector3 intersection){
+        Vector3 c = b.origin - a.origin;
         Vector3 axb = Vector3.Cross(a.direction, b.direction);
         Vector3 cxb = Vector3.Cross(c, b.direction);
 
