@@ -20,7 +20,11 @@ public class BackgroundScroll : MonoBehaviour
     {
 
         float offset = Time.time * scrollSpeed;
-        rend.GetMaterial().SetTextureOffset("_MainTex", new Vector2(-offset, offset));
+
+        var mat = rend.GetMaterial();
+        if (mat) {
+            rend.GetMaterial().SetTextureOffset("_MainTex", new Vector2(-offset, offset));
+        }
         
     }
 }
