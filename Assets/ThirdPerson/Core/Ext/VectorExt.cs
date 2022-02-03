@@ -1,7 +1,10 @@
 using UnityEngine;
 
+namespace ThirdPerson {
+
 /// static extensions for Vector3
 static class Vec3 {
+    // -- queries --
     /// create a Vector3 with components (0, 0, y)
     public static Vector3 XYN(this Vector3 v) {
         return new Vector3(v.x, v.y, 0.0f);
@@ -50,4 +53,6 @@ public static class Vec2 {
     public static Vector3 NNY(this Vector2 v) {
         return new Vector3(0, 0.0f, v.y);
     }
+}
+
 }

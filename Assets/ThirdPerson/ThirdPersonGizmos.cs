@@ -20,8 +20,8 @@ sealed partial class ThirdPerson {
         }
 
         // DrawRay(Color.green, m_State.FacingDirection);
-        DrawRay(Color.cyan, m_State.Velocity);
-        DrawRay(Color.blue, m_State.Tilt * Vector3.up);
+        // DrawRay(Color.cyan, m_State.Velocity);
+        // DrawRay(Color.blue, m_State.Tilt * Vector3.up);
 
         if(m_Hit != null) {
             DrawRay(Color.red, m_Hit.normal);
@@ -41,13 +41,15 @@ sealed partial class ThirdPerson {
             DrawLabel("Grounded");
             // DrawCube(Color.red, 2.0f);
         }
+
+        m_Controller.DrawGizmos();
     }
 
     // -- commands --
     /// draw a label at a vertical offset
     void DrawLabel(string text, float offset = 0.25f) {
         m_LabelOffset += offset;
-        Handles.Label(transform.position + Vector3.up * m_LabelOffset + transform.right*1.0f, text);
+        Handles.Label(transform.position + Vector3.up * m_LabelOffset + transform.right, text);
     }
 
     /// draw a ray in a direction

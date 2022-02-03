@@ -1,5 +1,7 @@
 using System;
 
+namespace ThirdPerson {
+
 /// a circular buffer of n data elements
 sealed class Buffer<T> {
     // -- properties --
@@ -37,4 +39,6 @@ sealed class Buffer<T> {
     private int GetIndex(int offset) {
         return ((m_Head - offset) + m_Queue.Length) % m_Queue.Length;
     }
+}
+
 }
