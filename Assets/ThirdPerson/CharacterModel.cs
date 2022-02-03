@@ -35,7 +35,9 @@ sealed class CharacterModel: MonoBehaviour {
     // -- commands --
     /// sync the animator's params
     void SyncAnimator() {
-        // set move animation params
+            // set move animation params
+
+            Debug.Log("syncing animator");
         m_Animator.SetFloat(
             "MoveSpeed",
             Mathf.InverseLerp(
