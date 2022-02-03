@@ -26,7 +26,7 @@ Shader "Custom/Desert" {
 
             // -- includes --
             #include "UnityCG.cginc"
-            #include "../Post/Core/Color.cginc"
+            #include "../../Post/Core/Color.cginc"
 
             // -- types --
             /// the vertex shader input
