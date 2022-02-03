@@ -25,8 +25,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: 0.18910752, y: 0.00009936093, z: -0.00001915544, w: 0.98195636}
-  m_LocalPosition: {x: -0.0020248294, y: 5.000001, z: -10.000002}
+  m_LocalRotation: {x: 0.18910748, y: 0.00009936093, z: -0.00001915544, w: 0.98195636}
+  m_LocalPosition: {x: -0.0020248294, y: 4.154, z: -10.000002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1785480724}
@@ -189,6 +189,7 @@ GameObject:
   - component: {fileID: 7614967429340073445}
   - component: {fileID: 7614967429340073450}
   - component: {fileID: 7614967429340073449}
+  - component: {fileID: 1972163625}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -283,10 +284,12 @@ MonoBehaviour:
     m_CollisionMask:
       serializedVersion: 2
       m_Bits: 4294967295
-    m_MinMove: 0
+    m_MinMove: 0.0005
     m_MaxGroundAngle: 80
-    m_CastOffset: 1
+    m_CastOffset: 0.01
+    m_ContactOffset: 0.01
     m_Transform: {fileID: 7614967429340073451}
+    m_Capsule: {fileID: 1972163625}
   frame: 0
   m_ShowGizmos: 1
 --- !u!114 &7614967429340073449
@@ -407,6 +410,20 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!136 &1972163625
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7614967429340073447}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &7614967428642375688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -436,7 +453,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4e65faf71cc081e40bf876fb0604d2f6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.846
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4e65faf71cc081e40bf876fb0604d2f6, type: 3}
       propertyPath: m_LocalPosition.z
