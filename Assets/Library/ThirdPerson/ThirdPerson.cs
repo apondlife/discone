@@ -3,23 +3,24 @@ using UnityEngine;
 /// the main third person controller
 namespace ThirdPerson {
 
-[RequireComponent(typeof(CharacterController))]
 sealed partial class ThirdPerson: MonoBehaviour {
     // -- fields --
-    [Header("references")]
-
-    [Tooltip("the input wrapper")]
-    [SerializeField] CharacterInput m_Input;
+    [Header("data")]
+    [Tooltip("the character's state")]
+    [SerializeField] CharacterState m_State;
 
     [Tooltip("the tunables; for tweaking the player's attributes")]
     [SerializeField] CharacterTunablesBase m_Tunables;
 
+    [Header("children")]
+    [Tooltip("the input wrapper")]
+    // TODO: this should probably be outside of the character, since it needs a reference to a camera.
+    [SerializeField] CharacterInput m_Input;
+
     [Tooltip("the underlying character controller")]
     [SerializeField] CharacterController m_Controller;
 
-    /// the character's state
-    [SerializeField] CharacterState m_State;
-
+    // -- props --
     /// the list of systems acting on this character
     private CharacterSystem[] m_Systems;
 
@@ -28,7 +29,9 @@ sealed partial class ThirdPerson: MonoBehaviour {
 
     // -- lifecycle --
     private void Awake() {
+        // init child objects
         m_Input.Init();
+        m_State.Reset();
 
         // init character
         var character = new Character(
@@ -40,6 +43,7 @@ sealed partial class ThirdPerson: MonoBehaviour {
 
         // init systems
         m_Systems = new CharacterSystem[] {
+            // new WallSystem(character),
             new GravitySystem(character),
             new MovementSystem(character),
             new JumpSystem(character),
@@ -59,21 +63,29 @@ sealed partial class ThirdPerson: MonoBehaviour {
         }
 
         // update controller state from character state
-        if(m_State.Velocity.magnitude > 0) {
-            m_Hit = null;
+        if (m_State.Velocity.sqrMagnitude > 0) {
+            m_State.Collision = null;
             m_Controller.Move(m_State.Velocity * Time.deltaTime);
         }
 
         // sync controller state back to character state
-        m_State.UpdateVelocity(v0, m_Controller.velocity, m_Hit?.normal);
+        m_State.UpdateVelocity(v0, m_Controller.velocity);
+        var c = GetComponent<CapsuleCollider>();
+        var delta = (c.height / 2.0f - c.radius) * Vector3.up;
+        var p0 = c.center - delta;
+        var p1 = c.center + delta;
+        frame ++;
     }
 
     // -- events --
     /// when the controller collider contact something
-    void OnControllerColliderHit(ControllerColliderHit hit) {
-        m_Hit = hit;
+    public int frame = 0;
+    void OnCollisionEnter(Collision hit) {
+        Debug.Log("hit frame " + frame + " " + hit.gameObject.name + hit.GetContact(0).normal);
+        m_State.Collision = hit;
     }
 
+    /// when the restart button is pressed, reload the scene
     public void OnRestart() {
         UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
     }

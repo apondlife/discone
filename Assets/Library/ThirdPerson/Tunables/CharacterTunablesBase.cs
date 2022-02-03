@@ -39,6 +39,9 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float FallGravity { get; }
     public abstract float FallAcceleration { get; }
 
+    // -- wall --
+    public abstract LayerMask WallLayer { get; }
+
     // -- tilt --
     public abstract float TiltForBaseAcceleration { get; }
     public abstract float MaxTilt { get; }
@@ -47,6 +50,8 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     // -- camera --
     public abstract float DutchScale { get; }
     public abstract float DutchSmoothing { get; }
-    }
+    public abstract float Damping { get; }
+    public abstract float FastDamping { get; }
+}
 
 }

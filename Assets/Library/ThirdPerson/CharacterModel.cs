@@ -35,9 +35,7 @@ sealed class CharacterModel: MonoBehaviour {
     // -- commands --
     /// sync the animator's params
     void SyncAnimator() {
-            // set move animation params
-
-            Debug.Log("syncing animator");
+        // set move animation params
         m_Animator.SetFloat(
             "MoveSpeed",
             Mathf.InverseLerp(
@@ -62,12 +60,11 @@ sealed class CharacterModel: MonoBehaviour {
             "VerticalSpeed",
             m_State.VerticalSpeed
         );
-
     }
 
     /// tilt the model as a fn of character acceleration
     void Tilt() {
-        // this is a fundamental misunderstanding of quaternions
+        // is this a fundamental misunderstanding of quaternions?
         transform.rotation = m_State.LookRotation;
     }
 }
