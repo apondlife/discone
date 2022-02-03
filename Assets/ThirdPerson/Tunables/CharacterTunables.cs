@@ -73,12 +73,16 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     public override uint JumpBuffer => m_JumpBuffer;
 
     [Tooltip("the min number of frames jump squat lasts")]
-    [SerializeField] private int m_MinJumpSquatFrames;
-    public override int MinJumpSquatFrames => m_MinJumpSquatFrames;
+    [SerializeField] private uint m_MinJumpSquatFrames = 5;
+    public override uint MinJumpSquatFrames => m_MinJumpSquatFrames;
 
     [Tooltip("the max number of frames jump squat lasts")]
-    [SerializeField] private int m_MaxJumpSquatFrames;
-    public override int MaxJumpSquatFrames => m_MaxJumpSquatFrames;
+    [SerializeField] private uint m_MaxJumpSquatFrames = 5;
+    public override uint MaxJumpSquatFrames => m_MaxJumpSquatFrames;
+
+    [Tooltip("max number of frames the character can be in the air and still jump")]
+    [SerializeField] private uint m_MaxCoyoteFrames;
+    public override uint MaxCoyoteFrames => m_MaxCoyoteFrames;
 
     [Tooltip("how the jump speed changes from holding the squat")]
     [SerializeField] private AnimationCurve m_JumpSpeedCurve;
@@ -151,6 +155,10 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     // -- queries --
     public float TimeToPercentMaxSpeed(float pct) {
         return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Deceleration;
+    }
+
+    public void OnValidate() {
+        m_MaxCoyoteFrames = System.Math.Max(m_MaxCoyoteFrames, m_MinJumpSquatFrames);
     }
 }
 

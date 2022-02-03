@@ -26,8 +26,9 @@ public abstract class CharacterTunablesBase: ScriptableObject {
 
     // -- jump --
     public abstract uint JumpBuffer { get; }
-    public abstract int MinJumpSquatFrames { get; }
-    public abstract int MaxJumpSquatFrames { get; }
+    public abstract uint MinJumpSquatFrames { get; }
+    public abstract uint MaxJumpSquatFrames { get; }
+    public abstract uint MaxCoyoteFrames { get; }
     public abstract float MinJumpSpeed { get; }
     public abstract float MaxJumpSpeed { get; }
     public abstract AnimationCurve JumpSpeedCurve { get; }
@@ -46,6 +47,6 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     // -- camera --
     public abstract float DutchScale { get; }
     public abstract float DutchSmoothing { get; }
-}
+    }
 
 }
