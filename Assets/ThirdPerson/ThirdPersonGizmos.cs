@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 
@@ -62,5 +63,6 @@ sealed partial class ThirdPerson {
         Gizmos.DrawCube(transform.position + Vector3.up * offset, Vector3.one * size);
     }
 }
-
 }
+
+#endif
