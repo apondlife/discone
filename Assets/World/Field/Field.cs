@@ -8,16 +8,19 @@ sealed class Field: MonoBehaviour {
     [SerializeField] Transform m_Target;
 
     [Header("references")]
-    [Tooltip("the terrain")]
-    [SerializeField] Terrain m_Terrain;
+    [Tooltip("the prefab for creating terrain chunks")]
+    [SerializeField] Terrain m_TerrainChunkPrefab;
 
-    [Tooltip("a material for the height shader")]
+    [Tooltip("the material for the height shader")]
     [SerializeField] Material m_TerrainHeight;
 
     // -- lifecycle --
-    void Start() {
+    void Awake() {
         // update height map
-        var td = m_Terrain.terrainData;
+        var chunks = new Terrain[9];
+        for (var i = 0; i < chunks.Length; i++) {
+            Instantiate(m_TerrainChunkPrefab);
+        }
 
         // render the heightmap around the target position
         m_TerrainHeight.SetVector(
