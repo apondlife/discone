@@ -35,11 +35,6 @@ sealed class CharacterState: ScriptableObject {
     [Tooltip("how much tilted the character is")]
     public Quaternion Tilt;
 
-    [Tooltip("the most recent hit")]
-    public Collision Collision;
-
-    public ContactPoint? Hit => Collision?.contactCount > 0 ? Collision?.GetContact(0) : null;
-
     // -- commands --
     /// reset to initial state
     public void Reset() {
@@ -52,7 +47,6 @@ sealed class CharacterState: ScriptableObject {
         IsGrounded = false;
         IsInJumpSquat = false;
         Tilt = Quaternion.identity;
-        Collision = null;
     }
 
     /// updates the character state from an external velocity
@@ -62,23 +56,11 @@ sealed class CharacterState: ScriptableObject {
         PrevPlanarVelocity = PlanarVelocity;
         PrevVerticalSpeed = VerticalSpeed;
 
-        // project velocity towards upward ramps
-        var v1n = v1;
-        var normal = Hit?.normal;
-        if (normal != null && v1.y > 0) {
-            v1n = Quaternion.FromToRotation(normal.Value, Vector3.up) * v1;
-        }
-
         // update state
         SetProjectedPlanarVelocity(v1);
-        VerticalSpeed = v1n.y;
+        VerticalSpeed = v1.y;
         PlanarVelocity = v1.XNZ();
         Acceleration = (v1 - v0) / Time.deltaTime;
-
-        if (Hit != null && Mathf.Abs(Vector3.Dot(Hit.Value.normal, Vector3.up)) < 0.5f) {
-            Debug.Log($"hit wall: v={v1} n={Hit.Value.normal} v•up={Vector3.Dot(Hit.Value.normal, Vector3.up)}");
-            Debug.Break();
-        }
     }
 
     /// sets the facing direction on the xz plane
