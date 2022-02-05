@@ -16,27 +16,25 @@ sealed class WallSystem: CharacterSystem {
     // -- Grounded --
     CharacterPhase NotOnWall => new CharacterPhase(
         name: "NotOnWall",
+        enter: NotOnWall_Enter,
         update: NotOnWall_Update
     );
 
+    void NotOnWall_Enter() {
+        m_State.IsOnWall = false;
+    }
+
     void NotOnWall_Update() {
-        // // if there's no hit, do nothing
-        // if (m_State.Hit == null) {
-        //     return;
-        // }
+        // if there's no hit, do nothing
+        if (m_Controller.Collisions.Count == 0) {
+            return;
+        }
 
-        // var hit = m_State.Hit.Value;
-
-        // // if the normal is not a wall, do nothing
-        // if (Mathf.Abs(Vector3.Dot(hit.normal.normalized, Vector3.up)) > 0.8f) {
-        //     return;
-        // }
-
-        // // switch to wall slide if the layer is a wall
-        // if (m_Tunables.WallLayer.Contains(hit.otherCollider.gameObject.layer)) {
-        //     ChangeTo(WallSlide);
-        //     return;
-        // }
+        var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
+        var angle = Mathf.Abs(Vector3.Dot(lastHit.Normal, Vector3.up));
+        if (angle < 0.2f) {
+            ChangeTo(WallSlide);
+        }
     }
 
     // -- WallSlide --
@@ -47,21 +45,35 @@ sealed class WallSystem: CharacterSystem {
     );
 
     void WallSlide_Enter() {
-        // var planarNormal = Vector3.ProjectOnPlane(m_State.Hit.Value.normal, Vector3.up).normalized;
-        // var projectedVelocity = Vector3.Project(m_State.PrevPlanarVelocity, planarNormal);
-        // // m_State.PlanarVelocity += projectedVelocity;
-        // m_State.VerticalSpeed += 2.0f * projectedVelocity.magnitude;
+        m_State.IsOnWall = true;
+        var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
+        var planarNormal = Vector3.ProjectOnPlane(lastHit.Normal, Vector3.up);
+        var projectedVelocity = Vector3.Project(m_State.PrevPlanarVelocity, planarNormal);
+        m_State.VerticalSpeed += projectedVelocity.magnitude;
         // Debug.Log($"wall-slide: n={m_State.Hit.Value.normal} n_p={planarNormal} v_0={m_State.PrevPlanarVelocity} v_n={projectedVelocity} dvy={2.0f * projectedVelocity.magnitude}");
     }
 
     void WallSlide_Update() {
-        if(m_State.PrevVerticalSpeed < 0) {
-            // m_State.VerticalSpeed = 0.5f * m_State.PrevVerticalSpeed;
-        }
-
-        if (m_State.IsGrounded) {
+         // if there's no hit, do nothing
+        if (m_Controller.Collisions.Count == 0) {
             ChangeTo(NotOnWall);
             return;
+        }
+
+
+        var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
+        var angle = Mathf.Abs(Vector3.Dot(lastHit.Normal, Vector3.up));
+        if (angle > 0.2f) {
+            ChangeTo(NotOnWall);
+            return;
+        }
+
+        var planarNormal = Vector3.ProjectOnPlane(lastHit.Normal, Vector3.up);
+        var projectedVelocity = Vector3.Project(m_State.PrevPlanarVelocity, planarNormal);
+        m_State.VerticalSpeed += projectedVelocity.magnitude;
+
+        if(m_Input.IsHoldingWall) {
+            m_State.VerticalSpeed += m_Tunables.WallAcceleration * Time.deltaTime;
         }
     }
 }

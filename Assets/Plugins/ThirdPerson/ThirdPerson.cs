@@ -43,7 +43,7 @@ sealed partial class ThirdPerson: MonoBehaviour {
 
         // init systems
         m_Systems = new CharacterSystem[] {
-            // new WallSystem(character),
+            new WallSystem(character),
             new GravitySystem(character),
             new MovementSystem(character),
             new JumpSystem(character),
@@ -65,6 +65,12 @@ sealed partial class ThirdPerson: MonoBehaviour {
         // update controller state from character state
         if (m_State.Velocity.sqrMagnitude > 0) {
             m_Controller.Move(m_State.Velocity * Time.deltaTime);
+        }
+
+        if(m_Controller.Collisions.Count > 0) {
+            m_State.Collision = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
+        } else {
+            m_State.Collision = null;
         }
 
         // sync controller state back to character state

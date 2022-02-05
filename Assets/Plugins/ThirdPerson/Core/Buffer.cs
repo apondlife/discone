@@ -35,7 +35,7 @@ sealed class Buffer<T> {
 
     // -- queries --
     /// gets the snapshot nth-newest snapshot.
-    public T this[uint index] {
+    public T this[int index] {
         get => m_Buffer[index];
     }
 

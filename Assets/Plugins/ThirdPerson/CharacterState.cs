@@ -35,6 +35,13 @@ sealed class CharacterState: ScriptableObject {
     [Tooltip("how much tilted the character is")]
     public Quaternion Tilt;
 
+    [Tooltip("the last collided surface")]
+    public CharacterCollision? Collision;
+
+    [Tooltip("whether or not the characer is on the wall")]
+    public bool IsOnWall;
+
+
     // -- commands --
     /// reset to initial state
     public void Reset() {
@@ -91,7 +98,7 @@ sealed class CharacterState: ScriptableObject {
 
     /// the characters look rotation (facing & tilt)
     public Quaternion LookRotation {
-        get => Tilt * Quaternion.LookRotation(FacingDirection, Vector3.up);
+        get => Tilt * Quaternion.LookRotation(IsGrounded ? FacingDirection : PlanarVelocity.normalized, Vector3.up);
     }
 }
 

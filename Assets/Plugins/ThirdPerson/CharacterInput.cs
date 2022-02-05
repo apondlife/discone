@@ -59,6 +59,10 @@ sealed class CharacterInput {
         get => m_Frames[0].IsJumpPressed;
     }
 
+    public bool IsHoldingWall {
+        get => m_Frames[0].IsJumpPressed;
+    }
+
     /// if jump was pressed in the past n frames
     public bool IsJumpDown(uint past = 1) {
         for (var i = 0u; i < past; i++) {

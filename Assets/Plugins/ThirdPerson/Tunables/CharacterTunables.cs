@@ -60,6 +60,7 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private float m_FloatAcceleration;
     public override float FloatAcceleration => m_FloatAcceleration;
 
+
     #endregion
 
     #region jump system
@@ -123,6 +124,7 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     public override float FallAcceleration {
         get => m_FallGravity - m_Gravity;
     }
+
     #endregion
 
     #region wall
@@ -131,6 +133,15 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [Tooltip("the collision layer of what counts as walls for wall sliding")]
     [SerializeField] private LayerMask m_WallLayer;
     public override LayerMask WallLayer => m_WallLayer;
+
+    [Tooltip("the gravity while holding jump and walling")]
+    [SerializeField] private float m_WallGravity;
+    public override float WallGravity => m_WallGravity;
+
+    /// the vertical acceleration while holding jump and Walling
+    public override float WallAcceleration {
+        get => m_WallGravity - m_Gravity;
+    }
 
     #endregion
 
