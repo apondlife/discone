@@ -2,42 +2,46 @@ using System;
 
 namespace ThirdPerson {
 
-/// a circular buffer of n data elements
+/// a fixed-width buffer of n data elements
 sealed class Buffer<T> {
-    // -- properties --
-    /// the current position in the buffer
-    private int m_Head = -1;
+    // -- props --
+    /// the current count of items
+    private int m_Count;
 
-    /// the queue of elements in the buffer
-    private readonly T[] m_Queue;
+    /// the array of items in the buffer
+    private readonly T[] m_Buffer;
 
     // -- lifetime --
     public Buffer(uint size) {
-        m_Queue = new T[size];
+        m_Count = 0;
+        m_Buffer = new T[size];
     }
 
     // -- commands --
     /// adds a new element to the buffer, removing the oldest one.
-    public void Add(T snapshot) {
-        m_Head = GetIndex(-1);
-        m_Queue[m_Head] = snapshot;
+    public void Add(T item) {
+        if (m_Count >= m_Buffer.Length) {
+            throw new IndexOutOfRangeException();
+        }
+
+        m_Buffer[m_Count] = item;
+        m_Count++;
+    }
+
+    /// remove all the items in the buffer
+    public void Clear() {
+        m_Count = 0;
     }
 
     // -- queries --
     /// gets the snapshot nth-newest snapshot.
-    public T this[uint offset] {
-        get {
-            if (offset >= m_Queue.Length) {
-                throw new IndexOutOfRangeException();
-            }
-
-            return m_Queue[GetIndex((int)offset)];
-        }
+    public T this[uint index] {
+        get => m_Buffer[index];
     }
 
-    /// gets the circular index given an from the start index.
-    private int GetIndex(int offset) {
-        return ((m_Head - offset) + m_Queue.Length) % m_Queue.Length;
+    /// the current count of items
+    public int Count {
+        get => m_Count;
     }
 }
 
