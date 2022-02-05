@@ -15,10 +15,15 @@ public class CharacterHitParticles : MonoBehaviour
             m_WallParticles.Stop();
         }
 
-        if(!m_WallParticles.isPlaying && m_State.IsOnWall) {
-            m_WallParticles.Play();
+        if(m_State.IsOnWall) {
+            if(!m_WallParticles.isPlaying) {
+                m_WallParticles.Play();
+            }
+            if(m_State.Collision.HasValue) {
+                m_WallParticles.transform.position = m_State.Collision.Value.Point;
+                m_WallParticles.transform.forward = -m_State.Collision.Value.Normal;
+            }
         }
-
     }
 }
 }

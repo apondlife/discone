@@ -54,10 +54,11 @@ MonoBehaviour:
   m_MinJumpSpeed: 20
   m_MaxJumpSpeed: 20
   m_JumpGravity: -30
-  m_FallGravity: -20
+  m_FallGravity: -60
   m_WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295
+  m_WallGravity: -100
   m_TiltForBaseAcceleration: 30
   m_MaxTilt: 69
   m_TiltSmoothing: 0.1

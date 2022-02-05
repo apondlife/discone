@@ -219,7 +219,7 @@ sealed class CharacterController {
             m_HitNormal = hit.normal;
 
             // add this collision to the list
-            m_Collisions.Add(new CharacterCollision(hit.normal));
+            m_Collisions.Add(new CharacterCollision(hit.normal, hit.point));
 
             // DEBUG: update state
             i++;
