@@ -40,7 +40,7 @@ sealed class GravitySystem: CharacterSystem {
 
     // -- commands --
     void SetGrounded() {
-        m_State.IsGrounded = m_Controller.isGrounded;
+        m_State.IsGrounded = m_Controller.IsGrounded;
     }
 }
 

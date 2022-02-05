@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ sealed class CharacterController {
     [Tooltip("the amount to offset collision casts to avoid precision issues")]
     [SerializeField] float m_CastOffset;
 
-    [Tooltip("the amount to offset ...?????")]
+    [Tooltip("the amount to offset TODO:...?????")]
     [SerializeField] float m_ContactOffset;
 
     [Header("references")]
@@ -46,11 +47,19 @@ sealed class CharacterController {
     /// the normal of the last collision surface
     Vector3 m_HitNormal = Vector3.up;
 
+    /// the collisions this frame
+    Buffer<CharacterCollision> m_Collisions = new Buffer<CharacterCollision>(5);
+
+    // -- debug --
+    #if UNITY_EDITOR
     /// the last collision hit
     List<RaycastHit> m_DebugHits = new List<RaycastHit>();
+    #endif
 
+    #if UNITY_EDITOR
     /// the list of casts this frame
     List<Capsule.Cast> m_DebugCasts = new List<Capsule.Cast>();
+    #endif
 
     // -- commands --
     /// move the character by a position delta
@@ -89,6 +98,9 @@ sealed class CharacterController {
         m_DebugCasts.Clear();
         m_DebugHits.Clear();
         #endif
+
+        // clear the collision buffer
+        m_Collisions.Clear();
 
         // while there is any more to move
         while (true) {
@@ -206,6 +218,9 @@ sealed class CharacterController {
             // update hit normal each cast
             m_HitNormal = hit.normal;
 
+            // add this collision to the list
+            m_Collisions.Add(new CharacterCollision(hit.normal));
+
             // DEBUG: update state
             i++;
         }
@@ -220,16 +235,22 @@ sealed class CharacterController {
 
     // -- queries --
     /// the character's curent velocity
-    public Vector3 velocity {
+    public Vector3 Velocity {
         get => m_Velocity;
     }
 
     /// if the character is touching the ground
-    public bool isGrounded {
+    public bool IsGrounded {
         get => m_IsGrounded;
     }
 
+    /// the collisions this frame
+    public Buffer<CharacterCollision> Collisions {
+        get => m_Collisions;
+    }
+
     // -- gizmos --
+    /// draw gizmos for the controller
     public void DrawGizmos() {
         foreach (var cast in m_DebugCasts) {
             var o1 = cast.Radius * Vector3.up;
