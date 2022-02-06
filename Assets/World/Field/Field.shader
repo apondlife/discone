@@ -56,12 +56,6 @@ Shader "Custom/Desert" {
                 float  saturation : TEXCOORD1;
                 float  value : TEXCOORD2;
                 UNITY_FOG_COORDS(3)
-                // 4.) The LIGHTING_COORDS macro (defined in AutoLight.cginc) defines the parameters needed to sample
-                // the shadow map. The (0,1) specifies which unused TEXCOORD semantics to hold the sampled values -
-                // As I'm not using any texcoords in this shader, I can use TEXCOORD0 and TEXCOORD1 for the shadow
-                // sampling. If I was already using TEXCOORD for UV coordinates, say, I could specify
-                // LIGHTING_COORDS(1,2) instead to use TEXCOORD1 and TEXCOORD2.
-                LIGHTING_COORDS(3,4)
             };
 
             // -- props --
@@ -177,9 +171,6 @@ Shader "Custom/Desert" {
                 o.value = lerp(_ValMin, _ValMax, dist);
 
                 UNITY_TRANSFER_FOG(o, o.pos);
-                // 5.) The TRANSFER_VERTEX_TO_FRAGMENT macro populates the chosen LIGHTING_COORDS in the v2f structure
-                // with appropriate values to sample from the shadow/lighting map
-                TRANSFER_VERTEX_TO_FRAGMENT(o);
 
                 return o;
             }
@@ -203,10 +194,10 @@ Shader "Custom/Desert" {
                 fixed4 col = fixed4(c, 1.0f);
 
                 // apply fog
-                float atten = LIGHT_ATTENUATION(f);
+                // float atten = LIGHT_ATTENUATION(f);
                 UNITY_APPLY_FOG(f.fogCoord, col);
 
-                return col * atten;
+                return col;
             }
             ENDCG
         }
