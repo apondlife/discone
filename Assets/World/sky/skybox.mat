@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: skybox
+  m_Shader: {fileID: 4800000, guid: f66a655bf429a0a4caf4cb8743784848, type: 3}
+  m_ShaderKeywords: _MAPPING_6_FRAMES_LAYOUT _SUNDISK_HIGH_QUALITY
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: f02d60f866d7cb9488196e08cfd79493, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Exposure: 0.55
+    - _ImageType: 1
+    - _Layout: 0
+    - _Mapping: 0
+    - _MirrorOnBack: 0
+    - _Rotation: 44
+    - _Scale: 10.36
+    m_Colors:
+    - _BG: {r: 0.172549, g: 0.20774828, b: 0.8117647, a: 1}
+    - _Tint: {r: 0.84437066, g: 0.972549, b: 0.37254903, a: 1}
+    - _Tint2: {r: 0, g: 0, b: 0, a: 1}
+  m_BuildTextureStacks: []
