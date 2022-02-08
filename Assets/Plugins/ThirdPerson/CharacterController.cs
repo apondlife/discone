@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +8,10 @@ namespace ThirdPerson {
 /// collision handling
 [System.Serializable]
 sealed class CharacterController {
-    // Why are we not using rigidbodies?
-    // They seems to be more annoying to workaround,
-    // since we are implementing collision from scratch, might as well implement it in a controlled way.
-    // The best thing we would get from rigidbodies is the possibility of other objects colliding with the character, which we can implement as an add-on/child object
+    // why are we not using rigidbodies? they seem to be more annoying to work around. since
+    // we have a bunch of custom unrealistic collision physics, might as well implement it
+    // with full control. the best thing we would get from rigidbodies is the possibility of
+    // other objects colliding with the character, we can implement that as an add-on/child
 
     // -- fields --
     [Header("config")]
@@ -26,7 +27,7 @@ sealed class CharacterController {
     [Tooltip("the amount to offset collision casts to avoid precision issues")]
     [SerializeField] float m_CastOffset;
 
-    [Tooltip("the amount to offset ...?????")]
+    [Tooltip("the amount to offset TODO:...?????")]
     [SerializeField] float m_ContactOffset;
 
     [Header("references")]
@@ -46,11 +47,19 @@ sealed class CharacterController {
     /// the normal of the last collision surface
     Vector3 m_HitNormal = Vector3.up;
 
+    /// the collisions this frame
+    Buffer<CharacterCollision> m_Collisions = new Buffer<CharacterCollision>(5);
+
+    // -- debug --
+    #if UNITY_EDITOR
     /// the last collision hit
     List<RaycastHit> m_DebugHits = new List<RaycastHit>();
+    #endif
 
+    #if UNITY_EDITOR
     /// the list of casts this frame
     List<Capsule.Cast> m_DebugCasts = new List<Capsule.Cast>();
+    #endif
 
     // -- commands --
     /// move the character by a position delta
@@ -58,6 +67,7 @@ sealed class CharacterController {
         // if the move was big enough to fire
         // TODO: is this necessary?
         if (delta.magnitude <= m_MinMove) {
+            Log.D("move delta below threshold, stopping move");
             return;
         }
 
@@ -83,23 +93,31 @@ sealed class CharacterController {
         var isGrounded = false;
 
         // DEBUG: reset state
+        #if UNITY_EDITOR
         var i = 0;
         m_DebugCasts.Clear();
         m_DebugHits.Clear();
+        #endif
+
+        // clear the collision buffer
+        m_Collisions.Clear();
 
         // while there is any more to move
         while (true) {
             // TODO: is this necessary?
             var moveMag = moveDelta.magnitude;
             if (moveMag <= m_MinMove) {
+                Log.D("move delta below threshold, stopping cast");
                 break;
             }
 
+            #if UNITY_EDITOR
             // DEBUG: if we cast an unlikely number of times, stop
             if (i > 5) {
-                Debug.LogError("cast more than 5 times in a single frame!");
+                Log.E("cast more than 5 times in a single frame!");
                 break;
             }
+            #endif
 
             // capsule cast the remaining move
             var castDir = moveDelta.normalized;
@@ -113,7 +131,9 @@ sealed class CharacterController {
             );
 
             // DEBUG: track cast
+            #if UNITY_EDITOR
             m_DebugCasts.Add(cast);
+            #endif
 
             // check for a collision
             var didHit = Physics.CapsuleCast(
@@ -136,20 +156,22 @@ sealed class CharacterController {
             }
 
             // DEBUG: track hit
+            #if UNITY_EDITOR
             m_DebugHits.Add(hit);
+            #endif
 
-            // find the center of the capsule relative to the hit
-            // it should be the intersection of the capsule's axis and the cast direction
+            // find the center of the capsule relative to the hit. it should be the intersection
+            // of the capsule's axis and the cast direction
             var hitCapsuleCenter = (Vector3)default;
 
-            // first find the capsule's axis:
-            // from the collision point and normal, we get a point on the capsule's axis.
-            // the normal will always point to the axis, if its on the sphere, pointing to the spheres center
+            // first find the capsule's axis: the normal from any collision point always points
+            // towards the capsule's axis at a distance of the radius.
             //     ___
-            //  .'     '.
-            // :    C    :
-            // |'.     .'|
-            // |   ‾‾‾   |
+            //  .'  ‖  '.
+            // ❘    C  <-❘
+            // |'.  ‖  .'|
+            // |   ‾‖‾   |
+            // |->  C    |
             var axisPoint = hit.point + hit.normal * cast.Radius;
 
             // if the cast is colinear with capsule's axis, we cant intersect them
@@ -175,7 +197,7 @@ sealed class CharacterController {
                 // this should not happen; but if it does abort the collision from the last
                 // successful cast
                 else {
-                    Debug.LogError("ray and center axis should interect");
+                    Log.E("cast ray and center axis did not intersect!");
                     break;
                 }
             }
@@ -196,6 +218,9 @@ sealed class CharacterController {
             // update hit normal each cast
             m_HitNormal = hit.normal;
 
+            // add this collision to the list
+            m_Collisions.Add(new CharacterCollision(hit.normal, hit.point));
+
             // DEBUG: update state
             i++;
         }
@@ -205,21 +230,27 @@ sealed class CharacterController {
 
         // move character; subtract total contact offset when calculating velocity
         t.position = moveEnd;
-        m_Velocity = (moveEnd - moveContactOffset - moveStart) / Time.deltaTime;
+        m_Velocity = (moveEnd - moveStart - moveContactOffset) / Time.deltaTime;
     }
 
     // -- queries --
     /// the character's curent velocity
-    public Vector3 velocity {
+    public Vector3 Velocity {
         get => m_Velocity;
     }
 
     /// if the character is touching the ground
-    public bool isGrounded {
+    public bool IsGrounded {
         get => m_IsGrounded;
     }
 
+    /// the collisions this frame
+    public Buffer<CharacterCollision> Collisions {
+        get => m_Collisions;
+    }
+
     // -- gizmos --
+    /// draw gizmos for the controller
     public void DrawGizmos() {
         foreach (var cast in m_DebugCasts) {
             var o1 = cast.Radius * Vector3.up;

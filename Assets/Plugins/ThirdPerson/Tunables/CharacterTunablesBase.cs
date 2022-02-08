@@ -41,6 +41,8 @@ public abstract class CharacterTunablesBase: ScriptableObject {
 
     // -- wall --
     public abstract LayerMask WallLayer { get; }
+    public abstract float WallGravity { get; }
+    public abstract float WallAcceleration { get; }
 
     // -- tilt --
     public abstract float TiltForBaseAcceleration { get; }

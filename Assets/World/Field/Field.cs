@@ -1,8 +1,12 @@
 using UnityEngine;
 
-/// the field terrain
+/// an infinite field
 sealed class Field: MonoBehaviour {
     // -- nodes --
+    [Header("config")]
+    [Tooltip("the target to follow")]
+    [SerializeField] Transform m_Target;
+
     [Header("references")]
     [Tooltip("the terrain")]
     [SerializeField] Terrain m_Terrain;
@@ -12,9 +16,15 @@ sealed class Field: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
+        // update height map
         var td = m_Terrain.terrainData;
 
-        // render a new heightmap
+        // render the heightmap around the target position
+        m_TerrainHeight.SetVector(
+            "_TargetPosition",
+            Vector3.zero
+        );
+
         Graphics.Blit(
             null,
             td.heightmapTexture,

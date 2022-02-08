@@ -61,7 +61,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void JumpSquat_Update() {
         // apply fall acceleration if not grounded
-        if (!m_State.IsGrounded) {
+        if (!m_State.IsGrounded && !m_State.IsOnWall) {
             m_State.VerticalSpeed += m_Tunables.FallAcceleration * Time.deltaTime;
         }
 
@@ -158,7 +158,8 @@ sealed class JumpSystem: CharacterSystem {
 
     void Falling_Update() {
         // apply fall acceleration while holding jump
-        if (m_Input.IsJumpPressed) {
+        // TODO: is this bad?
+        if (m_Input.IsJumpPressed && !m_State.IsOnWall) {
             m_State.VerticalSpeed += m_Tunables.FallAcceleration * Time.deltaTime;
         }
 

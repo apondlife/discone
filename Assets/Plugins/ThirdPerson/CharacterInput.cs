@@ -14,7 +14,7 @@ sealed class CharacterInput {
     [SerializeField] private PlayerInput m_PlayerInput;
 
     // -- props --
-    Buffer<Frame> m_Frames = new Buffer<Frame>(30);
+    Queue<Frame> m_Frames = new Queue<Frame>(30);
 
     /// the move input
     InputAction m_Move;
@@ -56,6 +56,10 @@ sealed class CharacterInput {
 
     /// if jump is pressed this frame
     public bool IsJumpPressed {
+        get => m_Frames[0].IsJumpPressed;
+    }
+
+    public bool IsHoldingWall {
         get => m_Frames[0].IsJumpPressed;
     }
 

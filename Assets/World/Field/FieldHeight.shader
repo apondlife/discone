@@ -2,6 +2,7 @@ Shader "Custom/DesertHeight" {
     Properties {
         _Scale ("Scale", Float) = 1.0
         _Period ("Period", Float) = 0.1
+        _TargetPosition ("Period", Vector) = (0.0, 0.0, 0.0, 0.0)
     }
 
     SubShader {
@@ -26,7 +27,7 @@ Shader "Custom/DesertHeight" {
 
             /// the fragment shader input
             struct FragIn {
-                float4 cPos : SV_POSITION;
+                float4 pos : SV_POSITION;
             };
 
             // -- props --
@@ -35,6 +36,9 @@ Shader "Custom/DesertHeight" {
 
             /// the noise period
             float _Period;
+
+            /// the position of the target in world space
+            float4 _TargetPosition;
 
             // -- noise --
             /// get random value at pt
@@ -98,17 +102,17 @@ Shader "Custom/DesertHeight" {
 
             // -- program --
             FragIn DrawVert(VertIn v) {
-                float3 pos = v.pos.xyz;
-
                 FragIn o;
-                o.cPos = UnityObjectToClipPos(pos);
+                float4 wPos = mul(unity_ObjectToWorld, v.pos) + _TargetPosition;
+                float4 cPos = UnityWorldToClipPos(wPos);
+                o.pos = cPos;
 
                 return o;
             }
 
             fixed4 DrawFrag(FragIn f) : SV_Target {
                 // scale by uniform
-                float2 st = f.cPos.xy * _Scale;
+                float2 st = f.pos.xy * _Scale;
 
                 // shift w/ time
                 st.x += _CosTime * _Period;
