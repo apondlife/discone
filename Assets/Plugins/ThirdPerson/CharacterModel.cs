@@ -4,7 +4,7 @@ using Cinemachine;
 namespace ThirdPerson {
 
 // needs a reference to ThirdPersonCharacter
-sealed class CharacterModel: MonoBehaviour {
+public sealed class CharacterModel: MonoBehaviour {
     // -- props --
     [Tooltip("the character's current state")]
     [SerializeField] private CharacterState m_State;

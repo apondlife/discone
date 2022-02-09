@@ -12,6 +12,7 @@ public class Online: NetworkManager {
     }
 
     // -- fields --
+    [Header("dependencies")]
     [Tooltip("a reference to the player character")]
     [SerializeField] GameObjectVariable m_PlayerCharacter;
 
@@ -34,13 +35,13 @@ public class Online: NetworkManager {
     // -- events --
     /// when a new character spawns on the server
     void OnCreateCharacter(NetworkConnection conn, CreateCharacter msg) {
-        // create the online player character
+        // instantiate the online player character
+        // NOTE:the offline character is destroyed in OnlineCharacter.OnStartLocalPlayer
         GameObject obj = Instantiate(playerPrefab);
+        obj.name = $"OnlinePlayer-{conn.connectionId}";
         obj.transform.position = msg.Position;
-        NetworkServer.AddPlayerForConnection(conn, obj);
 
-        // destroy the offline player character
-        Destroy(m_PlayerCharacter.Value);
-        m_PlayerCharacter.SetValue(obj);
+        // add them to the game
+        NetworkServer.AddPlayerForConnection(conn, obj);
     }
 }

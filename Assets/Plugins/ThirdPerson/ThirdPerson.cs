@@ -3,7 +3,7 @@ using UnityEngine;
 /// the main third person controller
 namespace ThirdPerson {
 
-sealed partial class ThirdPerson: MonoBehaviour {
+public partial class ThirdPerson: MonoBehaviour {
     // -- fields --
     [Header("data")]
     [Tooltip("the character's state")]

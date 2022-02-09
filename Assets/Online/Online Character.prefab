@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 409600868, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1289189457, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_LocalPosition.y
       value: 3.9999995
@@ -114,6 +118,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7614967429340073447, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
   m_PrefabInstance: {fileID: 1600901958131438545}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &3382435280090474034 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4091336841518413283, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+  m_PrefabInstance: {fileID: 1600901958131438545}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &935323127409554472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,3 +174,34 @@ MonoBehaviour:
   visible: 2
   m_AssetId: 2e7184c6685c20a40b0c0277e4c78af3
   hasSpawned: 0
+--- !u!114 &2791162096277452393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9194740061224754742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d25341087b47c824eaa61202d3311746, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  m_PlayerCharacter: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
+--- !u!114 &1264413613604897047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9194740061224754742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 1
+  animator: {fileID: 3382435280090474034}
