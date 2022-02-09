@@ -32,7 +32,7 @@ sealed class Field: MonoBehaviour {
     Queue<Terrain> m_TerrainPool = new Queue<Terrain>();
 
     // -- lifecycle --
-    void Awake() {
+    void Start() {
         // ensure terrain is square
         var td = m_Terrain.GetComponent<Terrain>().terrainData;
         Debug.Assert(td.size.x == td.size.z, "field's terrain chunk was not square");
@@ -82,7 +82,9 @@ sealed class Field: MonoBehaviour {
         var td = terrain.terrainData;
 
         // set display name
-        terrain.name = $"Chunk ({coord.x}, {coord.y})";
+        var x = coord.x;
+        var y = coord.y;
+        terrain.name = $"Chunk ({IntoString(x)}, {IntoString(y)})";
 
         // get chunk position
         var pos = IntoPosition(coord);
@@ -97,7 +99,8 @@ sealed class Field: MonoBehaviour {
         Graphics.Blit(
             null,
             td.heightmapTexture,
-            coord.x > 0 ? m_Whatever : m_TerrainHeight
+            m_TerrainHeight
+            // coord.x > 0 ? m_Whatever : m_TerrainHeight
         );
 
         // mark the entire heightmap as dirty
@@ -128,12 +131,18 @@ sealed class Field: MonoBehaviour {
             return m_TerrainPool.Dequeue();
         }
 
-        // otherwise, create a new terrain and terrain data
+        // otherwise, create a new terrain
         var obj = Instantiate(m_Terrain, transform);
-        var terrain = obj.GetComponent<Terrain>();
-        terrain.terrainData = Instantiate(terrain.terrainData);
+        var tt = obj.GetComponent<Terrain>();
+        var tc = obj.GetComponent<TerrainCollider>();
 
-        return terrain;
+        // and terrain data
+        var td = Instantiate(tt.terrainData);
+        td.name = "ChunkData";
+        tt.terrainData = td;
+        tc.terrainData = td;
+
+        return tt;
     }
 
     // -- queries --
@@ -159,5 +168,14 @@ sealed class Field: MonoBehaviour {
         var z = coord.y * cs - ch;
 
         return new Vector3(x, 0.0f, z);
+    }
+
+    // format the coordinate component
+    string IntoString(int component) {
+        if (component < 0) {
+            return component.ToString();
+        }
+
+        return $"+{component}";
     }
 }

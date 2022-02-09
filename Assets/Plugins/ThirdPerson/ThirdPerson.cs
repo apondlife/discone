@@ -27,7 +27,7 @@ sealed partial class ThirdPerson: MonoBehaviour {
     private void Awake() {
         // set log level
         // TODO: do this at game startup
-        Log.Init(Log.Level.Debug);
+        Log.Show(Log.Level.Info);
 
         // init child objects
         m_Input.Init();

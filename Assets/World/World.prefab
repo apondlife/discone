@@ -27,11 +27,11 @@ Transform:
   m_LocalPosition: {x: -200, y: 0, z: -200}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 7681164637137349762}
+  - {fileID: 3407841737223491995}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &7621160056716693211
+--- !u!1001 &3175073171730035650
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -60,15 +60,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 241846632514298457, guid: a9df5167d8b76445fa2b0daf1828080d, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 241846632514298457, guid: a9df5167d8b76445fa2b0daf1828080d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 241846632514298457, guid: a9df5167d8b76445fa2b0daf1828080d, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 241846632514298457, guid: a9df5167d8b76445fa2b0daf1828080d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -86,16 +86,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Field
       objectReference: {fileID: 0}
-    - target: {fileID: 6500960049770166275, guid: a9df5167d8b76445fa2b0daf1828080d, type: 3}
-      propertyPath: m_Terrain
-      value: 
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 241846632514298462, guid: a9df5167d8b76445fa2b0daf1828080d, type: 3}
-    - {fileID: 241846632514298463, guid: a9df5167d8b76445fa2b0daf1828080d, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9df5167d8b76445fa2b0daf1828080d, type: 3}
---- !u!4 &7681164637137349762 stripped
+--- !u!4 &3407841737223491995 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 241846632514298457, guid: a9df5167d8b76445fa2b0daf1828080d, type: 3}
-  m_PrefabInstance: {fileID: 7621160056716693211}
+  m_PrefabInstance: {fileID: 3175073171730035650}
   m_PrefabAsset: {fileID: 0}

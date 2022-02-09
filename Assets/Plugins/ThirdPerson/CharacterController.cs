@@ -58,7 +58,7 @@ sealed class CharacterController {
         // if the move was big enough to fire
         // TODO: is this necessary?
         if (delta.magnitude <= m_MinMove) {
-            Log.D("move delta below threshold, stopping move");
+            Debug.Log("move delta below threshold, stopping move");
             return;
         }
 
@@ -95,14 +95,14 @@ sealed class CharacterController {
             // TODO: is this necessary?
             var moveMag = moveDelta.magnitude;
             if (moveMag <= m_MinMove) {
-                Log.D("move delta below threshold, stopping cast");
+                Debug.Log("move delta below threshold, stopping cast");
                 break;
             }
 
             #if UNITY_EDITOR
             // DEBUG: if we cast an unlikely number of times, stop
             if (i > 5) {
-                Log.E("cast more than 5 times in a single frame!");
+                Debug.LogError("cast more than 5 times in a single frame!");
                 break;
             }
             #endif
@@ -185,7 +185,7 @@ sealed class CharacterController {
                 // this should not happen; but if it does abort the collision from the last
                 // successful cast
                 else {
-                    Log.E("cast ray and center axis did not intersect!");
+                    Debug.LogError("cast ray and center axis did not intersect!");
                     break;
                 }
             }

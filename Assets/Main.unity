@@ -746,6 +746,10 @@ PrefabInstance:
       propertyPath: m_Terrain
       value: 
       objectReference: {fileID: 3312532919274294580, guid: 7ace50d95b8ac46d797d1adb754ff491, type: 3}
+    - target: {fileID: 3745798662751581912, guid: 028479e9d066144b09e4c9ebdd70e6eb, type: 3}
+      propertyPath: m_Whatever
+      value: 
+      objectReference: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 5000541250416934005, guid: 028479e9d066144b09e4c9ebdd70e6eb, type: 3}
       propertyPath: m_Name
       value: World
@@ -802,5 +806,9 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8514104036584655809, guid: 028479e9d066144b09e4c9ebdd70e6eb, type: 3}
+      propertyPath: m_Target
+      value: 
+      objectReference: {fileID: 7614967428711631636}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 028479e9d066144b09e4c9ebdd70e6eb, type: 3}

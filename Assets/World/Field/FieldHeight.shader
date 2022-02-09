@@ -2,7 +2,7 @@ Shader "Custom/DesertHeight" {
     Properties {
         _Scale ("Scale", Float) = 1.0
         _Period ("Period", Float) = 0.1
-        _TargetPosition ("Period", Vector) = (0.0, 0.0, 0.0, 0.0)
+        _TargetPosition ("Target Position", Vector) = (0.0, 0.0, 0.0, 0.0)
     }
 
     SubShader {
@@ -27,7 +27,8 @@ Shader "Custom/DesertHeight" {
 
             /// the fragment shader input
             struct FragIn {
-                float4 pos : SV_POSITION;
+                float4 cPos : SV_POSITION;
+                float4 wPos : TEXCOORD0;
             };
 
             // -- props --
@@ -102,24 +103,27 @@ Shader "Custom/DesertHeight" {
 
             // -- program --
             FragIn DrawVert(VertIn v) {
-                FragIn o;
+                // offset world position by target
                 float4 wPos = mul(unity_ObjectToWorld, v.pos) + _TargetPosition;
-                float4 cPos = UnityWorldToClipPos(wPos);
-                o.pos = cPos;
+
+                FragIn o;
+                o.cPos = UnityWorldToClipPos(wPos);
+                o.wPos = wPos;
 
                 return o;
             }
 
             fixed4 DrawFrag(FragIn f) : SV_Target {
                 // scale by uniform
-                float2 st = f.pos.xy * _Scale;
+                float2 st = f.wPos.xy * _Scale;
 
                 // shift w/ time
                 st.x += _CosTime * _Period;
                 st.y += _SinTime * _Period;
 
                 // generate image
-                float c = Image(st);
+                // float c = Image(st);
+                float c = f.wPos.x;
 
                 // produce color
                 return fixed4(c, c, c, 1.0f);
