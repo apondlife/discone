@@ -9,11 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1244464915308659324}
-  - component: {fileID: 1244464915308659325}
   - component: {fileID: 1244464915308659202}
-  - component: {fileID: 1244464915308659203}
+  - component: {fileID: 745588075}
   m_Layer: 0
-  m_Name: NetworkManagerHUD
+  m_Name: Online
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,32 +32,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1244464915308659325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1244464915308659200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8aab4c8111b7c411b9b92cf3dbc5bd4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
-  runInBackground: 1
-  autoStartServerBuild: 1
-  serverTickRate: 30
-  offlineScene: Assets/Scenes/Online.unity
-  onlineScene: Assets/Scenes/Online.unity
-  transport: {fileID: 1244464915308659202}
-  networkAddress: localhost
-  maxConnections: 100
-  authenticator: {fileID: 0}
-  playerPrefab: {fileID: 9194740061224754742, guid: 2e7184c6685c20a40b0c0277e4c78af3, type: 3}
-  autoCreatePlayer: 1
-  playerSpawnMethod: 1
-  spawnPrefabs: []
 --- !u!114 &1244464915308659202
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,7 +61,7 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
---- !u!114 &1244464915308659203
+--- !u!114 &745588075
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,8 +70,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1244464915308659200}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Script: {fileID: 11500000, guid: 12cb46ad0fede984fb5831dd9cae46c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0
+  dontDestroyOnLoad: 1
+  runInBackground: 1
+  autoStartServerBuild: 1
+  serverTickRate: 30
+  offlineScene: Assets/Main.unity
+  onlineScene: Assets/Main.unity
+  transport: {fileID: 1244464915308659202}
+  networkAddress: localhost
+  maxConnections: 100
+  authenticator: {fileID: 0}
+  playerPrefab: {fileID: 9194740061224754742, guid: 2e7184c6685c20a40b0c0277e4c78af3, type: 3}
+  autoCreatePlayer: 0
+  playerSpawnMethod: 0
+  spawnPrefabs: []
+  m_PlayerCharacter: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}

@@ -19,6 +19,8 @@ sealed partial class ThirdPerson: MonoBehaviour {
     [Tooltip("the underlying character controller")]
     [SerializeField] CharacterController m_Controller;
 
+    [SerializeField] private Log.Level logLevel;
+
     // -- props --
     /// the list of systems acting on this character
     private CharacterSystem[] m_Systems;
@@ -27,7 +29,7 @@ sealed partial class ThirdPerson: MonoBehaviour {
     private void Awake() {
         // set log level
         // TODO: do this at game startup
-        Log.Init(Log.Level.Debug);
+        Log.Init(logLevel);
 
         // init child objects
         m_Input.Init();

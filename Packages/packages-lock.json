@@ -1,5 +1,31 @@
 {
   "dependencies": {
+    "com.unity-atoms.unity-atoms-base-atoms": {
+      "version": "4.4.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity-atoms.unity-atoms-core": "4.4.3"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "com.unity-atoms.unity-atoms-core": {
+      "version": "4.4.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
+    "com.unity-atoms.unity-atoms-mono-hooks": {
+      "version": "4.4.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity-atoms.unity-atoms-core": "4.4.3",
+        "com.unity-atoms.unity-atoms-base-atoms": "4.4.3"
+      },
+      "url": "https://package.openupm.com"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
