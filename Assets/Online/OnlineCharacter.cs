@@ -42,4 +42,5 @@ class OnlineCharacter: NetworkBehaviour {
         Destroy(m_PlayerCharacter.Value);
         m_PlayerCharacter.Value = gameObject;
     }
+
 }

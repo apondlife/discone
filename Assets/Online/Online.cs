@@ -44,4 +44,8 @@ public class Online: NetworkManager {
         // add them to the game
         NetworkServer.AddPlayerForConnection(conn, obj);
     }
+
+    public void SetNetworkAddress(string address) {
+        networkAddress = address;
+    }
 }
