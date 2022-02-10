@@ -3,7 +3,7 @@ using UnityEngine;
 /// the main third person controller
 namespace ThirdPerson {
 
-sealed partial class ThirdPerson: MonoBehaviour {
+public partial class ThirdPerson: MonoBehaviour {
     // -- fields --
     [Header("data")]
     [Tooltip("the character's state")]
@@ -19,16 +19,14 @@ sealed partial class ThirdPerson: MonoBehaviour {
     [Tooltip("the underlying character controller")]
     [SerializeField] CharacterController m_Controller;
 
+    [SerializeField] private Log.Level logLevel;
+
     // -- props --
     /// the list of systems acting on this character
     private CharacterSystem[] m_Systems;
 
     // -- lifecycle --
     private void Awake() {
-        // set log level
-        // TODO: do this at game startup
-        Log.Init(Log.Level.Debug);
-
         // init child objects
         m_Input.Init();
         m_State.Reset();

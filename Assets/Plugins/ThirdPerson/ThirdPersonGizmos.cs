@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 
@@ -82,3 +83,4 @@ sealed partial class ThirdPerson {
 }
 
 }
+#endif

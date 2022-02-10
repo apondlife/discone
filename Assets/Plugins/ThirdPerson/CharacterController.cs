@@ -67,7 +67,7 @@ sealed class CharacterController {
         // if the move was big enough to fire
         // TODO: is this necessary?
         if (delta.magnitude <= m_MinMove) {
-            Log.D("move delta below threshold, stopping move");
+            Debug.Log("move delta below threshold, stopping move");
             return;
         }
 
@@ -94,7 +94,6 @@ sealed class CharacterController {
 
         // DEBUG: reset state
         #if UNITY_EDITOR
-        var i = 0;
         m_DebugCasts.Clear();
         m_DebugHits.Clear();
         #endif
@@ -103,21 +102,20 @@ sealed class CharacterController {
         m_Collisions.Clear();
 
         // while there is any more to move
+        var i = 0;
         while (true) {
             // TODO: is this necessary?
             var moveMag = moveDelta.magnitude;
             if (moveMag <= m_MinMove) {
-                Log.D("move delta below threshold, stopping cast");
+                Debug.Log("move delta below threshold, stopping cast");
                 break;
             }
 
-            #if UNITY_EDITOR
-            // DEBUG: if we cast an unlikely number of times, stop
+            // if we cast an unlikely number of times, stop
             if (i > 5) {
-                Log.E("cast more than 5 times in a single frame!");
+                Debug.LogError("cast more than 5 times in a single frame!");
                 break;
             }
-            #endif
 
             // capsule cast the remaining move
             var castDir = moveDelta.normalized;
@@ -197,7 +195,7 @@ sealed class CharacterController {
                 // this should not happen; but if it does abort the collision from the last
                 // successful cast
                 else {
-                    Log.E("cast ray and center axis did not intersect!");
+                    Debug.LogError("cast ray and center axis did not intersect!");
                     break;
                 }
             }
@@ -221,7 +219,7 @@ sealed class CharacterController {
             // add this collision to the list
             m_Collisions.Add(new CharacterCollision(hit.normal, hit.point));
 
-            // DEBUG: update state
+            // update state
             i++;
         }
 
@@ -250,8 +248,10 @@ sealed class CharacterController {
     }
 
     // -- gizmos --
+    #if UNITY_EDITOR
     /// draw gizmos for the controller
     public void DrawGizmos() {
+        // draw the cast lollipops
         foreach (var cast in m_DebugCasts) {
             var o1 = cast.Radius * Vector3.up;
             var o2 = cast.Direction * cast.Length;
@@ -265,6 +265,7 @@ sealed class CharacterController {
             Gizmos.DrawLine(cast.Point1 - o1 + o2, cast.Point2 + o1 + o2);
         }
 
+        // draw spheres where the casts hit
         foreach (var hit in m_DebugHits) {
             Gizmos.color = Color.yellow;
             Gizmos.DrawSphere(hit.point, 0.05f);
@@ -282,5 +283,6 @@ sealed class CharacterController {
         Gizmos.color = Color.cyan;
         Gizmos.DrawSphere(m_Transform.position, 0.1f);
     }
+    #endif
 }
 }
