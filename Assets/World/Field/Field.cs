@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// an infinite field
 sealed class Field: MonoBehaviour {
@@ -19,17 +21,17 @@ sealed class Field: MonoBehaviour {
     [SerializeField] Material m_Whatever;
 
     // -- props --
-    /// the target's current coordinate
+    /// the target's current coordinate. the current center chunk index
     Vector2Int m_TargetCoord;
 
     /// the size of a chunk
     float m_ChunkSize;
 
     /// the map of visible chunks
-    Dictionary<Vector2Int, Terrain> m_Chunks;
+    Dictionary<Vector2Int, Terrain> m_Chunks = new Dictionary<Vector2Int, Terrain>();
 
     /// a pool of free terrain instances
-    Queue<Terrain> m_TerrainPool = new Queue<Terrain>();
+    Queue<Terrain> m_ChunkPool = new Queue<Terrain>();
 
     // -- lifecycle --
     void Start() {
@@ -43,41 +45,106 @@ sealed class Field: MonoBehaviour {
         // get initial target coordinate
         m_TargetCoord = IntoCoordinate(m_Target.position);
 
-        // instantiate a square of 9 chunks around the target
-        var chunks = new Dictionary<Vector2Int, Terrain>();
-        for (var i = 0; i < 9; i++) {
-            // get terrain
-            var terrain = DequeueTerrain();
+        // create the initial chunks
+        CreateChunks();
 
-            // get coord
-            var coord = m_TargetCoord;
-            coord.x += i % 3 - 1;
-            coord.y += i / 3 - 1;
+        StartCoroutine(PurgeChunksAsync());
+    }
 
-            // store chunk
-            chunks.Add(coord, terrain);
-        }
+    void Update() {
+        CreateChunks();
 
-        m_Chunks = chunks;
-
-        // render each chunk
-        foreach (var (coord, terrain) in chunks) {
-            RenderChunk(coord, terrain);
-        }
-
-        // reassign the chunk neighbors
-        foreach (var (coord, terrain) in chunks) {
-            terrain.SetNeighbors(
-                m_Chunks.Get(coord + Vector2Int.left),
-                m_Chunks.Get(coord + Vector2Int.up),
-                m_Chunks.Get(coord + Vector2Int.right),
-                m_Chunks.Get(coord + Vector2Int.down)
-            );
+        if(debounceTimer > 0 && Time.time > debounceTimer) {
+            debounceTimer = -1;
+            PurgeChunks(m_TargetCoord);
         }
     }
 
     // -- commands --
-    /// render the heightmap for a particular terrain chunk & offset
+    /// create new chunks as the player moves
+    void CreateChunks() {
+        // if we didn't change chunks, do nothing
+        var coord = IntoCoordinate(m_Target.position);
+        if (m_TargetCoord == coord) {
+            return;
+        }
+
+        // instantiate a square of 9 chunks around the target
+        for (var i = 0; i < 9; i++) {
+            var c = coord;
+            c.x += i % 3 - 1;
+            c.y += i / 3 - 1;
+
+            CreateChunk(c);
+        }
+
+        m_TargetCoord = coord;
+    }
+
+    /// create a new chunk at a coordinate if necessary
+    void CreateChunk(Vector2Int coord) {
+        // if the chunk already exists, don't create one
+        if (m_Chunks.ContainsKey(coord)) {
+            return;
+        }
+
+        // add the chunk to the map of active chunks
+        var chunk = DequeueChunk();
+        m_Chunks.Add(coord, chunk);
+
+        // render the chunks heightmap
+        RenderChunk(coord, chunk);
+
+        //
+        chunk.SetNeighbors(
+            m_Chunks.Get(coord + Vector2Int.left),
+            m_Chunks.Get(coord + Vector2Int.up),
+            m_Chunks.Get(coord + Vector2Int.right),
+            m_Chunks.Get(coord + Vector2Int.down)
+        );
+    }
+
+    private const int k_MaxChunks = 16;
+    private const float k_ChunkPurgePeriod = 2.0f;
+
+    int ManhDist(Vector2Int a, Vector2Int b) {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+    }
+
+    IEnumerator PurgeChunksAsync() {
+        while (true) {
+            yield return new WaitForSecondsRealtime(k_ChunkPurgePeriod);
+            PurgeChunks(m_TargetCoord);
+        }
+    }
+
+    float debounceTimer = 0;
+
+    void PurgeChunks(Vector2Int coord) {
+        if (m_Chunks.Count <= k_MaxChunks) {
+            return;
+        }
+
+        // remove the chunks that are further away and no longer needed
+        var sortedDistances = m_Chunks.Keys.ToList();
+        sortedDistances.Sort((a, b) => ManhDist(coord, a) - ManhDist(coord, b));
+
+        var i = sortedDistances.Count - 1;
+        while(m_Chunks.Count > k_MaxChunks) {
+            var farthest = sortedDistances[i];
+            var toRemove = m_Chunks[farthest];
+
+            // do remove stuff here
+            toRemove.gameObject.SetActive(false);
+            // TODO: maybe the pool should also be size limited
+            m_ChunkPool.Enqueue(toRemove);
+            m_Chunks.Remove(farthest);
+
+            i--;
+        }
+    }
+
+    // render the heightmap for a particular terrain chunk & offset
     void RenderChunk(Vector2Int coord, Terrain terrain) {
         var td = terrain.terrainData;
 
@@ -123,11 +190,13 @@ sealed class Field: MonoBehaviour {
         tt.position = IntoPosition(coord);
     }
 
-    /// dequeue a terrain from the terrain pool
-    Terrain DequeueTerrain() {
+    /// dequeue a terrain chunk from the pool
+    Terrain DequeueChunk() {
         // reuse an existing terrain if available
-        if (m_TerrainPool.Count != 0) {
-            return m_TerrainPool.Dequeue();
+        if (m_ChunkPool.Count != 0) {
+            var chunk = m_ChunkPool.Dequeue();
+            chunk.gameObject.SetActive(true);
+            return chunk;
         }
 
         // otherwise, create a new terrain
