@@ -86,21 +86,20 @@ sealed class Field: MonoBehaviour {
         var y = coord.y;
         terrain.name = $"Chunk ({IntoString(x)}, {IntoString(y)})";
 
-        // get chunk position
-        var pos = IntoPosition(coord);
-        Debug.Log($"[Field] render chunk {coord}");
+        // the heightmap res is a power of 2 + 1, so we scale the offset magically
+        // TODO: understand magic
+        var scale = ((float)td.heightmapResolution - 1.0f) / td.heightmapResolution;
 
         // render height material into chunk heightmap
         m_TerrainHeight.SetVector(
-            "_TargetPosition",
-            IntoPosition(coord)
+            "_Offset",
+            new Vector3(coord.x, coord.y) * scale
         );
 
         Graphics.Blit(
             null,
             td.heightmapTexture,
             m_TerrainHeight
-            // coord.x > 0 ? m_Whatever : m_TerrainHeight
         );
 
         // mark the entire heightmap as dirty
@@ -121,7 +120,7 @@ sealed class Field: MonoBehaviour {
 
         // move the terrain into position
         var tt = terrain.transform;
-        tt.position = pos;
+        tt.position = IntoPosition(coord);
     }
 
     /// dequeue a terrain from the terrain pool
