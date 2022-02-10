@@ -27,10 +27,6 @@ public partial class ThirdPerson: MonoBehaviour {
 
     // -- lifecycle --
     private void Awake() {
-        // set log level
-        // TODO: do this at game startup
-        Log.Init(logLevel);
-
         // init child objects
         m_Input.Init();
         m_State.Reset();

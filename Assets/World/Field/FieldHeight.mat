@@ -67,8 +67,8 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Period: 0.1
-    - _Scale: 0.03
+    - _Period: 0
+    - _Scale: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -77,5 +77,5 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _TargetPosition: {r: 0, g: 0, b: 0, a: 0}
+    - _TargetPosition: {r: 100, g: 0, b: 100, a: 0}
   m_BuildTextureStacks: []
