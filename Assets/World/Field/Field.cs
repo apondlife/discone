@@ -92,7 +92,7 @@ sealed class Field: MonoBehaviour {
         // render the chunks heightmap
         RenderChunk(coord, chunk);
 
-        //
+        // reassign neighbors
         chunk.SetNeighbors(
             m_Chunks.Get(coord + Vector2Int.left),
             m_Chunks.Get(coord + Vector2Int.up),
@@ -150,14 +150,16 @@ sealed class Field: MonoBehaviour {
         var y = coord.y;
         terrain.name = $"Chunk ({IntoString(x)}, {IntoString(y)})";
 
-        // the heightmap res is a power of 2 + 1, so we scale the offset magically
-        // TODO: understand magic
-        var scale = ((float)td.heightmapResolution - 1.0f) / td.heightmapResolution;
+        // in order for the edges of each chunk to overlap, we need to scale the coordinate offset so
+        // that the last row of vertices of the neighbor chunk and the first row in this chunk are
+        // the same. the offset is in uv-space.
+        // see: https://answers.unity.com/questions/581760/why-are-heightmap-resolutions-power-of-2-plus-one.html
+        var offsetScale = (float)(td.heightmapResolution - 1) / td.heightmapResolution;
 
         // render height material into chunk heightmap
         m_TerrainHeight.SetVector(
             "_Offset",
-            new Vector3(coord.x, coord.y) * scale
+            new Vector3(x, y) * offsetScale
         );
 
         Graphics.Blit(
