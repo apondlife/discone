@@ -1,3 +1,3 @@
-# thirdperson
+# discone
 
-a third person character controller
+an online, move-em-up jrpg-like
