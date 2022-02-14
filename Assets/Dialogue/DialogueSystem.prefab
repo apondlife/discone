@@ -138,6 +138,34 @@ PrefabInstance:
       propertyPath: dialogueViews.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1818437640680912173, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
+      propertyPath: onDialogueComplete.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818437640680912173, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
+      propertyPath: onDialogueComplete.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818437640680912173, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
+      propertyPath: onDialogueComplete.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 542221790792341999}
+    - target: {fileID: 1818437640680912173, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
+      propertyPath: onDialogueComplete.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818437640680912173, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
+      propertyPath: onDialogueComplete.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: DialogueEnd
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818437640680912173, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
+      propertyPath: onDialogueComplete.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: DialogueSystem, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818437640680912173, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
+      propertyPath: onDialogueComplete.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 4855737521419334314, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

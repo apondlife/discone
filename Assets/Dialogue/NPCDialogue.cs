@@ -6,6 +6,9 @@ using UnityEditor;
 
 [RequireComponent(typeof(Collider))]
 public class NPCDialogue : MonoBehaviour {
+
+  public PlayerInput input;
+
   public string dialogueMessage;
 
   public Texture characterPreview;
@@ -18,16 +21,20 @@ public class NPCDialogue : MonoBehaviour {
 
   private const string _dialogueTargetTag = "PlayerDialogueTarget";
 
+  InputAction talkAction;
+
   // Use this for initialization
   void Start () {
+    talkAction = input.currentActionMap["Jump"];
+
     if (talkable) talkable.SetActive(false);
   }
   
   // Update is called once per frame
   void Update () {
-    // TODO: probably get input in a nicer way
-    if (_canTalk && !ds.IsBusy() && Mouse.current.leftButton.isPressed) {
-      Debug.Log("start dialog "+dialogueMessage);
+
+    if (_canTalk && !ds.IsBusy() && talkAction.IsPressed()) {
+      Debug.Log("start dialog " + dialogueMessage);
 
       ds.StartDialogue(dialogueMessage, characterPreview);
     }
