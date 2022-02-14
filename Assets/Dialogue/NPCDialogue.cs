@@ -6,9 +6,7 @@ using UnityEditor;
 
 [RequireComponent(typeof(Collider))]
 public class NPCDialogue : MonoBehaviour {
-  public string talkButton = "Fire1"; // TODO replace with proper input thing
-
-  public string dialogueMessage = "KnightSpeak";
+  public string dialogueMessage;
 
   public Texture characterPreview;
 
@@ -16,7 +14,7 @@ public class NPCDialogue : MonoBehaviour {
 
   private bool _canTalk = false;
 
-  public DialogueManager dm;
+  public DialogueSystem ds;
 
   private const string _dialogueTargetTag = "PlayerDialogueTarget";
 
@@ -28,17 +26,18 @@ public class NPCDialogue : MonoBehaviour {
   // Update is called once per frame
   void Update () {
     // TODO: probably get input in a nicer way
-    if (_canTalk && !dm.IsBusy() && Mouse.current.leftButton.isPressed) {
+    if (_canTalk && !ds.IsBusy() && Mouse.current.leftButton.isPressed) {
       Debug.Log("start dialog "+dialogueMessage);
 
-      dm.StartDialogue(dialogueMessage, characterPreview);
+      ds.StartDialogue(dialogueMessage, characterPreview);
     }
   }
 
   void OnTriggerEnter(Collider other) {
-    if (other.CompareTag(_dialogueTargetTag) && !dm.IsTalkAvailable() && !dm.IsBusy()) {
+    if (other.CompareTag(_dialogueTargetTag) && !ds.IsTalkAvailable() && !ds.IsBusy()) {
+      Debug.Log("can talk!!!");
       _canTalk = true;
-      dm.SetTalkAvailable(true);
+      ds.SetTalkAvailable(true);
       if (talkable) talkable.SetActive(true);
     }
   }
@@ -46,7 +45,7 @@ public class NPCDialogue : MonoBehaviour {
   void OnTriggerExit(Collider other) {
     if (other.CompareTag(_dialogueTargetTag) && _canTalk) {
       _canTalk = false;
-      dm.SetTalkAvailable(false);
+      ds.SetTalkAvailable(false);
       if (talkable) talkable.SetActive(false);
     }
   }

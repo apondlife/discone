@@ -38,8 +38,6 @@ public class BackgroundScroll : MonoBehaviour
         float newX = img.uvRect.x + scrollSpeed;
         float newY = img.uvRect.y + scrollSpeed;
         img.uvRect = new Rect(newX, newY, img.uvRect.width, img.uvRect.height);
-
-        Debug.Log(newX);
         
     }
 }

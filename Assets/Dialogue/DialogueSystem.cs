@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using System;
 using Yarn.Unity;
 
-public class DialogueManager : MonoBehaviour
+public class DialogueSystem : MonoBehaviour
 {
     public PlayerInput input;
    //public Action OnUnfreeze;
