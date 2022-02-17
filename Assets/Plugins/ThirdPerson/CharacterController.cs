@@ -104,10 +104,9 @@ sealed class CharacterController {
         // while there is any more to move
         var i = 0;
         while (true) {
-            // TODO: is this necessary?
+            // is this necessary? yes, it happens a lot.
             var moveMag = moveDelta.magnitude;
             if (moveMag <= m_MinMove) {
-                Debug.Log("move delta below threshold, stopping cast");
                 break;
             }
 
