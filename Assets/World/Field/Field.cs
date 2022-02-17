@@ -1,11 +1,18 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityAtoms.BaseAtoms;
 
 /// an infinite field
+[ExecuteAlways]
 sealed class Field: MonoBehaviour {
+    // -- constants --
+    /// the maximum number of active chunks
+    private const int k_MaxChunks = 16;
+
+    /// the duration between purges
+    private const float k_PurgeChunksInterval = 2.0f;
+
     // -- nodes --
     [Header("config")]
     [Tooltip("the target to follow")]
@@ -20,10 +27,7 @@ sealed class Field: MonoBehaviour {
 
     // -- props --
     /// the target's current coordinate. the current center chunk index
-    Vector2Int m_TargetCoord;
-
-    /// the size of a chunk
-    float m_ChunkSize;
+    Vector2Int m_TargetCoord = new Vector2Int(69, 420);
 
     /// the map of visible chunks
     Dictionary<Vector2Int, Terrain> m_Chunks = new Dictionary<Vector2Int, Terrain>();
@@ -31,10 +35,18 @@ sealed class Field: MonoBehaviour {
     /// a pool of free terrain instances
     Queue<Terrain> m_ChunkPool = new Queue<Terrain>();
 
-    Transform m_Target => m_TargetObject.Value.transform;
+    // -- p/cache
+    /// the size of a chunk
+    float m_ChunkSize;
 
     // -- lifecycle --
     void Start() {
+        // in editor, draw entire field
+        if (!Application.IsPlaying(gameObject)) {
+            CreateEditorChunks();
+            return;
+        }
+
         // ensure terrain is square
         var td = m_Terrain.GetComponent<Terrain>().terrainData;
         Debug.Assert(td.size.x == td.size.z, "field's terrain chunk was not square");
@@ -42,37 +54,38 @@ sealed class Field: MonoBehaviour {
         // capture chunk size
         m_ChunkSize = td.size.x;
 
-        // get initial target coordinate
-        m_TargetCoord = IntoCoordinate(m_Target.position);
-
-        // create the initial chunks
-        CreateChunks();
-
-        StartCoroutine(PurgeChunksAsync());
+        // start purge routine
+        StartCoroutine(Coroutines.Interval(k_PurgeChunksInterval, PurgeChunks));
     }
 
     void Update() {
-        // if we didn't change chunks, do nothing
-        var coord = IntoCoordinate(m_Target.position);
+        // in editor, do nothing
+        if (!Application.IsPlaying(gameObject)) {
+            return;
+        }
+
+        var tt = m_TargetObject.Value.transform;
+
+        // if the target changed chunks, create neighbors
+        var coord = IntoCoordinate(tt.position);
         if (m_TargetCoord != coord) {
             m_TargetCoord = coord;
             CreateChunks();
         }
-
-        if(debounceTimer > 0 && Time.time > debounceTimer) {
-            debounceTimer = -1;
-            PurgeChunks(m_TargetCoord);
-        }
     }
 
     // -- commands --
+    // -- c/create
     /// create new chunks as the player moves
-    void CreateChunks() {
+    void CreateChunks(int size = 3) {
+        // the number of chunks to create
+        var n = size * size;
+
         // instantiate a square of 9 chunks around the target
-        for (var i = 0; i < 9; i++) {
+        for (var i = 0; i < n; i++) {
             var c = m_TargetCoord;
-            c.x += i % 3 - 1;
-            c.y += i / 3 - 1;
+            c.x += i % size - 1;
+            c.y += i / size - 1;
 
             CreateChunk(c);
         }
@@ -99,46 +112,6 @@ sealed class Field: MonoBehaviour {
             m_Chunks.Get(coord + Vector2Int.right),
             m_Chunks.Get(coord + Vector2Int.down)
         );
-    }
-
-    private const int k_MaxChunks = 16;
-    private const float k_ChunkPurgePeriod = 2.0f;
-
-    int ManhDist(Vector2Int a, Vector2Int b) {
-        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
-    }
-
-    IEnumerator PurgeChunksAsync() {
-        while (true) {
-            yield return new WaitForSecondsRealtime(k_ChunkPurgePeriod);
-            PurgeChunks(m_TargetCoord);
-        }
-    }
-
-    float debounceTimer = 0;
-
-    void PurgeChunks(Vector2Int coord) {
-        if (m_Chunks.Count <= k_MaxChunks) {
-            return;
-        }
-
-        // remove the chunks that are further away and no longer needed
-        var sortedDistances = m_Chunks.Keys.ToList();
-        sortedDistances.Sort((a, b) => ManhDist(coord, a) - ManhDist(coord, b));
-
-        var i = sortedDistances.Count - 1;
-        while(m_Chunks.Count > k_MaxChunks) {
-            var farthest = sortedDistances[i];
-            var toRemove = m_Chunks[farthest];
-
-            // do remove stuff here
-            toRemove.gameObject.SetActive(false);
-            // TODO: maybe the pool should also be size limited
-            m_ChunkPool.Enqueue(toRemove);
-            m_Chunks.Remove(farthest);
-
-            i--;
-        }
     }
 
     // render the heightmap for a particular terrain chunk & offset
@@ -210,6 +183,44 @@ sealed class Field: MonoBehaviour {
         tc.terrainData = td;
 
         return tt;
+    }
+
+    // -- c/purge
+    /// purge any unused chunks
+    void PurgeChunks() {
+        if (m_Chunks.Count <= k_MaxChunks) {
+            return;
+        }
+
+        // remove the chunks that are further away and no longer needed
+        var t = m_TargetCoord;
+        var sortedDistances = m_Chunks.Keys.ToList();
+        sortedDistances.Sort((a, b) => Vec2.Manhattan(t, a) - Vec2.Manhattan(t, b));
+
+        var i = sortedDistances.Count - 1;
+        while(m_Chunks.Count > k_MaxChunks) {
+            var farthest = sortedDistances[i];
+            var toRemove = m_Chunks[farthest];
+
+            // do remove stuff here
+            toRemove.gameObject.SetActive(false);
+            // TODO: maybe the pool should also be size limited
+            m_ChunkPool.Enqueue(toRemove);
+            m_Chunks.Remove(farthest);
+
+            i--;
+        }
+    }
+
+    // -- c/editor
+    /// create chunks for the editor field
+    void CreateEditorChunks() {
+        // set target coordinate
+        // var tc = Camera.current.transform;
+        m_TargetCoord = Vector2Int.zero;
+
+        // create chunks
+        CreateChunks(3);
     }
 
     // -- queries --
