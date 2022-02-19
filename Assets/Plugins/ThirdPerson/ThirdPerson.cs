@@ -79,6 +79,23 @@ public partial class ThirdPerson: MonoBehaviour {
         var p1 = c.center + delta;
     }
 
+    // -- queries --
+    // TODO: how should we expose state outside the library
+    /// if the character is grounded
+    public bool IsGrounded {
+        get => m_State.IsGrounded;
+    }
+
+    /// if the character just jumped
+    public bool IsInJumpStart {
+        get => m_State.IsInJumpStart;
+    }
+
+    /// the character's planar velocity
+    public Vector3 PlanarVelocity {
+        get => m_State.PlanarVelocity;
+    }
+
     // -- events --
     /// when the restart button is pressed, reload the scene
     public void OnRestart() {
