@@ -125,9 +125,14 @@ sealed class JumpSystem: CharacterSystem {
 
         // cancel vertical momentum and apply initial jump
         m_State.VerticalSpeed = vt;
+        m_State.IsInJumpStart = true;
     }
 
     void Jumping_Update() {
+        // only in jump start first frame
+        // TODO: reason about frames -- when should enter be called? what is frame one?
+        m_State.IsInJumpStart = false;
+
         // apply jump acceleration while holding jump
         if (m_Input.IsJumpPressed) {
             m_State.VerticalSpeed += m_Tunables.JumpAcceleration * Time.deltaTime;

@@ -4,7 +4,7 @@ using System.Collections;
 
 /// factory for coroutines
 static class Coroutines {
-    /// start a coroutine that runs an action at an interval
+    /// a coroutine that runs an action at an interval
     public static IEnumerator Interval(float interval, Action action) {
         while (true) {
             yield return new WaitForSecondsRealtime(interval);

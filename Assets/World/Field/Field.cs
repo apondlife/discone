@@ -4,7 +4,6 @@ using System.Linq;
 using UnityAtoms.BaseAtoms;
 
 /// an infinite field
-[ExecuteAlways]
 sealed class Field: MonoBehaviour {
     // -- constants --
     /// the maximum number of active chunks
