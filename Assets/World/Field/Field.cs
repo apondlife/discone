@@ -4,6 +4,7 @@ using System.Linq;
 using UnityAtoms.BaseAtoms;
 
 /// an infinite field
+[ExecuteAlways]
 sealed class Field: MonoBehaviour {
     // -- constants --
     /// the maximum number of active chunks
@@ -40,26 +41,32 @@ sealed class Field: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        // in editor, draw entire field
-        if (!Application.IsPlaying(gameObject)) {
-            CreateEditorChunks();
-            return;
-        }
-
         // ensure terrain is square
         var td = m_Terrain.GetComponent<Terrain>().terrainData;
         Debug.Assert(td.size.x == td.size.z, "field's terrain chunk was not square");
 
+        // destory any editor terrain
+        var t = transform;
+        while (t.childCount > 0) {
+            DestroyImmediate(t.GetChild(0).gameObject);
+        }
+
         // capture chunk size
         m_ChunkSize = td.size.x;
+
+        // if editor, don't do anything else
+        if (!Application.IsPlaying(gameObject)) {
+            return;
+        }
 
         // start purge routine
         StartCoroutine(Coroutines.Interval(k_PurgeChunksInterval, PurgeChunks));
     }
 
     void Update() {
-        // in editor, do nothing
+        // if editor, create editor chunks
         if (!Application.IsPlaying(gameObject)) {
+            CreateEditorChunks();
             return;
         }
 
@@ -120,7 +127,7 @@ sealed class Field: MonoBehaviour {
         // set display name
         var x = coord.x;
         var y = coord.y;
-        terrain.name = $"Chunk ({IntoString(x)}, {IntoString(y)})";
+        terrain.name = $"Chunk({IntoString(x)},{IntoString(y)})";
 
         // in order for the edges of each chunk to overlap, we need to scale the coordinate offset so
         // that the last row of vertices of the neighbor chunk and the first row in this chunk are
@@ -172,6 +179,8 @@ sealed class Field: MonoBehaviour {
 
         // otherwise, create a new terrain
         var obj = Instantiate(m_Terrain, transform);
+        obj.hideFlags = HideFlags.DontSave;
+
         var tt = obj.GetComponent<Terrain>();
         var tc = obj.GetComponent<TerrainCollider>();
 
@@ -214,12 +223,49 @@ sealed class Field: MonoBehaviour {
     // -- c/editor
     /// create chunks for the editor field
     void CreateEditorChunks() {
-        // set target coordinate
-        // var tc = Camera.current.transform;
-        m_TargetCoord = Vector2Int.zero;
+        // get the editor camera
+        var scene = UnityEditor.SceneView.lastActiveSceneView;
+        if (scene == null) {
+            return;
+        }
 
-        // create chunks
-        CreateChunks(3);
+        var camera = scene.camera;
+        if (camera == null) {
+            return;
+        }
+
+        // get the look position and direction
+        var ct = camera.transform;
+        var lp = ct.position;
+        var ld = ct.forward;
+
+        // the ground plane normal (position is always zero) (pretty unclear to me why
+        // the normal is reversed)
+        var pp = Vector3.zero;
+        var pn = Vector3.up;
+
+        // the magnitude of the the look pos to the plane & the look's scale (angle) in the plane
+        var a = Vector3.Dot(pp - lp, pn);
+        var b = Vector3.Dot(ld, pn);
+
+        // get the intersection
+        var intersection = Vector3.zero;
+        if (Mathf.Abs(b) < 0.00001f) {
+            if (Mathf.Abs(a) >= 0.00001f) {
+                return;
+            }
+
+            intersection = lp;
+        } else {
+            intersection = lp + a / b * ld;
+        }
+
+        // set target coordinate
+        var coord = IntoCoordinate(intersection);
+        if (m_TargetCoord != coord) {
+            m_TargetCoord = coord;
+            CreateChunks(3);
+        }
     }
 
     // -- queries --
