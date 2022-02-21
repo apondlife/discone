@@ -13,14 +13,15 @@ sealed class Field: MonoBehaviour {
     /// the duration between purges
     private const float k_PurgeChunksInterval = 2.0f;
 
-    // -- nodes --
+    // -- fields --
     [Header("config")]
     [Tooltip("the target to follow")]
     [SerializeField] GameObjectReference m_TargetObject;
 
     [Header("references")]
-    [Tooltip("the prefab for creating terrain")]
-    [SerializeField] GameObject m_Terrain;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Terrain")]
+    [Tooltip("the prefab for creating chunks")]
+    [SerializeField] GameObject m_Chunk;
 
     [Tooltip("the material for the height shader")]
     [SerializeField] Material m_TerrainHeight;
@@ -30,10 +31,10 @@ sealed class Field: MonoBehaviour {
     Vector2Int m_TargetCoord = new Vector2Int(69, 420);
 
     /// the map of visible chunks
-    Dictionary<Vector2Int, Terrain> m_Chunks = new Dictionary<Vector2Int, Terrain>();
+    Dictionary<Vector2Int, FieldChunk> m_Chunks = new Dictionary<Vector2Int, FieldChunk>();
 
-    /// a pool of free terrain instances
-    Queue<Terrain> m_ChunkPool = new Queue<Terrain>();
+    /// a pool of free chunk instances
+    Queue<FieldChunk> m_ChunkPool = new Queue<FieldChunk>();
 
     // -- p/cache
     /// the size of a chunk
@@ -42,7 +43,7 @@ sealed class Field: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         // ensure terrain is square
-        var td = m_Terrain.GetComponent<Terrain>().terrainData;
+        var td = m_Chunk.GetComponent<Terrain>().terrainData;
         Debug.Assert(td.size.x == td.size.z, "field's terrain chunk was not square");
 
         // destory any editor terrain
@@ -108,8 +109,8 @@ sealed class Field: MonoBehaviour {
         var chunk = DequeueChunk();
         m_Chunks.Add(coord, chunk);
 
-        // render the chunks heightmap
-        RenderChunk(coord, chunk);
+        // load the chunk for this coordinate
+        chunk.Load(coord);
 
         // reassign neighbors
         chunk.SetNeighbors(
@@ -118,79 +119,28 @@ sealed class Field: MonoBehaviour {
             m_Chunks.Get(coord + Vector2Int.right),
             m_Chunks.Get(coord + Vector2Int.down)
         );
-    }
 
-    // render the heightmap for a particular terrain chunk & offset
-    void RenderChunk(Vector2Int coord, Terrain terrain) {
-        var td = terrain.terrainData;
-
-        // set display name
-        var x = coord.x;
-        var y = coord.y;
-        terrain.name = $"Chunk({IntoString(x)},{IntoString(y)})";
-
-        // in order for the edges of each chunk to overlap, we need to scale the coordinate offset so
-        // that the last row of vertices of the neighbor chunk and the first row in this chunk are
-        // the same. the offset is in uv-space.
-        // see: https://answers.unity.com/questions/581760/why-are-heightmap-resolutions-power-of-2-plus-one.html
-        var offsetScale = (float)(td.heightmapResolution - 1) / td.heightmapResolution;
-
-        // render height material into chunk heightmap
-        m_TerrainHeight.SetVector(
-            "_Offset",
-            new Vector3(x, y) * offsetScale
-        );
-
-        Graphics.Blit(
-            null,
-            td.heightmapTexture,
-            m_TerrainHeight
-        );
-
-        // mark the entire heightmap as dirty
-        var tr = new RectInt(
-            0,
-            0,
-            td.heightmapResolution,
-            td.heightmapResolution
-        );
-
-        td.DirtyHeightmapRegion(
-            tr,
-            TerrainHeightmapSyncControl.HeightOnly
-        );
-
-        // sync it
-        td.SyncHeightmap();
-
-        // move the terrain into position
-        var tt = terrain.transform;
-        tt.position = IntoPosition(coord);
+        // move the chunk into position
+        var tc = chunk.transform;
+        tc.position = IntoPosition(coord);
     }
 
     /// dequeue a terrain chunk from the pool
-    Terrain DequeueChunk() {
-        // reuse an existing terrain if available
+    FieldChunk DequeueChunk() {
+        var chunk = null as FieldChunk;
+
+        // reuse an existing chunk if available
         if (m_ChunkPool.Count != 0) {
-            var chunk = m_ChunkPool.Dequeue();
+            chunk = m_ChunkPool.Dequeue();
             chunk.gameObject.SetActive(true);
-            return chunk;
+        }
+        // otherwise, create a new chunk
+        else {
+            var obj = Instantiate(m_Chunk, transform);
+            chunk = obj.GetComponent<FieldChunk>();
         }
 
-        // otherwise, create a new terrain
-        var obj = Instantiate(m_Terrain, transform);
-        obj.hideFlags = HideFlags.DontSave;
-
-        var tt = obj.GetComponent<Terrain>();
-        var tc = obj.GetComponent<TerrainCollider>();
-
-        // and terrain data
-        var td = Instantiate(tt.terrainData);
-        td.name = "ChunkData";
-        tt.terrainData = td;
-        tc.terrainData = td;
-
-        return tt;
+        return chunk;
     }
 
     // -- c/purge
@@ -291,14 +241,5 @@ sealed class Field: MonoBehaviour {
         var z = coord.y * cs - ch;
 
         return new Vector3(x, 0.0f, z);
-    }
-
-    // format the coordinate component
-    string IntoString(int component) {
-        if (component < 0) {
-            return component.ToString();
-        }
-
-        return $"+{component}";
     }
 }

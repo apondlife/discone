@@ -9,10 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3312532919274294577}
+  - component: {fileID: 7732029328038872556}
   - component: {fileID: 3312532919274294582}
   - component: {fileID: 3312532919274294583}
   m_Layer: 0
-  m_Name: FieldTerrain
+  m_Name: FieldChunk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,6 +33,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7732029328038872556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3312532919274294580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9327c06f13b44f4a9b6c3d20aada20e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CustomData: {fileID: 0}
+  m_TerrainHeight: {fileID: 2100000, guid: 7d71e3592d22344bda8e2a5aabb505d4, type: 2}
+  m_Terrain: {fileID: 3312532919274294582}
+  m_TerrainCollider: {fileID: 3312532919274294583}
 --- !u!218 &3312532919274294582
 Terrain:
   m_ObjectHideFlags: 0
