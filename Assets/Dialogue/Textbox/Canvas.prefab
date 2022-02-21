@@ -4832,7 +4832,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -0.0000076293945}
+  m_AnchoredPosition: {x: -0.000061035156, y: -0.0000076293945}
   m_SizeDelta: {x: 0, y: 216.11}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &7133888287059805314
@@ -5069,6 +5069,7 @@ GameObject:
   - component: {fileID: 3530509126746400240}
   - component: {fileID: 126249204197892337}
   - component: {fileID: 4487811354065030011}
+  - component: {fileID: 56681712}
   m_Layer: 5
   m_Name: Speech
   m_TagString: Untagged
@@ -5092,7 +5093,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00039673, y: -0.0010070801}
+  m_AnchoredPosition: {x: 0.00039673, y: 0.00074768066}
   m_SizeDelta: {x: 864.15, y: 216.11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &126249204197892337
@@ -5192,6 +5193,21 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &56681712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8296386166019471944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e5e0b92a6361b4b992e3e2317d4510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AngleMultiplier: 1
+  SpeedMultiplier: 1
+  CurveScale: 1
 --- !u!1 &9012261386236370152
 GameObject:
   m_ObjectHideFlags: 0
