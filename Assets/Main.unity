@@ -123,6 +123,23 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &56681708 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8296386166019471944, guid: 45d07c15908d5fc42b20508d39c4121b, type: 3}
+  m_PrefabInstance: {fileID: 648036767}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &56681709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 56681708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e5e0b92a6361b4b992e3e2317d4510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &124967528
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -426,7 +443,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2637902858799240805, guid: 45d07c15908d5fc42b20508d39c4121b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 13.522949
+      value: -0.000061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 2637902858799240805, guid: 45d07c15908d5fc42b20508d39c4121b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.0000076293945
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530509126746400240, guid: 45d07c15908d5fc42b20508d39c4121b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.00074768066
       objectReference: {fileID: 0}
     - target: {fileID: 3907691714521504632, guid: 45d07c15908d5fc42b20508d39c4121b, type: 3}
       propertyPath: m_Pivot.x
