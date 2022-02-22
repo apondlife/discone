@@ -1,5 +1,6 @@
 using UnityEngine;
 
+/// a chunk of field terrain
 public class FieldChunk: MonoBehaviour {
     // -- fields --
     [Header("config")]

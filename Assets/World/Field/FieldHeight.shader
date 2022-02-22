@@ -5,7 +5,7 @@ Shader "Custom/DesertHeight" {
         _MaxFloor ("Max Floor", Float) = 600
         _ElevationScale ("Elevation Noise Scale", Float) = 1.0
         _MinElevation ("Min Elevation (Roughness)", Float) = -20
-        _MaxElevation ("Ceiling Height (Roughness)", Float) = 200
+        _MaxElevation ("Max Elevation (Roughness)", Float) = 200
     }
 
     SubShader {
@@ -134,13 +134,11 @@ Shader "Custom/DesertHeight" {
                 float2 st = f.uv + _Offset;
 
                 // generate image
-                float c = (
-                    lerp(_MinFloor, _MaxFloor, Image(st * _FloorScale)) +
-                    lerp(_MinElevation, _MaxElevation, Image(st * _ElevationScale))
-                );
+                float floor = lerp(_MinFloor, _MaxFloor, Image(st * _FloorScale + float2(420, 420))) / _TerrainHeight;
+                float elevation = saturate(lerp(_MinElevation, _MaxElevation, Image(st * _ElevationScale)) / _TerrainHeight);
 
                 // scale by max terrain height
-                c /= _TerrainHeight;
+                float c = floor + elevation;
 
                 // produce color
                 return fixed4(c, c, c, 1.0f);
