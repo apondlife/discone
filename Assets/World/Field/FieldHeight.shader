@@ -1,7 +1,11 @@
 Shader "Custom/DesertHeight" {
     Properties {
-        _Scale ("Scale", Float) = 1.0
-        _Period ("Period", Float) = 0.1
+        _FloorScale ("Floor Noise Scale", Float) = .01
+        _MinFloor ("Min Floor", Float) = 100
+        _MaxFloor ("Max Floor", Float) = 600
+        _ElevationScale ("Elevation Noise Scale", Float) = 1.0
+        _MinElevation ("Min Elevation (Roughness)", Float) = -20
+        _MaxElevation ("Ceiling Height (Roughness)", Float) = 200
     }
 
     SubShader {
@@ -32,14 +36,29 @@ Shader "Custom/DesertHeight" {
             };
 
             // -- props --
-            /// the noise scale
-            float _Scale;
-
-            /// the noise period
-            float _Period;
-
             /// the integer offset of this chunk
             float2 _Offset;
+
+            // the scale for the floor noise
+            float _FloorScale;
+
+            // the minimum height of the floor
+            float _MinFloor;
+
+            // the maximum height of the floor
+            float _MaxFloor;
+
+            // the scale for the elevation noise
+            float _ElevationScale;
+
+            // the minimum elevation amount
+            float _MinElevation;
+
+            // the maximum elevation amound
+            float _MaxElevation;
+
+            // the maximum height of the terrain
+            float _TerrainHeight;
 
             // -- noise --
             /// get random value at pt
@@ -111,15 +130,17 @@ Shader "Custom/DesertHeight" {
             }
 
             fixed4 DrawFrag(FragIn f) : SV_Target {
-                // scale by uniform
-                float2 st = (f.uv + _Offset) * _Scale;
-
-                // shift w/ time
-                st.x += _CosTime * _Period;
-                st.y += _SinTime * _Period;
+                // add coordinate offset
+                float2 st = f.uv + _Offset;
 
                 // generate image
-                float c = Image(st);
+                float c = (
+                    lerp(_MinFloor, _MaxFloor, Image(st * _FloorScale)) +
+                    lerp(_MinElevation, _MaxElevation, Image(st * _ElevationScale))
+                );
+
+                // scale by max terrain height
+                c /= _TerrainHeight;
 
                 // produce color
                 return fixed4(c, c, c, 1.0f);

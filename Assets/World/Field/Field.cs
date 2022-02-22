@@ -21,10 +21,7 @@ sealed class Field: MonoBehaviour {
     [Header("references")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_Terrain")]
     [Tooltip("the prefab for creating chunks")]
-    [SerializeField] GameObject m_Chunk;
-
-    [Tooltip("the material for the height shader")]
-    [SerializeField] Material m_TerrainHeight;
+    [SerializeField] FieldChunk m_Chunk;
 
     // -- props --
     /// the target's current coordinate. the current center chunk index
@@ -42,18 +39,15 @@ sealed class Field: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        // ensure terrain is square
-        var td = m_Chunk.GetComponent<Terrain>().terrainData;
-        Debug.Assert(td.size.x == td.size.z, "field's terrain chunk was not square");
+        // capture chunk size
+        Debug.Assert(m_Chunk.Size.x == m_Chunk.Size.z, "field's terrain chunk was not square");
+        m_ChunkSize = m_Chunk.Size.x;
 
         // destory any editor terrain
         var t = transform;
         while (t.childCount > 0) {
             DestroyImmediate(t.GetChild(0).gameObject);
         }
-
-        // capture chunk size
-        m_ChunkSize = td.size.x;
 
         // if editor, don't do anything else
         if (!Application.IsPlaying(gameObject)) {
@@ -136,8 +130,7 @@ sealed class Field: MonoBehaviour {
         }
         // otherwise, create a new chunk
         else {
-            var obj = Instantiate(m_Chunk, transform);
-            chunk = obj.GetComponent<FieldChunk>();
+            chunk = Instantiate(m_Chunk, transform);
         }
 
         return chunk;

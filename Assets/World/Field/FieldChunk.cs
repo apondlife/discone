@@ -9,6 +9,9 @@ public class FieldChunk: MonoBehaviour {
     [Tooltip("the material for the height shader")]
     [SerializeField] Material m_TerrainHeight;
 
+    [Tooltip("the prefab terrain data")]
+    [SerializeField] TerrainData m_TerrainDataPrefab;
+
     [Header("references")]
     [Tooltip("the terrain")]
     [SerializeField] Terrain m_Terrain;
@@ -25,7 +28,7 @@ public class FieldChunk: MonoBehaviour {
     TerrainData m_GeneratedData;
 
     // -- lifecycle --
-    void Awake() {
+    void Start() {
         gameObject.hideFlags = HideFlags.DontSave;
     }
 
@@ -49,7 +52,7 @@ public class FieldChunk: MonoBehaviour {
         var td = m_CustomData;
         if (td == null) {
             if (m_GeneratedData == null) {
-                m_GeneratedData = Instantiate(m_Terrain.terrainData);
+                m_GeneratedData = Instantiate(m_TerrainDataPrefab);
                 m_GeneratedData.name = "Chunk-generated";
             }
 
@@ -82,6 +85,11 @@ public class FieldChunk: MonoBehaviour {
         m_TerrainHeight.SetVector(
             "_Offset",
             new Vector3(x, y) * offsetScale
+        );
+
+        m_TerrainHeight.SetFloat(
+            "_TerrainHeight",
+            m_Terrain.terrainData.heightmapScale.y
         );
 
         Graphics.Blit(
@@ -128,7 +136,12 @@ public class FieldChunk: MonoBehaviour {
     }
 
     // -- queries --
-    /// the terrain's terrain data
+    /// the size of the chunk
+    public Vector3 Size {
+        get => m_TerrainDataPrefab.size;
+    }
+
+    /// the active terrain data
     public TerrainData TerrainData {
         get => m_Terrain.terrainData;
     }
