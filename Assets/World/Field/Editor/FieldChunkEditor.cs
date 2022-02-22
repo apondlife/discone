@@ -11,7 +11,7 @@ public class FieldChunkEditor: Editor {
     private const string k_Dir = "Resources";
 
     // -- props --
-    /// the character tunables
+    /// the field chunk
     private FieldChunk m_Chunk;
 
     // -- lifecycle --

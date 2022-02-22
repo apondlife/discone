@@ -5,7 +5,7 @@ using UnityAtoms.BaseAtoms;
 
 /// an infinite field
 [ExecuteAlways]
-sealed class Field: MonoBehaviour {
+public sealed class Field: MonoBehaviour {
     // -- constants --
     /// the maximum number of active chunks
     private const int k_MaxChunks = 16;
@@ -22,6 +22,39 @@ sealed class Field: MonoBehaviour {
     [UnityEngine.Serialization.FormerlySerializedAs("m_Terrain")]
     [Tooltip("the prefab for creating chunks")]
     [SerializeField] FieldChunk m_Chunk;
+
+    [Tooltip("the field height material")]
+    [SerializeField] Material m_FieldHeight;
+
+
+    [Tooltip("the scale for the floor noise")]
+    [SerializeField] float m_FloorScale = 0.3f;
+
+    [Tooltip("the minimum height of the floor")]
+    [SerializeField] float m_MinFloor = 100.0f;
+
+    [Tooltip("the maximum height of the floor")]
+    [SerializeField] float m_MaxFloor = 600.0f;
+
+    [Tooltip("the scale for the elevation noise")]
+    [SerializeField] float m_ElevationScale = 0.97f;
+
+    [Tooltip("the minimum elevation amount")]
+    [SerializeField] float m_MinElevation = 0.0f;
+
+    [Tooltip("the maximum elevation amount")]
+    [SerializeField] float m_MaxElevation = 20.0f;
+
+    void OnValidate () {
+        m_FieldHeight.SetFloat("_FloorScale", m_FloorScale);
+        m_FieldHeight.SetFloat("_MinFloor", m_MinFloor);
+        m_FieldHeight.SetFloat("_MaxFloor", m_MaxFloor);
+        m_FieldHeight.SetFloat("_ElevationScale", m_ElevationScale);
+        m_FieldHeight.SetFloat("_MinElevation", m_MinElevation);
+        m_FieldHeight.SetFloat("_MaxElevation", m_MaxElevation);
+
+        ReloadEditorChunks();
+    }
 
     // -- props --
     /// the target's current coordinate. the current center chunk index
@@ -43,11 +76,8 @@ sealed class Field: MonoBehaviour {
         Debug.Assert(m_Chunk.Size.x == m_Chunk.Size.z, "field's terrain chunk was not square");
         m_ChunkSize = m_Chunk.Size.x;
 
-        // destory any editor terrain
-        var t = transform;
-        while (t.childCount > 0) {
-            DestroyImmediate(t.GetChild(0).gameObject);
-        }
+        // destroy any editor terrain
+        ClearEditorChunks();
 
         // if editor, don't do anything else
         if (!Application.IsPlaying(gameObject)) {
@@ -116,7 +146,7 @@ sealed class Field: MonoBehaviour {
 
         // move the chunk into position
         var tc = chunk.transform;
-        tc.position = IntoPosition(coord);
+        tc.localPosition = IntoPosition(coord);
     }
 
     /// dequeue a terrain chunk from the pool
@@ -164,6 +194,12 @@ sealed class Field: MonoBehaviour {
     }
 
     // -- c/editor
+    void ReloadEditorChunks() {
+        foreach (var (_, chunk) in m_Chunks) {
+            chunk.Reload();
+        }
+    }
+
     /// create chunks for the editor field
     void CreateEditorChunks() {
         // get the editor camera
@@ -208,6 +244,17 @@ sealed class Field: MonoBehaviour {
         if (m_TargetCoord != coord) {
             m_TargetCoord = coord;
             CreateChunks(3);
+        }
+    }
+
+    /// clear all editor chunks
+    public void ClearEditorChunks() {
+        m_Chunks.Clear();
+
+        // destroy any editor terrain
+        var t = transform;
+        while (t.childCount > 0) {
+            DestroyImmediate(t.GetChild(0).gameObject);
         }
     }
 
