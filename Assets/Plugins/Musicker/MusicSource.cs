@@ -161,6 +161,9 @@ public sealed class MusicSource: MonoBehaviour {
             src.minDistance = tmp.minDistance;
             src.maxDistance = tmp.maxDistance;
 
+            src.rolloffMode = tmp.rolloffMode;
+            src.dopplerLevel = tmp.dopplerLevel;
+
             var t0 = AudioSourceCurveType.CustomRolloff;
             var t1 = AudioSourceCurveType.Spread;
             for (var t = t0; t <= t1; t++) {

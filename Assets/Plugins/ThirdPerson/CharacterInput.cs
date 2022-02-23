@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace ThirdPerson {
 
@@ -10,23 +9,16 @@ sealed class CharacterInput {
     [Tooltip("the transform for the player's look viewpoint")]
     [SerializeField] private Transform m_Look;
 
-    [Tooltip("the unity player input")]
-    [SerializeField] private PlayerInput m_PlayerInput;
+    [Tooltip("the input provider")]
+    [SerializeField] private InputProvider m_Input;
 
     // -- props --
     Queue<Frame> m_Frames = new Queue<Frame>(30);
 
-    /// the move input
-    InputAction m_Move;
-
-    /// the jump input
-    InputAction m_Jump;
-
     // -- lifecycle --
     /// initialize the input wrapper
     public void Init() {
-        m_Move = m_PlayerInput.currentActionMap["Move"];
-        m_Jump = m_PlayerInput.currentActionMap["Jump"];
+        m_Input.Init();
     }
 
     /// read the next frame of input
@@ -38,12 +30,11 @@ sealed class CharacterInput {
 
         var right = m_Look.transform.right;
 
-        // this would also be separate
-        var pInput = m_Move.ReadValue<Vector2>();
+        var pInput = m_Input.Move;
         var move = forward * pInput.y + right * pInput.x;
 
         m_Frames.Add(new Frame(
-            m_Jump.IsPressed(),
+            m_Input.IsJumpPressed,
             move
         ));
     }
