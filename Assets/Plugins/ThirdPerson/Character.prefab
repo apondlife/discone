@@ -5045,6 +5045,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8408464189732441819}
   - component: {fileID: 5584465398057431512}
+  - component: {fileID: 3045745759675640991}
   m_Layer: 6
   m_Name: PlayerInput
   m_TagString: Untagged
@@ -5184,6 +5185,19 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &3045745759675640991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5313527247566061526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5ee237a9b8cf47b2b11c4f8b5654860, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PlayerInput: {fileID: 5584465398057431512}
 --- !u!1 &7614967429340073447
 GameObject:
   m_ObjectHideFlags: 0
@@ -5289,7 +5303,7 @@ MonoBehaviour:
   m_Tunables: {fileID: 11400000, guid: bd25c329fc87d4c929c635a6754cb2e1, type: 2}
   m_Input:
     m_Look: {fileID: 1289189457}
-    m_PlayerInput: {fileID: 5584465398057431512}
+    m_Input: {fileID: 3045745759675640991}
   m_Controller:
     m_CollisionMask:
       serializedVersion: 2
