@@ -74,7 +74,14 @@ public sealed class LineField {
 
             // adjust by accidentals
             foreach (var accidental in accidentals) {
-                var tone = note.Substring(0, i);
+                switch (accidental) {
+                case k_Flat:
+                    tone -= 1; break;
+                case k_Sharp:
+                    tone += 1; break;
+                default:
+                    Debug.Assert(false, $"LineField: {accidental} is not a valid accidental"); break;
+                }
             }
         }
 
