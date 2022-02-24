@@ -33,19 +33,21 @@ public sealed class LineField {
         var notes = m_Notation.Split(' ');
 
         var tones = new Tone[notes.Length];
-        foreach (var note in notes) {
-            var i = note.IndexOfAny(k_Accidentals);
+        for (var i = 0; i < notes.Length; i++) {
+            var note = notes[i];
 
             // split the root and accidentals
+            var j = note.IndexOfAny(k_Accidentals);
+
             var root = note;
             var accidentals = "";
 
-            if (i != -1) {
-                root = note.Substring(0, i);
-                accidentals = note.Substring(i);
+            if (j != -1) {
+                root = note.Substring(0, j);
+                accidentals = note.Substring(j);
             }
 
-            /// foo
+            // split the offset and octave
             var parsed = int.Parse(root);
             var offset = parsed % 8;
             var octave = parsed / 8;
@@ -83,10 +85,13 @@ public sealed class LineField {
                     Debug.Assert(false, $"LineField: {accidental} is not a valid accidental"); break;
                 }
             }
+
+            // add the tone
+            tones[i] = new Tone(tone);
         }
 
-        var line = new Line();
-        m_Line = line;
+        m_Line = new Line(tones);
+        Debug.Log($"line {tones}");
         m_IsParsed = true;
     }
 
