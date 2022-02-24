@@ -24,6 +24,7 @@ Shader "Custom/Desert" {
             // using the "ForwardAdd" lightmode.
             // see: http://docs.unity3d.com/Manual/SL-PassTags.html
             Tags { "LightMode" = "ForwardBase" }
+
             CGPROGRAM
             // -- config --
             #pragma vertex DrawVert

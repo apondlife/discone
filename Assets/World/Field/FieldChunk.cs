@@ -1,12 +1,15 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// a chunk of field terrain
 public class FieldChunk: MonoBehaviour {
     // -- fields --
-    [Header("config")]
-    [Tooltip("the custom terrain data, if any")]
-    [SerializeField] TerrainData m_CustomData;
+    [Header("tuning")]
+    [Tooltip("the custom chunk data, if any")]
+    [SerializeField] FieldChunkData m_CustomData;
 
+    [Header("config")]
     [Tooltip("the material for the height shader")]
     [SerializeField] Material m_TerrainHeight;
 
@@ -28,6 +31,10 @@ public class FieldChunk: MonoBehaviour {
     /// TODO: this could be pooled
     TerrainData m_GeneratedData;
 
+    /// the instantiated material, if any
+    /// TODO: this could be pooled
+    Material m_GeneratedMaterial;
+
     // -- lifecycle --
     void Start() {
         gameObject.hideFlags = HideFlags.DontSave;
@@ -47,10 +54,10 @@ public class FieldChunk: MonoBehaviour {
 
         // load the custom chunk data, if it exists
         // TODO: cache this? (https://forum.unity.com/threads/does-unity-cache-results-of-resources-load.270861/)
-        m_CustomData = Resources.Load<TerrainData>(name);
+        m_CustomData = Resources.Load<FieldChunkData>(name);
 
         // if missing, use the generated data
-        var td = m_CustomData;
+        var td = m_CustomData?.TerrainData;
         if (td == null) {
             if (m_GeneratedData == null) {
                 m_GeneratedData = Instantiate(m_TerrainDataPrefab);
@@ -66,6 +73,19 @@ public class FieldChunk: MonoBehaviour {
         // update data used by terrain
         m_Terrain.terrainData = td;
         m_TerrainCollider.terrainData = td;
+
+        // use a custom material, if any
+        var mat = m_CustomData?.Material;
+        if (mat == null) {
+            if (m_GeneratedMaterial == null) {
+                m_GeneratedMaterial = Instantiate(m_Terrain.materialTemplate);
+                m_GeneratedMaterial.name = "Chunk-generated";
+            }
+
+            mat = m_GeneratedMaterial;
+        }
+
+        m_Terrain.materialTemplate = mat;
     }
 
     /// render the generated heightmap for the coordinate
@@ -129,6 +149,33 @@ public class FieldChunk: MonoBehaviour {
             r?.m_Terrain,
             b?.m_Terrain
         );
+
+        if (m_CustomData?.Material != null) {
+            return;
+        }
+
+        var neighbors = new List<FieldChunk>() { l, t, r, b }
+            .Where(f => f != null)
+            .ToList();
+
+        if (neighbors.Count == 0) {
+            return;
+        }
+
+        void SetMaterialPropertyFromNeighbors(string name) {
+            var total = 0.0f;
+
+            foreach (var neighbor in neighbors) {
+                var material = neighbor.m_Terrain.materialTemplate;
+                total += material.GetFloat(name);
+            }
+
+            m_Terrain.materialTemplate.SetFloat(name, total / neighbors.Count);
+        }
+
+        new[] {"_HueMin", "_HueMax", "_SatMin", "_SatMax", "_ValMin", "_ValMax"}
+            .ToList()
+            .ForEach(SetMaterialPropertyFromNeighbors);
     }
 
     /// refresh the chunk's current coordinate
@@ -145,5 +192,9 @@ public class FieldChunk: MonoBehaviour {
     /// the active terrain data
     public TerrainData TerrainData {
         get => m_Terrain.terrainData;
+    }
+
+    public Material Material {
+        get => m_Terrain.materialTemplate;
     }
 }
