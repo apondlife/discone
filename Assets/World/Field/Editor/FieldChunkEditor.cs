@@ -22,28 +22,28 @@ public class FieldChunkEditor: Editor {
     public override void OnInspectorGUI() {
         base.OnInspectorGUI();
 
-        // draw create button
-        // @2021.2: AssetDatabase.AssetPathToGUID(path, AssetPathToGUIDOptions.OnlyExistingAssets)
-        GUI.enabled = AssetDatabase.AssetPathToGUID(AssetPath) == "";
-
         if (GUILayout.Button("Create Custom")) {
-            CreateCustomTerrainData();
+            CreateCustomChunkData();
         }
-
-        GUI.enabled = true;
     }
 
     // -- commands --
     /// create custom terrain data
-    void CreateCustomTerrainData() {
+    void CreateCustomChunkData() {
         // create the dir, if necessary
         if (!AssetDatabase.IsValidFolder(Dir)) {
             AssetDatabase.CreateFolder(k_Parent, k_Dir);
         }
 
         // create the asset
-        var custom = Instantiate(m_Chunk.TerrainData);
-        AssetDatabase.CreateAsset(custom, AssetPath);
+        var asset = ScriptableObject.CreateInstance<FieldChunkData>();
+        asset.Material = m_Chunk.Material;
+        asset.TerrainData = Instantiate(m_Chunk.TerrainData) as TerrainData;
+        asset.TerrainData.name = $"{m_Chunk.name}-data";
+
+        AssetDatabase.CreateAsset(asset, AssetPath);
+
+        // reload the chunk
         m_Chunk.Reload();
     }
 

@@ -26,7 +26,6 @@ public sealed class Field: MonoBehaviour {
     [Tooltip("the field height material")]
     [SerializeField] Material m_FieldHeight;
 
-
     [Tooltip("the scale for the floor noise")]
     [SerializeField] float m_FloorScale = 0.3f;
 
@@ -44,17 +43,6 @@ public sealed class Field: MonoBehaviour {
 
     [Tooltip("the maximum elevation amount")]
     [SerializeField] float m_MaxElevation = 20.0f;
-
-    void OnValidate () {
-        m_FieldHeight.SetFloat("_FloorScale", m_FloorScale);
-        m_FieldHeight.SetFloat("_MinFloor", m_MinFloor);
-        m_FieldHeight.SetFloat("_MaxFloor", m_MaxFloor);
-        m_FieldHeight.SetFloat("_ElevationScale", m_ElevationScale);
-        m_FieldHeight.SetFloat("_MinElevation", m_MinElevation);
-        m_FieldHeight.SetFloat("_MaxElevation", m_MaxElevation);
-
-        ReloadEditorChunks();
-    }
 
     // -- props --
     /// the target's current coordinate. the current center chunk index
@@ -103,6 +91,17 @@ public sealed class Field: MonoBehaviour {
             m_TargetCoord = coord;
             CreateChunks();
         }
+    }
+
+    void OnValidate () {
+        m_FieldHeight.SetFloat("_FloorScale", m_FloorScale);
+        m_FieldHeight.SetFloat("_MinFloor", m_MinFloor);
+        m_FieldHeight.SetFloat("_MaxFloor", m_MaxFloor);
+        m_FieldHeight.SetFloat("_ElevationScale", m_ElevationScale);
+        m_FieldHeight.SetFloat("_MinElevation", m_MinElevation);
+        m_FieldHeight.SetFloat("_MaxElevation", m_MaxElevation);
+
+        ReloadEditorChunks();
     }
 
     // -- commands --
