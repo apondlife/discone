@@ -14,6 +14,12 @@ class CharacterMusic: MonoBehaviour {
 
     // -- music --
     [Header("music")]
+    [Tooltip("the bass line when walking")]
+    [SerializeField] LineField m_FootstepsBass;
+
+    [Tooltip("the m line when walking")]
+    [SerializeField] LineField[] m_FootstepsMelodies;
+
     [Tooltip("the line to play when fluttering")]
     [SerializeField] LineField m_Flutter;
 
@@ -34,12 +40,6 @@ class CharacterMusic: MonoBehaviour {
 
     /// the musical key
     Key m_Key;
-
-    /// the bass line when walking
-    Line m_FootstepsBass;
-
-    /// the melody line when walking
-    Line[] m_FootstepsMelodies;
 
     /// the progress to play on jump
     Progression m_JumpProg;
@@ -64,35 +64,35 @@ class CharacterMusic: MonoBehaviour {
         // set props
         m_Key = new Key(m_Root);
 
-        m_FootstepsBass = new Line(
-            Tone.I,
-            Tone.V,
-            Tone.III,
-            Tone.II
-        );
+        // m_FootstepsBass = new Line(
+        //     Tone.I,
+        //     Tone.V,
+        //     Tone.III,
+        //     Tone.II
+        // );
 
-        m_FootstepsMelodies = new Line[5] {
-            new Line(
-                Tone.I.Octave(),
-                Tone.V.Octave()
-            ),
-            new Line(
-                Tone.III.Octave(),
-                Tone.V.Octave()
-            ),
-            new Line(
-                Tone.VII,
-                Tone.V.Octave()
-            ),
-            new Line(
-                Tone.VII.Flat(),
-                Tone.V.Octave()
-            ),
-            new Line(
-                Tone.VII.Flat(),
-                Tone.III.Flat().Octave()
-            ),
-        };
+        // m_FootstepsMelodies = new Line[5] {
+        //     new Line(
+        //         Tone.I.Octave(),
+        //         Tone.V.Octave()
+        //     ),
+        //     new Line(
+        //         Tone.III.Octave(),
+        //         Tone.V.Octave()
+        //     ),
+        //     new Line(
+        //         Tone.VII,
+        //         Tone.V.Octave()
+        //     ),
+        //     new Line(
+        //         Tone.VII.Flat(),
+        //         Tone.V.Octave()
+        //     ),
+        //     new Line(
+        //         Tone.VII.Flat(),
+        //         Tone.III.Flat().Octave()
+        //     ),
+        // };
 
         m_JumpProg = new Progression(
             new Chord(
@@ -190,10 +190,10 @@ class CharacterMusic: MonoBehaviour {
 
         // find line to play
         if (m_StepIdx % 2 == 0) {
-            m_Footsteps.PlayLine(m_FootstepsBass, m_Key);
+            m_Footsteps.PlayLine(m_FootstepsBass.Val, m_Key);
         } else {
             var melody = m_FootstepsMelodies[m_MelodyIdx];
-            m_Footsteps.PlayTone(melody[m_StepIdx / 2], m_Key);
+            m_Footsteps.PlayTone(melody.Val[m_StepIdx / 2], m_Key);
         }
 
         // advance step
