@@ -3,6 +3,8 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the character's shared state
+/// TODO: feel like this should just be a (readonly?!) struct, draft the next frame, store
+/// a buffer of readonly frames. CONTEXT: i really need a state-based jump
 sealed class CharacterState: ScriptableObject {
     [Header("fields")]
     [Tooltip("the velocity on the xz-plane")]
@@ -32,6 +34,9 @@ sealed class CharacterState: ScriptableObject {
     [Tooltip("if the character is in jump squat")]
     public bool IsInJumpSquat = false;
 
+    [Tooltip("if the character is in its first jump frame")]
+    public bool IsInJumpStart = false;
+
     [Tooltip("how much tilted the character is")]
     public Quaternion Tilt;
 
@@ -40,7 +45,6 @@ sealed class CharacterState: ScriptableObject {
 
     [Tooltip("whether or not the characer is on the wall")]
     public bool IsOnWall;
-
 
     // -- commands --
     /// reset to initial state
@@ -53,6 +57,7 @@ sealed class CharacterState: ScriptableObject {
         m_FacingDirection = Vector3.forward; // TODO: should be pulled from transform
         IsGrounded = false;
         IsInJumpSquat = false;
+        IsInJumpStart = false;
         Tilt = Quaternion.identity;
     }
 

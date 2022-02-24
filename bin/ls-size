@@ -1,0 +1,5 @@
+#!/bin/sh
+
+git ls-files \
+  | xargs stat -f "%8z %N" 2>/dev/null \
+  | sort -n
