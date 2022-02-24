@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 namespace ThirdPerson {
 
 [System.Serializable]
-sealed class CharacterInput {
+public sealed class CharacterInput {
     // -- fields --
     [Header("references")]
     [Tooltip("the transform for the player's look viewpoint")]

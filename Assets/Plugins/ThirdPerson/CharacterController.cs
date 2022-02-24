@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,8 +6,8 @@ namespace ThirdPerson {
 
 /// a re-implementation of unity's built-in character controller w/ better
 /// collision handling
-[System.Serializable]
-sealed class CharacterController {
+[Serializable]
+public sealed class CharacterController {
     // why are we not using rigidbodies? they seem to be more annoying to work around. since
     // we have a bunch of custom unrealistic collision physics, might as well implement it
     // with full control. the best thing we would get from rigidbodies is the possibility of

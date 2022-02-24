@@ -3,7 +3,7 @@ using System;
 namespace ThirdPerson {
 
 /// a fixed-width buffer of n data elements
-sealed class Buffer<T> {
+public sealed class Buffer<T> {
     // -- props --
     /// the current count of items
     private int m_Count;
