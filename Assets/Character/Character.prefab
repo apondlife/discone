@@ -8,8 +8,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1289189457, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99761933
+      objectReference: {fileID: 0}
+    - target: {fileID: 1289189457, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.0689576
+      objectReference: {fileID: 0}
+    - target: {fileID: 1289189457, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00096470106
+      value: 0.0006900429
+      objectReference: {fileID: 0}
+    - target: {fileID: 1289189457, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.000047702335
       objectReference: {fileID: 0}
     - target: {fileID: 7614967429340073447, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_Name
@@ -128,3 +140,16 @@ MonoBehaviour:
   m_Footsteps: {fileID: 5314848512108003892}
   m_Jump: {fileID: 163997010550435062}
   m_Controller: {fileID: 3345656352466467714}
+--- !u!114 &7088947875670345638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3345656352466467727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 290f4e363fc1d6d4e89a96bb495b8255, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Variable: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}

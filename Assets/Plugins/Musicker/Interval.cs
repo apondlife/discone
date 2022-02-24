@@ -19,6 +19,7 @@ public enum Interval {
     VI_s = 10,
     VII_f = 10,
     VII = 11,
+    I_f = 11,
 }
 
 }
