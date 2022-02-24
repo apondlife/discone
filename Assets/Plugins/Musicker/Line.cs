@@ -1,17 +1,17 @@
+using System;
 using UnityEngine;
 
 namespace Musicker {
 
 /// a note progression
-[System.Serializable]
-public sealed class Line {
+[Serializable]
+public struct Line {
     // -- props --
     /// the index of the current tone
     int m_Curr;
 
     /// the tones in this progression
-    [Tooltip("the chromatic scale (usually c3-based); must have a multiple of 12 notes")]
-    [SerializeField] public Tone[] m_Tones;
+    [SerializeField] Tone[] m_Tones;
 
     // -- lifetime --
     /// create a new line

@@ -12,6 +12,11 @@ class CharacterMusic: MonoBehaviour {
     [Tooltip("the time interval between notes in the jump chord")]
     [SerializeField] float m_JumpInterval = 3.0f / 60.0f;
 
+    // -- music --
+    [Header("music")]
+    [Tooltip("the line to play when fluttering")]
+    [SerializeField] LineField m_Flutter;
+
     // -- references --
     [Header("references")]
     [Tooltip("the footsteps music source")]
@@ -35,9 +40,6 @@ class CharacterMusic: MonoBehaviour {
 
     /// the melody line when walking
     Line[] m_FootstepsMelodies;
-
-    /// the line to play when fluttering
-    Line m_Flutter;
 
     /// the progress to play on jump
     Progression m_JumpProg;
@@ -103,10 +105,10 @@ class CharacterMusic: MonoBehaviour {
             )
         );
 
-        m_Flutter = new Line(
-            Tone.I.Octave(),
-            Tone.II.Octave()
-        );
+        // m_Flutter = new Line(
+        //     Tone.I.Octave(),
+        //     Tone.II.Octave()
+        // );
     }
 
     void Update() {
@@ -222,7 +224,7 @@ class CharacterMusic: MonoBehaviour {
             return;
         }
 
-        m_Footsteps.PlayLine(m_Flutter, m_Key);
+        m_Footsteps.PlayLine(m_Flutter.Val, m_Key);
         m_FlutterTime += 0.1f;
     }
 
