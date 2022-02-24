@@ -86,6 +86,14 @@ public partial class ThirdPerson: MonoBehaviour {
         get => m_State.IsGrounded;
     }
 
+    public bool IsOnWall {
+        get => m_State.IsOnWall;
+    }
+
+    internal CharacterCollision? Collision {
+        get => m_State.Collision;
+    }
+
     /// if the character just jumped
     public bool IsInJumpStart {
         get => m_State.IsInJumpStart;
