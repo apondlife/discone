@@ -1,0 +1,55 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEditor;
+using UnityAtoms.BaseAtoms;
+
+[RequireComponent(typeof(Collider))]
+public class NPCDialogue : MonoBehaviour {
+
+  [Header("THE IMPORTANT THING")]
+  [Tooltip("the yarn node for the dialogue for this npc")]
+  [SerializeField] private string dialogueMessage;
+
+  [Header("references")]
+  [Tooltip("the yarn node for the dialogue for this npc")]
+  [SerializeField] private GameObject talkable;
+  [SerializeField] private Texture characterPreview;
+
+  [Header("dialogue atoms")]
+  // TODO: have a bool reference in a child component on the player that stops it during dialogs
+  [SerializeField] private BoolReference m_IsDialogueBusy;
+  [SerializeField] private StringEvent m_StartDialogue;
+  [SerializeField] private VoidEvent m_NextLine;
+
+  private const string _dialogueTargetTag = "PlayerDialogueTarget";
+  [SerializeField] private bool _canTalk = false;
+
+  void Start () {
+    if (talkable) talkable.SetActive(false);
+  }
+
+  public void TryTalk() {
+    if (_canTalk && !m_IsDialogueBusy.Value) {
+        Debug.Log("start dialog " + dialogueMessage);
+        m_StartDialogue.Raise(dialogueMessage);
+    }
+  }
+
+  void OnTriggerEnter(Collider other) {
+    if (other.CompareTag(_dialogueTargetTag)) {
+      Debug.Log("can talk!!!");
+      _canTalk = true;
+      if (talkable) talkable.SetActive(true);
+    }
+  }
+
+  void OnTriggerExit(Collider other) {
+    if (other.CompareTag(_dialogueTargetTag)) {
+      _canTalk = false;
+      if (talkable) talkable.SetActive(false);
+      // TODO: end dialogue on exit, new atom?
+    }
+  }
+}

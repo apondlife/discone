@@ -43,7 +43,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8510e6aff0f7476ca1f3d0fcd42da9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Target: {fileID: 0}
-  m_Terrain: {fileID: 3312532919274294580, guid: 7ace50d95b8ac46d797d1adb754ff491, type: 3}
-  m_TerrainHeight: {fileID: 2100000, guid: 7d71e3592d22344bda8e2a5aabb505d4, type: 2}
-  m_Whatever: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  m_TargetObject:
+    _usage: 0
+    _value: {fileID: 0}
+    _constant: {fileID: 0}
+    _variable: {fileID: 0}
+    _variableInstancer: {fileID: 0}
+  m_Chunk: {fileID: 7732029328038872556, guid: 7ace50d95b8ac46d797d1adb754ff491, type: 3}
+  m_FieldHeight: {fileID: 2100000, guid: 7d71e3592d22344bda8e2a5aabb505d4, type: 2}
+  m_FloorScale: 0.3
+  m_MinFloor: 100
+  m_MaxFloor: 600
+  m_ElevationScale: 0.97
+  m_MinElevation: 0
+  m_MaxElevation: 20

@@ -1,78 +1,121 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityAtoms.BaseAtoms;
 
 /// an infinite field
-sealed class Field: MonoBehaviour {
-    // -- nodes --
+[ExecuteAlways]
+public sealed class Field: MonoBehaviour {
+    // -- constants --
+    /// the maximum number of active chunks
+    private const int k_MaxChunks = 16;
+
+    /// the duration between purges
+    private const float k_PurgeChunksInterval = 2.0f;
+
+    // -- fields --
     [Header("config")]
     [Tooltip("the target to follow")]
     [SerializeField] GameObjectReference m_TargetObject;
 
     [Header("references")]
-    [Tooltip("the prefab for creating terrain")]
-    [SerializeField] GameObject m_Terrain;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Terrain")]
+    [Tooltip("the prefab for creating chunks")]
+    [SerializeField] FieldChunk m_Chunk;
 
-    [Tooltip("the material for the height shader")]
-    [SerializeField] Material m_TerrainHeight;
+    [Tooltip("the field height material")]
+    [SerializeField] Material m_FieldHeight;
+
+    [Tooltip("the scale for the floor noise")]
+    [SerializeField] float m_FloorScale = 0.3f;
+
+    [Tooltip("the minimum height of the floor")]
+    [SerializeField] float m_MinFloor = 100.0f;
+
+    [Tooltip("the maximum height of the floor")]
+    [SerializeField] float m_MaxFloor = 600.0f;
+
+    [Tooltip("the scale for the elevation noise")]
+    [SerializeField] float m_ElevationScale = 0.97f;
+
+    [Tooltip("the minimum elevation amount")]
+    [SerializeField] float m_MinElevation = 0.0f;
+
+    [Tooltip("the maximum elevation amount")]
+    [SerializeField] float m_MaxElevation = 20.0f;
 
     // -- props --
     /// the target's current coordinate. the current center chunk index
-    Vector2Int m_TargetCoord;
+    Vector2Int m_TargetCoord = new Vector2Int(69, 420);
 
+    /// the map of visible chunks
+    Dictionary<Vector2Int, FieldChunk> m_Chunks = new Dictionary<Vector2Int, FieldChunk>();
+
+    /// a pool of free chunk instances
+    Queue<FieldChunk> m_ChunkPool = new Queue<FieldChunk>();
+
+    // -- p/cache
     /// the size of a chunk
     float m_ChunkSize;
 
-    /// the map of visible chunks
-    Dictionary<Vector2Int, Terrain> m_Chunks = new Dictionary<Vector2Int, Terrain>();
-
-    /// a pool of free terrain instances
-    Queue<Terrain> m_ChunkPool = new Queue<Terrain>();
-
-    Transform m_Target => m_TargetObject.Value.transform;
-
     // -- lifecycle --
     void Start() {
-        // ensure terrain is square
-        var td = m_Terrain.GetComponent<Terrain>().terrainData;
-        Debug.Assert(td.size.x == td.size.z, "field's terrain chunk was not square");
-
         // capture chunk size
-        m_ChunkSize = td.size.x;
+        Debug.Assert(m_Chunk.Size.x == m_Chunk.Size.z, "field's terrain chunk was not square");
+        m_ChunkSize = m_Chunk.Size.x;
 
-        // get initial target coordinate
-        m_TargetCoord = IntoCoordinate(m_Target.position);
+        // destroy any editor terrain
+        ClearEditorChunks();
 
-        // create the initial chunks
-        CreateChunks();
+        // if editor, don't do anything else
+        if (!Application.IsPlaying(gameObject)) {
+            return;
+        }
 
-        StartCoroutine(PurgeChunksAsync());
+        // start purge routine
+        StartCoroutine(Coroutines.Interval(k_PurgeChunksInterval, PurgeChunks));
     }
 
     void Update() {
-        // if we didn't change chunks, do nothing
-        var coord = IntoCoordinate(m_Target.position);
+        // if editor, create editor chunks
+        if (!Application.IsPlaying(gameObject)) {
+            CreateEditorChunks();
+            return;
+        }
+
+        var tt = m_TargetObject.Value.transform;
+
+        // if the target changed chunks, create neighbors
+        var coord = IntoCoordinate(tt.position);
         if (m_TargetCoord != coord) {
             m_TargetCoord = coord;
             CreateChunks();
         }
+    }
 
-        if(debounceTimer > 0 && Time.time > debounceTimer) {
-            debounceTimer = -1;
-            PurgeChunks(m_TargetCoord);
-        }
+    void OnValidate () {
+        m_FieldHeight.SetFloat("_FloorScale", m_FloorScale);
+        m_FieldHeight.SetFloat("_MinFloor", m_MinFloor);
+        m_FieldHeight.SetFloat("_MaxFloor", m_MaxFloor);
+        m_FieldHeight.SetFloat("_ElevationScale", m_ElevationScale);
+        m_FieldHeight.SetFloat("_MinElevation", m_MinElevation);
+        m_FieldHeight.SetFloat("_MaxElevation", m_MaxElevation);
+
+        ReloadEditorChunks();
     }
 
     // -- commands --
+    // -- c/create
     /// create new chunks as the player moves
-    void CreateChunks() {
+    void CreateChunks(int size = 3) {
+        // the number of chunks to create
+        var n = size * size;
+
         // instantiate a square of 9 chunks around the target
-        for (var i = 0; i < 9; i++) {
+        for (var i = 0; i < n; i++) {
             var c = m_TargetCoord;
-            c.x += i % 3 - 1;
-            c.y += i / 3 - 1;
+            c.x += i % size - 1;
+            c.y += i / size - 1;
 
             CreateChunk(c);
         }
@@ -89,42 +132,50 @@ sealed class Field: MonoBehaviour {
         var chunk = DequeueChunk();
         m_Chunks.Add(coord, chunk);
 
-        // render the chunks heightmap
-        RenderChunk(coord, chunk);
+        // load the chunk for this coordinate
+        chunk.Load(coord);
 
-        //
+        // reassign neighbors
         chunk.SetNeighbors(
             m_Chunks.Get(coord + Vector2Int.left),
             m_Chunks.Get(coord + Vector2Int.up),
             m_Chunks.Get(coord + Vector2Int.right),
             m_Chunks.Get(coord + Vector2Int.down)
         );
+
+        // move the chunk into position
+        var tc = chunk.transform;
+        tc.localPosition = IntoPosition(coord);
     }
 
-    private const int k_MaxChunks = 16;
-    private const float k_ChunkPurgePeriod = 2.0f;
+    /// dequeue a terrain chunk from the pool
+    FieldChunk DequeueChunk() {
+        var chunk = null as FieldChunk;
 
-    int ManhDist(Vector2Int a, Vector2Int b) {
-        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
-    }
-
-    IEnumerator PurgeChunksAsync() {
-        while (true) {
-            yield return new WaitForSecondsRealtime(k_ChunkPurgePeriod);
-            PurgeChunks(m_TargetCoord);
+        // reuse an existing chunk if available
+        if (m_ChunkPool.Count != 0) {
+            chunk = m_ChunkPool.Dequeue();
+            chunk.gameObject.SetActive(true);
         }
+        // otherwise, create a new chunk
+        else {
+            chunk = Instantiate(m_Chunk, transform);
+        }
+
+        return chunk;
     }
 
-    float debounceTimer = 0;
-
-    void PurgeChunks(Vector2Int coord) {
+    // -- c/purge
+    /// purge any unused chunks
+    void PurgeChunks() {
         if (m_Chunks.Count <= k_MaxChunks) {
             return;
         }
 
         // remove the chunks that are further away and no longer needed
+        var t = m_TargetCoord;
         var sortedDistances = m_Chunks.Keys.ToList();
-        sortedDistances.Sort((a, b) => ManhDist(coord, a) - ManhDist(coord, b));
+        sortedDistances.Sort((a, b) => Vec2.Manhattan(t, a) - Vec2.Manhattan(t, b));
 
         var i = sortedDistances.Count - 1;
         while(m_Chunks.Count > k_MaxChunks) {
@@ -141,73 +192,69 @@ sealed class Field: MonoBehaviour {
         }
     }
 
-    // render the heightmap for a particular terrain chunk & offset
-    void RenderChunk(Vector2Int coord, Terrain terrain) {
-        var td = terrain.terrainData;
-
-        // set display name
-        var x = coord.x;
-        var y = coord.y;
-        terrain.name = $"Chunk ({IntoString(x)}, {IntoString(y)})";
-
-        // the heightmap res is a power of 2 + 1, so we scale the offset magically
-        // TODO: understand magic
-        var scale = ((float)td.heightmapResolution - 1.0f) / td.heightmapResolution;
-
-        // render height material into chunk heightmap
-        m_TerrainHeight.SetVector(
-            "_Offset",
-            new Vector3(coord.x, coord.y) * scale
-        );
-
-        Graphics.Blit(
-            null,
-            td.heightmapTexture,
-            m_TerrainHeight
-        );
-
-        // mark the entire heightmap as dirty
-        var tr = new RectInt(
-            0,
-            0,
-            td.heightmapResolution,
-            td.heightmapResolution
-        );
-
-        td.DirtyHeightmapRegion(
-            tr,
-            TerrainHeightmapSyncControl.HeightOnly
-        );
-
-        // sync it
-        td.SyncHeightmap();
-
-        // move the terrain into position
-        var tt = terrain.transform;
-        tt.position = IntoPosition(coord);
+    // -- c/editor
+    void ReloadEditorChunks() {
+        foreach (var (_, chunk) in m_Chunks) {
+            chunk.Reload();
+        }
     }
 
-    /// dequeue a terrain chunk from the pool
-    Terrain DequeueChunk() {
-        // reuse an existing terrain if available
-        if (m_ChunkPool.Count != 0) {
-            var chunk = m_ChunkPool.Dequeue();
-            chunk.gameObject.SetActive(true);
-            return chunk;
+    /// create chunks for the editor field
+    void CreateEditorChunks() {
+        // get the editor camera
+        var scene = UnityEditor.SceneView.lastActiveSceneView;
+        if (scene == null) {
+            return;
         }
 
-        // otherwise, create a new terrain
-        var obj = Instantiate(m_Terrain, transform);
-        var tt = obj.GetComponent<Terrain>();
-        var tc = obj.GetComponent<TerrainCollider>();
+        var camera = scene.camera;
+        if (camera == null) {
+            return;
+        }
 
-        // and terrain data
-        var td = Instantiate(tt.terrainData);
-        td.name = "ChunkData";
-        tt.terrainData = td;
-        tc.terrainData = td;
+        // get the look position and direction
+        var ct = camera.transform;
+        var lp = ct.position;
+        var ld = ct.forward;
 
-        return tt;
+        // the ground plane normal (position is always zero) (pretty unclear to me why
+        // the normal is reversed)
+        var pp = Vector3.zero;
+        var pn = Vector3.up;
+
+        // the magnitude of the the look pos to the plane & the look's scale (angle) in the plane
+        var a = Vector3.Dot(pp - lp, pn);
+        var b = Vector3.Dot(ld, pn);
+
+        // get the intersection
+        var intersection = Vector3.zero;
+        if (Mathf.Abs(b) < 0.00001f) {
+            if (Mathf.Abs(a) >= 0.00001f) {
+                return;
+            }
+
+            intersection = lp;
+        } else {
+            intersection = lp + a / b * ld;
+        }
+
+        // set target coordinate
+        var coord = IntoCoordinate(intersection);
+        if (m_TargetCoord != coord) {
+            m_TargetCoord = coord;
+            CreateChunks(3);
+        }
+    }
+
+    /// clear all editor chunks
+    public void ClearEditorChunks() {
+        m_Chunks.Clear();
+
+        // destroy any editor terrain
+        var t = transform;
+        while (t.childCount > 0) {
+            DestroyImmediate(t.GetChild(0).gameObject);
+        }
     }
 
     // -- queries --
@@ -233,14 +280,5 @@ sealed class Field: MonoBehaviour {
         var z = coord.y * cs - ch;
 
         return new Vector3(x, 0.0f, z);
-    }
-
-    // format the coordinate component
-    string IntoString(int component) {
-        if (component < 0) {
-            return component.ToString();
-        }
-
-        return $"+{component}";
     }
 }
