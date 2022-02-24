@@ -5,65 +5,42 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System;
 using Yarn.Unity;
+using UnityAtoms.BaseAtoms;
 
 public class DialogueSystem : MonoBehaviour
 {
-    public PlayerInput input;
-   //public Action OnUnfreeze;
-
     public RawImage characterFaceUI; // the panel that shows the person's face as they are speaking
 
     public DialogueRunner yarnDialogueRunner;
 
-    private bool _busy;
-
-    private bool _isTalkAvailable;
+    [SerializeField] private BoolVariable m_IsBusy;
 
     // Start is called before the first frame update
     void Start()
     {
-        _busy = false;
-        _isTalkAvailable = false;
+        m_IsBusy.Value = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void SetTalkAvailable(bool b) {
-      _isTalkAvailable = b;
-    }
-    public bool IsTalkAvailable() {
-      return _isTalkAvailable;
-    }
-
-    public void StartDialogue(string yarnDialogueTitle, Texture faceTexture) {
-      Freeze();
-      _busy = true;
-
+    public void SetFaceTexture(Texture faceTexture) {
       if(characterFaceUI != null) characterFaceUI.texture = faceTexture;
+    }
 
+    public void StartDialogue(string yarnDialogueTitle) {
+      m_IsBusy.Value = true;
       // Tell Yarn dialogue to start
       yarnDialogueRunner.StartDialogue(yarnDialogueTitle);
     }
 
-    private void Freeze() {
-      // freeze player character.
-      if (input != null) input.enabled = false;
-
-      Debug.Log("Freeze");
-    }   
-    public void DialogueEnd() {
-      _busy = false;
-      // unfreeze player character.
-      if (input != null) input.enabled = true;
-      Debug.Log("Unfreeze");
-      //OnUnfreeze();
+    public void NextLine() {
+      yarnDialogueRunner.OnViewUserIntentNextLine();
     }
 
-    public bool IsBusy() {
-      return _busy;
+    public void StartDialogue(string yarnDialogueTitle, Texture faceTexture) {
+      SetFaceTexture(faceTexture);
+      StartDialogue(yarnDialogueTitle);
+    }
+
+    public void DialogueEnd() {
+      m_IsBusy.Value = false;
     }
 }

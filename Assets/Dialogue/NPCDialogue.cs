@@ -3,57 +3,53 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEditor;
+using UnityAtoms.BaseAtoms;
 
 [RequireComponent(typeof(Collider))]
 public class NPCDialogue : MonoBehaviour {
 
-  public PlayerInput input;
+  [Header("THE IMPORTANT THING")]
+  [Tooltip("the yarn node for the dialogue for this npc")]
+  [SerializeField] private string dialogueMessage;
 
-  public string dialogueMessage;
+  [Header("references")]
+  [Tooltip("the yarn node for the dialogue for this npc")]
+  [SerializeField] private GameObject talkable;
+  [SerializeField] private Texture characterPreview;
 
-  public Texture characterPreview;
-
-  public GameObject talkable;
-
-  private bool _canTalk = false;
-
-  public DialogueSystem ds;
+  [Header("dialogue atoms")]
+  // TODO: have a bool reference in a child component on the player that stops it during dialogs
+  [SerializeField] private BoolReference m_IsDialogueBusy;
+  [SerializeField] private StringEvent m_StartDialogue;
+  [SerializeField] private VoidEvent m_NextLine;
 
   private const string _dialogueTargetTag = "PlayerDialogueTarget";
+  [SerializeField] private bool _canTalk = false;
 
-  InputAction talkAction;
-
-  // Use this for initialization
   void Start () {
-    talkAction = input.currentActionMap["Jump"];
-
     if (talkable) talkable.SetActive(false);
   }
-  
-  // Update is called once per frame
-  void Update () {
 
-    if (_canTalk && !ds.IsBusy() && talkAction.IsPressed()) {
-      Debug.Log("start dialog " + dialogueMessage);
-
-      ds.StartDialogue(dialogueMessage, characterPreview);
+  public void TryTalk() {
+    if (_canTalk && !m_IsDialogueBusy.Value) {
+        Debug.Log("start dialog " + dialogueMessage);
+        m_StartDialogue.Raise(dialogueMessage);
     }
   }
 
   void OnTriggerEnter(Collider other) {
-    if (other.CompareTag(_dialogueTargetTag) && !ds.IsTalkAvailable() && !ds.IsBusy()) {
+    if (other.CompareTag(_dialogueTargetTag)) {
       Debug.Log("can talk!!!");
       _canTalk = true;
-      ds.SetTalkAvailable(true);
       if (talkable) talkable.SetActive(true);
     }
   }
 
   void OnTriggerExit(Collider other) {
-    if (other.CompareTag(_dialogueTargetTag) && _canTalk) {
+    if (other.CompareTag(_dialogueTargetTag)) {
       _canTalk = false;
-      ds.SetTalkAvailable(false);
       if (talkable) talkable.SetActive(false);
+      // TODO: end dialogue on exit, new atom?
     }
   }
 }
