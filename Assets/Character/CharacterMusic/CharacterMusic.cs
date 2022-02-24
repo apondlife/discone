@@ -20,8 +20,8 @@ class CharacterMusic: MonoBehaviour {
     [Tooltip("the jump music source")]
     [SerializeField] MusicSource m_Jump;
 
-    [Tooltip("the character controller")]
-    [SerializeField] ThirdPerson.CharacterState m_State;
+    /// the character controller
+    ThirdPerson.CharacterState m_State;
 
     // -- props --
     /// the current key root

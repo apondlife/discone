@@ -3,49 +3,28 @@ using UnityEngine.InputSystem;
 
 namespace ThirdPerson {
 
-[System.Serializable]
 public sealed class CharacterInput {
-    // -- fields --
-    [Header("references")]
-    [Tooltip("the transform for the player's look viewpoint")]
-    [SerializeField] private Transform m_Look;
-
-    [Tooltip("the unity player input")]
-    [SerializeField] private PlayerInput m_PlayerInput;
-
     // -- props --
+    /// the source of input frames
+    CharacterInputSource m_Source = null;
+
+    /// the most recent input frames
     Queue<Frame> m_Frames = new Queue<Frame>(30);
 
-    /// the move input
-    InputAction m_Move;
-
-    /// the jump input
-    InputAction m_Jump;
-
-    // -- lifecycle --
-    /// initialize the input wrapper
-    public void Init() {
-        m_Move = m_PlayerInput.currentActionMap["Move"];
-        m_Jump = m_PlayerInput.currentActionMap["Jump"];
+    // -- commands --
+    /// drive the input with a source
+    public void Drive(CharacterInputSource source) {
+        Debug.Log($"drive w/ source");
+        m_Source = source;
     }
 
     /// read the next frame of input
     public void Read() {
-        var forward = Vector3.Normalize(Vector3.ProjectOnPlane(
-            m_Look.transform.forward,
-            Vector3.up
-        ));
+        if (m_Source == null) {
+            return;
+        }
 
-        var right = m_Look.transform.right;
-
-        // this would also be separate
-        var pInput = m_Move.ReadValue<Vector2>();
-        var move = forward * pInput.y + right * pInput.x;
-
-        m_Frames.Add(new Frame(
-            m_Jump.IsPressed(),
-            move
-        ));
+        m_Frames.Add(m_Source.Read());
     }
 
     // -- queries --

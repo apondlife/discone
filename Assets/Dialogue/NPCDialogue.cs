@@ -23,6 +23,10 @@ public class NPCDialogue : MonoBehaviour {
   [SerializeField] private StringEvent m_StartDialogue;
   [SerializeField] private VoidEvent m_NextLine;
 
+  [SerializeField] private GameObjectEvent m_StartDialogueWithCharacter;
+  [SerializeField] private GameObject Character;
+
+
   private const string _dialogueTargetTag = "PlayerDialogueTarget";
   [SerializeField] private bool _canTalk = false;
 
@@ -34,6 +38,7 @@ public class NPCDialogue : MonoBehaviour {
     if (_canTalk && !m_IsDialogueBusy.Value) {
         Debug.Log("start dialog " + dialogueMessage);
         m_StartDialogue.Raise(dialogueMessage);
+        m_StartDialogueWithCharacter.Raise(Character);
     }
   }
 

@@ -5,14 +5,12 @@ using Cinemachine;
 namespace ThirdPerson {
 
 [RequireComponent(typeof(CinemachineVirtualCamera))]
-sealed class ThirdPersonCamera: MonoBehaviour {
+public sealed class ThirdPersonCamera: MonoBehaviour {
     // -- fields --
     [Header("references")]
     [Tooltip("the cinemachine camera")]
     CinemachineVirtualCamera m_Camera;
 
-    [Tooltip("the character's current state")]
-    [SerializeField] CharacterState m_State;
 
     [Tooltip("the character's tunables/constants")]
     [SerializeField] CharacterTunablesBase m_Tunables;
@@ -21,10 +19,14 @@ sealed class ThirdPersonCamera: MonoBehaviour {
     /// the camera's transposer (the body; controls camera movement)
     CinemachineTransposer m_Transposer;
 
+    /// the character's current state
+    CharacterState m_State;
+
     // -- lifecycle --
     private void Awake() {
         m_Camera = GetComponent<CinemachineVirtualCamera>();
         m_Transposer = m_Camera.GetCinemachineComponent<CinemachineTransposer>();
+        m_State = GetComponentInParent<ThirdPerson>().State;
     }
 
     private void Start() {

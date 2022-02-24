@@ -6,16 +6,10 @@ namespace ThirdPerson {
 public partial class ThirdPerson: MonoBehaviour {
     // -- fields --
     [Header("data")]
-    [Tooltip("the character's state")]
-    [SerializeField] CharacterState m_State;
-
     [Tooltip("the tunables; for tweaking the player's attributes")]
     [SerializeField] CharacterTunablesBase m_Tunables;
 
     [Header("children")]
-    [Tooltip("the input wrapper")]
-    [SerializeField] CharacterInput m_Input;
-
     [Tooltip("the underlying character controller")]
     [SerializeField] CharacterController m_Controller;
 
@@ -23,10 +17,15 @@ public partial class ThirdPerson: MonoBehaviour {
     /// the list of systems acting on this character
     private CharacterSystem[] m_Systems;
 
+    /// the character's stat
+    CharacterState m_State = new CharacterState();
+
+    ///the input wrapper
+    private CharacterInput m_Input = new CharacterInput();
+
     // -- lifecycle --
     private void Awake() {
         // init child objects
-        m_Input.Init();
         m_State.Reset();
 
         // init character
