@@ -19,8 +19,6 @@ public partial class ThirdPerson: MonoBehaviour {
     [Tooltip("the underlying character controller")]
     [SerializeField] CharacterController m_Controller;
 
-    [SerializeField] private Log.Level logLevel;
-
     // -- props --
     /// the list of systems acting on this character
     private CharacterSystem[] m_Systems;
@@ -80,29 +78,14 @@ public partial class ThirdPerson: MonoBehaviour {
     }
 
     // -- queries --
-    // TODO: how should we expose state outside the library
-    /// if the character is grounded
-    public bool IsGrounded {
-        get => m_State.IsGrounded;
-    }
+    public CharacterController Controller => m_Controller;
 
-    public bool IsOnWall {
-        get => m_State.IsOnWall;
-    }
+    public CharacterInput Input => m_Input;
+    // TODO: how should we make state immutable outside the class
 
-    internal CharacterCollision? Collision {
-        get => m_State.Collision;
-    }
+    public CharacterTunablesBase Tunables => m_Tunables;
 
-    /// if the character just jumped
-    public bool IsInJumpStart {
-        get => m_State.IsInJumpStart;
-    }
-
-    /// the character's planar velocity
-    public Vector3 PlanarVelocity {
-        get => m_State.PlanarVelocity;
-    }
+    public CharacterState State => m_State;
 
     // -- events --
     /// when the restart button is pressed, reload the scene
