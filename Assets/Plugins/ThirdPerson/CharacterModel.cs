@@ -4,25 +4,30 @@ using Cinemachine;
 namespace ThirdPerson {
 
 // needs a reference to ThirdPersonCharacter
-public sealed class CharacterModel: MonoBehaviour {
-    // -- props --
-    [Tooltip("the character's current state")]
-    [SerializeField] private CharacterState m_State;
-    private CharacterState m_PreviousState;
-
-    [Tooltip("the character's tunables/constants")]
-    [SerializeField] private CharacterTunablesBase m_Tunables;
-
+public sealed class CharacterModel : MonoBehaviour {
+    // -- fields --
+    [Header("references")]
     [Tooltip("the character's animator")]
     [SerializeField] private Animator m_Animator;
 
-    [SerializeField] private CinemachineVirtualCamera m_Camera;
+    // -- props --
+    /// the character's state
+    private CharacterState m_State;
 
-    private void Awake() {
+    /// the previous state frame
+    private CharacterState m_PreviousState;
+
+    /// the character's tunables
+    private CharacterTunablesBase m_Tunables;
+
+    // -- lifecycle --
+    void Awake() {
+        var container = GetComponentInParent<ThirdPerson>();
+        m_Tunables = container.Tunables;
+        m_State = container.State;
         m_PreviousState = ScriptableObject.Instantiate(m_State);
     }
 
-    // -- lifecycle --
     void FixedUpdate() {
         // update animator & model
         SyncAnimator();

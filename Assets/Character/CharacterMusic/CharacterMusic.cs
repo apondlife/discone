@@ -21,7 +21,7 @@ class CharacterMusic: MonoBehaviour {
     [SerializeField] MusicSource m_Jump;
 
     [Tooltip("the character controller")]
-    [SerializeField] T.ThirdPerson m_Controller;
+    [SerializeField] ThirdPerson.CharacterState m_State;
 
     // -- props --
     /// the current key root
@@ -59,6 +59,10 @@ class CharacterMusic: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
+        // set deps
+        var container = GetComponentInParent<ThirdPerson.ThirdPerson>();
+        m_State = container.State;
+
         // set props
         m_Key = new Key(m_Root);
 
@@ -123,7 +127,7 @@ class CharacterMusic: MonoBehaviour {
     // -- commands --
     // update current step progress
     void Step() {
-        if (!m_Controller.IsGrounded) {
+        if (!m_State.IsGrounded) {
             return;
         }
 
@@ -163,7 +167,7 @@ class CharacterMusic: MonoBehaviour {
 
     /// flutter when airborne
     void Flutter() {
-        if (m_Controller.IsGrounded) {
+        if (m_State.IsGrounded) {
             m_FlutterTime = -1.0f;
             return;
         }
@@ -201,7 +205,7 @@ class CharacterMusic: MonoBehaviour {
 
     /// play jump audio
     void PlayJump() {
-        if (!m_Controller.IsInJumpStart) {
+        if (!m_State.IsInJumpStart) {
             return;
         }
 
@@ -229,6 +233,6 @@ class CharacterMusic: MonoBehaviour {
     // -- queries --
     /// the character's step (planar) velocity
     Vector3 StepVelocity {
-        get => m_Controller.PlanarVelocity;
+        get => m_State.PlanarVelocity;
     }
 }
