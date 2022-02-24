@@ -171,10 +171,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TrackedObjectOffset: {x: 0, y: 1.26, z: 0}
-  m_LookaheadTime: 0.42
-  m_LookaheadSmoothing: 10.4
+  m_LookaheadTime: 0.362
+  m_LookaheadSmoothing: 7.6
   m_LookaheadIgnoreY: 0
-  m_HorizontalDamping: 3.7
+  m_HorizontalDamping: 2.45
   m_VerticalDamping: 0.5
   m_ScreenX: 0.5
   m_ScreenY: 0.71
@@ -5033,8 +5033,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b8caf1437dfd1545a9456404a5582bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_FloorParticlesBaseEmission: 0
   m_WallParticles: {fileID: 2009803955}
-  m_State: {fileID: 11400000, guid: 6065e7ea79c83c5449da42690c32a8c6, type: 2}
+  m_FloorParticles: {fileID: 0}
+  m_Character: {fileID: 0}
 --- !u!1 &5313527247566061526
 GameObject:
   m_ObjectHideFlags: 0
