@@ -14,7 +14,6 @@ public sealed class CharacterInput {
     // -- commands --
     /// drive the input with a source
     public void Drive(CharacterInputSource source) {
-        Debug.Log($"drive w/ source");
         m_Source = source;
     }
 
