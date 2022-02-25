@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Yarn.Unity;
+using Yarn.Markup;
 using TMPro;
 
 public class IvanDialogueView : DialogueViewBase
@@ -62,6 +63,15 @@ public class IvanDialogueView : DialogueViewBase
         {
                 characterNameText.text = dialogueLine.CharacterName;
                 lineText.text = dialogueLine.TextWithoutCharacterName.Text;
+        }
+
+        // This is where i would do animations... if i had any!!!
+        foreach(MarkupAttribute attr in dialogueLine.Text.Attributes) {
+            Debug.Log(attr.ToString());
+            Debug.Log(attr.Length); // number of charactres
+            Debug.Log(attr.Name); // e.g. "shake"
+            Debug.Log(attr.Position); // position of first character
+            Debug.Log(attr.Properties); // idk
         }
 
 
