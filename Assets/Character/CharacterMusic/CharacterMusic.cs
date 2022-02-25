@@ -64,35 +64,15 @@ class CharacterMusic: MonoBehaviour {
         // set props
         m_Key = new Key(m_Root);
 
-        // m_FootstepsBass = new Line(
-        //     Tone.I,
-        //     Tone.V,
-        //     Tone.III,
-        //     Tone.II
-        // );
+        // 5.P5
+        // 5.M5
+        // 5.m5
 
-        // m_FootstepsMelodies = new Line[5] {
-        //     new Line(
-        //         Tone.I.Octave(),
-        //         Tone.V.Octave()
-        //     ),
-        //     new Line(
-        //         Tone.III.Octave(),
-        //         Tone.V.Octave()
-        //     ),
-        //     new Line(
-        //         Tone.VII,
-        //         Tone.V.Octave()
-        //     ),
-        //     new Line(
-        //         Tone.VII.Flat(),
-        //         Tone.V.Octave()
-        //     ),
-        //     new Line(
-        //         Tone.VII.Flat(),
-        //         Tone.III.Flat().Octave()
-        //     ),
-        // };
+        // 7.M7
+        // 7.7
+        // 7.m7
+        // 7.m7b5
+        // 7.dim7
 
         m_JumpProg = new Progression(
             new Chord(
@@ -104,11 +84,6 @@ class CharacterMusic: MonoBehaviour {
                 Quality.Maj5
             )
         );
-
-        // m_Flutter = new Line(
-        //     Tone.I.Octave(),
-        //     Tone.II.Octave()
-        // );
     }
 
     void Update() {

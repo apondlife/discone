@@ -42,6 +42,11 @@ public struct Line {
     public Tone this[int i] {
         get => m_Tones[i];
     }
+
+    // -- debugging --
+    public override string ToString() {
+        return $"[{string.Join(",", m_Tones)}]";
+    }
 }
 
 }
