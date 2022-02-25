@@ -53,6 +53,10 @@ public struct Tone {
     }
 
     // -- factories --
+    public static Tone R {
+        get => new Tone(0);
+    }
+
     public static Tone I {
         get => new Tone(0);
     }
@@ -79,6 +83,11 @@ public struct Tone {
 
     public static Tone VII {
         get => new Tone(11);
+    }
+
+    /// -- debugging --
+    public override string ToString() {
+        return m_Steps.ToString();
     }
 }
 

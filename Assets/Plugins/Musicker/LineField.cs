@@ -11,10 +11,13 @@ public sealed class LineField {
     const char k_Sharp = '#';
 
     /// the flat character
-    const char k_Flat = 'f';
+    const char k_Flat = 'b';
 
-    /// the list of accidentals
-    static readonly char[] k_Accidentals = new char[2] {'f', '#'};
+    /// the octave character
+    const char k_Octave = '\'';
+
+    /// the quality characters
+    static readonly char[] k_Quality = new char[3] {k_Flat, k_Sharp, k_Octave};
 
     // -- fields --
     [Tooltip("the notated line")]
@@ -37,61 +40,62 @@ public sealed class LineField {
             var note = notes[i];
 
             // split the root and accidentals
-            var j = note.IndexOfAny(k_Accidentals);
+            var j = note.IndexOfAny(k_Quality);
 
             var root = note;
-            var accidentals = "";
+            var quality = "";
 
             if (j != -1) {
                 root = note.Substring(0, j);
-                accidentals = note.Substring(j);
+                quality = note.Substring(j);
             }
 
             // split the offset and octave
-            var parsed = int.Parse(root);
-            var offset = parsed % 8;
-            var octave = parsed / 8;
+            var parsed = root == "R" ? 0 : int.Parse(root) - 1;
+            var offset = parsed % 7;
+            var octave = parsed / 7;
 
-            // get base tone
-            var tone = 0;
+            // get steps from base tone
+            var steps = 0;
             switch (offset) {
             case 0:
-                tone = 0; break;
+                steps = 0; break;
             case 1:
-                tone = 2; break;
+                steps = 2; break;
             case 2:
-                tone = 4; break;
+                steps = 4; break;
             case 3:
-                tone = 5; break;
+                steps = 5; break;
             case 4:
-                tone = 7; break;
+                steps = 7; break;
+            case 5:
+                steps = 9; break;
             case 6:
-                tone = 9; break;
-            case 7:
-                tone = 11; break;
+                steps = 11; break;
             }
 
             // adjust by octave
-            tone += octave * 12;
+            steps += octave * 12;
 
-            // adjust by accidentals
-            foreach (var accidental in accidentals) {
+            // adjust by quality
+            foreach (var accidental in quality) {
                 switch (accidental) {
                 case k_Flat:
-                    tone -= 1; break;
+                    steps -= 1; break;
                 case k_Sharp:
-                    tone += 1; break;
+                    steps += 1; break;
+                case k_Octave:
+                    steps += 12; break;
                 default:
                     Debug.Assert(false, $"LineField: {accidental} is not a valid accidental"); break;
                 }
             }
 
             // add the tone
-            tones[i] = new Tone(tone);
+            tones[i] = new Tone(steps);
         }
 
         m_Line = new Line(tones);
-        Debug.Log($"line {tones}");
         m_IsParsed = true;
     }
 
@@ -106,9 +110,6 @@ public sealed class LineField {
             return m_Line;
         }
     }
-
-    // -- q/parsing
-
 }
 
 }
