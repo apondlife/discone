@@ -5,7 +5,7 @@ namespace ThirdPerson {
 /// the character's shared state
 /// TODO: feel like this should just be a (readonly?!) struct, draft the next frame, store
 /// a buffer of readonly frames. CONTEXT: i really need a state-based jump
-sealed class CharacterState: ScriptableObject {
+public sealed class CharacterState {
     [Header("fields")]
     [Tooltip("the velocity on the xz-plane")]
     public Vector3 PlanarVelocity;

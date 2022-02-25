@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the collision info
-struct CharacterCollision {
+public readonly struct CharacterCollision {
     // -- props --
     /// the normal of the collision surface
     public readonly Vector3 Normal;
