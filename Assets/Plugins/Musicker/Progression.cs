@@ -1,6 +1,7 @@
 namespace Musicker {
 
 /// a chord progression
+/// TODO: it'd be nice to be able to just have a Run of mixed Tones and Chords
 public sealed class Progression {
     // -- props --
     /// the index of the current chord

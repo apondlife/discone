@@ -3,8 +3,8 @@ using UnityEditor;
 
 namespace Musicker {
 
-[CustomPropertyDrawer(typeof(LineField))]
-sealed class LineDrawer: PropertyDrawer {
+[CustomPropertyDrawer(typeof(ProgressionField))]
+sealed class ProgressionDrawer: PropertyDrawer {
     // -- lifecycle --
     public override void OnGUI(Rect pos, SerializedProperty prop, GUIContent name) {
         // get the prop by reflection

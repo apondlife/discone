@@ -1,17 +1,14 @@
-using System;
-using UnityEngine;
-
 namespace Musicker {
 
 /// a note progression
-[Serializable]
-public struct Line {
+/// TODO: it'd be nice to be able to just have a Run of mixed Tones and Chords
+public sealed class Line {
     // -- props --
     /// the index of the current tone
     int m_Curr;
 
     /// the tones in this progression
-    [SerializeField] Tone[] m_Tones;
+    readonly Tone[] m_Tones;
 
     // -- lifetime --
     /// create a new line
