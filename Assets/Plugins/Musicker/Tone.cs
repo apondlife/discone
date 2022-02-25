@@ -2,12 +2,10 @@ using UnityEngine;
 namespace Musicker {
 
 /// a western-musical tone
-[System.Serializable]
-public struct Tone {
+public readonly struct Tone {
     // -- props --
     /// the number of steps from the root
-    [Tooltip("the number of steps from the root")]
-    [SerializeField] private int m_Steps;
+    readonly int m_Steps;
 
     // -- lifetime --
     /// create a new tone w/ a number of steps

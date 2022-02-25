@@ -24,25 +24,18 @@ public readonly struct Quality {
     }
 
     // -- factories --
-    /// a perfect fifth (w/ octave; a power chord)
-    public static Quality P5 = new Quality(
-        Tone.I,
-        Tone.V,
-        Tone.I.Octave()
-    );
-
-    /// a minor third
-    public static Quality Min3 = new Quality(
-        Tone.I,
-        Tone.III.Flat()
-    );
-
     /// a major fifth (w/ octave)
     public static Quality Maj5 = new Quality(
         Tone.I,
         Tone.III,
-        Tone.V,
-        Tone.I.Octave()
+        Tone.V
+    );
+
+    /// a major fifth (w/ octave)
+    public static Quality Min5 = new Quality(
+        Tone.I,
+        Tone.III.Flat(),
+        Tone.V
     );
 
     /// a major 7th chord quality
