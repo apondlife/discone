@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 357278567984863535}
   m_Layer: 0
   m_Name: NPCTalkBox
-  m_TagString: Untagged
+  m_TagString: PlayerDialogueTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb117a8d05aa01441a2e1b4b04cb8013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueMessage: Start
+  dialogueMessage: placeholder
   talkable: {fileID: 6639605653257697580}
   characterPreview: {fileID: 0}
   m_IsDialogueBusy:
@@ -70,6 +70,7 @@ MonoBehaviour:
     _variableInstancer: {fileID: 0}
   m_StartDialogue: {fileID: 11400000, guid: 2aab636a2ac6293419bb38c93a4895f4, type: 2}
   m_NextLine: {fileID: 11400000, guid: 7bb2580b298fe674eb23cbfc00e426b6, type: 2}
+  _canTalk: 0
 --- !u!114 &357278567984863535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,6 +94,19 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 11400000, guid: e776bc01eb723b046b946fb4461a0501, type: 2}
+        m_TargetAssemblyTypeName: UnityAtoms.AtomEvent`1[[UnityEngine.GameObject,
+          UnityEngine
+        m_MethodName: Raise
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
