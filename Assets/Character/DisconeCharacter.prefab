@@ -63,8 +63,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_StepInterval: 1.2
   m_JumpInterval: 0.05
-  m_Footsteps: {fileID: 1738539498203523173}
-  m_Jump: {fileID: 1738539498203523173}
+  m_FootstepsBass:
+    m_Notation: R 5 3 2
+  m_FootstepsMelodies:
+  - m_Notation: R' 5'
+  - m_Notation: 3' 5'
+  - m_Notation: 7 5'
+  - m_Notation: 7b 5'
+  - m_Notation: 7b 3'b
+  m_Jump:
+    m_Notation: 5.M5 4.M5
+  m_Flutter:
+    m_Notation: R' 2'
+  m_Source: {fileID: 1738539498203523173}
 --- !u!1001 &3320609410484118982
 PrefabInstance:
   m_ObjectHideFlags: 0

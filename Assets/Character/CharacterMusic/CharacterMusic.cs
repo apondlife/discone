@@ -1,6 +1,6 @@
 using UnityEngine;
 using Musicker;
-using T = ThirdPerson;
+using ThirdPerson;
 
 /// the character's music
 class CharacterMusic: MonoBehaviour {
@@ -12,16 +12,27 @@ class CharacterMusic: MonoBehaviour {
     [Tooltip("the time interval between notes in the jump chord")]
     [SerializeField] float m_JumpInterval = 3.0f / 60.0f;
 
+    // -- music --
+    [Header("music")]
+    [Tooltip("the bass line when walking")]
+    [SerializeField] LineField m_FootstepsBass;
+
+    [Tooltip("the melody line when walking")]
+    [SerializeField] LineField[] m_FootstepsMelodies;
+
+    [Tooltip("the progression when jumping")]
+    [SerializeField] ProgressionField m_Jump;
+
+    [Tooltip("the line to play when fluttering")]
+    [SerializeField] LineField m_Flutter;
+
     // -- references --
     [Header("references")]
-    [Tooltip("the footsteps music source")]
-    [SerializeField] MusicSource m_Footsteps;
+    [Tooltip("the music source")]
+    [SerializeField] MusicSource m_Source;
 
-    [Tooltip("the jump music source")]
-    [SerializeField] MusicSource m_Jump;
-
-    /// the character controller
-    ThirdPerson.CharacterState m_State;
+    [Tooltip("the character controller")]
+    [SerializeField] CharacterState m_State;
 
     // -- props --
     /// the current key root
@@ -29,18 +40,6 @@ class CharacterMusic: MonoBehaviour {
 
     /// the musical key
     Key m_Key;
-
-    /// the bass line when walking
-    Line m_FootstepsBass;
-
-    /// the melody line when walking
-    Line[] m_FootstepsMelodies;
-
-    /// the line to play when fluttering
-    Line m_Flutter;
-
-    /// the progress to play on jump
-    Progression m_JumpProg;
 
     /// the index of the current step
     int m_StepIdx;
@@ -65,52 +64,6 @@ class CharacterMusic: MonoBehaviour {
 
         // set props
         m_Key = new Key(m_Root);
-
-        m_FootstepsBass = new Line(
-            Tone.I,
-            Tone.V,
-            Tone.III,
-            Tone.II
-        );
-
-        m_FootstepsMelodies = new Line[5] {
-            new Line(
-                Tone.I.Octave(),
-                Tone.V.Octave()
-            ),
-            new Line(
-                Tone.III.Octave(),
-                Tone.V.Octave()
-            ),
-            new Line(
-                Tone.VII,
-                Tone.V.Octave()
-            ),
-            new Line(
-                Tone.VII.Flat(),
-                Tone.V.Octave()
-            ),
-            new Line(
-                Tone.VII.Flat(),
-                Tone.III.Flat().Octave()
-            ),
-        };
-
-        m_JumpProg = new Progression(
-            new Chord(
-                Tone.V,
-                Quality.Maj5
-            ),
-            new Chord(
-                Tone.IV,
-                Quality.Maj5
-            )
-        );
-
-        m_Flutter = new Line(
-            Tone.I.Octave(),
-            Tone.II.Octave()
-        );
     }
 
     void Update() {
@@ -192,10 +145,10 @@ class CharacterMusic: MonoBehaviour {
 
         // find line to play
         if (m_StepIdx % 2 == 0) {
-            m_Footsteps.PlayLine(m_FootstepsBass, m_Key);
+            m_Source.PlayLine(m_FootstepsBass.Value, m_Key);
         } else {
             var melody = m_FootstepsMelodies[m_MelodyIdx];
-            m_Footsteps.PlayTone(melody[m_StepIdx / 2], m_Key);
+            m_Source.PlayTone(melody.Value[m_StepIdx / 2], m_Key);
         }
 
         // advance step
@@ -209,8 +162,8 @@ class CharacterMusic: MonoBehaviour {
             return;
         }
 
-        m_Jump.PlayProgression(
-            m_JumpProg,
+        m_Source.PlayProgression(
+            m_Jump.Value,
             m_JumpInterval,
             m_Key
         );
@@ -226,7 +179,7 @@ class CharacterMusic: MonoBehaviour {
             return;
         }
 
-        m_Footsteps.PlayLine(m_Flutter, m_Key);
+        m_Source.PlayLine(m_Flutter.Value, m_Key);
         m_FlutterTime += 0.1f;
     }
 
