@@ -7,9 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: skybox
-  m_Shader: {fileID: 4800000, guid: f66a655bf429a0a4caf4cb8743784848, type: 3}
-  m_ShaderKeywords: _MAPPING_6_FRAMES_LAYOUT _SUNDISK_HIGH_QUALITY
+  m_Name: Sky
+  m_Shader: {fileID: 4800000, guid: 3c1f06980eb9344f5b8d2a950d77cf9c, type: 3}
+  m_ShaderKeywords: _MAPPING_LATITUDE_LONGITUDE_LAYOUT _SUNDISK_HIGH_QUALITY
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -24,15 +24,21 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Exposure: 1.14
-    - _ImageType: 1
-    - _Layout: 0
-    - _Mapping: 0
+    - _Exposure: 1
+    - _FogHeight: 1000
+    - _FogMin: 0
+    - _Horizon: 0
+    - _ImageType: 0
+    - _Layout: 2
+    - _Mapping: 1
     - _MirrorOnBack: 0
-    - _Rotation: 44
-    - _Scale: 10.36
+    - _Rotation: 0
+    - _Scale: 10.4
     m_Colors:
     - _BG: {r: 0.2658859, g: 0.112273075, b: 0.8207547, a: 1}
+    - _Background: {r: 0.8584906, g: 0.5709772, b: 0.85671175, a: 1}
+    - _Fog: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
+    - _Foreground: {r: 0.9245283, g: 0.8708979, b: 0.19624424, a: 1}
     - _Tint: {r: 0.93544734, g: 1, b: 0, a: 1}
     - _Tint2: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
