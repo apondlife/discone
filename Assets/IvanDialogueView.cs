@@ -16,7 +16,7 @@ public class IvanDialogueView : DialogueViewBase
     internal TextMeshProUGUI lineText = null;
 
     [SerializeField]
-    internal bool showCharacterNameInLineView = true;
+    internal bool inlineCharacterName = true;
 
 
     [SerializeField]
@@ -50,30 +50,31 @@ public class IvanDialogueView : DialogueViewBase
         lineText.gameObject.SetActive(true);
         canvasGroup.gameObject.SetActive(true);
 
-        // Fill in text fields for TMP objs with text
-        if (characterNameText == null)
-        {
-            if (showCharacterNameInLineView)
-            {
-                lineText.text = dialogueLine.Text.Text;
-            }
-            else
-            {
-                lineText.text = dialogueLine.TextWithoutCharacterName.Text;
+
+        if (inlineCharacterName) {
+            characterNameText.text = "";
+            lineText.text = dialogueLine.Text.Text;
+
+            // This is where i would do animations... if i had any!!!
+            foreach (MarkupAttribute attr in dialogueLine.Text.Attributes) {
+                if (attr.Name == "shake") {
+                    textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
+                }
             }
         }
-        else
-        {
-                characterNameText.text = dialogueLine.CharacterName;
-                lineText.text = dialogueLine.TextWithoutCharacterName.Text;
+        else {
+            characterNameText.text = dialogueLine.CharacterName;
+            lineText.text = dialogueLine.TextWithoutCharacterName.Text;
+
+            foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
+                if (attr.Name == "shake") {
+                    textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
+                }
+            }
         }
 
-        // This is where i would do animations... if i had any!!!
-        foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
-            if (attr.Name == "shake") {
-                textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
-            }
-        }
+
+
 
 
         // Immediately appear 
