@@ -4709,7 +4709,6 @@ GameObject:
   - component: {fileID: 6881554224051468337}
   - component: {fileID: 7518255437480528118}
   - component: {fileID: 8645781200493723215}
-  - component: {fileID: 1479871471930232732}
   m_Layer: 5
   m_Name: Speech
   m_TagString: Untagged
@@ -4833,21 +4832,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &1479871471930232732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5061975539739937306}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02e5e0b92a6361b4b992e3e2317d4510, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AngleMultiplier: 1
-  SpeedMultiplier: 1
-  CurveScale: 1
 --- !u!1 &5214350241557084342
 GameObject:
   m_ObjectHideFlags: 0
@@ -6026,6 +6010,7 @@ GameObject:
   - component: {fileID: 8947971726866609605}
   - component: {fileID: 9076545044295783707}
   - component: {fileID: 9164117870635076021}
+  - component: {fileID: 659033436}
   m_Layer: 5
   m_Name: TextboxIvan
   m_TagString: Untagged
@@ -6081,3 +6066,18 @@ MonoBehaviour:
   lineText: {fileID: 8645781200493723215}
   showCharacterNameInLineView: 1
   characterNameText: {fileID: 235106346669311311}
+--- !u!114 &659033436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9111484464303403165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e45722f55ecb3f4286fea2e57287e26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AngleMultiplier: 1
+  SpeedMultiplier: 4.63
+  CurveScale: 8.68

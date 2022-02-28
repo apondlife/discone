@@ -24,8 +24,11 @@ public class IvanDialogueView : DialogueViewBase
 
     LocalizedLine currentLine = null;
 
+    TextShakeChars textAnimator;
+
     void Start()
     {
+        textAnimator = GetComponent<TextShakeChars>();
         canvasGroup.alpha = 0;
     }
 
@@ -66,12 +69,10 @@ public class IvanDialogueView : DialogueViewBase
         }
 
         // This is where i would do animations... if i had any!!!
-        foreach(MarkupAttribute attr in dialogueLine.Text.Attributes) {
-            Debug.Log(attr.ToString());
-            Debug.Log(attr.Length); // number of charactres
-            Debug.Log(attr.Name); // e.g. "shake"
-            Debug.Log(attr.Position); // position of first character
-            Debug.Log(attr.Properties); // idk
+        foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
+            if (attr.Name == "shake") {
+                textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
+            }
         }
 
 
