@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class TextShake : MonoBehaviour
+public class TextShakeChars : MonoBehaviour
 {
 
     public float AngleMultiplier = 1.0f;
@@ -26,8 +26,10 @@ public class TextShake : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_TextComponent = GetComponent<TMP_Text>();
-        Coroutine coroutine = StartCoroutine(ShakeText());
+        // get the right text component
+        //m_TextComponent = GetComponent<TMP_Text>();
+
+      //  Coroutine coroutine = StartCoroutine(ShakeText());
         
     }
 
@@ -48,9 +50,13 @@ public class TextShake : MonoBehaviour
             hasTextChanged = true;
     }
 
+    public void StartShakeText(TMP_Text text, int startPos, int length) {
+        m_TextComponent = text;
+        Coroutine coroutine = StartCoroutine(ShakeText(startPos, length));
 
+    }
 
-    IEnumerator ShakeText()
+    IEnumerator ShakeText(int startPos, int length)
     {
 
     m_TextComponent.ForceMeshUpdate();
@@ -95,8 +101,7 @@ public class TextShake : MonoBehaviour
             continue;
         }
 
-
-        for (int i = 0; i < characterCount; i++)
+        for (int i = startPos; i < startPos + length; i++)
         {
             TMP_CharacterInfo charInfo = textInfo.characterInfo[i];
 
