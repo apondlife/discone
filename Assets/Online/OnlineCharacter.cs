@@ -29,7 +29,6 @@ class OnlineCharacter: NetworkBehaviour {
             var model = GetComponentInChildren<ThirdPerson.CharacterModel>();
             model.enabled = false;
         }
-
     }
 
     public override void OnStartLocalPlayer() {

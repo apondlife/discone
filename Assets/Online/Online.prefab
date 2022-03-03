@@ -83,8 +83,16 @@ MonoBehaviour:
   networkAddress: 47.20.188.207
   maxConnections: 100
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 9194740061224754742, guid: 2e7184c6685c20a40b0c0277e4c78af3, type: 3}
+  playerPrefab: {fileID: 839802167741535671, guid: b9693b3e51d224246a5c785002ab2f85, type: 3}
   autoCreatePlayer: 0
   playerSpawnMethod: 0
   spawnPrefabs: []
-  m_PlayerCharacter: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
+  m_HostAddress:
+    _usage: 2
+    _value: 
+    _constant: {fileID: 0}
+    _variable: {fileID: 11400000, guid: 9a1de8f959c00404e8f4ea3f74be29c0, type: 2}
+    _variableInstancer: {fileID: 0}
+  m_StartHostEvent: {fileID: 11400000, guid: 5278b8672edc5db4c962b030e88727a0, type: 2}
+  m_StartClientEvent: {fileID: 11400000, guid: 4317195ff7eed3b459aaacbfbb45ea67, type: 2}
+  m_Player: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
