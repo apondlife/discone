@@ -83,6 +83,11 @@ public sealed class Field: MonoBehaviour {
             return;
         }
 
+        // if the target is active
+        if (!m_TargetObject.Value) {
+            return;
+        }
+
         var tt = m_TargetObject.Value.transform;
 
         // if the target changed chunks, create neighbors

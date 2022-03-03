@@ -9,8 +9,16 @@ using ThirdPerson;
 [RequireComponent(typeof(Player))]
 sealed class OnlinePlayer: NetworkBehaviour {
     // -- references --
+    [Header("references")]
     [Tooltip("a reference to the player character")]
     [SerializeField] GameObjectVariable m_Player;
+
+    // -- lifecycle --
+    void Awake() {
+        if (isLocalPlayer) {
+            
+        }
+    }
 
     // -- NetworkBehaviour --
     public override void OnStartClient() {
