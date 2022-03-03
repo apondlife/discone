@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: frog tunables
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
-  m_Acceleration: 20
+  m_Acceleration: 1
   m_Deceleration: 1.3
   m_MinPlanarSpeed: 0.85
   m_TurnSpeed: 200
@@ -59,8 +59,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_WallGravity: -85
-  m_TiltForBaseAcceleration: 30
-  m_MaxTilt: 69
+  m_TiltForBaseAcceleration: 10
+  m_MaxTilt: 20
   m_TiltSmoothing: 0.1
   m_DutchScale: 0.2
   m_DutchSmoothing: 0.2
