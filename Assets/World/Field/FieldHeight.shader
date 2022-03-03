@@ -1,4 +1,4 @@
-Shader "Custom/DesertHeight" {
+Shader "Custom/FieldHeight" {
     Properties {
         _FloorScale ("Floor Noise Scale", Float) = .01
         _MinFloor ("Min Floor", Float) = 100
