@@ -1,8 +1,7 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
+using UnityEngine.Serialization;
 
 public class Online: NetworkManager {
     // -- types --
@@ -12,9 +11,28 @@ public class Online: NetworkManager {
     }
 
     // -- fields --
-    [Header("dependencies")]
+    [Header("state")]
+    [Tooltip("the host address to connect to")]
+    [SerializeField] StringReference m_HostAddress;
+
+    [Header("events")]
+    [Tooltip("an event when the starts")]
+    [SerializeField] VoidEvent m_StartHostEvent;
+
+    [Tooltip("an event when the starts")]
+    [SerializeField] VoidEvent m_StartClientEvent;
+
+    [Header("deps")]
     [Tooltip("a reference to the player character")]
-    [SerializeField] GameObjectVariable m_PlayerCharacter;
+    [FormerlySerializedAs("m_PlayerCharacter")]
+    [SerializeField] GameObjectVariable m_Player;
+
+    // -- lifecycle --
+    void Awake() {
+        // bind events
+        m_StartHostEvent.Register(OnStartHost);
+        m_StartClientEvent.Register(OnStartClient);
+    }
 
     // -- NetworkManager --
     public override void OnStartServer() {
@@ -28,24 +46,26 @@ public class Online: NetworkManager {
 
         // you can send the message here, or wherever else you want
         NetworkClient.Send(new CreateCharacter() {
-            Position = m_PlayerCharacter.Value.transform.position
+            Position = m_Player.Value.transform.position
         });
     }
 
     // -- events --
     /// when a new character spawns on the server
     void OnCreateCharacter(NetworkConnection conn, CreateCharacter msg) {
-        // instantiate the online player character
-        // NOTE:the offline character is destroyed in OnlineCharacter.OnStartLocalPlayer
-        GameObject obj = Instantiate(playerPrefab);
-        obj.name = $"OnlinePlayer-{conn.connectionId}";
-        obj.transform.position = msg.Position;
-
-        // add them to the game
+        // add the online player to the game
+        var obj = OnlinePlayer.Spawn(playerPrefab, conn.connectionId, msg.Position);
         NetworkServer.AddPlayerForConnection(conn, obj);
     }
 
-    public void SetNetworkAddress(string address) {
-        networkAddress = address;
+    /// when the host starts
+    void OnStartHost() {
+        StartHost();
+    }
+
+    /// when the host starts
+    void OnStartClient() {
+        networkAddress = m_HostAddress.Value;
+        StartClient();
     }
 }
