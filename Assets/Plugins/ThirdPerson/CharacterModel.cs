@@ -1,27 +1,36 @@
 using UnityEngine;
-using Cinemachine;
 
 namespace ThirdPerson {
 
-// needs a reference to ThirdPersonCharacter
-public sealed class CharacterModel : MonoBehaviour {
+/// a container for the character's model and animations
+public sealed class CharacterModel: MonoBehaviour {
+    // -- fields --
+    [Header("references")]
+    [Tooltip("The shared third person animator controller")]
+    [SerializeField] private RuntimeAnimatorController m_AnimatorController;
+
     // -- props --
     /// the character's animator
     private Animator m_Animator;
+
     /// the character's state
     private CharacterState m_State;
 
-    /// the previous state frame
     /// the character's tunables
     private CharacterTunablesBase m_Tunables;
 
     // -- lifecycle --
     void Awake() {
-        m_Animator = GetComponentInChildren<Animator>();
-
+        // get dependencies
         var container = GetComponentInParent<ThirdPerson>();
         m_Tunables = container.Tunables;
         m_State = container.State;
+
+        // configure animator
+        m_Animator = GetComponentInChildren<Animator>();
+        if (m_Animator != null && m_Animator.runtimeAnimatorController == null) {
+            m_Animator.runtimeAnimatorController = m_AnimatorController;
+        }
     }
 
     void FixedUpdate() {
@@ -33,12 +42,13 @@ public sealed class CharacterModel : MonoBehaviour {
     // -- commands --
     /// sync the animator's params
     void SyncAnimator() {
-        if (m_Animator == null) {
+        var anim = m_Animator;
+        if (anim == null || anim.runtimeAnimatorController == null) {
             return;
         }
 
         // set move animation params
-        m_Animator.SetFloat(
+        anim.SetFloat(
             "MoveSpeed",
             Mathf.InverseLerp(
                 m_Tunables.MinPlanarSpeed,
@@ -48,17 +58,17 @@ public sealed class CharacterModel : MonoBehaviour {
         );
 
         // set jump animation params
-        m_Animator.SetBool(
+        anim.SetBool(
             "JumpSquat",
             m_State.IsInJumpSquat
         );
 
-        m_Animator.SetBool(
+        anim.SetBool(
             "Airborne",
             !m_State.IsGrounded
         );
 
-        m_Animator.SetFloat(
+        anim.SetFloat(
             "VerticalSpeed",
             m_State.VerticalSpeed
         );
