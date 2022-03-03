@@ -1,7 +1,6 @@
-Shader "Custom/Desert" {
+Shader "Custom/Field" {
     Properties {
         _Scale ("Scale", Float) = 1.0
-        _Period ("Period", Float) = 0.1
         _Bands ("Bands", Int) = -1
         _ViewDist ("View Distance", Float) = 0.0
         _HueMin ("Hue Min", Range(0.0, 2.0)) = 0.0
@@ -18,53 +17,45 @@ Shader "Custom/Desert" {
         }
 
         Pass {
-            // from : https://alastaira.wordpress.com/2014/12/30/adding-shadows-to-a-unity-vertexfragment-shader-in-7-easy-steps/
-            // 1.) This will be the base forward rendering pass in which ambient, vertex, and
-            // main directional light will be applied. Additional lights will need additional passes
-            // using the "ForwardAdd" lightmode.
-            // see: http://docs.unity3d.com/Manual/SL-PassTags.html
-            Tags { "LightMode" = "ForwardBase" }
+            Tags {
+                "LightMode" = "ForwardBase"
+            }
 
             CGPROGRAM
             // -- config --
             #pragma vertex DrawVert
             #pragma fragment DrawFrag
             #pragma multi_compile_fog
-
-            // 2.) This matches the "forward base" of the LightMode tag to ensure the shader compiles
-            // properly for the forward bass pass. As with the LightMode tag, for any additional lights
-            // this would be changed from _fwdbase to _fwdadd.
             #pragma multi_compile_fwdbase
 
-            // 3.) Reference the Unity library that includes all the lighting shadow macros
-            #include "AutoLight.cginc"
 
             // -- includes --
             #include "UnityCG.cginc"
+            #include "AutoLight.cginc"
             #include "../../Post/Core/Color.cginc"
 
             // -- types --
             /// the vertex shader input
             struct VertIn {
-                float4 pos : POSITION;
-
+                // NOTE: shadow shader macros require this name
+                float4 vertex : POSITION;
             };
 
             /// the fragment shader input
             struct FragIn {
+                // NOTE: shadow shader macros require this name
                 float4 pos : SV_POSITION;
                 float3 wPos : TEXCOORD0;
                 float  saturation : TEXCOORD1;
                 float  value : TEXCOORD2;
-                UNITY_FOG_COORDS(3)
+                LIGHTING_COORDS(3,4)
+                UNITY_FOG_COORDS(5)
+
             };
 
             // -- props --
             /// the noise scale
             float _Scale;
-
-            /// the noise period
-            float _Period;
 
             /// the number of bands
             float _Bands;
@@ -160,7 +151,7 @@ Shader "Custom/Desert" {
             }
 
             // -- program --
-            FragIn DrawVert(appdata_base v) {
+            FragIn DrawVert(VertIn v) {
                 float3 pos = v.vertex.xyz;
 
                 FragIn o;
@@ -171,6 +162,7 @@ Shader "Custom/Desert" {
                 o.saturation = lerp(_SatMin, _SatMax, dist);
                 o.value = lerp(_ValMin, _ValMax, dist);
 
+                TRANSFER_VERTEX_TO_FRAGMENT(o);
                 UNITY_TRANSFER_FOG(o, o.pos);
 
                 return o;
@@ -179,10 +171,6 @@ Shader "Custom/Desert" {
             fixed4 DrawFrag(FragIn f) : SV_Target {
                 // scale by uniform
                 float2 st = f.wPos.xz * _Scale;
-
-                // shift w/ time
-                st.x += _CosTime * _Period;
-                st.y += _SinTime * _Period;
 
                 // generate image
                 float3 c = IntoRgb(float3(
@@ -194,8 +182,8 @@ Shader "Custom/Desert" {
                 // produce color
                 fixed4 col = fixed4(c, 1.0f);
 
-                // apply fog
-                // float atten = LIGHT_ATTENUATION(f);
+                // apply lighting & fog
+                col *= LIGHT_ATTENUATION(f);
                 UNITY_APPLY_FOG(f.fogCoord, col);
 
                 return col;
