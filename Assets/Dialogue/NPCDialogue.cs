@@ -28,14 +28,15 @@ public class NPCDialogue : MonoBehaviour {
 
 
   private const string _dialogueTargetTag = "PlayerDialogueTarget";
-  [SerializeField] private bool _canTalk = false;
+  [SerializeField] private bool _playerInTalkRange = false;
 
   void Start () {
     if (talkable) talkable.SetActive(false);
   }
 
+  // NOTE: this should never run if we're already talking, should check for input before this
   public void TryTalk() {
-    if (_canTalk && !m_IsDialogueBusy.Value) {
+    if (_playerInTalkRange && !m_IsDialogueBusy.Value) {
         Debug.Log("start dialog " + dialogueMessage);
         m_StartDialogue.Raise(dialogueMessage);
         m_StartDialogueWithCharacter.Raise(Character);
@@ -45,14 +46,14 @@ public class NPCDialogue : MonoBehaviour {
   void OnTriggerEnter(Collider other) {
     if (other.CompareTag(_dialogueTargetTag)) {
       Debug.Log("can talk!!!");
-      _canTalk = true;
+      _playerInTalkRange = true;
       if (talkable) talkable.SetActive(true);
     }
   }
 
   void OnTriggerExit(Collider other) {
     if (other.CompareTag(_dialogueTargetTag)) {
-      _canTalk = false;
+      _playerInTalkRange = false;
       if (talkable) talkable.SetActive(false);
       // TODO: end dialogue on exit, new atom?
     }
