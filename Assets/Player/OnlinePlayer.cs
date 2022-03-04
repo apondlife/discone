@@ -1,34 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityAtoms.BaseAtoms;
 using ThirdPerson;
 
 /// an online player
+/// TODO: swap (drive) characters by setting m_CurrentCharacter
+/// TODO: what to do for multiple players? variable instancer?
 [RequireComponent(typeof(Player))]
 sealed class OnlinePlayer: NetworkBehaviour {
     // -- references --
     [Header("references")]
-    [Tooltip("a reference to the player character")]
-    [SerializeField] GameObjectVariable m_Player;
+    [Tooltip("a reference to the current player")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_CurrentPlayer")]
+    [SerializeField] GameObjectVariable m_CurrentPlayer;
+
+    [Tooltip("a reference to the crruent player's character")]
+    [SerializeField] GameObjectVariable m_CurrentCharacter;
 
     // -- lifecycle --
-    void Awake() {
-        if (isLocalPlayer) {
-            
+    void Start() {
+        if (m_CurrentPlayer.Value == gameObject) {
+            Debug.Log($"start & isLocalPlayer");
+            DriveInitialCharacter();
         }
     }
 
     // -- NetworkBehaviour --
-    public override void OnStartClient() {
-        base.OnStartClient();
-
-        // disable camera for other players
-        if (!isLocalPlayer) {
-        }
-    }
-
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
 
@@ -37,7 +34,22 @@ sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     // -- commands --
-    /// spawn a new player
+    /// drive the initial character, if it's configured
+    void DriveInitialCharacter() {
+        var p = m_CurrentPlayer.GetComponent<Player>();
+        var c = m_CurrentCharacter.GetComponent<ThirdPerson.ThirdPerson>();
+
+        // ensure these are configured properly
+        if (p == null && c == null) {
+            Debug.LogError("missing initial player or character");
+            return;
+        }
+
+        // drive the initial character
+        p.Drive(c);
+    }
+
+    /// connect an online copy of the player
     public static GameObject Spawn(GameObject prefab, int id, Vector3 pos) {
         var obj = GameObject.Instantiate(prefab);
         obj.name = $"Player-{id}";
@@ -52,12 +64,12 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
         // replace the offline character with the online one (see: Online.OnCreateCharacter)
         var online = GetComponent<Player>();
-        var offline = m_Player.GetComponent<Player>();
+        var offline = m_CurrentPlayer.GetComponent<Player>();
 
         var character = offline.CurrentCharacter;
         online.Drive(character);
         Destroy(offline.gameObject);
 
-        m_Player.Value = gameObject;
+        m_CurrentPlayer.Value = gameObject;
     }
 }
