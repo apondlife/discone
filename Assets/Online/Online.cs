@@ -28,17 +28,19 @@ public class Online: NetworkManager {
     [SerializeField] GameObjectVariable m_Player;
 
     // -- lifecycle --
-    void Awake() {
+    public override void Awake() {
+        base.Awake();
+
         // bind events
-        m_StartHostEvent.Register(OnStartHost);
-        m_StartClientEvent.Register(OnStartClient);
+        m_StartHostEvent.Register(DidStartHost);
+        m_StartClientEvent.Register(DidStartClient);
     }
 
     // -- NetworkManager --
     public override void OnStartServer() {
         base.OnStartServer();
 
-        NetworkServer.RegisterHandler<CreateCharacter>(OnCreateCharacter);
+        NetworkServer.RegisterHandler<CreateCharacter>(DidCreateCharacter);
     }
 
     public override void OnClientConnect() {
@@ -52,19 +54,19 @@ public class Online: NetworkManager {
 
     // -- events --
     /// when a new character spawns on the server
-    void OnCreateCharacter(NetworkConnection conn, CreateCharacter msg) {
+    void DidCreateCharacter(NetworkConnection conn, CreateCharacter msg) {
         // add the online player to the game
         var obj = OnlinePlayer.Spawn(playerPrefab, conn.connectionId, msg.Position);
         NetworkServer.AddPlayerForConnection(conn, obj);
     }
 
     /// when the host starts
-    void OnStartHost() {
+    void DidStartHost() {
         StartHost();
     }
 
     /// when the host starts
-    void OnStartClient() {
+    void DidStartClient() {
         networkAddress = m_HostAddress.Value;
         StartClient();
     }
