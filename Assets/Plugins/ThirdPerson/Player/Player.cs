@@ -16,7 +16,9 @@ public class Player: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        Drive(m_CurrentCharacter);
+        if (m_CurrentCharacter != null) {
+            Drive(m_CurrentCharacter);
+        }
     }
 
     void Update() {
@@ -34,6 +36,7 @@ public class Player: MonoBehaviour {
         }
     }
 
+    /// drive a particular character
     public void Drive(ThirdPerson character) {
         if(m_CurrentCharacter != null) {
             m_CurrentCharacter.Input.Drive(null);
