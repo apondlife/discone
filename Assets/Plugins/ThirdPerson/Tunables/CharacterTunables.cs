@@ -28,10 +28,10 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     public override float MaxPlanarSpeed => Acceleration / Deceleration;
 
     /// the time to to reach max speed from zero.
-    public override float TimeToMaxSpeed => TimeToPercentMaxSpeed(0.999f);
+    public override float TimeToMaxSpeed => TimeToPercentMaxSpeed((MaxPlanarSpeed - MinPlanarSpeed)/MaxPlanarSpeed);
 
     /// the time to stop from max speed
-    public override float TimeToStop => TimeToPercentMaxSpeed(0.001f);
+    public override float TimeToStop => TimeToPercentMaxSpeed(MinPlanarSpeed/MaxPlanarSpeed);
 
     [Tooltip("the turn speed in radians")]
     [SerializeField] private float m_TurnSpeed;
