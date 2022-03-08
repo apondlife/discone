@@ -158,8 +158,10 @@ public sealed class MusicSource: MonoBehaviour {
         // copy templated props
         var tmp = m_Template;
         if (tmp != null) {
+            src.outputAudioMixerGroup = tmp.outputAudioMixerGroup;
             src.minDistance = tmp.minDistance;
             src.maxDistance = tmp.maxDistance;
+            src.dopplerLevel = tmp.dopplerLevel;
 
             var t0 = AudioSourceCurveType.CustomRolloff;
             var t1 = AudioSourceCurveType.Spread;

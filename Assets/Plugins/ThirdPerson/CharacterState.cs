@@ -34,6 +34,9 @@ public sealed class CharacterState {
     [Tooltip("if the character is in jump squat")]
     public bool IsInJumpSquat = false;
 
+    [Tooltip("the current frame of jump squat")]
+    public int JumpSquatFrame = -1;
+
     [Tooltip("if the character is in its first jump frame")]
     public bool IsInJumpStart = false;
 
