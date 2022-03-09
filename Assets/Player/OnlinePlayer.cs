@@ -7,7 +7,7 @@ using ThirdPerson;
 /// TODO: swap (drive) characters by setting m_CurrentCharacter
 /// TODO: what to do for multiple players? variable instancer?
 [RequireComponent(typeof(Player))]
-sealed class OnlinePlayer: NetworkBehaviour {
+sealed class OnlinePlayer: MonoBehaviour {
     // -- references --
     [Header("references")]
     [Tooltip("a reference to the current player")]
@@ -20,28 +20,32 @@ sealed class OnlinePlayer: NetworkBehaviour {
     // -- lifecycle --
     void Start() {
         if (m_CurrentPlayer.Value == gameObject) {
-            Debug.Log($"start & isLocalPlayer");
             DriveInitialCharacter();
         }
     }
 
     // -- NetworkBehaviour --
-    public override void OnStartLocalPlayer() {
-        base.OnStartLocalPlayer();
+    // public override void OnStartLocalPlayer() {
+    //     base.OnStartLocalPlayer();
 
-        // transfer control from offline to online player
-        Transfer();
-    }
+    //     // transfer control from offline to online player
+    //     Transfer();
+    // }
 
     // -- commands --
     /// drive the initial character, if it's configured
     void DriveInitialCharacter() {
+        // get the initial player
         var p = m_CurrentPlayer.GetComponent<Player>();
-        var c = m_CurrentCharacter.GetComponent<ThirdPerson.ThirdPerson>();
+        if (!p) {
+            Debug.LogError("missing initial player");
+            return;
+        }
 
-        // ensure these are configured properly
-        if (p == null && c == null) {
-            Debug.LogError("missing initial player or character");
+        // get the initial character
+        var c = m_CurrentCharacter.GetComponent<ThirdPerson.ThirdPerson>();
+        if (!c) {
+            Debug.LogError("missing initial character");
             return;
         }
 
@@ -49,27 +53,27 @@ sealed class OnlinePlayer: NetworkBehaviour {
         p.Drive(c);
     }
 
-    /// connect an online copy of the player
-    public static GameObject Spawn(GameObject prefab, int id, Vector3 pos) {
-        var obj = GameObject.Instantiate(prefab);
-        obj.name = $"Player-{id}";
-        obj.transform.position = pos;
-        return obj;
-    }
+    // /// connect an online copy of the player
+    // public static GameObject Spawn(GameObject prefab, int id, Vector3 pos) {
+    //     var obj = GameObject.Instantiate(prefab);
+    //     obj.name = $"Player-{id}";
+    //     obj.transform.position = pos;
+    //     return obj;
+    // }
 
-    /// transfer control to online player and destroy offline version
-    public void Transfer() {
-        // give the local player a special name
-        gameObject.name = "Player (local)";
+    // /// transfer control to online player and destroy offline version
+    // public void Transfer() {
+    //     // give the local player a special name
+    //     gameObject.name = "Player (local)";
 
-        // replace the offline character with the online one (see: Online.OnCreateCharacter)
-        var online = GetComponent<Player>();
-        var offline = m_CurrentPlayer.GetComponent<Player>();
+    //     // replace the offline character with the online one (see: Online.OnCreateCharacter)
+    //     var online = GetComponent<Player>();
+    //     var offline = m_CurrentPlayer.GetComponent<Player>();
 
-        var character = offline.CurrentCharacter;
-        online.Drive(character);
-        Destroy(offline.gameObject);
+    //     var character = offline.CurrentCharacter;
+    //     online.Drive(character);
+    //     Destroy(offline.gameObject);
 
-        m_CurrentPlayer.Value = gameObject;
-    }
+    //     m_CurrentPlayer.Value = gameObject;
+    // }
 }
