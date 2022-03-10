@@ -8,14 +8,18 @@ namespace ThirdPerson {
 public sealed class ThirdPersonCamera: MonoBehaviour {
     // -- fields --
     [Header("references")]
-    [Tooltip("the cinemachine camera")]
-    CinemachineVirtualCamera m_Camera;
-
-
     [Tooltip("the character's tunables/constants")]
     [SerializeField] CharacterTunablesBase m_Tunables;
 
+    // -- hacks --
+    [Header("hacks")]
+    [Tooltip("the recenter action")]
+    [SerializeField] InputActionReference m_Recenter;
+
     // -- props --
+    /// the cinemachine camera
+    CinemachineVirtualCamera m_Camera;
+
     /// the camera's transposer (the body; controls camera movement)
     CinemachineTransposer m_Transposer;
 
@@ -23,17 +27,26 @@ public sealed class ThirdPersonCamera: MonoBehaviour {
     CharacterState m_State;
 
     // -- lifecycle --
-    private void Awake() {
+    void Awake() {
         m_Camera = GetComponent<CinemachineVirtualCamera>();
         m_Transposer = m_Camera.GetCinemachineComponent<CinemachineTransposer>();
         m_State = GetComponentInParent<ThirdPerson>().State;
     }
 
-    private void Start() {
+    void Start() {
         SetDamping(m_Tunables.Damping);
     }
 
-    private void FixedUpdate() {
+    void Update() {
+        var recenter = m_Recenter.action;
+        if (recenter.WasPressedThisFrame()) {
+            SetDamping(m_Tunables.FastDamping);
+        } else if (recenter.WasReleasedThisFrame()) {
+            SetDamping(m_Tunables.Damping);
+        }
+    }
+
+    void FixedUpdate() {
         // get angle between tilt up and camera up
         var tilt = Vector3.SignedAngle(
             transform.up,
@@ -58,13 +71,6 @@ public sealed class ThirdPersonCamera: MonoBehaviour {
     /// set the camera's yaw damping to control recentering speed (lower is faster)
     void SetDamping(float damping) {
         m_Transposer.m_YawDamping = damping;
-    }
-
-    // -- events --
-    /// recenter the camera on the player
-    public void OnRecenter(InputAction.CallbackContext ctx) {
-        var pressed = ctx.ReadValueAsButton();
-        SetDamping(pressed ? m_Tunables.FastDamping : m_Tunables.Damping);
     }
 }
 
