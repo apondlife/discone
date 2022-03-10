@@ -173,10 +173,6 @@ MonoBehaviour:
     m_ActionName: Player/Look[/XInputControllerWindows/rightStick,/Mouse/delta]
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: d2bddad8-42c9-4e8f-93b3-d48094bb4752
-    m_ActionName: Player/Fire[/XInputControllerWindows/rightTrigger,/Mouse/leftButton]
-  - m_PersistentCalls:
-      m_Calls: []
     m_ActionId: 7ccefbfa-e8cc-4d40-89a0-473a077addc8
     m_ActionName: Player/Jump[/Keyboard/space]
   - m_PersistentCalls:
@@ -228,25 +224,9 @@ MonoBehaviour:
     m_ActionId: f5b46e8d-f7b3-47d8-8ca2-e0627182e565
     m_ActionName: Player/Camera[/Keyboard/c]
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 11400000, guid: 5ba3f5b973626da43a2d38dd2dbca59b, type: 2}
-        m_TargetAssemblyTypeName: UnityAtoms.BaseAtoms.VoidEvent, UnityAtoms.UnityAtomsBaseAtoms.Runtime
-        m_MethodName: Raise
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 92bd5ce6-633f-4731-8f6d-69a8587f37cd
     m_ActionName: Player/Talk[/Keyboard/space]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 92c8b4b4-8c17-4292-8626-e48686a8d231
-    m_ActionName: Player/NextLine[/Keyboard/space]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
