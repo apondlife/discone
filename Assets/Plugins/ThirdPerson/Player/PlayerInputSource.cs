@@ -17,6 +17,11 @@ public sealed class PlayerInputSource: MonoBehaviour, CharacterInputSource {
     [SerializeField] private InputActionReference m_Jump;
 
     // -- CharacterInputSource --
+    /// if the input is enabled
+    public bool IsEnabled {
+        get => enabled;
+    }
+
     /// read the next frame of input
     public CharacterInput.Frame Read() {
         var forward = Vector3.Normalize(Vector3.ProjectOnPlane(

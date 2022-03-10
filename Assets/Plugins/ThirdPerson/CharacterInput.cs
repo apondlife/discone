@@ -19,7 +19,7 @@ public sealed class CharacterInput {
 
     /// read the next frame of input
     public void Read() {
-        if (m_Source == null) {
+        if (m_Source == null || !m_Source.IsEnabled) {
             return;
         }
 
