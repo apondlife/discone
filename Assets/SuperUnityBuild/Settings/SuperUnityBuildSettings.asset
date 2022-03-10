@@ -74,43 +74,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _basicSettings:
     baseBuildFolder: Artifacts\Builds
-    buildPath: $VERSION/$RELEASE_TYPE/$PLATFORM/$ARCHITECTURE
+    buildPath: $VERSION/$RELEASE_TYPE-$PLATFORM-$ARCHITECTURE
     openFolderPostBuild: 1
   _productParameters:
-    buildCounter: 69
-    buildVersion: 
+    buildCounter: 70
+    buildVersion: discone.2022.03.10.70
     versionTemplate: discone.$YEAR.$MONTH.$DAY.$BUILD
     autoGenerate: 1
     syncWithPlayerSettings: 0
   _releaseTypeList:
     releaseTypes:
-    - typeName: NewReleaseType
-      bundleIdentifier: com.pondlife.pondlife
+    - typeName: alpha
+      bundleIdentifier: com.pondlife.discone
       companyName: pondlife
-      productName: pondlife #1
+      productName: discone
       buildOptions: 0
       customDefines: 
       sceneList:
-        enabledScenes: []
+        enabledScenes:
+        - fileGUID: 3da4a01a1c52a1e40935e78e6f152d85
   _platformList:
     platforms:
     - {fileID: -4890373150655689217}
     - {fileID: 9141539422439069234}
   _projectConfigurations:
     configSet:
-      _Buckets: ffffffff04000000ffffffff01000000ffffffff0000000002000000
-      _HashCodes: cf10b466150f5805f1b29a7531730433494e1b2d0000000000000000
-      _Next: ffffffffffffffffffffffffffffffff030000000000000000000000
+      _Buckets: 0100000003000000ffffffff0400000002000000ffffffffffffffff
+      _HashCodes: 4cceda1e46336e1faaca4f25c888304ebad827170000000000000000
+      _Next: ffffffffffffffffffffffff00000000ffffffff0000000000000000
       _Count: 5
       _Version: 5
       _FreeList: -1
       _FreeCount: 0
       _Keys:
-      - NewReleaseType/PC/Windows x86 (App)
-      - NewReleaseType/PC
-      - NewReleaseType/macOS/macOS (Intelx64,App)
-      - NewReleaseType/macOS
-      - NewReleaseType
+      - alpha/PC/Windows x86 (App)
+      - alpha/PC
+      - alpha/macOS/macOS (Intelx64,App)
+      - alpha/macOS
+      - alpha
       - 
       - 
       _Values:
@@ -118,16 +119,16 @@ MonoBehaviour:
         childKeys: []
       - enabled: 1
         childKeys:
-        - NewReleaseType/PC/Windows x86 (App)
+        - alpha/PC/Windows x86 (App)
       - enabled: 1
         childKeys: []
       - enabled: 1
         childKeys:
-        - NewReleaseType/macOS/macOS (Intelx64,App)
+        - alpha/macOS/macOS (Intelx64,App)
       - enabled: 1
         childKeys:
-        - NewReleaseType/PC
-        - NewReleaseType/macOS
+        - alpha/PC
+        - alpha/macOS
       - enabled: 1
         childKeys: []
       - enabled: 1
