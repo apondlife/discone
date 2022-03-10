@@ -5,8 +5,8 @@ using System.Linq;
 /// rename children of a game object; found on the internet
 public sealed class RenameSelected: EditorWindow {
     // -- constants --
-    /// the window size
-    static readonly Vector2Int k_Size = new Vector2Int(250, 100);
+    /// the operation name
+    const string k_Name = "rename";
 
     // -- props --
     /// the name of the objects
@@ -16,11 +16,21 @@ public sealed class RenameSelected: EditorWindow {
     int m_Start;
 
     /// -- lifecycle --
+    /// show the window
+    [MenuItem("GameObject/Selection/rename")]
+    public static void Init() {
+        EditorWindow window = GetWindow<RenameSelected>();
+        window.name = k_Name;
+        window.Show();
+    }
+
     void OnGUI() {
+        // show fields
         m_Name = EditorGUILayout.TextField("name", m_Name);
         m_Start = EditorGUILayout.IntField("start index", m_Start);
 
-        if (GUILayout.Button("rename")) {
+        // show button
+        if (GUILayout.Button(k_Name)) {
             Rename();
         }
     }
@@ -28,9 +38,20 @@ public sealed class RenameSelected: EditorWindow {
     // -- commands --
     /// rename selected objects
     void Rename() {
+        var all = Selection.gameObjects;
+
+        // create undo record
+        Undo.IncrementCurrentGroup();
+        Undo.SetCurrentGroupName(k_Name);
+
+        foreach (var obj in all) {
+            Undo.RegisterCompleteObjectUndo(obj, k_Name);
+        }
+
+        Undo.IncrementCurrentGroup();
+
         // sort selected objects by index
-        var sorted = Selection
-            .gameObjects
+        var sorted = all
             .OrderBy((o) => o.transform.GetSiblingIndex());
 
         // rename all the objects
@@ -39,15 +60,5 @@ public sealed class RenameSelected: EditorWindow {
             obj.name = $"{m_Name}{m_Start + i}";
             i++;
         }
-    }
-
-    // -- factories --
-    /// show the window
-    [MenuItem("GameObject/Selection/rename")]
-    public static void Create() {
-        EditorWindow window = GetWindow<RenameSelected>();
-        window.name = "rename selection";
-        window.minSize = k_Size;
-        window.maxSize = k_Size;
     }
 }

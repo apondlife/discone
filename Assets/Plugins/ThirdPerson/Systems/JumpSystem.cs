@@ -8,9 +8,6 @@ sealed class JumpSystem: CharacterSystem {
     /// the current frame in coyote time
     int m_CoyoteFrame = 0;
 
-    /// the current frame in jump squat
-    int m_JumpSquatFrame = 0;
-
     // -- lifetime --
     public JumpSystem(Character character)
         : base(character) {
@@ -56,7 +53,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void JumpSquat_Enter() {
         m_State.IsInJumpSquat = true;
-        m_JumpSquatFrame = 0;
+        m_State.JumpSquatFrame  = 0;
     }
 
     void JumpSquat_Update() {
@@ -68,9 +65,9 @@ sealed class JumpSystem: CharacterSystem {
         // jump if jump was released or jump squat ended
         var shouldJump = (
             // if the jump squat finished
-            m_JumpSquatFrame >= m_Tunables.MaxJumpSquatFrames ||
+            m_State.JumpSquatFrame >= m_Tunables.MaxJumpSquatFrames ||
             // or jump was released after the minimum
-            (!m_Input.IsJumpPressed && m_JumpSquatFrame >= m_Tunables.MinJumpSquatFrames)
+            (!m_Input.IsJumpPressed && m_State.JumpSquatFrame >= m_Tunables.MinJumpSquatFrames)
         );
 
         if (shouldJump) {
@@ -92,7 +89,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // count jump squat frames
-        m_JumpSquatFrame += 1;
+        m_State.JumpSquatFrame += 1;
     }
 
     void JumpSquat_Exit() {
@@ -111,7 +108,7 @@ sealed class JumpSystem: CharacterSystem {
         var pct = Mathf.InverseLerp(
             m_Tunables.MinJumpSquatFrames,
             m_Tunables.MaxJumpSquatFrames,
-            m_JumpSquatFrame
+            m_State.JumpSquatFrame
         );
 
         pct = m_Tunables.JumpSpeedCurve.Evaluate(pct);

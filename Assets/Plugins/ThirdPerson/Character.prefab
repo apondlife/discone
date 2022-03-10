@@ -4839,8 +4839,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.0689576, y: 0.0006900429, z: 0.000047702335, w: 0.99761933}
-  m_LocalPosition: {x: -0.013820529, y: 1.2610092, z: -9.989695}
+  m_LocalRotation: {x: -0.007656164, y: 0.0006906987, z: 0.0000052885157, w: 0.9999705}
+  m_LocalPosition: {x: -0.013800144, y: 1.2610092, z: -9.989739}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1785480724}
@@ -4871,7 +4871,7 @@ MonoBehaviour:
     FieldOfView: 60
     OrthographicSize: 5
     NearClipPlane: 0.3
-    FarClipPlane: 300
+    FarClipPlane: 5000
     Dutch: -0.0000001318375
     LensShift: {x: 0, y: 0}
   m_Transitions:
@@ -5040,7 +5040,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.8
+      scalar: 0.6
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -7055,7 +7055,7 @@ ParticleSystem:
     m_Curve:
       serializedVersion: 2
       minMaxState: 1
-      scalar: 5
+      scalar: 3
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -9786,7 +9786,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4044717213e31446939f7bd49c896ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TrackedObjectOffset: {x: 0, y: 1.26, z: 0}
+  m_TrackedObjectOffset: {x: 0, y: 0, z: 0}
   m_LookaheadTime: 0.362
   m_LookaheadSmoothing: 7.6
   m_LookaheadIgnoreY: 0
@@ -9816,8 +9816,8 @@ MonoBehaviour:
   m_BindingMode: 1
   m_FollowOffset: {x: -0.01382088, y: 2.261009, z: -9.98969}
   m_XDamping: 2
-  m_YDamping: 2
-  m_ZDamping: 0
+  m_YDamping: 0.16
+  m_ZDamping: 0.1
   m_AngularDampingMode: 0
   m_PitchDamping: 0
   m_YawDamping: 20
@@ -9868,7 +9868,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b8caf1437dfd1545a9456404a5582bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FloorParticlesBaseEmission: 0.2
+  m_FloorParticlesBaseEmission: 0.04
   m_WallParticles: {fileID: 361040688}
   m_FloorParticles: {fileID: 1378686940}
 --- !u!1 &7562501268775911199
@@ -9914,6 +9914,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b04aa04aaec9e841bd620ab61ec9231, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AnimateScale: 1
+  MaxJumpSquatSquash: 0.8
+  JumpSquatSquashCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -2.2470524
+      outSlope: -2.2470524
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.07391114
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -0.032639936
+      outSlope: -0.032639936
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.43372136
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  VerticalAccelerationStretch: 0.01
+  VerticalAccelerationStretchCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  StretchAndSquashLerp: 0.1
+  MinSquashScale: 0.4
+  MaxSquashScale: 1.5
   m_AnimatorController: {fileID: 9100000, guid: 597f755a64b35974b963a44170d24fb5, type: 2}
 --- !u!1 &7614967429340073447
 GameObject:
