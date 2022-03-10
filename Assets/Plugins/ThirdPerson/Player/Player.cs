@@ -51,7 +51,7 @@ public class Player: MonoBehaviour {
         var src = m_CurrentCharacter;
         if(src != null) {
             src.Input.Drive(null);
-            m_OnDriveStart?.Invoke(src);
+            m_OnDriveStop?.Invoke(src);
 
             src.GetComponentInChildren<ThirdPersonCamera>(true)?.gameObject.SetActive(false);
             src.GetComponentInChildren<SphereCollider>(true)?.gameObject.SetActive(false);
@@ -61,7 +61,7 @@ public class Player: MonoBehaviour {
         var dst = character;
         if (dst != null) {
             dst.Input.Drive(m_InputSource);
-            m_OnDriveStop?.Invoke(src);
+            m_OnDriveStart?.Invoke(dst);
 
             dst.GetComponentInChildren<ThirdPersonCamera>(true)?.gameObject.SetActive(true);
             dst.GetComponentInChildren<SphereCollider>(true)?.gameObject.SetActive(true);
