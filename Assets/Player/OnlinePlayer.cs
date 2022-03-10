@@ -41,12 +41,11 @@ sealed class OnlinePlayer: NetworkBehaviour {
         // find all available characters
         var available = GameObject
             .FindObjectsOfType<OnlineCharacter>()
-            .Where(c => c.IsAvailable)
+            .Where(c => c.IsAvailable && c.IsInitial)
             .ToArray();
 
         // if there is nothing to drive
-        // var character = available[Random.Range(0, available.Length)];
-        var character = available[1];
+        var character = available[Random.Range(0, available.Length)];
         if (character == null) {
             Debug.LogError("[player] the was no character to drive");
             Application.Quit();

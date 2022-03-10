@@ -6,6 +6,10 @@ sealed class OnlineCharacter: NetworkBehaviour {
     // -- fields --
     /// if this character is available
     [Header("fields")]
+    [Tooltip("if the character is can be selected initially")]
+    [SerializeField] bool m_IsInitial;
+
+    [Tooltip("if the character is currently available")]
     [SyncVar] [SerializeField] bool m_IsAvailable = true;
 
     // -- commands --
@@ -25,5 +29,10 @@ sealed class OnlineCharacter: NetworkBehaviour {
     /// if this character is available
     public bool IsAvailable {
         get => m_IsAvailable;
+    }
+
+    // if the character is can be selected initially
+    public bool IsInitial {
+        get => m_IsInitial;
     }
 }
