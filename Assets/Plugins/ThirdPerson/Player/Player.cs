@@ -40,6 +40,7 @@ public class Player: MonoBehaviour {
     public void Drive(ThirdPerson character) {
         if(m_CurrentCharacter != null) {
             m_CurrentCharacter.Input.Drive(null);
+            // TODO: unity event
             m_CurrentCharacter.GetComponentInChildren<ThirdPersonCamera>(true)?.gameObject.SetActive(false);
             m_CurrentCharacter.GetComponentInChildren<SphereCollider>(true)?.gameObject.SetActive(false);
             m_CurrentCharacter.GetComponentInChildren<BoxCollider>(true)?.gameObject.SetActive(true);

@@ -107,10 +107,12 @@ public class Online: NetworkManager {
     }
 
     public override void OnStopClient() {
+        // call events
         m_OnStopClient?.Raise();
     }
 
     public override void OnStartClient() {
+        // call events
         m_OnStartClient?.Raise();
     }
 }
