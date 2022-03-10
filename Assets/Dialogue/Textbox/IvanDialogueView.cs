@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Yarn.Unity;
 using Yarn.Markup;
 using TMPro;
-using UnityEngine.InputSystem;
+using UnityAtoms.BaseAtoms;
 
 public class IvanDialogueView : DialogueViewBase
 {
@@ -23,34 +21,30 @@ public class IvanDialogueView : DialogueViewBase
     [SerializeField]
     internal TextMeshProUGUI characterNameText = null;
 
-    [SerializeField]
-    internal InputActionReference continueActionReference = null;
-
     LocalizedLine currentLine = null;
 
     TextShakeChars textAnimator;
 
-    void Start()
-    {
+    // -- events --
+    [Header("events")]
+    [Tooltip("when the next line runs")]
+    [SerializeField] VoidEvent m_RunNextLine;
+
+    // -- lifecycle --
+    void Start() {
         textAnimator = GetComponent<TextShakeChars>();
         canvasGroup.alpha = 0;
 
-        if (continueActionReference != null)
-        {
-            continueActionReference.action.started += UserPerformedSkipAction;
-        }
+        // bind events
+        // m_RunNextLine.Register(OnRunNextLine);
     }
 
-    public void Reset()
-    {
+    public void Reset() {
         canvasGroup = GetComponentInParent<CanvasGroup>();
     }
 
-    public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
-    {
+    public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
         currentLine = dialogueLine;
-        continueActionReference?.action.Enable();
-
         lineText.gameObject.SetActive(true);
         canvasGroup.gameObject.SetActive(true);
 
@@ -82,14 +76,10 @@ public class IvanDialogueView : DialogueViewBase
         canvasGroup.blocksRaycasts = true;
 
         onDialogueLineFinished();
-
     }
 
-    public override void DismissLine(Action onDismissalComplete)
-    {
+    public override void DismissLine(Action onDismissalComplete) {
         currentLine = null;
-
-        continueActionReference?.action?.Disable();
 
         canvasGroup.interactable = false;
         canvasGroup.alpha = 0;
@@ -97,18 +87,14 @@ public class IvanDialogueView : DialogueViewBase
         onDismissalComplete();
     }
 
-    void UserPerformedSkipAction(InputAction.CallbackContext obj)
-    {
-            OnContinueClicked();
-    }
-
-    public void OnContinueClicked()
-        {
-            if (currentLine == null)
-            {
-                // we're not actually displaying a line. no-op.
-                return;
-            }
-            ReadyForNextLine();
+    // -- events --
+    /// when the next line runs
+    void OnRunNextLine() {
+        // we're not actually displaying a line. no-op.
+        if (currentLine == null) {
+            return;
         }
+
+        ReadyForNextLine();
+    }
 }

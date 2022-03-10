@@ -1,46 +1,105 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using System;
 using Yarn.Unity;
 using UnityAtoms.BaseAtoms;
 
-public class DialogueSystem : MonoBehaviour
-{
-    public RawImage characterFaceUI; // the panel that shows the person's face as they are speaking
+/// the dialogue system
+public class DialogueSystem: MonoBehaviour {
+    // -- name --
+    [Header("state")]
+    [Tooltip("the dialogue for the character we're talking to")]
+    [SerializeField] private NPCDialogue m_ActiveDialogue;
 
-    public DialogueRunner yarnDialogueRunner;
+    // -- events --
+    [Header("events")]
+    [Tooltip("when to start dialogue with a character")]
+    [SerializeField] GameObjectEvent m_Start;
 
-    [SerializeField] private BoolVariable m_IsBusy;
+    [Tooltip("when the dialogue completes")]
+    [SerializeField] VoidEvent m_Complete;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        m_IsBusy.Value = false;
+    [Tooltip("when to switch character")]
+    [SerializeField] GameObjectEvent m_SwitchCharacter;
+
+    // -- references --
+    [Header("references")]
+    [Tooltip("the input reference")]
+    [SerializeField] InputActionReference m_Talk;
+
+    [Tooltip("the dialogue runner")]
+    [SerializeField] DialogueRunner yarnDialogueRunner;
+
+    // -- lifecycle --
+    void Awake() {
+        // bind events
+        m_Start.Register(OnStartDialogue);
+        m_Complete.Register(OnDialogueComplete);
     }
 
-    public void SetFaceTexture(Texture faceTexture) {
-      if(characterFaceUI != null) characterFaceUI.texture = faceTexture;
+    // -- commands --
+    /// start dialogue with a particular character
+    void StartDialogue(NPCDialogue dialogue) {
+        if (dialogue == null) {
+            Debug.LogError($"[dialogue] tried to start dialogue w/ a character w/ no NPCDialogue");
+            return;
+        }
+
+        if (m_ActiveDialogue != null) {
+            return;
+        }
+
+        Debug.Log($"[dialogue] start dialgoue <{dialogue.NodeTitle}>");
+
+        // show the dialogue for this character
+        m_ActiveDialogue = dialogue;
+        yarnDialogueRunner.StartDialogue(dialogue.NodeTitle);
+
+        // register the continue talking event
+        m_Talk.action.performed += OnTalkPressed;
     }
 
-    public void StartDialogue(string yarnDialogueTitle) {
-      m_IsBusy.Value = true;
-      // Tell Yarn dialogue to start
-      yarnDialogueRunner.StartDialogue(yarnDialogueTitle);
+    /// advance dialgoue to the next line
+    void RunNextLine() {
+        Debug.Log($"[dialogue] advance line <{m_ActiveDialogue.NodeTitle}>");
+        yarnDialogueRunner.OnViewUserIntentNextLine();
     }
 
-    public void NextLine() {
-      yarnDialogueRunner.OnViewUserIntentNextLine();
+    /// complete dialgoue with the current character
+    void CompleteDialogue() {
+        if (m_ActiveDialogue == null) {
+            Debug.LogError($"[dialogue] tried to complete dialogue w/ no active NPCDialogue");
+            return;
+        }
+
+        Debug.Log($"[dialogue] complete dialogue <{m_ActiveDialogue.NodeTitle}>");
+
+        // complete the active dialgoue
+        m_SwitchCharacter.Raise(m_ActiveDialogue.Character);
+        m_ActiveDialogue = null;
+
+        // stop listening for the continue talking event
+        m_Talk.action.performed -= OnTalkPressed;
     }
 
-    public void StartDialogue(string yarnDialogueTitle, Texture faceTexture) {
-      SetFaceTexture(faceTexture);
-      StartDialogue(yarnDialogueTitle);
+    // -- events --
+    /// when a dialogue node is started
+    void OnStartDialogue(GameObject obj) {
+        var dialogue = obj.GetComponent<NPCDialogue>();
+        StartDialogue(dialogue);
     }
 
-    public void DialogueEnd() {
-      m_IsBusy.Value = false;
+    /// when the talk button is pressed
+    void OnTalkPressed(InputAction.CallbackContext _) {
+        // if there's an active dialgoue, continue. see NPCDialogue#StartTalking to see
+        // how dialogue starts
+        if (m_ActiveDialogue != null) {
+            RunNextLine();
+        }
+    }
+
+    /// when dialogue completes
+    void OnDialogueComplete() {
+        CompleteDialogue();
     }
 }
