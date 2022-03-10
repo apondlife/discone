@@ -10,12 +10,22 @@ using System.Linq;
 sealed class OnlinePlayer: NetworkBehaviour {
     // -- references --
     [Header("references")]
-    [Tooltip("a reference to the current player")]
+    [Tooltip("the current player")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_CurrentPlayer")]
     [SerializeField] GameObjectVariable m_CurrentPlayer;
 
-    [Tooltip("a reference to the crruent player's character")]
+    [Tooltip("the current player's character")]
     [SerializeField] GameObjectVariable m_CurrentCharacter;
+
+    // -- events --
+    [Header("events")]
+    [Tooltip("switch the character")]
+    [SerializeField] GameObjectEvent m_SwitchCharacter;
+
+    // -- lifecycle --
+    void Awake() {
+        m_SwitchCharacter.Register(OnSwitchCharacter);
+    }
 
     // -- NetworkBehaviour --
     public override void OnStartLocalPlayer() {
@@ -35,7 +45,8 @@ sealed class OnlinePlayer: NetworkBehaviour {
             .ToArray();
 
         // if there is nothing to drive
-        var character = available[Random.Range(0, available.Length)];
+        // var character = available[Random.Range(0, available.Length)];
+        var character = available[1];
         if (character == null) {
             Debug.LogError("[player] the was no character to drive");
             Application.Quit();
@@ -46,6 +57,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
         DriveCharacter(character);
     }
 
+    /// drive a new character
     void DriveCharacter(OnlineCharacter character) {
         Server_SwitchCharacter(m_CurrentCharacter.Value, character.gameObject);
     }
@@ -101,5 +113,17 @@ sealed class OnlinePlayer: NetworkBehaviour {
         if (isInitial) {
             DriveInitialCharacter();
         }
+    }
+
+    // -- events --
+    /// when the character should switch
+    void OnSwitchCharacter(GameObject obj) {
+        var character = obj.GetComponent<OnlineCharacter>();
+        if (character == null) {
+            Debug.Log($"[player] tried to switch to an character w/ no OnlineCharacter");
+            return;
+        }
+
+        DriveCharacter(character);
     }
 }

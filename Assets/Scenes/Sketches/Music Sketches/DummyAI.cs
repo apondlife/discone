@@ -12,6 +12,10 @@ public class AiInputSource: CharacterInputSource {
     [SerializeField] private float m_JumpProbability = 0.001f;
 
     // -- CharacterInputSource --
+    public bool IsEnabled {
+        get => true;
+    }
+
     public CharacterInput.Frame Read() {
         return new CharacterInput.Frame(
             Random.value < m_JumpProbability,
