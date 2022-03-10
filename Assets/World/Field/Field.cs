@@ -64,6 +64,7 @@ public sealed class Field: MonoBehaviour {
         Debug.Assert(m_Chunk.Size.x == m_Chunk.Size.z, "field's terrain chunk was not square");
         m_ChunkSize = m_Chunk.Size.x;
 
+        #if UNITY_EDITOR
         // destroy any editor terrain
         ClearEditorChunks();
 
@@ -71,17 +72,20 @@ public sealed class Field: MonoBehaviour {
         if (!Application.IsPlaying(gameObject)) {
             return;
         }
+        #endif
 
         // start purge routine
         StartCoroutine(Coroutines.Interval(k_PurgeChunksInterval, PurgeChunks));
     }
 
     void Update() {
+        #if UNITY_EDITOR
         // if editor, create editor chunks
         if (!Application.IsPlaying(gameObject)) {
             CreateEditorChunks();
             return;
         }
+        #endif
 
         // if the target is active
         if (!m_TargetObject.Value) {
@@ -206,6 +210,7 @@ public sealed class Field: MonoBehaviour {
 
     /// create chunks for the editor field
     void CreateEditorChunks() {
+        #if UNITY_EDITOR
         // get the editor camera
         var scene = UnityEditor.SceneView.lastActiveSceneView;
         if (scene == null) {
@@ -249,10 +254,12 @@ public sealed class Field: MonoBehaviour {
             m_TargetCoord = coord;
             CreateChunks(3);
         }
+        #endif
     }
 
     /// clear all editor chunks
     public void ClearEditorChunks() {
+        #if UNITY_EDITOR
         m_Chunks.Clear();
 
         // destroy any editor terrain
@@ -260,6 +267,7 @@ public sealed class Field: MonoBehaviour {
         while (t.childCount > 0) {
             DestroyImmediate(t.GetChild(0).gameObject);
         }
+        #endif
     }
 
     // -- queries --
