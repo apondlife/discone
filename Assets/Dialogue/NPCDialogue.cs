@@ -33,14 +33,18 @@ public class NPCDialogue: MonoBehaviour {
     [SerializeField] private GameObjectEvent m_StartDialogue;
 
     // -- lifecycle --
-    void Awake() {
-        m_Talk.action.performed += OnTalkPressed;
-    }
-
     void Start() {
         if (talkable) {
             talkable.SetActive(false);
         }
+    }
+
+    void OnEnable() {
+        m_Talk.action.performed += OnTalkPressed;
+    }
+
+    void OnDisable() {
+        m_Talk.action.performed -= OnTalkPressed;
     }
 
     // -- commands --
