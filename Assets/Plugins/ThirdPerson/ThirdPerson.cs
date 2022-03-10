@@ -26,7 +26,7 @@ public partial class ThirdPerson: MonoBehaviour {
     // -- lifecycle --
     private void Awake() {
         // init child objects
-        m_State.Reset();
+        m_State.Reset(transform.forward);
 
         // init character
         var character = new Character(

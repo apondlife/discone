@@ -51,13 +51,13 @@ public sealed class CharacterState {
 
     // -- commands --
     /// reset to initial state
-    public void Reset() {
+    public void Reset(Vector3 forward) {
         PlanarVelocity = Vector3.zero;
         PrevPlanarVelocity = Vector3.zero;
         VerticalSpeed = 0.0f;
         PrevVerticalSpeed = 0.0f;
         Acceleration = Vector3.zero;
-        m_FacingDirection = Vector3.forward; // TODO: should be pulled from transform
+        m_FacingDirection = forward;
         IsGrounded = false;
         IsInJumpSquat = false;
         IsInJumpStart = false;
