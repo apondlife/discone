@@ -1,18 +1,28 @@
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace ThirdPerson {
 
 /// the player
 public class Player: MonoBehaviour {
-    // -- fields --
+    // -- state --
+    [Header("fields")]
+    [Tooltip("the currently controlled character")]
+    [SerializeField] private ThirdPerson m_CurrentCharacter;
+
+    // -- references --
+    [Header("references")]
     [Tooltip("the player input source")]
     [SerializeField] PlayerInputSource m_InputSource;
 
-    [Tooltip("the character the player is controlling")]
-    [SerializeField] private ThirdPerson m_CurrentCharacter;
+    // -- events --
+    [Header("events")]
+    [Tooltip("when the player starts driving a character")]
+    [SerializeField] UnityEvent<ThirdPerson> m_OnDriveStart;
 
-    void Awake() {
-    }
+    [Tooltip("when the player stops driving a character")]
+    [SerializeField] UnityEvent<ThirdPerson> m_OnDriveStop;
 
     // -- lifecycle --
     void Start() {
@@ -38,21 +48,27 @@ public class Player: MonoBehaviour {
 
     /// drive a particular character
     public void Drive(ThirdPerson character) {
-        if(m_CurrentCharacter != null) {
-            m_CurrentCharacter.Input.Drive(null);
-            m_CurrentCharacter.GetComponentInChildren<ThirdPersonCamera>(true)?.gameObject.SetActive(false);
-            m_CurrentCharacter.GetComponentInChildren<SphereCollider>(true)?.gameObject.SetActive(false);
-            m_CurrentCharacter.GetComponentInChildren<BoxCollider>(true)?.gameObject.SetActive(true);
+        var src = m_CurrentCharacter;
+        if(src != null) {
+            src.Input.Drive(null);
+            m_OnDriveStart?.Invoke(src);
+
+            src.GetComponentInChildren<ThirdPersonCamera>(true)?.gameObject.SetActive(false);
+            src.GetComponentInChildren<SphereCollider>(true)?.gameObject.SetActive(false);
+            src.GetComponentInChildren<BoxCollider>(true)?.gameObject.SetActive(true);
         }
 
-        if (character != null) {
-            character.Input.Drive(m_InputSource);
-            character.GetComponentInChildren<ThirdPersonCamera>(true)?.gameObject.SetActive(true);
-            character.GetComponentInChildren<SphereCollider>(true)?.gameObject.SetActive(true);
-            character.GetComponentInChildren<BoxCollider>(true)?.gameObject.SetActive(false);
+        var dst = character;
+        if (dst != null) {
+            dst.Input.Drive(m_InputSource);
+            m_OnDriveStop?.Invoke(src);
+
+            dst.GetComponentInChildren<ThirdPersonCamera>(true)?.gameObject.SetActive(true);
+            dst.GetComponentInChildren<SphereCollider>(true)?.gameObject.SetActive(true);
+            dst.GetComponentInChildren<BoxCollider>(true)?.gameObject.SetActive(false);
         }
 
-        m_CurrentCharacter = character;
+        m_CurrentCharacter = dst;
     }
 
     // -- queries --
