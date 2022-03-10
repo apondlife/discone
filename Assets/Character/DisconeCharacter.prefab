@@ -182,6 +182,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  m_IsInitial: 0
   m_IsAvailable: 1
 --- !u!114 &1731996866325999123
 MonoBehaviour:
@@ -291,7 +292,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5913118891810761671, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
