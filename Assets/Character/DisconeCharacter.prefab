@@ -168,6 +168,21 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7614967429340073451, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
   m_PrefabInstance: {fileID: 5171227752169666152}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1499552191486369337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3345656352466467727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eee887177deb46d0a99a80352fa4831, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  m_IsAvailable: 1
 --- !u!114 &1731996866325999123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,7 +214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
