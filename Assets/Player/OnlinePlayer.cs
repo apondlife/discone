@@ -10,11 +10,11 @@ using System.Linq;
 sealed class OnlinePlayer: NetworkBehaviour {
     // -- references --
     [Header("references")]
-    [Tooltip("a reference to the current player")]
+    [Tooltip("the current player")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_CurrentPlayer")]
     [SerializeField] GameObjectVariable m_CurrentPlayer;
 
-    [Tooltip("a reference to the crruent player's character")]
+    [Tooltip("the current player's character")]
     [SerializeField] GameObjectVariable m_CurrentCharacter;
 
     // -- events --

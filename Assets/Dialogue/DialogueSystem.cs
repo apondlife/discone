@@ -8,8 +8,11 @@ using UnityAtoms.BaseAtoms;
 public class DialogueSystem: MonoBehaviour {
     // -- name --
     [Header("state")]
+    [Tooltip("if the dialogue is active")]
+    [SerializeField] BoolVariable m_IsActive;
+
     [Tooltip("the dialogue for the character we're talking to")]
-    [SerializeField] private NPCDialogue m_ActiveDialogue;
+    [SerializeField] NPCDialogue m_ActiveDialogue;
 
     // -- events --
     [Header("events")]
@@ -52,6 +55,7 @@ public class DialogueSystem: MonoBehaviour {
         Debug.Log($"[dialogue] start dialgoue <{dialogue.NodeTitle}>");
 
         // show the dialogue for this character
+        m_IsActive.Value = true;
         m_ActiveDialogue = dialogue;
         yarnDialogueRunner.StartDialogue(dialogue.NodeTitle);
 
@@ -76,6 +80,7 @@ public class DialogueSystem: MonoBehaviour {
 
         // complete the active dialgoue
         m_SwitchCharacter.Raise(m_ActiveDialogue.Character);
+        m_IsActive.Value = false;
         m_ActiveDialogue = null;
 
         // stop listening for the continue talking event
