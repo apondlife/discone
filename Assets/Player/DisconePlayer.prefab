@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2868360700455012734}
   - component: {fileID: 4256822043113479821}
+  - component: {fileID: 8277217553599077214}
   m_Layer: 0
   m_Name: CycleCharacters
   m_TagString: Untagged
@@ -44,6 +45,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SwitchCharacter: {fileID: 11400000, guid: 1ffcf622465e24d1f82887e4c9b64359, type: 2}
+--- !u!114 &8277217553599077214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926867812887982162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f47328428d54ff43952147249a7a7f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InputAction: {fileID: -416993907950900620, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
+  Type: 0
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4256822043113479821}
+        m_TargetAssemblyTypeName: CycleCharacters, Assembly-CSharp
+        m_MethodName: CycleStarters
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &3220446418401166604
 PrefabInstance:
   m_ObjectHideFlags: 0
