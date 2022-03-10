@@ -36,7 +36,7 @@ public class FieldChunk: MonoBehaviour {
     Material m_GeneratedMaterial;
 
     // -- lifecycle --
-    void Start() {
+    void Awake() {
         gameObject.hideFlags = HideFlags.DontSave;
     }
 

@@ -5,6 +5,16 @@ namespace ThirdPerson {
 /// a container for the character's model and animations
 public sealed class CharacterModel: MonoBehaviour {
     // -- fields --
+    [Header("parameters")]
+    [SerializeField] private bool AnimateScale;
+    [SerializeField] private float MaxJumpSquatSquash;
+    [SerializeField] private AnimationCurve JumpSquatSquashCurve;
+    [SerializeField] private float VerticalAccelerationStretch;
+    [SerializeField] private AnimationCurve VerticalAccelerationStretchCurve;
+    [SerializeField] private float StretchAndSquashLerp;
+    [SerializeField] private float MinSquashScale = 0;
+    [SerializeField] private float MaxSquashScale = 2;
+
     [Header("references")]
     [Tooltip("The shared third person animator controller")]
     [SerializeField] private RuntimeAnimatorController m_AnimatorController;
@@ -19,6 +29,12 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the character's tunables
     private CharacterTunablesBase m_Tunables;
 
+    /// the initial scale of the character
+    private Vector3 c_BaseScale;
+
+    /// the current strech/squash multiplier
+    private float m_CurrentSquashStretch = 1.0f;
+
     // -- lifecycle --
     void Awake() {
         // get dependencies
@@ -31,12 +47,15 @@ public sealed class CharacterModel: MonoBehaviour {
         if (m_Animator != null && m_Animator.runtimeAnimatorController == null) {
             m_Animator.runtimeAnimatorController = m_AnimatorController;
         }
+
+        c_BaseScale = transform.localScale;
     }
 
     void FixedUpdate() {
         // update animator & model
         SyncAnimator();
         Tilt();
+        StretchAndSquash();
     }
 
     // -- commands --
@@ -78,6 +97,30 @@ public sealed class CharacterModel: MonoBehaviour {
     void Tilt() {
         // is this a fundamental misunderstanding of quaternions?
         transform.rotation = m_State.LookRotation;
+    }
+
+    void StretchAndSquash() {
+        if(!AnimateScale) {
+            return;
+        }
+
+        var targetScale = 0.0f;
+        if(m_State.IsInJumpSquat) {
+            var jumpSquatPct = (float)m_State.JumpSquatFrame / m_Tunables.MaxJumpSquatFrames;
+            var jumpSquatDiff = 1.0f - MaxJumpSquatSquash;
+            targetScale = (1.0f - jumpSquatDiff * (1.0f-JumpSquatSquashCurve.Evaluate(jumpSquatPct)));
+        } else {
+            // if accelerating against velocity, sigh should squash (negative sign), otherwise, stretch
+            var sign = Mathf.Sign(m_State.Acceleration.y) * Mathf.Sign(m_State.Velocity.y);
+            targetScale = (1.0f + sign * Mathf.Abs(m_State.Acceleration.y) * VerticalAccelerationStretch);
+        }
+
+        m_CurrentSquashStretch = Mathf.Lerp(m_CurrentSquashStretch, targetScale, StretchAndSquashLerp);
+        m_CurrentSquashStretch = Mathf.Clamp(m_CurrentSquashStretch, MinSquashScale, MaxSquashScale);
+
+        var newScale = c_BaseScale;
+        newScale.y *= m_CurrentSquashStretch;
+        transform.localScale = newScale;
     }
 }
 
