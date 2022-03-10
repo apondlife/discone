@@ -17,7 +17,7 @@ public class CycleCharacters : MonoBehaviour
     }
 
     public void CycleStarters() {
-        // CycleList(c => c.IsAvailable && c.IsStarter);
+        CycleList(c => c.IsAvailable && c.IsInitial);
     }
 
     private void CycleList(Func<OnlineCharacter, bool> filter) {

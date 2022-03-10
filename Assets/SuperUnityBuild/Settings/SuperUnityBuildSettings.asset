@@ -1,5 +1,65 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-4890373150655689217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2786f6b2301a94f4288672ff5305244c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enabled: 1
+  distributionList:
+    distributions: []
+  architectures:
+  - target: 5
+    name: Windows x86
+    enabled: 1
+    binaryNameFormat: '{0}.exe'
+  - target: 19
+    name: Windows x64
+    enabled: 0
+    binaryNameFormat: '{0}.exe'
+  variants:
+  - variantName: Build Output
+    selectedIndex: 0
+    values:
+    - App
+    - Visual Studio Solution
+  platformName: PC
+  dataDirNameFormat: '{0}_Data'
+  targetGroup: 1
+--- !u!114 &-3132922106993771653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97d88f7d353534a4fbdeb11196057db7, type: 3}
+  m_Name: UploadItch
+  m_EditorClassIdentifier: 
+  actionType: 1
+  actionName: UploadItch
+  note: 
+  actionEnabled: 1
+  configureEditor: 0
+  filter:
+    condition: 0
+    clauses: []
+  pathToButlerExe: C:\Users\gusta\AppData\Roaming\itch\apps\butler\butler.exe
+  nameOfItchUser: frogfrogforg
+  nameOfItchGame: discone
+  useGeneratedBuildVersion: 0
+  channelName: $PLATFORM-$ARCHITECTURE
+  showUploadProgress: 1
+  itchChannelOverride: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13,35 +73,61 @@ MonoBehaviour:
   m_Name: SuperUnityBuildSettings
   m_EditorClassIdentifier: 
   _basicSettings:
-    baseBuildFolder: Builds
+    baseBuildFolder: Artifacts\Builds
     buildPath: $VERSION/$RELEASE_TYPE/$PLATFORM/$ARCHITECTURE
     openFolderPostBuild: 1
   _productParameters:
-    buildCounter: 0
+    buildCounter: 69
     buildVersion: 
-    versionTemplate: 1.0.0.$BUILD
+    versionTemplate: discone.$YEAR.$MONTH.$DAY.$BUILD
     autoGenerate: 1
     syncWithPlayerSettings: 0
   _releaseTypeList:
-    releaseTypes: []
+    releaseTypes:
+    - typeName: NewReleaseType
+      bundleIdentifier: com.pondlife.pondlife
+      companyName: pondlife
+      productName: pondlife #1
+      buildOptions: 0
+      customDefines: 
+      sceneList:
+        enabledScenes: []
   _platformList:
-    platforms: []
+    platforms:
+    - {fileID: -4890373150655689217}
+    - {fileID: 9141539422439069234}
   _projectConfigurations:
     configSet:
-      _Buckets: ffffffffffffffffffffffff
-      _HashCodes: 000000000000000000000000
-      _Next: 000000000000000000000000
-      _Count: 0
-      _Version: 0
+      _Buckets: ffffffff04000000ffffffff01000000ffffffff0000000002000000
+      _HashCodes: cf10b466150f5805f1b29a7531730433494e1b2d0000000000000000
+      _Next: ffffffffffffffffffffffffffffffff030000000000000000000000
+      _Count: 5
+      _Version: 5
       _FreeList: -1
       _FreeCount: 0
       _Keys:
-      - 
+      - NewReleaseType/PC/Windows x86 (App)
+      - NewReleaseType/PC
+      - NewReleaseType/macOS/macOS (Intelx64,App)
+      - NewReleaseType/macOS
+      - NewReleaseType
       - 
       - 
       _Values:
       - enabled: 1
         childKeys: []
+      - enabled: 1
+        childKeys:
+        - NewReleaseType/PC/Windows x86 (App)
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys:
+        - NewReleaseType/macOS/macOS (Intelx64,App)
+      - enabled: 1
+        childKeys:
+        - NewReleaseType/PC
+        - NewReleaseType/macOS
       - enabled: 1
         childKeys: []
       - enabled: 1
@@ -55,4 +141,40 @@ MonoBehaviour:
   _preBuildActions:
     buildActions: []
   _postBuildActions:
-    buildActions: []
+    buildActions:
+    - {fileID: -3132922106993771653}
+--- !u!114 &9141539422439069234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d962d142a259c394da2bdb301b72eeb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enabled: 1
+  distributionList:
+    distributions: []
+  architectures:
+  - target: 2
+    name: macOS
+    enabled: 1
+    binaryNameFormat: '{0}.app'
+  variants:
+  - variantName: macOS Architecture
+    selectedIndex: 0
+    values:
+    - Intelx64
+    - Apple Silicon
+    - Universal
+  - variantName: Build Output
+    selectedIndex: 0
+    values:
+    - App
+    - Xcode Project
+  platformName: macOS
+  dataDirNameFormat: '{0}.app/Contents'
+  targetGroup: 1
