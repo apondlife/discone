@@ -80,10 +80,10 @@ public partial class ThirdPerson: MonoBehaviour {
     public CharacterController Controller => m_Controller;
 
     public CharacterInput Input => m_Input;
-    // TODO: how should we make state immutable outside the class
 
     public CharacterTunablesBase Tunables => m_Tunables;
 
+    // TODO: how should we make state immutable outside the class
     public CharacterState State => m_State;
 
     // -- events --
