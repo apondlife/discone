@@ -8,17 +8,17 @@ public readonly struct Key {
 
     // -- lifetime --
     /// create a new key with the root
-    public Key(in Tone root) {
+    public Key(Tone root) {
         m_Root = root;
     }
 
-    public Key(in Root root) {
+    public Key(Root root) {
         m_Root = new Tone((int)root);
     }
 
     // -- queries --
     /// transpose tone to this key
-    public Tone Transpose(in Tone tone) {
+    public Tone Transpose(Tone tone) {
         return tone.Transpose(m_Root);
     }
 }
