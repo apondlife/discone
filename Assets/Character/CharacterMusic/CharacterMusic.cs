@@ -29,7 +29,7 @@ class CharacterMusic: MonoBehaviour {
     // -- references --
     [Header("references")]
     [Tooltip("the music source")]
-    [SerializeField] MusicSource m_Source;
+    [SerializeField] FmodMusicSource m_Source;
 
     [Tooltip("the character controller")]
     [SerializeField] CharacterState m_State;
@@ -148,7 +148,7 @@ class CharacterMusic: MonoBehaviour {
             m_Source.PlayLine(m_FootstepsBass.Value, m_Key);
         } else {
             var melody = m_FootstepsMelodies[m_MelodyIdx];
-            m_Source.PlayTone(melody.Value[m_StepIdx / 2], m_Key);
+            m_Source.PlayNote(melody.Value[m_StepIdx / 2], m_Key);
         }
 
         // advance step

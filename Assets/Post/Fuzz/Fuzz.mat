@@ -43,6 +43,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _FuzzTexture:
+        m_Texture: {fileID: 2800000, guid: f02d60f866d7cb9488196e08cfd79493, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -63,26 +67,35 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Texture:
+        m_Texture: {fileID: 2800000, guid: f9330abec7da40546a1d3d7e3acce1b7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
-    - _DepthScale: 2.65
+    - _DepthScale: 8.8
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _HueShift: 0.05
+    - _MaxOrthogonality: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NormalMax: 0.4
+    - _NormalMax: 0.62
     - _NormalMin: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _SaturationShift: -1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TextureScale: -3.64
     - _UVSec: 0
+    - _ValueShift: -0.29
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

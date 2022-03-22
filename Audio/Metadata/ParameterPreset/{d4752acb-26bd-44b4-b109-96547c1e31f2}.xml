@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{d4752acb-26bd-44b4-b109-96547c1e31f2}">
+		<property name="name">
+			<value>Tone1</value>
+		</property>
+		<relationship name="folder">
+			<destination>{c46d47d8-ae5c-4831-bc91-5682c635144b}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{61b6aa62-cebb-472f-b447-7364860ed6c5}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{61b6aa62-cebb-472f-b447-7364860ed6c5}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="minimum">
+			<value>-1</value>
+		</property>
+		<property name="maximum">
+			<value>24</value>
+		</property>
+		<property name="initialValue">
+			<value>-1</value>
+		</property>
+	</object>
+</objects>
