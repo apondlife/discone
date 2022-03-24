@@ -145,10 +145,10 @@ class CharacterMusic: MonoBehaviour {
 
         // find line to play
         if (m_StepIdx % 2 == 0) {
-            m_Source.PlayLine(m_FootstepsBass.Value, m_Key);
+            m_Source.PlayLine(m_FootstepsBass.Value, 0.0f, m_Key);
         } else {
             var melody = m_FootstepsMelodies[m_MelodyIdx];
-            m_Source.PlayNote(melody.Value[m_StepIdx / 2], m_Key);
+            m_Source.PlayNote(melody.Value[m_StepIdx / 2], 0.0f, m_Key);
         }
 
         // advance step
@@ -179,7 +179,7 @@ class CharacterMusic: MonoBehaviour {
             return;
         }
 
-        m_Source.PlayLine(m_Flutter.Value, m_Key);
+        m_Source.PlayLine(m_Flutter.Value, 0.0f, m_Key);
         m_FlutterTime += 0.1f;
     }
 
