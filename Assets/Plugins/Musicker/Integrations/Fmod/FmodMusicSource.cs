@@ -10,6 +10,9 @@ public sealed class FmodMusicSource: MonoBehaviour {
     /// the name of the tone param
     const string k_ParamTone = "Tone";
 
+    /// the name of the delay param
+    const string k_ParamDelay = "Delay";
+
     // -- references --
     [Header("references")]
     [Tooltip("the fmod event emitter for this source")]
@@ -25,8 +28,8 @@ public sealed class FmodMusicSource: MonoBehaviour {
 
     // -- commands --
     /// play the current tone in the line and advance it
-    public void PlayLine(Line line, Key? key = null) {
-        PlayNote(line.Curr(), key);
+    public void PlayLine(Line line, float delay = 0.0f, Key? key = null) {
+        PlayNote(line.Curr(), delay, key);
         line.Advance();
     }
 
@@ -36,20 +39,15 @@ public sealed class FmodMusicSource: MonoBehaviour {
         prog.Advance();
     }
 
-    /// play the clips in the chord
-    public void PlayChord(Chord chord, in Key? key = null) {
-        PlayChord(chord, 0.0f, key);
-    }
-
-    /// play the clips in the chord, pass an interval to arpeggiate
-    public void PlayChord(Chord chord, float interval, Key? key = null) {
+    /// play the clips in the chord; pass an interval to arpeggiate
+    public void PlayChord(Chord chord, float interval = 0.0f, Key? key = null) {
         for (var i = 0; i < chord.Length; i++) {
-            PlayNote(chord[i], key);
+            PlayNote(chord[i], interval * i, key);
         }
     }
 
     /// play the note
-    public void PlayNote(Tone tone, Key? key = null) {
+    public void PlayNote(Tone tone, float delay = 0.0f, Key? key = null) {
         // transpose if necessary
         var keyed = tone;
         if (key != null) {
@@ -59,6 +57,7 @@ public sealed class FmodMusicSource: MonoBehaviour {
         // play the event for this note
         m_Emitter.Play();
         m_Emitter.SetParameter(k_ParamTone, keyed.Steps);
+        m_Emitter.SetParameter(k_ParamDelay, delay);
     }
 }
 
