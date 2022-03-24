@@ -15,7 +15,7 @@ public readonly struct Chord {
     }
 
     /// create a chord from a root note and a chord quality, building its tones
-    public Chord(in Tone root, in Quality quality) {
+    public Chord(Tone root, Quality quality) {
         // create the right number of tones
         var n = quality.Length;
         var tones = new Tone[n];

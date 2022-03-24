@@ -7,12 +7,12 @@ namespace ThirdPerson {
 /// the player
 public class Player: MonoBehaviour {
     // -- state --
-    [Header("fields")]
+    [Header("state")]
     [Tooltip("the currently controlled character")]
     [SerializeField] private ThirdPerson m_CurrentCharacter;
 
-    // -- references --
-    [Header("references")]
+    // -- refs --
+    [Header("refs")]
     [Tooltip("the player input source")]
     [SerializeField] PlayerInputSource m_InputSource;
 
