@@ -60,6 +60,8 @@ public class FieldChunk: MonoBehaviour {
         var td = m_CustomData?.TerrainData;
         if (td == null) {
             if (m_GeneratedData == null) {
+                // TODO: we instantiate so that we can change the material props based on
+                // neighbors, but is this the right approach?
                 m_GeneratedData = Instantiate(m_TerrainDataPrefab);
                 m_GeneratedData.name = "Chunk-generated";
             }
@@ -76,9 +78,16 @@ public class FieldChunk: MonoBehaviour {
 
         // use a custom material, if any
         var mat = m_CustomData?.Material;
-        if (mat != null) {
-            m_Terrain.materialTemplate = mat;
+        if (mat == null) {
+            if (m_GeneratedMaterial == null) {
+                m_GeneratedMaterial = Instantiate(m_Terrain.materialTemplate);
+                m_GeneratedMaterial.name = "Chunk-generated";
+            }
+
+            mat = m_GeneratedMaterial;
         }
+
+        m_Terrain.materialTemplate = mat;
     }
 
     /// render the generated heightmap for the coordinate
