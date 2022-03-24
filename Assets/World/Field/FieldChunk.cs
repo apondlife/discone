@@ -76,16 +76,9 @@ public class FieldChunk: MonoBehaviour {
 
         // use a custom material, if any
         var mat = m_CustomData?.Material;
-        if (mat == null) {
-            if (m_GeneratedMaterial == null) {
-                m_GeneratedMaterial = Instantiate(m_Terrain.materialTemplate);
-                m_GeneratedMaterial.name = "Chunk-generated";
-            }
-
-            mat = m_GeneratedMaterial;
+        if (mat != null) {
+            m_Terrain.materialTemplate = mat;
         }
-
-        m_Terrain.materialTemplate = mat;
     }
 
     /// render the generated heightmap for the coordinate
@@ -194,7 +187,13 @@ public class FieldChunk: MonoBehaviour {
         get => m_Terrain.terrainData;
     }
 
+    /// the active terrain material
     public Material Material {
         get => m_Terrain.materialTemplate;
+    }
+
+    /// the custom terrain data, if any
+    public FieldChunkData CustomData {
+        get => m_CustomData;
     }
 }

@@ -22,7 +22,17 @@ public class FieldChunkEditor: Editor {
     public override void OnInspectorGUI() {
         base.OnInspectorGUI();
 
-        if (GUILayout.Button("Create Custom")) {
+        // draw spacing
+        GUILayout.Space(10.0f);
+
+        // draw label
+        var style = new GUIStyle();
+        style.normal.textColor = Color.white;
+        style.fontStyle = FontStyle.Bold;
+        GUILayout.Label("custom chunk", style);
+
+        // draw button
+        if (GUILayout.Button("create or update")) {
             CreateCustomChunkData();
         }
     }
@@ -35,13 +45,36 @@ public class FieldChunkEditor: Editor {
             AssetDatabase.CreateFolder(k_Parent, k_Dir);
         }
 
-        // create the asset
-        var asset = ScriptableObject.CreateInstance<FieldChunkData>();
-        asset.Material = m_Chunk.Material;
-        asset.TerrainData = Instantiate(m_Chunk.TerrainData) as TerrainData;
-        asset.TerrainData.name = $"{m_Chunk.name}-data";
+        // find or init chunk data
+        var chunkData = m_Chunk.CustomData;
+        if (chunkData == null) {
+            chunkData = ScriptableObject.CreateInstance<FieldChunkData>();
+        }
 
-        AssetDatabase.CreateAsset(asset, AssetPath);
+        // save terrain data if necessary
+        var terrainData = chunkData?.TerrainData;
+        if (terrainData == null) {
+            terrainData = Instantiate(m_Chunk.TerrainData) as TerrainData;
+            terrainData.name = $"{m_Chunk.name}-data";
+            AssetDatabase.CreateAsset(terrainData, TerrainAssetPath);
+        }
+
+        // update chunk data
+        chunkData.Material = m_Chunk.Material;
+        chunkData.TerrainData = terrainData;
+
+        // create or save asset
+        var chunkDataId = AssetDatabase.AssetPathToGUID(
+            ChunkAssetPath,
+            AssetPathToGUIDOptions.OnlyExistingAssets
+        );
+
+        Debug.Log($"chunk data id {chunkDataId}");
+        if (chunkDataId == null || chunkDataId == "") {
+            AssetDatabase.CreateAsset(chunkData, ChunkAssetPath);
+        } else {
+            AssetDatabase.SaveAssetIfDirty(chunkData);
+        }
 
         // reload the chunk
         m_Chunk.Reload();
@@ -54,7 +87,12 @@ public class FieldChunkEditor: Editor {
     }
 
     /// path to the chunk asset
-    string AssetPath {
+    string ChunkAssetPath {
         get => $"{Dir}/{m_Chunk.name}.asset";
+    }
+
+    /// path to the terrain data asset
+    string TerrainAssetPath {
+        get => $"{Dir}/{m_Chunk.name}-terrain.asset";
     }
 }
