@@ -158,14 +158,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
---- !u!1 &3345656352466467727 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7614967429340073447, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
-  m_PrefabInstance: {fileID: 5171227752169666152}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3345656352466467715 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7614967429340073451, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+  m_PrefabInstance: {fileID: 5171227752169666152}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3345656352466467727 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7614967429340073447, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
   m_PrefabInstance: {fileID: 5171227752169666152}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1499552191486369337
@@ -286,13 +286,53 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: Params.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: EventReference.Path
+      value: event:/Character/Mousing
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: EventReference.Guid.Data1
+      value: -1145447799
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: EventReference.Guid.Data2
+      value: 1096292872
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: EventReference.Guid.Data3
+      value: 895225775
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: EventReference.Guid.Data4
+      value: 1332738784
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: Params.Array.data[0].Name
+      value: Tone
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: Params.Array.data[1].Name
+      value: Tone3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: Params.Array.data[2].Name
+      value: Tone4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: Params.Array.data[3].Name
+      value: Tone
+      objectReference: {fileID: 0}
+    - target: {fileID: 4283023995948312298, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: m_CurrentCharacter
+      value: 
+      objectReference: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
     - target: {fileID: 5077628810954296242, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
       propertyPath: m_Name
       value: Sound
-      objectReference: {fileID: 0}
-    - target: {fileID: 5913118891810761671, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}

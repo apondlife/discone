@@ -19,6 +19,7 @@ Shader "Custom/Field" {
         Pass {
             Tags {
                 "LightMode" = "ForwardBase"
+                "TerrainCompatible" = "True"
             }
 
             CGPROGRAM

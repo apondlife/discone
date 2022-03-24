@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2784589926643812344}
-  - component: {fileID: 5773200750068286421}
   - component: {fileID: 5913118891810761671}
+  - component: {fileID: 4283023995948312298}
+  - component: {fileID: 3451155947279716790}
   m_Layer: 6
   m_Name: CharacterSound
   m_TagString: Untagged
@@ -28,27 +29,11 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5773200750068286421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5077628810954296242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca8ed092cd6654f1c9575cc95fbe061c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_MaxVolume: 0.5
-  m_Template: {fileID: 5996123545961523746, guid: 56796852f9bcb4e43a0a17eb3771e4c9, type: 3}
-  m_NumSources: 8
-  m_Sources: []
-  m_Instrument: {fileID: 11400000, guid: 4c8f868a9254248148da092bde9a4940, type: 2}
 --- !u!114 &5913118891810761671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,4 +60,57 @@ MonoBehaviour:
     m_Notation: 5.M5 4.M5
   m_Flutter:
     m_Notation: R' 2'
-  m_Source: {fileID: 5773200750068286421}
+  m_Source: {fileID: 4283023995948312298}
+--- !u!114 &4283023995948312298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5077628810954296242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e096031bf7174d93918f295affa142b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Emitter: {fileID: 3451155947279716790}
+--- !u!114 &3451155947279716790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5077628810954296242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -1560653190
+      Data2: 1104117702
+      Data3: 705651135
+      Data4: -1212547865
+    Path: event:/Character/Mouse
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  Params:
+  - Name: Tone1
+    Value: -1
+  - Name: Tone2
+    Value: -1
+  - Name: Tone3
+    Value: -1
+  - Name: Tone4
+    Value: -1
+  - Name: Tone
+    Value: -1
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20

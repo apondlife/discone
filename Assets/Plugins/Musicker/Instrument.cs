@@ -22,7 +22,7 @@ public class Instrument: ScriptableObject {
     }
 
     /// find the clip for a tone
-    public AudioClip FindClip(in Tone tone) {
+    public AudioClip FindClip(Tone tone) {
         return m_Scale[tone.Steps % Length];
     }
 

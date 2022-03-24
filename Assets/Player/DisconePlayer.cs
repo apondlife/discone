@@ -4,13 +4,13 @@ using ThirdPerson;
 
 /// the discone player
 sealed class DisconePlayer: MonoBehaviour {
-    // -- references --
+    // -- events --
     [Header("events")]
     [Tooltip("if the dialogue is active")]
     [SerializeField] BoolEvent m_IsDialogueActiveChanged;
 
-    // -- references --
-    [Header("references")]
+    // -- refs --
+    [Header("refs")]
     [Tooltip("the input source")]
     [SerializeField] PlayerInputSource m_InputSource;
 

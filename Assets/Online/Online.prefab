@@ -28,7 +28,9 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7.49967, y: 6.09995, z: -17.984493}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 385087212776781739}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -83,10 +85,14 @@ MonoBehaviour:
   networkAddress: 47.20.188.207
   maxConnections: 100
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 839802167741535671, guid: b9693b3e51d224246a5c785002ab2f85, type: 3}
-  autoCreatePlayer: 0
+  playerPrefab: {fileID: 8685233576683617771, guid: 21588d4a40e794c8680339b21fce2acd, type: 3}
+  autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 1203320913305659433, guid: 9407b081fd78c6145b5c99f4803e2d59, type: 3}
+  - {fileID: 2771430499345863993, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
+  - {fileID: 8348695913712926606, guid: 11dc85af13d69414e95e954ce1859949, type: 3}
+  - {fileID: 2960029541259181288, guid: d3c90f4064219c34d92fa16228c6f295, type: 3}
   m_HostAddress:
     _usage: 2
     _value: 
@@ -95,4 +101,68 @@ MonoBehaviour:
     _variableInstancer: {fileID: 0}
   m_StartHostEvent: {fileID: 11400000, guid: 5278b8672edc5db4c962b030e88727a0, type: 2}
   m_StartClientEvent: {fileID: 11400000, guid: 4317195ff7eed3b459aaacbfbb45ea67, type: 2}
+  m_DisconnectEvent: {fileID: 11400000, guid: dd783e5802f7a45bcb8bcd0772fc0c3c, type: 2}
+  m_OnStartClient: {fileID: 0}
+  m_OnStopClient: {fileID: 0}
   m_Player: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
+--- !u!1 &5984576550194437987
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 385087212776781739}
+  - component: {fileID: 2686995925395726467}
+  m_Layer: 0
+  m_Name: KeyboardInput
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &385087212776781739
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5984576550194437987}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1244464915308659324}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2686995925395726467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5984576550194437987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77b3ad85de3ebcd4cac66b4281aa11fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Key: 111
+  Type: 0
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 745588075}
+        m_TargetAssemblyTypeName: Mirror.NetworkManager, Mirror
+        m_MethodName: StartClient
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
