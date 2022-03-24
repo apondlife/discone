@@ -64,21 +64,21 @@ sealed class OnlinePlayer: NetworkBehaviour {
     // -- c/network
     [Command]
     public void Server_SwitchCharacter(GameObject src, GameObject dst) {
-        var srcChar = src.GetComponent<OnlineCharacter>();
-        var dstChar = dst.GetComponent<OnlineCharacter>();
+        var srcCharacter = src?.GetComponent<OnlineCharacter>();
+        var dstCharacter = dst.GetComponent<OnlineCharacter>();
 
         // if the server doesn't have authority over this character, another player
         // already does
-        if (!dstChar.IsAvailable) {
-            Client_FailedToSwitchCharacter(src == null);
+        if (!dstCharacter.IsAvailable) {
+            Client_FailedToSwitchCharacter(isInitial: src == null);
             return;
         }
 
         // assign authority to this client
-        dstChar.AssignClientAuthority(connectionToClient);
+        dstCharacter.AssignClientAuthority(connectionToClient);
 
-        if (srcChar != null) {
-            srcChar.RemoveClientAuthority();
+        if (srcCharacter != null) {
+            srcCharacter.RemoveClientAuthority();
         }
 
         // call back to the client
@@ -88,22 +88,22 @@ sealed class OnlinePlayer: NetworkBehaviour {
     [TargetRpc]
     void Client_SwitchCharacter(NetworkConnection target, GameObject dst) {
         // if the player exists
-        var p = m_CurrentPlayer.GetComponent<Player>();
-        if (p == null || !p.enabled) {
+        var player = m_CurrentPlayer.GetComponent<Player>();
+        if (player == null || !player.enabled) {
             Debug.Assert(false, "[player] missing player!");
             return;
         }
 
         // and the character exists
-        var c = dst.GetComponent<ThirdPerson.ThirdPerson>();
-        if (c == null || !c.enabled) {
+        var character = dst.GetComponent<ThirdPerson.ThirdPerson>();
+        if (character == null || !character.enabled) {
             Debug.Assert(false, "[player] missing character");
             return;
         }
 
         // drive this character
         m_CurrentCharacter.Value = dst;
-        p.Drive(c);
+        player.Drive(character);
     }
 
     [TargetRpc]

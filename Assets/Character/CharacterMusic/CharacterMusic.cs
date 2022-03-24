@@ -2,7 +2,7 @@ using UnityEngine;
 using Musicker;
 using ThirdPerson;
 
-/// the character's music
+/// the character's music ("m***** mousing")
 class CharacterMusic: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
@@ -26,8 +26,8 @@ class CharacterMusic: MonoBehaviour {
     [Tooltip("the line to play when fluttering")]
     [SerializeField] LineField m_Flutter;
 
-    // -- references --
-    [Header("references")]
+    // -- refs --
+    [Header("refs")]
     [Tooltip("the music source")]
     [SerializeField] FmodMusicSource m_Source;
 

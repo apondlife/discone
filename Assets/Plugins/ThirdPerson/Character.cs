@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace ThirdPerson {
 
 /// a container for shuffling around character data

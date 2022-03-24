@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityAtoms.BaseAtoms;
 
 namespace Musicker {
 
@@ -7,7 +8,7 @@ namespace Musicker {
 public sealed class FmodMusicSource: MonoBehaviour {
     // -- constants --
     /// the name of the tone param
-    const string k_ParamTone = "Tone1";
+    const string k_ParamTone = "Tone";
 
     // -- references --
     [Header("references")]
@@ -56,8 +57,8 @@ public sealed class FmodMusicSource: MonoBehaviour {
         }
 
         // play the event for this note
-        m_Emitter.SetParameter(k_ParamTone, keyed.Steps);
         m_Emitter.Play();
+        m_Emitter.SetParameter(k_ParamTone, keyed.Steps);
     }
 }
 
