@@ -26,6 +26,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4372862189765584729}
   - {fileID: 918655906608104097}
@@ -64,6 +65,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 700287134566711189}
   m_Father: {fileID: 0}
@@ -86,7 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6471546edccbce44aa4f5b1a8214f63b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ToggleButton: {fileID: 7987326823930039304, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
+  m_ToggleButton: {fileID: 7222811763927796809, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   m_ObjectToToggle: {fileID: 700287134566711190}
 --- !u!1001 &700287134420031318
 PrefabInstance:
