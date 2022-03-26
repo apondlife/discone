@@ -9,7 +9,7 @@ sealed class JumpSystem: CharacterSystem {
     int m_CoyoteFrame = 0;
 
     // -- lifetime --
-    public JumpSystem(Character character)
+    public JumpSystem(CharacterData character)
         : base(character) {
     }
 

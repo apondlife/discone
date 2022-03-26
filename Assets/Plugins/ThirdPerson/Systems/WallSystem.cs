@@ -5,7 +5,7 @@ namespace ThirdPerson {
 /// how the character interacts with walls
 sealed class WallSystem: CharacterSystem {
     // -- lifetime --
-    public WallSystem(Character character)
+    public WallSystem(CharacterData character)
         : base(character) {
     }
 

@@ -9,7 +9,7 @@ public class Player: MonoBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("the currently controlled character")]
-    [SerializeField] private ThirdPerson m_CurrentCharacter;
+    [SerializeField] private Character m_CurrentCharacter;
 
     // -- refs --
     [Header("refs")]
@@ -19,10 +19,10 @@ public class Player: MonoBehaviour {
     // -- events --
     [Header("events")]
     [Tooltip("when the player starts driving a character")]
-    [SerializeField] UnityEvent<ThirdPerson> m_OnDriveStart;
+    [SerializeField] UnityEvent<Character> m_OnDriveStart;
 
     [Tooltip("when the player stops driving a character")]
-    [SerializeField] UnityEvent<ThirdPerson> m_OnDriveStop;
+    [SerializeField] UnityEvent<Character> m_OnDriveStop;
 
     // -- lifecycle --
     void Start() {
@@ -40,14 +40,14 @@ public class Player: MonoBehaviour {
     // -- commands --
     /// drive a particular character
     public void Drive(GameObject target) {
-        var character = target.GetComponent<ThirdPerson>();
+        var character = target.GetComponent<Character>();
         if (character != null) {
             Drive(character);
         }
     }
 
     /// drive a particular character
-    public void Drive(ThirdPerson character) {
+    public void Drive(Character character) {
         var src = m_CurrentCharacter;
         if(src != null) {
             src.Input.Drive(null);
@@ -73,7 +73,7 @@ public class Player: MonoBehaviour {
 
     // -- queries --
     /// the character the player is currently driving
-    public ThirdPerson CurrentCharacter {
+    public Character CurrentCharacter {
         get => m_CurrentCharacter;
     }
 }

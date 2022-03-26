@@ -25,12 +25,12 @@ abstract class CharacterSystem {
 
     // -- lifetime --
     /// create a new system
-    public CharacterSystem(Character character) {
+    public CharacterSystem(CharacterData data) {
         // set dependencies
-        m_Input = character.Input;
-        m_State = character.State;
-        m_Tunables = character.Tunables;
-        m_Controller = character.Controller;
+        m_Input = data.Input;
+        m_State = data.State;
+        m_Tunables = data.Tunables;
+        m_Controller = data.Controller;
 
         // set props
         m_Name = this.GetType().Name;

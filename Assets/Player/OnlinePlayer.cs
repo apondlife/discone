@@ -95,7 +95,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // and the character exists
-        var character = dst.GetComponent<ThirdPerson.ThirdPerson>();
+        var character = dst.GetComponent<ThirdPerson.Character>();
         if (character == null || !character.enabled) {
             Debug.Assert(false, "[player] missing character");
             return;

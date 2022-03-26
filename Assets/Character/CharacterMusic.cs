@@ -59,7 +59,7 @@ class CharacterMusic: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         // set deps
-        var container = GetComponentInParent<ThirdPerson.ThirdPerson>();
+        var container = GetComponentInParent<ThirdPerson.Character>();
         m_State = container.State;
 
         // set props
