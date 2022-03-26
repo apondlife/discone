@@ -3,6 +3,9 @@ using Mirror;
 
 /// an online character
 sealed class OnlineCharacter: NetworkBehaviour {
+    // -- constants --
+    static Transform k_Characters;
+
     // -- fields --
     /// if this character is available
     [Header("fields")]
@@ -11,6 +14,21 @@ sealed class OnlineCharacter: NetworkBehaviour {
 
     [Tooltip("if the character is currently available")]
     [SyncVar] [SerializeField] bool m_IsAvailable = true;
+
+    // -- lifecycle --
+    void Awake() {
+        #if UNITY_EDITOR
+        // create shared characters "folder"
+        if (k_Characters == null) {
+            var obj = new GameObject();
+            obj.name = "Characters";
+            k_Characters = obj.transform;
+        }
+
+        // move character to folder
+        transform.parent = k_Characters.transform;
+        #endif
+    }
 
     // -- commands --
     /// mark this character as unavaialble
