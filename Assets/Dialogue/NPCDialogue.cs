@@ -30,27 +30,37 @@ public class NPCDialogue: MonoBehaviour {
     // -- debug --
     [Header("debug")]
     [Tooltip("if this is listening for nearby players")]
-    [SerializeField] bool m_IsListening;
+    [SerializeField] bool m_IsListening = true;
 
     [Tooltip("if this is in range to talk")]
     [SerializeField] bool m_IsInRange = false;
 
+
     // -- events --
     [Header("events")]
-    [Tooltip("when the player starts driving a character")]
-    [SerializeField] CharacterEvent m_DriveStart;
-
-    [Tooltip("when the player stops driving a character")]
-    [SerializeField] CharacterEvent m_DriveStop;
-
     [Tooltip("start the dialogue for this character")]
     [SerializeField] private GameObjectEvent m_StartDialogue;
+
+    bool m_PlayerCanInteract => m_IsInRange && m_IsListening;
 
     // -- lifecycle --
     void Start() {
         // TODO: do in prefab
         if (m_TalkIndicator) {
             m_TalkIndicator.SetActive(false);
+        }
+
+        m_IsListening = true;
+    }
+
+    void Update() {
+        // update the indicator
+        if (m_TalkIndicator) {
+            if(m_PlayerCanInteract) {
+                m_TalkIndicator.SetActive(true);
+            } else {
+                m_TalkIndicator.SetActive(false);
+            }
         }
     }
 
@@ -82,12 +92,12 @@ public class NPCDialogue: MonoBehaviour {
 
     // -- events --
     // when the player starts driving a character
-    void StartListening() {
+    public void StartListening() {
         m_IsListening = true;
     }
 
     // when the player stops driving a character
-    void StopListening() {
+    public void StopListening() {
         m_IsListening = false;
         m_IsInRange = false;
     }
@@ -109,11 +119,9 @@ public class NPCDialogue: MonoBehaviour {
             Debug.Log($"[dialogue] character in range <{m_NodeTitle}>");
             m_IsInRange = true;
 
-            if (m_TalkIndicator) {
-                m_TalkIndicator.SetActive(true);
-            }
         }
     }
+
 
     void OnTriggerExit(Collider other) {
         if (!m_IsListening) {
@@ -122,10 +130,6 @@ public class NPCDialogue: MonoBehaviour {
 
         if (other.CompareTag(_dialogueTargetTag)) {
             m_IsInRange = false;
-
-            if (m_TalkIndicator) {
-                m_TalkIndicator.SetActive(false);
-            }
             // TODO: end dialogue on exit, new atom?
         }
     }
