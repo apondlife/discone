@@ -10,14 +10,16 @@ public class NPCDialogue: MonoBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("IMPORTANT: the title of the yarn node for this npc's dialogue")]
+    [UnityEngine.Serialization.FormerlySerializedAs("dialogueMessage")]
     /// TODO: should this be called the "dialogue node title"?
-    [SerializeField] private string dialogueMessage;
+    [SerializeField] private string m_NodeTitle;
 
-    [Tooltip("the yarn node for the dialogue for this npc")]
-    [SerializeField] private GameObject talkable;
+    [Tooltip("the character's talk indicator")]
+    [UnityEngine.Serialization.FormerlySerializedAs("talkable")]
+    [SerializeField] private GameObject m_TalkIndicator;
 
-    // -- references --
-    [Header("references")]
+    // -- refs --
+    [Header("refs")]
     [Tooltip("the character")]
     [SerializeField] private GameObject m_Character;
 
@@ -34,8 +36,8 @@ public class NPCDialogue: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        if (talkable) {
-            talkable.SetActive(false);
+        if (m_TalkIndicator) {
+            m_TalkIndicator.SetActive(false);
         }
     }
 
@@ -57,7 +59,7 @@ public class NPCDialogue: MonoBehaviour {
     // -- queries --
     /// the title of the dialogue node to start
     public string NodeTitle {
-        get => dialogueMessage;
+        get => m_NodeTitle;
     }
 
     /// the character for this dialogue
@@ -68,16 +70,21 @@ public class NPCDialogue: MonoBehaviour {
     // -- events --
     void OnTriggerEnter(Collider other) {
         if (other.CompareTag(_dialogueTargetTag)) {
-            Debug.Log($"[dialogue] character in range <{dialogueMessage}>");
+            Debug.Log($"[dialogue] character in range <{m_NodeTitle}>");
             _playerInTalkRange = true;
-            if (talkable) talkable.SetActive(true);
+            if (m_TalkIndicator) {
+                m_TalkIndicator.SetActive(true);
+            }
         }
     }
 
     void OnTriggerExit(Collider other) {
         if (other.CompareTag(_dialogueTargetTag)) {
             _playerInTalkRange = false;
-            if (talkable) talkable.SetActive(false);
+
+            if (m_TalkIndicator) {
+                m_TalkIndicator.SetActive(false);
+            }
             // TODO: end dialogue on exit, new atom?
         }
     }
