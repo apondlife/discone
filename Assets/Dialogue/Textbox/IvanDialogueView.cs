@@ -34,9 +34,6 @@ public class IvanDialogueView : DialogueViewBase
     void Start() {
         textAnimator = GetComponent<TextShakeChars>();
         canvasGroup.alpha = 0;
-
-        // bind events
-        // m_RunNextLine.Register(OnRunNextLine);
     }
 
     public void Reset() {

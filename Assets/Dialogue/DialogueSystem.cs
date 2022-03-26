@@ -33,11 +33,21 @@ public class DialogueSystem: MonoBehaviour {
     [Tooltip("the dialogue runner")]
     [SerializeField] DialogueRunner yarnDialogueRunner;
 
+    // -- props --
+    /// a set of event subscriptions
+    Subscriptions m_Subscriptions;
+
     // -- lifecycle --
     void Awake() {
         // bind events
-        m_Start.Register(OnStartDialogue);
-        m_Complete.Register(OnDialogueComplete);
+        m_Subscriptions
+            .Add(m_Start, OnStartDialogue)
+            .Add(m_Complete, OnDialogueComplete);
+    }
+
+    private void OnDestroy() {
+        // unbind events
+        m_Subscriptions.Dispose();
     }
 
     // -- commands --

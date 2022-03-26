@@ -20,12 +20,22 @@ sealed class DisconePlayer: MonoBehaviour {
     [Tooltip("the input source")]
     [SerializeField] PlayerInputSource m_InputSource;
 
+    // -- props --
+    /// a set of event subscriptions
+    Subscriptions m_Subscriptions;
+
     // -- lifecycle --
     void Awake() {
         // bind events
-        m_DriveStart.Register(OnDriveStart);
-        m_DriveStop.Register(OnDriveStop);
-        m_IsDialogueActiveChanged.Register(OnIsDialogueActiveChanged);
+        m_Subscriptions
+            .Add(m_DriveStart, OnDriveStart)
+            .Add(m_DriveStop, OnDriveStop)
+            .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
+    }
+
+    void OnDestroy() {
+        // unbind events
+        m_Subscriptions.Dispose();
     }
 
     // -- queries --
