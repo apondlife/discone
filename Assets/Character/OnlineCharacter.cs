@@ -30,6 +30,13 @@ sealed class OnlineCharacter: NetworkBehaviour {
         #endif
     }
 
+    public override void OnStartServer() {
+        base.OnStartServer();
+
+        // initially, nobody has authority over any character (except the host client)
+        RemoveClientAuthority();
+    }
+
     // -- commands --
     /// mark this character as unavaialble
     public void AssignClientAuthority(NetworkConnection connection) {
@@ -40,7 +47,7 @@ sealed class OnlineCharacter: NetworkBehaviour {
     /// mark this character as available
     public void RemoveClientAuthority() {
         m_IsAvailable = true;
-        netIdentity.RemoveClientAuthority();
+        netIdentity.AssignClientAuthority(NetworkServer.localConnection);
     }
 
     // -- queries --
