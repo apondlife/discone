@@ -18,20 +18,10 @@ public class Online: NetworkManager {
 
     [Header("input events")]
     [Tooltip("an event when the starts")]
-    [SerializeField] VoidEvent m_StartHostEvent;
-
-    [Tooltip("an event when the starts")]
     [SerializeField] VoidEvent m_StartClientEvent;
 
     [Tooltip("an event when the starts")]
     [SerializeField] VoidEvent m_DisconnectEvent;
-
-    [Header("output events")]
-    [Tooltip("an event when the client successfully connects")]
-    [SerializeField] VoidEvent m_OnStartClient;
-
-    [Tooltip("an event when the client failts to connect")]
-    [SerializeField] VoidEvent m_OnStopClient;
 
     [Header("deps")]
     [Tooltip("a reference to the player character")]
@@ -43,7 +33,6 @@ public class Online: NetworkManager {
         base.Awake();
 
         // bind events
-        m_StartHostEvent.Register(DidStartHost);
         m_StartClientEvent.Register(DidStartClient);
         m_DisconnectEvent.Register(DidDisconnect);
     }
@@ -56,45 +45,7 @@ public class Online: NetworkManager {
         StartHost();
     }
 
-    // -- NetworkManager --
-    public override void OnStartServer() {
-        base.OnStartServer();
-
-        // NetworkServer.RegisterHandler<CreateCharacter>(DidCreateCharacter);
-    }
-
-    public override void OnClientConnect() {
-        base.OnClientConnect();
-
-        // // you can send the message here, or wherever else you want
-        // NetworkClient.Send(new CreateCharacter() {
-        //     Position = m_Player.Value.transform.position
-        // });
-    }
-
     // -- events --
-    /// when a new character spawns on the server
-    void DidCreateCharacter(NetworkConnection conn, CreateCharacter msg) {
-        // // add the online player to the game
-        // var obj = OnlinePlayer.Spawn(playerPrefab, conn.connectionId, msg.Position);
-        // NetworkServer.AddPlayerForConnection(conn, obj);
-    }
-
-    /// when the host starts
-    void DidStartHost() {
-        StartHost();
-        Debug.Log($"[online] started host");
-    }
-
-    /// when the host/client disconnect
-    void DidDisconnect() {
-        if (NetworkServer.active) {
-            StopHost();
-        } else {
-            StopClient();
-        }
-    }
-
     /// when the host starts
     void DidStartClient() {
         if (NetworkServer.active) {
@@ -106,13 +57,12 @@ public class Online: NetworkManager {
         Debug.Log($"[online] started client: {networkAddress}");
     }
 
-    public override void OnStopClient() {
-        // call events
-        m_OnStopClient?.Raise();
-    }
-
-    public override void OnStartClient() {
-        // call events
-        m_OnStartClient?.Raise();
+    /// when the host/client disconnect
+    void DidDisconnect() {
+        if (NetworkServer.active) {
+            StopHost();
+        } else {
+            StopClient();
+        }
     }
 }
