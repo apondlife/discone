@@ -28,19 +28,23 @@ sealed class DisconePlayer: MonoBehaviour {
         m_IsDialogueActiveChanged.Register(OnIsDialogueActiveChanged);
     }
 
+    // -- queries --
+    /// get the dialogue attached to a character
+    NPCDialogue FindDialogue(Character character) {
+        var dialogue = character.GetComponentInChildren<NPCDialogue>();
+        Debug.Assert(dialogue != null, $"character {character.name} has no dialogue attached.");
+        return dialogue;
+    }
+
     // -- events --
     // when the player starts driving a character
     void OnDriveStart(Character character) {
-        var dialogue = character.GetComponentInChildren<NPCDialogue>();
-        Debug.Assert(dialogue != null, $"character {character.name} has no dialogue attached.");
-        dialogue?.StopListening();
+        FindDialogue(character)?.StopListening();
     }
 
     // when the player stops driving a character
     void OnDriveStop(Character character) {
-        var dialogue = character.GetComponentInChildren<NPCDialogue>();
-        Debug.Assert(dialogue != null, $"character {character.name} has no dialogue attached.");
-        dialogue?.StartListening();
+        FindDialogue(character)?.StartListening();
     }
 
     /// when the dialog becomes in/active
