@@ -16,7 +16,7 @@ public class NPCDialogue: MonoBehaviour {
 
     [Tooltip("the character's talk indicator")]
     [UnityEngine.Serialization.FormerlySerializedAs("talkable")]
-    [SerializeField] private GameObject m_TalkIndicator;
+    [SerializeField] private TalkableIndicator m_TalkIndicator;
 
     // -- refs --
     [Header("refs")]
@@ -47,7 +47,7 @@ public class NPCDialogue: MonoBehaviour {
     void Start() {
         // TODO: do in prefab
         if (m_TalkIndicator) {
-            m_TalkIndicator.SetActive(false);
+            m_TalkIndicator.Hide();
         }
 
         m_IsListening = true;
@@ -57,9 +57,9 @@ public class NPCDialogue: MonoBehaviour {
         // update the indicator
         if (m_TalkIndicator) {
             if(m_PlayerCanInteract) {
-                m_TalkIndicator.SetActive(true);
+                m_TalkIndicator.Show();
             } else {
-                m_TalkIndicator.SetActive(false);
+                m_TalkIndicator.Hide();
             }
         }
     }
@@ -99,6 +99,8 @@ public class NPCDialogue: MonoBehaviour {
     // when the player stops driving a character
     public void StopListening() {
         m_IsListening = false;
+
+        // by doing this, the player has to come in and out of range again to redo a dialogue with a character
         m_IsInRange = false;
     }
 
