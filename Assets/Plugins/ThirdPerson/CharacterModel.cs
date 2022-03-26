@@ -38,9 +38,9 @@ public sealed class CharacterModel: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         // get dependencies
-        var container = GetComponentInParent<ThirdPerson>();
-        m_Tunables = container.Tunables;
-        m_State = container.State;
+        var character = GetComponentInParent<Character>();
+        m_Tunables = character.Tunables;
+        m_State = character.State;
 
         // configure animator
         m_Animator = GetComponentInChildren<Animator>();

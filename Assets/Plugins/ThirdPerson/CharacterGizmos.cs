@@ -5,7 +5,7 @@ using UnityEditor;
 namespace ThirdPerson {
 
 /// gizmos for vizualizing character state
-sealed partial class ThirdPerson {
+sealed partial class Character {
     // -- fields --
     [Header("config")]
     [Tooltip("if the gizmos are visible")]

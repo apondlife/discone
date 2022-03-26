@@ -5,7 +5,7 @@ namespace ThirdPerson {
 /// how the character moves on the ground & air
 sealed class MovementSystem: CharacterSystem {
     // -- lifetime --
-    public MovementSystem(Character character)
+    public MovementSystem(CharacterData character)
         : base(character) {
     }
 

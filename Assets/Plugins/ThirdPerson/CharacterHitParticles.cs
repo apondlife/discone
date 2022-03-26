@@ -21,7 +21,7 @@ public class CharacterHitParticles: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
-        var container = GetComponentInParent<ThirdPerson>();
+        var container = GetComponentInParent<Character>();
         m_State = container.State;
     }
 

@@ -30,7 +30,7 @@ public sealed class ThirdPersonCamera: MonoBehaviour {
     void Awake() {
         m_Camera = GetComponent<CinemachineVirtualCamera>();
         m_Transposer = m_Camera.GetCinemachineComponent<CinemachineTransposer>();
-        m_State = GetComponentInParent<ThirdPerson>().State;
+        m_State = GetComponentInParent<Character>().State;
     }
 
     void Start() {
