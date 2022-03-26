@@ -24,21 +24,21 @@ sealed class DisconePlayer: MonoBehaviour {
     void Awake() {
         // bind events
         m_DriveStart.Register(OnDriveStart);
-        m_DriveStart.Register(OnDriveStop);
+        m_DriveStop.Register(OnDriveStop);
         m_IsDialogueActiveChanged.Register(OnIsDialogueActiveChanged);
     }
 
     // -- events --
     // when the player starts driving a character
     void OnDriveStart(Character character) {
-        var dialogue = character.GetComponent<NPCDialogue>();
+        var dialogue = character.GetComponentInChildren<NPCDialogue>();
         Debug.Assert(dialogue != null, $"character {character.name} has no dialogue attached.");
         dialogue?.StopListening();
     }
 
     // when the player stops driving a character
     void OnDriveStop(Character character) {
-        var dialogue = character.GetComponent<NPCDialogue>();
+        var dialogue = character.GetComponentInChildren<NPCDialogue>();
         Debug.Assert(dialogue != null, $"character {character.name} has no dialogue attached.");
         dialogue?.StartListening();
     }

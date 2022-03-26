@@ -1,66 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &3320609410484118982
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 3345656352466467715}
-    m_Modifications:
-    - target: {fileID: 8345340280521246286, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_Name
-      value: PlayerDialogueTarget
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246286, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_RootOrder
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.757
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345340280521246287, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: e6929546be4a1554884e93ae304d4b89, type: 3}
 --- !u!1001 &5171227752169666152
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -349,7 +288,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3865053424001678558, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3865053424001678558, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -403,6 +342,10 @@ PrefabInstance:
       propertyPath: m_Character
       value: 
       objectReference: {fileID: 3345656352466467727}
+    - target: {fileID: 5426690310298381735, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
+      propertyPath: m_DriveStart
+      value: 
+      objectReference: {fileID: 11400000, guid: 0deed690cad61482db6659a55125900d, type: 2}
     - target: {fileID: 5426690310298381735, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
       propertyPath: m_StartDialogueWithCharacter
       value: 
