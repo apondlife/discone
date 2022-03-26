@@ -11,7 +11,6 @@ sealed class OnlinePlayer: NetworkBehaviour {
     // -- references --
     [Header("references")]
     [Tooltip("the current player")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_CurrentPlayer")]
     [SerializeField] GameObjectVariable m_CurrentPlayer;
 
     [Tooltip("the current player's character")]
@@ -22,17 +21,15 @@ sealed class OnlinePlayer: NetworkBehaviour {
     [Tooltip("switch the character")]
     [SerializeField] GameObjectEvent m_SwitchCharacter;
 
-    // -- lifecycle --
-    void Awake() {
-        m_SwitchCharacter.Register(OnSwitchCharacter);
-    }
-
     // -- NetworkBehaviour --
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
 
         // drive any character
         DriveInitialCharacter();
+
+        /// listen to switch events
+        m_SwitchCharacter.Register(OnSwitchCharacter);
     }
 
     // -- commands --
