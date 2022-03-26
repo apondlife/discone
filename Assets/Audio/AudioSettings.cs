@@ -9,12 +9,14 @@ public class AudioSettings : MonoBehaviour
     public FloatVariable MusicVolume;
     public AudioMixer mixer;
 
+    private Subscriptions subscriptions;
+
     // Start is called before the first frame update
     void Start()
     {
         mixer.GetFloat("volumeMaster", out var masterVolume);
         MasterVolume.Value = masterVolume;
-        MasterVolume.Changed.Register((v) =>
+        subscriptions.Add(MasterVolume.Changed, (v) =>
         {
             v = Mathf.Max(v, 0.00001f);
             mixer.SetFloat("volumeMaster", Mathf.Log10(v) * 20);
@@ -22,7 +24,7 @@ public class AudioSettings : MonoBehaviour
 
         mixer.GetFloat("volumeMusic", out var musicVolume);
         MusicVolume.Value = musicVolume;
-        MusicVolume.Changed.Register((v) =>
+        subscriptions.Add(MusicVolume.Changed, (v) =>
         {
             v = Mathf.Max(v, 0.00001f);
             mixer.SetFloat("volumeMusic", Mathf.Log10(v) * 20);
@@ -30,11 +32,15 @@ public class AudioSettings : MonoBehaviour
 
         mixer.GetFloat("volumeSfx", out var sfxVolume);
         SfxVolume.Value = sfxVolume;
-        SfxVolume.Changed.Register((v) =>
+        subscriptions.Add(SfxVolume.Changed, (v) =>
         {
             v = Mathf.Max(v, 0.00001f);
             mixer.SetFloat("volumeSfx", Mathf.Log10(v) * 20);
         });
+    }
+
+    private void OnDestroy() {
+        subscriptions.Dispose();
     }
 
     // Update is called once per frame

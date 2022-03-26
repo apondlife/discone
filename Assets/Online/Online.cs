@@ -28,13 +28,20 @@ public class Online: NetworkManager {
     [FormerlySerializedAs("m_PlayerCharacter")]
     [SerializeField] GameObjectVariable m_Player;
 
+    private Subscriptions subscriptions;
+
     // -- lifecycle --
     public override void Awake() {
         base.Awake();
 
         // bind events
-        m_StartClientEvent.Register(DidStartClient);
-        m_DisconnectEvent.Register(DidDisconnect);
+        subscriptions
+            .Add(m_StartClientEvent, DidStartClient)
+            .Add(m_DisconnectEvent, DidDisconnect);
+    }
+
+    private void OnDestroy() {
+        subscriptions.Dispose();
     }
 
     public override void Start() {

@@ -21,6 +21,10 @@ sealed class OnlinePlayer: NetworkBehaviour {
     [Tooltip("switch the character")]
     [SerializeField] GameObjectEvent m_SwitchCharacter;
 
+    // -- props --
+    /// a set of event subscriptions
+    Subscriptions m_Subscriptions;
+
     // -- NetworkBehaviour --
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
@@ -29,7 +33,11 @@ sealed class OnlinePlayer: NetworkBehaviour {
         DriveInitialCharacter();
 
         /// listen to switch events
-        m_SwitchCharacter.Register(OnSwitchCharacter);
+        m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
+    }
+
+    void OnDestroy() {
+        m_Subscriptions.Dispose();
     }
 
     // -- commands --
