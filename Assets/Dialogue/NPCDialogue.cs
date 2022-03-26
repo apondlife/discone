@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityAtoms.BaseAtoms;
+using ThirdPerson;
 
 [RequireComponent(typeof(Collider))]
 public class NPCDialogue: MonoBehaviour {
@@ -11,7 +12,6 @@ public class NPCDialogue: MonoBehaviour {
     [Header("config")]
     [Tooltip("IMPORTANT: the title of the yarn node for this npc's dialogue")]
     [UnityEngine.Serialization.FormerlySerializedAs("dialogueMessage")]
-    /// TODO: should this be called the "dialogue node title"?
     [SerializeField] private string m_NodeTitle;
 
     [Tooltip("the character's talk indicator")]
@@ -24,29 +24,42 @@ public class NPCDialogue: MonoBehaviour {
     [SerializeField] private GameObject m_Character;
 
     [Tooltip("the input reference")]
-    [SerializeField] InputActionReference m_Talk;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Talk")]
+    [SerializeField] InputActionReference m_TalkInput;
 
-    [Tooltip("if the character is in range to talk")]
-    [SerializeField] private bool _playerInTalkRange = false;
+    // -- debug --
+    [Header("debug")]
+    [Tooltip("if this is listening for nearby players")]
+    [SerializeField] bool m_IsListening;
+
+    [Tooltip("if this is in range to talk")]
+    [SerializeField] bool m_IsInRange = false;
 
     // -- events --
     [Header("events")]
+    [Tooltip("when the player starts driving a character")]
+    [SerializeField] CharacterEvent m_DriveStart;
+
+    [Tooltip("when the player stops driving a character")]
+    [SerializeField] CharacterEvent m_DriveStop;
+
     [Tooltip("start the dialogue for this character")]
     [SerializeField] private GameObjectEvent m_StartDialogue;
 
     // -- lifecycle --
     void Start() {
+        // TODO: do in prefab
         if (m_TalkIndicator) {
             m_TalkIndicator.SetActive(false);
         }
     }
 
     void OnEnable() {
-        m_Talk.action.performed += OnTalkPressed;
+        m_TalkInput.action.performed += OnTalkPressed;
     }
 
     void OnDisable() {
-        m_Talk.action.performed -= OnTalkPressed;
+        m_TalkInput.action.performed -= OnTalkPressed;
     }
 
     // -- commands --
@@ -68,10 +81,34 @@ public class NPCDialogue: MonoBehaviour {
     }
 
     // -- events --
+    // when the player starts driving a character
+    void StartListening() {
+        m_IsListening = true;
+    }
+
+    // when the player stops driving a character
+    void StopListening() {
+        m_IsListening = false;
+        m_IsInRange = false;
+    }
+
+    /// when the player presses talk
+    void OnTalkPressed(InputAction.CallbackContext _) {
+        // talk to the character if they're in range
+        if (m_IsListening && m_IsInRange) {
+            StartTalking();
+        }
+    }
+
     void OnTriggerEnter(Collider other) {
+        if (!m_IsListening) {
+            return;
+        }
+
         if (other.CompareTag(_dialogueTargetTag)) {
             Debug.Log($"[dialogue] character in range <{m_NodeTitle}>");
-            _playerInTalkRange = true;
+            m_IsInRange = true;
+
             if (m_TalkIndicator) {
                 m_TalkIndicator.SetActive(true);
             }
@@ -79,21 +116,17 @@ public class NPCDialogue: MonoBehaviour {
     }
 
     void OnTriggerExit(Collider other) {
+        if (!m_IsListening) {
+            return;
+        }
+
         if (other.CompareTag(_dialogueTargetTag)) {
-            _playerInTalkRange = false;
+            m_IsInRange = false;
 
             if (m_TalkIndicator) {
                 m_TalkIndicator.SetActive(false);
             }
             // TODO: end dialogue on exit, new atom?
-        }
-    }
-
-    /// when the player presses talk
-    void OnTalkPressed(InputAction.CallbackContext _) {
-        // talk to the character if they're in range
-        if (_playerInTalkRange) {
-            StartTalking();
         }
     }
 }
