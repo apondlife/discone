@@ -41,12 +41,14 @@ sealed class OnlineCharacter: NetworkBehaviour {
     /// mark this character as unavaialble
     public void AssignClientAuthority(NetworkConnection connection) {
         m_IsAvailable = false;
+        netIdentity.RemoveClientAuthority();
         netIdentity.AssignClientAuthority(connection);
     }
 
     /// mark this character as available
     public void RemoveClientAuthority() {
         m_IsAvailable = true;
+        netIdentity.RemoveClientAuthority();
         netIdentity.AssignClientAuthority(NetworkServer.localConnection);
     }
 
