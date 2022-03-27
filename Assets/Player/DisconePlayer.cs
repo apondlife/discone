@@ -22,7 +22,7 @@ sealed class DisconePlayer: MonoBehaviour {
 
     // -- props --
     /// a set of event subscriptions
-    Subscriptions m_Subscriptions;
+    Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
     void Awake() {

@@ -28,7 +28,7 @@ public class Online: NetworkManager {
     [FormerlySerializedAs("m_PlayerCharacter")]
     [SerializeField] GameObjectVariable m_Player;
 
-    private Subscriptions subscriptions;
+    private Subscriptions subscriptions = new Subscriptions();
 
     // -- lifecycle --
     public override void Awake() {
@@ -40,7 +40,10 @@ public class Online: NetworkManager {
             .Add(m_DisconnectEvent, DidDisconnect);
     }
 
-    private void OnDestroy() {
+    public override void OnDestroy() {
+        base.OnDestroy();
+
+        // unbind events
         subscriptions.Dispose();
     }
 
