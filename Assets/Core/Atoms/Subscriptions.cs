@@ -3,7 +3,7 @@ using UnityAtoms.BaseAtoms;
 using System;
 
 /// a collection of event subscriptions
-struct Subscriptions: IDisposable {
+sealed class Subscriptions: IDisposable {
     // -- props --
     private Action subscriptions;
 
@@ -24,5 +24,6 @@ struct Subscriptions: IDisposable {
     /// dispose of all the subscriptions
     public void Dispose() {
         subscriptions?.Invoke();
+        subscriptions = null;
     }
 }

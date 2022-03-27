@@ -23,7 +23,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
     // -- props --
     /// a set of event subscriptions
-    Subscriptions m_Subscriptions;
+    Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- NetworkBehaviour --
     public override void OnStartLocalPlayer() {

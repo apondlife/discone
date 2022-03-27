@@ -9,7 +9,7 @@ public class AudioSettings : MonoBehaviour
     public FloatVariable MusicVolume;
     public AudioMixer mixer;
 
-    private Subscriptions subscriptions;
+    private Subscriptions subscriptions = new Subscriptions();
 
     // Start is called before the first frame update
     void Start()
