@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace ThirdPerson {
 
 /// a character system; may be a state machine

@@ -34,9 +34,26 @@ public sealed class Buffer<T> {
     }
 
     // -- queries --
-    /// gets the snapshot nth-newest snapshot.
+    /// gets the nth item
     public T this[int index] {
-        get => m_Buffer[index];
+        get {
+            if (index >= m_Count) {
+                throw new IndexOutOfRangeException();
+            }
+
+            return m_Buffer[index];
+        }
+    }
+
+    /// gets the last item
+    public T Last {
+        get {
+            if (m_Count == 0) {
+                return default;
+            }
+
+            return m_Buffer[m_Count - 1];
+        }
     }
 
     /// the current count of items
