@@ -31,7 +31,7 @@ class CharacterMusic: MonoBehaviour {
     [Tooltip("the music source")]
     [SerializeField] FmodMusicSource m_Source;
 
-    [Tooltip("the character controller")]
+    [Tooltip("the character state")]
     [SerializeField] CharacterState m_State;
 
     // -- props --

@@ -5,8 +5,10 @@ namespace ThirdPerson {
 /// the collision info
 public readonly struct CharacterCollision {
     // -- props --
-    /// the normal of the collision surface
+    /// the normal at the on the collision surface
     public readonly Vector3 Normal;
+
+    /// the collision point
     public readonly Vector3 Point;
 
     // -- lifetime --

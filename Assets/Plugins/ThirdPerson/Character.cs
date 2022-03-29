@@ -25,9 +25,6 @@ public partial class Character: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
-        // init child objects
-        m_State.Reset(transform.forward);
-
         // init data
         var data = new CharacterData(
             m_Input,
@@ -47,12 +44,14 @@ public partial class Character: MonoBehaviour {
     }
 
     void FixedUpdate() {
+        // store the previous frame
+        m_State.Snapshot();
+
+        // calculate the next one
         var v0 = m_State.Velocity;
 
-        // camera to left/forward movement
-        m_Input.Read();
-
         // update the character's systems
+        m_Input.Read();
         foreach (var system in m_Systems) {
             system.Update();
         }
@@ -63,23 +62,26 @@ public partial class Character: MonoBehaviour {
         }
 
         if(m_Controller.Collisions.Count > 0) {
-            m_State.Collision = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
+            m_State.Collision = m_Controller.Collisions.Last;
         } else {
             m_State.Collision = null;
         }
 
         // sync controller state back to character state
-        m_State.UpdateVelocity(v0, m_Controller.Velocity);
-        var c = GetComponent<CapsuleCollider>();
-        var delta = (c.height / 2.0f - c.radius) * Vector3.up;
-        var p0 = c.center - delta;
-        var p1 = c.center + delta;
+        m_State.SetVelocity(m_Controller.Velocity);
+    }
+
+    // -- commands --
+    public void Drive(PlayerInputSource source) {
+        m_Input.Drive(source);
+    }
+
+    public void ForceState(CharacterState.Frame frame) {
+        m_State.SetLastFrame(frame);
     }
 
     // -- queries --
     public CharacterController Controller => m_Controller;
-
-    public CharacterInput Input => m_Input;
 
     public CharacterTunablesBase Tunables => m_Tunables;
 
