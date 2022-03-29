@@ -63,7 +63,7 @@ public sealed class CharacterController {
 
     // -- commands --
     /// move the character by a position delta
-    public void Move(Vector3 delta) {
+    public void Move(Vector3 position, Vector3 delta) {
         // if the move was big enough to fire
         // TODO: is this necessary?
         if (delta.magnitude <= m_MinMove) {
@@ -84,7 +84,7 @@ public sealed class CharacterController {
         );
 
         // track start and end position to calculate velocity
-        var moveStart = t.position;
+        var moveStart = position;
         var moveEnd = moveStart;
         var moveDelta = delta;
         var moveContactOffset = Vector3.zero;

@@ -48,7 +48,7 @@ sealed class WallSystem: CharacterSystem {
         m_State.IsOnWall = true;
         var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
         var planarNormal = Vector3.ProjectOnPlane(lastHit.Normal, Vector3.up);
-        var projectedVelocity = Vector3.Project(m_State.PrevPlanarVelocity, planarNormal);
+        var projectedVelocity = Vector3.Project(m_State.GetFrame(1).Velocity, planarNormal);
         m_State.VerticalSpeed += projectedVelocity.magnitude;
         // Debug.Log($"wall-slide: n={m_State.Hit.Value.normal} n_p={planarNormal} v_0={m_State.PrevPlanarVelocity} v_n={projectedVelocity} dvy={2.0f * projectedVelocity.magnitude}");
     }
@@ -69,7 +69,7 @@ sealed class WallSystem: CharacterSystem {
         }
 
         var planarNormal = Vector3.ProjectOnPlane(lastHit.Normal, Vector3.up);
-        var projectedVelocity = Vector3.Project(m_State.PrevPlanarVelocity, planarNormal);
+        var projectedVelocity = Vector3.Project(m_State.GetFrame(1).PlanarVelocity, planarNormal);
         m_State.VerticalSpeed += projectedVelocity.magnitude;
 
         if(m_Input.IsHoldingWall) {
