@@ -57,7 +57,7 @@ class CharacterMusic: MonoBehaviour {
     float m_FlutterTime = 0.0f;
 
     // -- lifecycle --
-    void Awake() {
+    void Start() {
         // set deps
         var container = GetComponentInParent<ThirdPerson.Character>();
         m_State = container.State;

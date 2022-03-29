@@ -1,52 +1,88 @@
-using System;
 using UnityEngine;
 
 namespace ThirdPerson {
 
 /// the character's authoritative state
 public sealed class CharacterState {
-    // -- fields --
-    [Header("fields")]
-    [Tooltip("the world position")]
-    public Vector3 Position;
-
-    [Tooltip("the velocity on the xz-plane")]
-    public Vector3 PlanarVelocity;
-
-    [Tooltip("the speed on the y-axis")]
-    public float VerticalSpeed = 0;
-
-    [Tooltip("the current facing direction")]
-    public Vector3 FacingDirection;
-
-    [Tooltip("if the character is grounded")]
-    public bool IsGrounded = false;
-
-    [Tooltip("if the character is in jump squat")]
-    public bool IsInJumpSquat = false;
-
-    [Tooltip("if the character is in its first jump frame")]
-    public bool IsInJumpStart = false;
-
-    [Tooltip("if the characer is on the wall")]
-    public bool IsOnWall;
-
-    [Tooltip("how much tilted the character is")]
-    public Quaternion Tilt;
-
-    [Tooltip("the most recent collision")]
-    public CharacterCollision? Collision;
-
-    [Tooltip("the current jump squat frame")]
-    public int JumpSquatFrame;
-
     // -- props --
-    Queue<Frame> m_Frames = new Queue<Frame>(5);
+    Queue<Frame> m_Frames;
+
+    // -- lifetime --
+    public CharacterState(Vector3 position, Vector3 forward) {
+        m_Frames = new Queue<Frame>(5);
+        m_Frames.Add(new Frame(position, forward));
+    }
+
+    // -- props/hot --
+    public Vector3 Position {
+        get => m_Frames[0].Position;
+        set => m_Frames[0].Position = value;
+    }
+
+    /// the velocity on the xz-plane
+    public Vector3 PlanarVelocity {
+        get => m_Frames[0].PlanarVelocity;
+        set => m_Frames[0].PlanarVelocity = value;
+    }
+
+    /// the speed on the y-axis
+    public float VerticalSpeed {
+        get => m_Frames[0].VerticalSpeed;
+        set => m_Frames[0].VerticalSpeed = value;
+    }
+
+    /// the current facing direction
+    public Vector3 FacingDirection {
+        get => m_Frames[0].FacingDirection;
+        set => m_Frames[0].FacingDirection = value;
+    }
+
+    /// if the character is grounded
+    public bool IsGrounded {
+        get => m_Frames[0].IsGrounded;
+        set => m_Frames[0].IsGrounded = value;
+    }
+
+    /// if the character is in jump squat
+    public bool IsInJumpSquat {
+        get => m_Frames[0].IsInJumpSquat;
+        set => m_Frames[0].IsInJumpSquat = value;
+    }
+
+    /// if the character is in its first jump frame
+    public bool IsInJumpStart {
+        get => m_Frames[0].IsInJumpStart;
+        set => m_Frames[0].IsInJumpStart = value;
+    }
+
+    /// if the characer is on the wall
+    public bool IsOnWall {
+        get => m_Frames[0].IsOnWall;
+        set => m_Frames[0].IsOnWall = value;
+    }
+
+    /// how much tilted the character is
+    public Quaternion Tilt {
+        get => m_Frames[0].Tilt;
+        set => m_Frames[0].Tilt = value;
+    }
+
+    /// the most recent collision
+    public CharacterCollision? Collision {
+        get => m_Frames[0].Collision;
+        set => m_Frames[0].Collision = value;
+    }
+
+    /// the current jump squat frame
+    public int JumpSquatFrame {
+        get => m_Frames[0].JumpSquatFrame;
+        set => m_Frames[0].JumpSquatFrame = value;
+    }
 
     // -- commands --
     /// snapshot the current state
     public void Snapshot() {
-        m_Frames.Add(new Frame(this));
+        m_Frames.Add(new Frame(m_Frames[0]));
     }
 
     /// sets the velocity
@@ -75,9 +111,9 @@ public sealed class CharacterState {
         }
     }
 
-    /// sets the last state frame
-    public void SetLastFrame(Frame frame) {
-        // m_Frames[0] = frame;
+    /// update frame
+    public void SetCurrentFrame(Frame frame) {
+        m_Frames[0] = frame;
     }
 
     // -- queries --
@@ -86,24 +122,23 @@ public sealed class CharacterState {
         get => Vector3.up;
     }
 
+    public Frame GetFrame(uint v) {
+        return m_Frames[v];
+    }
+
     /// the character's velocity in 3d-space
     public Vector3 Velocity {
-        get => GetVelocity(PlanarVelocity, VerticalSpeed);
+        get => m_Frames[0].Velocity;
+
     }
 
     /// the character's current acceleration
     public Vector3 Acceleration {
         get {
-            var f = m_Frames[0];
-            var v0 = GetVelocity(f.PlanarVelocity, f.VerticalSpeed);
-            var v1 = Velocity;
+            var v0 = m_Frames[1].Velocity;
+            var v1 = m_Frames[0].Velocity;
             return (v1 - v0) / Time.fixedDeltaTime;
         }
-    }
-
-    /// the planar velocity last frame
-    public Vector3 PrevPlanarVelocity {
-        get => m_Frames[0].PlanarVelocity;
     }
 
     /// the characters look rotation (facing & tilt)
@@ -122,59 +157,80 @@ public sealed class CharacterState {
         }
     }
 
-    Vector3 GetVelocity(Vector3 planarVelocity, float verticalSpeed) {
-        return planarVelocity + verticalSpeed * Up;
-    }
-
     // -- types --
-    [Serializable]
-    public readonly struct Frame {
+    /// a single frame of character state
+    public sealed class Frame {
         // -- props --
-        // the world position
-        public readonly Vector3 Position;
+        /// the world position
+        public Vector3 Position;
 
-        // the velocity on the xz-plane
-        public readonly Vector3 PlanarVelocity;
+        /// the velocity on the xz-plane
+        public Vector3 PlanarVelocity = Vector3.zero;
 
-        // the speed on the y-axis
-        public readonly float VerticalSpeed;
+        /// the speed on the y-axis
+        public float VerticalSpeed = 0.0f;
 
-        // how much velocity changed since last update
-        public readonly Vector3 Acceleration;
+        /// how much velocity changed since last update
+        public Vector3 Acceleration = Vector3.zero;
 
-        // the current facing direction
-        public readonly Vector3 FacingDirection;
+        /// the current facing direction
+        public Vector3 FacingDirection;
 
-        // if the character is grounded
-        public readonly bool IsGrounded;
+        /// if the character is grounded
+        public bool IsGrounded = false;
 
-        // if the character is in jump squat
-        public readonly bool IsInJumpSquat;
+        /// if the character is in jump squat
+        public bool IsInJumpSquat = false;
 
-        // if the character is in its first jump frame
-        public readonly bool IsInJumpStart;
+        /// if the character is in its first jump frame
+        public bool IsInJumpStart = false;
 
-        // if the characer is on the wall
-        public readonly bool IsOnWall;
+        /// if the characer is on the wall
+        public bool IsOnWall = false;
 
-        // how much tilted the character is
-        public readonly Quaternion Tilt;
+        /// how much tilted the character is
+        public Quaternion Tilt = Quaternion.identity;
+
+        /// the list of collision information for the previous frame
+        public CharacterCollision? Collision = null;
+
+        /// the current frame in the jump squat
+        public int JumpSquatFrame = -1;
 
         // -- lifetime --
-        /// capture a frame from state
-        public Frame(CharacterState s) {
-            Position = s.Position;
-            PlanarVelocity = s.PlanarVelocity;
-            VerticalSpeed = s.VerticalSpeed;
-            Acceleration = s.Acceleration;
-            FacingDirection = s.FacingDirection;
-            IsGrounded = s.IsGrounded;
-            IsInJumpSquat = s.IsInJumpSquat;
-            IsInJumpStart = s.IsInJumpStart;
-            IsOnWall = s.IsOnWall;
-            Tilt = s.Tilt;
+        /// create an empty frame
+        public Frame(Vector3 position, Vector3 forward) {
+            Position = position;
+            FacingDirection = forward;
         }
+
+        /// capture a frame from state
+        public Frame(CharacterState.Frame f) {
+            Position = f.Position;
+            PlanarVelocity = f.PlanarVelocity;
+            VerticalSpeed = f.VerticalSpeed;
+            Acceleration = f.Acceleration;
+            FacingDirection = f.FacingDirection;
+            IsGrounded = f.IsGrounded;
+            IsInJumpSquat = f.IsInJumpSquat;
+            IsInJumpStart = f.IsInJumpStart;
+            IsOnWall = f.IsOnWall;
+            Tilt = f.Tilt;
+            Collision = f.Collision;
+            JumpSquatFrame = f.JumpSquatFrame;
+        }
+
+        // -- queries --
+        /// the character's up vector (hardcoded to Vector3.up)
+        public Vector3 Up {
+            get => Vector3.up;
+        }
+
+        /// the character's velocity in 3d-space
+        public Vector3 Velocity {
+            get => PlanarVelocity + VerticalSpeed * Up;
+        }
+
     }
 }
-
 }

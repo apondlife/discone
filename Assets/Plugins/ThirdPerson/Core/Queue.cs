@@ -33,6 +33,10 @@ public sealed class Queue<T> {
 
             return m_Queue[GetIndex((int)offset)];
         }
+
+        set {
+            m_Queue[GetIndex((int)offset)] = value;
+        }
     }
 
     /// gets the circular index given an offset from the start index

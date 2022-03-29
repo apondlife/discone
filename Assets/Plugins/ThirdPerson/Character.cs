@@ -18,13 +18,19 @@ public partial class Character: MonoBehaviour {
     CharacterSystem[] m_Systems;
 
     /// the character's state
-    CharacterState m_State = new CharacterState();
+    CharacterState m_State;
 
     ///the input wrapper
     CharacterInput m_Input = new CharacterInput();
 
     // -- lifecycle --
     void Awake() {
+        // init state
+        m_State = new CharacterState(
+            transform.position,
+            transform.forward
+        );
+
         // init data
         var data = new CharacterData(
             m_Input,
@@ -58,7 +64,7 @@ public partial class Character: MonoBehaviour {
 
         // update controller state from character state
         if (m_State.Velocity.sqrMagnitude > 0) {
-            m_Controller.Move(m_State.Velocity * Time.deltaTime);
+            m_Controller.Move(m_State.Position, m_State.Velocity * Time.deltaTime);
         }
 
         if(m_Controller.Collisions.Count > 0) {
@@ -69,6 +75,7 @@ public partial class Character: MonoBehaviour {
 
         // sync controller state back to character state
         m_State.SetVelocity(m_Controller.Velocity);
+        m_State.Position = transform.position;
     }
 
     // -- commands --
@@ -77,7 +84,7 @@ public partial class Character: MonoBehaviour {
     }
 
     public void ForceState(CharacterState.Frame frame) {
-        m_State.SetLastFrame(frame);
+        m_State.SetCurrentFrame(frame);
     }
 
     // -- queries --

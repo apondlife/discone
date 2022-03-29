@@ -36,7 +36,7 @@ public sealed class CharacterModel: MonoBehaviour {
     private float m_CurrentSquashStretch = 1.0f;
 
     // -- lifecycle --
-    void Awake() {
+    void Start() {
         // get dependencies
         var character = GetComponentInParent<Character>();
         m_Tunables = character.Tunables;

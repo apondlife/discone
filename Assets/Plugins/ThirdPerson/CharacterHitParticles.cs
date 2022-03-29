@@ -16,11 +16,11 @@ public class CharacterHitParticles: MonoBehaviour {
     [SerializeField] private ParticleSystem m_FloorParticles;
 
     // -- props --
-    /// the character's tate
+    /// the character's state
     CharacterState m_State;
 
     // -- lifecycle --
-    void Awake() {
+    void Start() {
         var container = GetComponentInParent<Character>();
         m_State = container.State;
     }
