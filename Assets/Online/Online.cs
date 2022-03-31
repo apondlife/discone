@@ -2,6 +2,7 @@ using Mirror;
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
 using UnityEngine.Serialization;
+using System;
 
 /// the online "manager"
 public class Online: NetworkManager {
@@ -34,17 +35,10 @@ public class Online: NetworkManager {
     public override void Awake() {
         base.Awake();
 
-        // bind events
+        // bind atom events
         subscriptions
             .Add(m_StartClientEvent, DidStartClient)
             .Add(m_DisconnectEvent, DidDisconnect);
-    }
-
-    public override void OnDestroy() {
-        base.OnDestroy();
-
-        // unbind events
-        subscriptions.Dispose();
     }
 
     public override void Start() {
@@ -55,21 +49,61 @@ public class Online: NetworkManager {
         StartHost();
     }
 
+    public override void OnDestroy() {
+        base.OnDestroy();
+
+        // unbind events
+        subscriptions.Dispose();
+    }
+
+    // -- l/mirror
+    public override void OnClientError(Exception exception) {
+        base.OnClientError(exception);
+
+        if (!NetworkServer.active) {
+            Debug.Log($"[online] client error {exception}");
+        }
+    }
+
+    public override void OnClientConnect() {
+        base.OnClientConnect();
+
+        if (!NetworkServer.active) {
+            Debug.Log($"[online] client connected!");
+        }
+    }
+
+    public override void OnClientDisconnect() {
+        base.OnClientDisconnect();
+
+        Debug.Log($"[online] client disconnected");
+        StartHost();
+    }
+
+    // -- queries --
+    /// if we're acting as the host
+    bool IsHost {
+        get => NetworkServer.active;
+    }
+
     // -- events --
     /// when the host starts
     void DidStartClient() {
-        if (NetworkServer.active) {
+        // stop the host
+        if (IsHost) {
             StopHost();
         }
 
+        // start the client
         networkAddress = m_HostAddress.Value;
         StartClient();
-        Debug.Log($"[online] started client: {networkAddress}");
+
+        Debug.Log($"[online] starting client: {networkAddress}");
     }
 
     /// when the host/client disconnect
     void DidDisconnect() {
-        if (NetworkServer.active) {
+        if (IsHost) {
             StopHost();
         } else {
             StopClient();
