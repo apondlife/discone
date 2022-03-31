@@ -80,10 +80,10 @@ sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // assign authority to this client
-        dstCharacter.AssignClientAuthority(connectionToClient);
+        dstCharacter.Server_AssignClientAuthority(connectionToClient);
 
         if (srcCharacter != null) {
-            srcCharacter.RemoveClientAuthority();
+            srcCharacter.Server_RemoveClientAuthority();
         }
 
         // call back to the client

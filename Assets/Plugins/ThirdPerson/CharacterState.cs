@@ -151,6 +151,7 @@ public sealed class CharacterState {
 
     // -- types --
     /// a single frame of character state
+    [Serializable]
     public sealed class Frame: IEquatable<Frame> {
         // -- props --
         /// the world position

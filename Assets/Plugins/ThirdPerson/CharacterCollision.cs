@@ -33,6 +33,10 @@ public readonly struct CharacterCollision: IEquatable<CharacterCollision> {
         );
     }
 
+    public override int GetHashCode() {
+        return HashCode.Combine(Normal, Point);
+    }
+
     public static bool operator ==(
         CharacterCollision a,
         CharacterCollision b
