@@ -3,6 +3,7 @@ using UnityEngine;
 /// the main third person controller
 namespace ThirdPerson {
 
+// [ExecuteAlways]
 public partial class Character: MonoBehaviour {
     // -- fields --
     [Header("data")]
@@ -30,6 +31,13 @@ public partial class Character: MonoBehaviour {
             transform.position,
             transform.forward
         );
+
+        // if editor, duplicate the frame and stop
+        // if (!Application.IsPlaying(gameObject)) {
+        //     Debug.Log($"giving up");
+        //     m_State.Snapshot();
+        //     return;
+        // }
 
         // init data
         var data = new CharacterData(
@@ -70,7 +78,7 @@ public partial class Character: MonoBehaviour {
         if(m_Controller.Collisions.Count > 0) {
             m_State.Collision = m_Controller.Collisions.Last;
         } else {
-            m_State.Collision = null;
+            m_State.Collision = default;
         }
 
         // sync controller state back to character state
@@ -84,16 +92,30 @@ public partial class Character: MonoBehaviour {
     }
 
     public void ForceState(CharacterState.Frame frame) {
-        m_State.SetCurrentFrame(frame);
+        m_State.CurrentFrame = frame;
     }
 
     // -- queries --
-    public CharacterController Controller => m_Controller;
+    /// the character's controller
+    public CharacterController Controller {
+        get => m_Controller;
+    }
 
-    public CharacterTunablesBase Tunables => m_Tunables;
+    /// the character's tunables
+    public CharacterTunablesBase Tunables {
+        get => m_Tunables;
+    }
 
+    /// the character's state
     // TODO: how should we make state immutable outside the class
-    public CharacterState State => m_State;
+    public CharacterState State {
+        get => m_State;
+    }
+
+    /// the character's current state
+    public CharacterState.Frame CurrentState {
+        get => m_State.CurrentFrame;
+    }
 
     // -- events --
     /// when the restart button is pressed, reload the scene
