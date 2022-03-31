@@ -31,15 +31,15 @@ public class CharacterHitParticles: MonoBehaviour {
         }
 
         if(m_State.IsOnWall) {
-            if (!m_WallParticles.isPlaying) {
+            if(!m_WallParticles.isPlaying) {
                 m_WallParticles.Play();
             }
 
-            if (!m_State.Collision.IsNone) {
+            if(m_State.Collision.HasValue) {
                 var c = m_State.Collision;
                 var t = m_WallParticles.transform;
-                t.position = c.Point;
-                t.forward = -c.Normal;
+                t.position = c.Value.Point;
+                t.forward = -c.Value.Normal;
             }
         }
 
@@ -48,13 +48,13 @@ public class CharacterHitParticles: MonoBehaviour {
         }
 
         if(m_State.IsGrounded) {
-            if (!m_FloorParticles.isPlaying) {
+            if(!m_FloorParticles.isPlaying) {
                 m_FloorParticles.Play();
             }
 
-            if (!m_State.Collision.IsNone) {
+            if(m_State.Collision.HasValue) {
                 var t = m_FloorParticles.transform;
-                var c = m_State.Collision;
+                var c = m_State.Collision.Value;
                 t.position = c.Point;
             }
 

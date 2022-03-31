@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -15,13 +14,6 @@ public sealed class CharacterState {
     }
 
     // -- props/hot --
-    /// the current frame
-    public Frame CurrentFrame {
-        get => m_Frames[0];
-        set => m_Frames[0] = value;
-    }
-
-    /// the position
     public Vector3 Position {
         get => m_Frames[0].Position;
         set => m_Frames[0].Position = value;
@@ -76,7 +68,7 @@ public sealed class CharacterState {
     }
 
     /// the most recent collision
-    public CharacterCollision Collision {
+    public CharacterCollision? Collision {
         get => m_Frames[0].Collision;
         set => m_Frames[0].Collision = value;
     }
@@ -119,25 +111,25 @@ public sealed class CharacterState {
         }
     }
 
-    // -- queries --
-    /// get the nth most recent frame
-    public Frame GetFrame(uint i) {
-        return m_Frames[i];
+    /// update frame
+    public void SetCurrentFrame(Frame frame) {
+        m_Frames[0] = frame;
     }
 
+    // -- queries --
     /// the character's up vector (hardcoded to Vector3.up)
     public Vector3 Up {
-        get => m_Frames[0].Up;
+        get => Vector3.up;
+    }
+
+    public Frame GetFrame(uint v) {
+        return m_Frames[v];
     }
 
     /// the character's velocity in 3d-space
     public Vector3 Velocity {
         get => m_Frames[0].Velocity;
-    }
 
-    /// the character's look rotation (facing & tilt)
-    public Quaternion LookRotation {
-        get => m_Frames[0].LookRotation;
     }
 
     /// the character's current acceleration
@@ -149,9 +141,25 @@ public sealed class CharacterState {
         }
     }
 
+    /// the characters look rotation (facing & tilt)
+    public Quaternion LookRotation {
+        get {
+            var look = FacingDirection;
+
+            // if airborne, look in direction of velocity
+            // TODO: we don't want to calculate a look direction from a zero velocity,
+            // but is using FacingDirection in this situation correct?
+            if (!IsGrounded && PlanarVelocity != Vector3.zero) {
+                look = PlanarVelocity.normalized;
+            }
+
+            return Tilt * Quaternion.LookRotation(look, Up);
+        }
+    }
+
     // -- types --
     /// a single frame of character state
-    public sealed class Frame: IEquatable<Frame> {
+    public sealed class Frame {
         // -- props --
         /// the world position
         public Vector3 Position;
@@ -183,24 +191,20 @@ public sealed class CharacterState {
         /// how much tilted the character is
         public Quaternion Tilt = Quaternion.identity;
 
-        /// the collision information for the previous frame
-        public CharacterCollision Collision;
+        /// the list of collision information for the previous frame
+        public CharacterCollision? Collision = null;
 
         /// the current frame in the jump squat
         public int JumpSquatFrame = -1;
 
         // -- lifetime --
         /// create an empty frame
-        public Frame() {
-        }
-
-        /// create an initial frame
         public Frame(Vector3 position, Vector3 forward) {
             Position = position;
             FacingDirection = forward;
         }
 
-        /// create a copy of an existing frame
+        /// capture a frame from state
         public Frame(CharacterState.Frame f) {
             Position = f.Position;
             PlanarVelocity = f.PlanarVelocity;
@@ -227,43 +231,6 @@ public sealed class CharacterState {
             get => PlanarVelocity + VerticalSpeed * Up;
         }
 
-        /// the character's look rotation (facing & tilt)
-        public Quaternion LookRotation {
-            get {
-                var look = FacingDirection;
-
-                // if airborne, look in direction of velocity
-                // TODO: we don't want to calculate a look direction from a zero velocity,
-                // but is using FacingDirection in this situation correct?
-                if (!IsGrounded && PlanarVelocity != Vector3.zero) {
-                    look = PlanarVelocity.normalized;
-                }
-
-                return Tilt * Quaternion.LookRotation(look, Up);
-            }
-        }
-
-        // -- IEquatable --
-        public bool Equals(Frame o) {
-            if (o == null) {
-                return false;
-            }
-
-            return (
-                Position == o.Position &&
-                PlanarVelocity == o.PlanarVelocity &&
-                VerticalSpeed == o.VerticalSpeed &&
-                Acceleration == o.Acceleration &&
-                FacingDirection == o.FacingDirection &&
-                IsGrounded == o.IsGrounded &&
-                IsInJumpSquat == o.IsInJumpSquat &&
-                IsInJumpStart == o.IsInJumpStart &&
-                IsOnWall == o.IsOnWall &&
-                Tilt == o.Tilt &&
-                Collision == o.Collision &&
-                JumpSquatFrame == o.JumpSquatFrame
-            );
-        }
     }
 }
 }
