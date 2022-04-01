@@ -27,6 +27,13 @@ sealed partial class Character {
     void DrawGizmos() {
         m_LabelOffset = Vector3.zero;
 
+        // draw controller gizmos
+        m_Controller.DrawGizmos();
+
+        if(m_State == null) {
+            return;
+        }
+
         // draw state labels
         DrawLabel($"vy{m_State.VerticalSpeed}");
 
@@ -37,9 +44,6 @@ sealed partial class Character {
         if(m_State.IsGrounded) {
             DrawLabel("Grounded");
         }
-
-        // draw controller gizmos
-        m_Controller.DrawGizmos();
     }
 
     /// draw a label offset from the previous label
