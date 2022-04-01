@@ -12,7 +12,7 @@ static class RayExt {
 
         // if the rays are coplanar and nonparallel
         var isIntersecting = (
-            Mathf.Abs(Vector3.Dot(c, axb)) < 0.0001f &&
+            Mathf.Abs(Vector3.Dot(c.normalized, axb)) < 0.0001f &&
             axb.sqrMagnitude > 0.0001f
         );
 
@@ -29,5 +29,4 @@ static class RayExt {
         return true;
     }
 }
-
 }

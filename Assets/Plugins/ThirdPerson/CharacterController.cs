@@ -169,7 +169,7 @@ public sealed class CharacterController {
             // |'.  ‖  .'|
             // |   ‾‖‾   |
             // |->  C    |
-            var axisPoint = hit.point + hit.normal * cast.Radius;
+            var axisPoint = (hit.point - castPos) + hit.normal * cast.Radius;
 
             // if the cast is colinear with capsule's axis, we cant intersect them
             var castDotUp = Vector3.Dot(cast.Direction, capsule.Up);
@@ -186,15 +186,28 @@ public sealed class CharacterController {
                 // the hit is always radius away from the axis and its normal always points towards
                 // the axis
                 var axis = new Ray(axisPoint, capsule.Up);
+                var localCast = new Ray(c.center, cast.Direction);
 
                 // find the intersection between the cast ray and axis
-                if (cast.IntoRay().TryIntersect(axis, out var intersection)) {
-                    hitCapsuleCenter = intersection;
+                // to make this account for float precision error, we will intersect the cast
+                // with a plane containing the axis (and is the "least" parallel to it)
+
+                // first we get a vector on the plane
+                var tan = Vector3.Cross(capsule.Up, cast.Direction);
+
+                // then the vector normal to the plane
+                var n = Vector3.Cross(capsule.Up, tan);
+
+                var plane = new Plane(n, axisPoint);
+
+                // then we intersect the ray with the plane
+                if(plane.Raycast(localCast, out var distance)) {
+                    hitCapsuleCenter = localCast.origin + distance * localCast.direction;
                 }
                 // this should not happen; but if it does abort the collision from the last
                 // successful cast
                 else {
-                    Debug.LogError("cast ray and center axis did not intersect!");
+                    Debug.LogError("HUGE MISTAKE, THIS SHOULD NEVER HAPPEN EVER EVER...");
                     break;
                 }
             }
@@ -203,7 +216,7 @@ public sealed class CharacterController {
             var hitContactOffset = hit.normal * m_ContactOffset;
 
             // update move state; next move starts from capsule center and remaining distance
-            moveEnd = hitCapsuleCenter + hitContactOffset;
+            moveEnd = castPos + hitCapsuleCenter + hitContactOffset;
             moveDelta = Vector3.ProjectOnPlane(moveTarget - moveEnd, hit.normal);
             moveContactOffset += hitContactOffset;
 
