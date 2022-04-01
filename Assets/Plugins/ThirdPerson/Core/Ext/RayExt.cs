@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 static class RayExt {
-    /// get the intersection of two lines; returns false if they don't intersect
+    /// find the intersection of two lines
     /// see: https://stackoverflow.com/questions/59449628/check-when-two-vector3-lines-intersect-unity3d
     public static bool TryIntersect(this Ray a, Ray b, out Vector3 intersection){
         Vector3 c = b.origin - a.origin;
@@ -28,5 +28,26 @@ static class RayExt {
 
         return true;
     }
+
+    /// find the intersection of a line and the incidence plane defined by a tangent ray, b. the
+    /// incididence plane both contains b and is orthogonal to the plane containing a & b.
+    /// see: https://en.wikipedia.org/wiki/Plane_of_incidence
+    /// TODO (partially resolved): what is a math word for this/
+    public static bool TryIntersectIncidencePlane(this Ray a, Ray b, out Vector3 intersection) {
+        // find a tangent vector on the incidence plane, and then its normal
+        var t = Vector3.Cross(b.direction, a.direction);
+        var n = Vector3.Cross(b.direction, t);
+
+        // then intersect the ray and the incidence plane
+        var plane = new Plane(n, b.origin);
+        if (!plane.Raycast(a, out var distance)) {
+            intersection = Vector3.zero;
+            return false;
+        }
+
+        intersection = a.origin + distance * a.direction;
+        return true;
+    }
 }
+
 }

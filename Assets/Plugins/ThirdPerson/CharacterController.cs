@@ -171,38 +171,27 @@ public sealed class CharacterController {
             // |->  C    |
             var axisPoint = (hit.point - castPos) + hit.normal * cast.Radius;
 
-            // if the cast is colinear with capsule's axis, we cant intersect them
+            // check the cast's colinearity with the capsule's axis
             var castDotUp = Vector3.Dot(cast.Direction, capsule.Up);
+
+            // if they're colinear, we can't intersect them
             if (Mathf.Abs(castDotUp) > 0.9999f) {
-                // but we know that the hit can only have been on the sphere's surface,
-                // for which the normal will always point towards the center,
-                // meaning axisPoint is the center of the sphere.
-                // therefore finding the capsules center is trivial
+                // but we know that the hit can only have been the center of one of the
+                // capsule's caps, so instead subtract (h / 2 - r)
                 hitCapsuleCenter = axisPoint - Mathf.Sign(castDotUp) * (capsule.Height * 0.5f - capsule.Radius) * capsule.Up;
             }
             // otherwise the center is the intersection of the cast ray and the capsule's
             // vertical axis (any center + up)
             else {
-                // the hit is always radius away from the axis and its normal always points towards
-                // the axis
+                // find the intersection between the cast ray and the capsule's axis. to deal
+                // with float precision errors, we intersect the cast with a plane containing the axis
+                // and that is orthogonal to the plane containing the axis and cast
                 var axis = new Ray(axisPoint, capsule.Up);
                 var localCast = new Ray(c.center, cast.Direction);
 
-                // find the intersection between the cast ray and axis
-                // to make this account for float precision error, we will intersect the cast
-                // with a plane containing the axis (and is the "least" parallel to it)
-
-                // first we get a vector on the plane
-                var tan = Vector3.Cross(capsule.Up, cast.Direction);
-
-                // then the vector normal to the plane
-                var n = Vector3.Cross(capsule.Up, tan);
-
-                var plane = new Plane(n, axisPoint);
-
-                // then we intersect the ray with the plane
-                if(plane.Raycast(localCast, out var distance)) {
-                    hitCapsuleCenter = localCast.origin + distance * localCast.direction;
+                // try to intersect the ray and the plane
+                if (localCast.TryIntersectIncidencePlane(axis, out var intersection)) {
+                    hitCapsuleCenter = intersection;
                 }
                 // this should not happen; but if it does abort the collision from the last
                 // successful cast
