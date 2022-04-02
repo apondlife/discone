@@ -9,17 +9,23 @@ abstract class CharacterSystem {
     /// the current phase
     protected CharacterPhase m_Phase;
 
-    /// a shorthand reference to the character's input
+    /// a ref to the character's input
     protected CharacterInput m_Input;
 
-    /// a shorthand reference to the character's state
+    /// a ref to the character's state
     protected CharacterState m_State;
 
-    /// a shorthand reference to the character's tunables
+    /// a ref to the character's tunables
     protected CharacterTunablesBase m_Tunables;
 
-    /// the raw unity controller
+    /// a ref to the character's controller
     protected CharacterController m_Controller;
+
+    // -- p/debug
+    #if UNITY_EDITOR
+    // if this system logs
+    bool m_IsLogging;
+    #endif
 
     // -- lifetime --
     /// create a new system
@@ -58,8 +64,21 @@ abstract class CharacterSystem {
         m_Phase = next;
         m_Phase.Enter();
 
-        // Debug.Log($"{m_Name}: did change  {prev.Name} -> {next.Name}");
+        // debug
+        #if UNITY_EDITOR
+        if (m_IsLogging) {
+            UnityEngine.Debug.Log($"{m_Name}: did change  {prev.Name} -> {next.Name}");
+        }
+        #endif
     }
+
+    // -- c/debug
+    #if UNITY_EDITOR
+    /// log debug information for this system
+    protected void UseLogging(bool isLogging = true) {
+        m_IsLogging = isLogging;
+    }
+    #endif
 }
 
 }

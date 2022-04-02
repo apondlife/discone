@@ -5,8 +5,8 @@ namespace ThirdPerson {
 /// how the character jumps
 sealed class JumpSystem: CharacterSystem {
     // -- props --
-    /// the current frame in coyote time
-    int m_CoyoteFrame = 0;
+    /// the number of coyote frames the available
+    int m_CoyoteFrames = 0;
 
     // -- lifetime --
     public JumpSystem(CharacterData character)
@@ -27,7 +27,7 @@ sealed class JumpSystem: CharacterSystem {
 
     // -- NotJumping --
     CharacterPhase NotJumping => new CharacterPhase(
-        name: "Jump_NotJumping",
+        name: "NotJumping",
         update: NotJumping_Update
     );
 
@@ -38,6 +38,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         if (!m_State.IsGrounded && m_State.VerticalSpeed < 0.0f)  {
+            m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
             ChangeTo(Falling);
             return;
         }
@@ -75,15 +76,17 @@ sealed class JumpSystem: CharacterSystem {
             return;
         }
 
-        // cancel the jump if falling & coyote time expires
+        // count coyote frames; reset to max whenever grounded
         if (m_State.IsGrounded) {
-            m_CoyoteFrame = 0;
-        } else {
-            // this here is a weird moment, where you are falling, but not in the falling phase
-            m_CoyoteFrame += 1;
+            m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
+        }
+        // but if not, subtract a frame
+        else {
+            m_CoyoteFrames -= 1;
         }
 
-        if (m_CoyoteFrame > m_Tunables.MaxCoyoteFrames) {
+        // fall once coyote time expires
+        if (m_CoyoteFrames < 0) {
             ChangeTo(Falling);
             return;
         }
@@ -142,6 +145,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         if (m_State.VerticalSpeed < 0.0f) {
+            m_CoyoteFrames = 0;
             ChangeTo(Falling);
             return;
         }
@@ -150,13 +154,8 @@ sealed class JumpSystem: CharacterSystem {
     // -- Falling --
     CharacterPhase Falling => new CharacterPhase(
         name: "Falling",
-        enter: Falling_Enter,
         update: Falling_Update
     );
-
-    void Falling_Enter() {
-        m_CoyoteFrame = 0;
-    }
 
     void Falling_Update() {
         // apply fall acceleration while holding jump
@@ -165,15 +164,15 @@ sealed class JumpSystem: CharacterSystem {
             m_State.VerticalSpeed += m_Tunables.FallAcceleration * Time.deltaTime;
         }
 
-        // add coyote frames
-        m_CoyoteFrame += 1;
+        // count coyote frames
+        m_CoyoteFrames -= 1;
 
         // start jump if jump is pressed before coyote frames expire
         // NOTE: it's possible to start a jump you can't or don't finish and spend
         // a few frames in jump squat before falling again
         // NOTE: we could sorta fix this by skipping jump squat, requiring the whole
         // jump finish here, and transitioning directly to jump
-        if (m_CoyoteFrame <= m_Tunables.MaxCoyoteFrames && m_Input.IsJumpDown()) {
+        if (m_CoyoteFrames >= 0 && m_Input.IsJumpDown()) {
             ChangeTo(JumpSquat);
             return;
         }
