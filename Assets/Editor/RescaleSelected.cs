@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using System.Linq;
 
 /// normalize scale of a single object, rescaling children
 public sealed class RescaleSelected: EditorWindow {
