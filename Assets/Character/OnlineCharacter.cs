@@ -19,6 +19,11 @@ sealed class OnlineCharacter: NetworkBehaviour {
     [SyncVar]
     [SerializeField] bool m_IsAvailable = true;
 
+    #if UNITY_EDITOR
+    [Tooltip("if this is the initial debug character")]
+    [SerializeField] bool m_IsDebug = false;
+    #endif
+
     [Tooltip("the character's most recent state frame")]
     [SyncVar(hook = nameof(Client_OnStateReceived))]
     [SerializeField] CharacterState.Frame m_CurrentState;
@@ -94,10 +99,18 @@ sealed class OnlineCharacter: NetworkBehaviour {
         get => m_IsAvailable;
     }
 
-    // if the character is can be selected initially
+    /// if the character is selected initially
     public bool IsInitial {
         get => m_IsInitial;
     }
+
+    // -- q/debug
+    #if UNITY_EDITOR
+    /// if this is the debug character
+    public bool IsDebug {
+        get => m_IsDebug;
+    }
+    #endif
 
     // -- events --
     void Client_OnStateReceived(CharacterState.Frame src, CharacterState.Frame dst) {

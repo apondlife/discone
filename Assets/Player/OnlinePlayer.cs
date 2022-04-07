@@ -44,10 +44,23 @@ sealed class OnlinePlayer: NetworkBehaviour {
     /// drive the first available character in the world
     void DriveInitialCharacter() {
         // find all available characters
-        var available = GameObject
-            .FindObjectsOfType<OnlineCharacter>()
-            .Where(c => c.IsAvailable && c.IsInitial)
+        var all = GameObject
+            .FindObjectsOfType<OnlineCharacter>();
+
+        // use debug characters if available, otherwise the first initial character
+        var options = new[] {
+            #if UNITY_EDITOR
+            all.Where(c => c.IsDebug),
+            #endif
+            all.Where(c => c.IsAvailable && c.IsInitial)
+        };
+
+        var available = options
+            .Where((cs) => cs.Any())
+            .First()
             .ToArray();
+
+        Debug.Log($"found {available.Length} characters");
 
         // if there is nothing to drive
         var character = available[Random.Range(0, available.Length)];
