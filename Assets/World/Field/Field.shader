@@ -13,13 +13,13 @@ Shader "Custom/Field" {
 
     SubShader {
         Tags {
-            "RenderType"="Opaque"
+            "RenderType" = "Opaque"
+            "TerrainCompatible" = "True"
         }
 
         Pass {
             Tags {
                 "LightMode" = "ForwardBase"
-                "TerrainCompatible" = "True"
             }
 
             CGPROGRAM
