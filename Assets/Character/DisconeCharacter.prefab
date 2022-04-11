@@ -55,6 +55,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DisconeCharacter
       objectReference: {fileID: 0}
+    - target: {fileID: 7614967429340073450, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_Controller.m_GroundedGravity
+      value: 0.042
+      objectReference: {fileID: 0}
     - target: {fileID: 7614967429340073451, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -127,6 +131,7 @@ MonoBehaviour:
   syncInterval: 0.1
   m_IsInitial: 0
   m_IsAvailable: 1
+  m_IsDebug: 0
   m_CurrentState:
     Position: {x: 0, y: 0, z: 0}
     PlanarVelocity: {x: 0, y: 0, z: 0}

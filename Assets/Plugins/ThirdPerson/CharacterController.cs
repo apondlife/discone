@@ -30,6 +30,9 @@ public sealed class CharacterController {
     [Tooltip("the amount to offset TODO:...?????")]
     [SerializeField] float m_ContactOffset;
 
+    [Tooltip("the amount of fake gravity that is applied in the first move to maintain the character grounded")]
+    [SerializeField] float m_GroundedGravity;
+
     [Header("references")]
     [Tooltip("the character's transform")]
     [SerializeField] Transform m_Transform;
@@ -46,6 +49,15 @@ public sealed class CharacterController {
 
     /// the normal of the last collision surface
     Vector3 m_HitNormal = Vector3.up;
+
+    // how much movement should be lost when hitting a slope
+    // parameters an angle from 0 to 1 (0 deg to 90 deg)
+    // returns a value between 0 and 1 to multiply the next movement by
+    private Func<float, float> CustomSlopeAngleLossFunction = null;
+
+    private float LimitSlopeToWallAngle(float angle) {
+        return angle < m_MaxGroundAngle ? 1.0f : 0.0f;
+    }
 
     /// the collisions this frame
     Buffer<CharacterCollision> m_Collisions = new Buffer<CharacterCollision>(5);
@@ -89,7 +101,20 @@ public sealed class CharacterController {
         var moveDelta = delta;
         var moveContactOffset = Vector3.zero;
 
-        // track hit surface state
+
+        // cancel movement towards the ground in case the character is grounded
+        if(m_IsGrounded) {
+            // check if there's movement towards the ground;
+            if(Vector3.Dot(m_HitNormal, moveDelta) < 0) {
+                // "cancel" the normal part (ie project the vector)
+                moveDelta = Vector3.ProjectOnPlane(moveDelta, m_HitNormal);
+
+                // leave a constant factor so the grounded check works
+                moveDelta -= m_HitNormal * m_GroundedGravity;
+            }
+        }
+
+        // temporary grounded calculation
         var isGrounded = false;
 
         // DEBUG: reset state
@@ -175,7 +200,7 @@ public sealed class CharacterController {
             var castDotUp = Vector3.Dot(cast.Direction, capsule.Up);
 
             // if they're colinear, we can't intersect them
-            if (Mathf.Abs(castDotUp) > 0.9999f) {
+            if (Mathf.Abs(castDotUp) > 0.99f) {
                 // but we know that the hit can only have been the center of one of the
                 // capsule's caps, so instead subtract (h / 2 - r)
                 hitCapsuleCenter = axisPoint - Mathf.Sign(castDotUp) * (capsule.Height * 0.5f - capsule.Radius) * capsule.Up;
@@ -206,13 +231,24 @@ public sealed class CharacterController {
 
             // update move state; next move starts from capsule center and remaining distance
             moveEnd = castPos + hitCapsuleCenter + hitContactOffset;
-            moveDelta = Vector3.ProjectOnPlane(moveTarget - moveEnd, hit.normal);
+
+            // calculate the remaining movement
+            // TODO: should have something to do with the angle, considering wall hits
+            var overshoot = moveTarget - moveEnd;
+            moveDelta = Vector3.ProjectOnPlane(overshoot.normalized, hit.normal) * overshoot.magnitude;
+            var groundAngle = Vector3.Angle(overshoot, moveDelta);
+
+            // limit the move delta when hitting walls or over some custom slope function
+            if(CustomSlopeAngleLossFunction != null) {
+                moveDelta *= CustomSlopeAngleLossFunction(groundAngle);
+            } else {
+                moveDelta *= LimitSlopeToWallAngle(groundAngle);
+            }
+
             moveContactOffset += hitContactOffset;
 
             // if we touch any ground surface, we're grounded
-            if (!isGrounded && Vector3.Angle(hit.normal, Vector3.up) <= m_MaxGroundAngle) {
-                isGrounded = true;
-            }
+            isGrounded = Vector3.Angle(hit.normal, Vector3.up) <= m_MaxGroundAngle;
 
             // update hit normal each cast
             m_HitNormal = hit.normal;
