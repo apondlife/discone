@@ -15,6 +15,9 @@ public class RegionSign : MonoBehaviour
     [SerializeField]
     internal UIShader m_UIShader;
 
+    [SerializeField]
+    internal float dissolveTime = 1f;
+
 
     // Start is called before the first frame update
     void Start()
@@ -38,7 +41,7 @@ public class RegionSign : MonoBehaviour
     public void OnRegionEntered(string regionName) {
         canvasGroup.alpha = 1;
         m_UIShader.dissolveAmount = 1;
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(1f, DissolveIn));
+        StartCoroutine(CoroutineHelpers.InterpolateByTime(dissolveTime, DissolveIn));
       
         // funciton that recives a k goes from 0 to 1
         // 3rd param takes that k and does somethign with it
