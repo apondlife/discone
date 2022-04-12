@@ -12,7 +12,7 @@ public class UIShader: MonoBehaviour {
     [SerializeField] Material m_Material;
 
     [Range(0, 1)]
-    [SerializeField] float dissolveAmount;
+    [SerializeField] public float dissolveAmount;
 
     // -- lifecycle --
     void Awake() {
