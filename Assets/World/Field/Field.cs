@@ -169,6 +169,7 @@ public sealed class Field: MonoBehaviour {
         // otherwise, create a new chunk
         else {
             chunk = Instantiate(m_Chunk, transform);
+            chunk.gameObject.layer = gameObject.layer;
         }
 
         return chunk;
