@@ -48,14 +48,14 @@ sealed class OnlinePlayer: NetworkBehaviour {
             .FindObjectsOfType<OnlineCharacter>();
 
         // use debug characters if available, otherwise the first initial character
-        var options = new[] {
+        var sets = new[] {
             #if UNITY_EDITOR
             all.Where(c => c.IsDebug),
             #endif
             all.Where(c => c.IsAvailable && c.IsInitial)
         };
 
-        var available = options
+        var available = sets
             .Where((cs) => cs.Any())
             .First()
             .ToArray();
