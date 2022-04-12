@@ -15,14 +15,13 @@ public class RegionDetector : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
-        
+    { 
     }
+    
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     // Physics settings should be set so that only things on the 
