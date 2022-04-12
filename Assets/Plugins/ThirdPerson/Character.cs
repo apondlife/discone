@@ -39,6 +39,7 @@ public partial class Character: MonoBehaviour {
 
         // init data
         var data = new CharacterData(
+            name,
             m_Input,
             m_State,
             m_Tunables,
