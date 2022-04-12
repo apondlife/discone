@@ -48,11 +48,6 @@ Shader "Image/Fuzz" {
                 float2 uv : TEXCOORD0;
             };
 
-            struct FragOut {
-                fixed4 color : SV_TARGET;
-                float depth: SV_DEPTH;
-            };
-
             // -- props --
             /// the main texture; set by unity to the screen buffer if used in an effect
             sampler2D _MainTex;
@@ -97,8 +92,7 @@ Shader "Image/Fuzz" {
                 return o;
             }
 
-            FragOut DrawFrag(FragIn i) : SV_Target {
-                FragOut o;
+            fixed4 DrawFrag(FragIn i) : SV_Target {
                 // lookup depth and normal at uv
                 float1 depth;
                 float3 normal;
@@ -131,16 +125,11 @@ Shader "Image/Fuzz" {
                 // fuzz between the base and shifted color
                 col = lerp(col, IntoRgb(hsv), fuzz);
 
-                o.depth = depth;
                 float a = 1.0;
-                if(depth > _DissolveDepth  + _DissolveBand * Rand(i.uv)) {
-                    a = 0.0;
-                    o.depth = 1.0;
-                    discard;
-                }
+                float p = saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, depth));
+                a = step(p, Rand(i.uv + 0.1*_Time.x));
 
-                o.color = fixed4(col, a);
-                return o;
+                return fixed4(col, a);
             }
             ENDCG
         }
