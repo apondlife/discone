@@ -2,11 +2,26 @@ Shader "Unlit/Dissolve"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
+        _DissolveTex("Dissolve Tex", 2D) = "white" {}
+        _DissolveAmount("Dissolve Amount", Range(0,1)) = 0.5
+        _DissolveScale("Dissolve Scale", Float) = 1
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        // tags and stuff taken from
+        // https://www.patreon.com/posts/shaders-for-who-29239797
+        Tags { 
+            "Queue" = "Transparent"
+            "IgnoreProjector" = "True"
+            "RenderType" = "Transparent"
+            "PreviewType" = "Plane"
+            "CanUseSpriteAtlas" = "True"
+        }
+
+        ZTest Off
+        Blend SrcAlpha OneMinusSrcAlpha
+        
         LOD 100
 
         Pass
@@ -31,6 +46,10 @@ Shader "Unlit/Dissolve"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            half _DissolveAmount;
+            sampler2D _DissolveTex;
+            half _DissolveScale;
+            
 
             v2f vert (appdata v)
             {
@@ -44,6 +63,30 @@ Shader "Unlit/Dissolve"
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
                 //fixed4 col = fixed4(1, 0, 0, 0);
+
+                // sample noise tex at this uv
+                half4 noise = tex2D(_DissolveTex, i.uv * _DissolveScale);
+
+                // noise is b/w, so we just take red
+                clip(noise.r - _DissolveAmount);
+
+                // if (false) {
+                //     discard;
+                // }
+
+                // if (col.a == 0) {
+                //     col.r = 0;
+                // }
+
+                // fixed alpha = step(noise.r, _DissolveAmount);
+                // col.a = alpha;
+                // if ()
+                //col.r = 1;
+
+                //clip (col.a - .001);
+
+                
+
                 return col;
             }
             ENDCG
