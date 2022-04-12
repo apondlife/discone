@@ -6,6 +6,9 @@ abstract class CharacterSystem {
     /// a name for this system
     protected string m_Name;
 
+    /// the character name
+    protected string m_CharacterName;
+
     /// the current phase
     protected CharacterPhase m_Phase;
 
@@ -29,12 +32,13 @@ abstract class CharacterSystem {
 
     // -- lifetime --
     /// create a new system
-    public CharacterSystem(CharacterData data) {
+    public CharacterSystem(CharacterData d) {
         // set dependencies
-        m_Input = data.Input;
-        m_State = data.State;
-        m_Tunables = data.Tunables;
-        m_Controller = data.Controller;
+        m_CharacterName = d.Name;
+        m_Input = d.Input;
+        m_State = d.State;
+        m_Tunables = d.Tunables;
+        m_Controller = d.Controller;
 
         // set props
         m_Name = this.GetType().Name;

@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace ThirdPerson {
 
 /// a fixed-width buffer of n data elements
-public sealed class Buffer<T> {
+public sealed class Buffer<T>: IEnumerable<T> {
     // -- props --
     /// the current count of items
     private int m_Count;
@@ -59,6 +61,18 @@ public sealed class Buffer<T> {
     /// the current count of items
     public int Count {
         get => m_Count;
+    }
+
+    // -- IEnumerable --
+    IEnumerator IEnumerable.GetEnumerator() {
+        return GetEnumerator();
+    }
+
+    public IEnumerator<T> GetEnumerator() {
+        var n = m_Count;
+        for (var i = 0; i < n; i++) {
+            yield return m_Buffer[i];
+        }
     }
 }
 
