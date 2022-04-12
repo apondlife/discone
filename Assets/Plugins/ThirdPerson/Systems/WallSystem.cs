@@ -30,10 +30,19 @@ sealed class WallSystem: CharacterSystem {
             return;
         }
 
-        var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
-        var angle = Mathf.Abs(Vector3.Dot(lastHit.Normal, Vector3.up));
-        if (angle < 0.2f) {
-            ChangeTo(WallSlide);
+        // TODO: add IEnumerable, or delete this struct
+        var n = m_Controller.Collisions.Count;
+        Debug.Log($"collision {n}");
+        for (var i = 0; i < n; i++) {
+            var collision = m_Controller.Collisions[i];
+            Debug.Log($"collision.normal {collision.Normal}");
+            var angle = Vector3.Angle(collision.Normal, Vector3.up);// Mathf.Abs(Vector3.Dot(lastHit.Normal, Vector3.up));
+            var angleToWall = Mathf.Abs(angle - m_Controller.WallAngle);
+
+            if (angleToWall < (90.0f - m_Controller.WallAngle)) {
+                ChangeTo(WallSlide);
+                break;
+            }
         }
     }
 
@@ -46,11 +55,10 @@ sealed class WallSystem: CharacterSystem {
 
     void WallSlide_Enter() {
         m_State.IsOnWall = true;
-        var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
+        var lastHit = m_Controller.Collisions.Last;
         var planarNormal = Vector3.ProjectOnPlane(lastHit.Normal, Vector3.up);
         var projectedVelocity = Vector3.Project(m_State.GetFrame(1).Velocity, planarNormal);
         m_State.VerticalSpeed += projectedVelocity.magnitude;
-        // Debug.Log($"wall-slide: n={m_State.Hit.Value.normal} n_p={planarNormal} v_0={m_State.PrevPlanarVelocity} v_n={projectedVelocity} dvy={2.0f * projectedVelocity.magnitude}");
     }
 
     void WallSlide_Update() {
@@ -60,8 +68,7 @@ sealed class WallSystem: CharacterSystem {
             return;
         }
 
-
-        var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
+        var lastHit = m_Controller.Collisions.Last;
         var angle = Mathf.Abs(Vector3.Dot(lastHit.Normal, Vector3.up));
         if (angle > 0.2f) {
             ChangeTo(NotOnWall);
