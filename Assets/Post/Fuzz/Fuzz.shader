@@ -7,17 +7,18 @@ Shader "Image/Fuzz" {
         _HueShift ("Hue Shift", Range(-1.0, 1.0)) = 0.0
         _SaturationShift ("Saturation Shift", Range(-1.0, 1.0)) = 0.0
         _ValueShift ("Value Shift", Range(-1.0, 1.0)) = 0.0
+        _DissolveDepth ("Dissolve Depth", Range(0, 1.0)) = 0.1
+        _DissolveBand ("Dissolve Band", Range(0, 1.0)) = 0.1
     }
 
     SubShader {
-        Tags {
-            "RenderType" = "Opaque"
-        }
-
         // no culling or depth
         Cull Off
         ZWrite Off
         ZTest Always
+        // Blend One One
+        Blend SrcAlpha OneMinusSrcAlpha
+        // Blend SrcAlpha Zero  // uncomment for cool effect
 
         Pass {
             CGPROGRAM
@@ -47,6 +48,11 @@ Shader "Image/Fuzz" {
                 float2 uv : TEXCOORD0;
             };
 
+            struct FragOut {
+                fixed4 color : SV_TARGET;
+                float depth: SV_DEPTH;
+            };
+
             // -- props --
             /// the main texture; set by unity to the screen buffer if used in an effect
             sampler2D _MainTex;
@@ -56,6 +62,8 @@ Shader "Image/Fuzz" {
 
             /// the fuzz texture to apply to the edges
             sampler2D _Texture;
+
+            sampler2D _Temp;
 
             /// the scale to apply to the fuzz texture
             float _TextureScale;
@@ -75,6 +83,12 @@ Shader "Image/Fuzz" {
             /// the amount to shift the fuzz value by
             float _ValueShift;
 
+            // the size of the dissolve band
+            float _DissolveBand;
+
+            // where the world should start dissolving
+            float _DissolveDepth;
+
             // -- program --
             FragIn DrawVert(VertIn v) {
                 FragIn o;
@@ -83,7 +97,8 @@ Shader "Image/Fuzz" {
                 return o;
             }
 
-            fixed4 DrawFrag(FragIn i) : SV_Target {
+            FragOut DrawFrag(FragIn i) : SV_Target {
+                FragOut o;
                 // lookup depth and normal at uv
                 float1 depth;
                 float3 normal;
@@ -102,8 +117,10 @@ Shader "Image/Fuzz" {
                 fuzz *= saturate(depth * _DepthScale);
                 fuzz *= tex2D(_Texture, i.uv * _TextureScale).r;
 
+
                 // fuzz texture color based on its horizontalness
-                fixed3 col = tex2D(_MainTex, i.uv).rgb;
+                fixed4 tex = tex2D(_MainTex, i.uv);
+                fixed3 col = tex.rgb;
 
                 // hue shift the color from the source texture
                 fixed3 hsv = IntoHsv(col);
@@ -114,7 +131,16 @@ Shader "Image/Fuzz" {
                 // fuzz between the base and shifted color
                 col = lerp(col, IntoRgb(hsv), fuzz);
 
-                return fixed4(col, 1.0f);
+                o.depth = depth;
+                float a = 1.0;
+                if(depth > _DissolveDepth  + _DissolveBand * Rand(i.uv)) {
+                    a = 0.0;
+                    o.depth = 1.0;
+                    discard;
+                }
+
+                o.color = fixed4(col, a);
+                return o;
             }
             ENDCG
         }
