@@ -13,58 +13,79 @@ public class Fuzz: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         // make sure we have the depth & normals texture
-        var camera = GetComponent<Camera>();
-        camera.depthTextureMode = DepthTextureMode.DepthNormals;
+        var cam = GetComponent<Camera>();
+        cam.depthTextureMode = DepthTextureMode.DepthNormals;
 
-        var overlaySha = Shader.Find("Image/Overlay");
-        var overlayMat = new Material(overlaySha);
+        // draw fuzz geometry on top of skybox
+        cam.RemoveAllCommandBuffers();
 
-        camera.RemoveAllCommandBuffers();
-        var beforeSkyboxBuffer = new CommandBuffer();
-        int rt = Shader.PropertyToID("_Temp");
+        // get texture refs
+        var fuzz = Shader.PropertyToID("_FuzzTex");
+        var main = Shader.PropertyToID("_MainTex");
+        var temp = Shader.PropertyToID("_TempTex");
 
-        beforeSkyboxBuffer.GetTemporaryRT(rt, -1, -1);
-        beforeSkyboxBuffer.SetGlobalTexture(
-            Shader.PropertyToID("_MainTex"),
-            BuiltinRenderTextureType.CurrentActive);
+        // copy opaque geometry to temp texture
+        var copy = new CommandBuffer();
+        copy.name = "CopyOpaque";
+        copy.GetTemporaryRT(fuzz, -1, -1);
+        copy.SetGlobalTexture(
+            main,
+            BuiltinRenderTextureType.CurrentActive
+        );
 
+        copy.Blit(
+            main,
+            fuzz,
+            m_Material
+        );
 
-        beforeSkyboxBuffer.Blit(
-            rt,
-            rt,
-            m_Material);
+        cam.AddCommandBuffer(CameraEvent.BeforeSkybox, copy);
 
+        // copy depth buffer
+        // var copyDepth = new CommandBuffer();
+        // copyDepth.name = "CopyDepth";
+        // copyDepth.GetTemporaryRT(temp, -1, -1);
+        // copyDepth.SetGlobalTexture(
+        //     main,
+        //     BuiltinRenderTextureType.Depth
+        // );
 
-        camera.AddCommandBuffer(CameraEvent.BeforeSkybox, beforeSkyboxBuffer);
+        // copyDepth.Blit(
+        //     main,
+        //     temp
+        // );
 
-        var beforeSkyboxBuffer2 = new CommandBuffer();
-        beforeSkyboxBuffer2.SetRenderTarget(BuiltinRenderTextureType.CurrentActive);
+        // cam.AddCommandBuffer(CameraEvent.BeforeSkybox, copyDepth);
+
+        // clear main tex & dpeth buffer so skybox draws over the whole screen
         // TODO: this fucks up transparent objects
-        beforeSkyboxBuffer2.ClearRenderTarget(RTClearFlags.All, new Color(0, 0.0f, 0, 0), 1.0f, 0);
+        var clear = new CommandBuffer();
+        clear.name = "Clear";
+        clear.SetRenderTarget(BuiltinRenderTextureType.CurrentActive);
+        clear.ClearRenderTarget(RTClearFlags.All, Color.clear, 1.0f, 0);
 
-        camera.AddCommandBuffer(CameraEvent.BeforeSkybox, beforeSkyboxBuffer2);
+        cam.AddCommandBuffer(CameraEvent.BeforeSkybox, clear);
 
-        var afterSkyboxBuffer = new CommandBuffer();
-        afterSkyboxBuffer.GetTemporaryRT(rt, -1, -1);
-        beforeSkyboxBuffer.SetGlobalTexture(
-            Shader.PropertyToID("_MainTex"),
-            rt);
+        // overlay geometry onto skybox
+        var overlay = new CommandBuffer();
+        overlay.name = "DrawOpaque";
+        overlay.GetTemporaryRT(fuzz, -1, -1);
+        overlay.SetGlobalTexture(
+            main,
+            fuzz
+        );
 
-        afterSkyboxBuffer.Blit(
-            rt,
+        overlay.Blit(
+            fuzz,
             BuiltinRenderTextureType.CameraTarget,
-            overlayMat
-            );
+            new Material(Shader.Find("Image/Overlay"))
+        );
 
-        afterSkyboxBuffer.SetRenderTarget(rt);
-        afterSkyboxBuffer.ClearRenderTarget(RTClearFlags.Color, new Color(0, 0.0f, 0, 0), 1.0f, 0);
-        afterSkyboxBuffer.ReleaseTemporaryRT(rt);
+        // and clear the fuzz texture
+        overlay.SetRenderTarget(fuzz);
+        overlay.ClearRenderTarget(RTClearFlags.Color, Color.clear, 1.0f, 0);
+        overlay.ReleaseTemporaryRT(fuzz);
 
-        camera.AddCommandBuffer(CameraEvent.AfterSkybox, afterSkyboxBuffer);
+        cam.AddCommandBuffer(CameraEvent.AfterSkybox, overlay);
     }
-
-    // void OnRenderImage(RenderTexture src, RenderTexture dst) {
-        // render the effect
-        // Graphics.Blit(src, dst, m_Material);
-    // }
 }
