@@ -26,6 +26,14 @@ public readonly struct CharacterCollision: IEquatable<CharacterCollision> {
     }
 
     // -- IEquatable --
+    public override bool Equals(object o) {
+        if (o is CharacterCollision c) {
+            return Equals(c);
+        } else {
+            return false;
+        }
+    }
+
     public bool Equals(CharacterCollision o) {
         return (
             Normal == o.Normal &&

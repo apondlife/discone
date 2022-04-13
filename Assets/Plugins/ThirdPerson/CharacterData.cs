@@ -3,6 +3,9 @@ namespace ThirdPerson {
 /// a container for shuffling around character data
 readonly struct CharacterData {
     /// -- props --
+    /// the character's name
+    public readonly string Name;
+
     /// the character's input
     public readonly CharacterInput Input;
 
@@ -18,11 +21,13 @@ readonly struct CharacterData {
     // -- lifetime --
     /// create a new container
     public CharacterData(
+        string name,
         CharacterInput input,
         CharacterState state,
         CharacterTunablesBase tunables,
         CharacterController controller
     ) {
+        Name = name;
         Input = input;
         State = state;
         Tunables = tunables;
