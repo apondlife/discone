@@ -58,8 +58,6 @@ Shader "Image/Fuzz" {
             /// the fuzz texture to apply to the edges
             sampler2D _Texture;
 
-            sampler2D _Temp;
-
             /// the scale to apply to the fuzz texture
             float _TextureScale;
 
