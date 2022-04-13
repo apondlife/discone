@@ -125,9 +125,10 @@ Shader "Image/Fuzz" {
                 // fuzz between the base and shifted color
                 col = lerp(col, IntoRgb(hsv), fuzz);
 
+                // dissolve far away objects
                 float a = 1.0;
                 float p = saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, depth));
-                a = step(p, Rand(i.uv + 0.1*_Time.x));
+                a = step(p, Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
 
                 return fixed4(col, a);
             }

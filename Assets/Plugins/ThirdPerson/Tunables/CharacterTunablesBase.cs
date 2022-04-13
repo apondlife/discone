@@ -22,7 +22,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float TimeToPivot { get; }
 
     // -- air movement --
-    public abstract float FloatAcceleration { get; }
+    public abstract float AerialDriftAcceleration { get; }
 
     // -- jump --
     public abstract uint JumpBuffer { get; }
@@ -38,6 +38,9 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float JumpAcceleration { get; }
     public abstract float FallGravity { get; }
     public abstract float FallAcceleration { get; }
+    public abstract float MinJumpSpeed_Horizontal { get; }
+    public abstract float MaxJumpSpeed_Horizontal { get; }
+    public abstract AnimationCurve JumpSpeedCurve_Horizontal { get; }
 
     // -- wall --
     public abstract LayerMask WallLayer { get; }
