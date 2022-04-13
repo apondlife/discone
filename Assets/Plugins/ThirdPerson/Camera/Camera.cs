@@ -4,12 +4,12 @@ using Cinemachine;
 
 namespace ThirdPerson {
 
-[RequireComponent(typeof(CinemachineVirtualCamera))]
-public sealed class CharacterCamera: MonoBehaviour {
-    // -- fields --
-    [Header("references")]
-    [Tooltip("the character's tunables/constants")]
-    [SerializeField] CharacterTunablesBase m_Tunables;
+/// the third person camera
+public sealed class Camera: MonoBehaviour {
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("the cinemachine camera")]
+    [SerializeField] CinemachineVirtualCamera m_Camera;
 
     // -- hacks --
     [Header("hacks")]
@@ -17,23 +17,28 @@ public sealed class CharacterCamera: MonoBehaviour {
     [SerializeField] InputActionReference m_Recenter;
 
     // -- props --
-    /// the cinemachine camera
-    CinemachineVirtualCamera m_Camera;
+    /// the character's current state
+    CharacterState m_State;
+
+    /// the character's tunables / constants
+    CharacterTunablesBase m_Tunables;
 
     /// the camera's transposer (the body; controls camera movement)
     CinemachineTransposer m_Transposer;
 
-    /// the character's current state
-    CharacterState m_State;
-
     // -- lifecycle --
     void Awake() {
-        m_Camera = GetComponent<CinemachineVirtualCamera>();
+        // set props
         m_Transposer = m_Camera.GetCinemachineComponent<CinemachineTransposer>();
-        m_State = GetComponentInParent<Character>().State;
     }
 
     void Start() {
+        // set deps
+        var character = GetComponentInParent<Character>();
+        m_State = character.State;
+        m_Tunables = character.Tunables;
+
+        // set initial damping
         SetDamping(m_Tunables.Damping);
     }
 
