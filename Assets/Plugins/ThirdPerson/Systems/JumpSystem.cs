@@ -114,17 +114,22 @@ sealed class JumpSystem: CharacterSystem {
             m_State.JumpSquatFrame
         );
 
-        pct = m_Tunables.JumpSpeedCurve.Evaluate(pct);
-
         // interpolate initial jump speed
-        var vt = Mathf.Lerp(
+        var verticalSpeed = Mathf.Lerp(
             m_Tunables.MinJumpSpeed,
             m_Tunables.MaxJumpSpeed,
-            pct
+            m_Tunables.JumpSpeedCurve.Evaluate(pct)
         );
 
-        // cancel vertical momentum and apply initial jump
-        m_State.VerticalSpeed = vt;
+        var planarSpeed = Mathf.Lerp(
+            m_Tunables.MinJumpSpeed_Horizontal,
+            m_Tunables.MaxJumpSpeed_Horizontal,
+            m_Tunables.JumpSpeedCurve_Horizontal.Evaluate(pct)
+        );
+
+        // cancel downwards momentum and apply initial jump
+        m_State.VerticalSpeed = Mathf.Max(m_State.VerticalSpeed, 0.0f) + verticalSpeed;
+        m_State.SetProjectedPlanarVelocity(m_State.PlanarVelocity + m_State.FacingDirection * planarSpeed);
         m_State.IsInJumpStart = true;
     }
 
