@@ -87,7 +87,7 @@ sealed class WallSystem: CharacterSystem {
             var angle = Vector3.Angle(c.Normal, Vector3.up);
 
             // if it's within the wall range, we're on a wall
-            if (Mathf.Abs(90.0f - angle) < (90.0f - m_Controller.WallAngle)) {
+            if (Mathf.Abs(90.0f - angle) <= (90.0f - m_Controller.WallAngle)) {
                 collision = c;
                 return true;
             }
@@ -98,8 +98,8 @@ sealed class WallSystem: CharacterSystem {
     }
 
     /// find the velocity to transfer to the wall
-    Vector2 FindTransferredVelocity(Vector2 normal) {
-        normal = Vector3.ProjectOnPlane(normal, Vector3.up);
+    Vector3 FindTransferredVelocity(Vector3 normal) {
+        normal = Vector3.ProjectOnPlane(normal, Vector3.up).normalized;
         var transferred = Vector3.Project(m_State.GetFrame(1).PlanarVelocity, normal);
         return transferred;
     }
