@@ -1,15 +1,10 @@
 Shader "Image/Overlay" {
-    Properties {
-    }
-
     SubShader {
         // no culling or depth
         Cull Off
         ZWrite Off
         ZTest Always
-        // Blend One One
         Blend SrcAlpha OneMinusSrcAlpha
-        // Blend SrcAlpha Zero  // uncomment for cool effect
 
         Pass {
             CGPROGRAM
@@ -19,9 +14,6 @@ Shader "Image/Overlay" {
 
             // -- includes --
             #include "UnityCG.cginc"
-            #include "../Core/Math.cginc"
-            #include "../Core/Color.cginc"
-
 
             // -- types --
             struct VertIn {
