@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 // a position below the target, on the ground if possible
-public class GroundTarget: MonoBehaviour {
+public class CameraLookAtTarget: MonoBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("the max distance from the character to cast for the ground")]
@@ -31,6 +31,12 @@ public class GroundTarget: MonoBehaviour {
         }
     }
 
+    // -- queries --
+    public float PercentExtended {
+        get => Mathf.Clamp01(Vector3.Distance(transform.position, m_Target.position)/m_MaxDistance);
+    }
+
+    // -- gizmos --
     void OnDrawGizmosSelected() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawRay(transform.position, Vector3.down * m_MaxDistance);

@@ -37,10 +37,10 @@ public sealed class CharacterModel: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        // get dependencies
+        // set dependencies
         var character = GetComponentInParent<Character>();
-        m_Tunables = character.Tunables;
         m_State = character.State;
+        m_Tunables = character.Tunables;
 
         // configure animator
         m_Animator = GetComponentInChildren<Animator>();

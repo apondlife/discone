@@ -21,8 +21,8 @@ public class CharacterHitParticles: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        var container = GetComponentInParent<Character>();
-        m_State = container.State;
+        var character = GetComponentInParent<Character>();
+        m_State = character.State;
     }
 
     void Update() {
