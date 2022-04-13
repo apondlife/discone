@@ -57,9 +57,9 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     public override float TurningFriction => m_TurningFriction;
 
     [Tooltip("the planar acceleration while floating")]
-    [SerializeField] private float m_FloatAcceleration;
-    public override float FloatAcceleration => m_FloatAcceleration;
-
+    [UnityEngine.Serialization.FormerlySerializedAs("m_FloatAcceleration")]
+    [SerializeField] private float m_AerialDriftAcceleration;
+    public override float AerialDriftAcceleration => m_AerialDriftAcceleration;
 
     #endregion
 
@@ -104,7 +104,7 @@ public sealed class CharacterTunables: CharacterTunablesBase {
 
     /// the maximum jump speed (hold jump for duration)
     public override float MaxJumpHeight {
-        get => MinJumpSpeed * MaxJumpSpeed / -(2.0f * (Gravity + JumpAcceleration));
+        get => m_MinJumpSpeed * m_MaxJumpSpeed / -(2.0f * (Gravity + JumpAcceleration));
     }
 
     [Tooltip("the gravity while holding jump and moving up")]
@@ -124,6 +124,18 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     public override float FallAcceleration {
         get => m_FallGravity - m_Gravity;
     }
+
+    [Tooltip("how the jump speed changes from holding the squat")]
+    [SerializeField] private AnimationCurve m_JumpSpeedCurve_Horizontal;
+    public override AnimationCurve JumpSpeedCurve_Horizontal => m_JumpSpeedCurve_Horizontal;
+
+    [Tooltip("the minimum horizontal jump speed (minimum length jump squat)")]
+    [SerializeField] private float m_MinJumpSpeed_Horizontal;
+    public override float MinJumpSpeed_Horizontal => m_MinJumpSpeed_Horizontal;
+
+    [Tooltip("the maximum horizontal jump speed (maximum length jump squat)")]
+    [SerializeField] private float m_MaxJumpSpeed_Horizontal;
+    public override float MaxJumpSpeed_Horizontal => m_MaxJumpSpeed_Horizontal;
 
     #endregion
 

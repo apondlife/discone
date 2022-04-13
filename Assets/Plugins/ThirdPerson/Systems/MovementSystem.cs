@@ -152,7 +152,7 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         var v0 = m_State.PlanarVelocity;
-        var vt = v0 + m_Input.MoveAxis * m_Tunables.FloatAcceleration * Time.deltaTime;
+        var vt = v0 + m_Input.MoveAxis * m_Tunables.AerialDriftAcceleration * Time.deltaTime;
         m_State.SetProjectedPlanarVelocity(vt);
     }
 }

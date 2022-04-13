@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3865053424001678558}
   - component: {fileID: 5426690310298381734}
   - component: {fileID: 5426690310298381735}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: NPCTalkBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -76,6 +76,10 @@ PrefabInstance:
     - target: {fileID: 1687693433773622100, guid: 92fbe3faea79a1548a1dc9bc60bfbf98, type: 3}
       propertyPath: m_Name
       value: TalkableIndicator
+      objectReference: {fileID: 0}
+    - target: {fileID: 1687693433773622100, guid: 92fbe3faea79a1548a1dc9bc60bfbf98, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1687693433773622101, guid: 92fbe3faea79a1548a1dc9bc60bfbf98, type: 3}
       propertyPath: m_Pivot.x
