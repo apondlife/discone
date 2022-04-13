@@ -22,7 +22,7 @@ public class Fuzz: MonoBehaviour {
         // get texture refs
         var fuzz = Shader.PropertyToID("_FuzzTex");
         var main = Shader.PropertyToID("_MainTex");
-        var temp = Shader.PropertyToID("_TempTex");
+        // var temp = Shader.PropertyToID("_DepthTex");
 
         // copy opaque geometry to temp texture
         var copy = new CommandBuffer();
@@ -52,7 +52,8 @@ public class Fuzz: MonoBehaviour {
 
         // copyDepth.Blit(
         //     main,
-        //     temp
+        //     temp,
+        //     new Material(Shader.Find("Image/Overlay"))
         // );
 
         // cam.AddCommandBuffer(CameraEvent.BeforeSkybox, copyDepth);
@@ -61,7 +62,7 @@ public class Fuzz: MonoBehaviour {
         // TODO: this fucks up transparent objects
         var clear = new CommandBuffer();
         clear.name = "Clear";
-        clear.SetRenderTarget(BuiltinRenderTextureType.CurrentActive);
+        clear.SetRenderTarget(BuiltinRenderTextureType.CameraTarget); // TODO: understand if this should be CurrentActive or CameraTarget
         clear.ClearRenderTarget(RTClearFlags.All, Color.clear, 1.0f, 0);
 
         cam.AddCommandBuffer(CameraEvent.BeforeSkybox, clear);
@@ -81,11 +82,13 @@ public class Fuzz: MonoBehaviour {
             new Material(Shader.Find("Image/Overlay"))
         );
 
-        // and clear the fuzz texture
+        // and clear the temp textures
         overlay.SetRenderTarget(fuzz);
         overlay.ClearRenderTarget(RTClearFlags.Color, Color.clear, 1.0f, 0);
         overlay.ReleaseTemporaryRT(fuzz);
 
         cam.AddCommandBuffer(CameraEvent.AfterSkybox, overlay);
+
+        // TODO: draw depth temp back into depth buffer
     }
 }
