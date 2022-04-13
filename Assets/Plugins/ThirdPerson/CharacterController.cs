@@ -22,7 +22,8 @@ public sealed class CharacterController {
     [SerializeField] private float m_MinMove;
 
     [Tooltip("the highest angle in which colliding with is considered ground. ie slope angle")]
-    [SerializeField] private float m_MaxGroundAngle;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_MaxGroundAngle")]
+    [SerializeField] private float m_WallAngle;
 
     [Tooltip("the amount to offset collision casts to avoid precision issues")]
     [SerializeField] float m_CastOffset;
@@ -56,7 +57,7 @@ public sealed class CharacterController {
     private Func<float, float> CustomSlopeAngleLossFunction = null;
 
     private float LimitSlopeToWallAngle(float angle) {
-        return angle < m_MaxGroundAngle ? 1.0f : 0.0f;
+        return angle < m_WallAngle ? 1.0f : 0.0f;
     }
 
     /// the collisions this frame
@@ -101,11 +102,11 @@ public sealed class CharacterController {
         var moveDelta = delta;
         var moveContactOffset = Vector3.zero;
 
-
         // cancel movement towards the ground in case the character is grounded
-        if(m_IsGrounded) {
+
+        if (m_IsGrounded) {
             // check if there's movement towards the ground;
-            if(Vector3.Dot(m_HitNormal, moveDelta) < 0) {
+            if (Vector3.Dot(m_HitNormal, moveDelta) < 0) {
                 // "cancel" the normal part (ie project the vector)
                 moveDelta = Vector3.ProjectOnPlane(moveDelta, m_HitNormal);
 
@@ -248,7 +249,9 @@ public sealed class CharacterController {
             moveContactOffset += hitContactOffset;
 
             // if we touch any ground surface, we're grounded
-            isGrounded = Vector3.Angle(hit.normal, Vector3.up) <= m_MaxGroundAngle;
+            if (!isGrounded && Vector3.Angle(hit.normal, Vector3.up) <= m_WallAngle) {
+                isGrounded = true;
+            }
 
             // update hit normal each cast
             m_HitNormal = hit.normal;
@@ -272,6 +275,11 @@ public sealed class CharacterController {
     /// the character's curent velocity
     public Vector3 Velocity {
         get => m_Velocity;
+    }
+
+    /// the angle considered a wall
+    public float WallAngle {
+        get => m_WallAngle;
     }
 
     /// if the character is touching the ground

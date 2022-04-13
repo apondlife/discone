@@ -30,9 +30,8 @@ sealed class WallSystem: CharacterSystem {
             return;
         }
 
-        var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
-        var angle = Mathf.Abs(Vector3.Dot(lastHit.Normal, Vector3.up));
-        if (angle < 0.2f) {
+        // if we're on a wall, enter slide
+        if (IsOnWall()) {
             ChangeTo(WallSlide);
         }
     }
@@ -45,36 +44,64 @@ sealed class WallSystem: CharacterSystem {
     );
 
     void WallSlide_Enter() {
+        // find wall collision
+        var _ = FindWall(out var collision);
+
+        // calculate initial slide velocity
+        var transferred = FindTransferredVelocity(collision.Normal);
+        m_State.VerticalSpeed += transferred.magnitude;
+
+        // update state
         m_State.IsOnWall = true;
-        var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
-        var planarNormal = Vector3.ProjectOnPlane(lastHit.Normal, Vector3.up);
-        var projectedVelocity = Vector3.Project(m_State.GetFrame(1).Velocity, planarNormal);
-        m_State.VerticalSpeed += projectedVelocity.magnitude;
-        // Debug.Log($"wall-slide: n={m_State.Hit.Value.normal} n_p={planarNormal} v_0={m_State.PrevPlanarVelocity} v_n={projectedVelocity} dvy={2.0f * projectedVelocity.magnitude}");
     }
 
     void WallSlide_Update() {
-         // if there's no hit, do nothing
-        if (m_Controller.Collisions.Count == 0) {
+        // if we left the wall, exit
+        var isOnWall = FindWall(out var collision);
+        if (!isOnWall) {
             ChangeTo(NotOnWall);
             return;
         }
 
+        // transfer velocity
+        var transferred = FindTransferredVelocity(collision.Normal);
+        m_State.VerticalSpeed += transferred.magnitude;
 
-        var lastHit = m_Controller.Collisions[m_Controller.Collisions.Count - 1];
-        var angle = Mathf.Abs(Vector3.Dot(lastHit.Normal, Vector3.up));
-        if (angle > 0.2f) {
-            ChangeTo(NotOnWall);
-            return;
-        }
-
-        var planarNormal = Vector3.ProjectOnPlane(lastHit.Normal, Vector3.up);
-        var projectedVelocity = Vector3.Project(m_State.GetFrame(1).PlanarVelocity, planarNormal);
-        m_State.VerticalSpeed += projectedVelocity.magnitude;
-
-        if(m_Input.IsHoldingWall) {
+        // accelerate while holding button
+        if (m_Input.IsHoldingWall) {
             m_State.VerticalSpeed += m_Tunables.WallAcceleration * Time.deltaTime;
         }
+    }
+
+    // -- queries --
+    /// if the character is on a wall this frame
+    bool IsOnWall() {
+        return FindWall(out _);
+    }
+
+    /// the collision with the wall this frame
+    bool FindWall(out CharacterCollision collision) {
+        // for each collision
+        foreach (var c in m_Controller.Collisions) {
+            // check the angle between the normal and up
+            var angle = Vector3.Angle(c.Normal, Vector3.up);
+
+            // if it's within the wall range, we're on a wall
+            if (Mathf.Abs(90.0f - angle) < (90.0f - m_Controller.WallAngle)) {
+                collision = c;
+                return true;
+            }
+        }
+
+        collision = default;
+        return false;
+    }
+
+    /// find the velocity to transfer to the wall
+    Vector2 FindTransferredVelocity(Vector2 normal) {
+        normal = Vector3.ProjectOnPlane(normal, Vector3.up);
+        var transferred = Vector3.Project(m_State.GetFrame(1).PlanarVelocity, normal);
+        return transferred;
     }
 }
 
