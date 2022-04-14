@@ -49,6 +49,8 @@ public sealed class CharacterModel: MonoBehaviour {
         }
 
         c_BaseScale = transform.localScale;
+
+        gameObject.SetLayerRecursively(gameObject.layer);
     }
 
     void FixedUpdate() {

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 299324000264898386}
   m_Layer: 6
-  m_Name: Target
+  m_Name: LookAtTarget
   m_TagString: Untagged
   m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 4801873550519773364}
   - component: {fileID: 4801873550519773367}
   - component: {fileID: 4801873550519773366}
-  - component: {fileID: 4801873550519773365}
   m_Layer: 6
   m_Name: cm
   m_TagString: Untagged
@@ -104,28 +103,6 @@ MonoBehaviour:
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
---- !u!114 &4801873550519773365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4801873550519773363}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa7155796051b734daa718462081dc5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 0, z: 0}
-  m_XDamping: 2
-  m_YDamping: 0.16
-  m_ZDamping: 0.1
-  m_AngularDampingMode: 0
-  m_PitchDamping: 0
-  m_YawDamping: 20
-  m_RollDamping: 0
-  m_AngularDamping: 0
 --- !u!1 &4801873551099959023
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,8 +128,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4801873551099959023}
-  m_LocalRotation: {x: -0.007655653, y: 0.00069174194, z: 0.0000052958926, w: 0.9999705}
-  m_LocalPosition: {x: -0.013820648, y: 1.261009, z: -9.98969}
+  m_LocalRotation: {x: -0.7009091, y: 0.00050343544, z: 0.0004947246, w: 0.71325034}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -289,8 +266,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4801873551099959025}
-  - {fileID: 2705787981773572327}
   - {fileID: 3497060394157475409}
+  - {fileID: 2705787981773572327}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -319,7 +296,7 @@ GameObject:
   - component: {fileID: 2705787981773572327}
   - component: {fileID: 3025936753336903602}
   m_Layer: 0
-  m_Name: FollowTarget
+  m_Name: Follow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -339,7 +316,7 @@ Transform:
   m_Children:
   - {fileID: 8096046607654868996}
   m_Father: {fileID: 6946443411796736371}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3025936753336903602
 MonoBehaviour:
@@ -353,12 +330,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc3d0067bd335fb419b025c67fd4c1df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Distance: 10
+  m_YawCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -0.07486133
+      outSlope: -0.07486133
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.0978628
+    - serializedVersion: 3
+      time: 0.9
+      value: 0
+      inSlope: -0.06780722
+      outSlope: 0
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.1342596
+      outWeight: 1
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.547909
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_MaxYawSpeed: 80
+  m_MinAngle: 25.5
+  m_MaxAngle: 60
   m_Model: {fileID: 0}
-  m_LookAtTarget: {fileID: 0}
-  m_Distance: 0
-  m_MinAngle: 0
-  m_MaxAngle: 0
-  m_Target: {fileID: 0}
+  m_LookAtTarget: {fileID: 7545719702053008949}
+  m_Target: {fileID: 8096046607654868996}
 --- !u!1 &8544393354180784480
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,8 +379,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3497060394157475409}
+  - component: {fileID: 7545719702053008949}
   m_Layer: 6
-  m_Name: GroundTarget
+  m_Name: LookAt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -389,5 +401,22 @@ Transform:
   m_Children:
   - {fileID: 299324000264898386}
   m_Father: {fileID: 6946443411796736371}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7545719702053008949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8544393354180784480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0cce15f68687b342b161d35ac99ba14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MaxDistance: 20
+  m_GroundLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  m_Target: {fileID: 299324000264898386}

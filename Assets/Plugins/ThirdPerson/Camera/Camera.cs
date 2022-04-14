@@ -75,7 +75,9 @@ public sealed class Camera: MonoBehaviour {
     // -- commands --
     /// set the camera's yaw damping to control recentering speed (lower is faster)
     void SetDamping(float damping) {
-        m_Transposer.m_YawDamping = damping;
+        if(m_Transposer) {
+            m_Transposer.m_YawDamping = damping;
+        }
     }
 }
 
