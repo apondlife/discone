@@ -114,12 +114,14 @@ sealed class OnlineCharacter: NetworkBehaviour {
 
     // -- events --
     void Client_OnStateReceived(CharacterState.Frame src, CharacterState.Frame dst) {
+        Debug.Log($"{name} Received some state");
         // ignore state if we have authority
         if (hasAuthority) {
             return;
         }
 
         // update character's current state frame
+        Debug.Log($"{name} Forcing state for");
         m_Character.ForceState(dst);
     }
 }
