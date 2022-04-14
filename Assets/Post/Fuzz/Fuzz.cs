@@ -9,6 +9,7 @@ public class Fuzz: MonoBehaviour {
     [Header("config")]
     [Tooltip("the post-processing material (shader)")]
     [SerializeField] Material m_Material;
+    [SerializeField] RenderTexture m_Texture;
 
     // -- lifecycle --
     void Awake() {
@@ -18,6 +19,7 @@ public class Fuzz: MonoBehaviour {
 
         // draw fuzz geometry on top of skybox
         cam.RemoveAllCommandBuffers();
+        return;
 
         // get texture refs
         var fuzz = Shader.PropertyToID("_FuzzTex");
@@ -90,5 +92,10 @@ public class Fuzz: MonoBehaviour {
         cam.AddCommandBuffer(CameraEvent.AfterSkybox, overlay);
 
         // TODO: draw depth temp back into depth buffer
+    }
+
+    private void OnRenderImage(RenderTexture src, RenderTexture dest) {
+    //    m_Texture.colorBuffer
+       Graphics.Blit(src, dest, m_Material);
     }
 }

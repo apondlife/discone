@@ -17,7 +17,7 @@ Shader "Image/Fuzz" {
         ZWrite Off
         ZTest Always
         // Blend One One
-        Blend SrcAlpha OneMinusSrcAlpha
+        // Blend SrcAlpha OneMinusSrcAlpha
         // Blend SrcAlpha Zero  // uncomment for cool effect
 
         Pass {
@@ -126,7 +126,7 @@ Shader "Image/Fuzz" {
                 // dissolve far away objects
                 float a = 1.0;
                 float p = saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, depth));
-                a = step(p, Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
+                a = step(p, 0.997*Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
 
                 return fixed4(col, a);
             }
