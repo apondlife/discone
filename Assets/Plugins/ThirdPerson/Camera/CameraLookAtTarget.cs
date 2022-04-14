@@ -36,7 +36,7 @@ public class CameraLookAtTarget: MonoBehaviour {
         get => Mathf.Clamp01(Vector3.Distance(transform.position, m_Target.position)/m_MaxDistance);
     }
 
-    // -- gizmos --
+    // -- debug --
     void OnDrawGizmosSelected() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawRay(transform.position, Vector3.down * m_MaxDistance);
