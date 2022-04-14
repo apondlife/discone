@@ -88,12 +88,19 @@ public partial class Character: MonoBehaviour {
     }
 
     // -- commands --
+    /// drive the character with a new input source
     public void Drive(PlayerInputSource source) {
         m_Input.Drive(source);
     }
 
+    /// force the current frame's state
     public void ForceState(CharacterState.Frame frame) {
-        m_State.CurrentFrame = frame;
+        // TODO: hack, we should sync the full list of frames on connect
+        if (m_State.IsEmpty) {
+            m_State.Fill(frame);
+        } else {
+            m_State.CurrentFrame = frame;
+        }
     }
 
     // -- queries --
