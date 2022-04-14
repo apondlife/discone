@@ -97,7 +97,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// tilt the model as a fn of character acceleration
     void Tilt() {
-        // is this a fundamental misunderstanding of quaternions?
+        // is this a fundamental misunderstanding of quaternions? maybe
         transform.rotation = m_State.LookRotation;
     }
 

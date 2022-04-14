@@ -231,16 +231,7 @@ public sealed class CharacterState {
         /// the character's look rotation (facing & tilt)
         public Quaternion LookRotation {
             get {
-                var look = FacingDirection;
-
-                // if airborne, look in direction of velocity
-                // TODO: we don't want to calculate a look direction from a zero velocity,
-                // but is using FacingDirection in this situation correct?
-                if (!IsGrounded && PlanarVelocity != Vector3.zero) {
-                    look = PlanarVelocity.normalized;
-                }
-
-                return Tilt * Quaternion.LookRotation(look, Up);
+                return Tilt * Quaternion.LookRotation(FacingDirection, Up);
             }
         }
 
