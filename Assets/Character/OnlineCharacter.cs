@@ -115,7 +115,7 @@ sealed class OnlineCharacter: NetworkBehaviour {
     // -- events --
     void Client_OnStateReceived(CharacterState.Frame src, CharacterState.Frame dst) {
         // ignore state if we have authority
-        if (!hasAuthority) {
+        if (hasAuthority) {
             return;
         }
 
