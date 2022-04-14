@@ -229,7 +229,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5258442826006515759}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -336,13 +336,31 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: -0.07486133
       outSlope: -0.07486133
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.0978628
+    - serializedVersion: 3
+      time: 0.05
+      value: 0
+      inSlope: -0
+      outSlope: -Infinity
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.0512677
+      value: 1.0044463
+      inSlope: 13.782588
+      outSlope: 0
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 0.11775515
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 0.9
       value: 0
@@ -365,8 +383,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   m_MaxYawSpeed: 80
-  m_MinAngle: 25.5
-  m_MaxAngle: 60
+  m_MinPitch: 25.5
+  m_MaxPitch: 60
   m_Model: {fileID: 0}
   m_LookAtTarget: {fileID: 7545719702053008949}
   m_Target: {fileID: 8096046607654868996}

@@ -3,7 +3,6 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the main third person controller
-[ExecuteAlways]
 public partial class Character: MonoBehaviour {
     // -- fields --
     [Header("data")]
@@ -31,6 +30,9 @@ public partial class Character: MonoBehaviour {
             transform.position,
             transform.forward
         );
+
+        // reset rotation; model is the only transform that rotates
+        transform.rotation = Quaternion.identity;
 
         // if editor, stop here
         if (!Application.IsPlaying(gameObject)) {

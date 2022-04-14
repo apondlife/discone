@@ -63,6 +63,9 @@ public sealed class CharacterController {
     /// the collisions this frame
     Buffer<CharacterCollision> m_Collisions = new Buffer<CharacterCollision>(5);
 
+    /// pending move delta, if there is any
+    Vector3 m_PendingMoveDelta;
+
     // -- debug --
     #if UNITY_EDITOR
     /// the last collision hit
@@ -78,10 +81,21 @@ public sealed class CharacterController {
     /// move the character by a position delta
     public void Move(Vector3 position, Vector3 delta) {
         // if the move was big enough to fire
-        // TODO: is this necessary?
+        var mag = delta.magnitude;
         if (delta.magnitude <= m_MinMove) {
-            Debug.Log("move delta below threshold, stopping move");
-            return;
+            // accumulate it
+            m_PendingMoveDelta += delta;
+
+            // and once we've accumulated enough, make that move
+            if (m_PendingMoveDelta.magnitude > m_MinMove) {
+                delta = m_PendingMoveDelta;
+                m_PendingMoveDelta = Vector3.zero;
+            }
+            // until then, stop here
+            else {
+                Debug.Log($"[controller] move delta {mag} < {m_MinMove}; accumulating");
+                return;
+            }
         }
 
         // capture shorthand
@@ -103,7 +117,6 @@ public sealed class CharacterController {
         var moveContactOffset = Vector3.zero;
 
         // cancel movement towards the ground in case the character is grounded
-
         if (m_IsGrounded) {
             // check if there's movement towards the ground;
             if (Vector3.Dot(m_HitNormal, moveDelta) < 0) {
@@ -138,7 +151,7 @@ public sealed class CharacterController {
 
             // if we cast an unlikely number of times, stop
             if (i > 5) {
-                Debug.LogError("cast more than 5 times in a single frame!");
+                Debug.LogError("[controller] cast more than 5 times in a single frame!");
                 break;
             }
 
@@ -222,7 +235,7 @@ public sealed class CharacterController {
                 // this should not happen; but if it does abort the collision from the last
                 // successful cast
                 else {
-                    Debug.LogError("HUGE MISTAKE, THIS SHOULD NEVER HAPPEN EVER EVER...");
+                    Debug.LogError("[controller] HUGE MISTAKE, THIS SHOULD NEVER HAPPEN EVER EVER...");
                     break;
                 }
             }

@@ -23,13 +23,8 @@ public sealed class Camera: MonoBehaviour {
     /// the character's tunables / constants
     CharacterTunablesBase m_Tunables;
 
-    /// the camera's transposer (the body; controls camera movement)
-    CinemachineTransposer m_Transposer;
-
     // -- lifecycle --
     void Awake() {
-        // set props
-        m_Transposer = m_Camera.GetCinemachineComponent<CinemachineTransposer>();
     }
 
     void Start() {
@@ -75,9 +70,6 @@ public sealed class Camera: MonoBehaviour {
     // -- commands --
     /// set the camera's yaw damping to control recentering speed (lower is faster)
     void SetDamping(float damping) {
-        if(m_Transposer) {
-            m_Transposer.m_YawDamping = damping;
-        }
     }
 }
 
