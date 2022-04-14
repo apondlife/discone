@@ -4,12 +4,16 @@ namespace ThirdPerson {
 
 /// a circular buffer of n data elements
 public sealed class Queue<T> {
+    // -- constants --
+    /// a null index
+    const int k_None = -1;
+
     // -- properties --
     /// the current position in the buffer
-    private int m_Head = -1;
+    int m_Head = k_None;
 
     /// the queue of elements in the buffer
-    private readonly T[] m_Queue;
+    readonly T[] m_Queue;
 
     // -- lifetime --
     public Queue(uint size) {
@@ -23,7 +27,19 @@ public sealed class Queue<T> {
         m_Queue[m_Head] = snapshot;
     }
 
+    /// fills the buffer with a given value
+    public void Fill(T snapshot) {
+        for (var i = 0; i < m_Queue.Length; i++) {
+            m_Queue[i] = snapshot;
+        }
+    }
+
     // -- queries --
+    /// if the queue is empty
+    public bool IsEmpty {
+        get => m_Head == k_None;
+    }
+
     /// gets the snapshot nth-newest snapshot.
     public T this[uint offset] {
         get {

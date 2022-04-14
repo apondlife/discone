@@ -6,6 +6,7 @@ namespace ThirdPerson {
 /// the character's authoritative state
 public sealed class CharacterState {
     // -- props --
+    /// the queue of frames
     Queue<Frame> m_Frames;
 
     // -- lifetime --
@@ -93,6 +94,11 @@ public sealed class CharacterState {
         m_Frames.Add(new Frame(m_Frames[0]));
     }
 
+    /// fill the queue with the frame
+    public void Fill(CharacterState.Frame frame) {
+        m_Frames.Fill(frame);
+    }
+
     /// sets the velocity
     public void SetVelocity(Vector3 v) {
         VerticalSpeed = v.y;
@@ -120,6 +126,11 @@ public sealed class CharacterState {
     }
 
     // -- queries --
+    /// if the state has no frames
+    public bool IsEmpty {
+        get => m_Frames.IsEmpty;
+    }
+
     /// get the nth most recent frame
     public Frame GetFrame(uint i) {
         return m_Frames[i];
