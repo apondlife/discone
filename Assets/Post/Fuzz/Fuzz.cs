@@ -18,8 +18,8 @@ public class Fuzz: MonoBehaviour {
         cam.depthTextureMode = DepthTextureMode.DepthNormals;
 
         // draw fuzz geometry on top of skybox
-        cam.RemoveAllCommandBuffers();
         return;
+        cam.RemoveAllCommandBuffers();
 
         // get texture refs
         var fuzz = Shader.PropertyToID("_FuzzTex");
