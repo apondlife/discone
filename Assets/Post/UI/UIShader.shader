@@ -1,4 +1,4 @@
-Shader "Unlit/Dissolve"
+Shader "Unlit/UIShader"
 {
     Properties
     {
@@ -6,6 +6,8 @@ Shader "Unlit/Dissolve"
         _DissolveTex("Dissolve Tex", 2D) = "white" {}
         _DissolveAmount("Dissolve Amount", Range(0,1)) = 0.5
         _DissolveScale("Dissolve Scale", Float) = 1
+        _LetterboxAmount("Letterbox Amount", Range(0,1)) = 0.5
+        _LetterboxSize("Letterbox Size", Range(0,.5)) = .2
     }
     SubShader
     {
@@ -46,9 +48,13 @@ Shader "Unlit/Dissolve"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+
             half _DissolveAmount;
             sampler2D _DissolveTex;
             half _DissolveScale;
+
+            half _LetterboxAmount;
+            half _LetterboxSize;
             
 
             v2f vert (appdata v)
@@ -67,8 +73,18 @@ Shader "Unlit/Dissolve"
                 // sample noise tex at this uv
                 half4 noise = tex2D(_DissolveTex, i.uv * _DissolveScale);
 
-                // noise is b/w, so we just take red
-                clip(noise.r - _DissolveAmount);
+                half letterboxThreshold = lerp(0, _LetterboxSize, _LetterboxAmount);
+
+                if (i.uv.y < letterboxThreshold || i.uv.y > 1 - letterboxThreshold ) {
+                    // letterbox
+                    col = fixed4(0, 0, 0, 1);
+                } else {
+                    // dissolve
+                    // noise is b/w, so we just take red
+                    clip(noise.r - _DissolveAmount);
+                }
+
+  
 
                 // if (false) {
                 //     discard;
