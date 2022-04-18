@@ -71,7 +71,7 @@ Shader "Unlit/UIShader"
                 //fixed4 col = fixed4(1, 0, 0, 0);
 
                 // sample noise tex at this uv
-                half4 noise = tex2D(_DissolveTex, i.uv * _DissolveScale);
+                half4 disTexel = tex2D(_DissolveTex, i.uv * _DissolveScale);
 
                 half letterboxThreshold = lerp(0, _LetterboxSize, _LetterboxAmount);
 
@@ -80,8 +80,8 @@ Shader "Unlit/UIShader"
                     col = fixed4(0, 0, 0, 1);
                 } else {
                     // dissolve
-                    // noise is b/w, so we just take red
-                    clip(noise.r - _DissolveAmount);
+                    half4 avg = (disTexel.r + disTexel.g + disTexel.b) / 3.0f;
+                    clip(avg - _DissolveAmount);
                 }
 
               

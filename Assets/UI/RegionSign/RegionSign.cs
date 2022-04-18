@@ -31,7 +31,7 @@ public class RegionSign : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        letterboxDuration = textDuration + dissolveTime * 2;
+        letterboxDuration = textDuration + dissolveTime;
 
         canvasGroup.alpha = 0;
         m_UIShader.letterboxAmount = 0;
@@ -52,12 +52,21 @@ public class RegionSign : MonoBehaviour
         m_UIShader.dissolveAmount = k;
     }
 
+    void StartDissolveIn() {
+        StartCoroutine(CoroutineHelpers.InterpolateByTime(dissolveTime, DissolveIn));
+    }
+
     void StartDissolveOut() {
         StartCoroutine(CoroutineHelpers.InterpolateByTime(dissolveTime, DissolveOut));
     }
 
      void LetterboxIn(float k) {
         m_UIShader.letterboxAmount = k;
+    }
+
+    void StartLetterboxIn() {
+        Debug.Log("Starting letterbox in...");
+        StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxIn));
     }
 
     void LetterboxOut(float k) {
@@ -69,18 +78,24 @@ public class RegionSign : MonoBehaviour
     }
 
 
+
+
     public void OnRegionEntered(string regionName) {
         canvasGroup.alpha = 1;
-        m_UIShader.dissolveAmount = 1;
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(dissolveTime, DissolveIn));
-        StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(textDuration, StartDissolveOut));
-
         m_UIShader.letterboxAmount = 0;
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxIn));
-        StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(letterboxDuration, StartLetterboxOut));
-      
-        // funciton that recives a k goes from 0 to 1
-        // 3rd param takes that k and does somethign with it
+        m_UIShader.dissolveAmount = 1;
+
         m_Text.SetText(regionName);
+
+        // tween in letterbox (and start dissolving when letterbox is done)
+        StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxIn, StartDissolveIn));
+
+        // set dissolve out to start after textDuration
+        StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(textDuration, StartDissolveOut));
+        
+        // set letterbox to start after letterboxDuration
+        StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(letterboxDuration, StartLetterboxOut));
+    
+
     }
 }
