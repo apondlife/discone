@@ -31,8 +31,12 @@ public class RegionSign : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        canvasGroup.alpha = 0;
         letterboxDuration = textDuration + dissolveTime * 2;
+
+        canvasGroup.alpha = 0;
+        m_UIShader.letterboxAmount = 0;
+        m_UIShader.dissolveAmount = 1;
+        
     }
 
     // Update is called once per frame
@@ -61,7 +65,7 @@ public class RegionSign : MonoBehaviour
     }
 
     void StartLetterboxOut() {
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, DissolveOut));
+        StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxOut));
     }
 
 
@@ -71,9 +75,9 @@ public class RegionSign : MonoBehaviour
         StartCoroutine(CoroutineHelpers.InterpolateByTime(dissolveTime, DissolveIn));
         StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(textDuration, StartDissolveOut));
 
-        m_UIShader.letterboxAmount = 1;
+        m_UIShader.letterboxAmount = 0;
         StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxIn));
-        StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(letterboxDuration, StartDissolveOut));
+        StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(letterboxDuration, StartLetterboxOut));
       
         // funciton that recives a k goes from 0 to 1
         // 3rd param takes that k and does somethign with it

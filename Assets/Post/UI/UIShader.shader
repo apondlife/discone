@@ -84,6 +84,8 @@ Shader "Unlit/UIShader"
                     clip(noise.r - _DissolveAmount);
                 }
 
+              
+
   
 
                 // if (false) {
