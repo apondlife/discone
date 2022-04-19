@@ -13,7 +13,8 @@ public class CameraFollowTarget : MonoBehaviour {
     [SerializeField] AnimationCurve m_YawCurve;
 
     [Tooltip("the max speed the camera yaws around the character")]
-    [SerializeField] float m_MaxYawSpeed;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_MaxYawSpeed")]
+    [SerializeField] float m_YawSpeed;
 
     [Tooltip("the minimum angle the camera rotates around the character vertically")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_MinAngle")]
@@ -22,6 +23,15 @@ public class CameraFollowTarget : MonoBehaviour {
     [Tooltip("the maximum angle the camera rotates around the character vertically")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_MaxAngle")]
     [SerializeField] private float m_MaxPitch;
+
+    [Tooltip("the time the camera can be idle before recentering")]
+    [SerializeField] private float m_Recenter_IdleTime;
+
+    [Tooltip("the speed the camera recenters after idle")]
+    [SerializeField] private float m_Recenter_YawSpeed;
+
+    [Tooltip("the curve the camera recenters looking at the character")]
+    [SerializeField] AnimationCurve m_Recenter_YawCurve;
 
     // -- refs --
     [Header("refs")]
@@ -44,15 +54,22 @@ public class CameraFollowTarget : MonoBehaviour {
     /// the direction for zero yaw
     Vector3 m_ZeroYawDir;
 
+    // the current character state
+    CharacterState m_State;
+
     // -- lifecycle --
     private void Start() {
         m_Yaw = 0;
         m_ZeroYawDir = -Vector3.ProjectOnPlane(m_Model.forward, Vector3.up).normalized;
         m_Pitch = m_MinPitch;
         m_Target.position = transform.position + Quaternion.AngleAxis(m_MinPitch, m_Model.right) * m_ZeroYawDir * m_Distance;
+
+        var character = GetComponentInParent<Character>();
+        m_State = character.State;
     }
 
     private void Update() {
+
         // get current & target positions
         var p0 = Vector3.ProjectOnPlane(m_Target.position - m_Model.position, Vector3.up);
         var pt = Vector3.ProjectOnPlane(-m_Model.forward, Vector3.up).normalized * m_Distance;
@@ -63,7 +80,12 @@ public class CameraFollowTarget : MonoBehaviour {
         var yawMag = Mathf.Abs(yawAngle);
 
         // we want to rotate around the character's up axis, to maintain the distance
-        var yawSpeed = Mathf.Lerp(0, m_MaxYawSpeed, m_YawCurve.Evaluate(yawMag / 180.0f));
+
+        // check if the character has been idle for long enough
+        var yawSpeed =
+            m_State.IdleTime > m_Recenter_IdleTime
+                ? Mathf.Lerp(0, m_Recenter_YawSpeed, m_Recenter_YawCurve.Evaluate(yawMag / 180.0f))
+                : Mathf.Lerp(0, m_YawSpeed, m_YawCurve.Evaluate(yawMag / 180.0f));
         var yawDelta = yawDir * yawSpeed * Time.deltaTime;
         var yaw = Mathf.MoveTowardsAngle(m_Yaw, m_Yaw + yawDelta, yawMag);
         var yawRot = Quaternion.AngleAxis(yaw, Vector3.up);

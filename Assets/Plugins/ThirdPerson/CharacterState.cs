@@ -88,6 +88,12 @@ public sealed class CharacterState {
         set => m_Frames[0].JumpSquatFrame = value;
     }
 
+    /// the current jump squat frame
+    public float IdleTime {
+        get => m_Frames[0].IdleTime;
+        set => m_Frames[0].IdleTime = value;
+    }
+
     // -- commands --
     /// snapshot the current state
     public void Snapshot() {
@@ -200,6 +206,9 @@ public sealed class CharacterState {
 
         /// the current frame in the jump squat
         public int JumpSquatFrame = -1;
+
+        /// the current frame in the jump squat
+        public float IdleTime = 0;
 
         // -- lifetime --
         /// create an empty frame
