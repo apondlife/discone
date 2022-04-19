@@ -218,6 +218,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 3578791518119098710}
+    - target: {fileID: 7608519197004547813, guid: 45d07c15908d5fc42b20508d39c4121b, type: 3}
+      propertyPath: m_UIShader
+      value: 
+      objectReference: {fileID: 9184189690146937991}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45d07c15908d5fc42b20508d39c4121b, type: 3}
 --- !u!224 &3283890951310279379 stripped
@@ -429,3 +433,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4802843705883134831, guid: e85d6e269e2f13f409e85de8667dda56, type: 3}
   m_PrefabInstance: {fileID: 9184189688205303026}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9184189690146937991 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1951072373, guid: e85d6e269e2f13f409e85de8667dda56, type: 3}
+  m_PrefabInstance: {fileID: 9184189688205303026}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0a8b42bd3eb5164cb61a09d312b777c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
