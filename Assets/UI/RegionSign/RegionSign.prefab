@@ -28,7 +28,7 @@ RectTransform:
   m_GameObject: {fileID: 5198444820025073509}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.30555558, y: 0.30555558, z: 0.30555558}
+  m_LocalScale: {x: 0.30555558, y: 0.30555558, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1756354218895475117}
@@ -66,6 +66,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 7738913042890572298}
   m_Text: {fileID: 8565539946255639089}
+  m_UIShader: {fileID: 0}
+  dissolveTime: 2.76
+  textDuration: 6.25
+  letterboxTweenTime: 0.35
 --- !u!114 &4201571782177765910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,8 +143,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0009765625, y: -0.000122070305}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 3.2536926, y: 2.4302063}
+  m_SizeDelta: {x: -28.8194, y: -137.5574}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &281249768009805167
 CanvasRenderer:
@@ -170,7 +174,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Ivan's house
+  m_text: Swamp
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 61137ca2c3b204e42b357a813adbc6b9, type: 2}
   m_sharedMaterial: {fileID: -1505298826483812940, guid: 61137ca2c3b204e42b357a813adbc6b9, type: 2}
@@ -197,12 +201,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 94.8
-  m_fontSizeBase: 94.8
+  m_fontSize: 171.25
+  m_fontSizeBase: 114.2
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 59.8
+  m_fontSizeMax: 281.1
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
