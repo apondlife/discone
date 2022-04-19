@@ -742,6 +742,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 523058266300869357, guid: 59df46f854533cf4e93cdc1c03b36279, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -27.299988
+      objectReference: {fileID: 0}
     - target: {fileID: 561071958080543178, guid: 59df46f854533cf4e93cdc1c03b36279, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -850,13 +854,17 @@ PrefabInstance:
       propertyPath: m_text
       value: Swamp
       objectReference: {fileID: 0}
+    - target: {fileID: 8232213324633268046, guid: 59df46f854533cf4e93cdc1c03b36279, type: 3}
+      propertyPath: m_UIShader
+      value: 
+      objectReference: {fileID: 575813417}
     - target: {fileID: 8290365002055586941, guid: 59df46f854533cf4e93cdc1c03b36279, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9184189690146937991, guid: 59df46f854533cf4e93cdc1c03b36279, type: 3}
       propertyPath: dissolveAmount
-      value: 0
+      value: 0.717
       objectReference: {fileID: 0}
     - target: {fileID: 9184189690146937991, guid: 59df46f854533cf4e93cdc1c03b36279, type: 3}
       propertyPath: letterboxAmount
