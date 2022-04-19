@@ -222,6 +222,10 @@ PrefabInstance:
       propertyPath: m_UIShader
       value: 
       objectReference: {fileID: 9184189690146937991}
+    - target: {fileID: 8244732830022176986, guid: 45d07c15908d5fc42b20508d39c4121b, type: 3}
+      propertyPath: m_fontSize
+      value: 637.05
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45d07c15908d5fc42b20508d39c4121b, type: 3}
 --- !u!224 &3283890951310279379 stripped
@@ -236,6 +240,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3578791517409189939}
     m_Modifications:
+    - target: {fileID: 4908320859908290666, guid: 11f06576c5a37364dad526c5db406345, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4908320859908290666, guid: 11f06576c5a37364dad526c5db406345, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7270353742733753074, guid: 11f06576c5a37364dad526c5db406345, type: 3}
       propertyPath: m_Name
       value: UINoPostFX
