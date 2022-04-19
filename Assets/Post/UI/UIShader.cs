@@ -14,6 +14,9 @@ public class UIShader: MonoBehaviour {
     [Range(0, 1)]
     [SerializeField] public float dissolveAmount;
 
+    [Range(0, 1f)]
+    [SerializeField] public float letterboxAmount;
+
     // -- lifecycle --
     void Awake() {
         m_Material = GetComponent<RawImage>().material;
@@ -22,5 +25,6 @@ public class UIShader: MonoBehaviour {
 
     void Update() {
         m_Material.SetFloat("_DissolveAmount", dissolveAmount);
+        m_Material.SetFloat("_LetterboxAmount", letterboxAmount);
     }
 }
