@@ -317,6 +317,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6766f07a37c4ca84d892728a923da5ac, type: 3}
+--- !u!114 &147055373 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 148793148733631864, guid: 5dd20f18d676945cfa94806c65220a0f, type: 3}
+  m_PrefabInstance: {fileID: 503244930}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a90d98e5b8f3c4ca7b9608e8e3ecf071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &173226179 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5754428092225543885, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
@@ -345,7 +356,7 @@ PrefabInstance:
     - target: {fileID: 678411839616086626, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: dialogueViews.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 147055373}
     - target: {fileID: 2034220523717006716, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -403,6 +414,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1794724145}
     m_Modifications:
+    - target: {fileID: 2665930726946694760, guid: 5dd20f18d676945cfa94806c65220a0f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2665930726946694760, guid: 5dd20f18d676945cfa94806c65220a0f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5498745658256887569, guid: 5dd20f18d676945cfa94806c65220a0f, type: 3}
       propertyPath: m_Name
       value: TextboxNew

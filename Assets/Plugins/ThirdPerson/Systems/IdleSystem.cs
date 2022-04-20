@@ -39,7 +39,7 @@ sealed class IdleSystem: CharacterSystem {
 
     void Idle_Update() {
         m_State.IdleTime += Time.deltaTime;
-        Debug.Log("idle");
+        //Debug.Log("idle");
         if(m_State.Velocity.sqrMagnitude > 0.1f) {
            ChangeTo(NotIdle);
         }
