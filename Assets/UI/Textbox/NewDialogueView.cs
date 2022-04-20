@@ -45,27 +45,81 @@ public class NewDialogueView : DialogueViewBase
         lineText.gameObject.SetActive(true);
         canvasGroup.gameObject.SetActive(true);
 
-        if (inlineCharacterName) {
-            characterNameText.text = "";
-            lineText.text = dialogueLine.Text.Text;
+        Debug.Log("RUNNING LINE!");
 
-            // This is where i would do animations... if i had any!!!
-            foreach (MarkupAttribute attr in dialogueLine.Text.Attributes) {
-                if (attr.Name == "shake") {
-                    textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
-                }
-            }
-        }
-        else {
-            characterNameText.text = dialogueLine.CharacterName;
-            lineText.text = dialogueLine.TextWithoutCharacterName.Text;
 
-            foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
-                if (attr.Name == "shake") {
-                    textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
-                }
+
+        
+
+        //int startPos = 0;
+
+        
+
+        characterNameText.SetText(dialogueLine.CharacterName);
+        //lineText.text = dialogueLine.TextWithoutCharacterName.Text;
+        lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
+
+        lineText.ForceMeshUpdate();
+
+        TMP_TextInfo textInfo = lineText.textInfo;
+        Debug.Log("char count: " + textInfo.characterCount);
+        
+
+        for (int i = 0; i < textInfo.characterCount; i++)
+        {
+            TMP_CharacterInfo charInfo = textInfo.characterInfo[i];
+
+            Debug.Log("character!  " + charInfo.character);
+            
+            if (i == 2) {
+                Debug.Log("setting character  " + charInfo.character + " to invisible");
+                charInfo.isVisible = false;
             }
+            Debug.Log(charInfo.isVisible);
+            // lineText.ForceMeshUpdate();
+
+            // Color32 c1;
+            // c1 = new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), 127);                         
+
+            // int vertexIndex = textInfo.characterInfo[i].vertexIndex;
+            // newVertexColors = textInfo.meshInfo.vertexColors;
+            // newVertexColors[vertexIndex + 0] = c1;
+            // newVertexColors[vertexIndex + 1] = c1;           
+            // newVertexColors[vertexIndex + 2] = c1;
+            // newVertexColors[vertexIndex + 3] = c1;
+
+            // lineText.mesh.vertices = textInfo.meshInfo.vertices;
+            // lineText.mesh.uv = textInfo.meshInfo.uv0;
+            // lineText.mesh.uv2 = textInfo.meshInfo.uv2;
+            // lineText.mesh.colors32 = newVertexColors;
+            
+
         }
+
+
+
+
+        // if (inlineCharacterName) {
+        //     characterNameText.text = "";
+        //     lineText.text = dialogueLine.Text.Text;
+
+        //     // This is where i would do animations... if i had any!!!
+        //     foreach (MarkupAttribute attr in dialogueLine.Text.Attributes) {
+        //         if (attr.Name == "shake") {
+        //             textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
+        //         }
+        //     }
+        // }
+        // else {
+        //     characterNameText.text = dialogueLine.CharacterName;
+        //     lineText.text = dialogueLine.TextWithoutCharacterName.Text;
+
+        //     foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
+        //         if (attr.Name == "shake") {
+        //             textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
+        //         }
+        //     }
+        // }
 
         // Immediately appear
         canvasGroup.interactable = true;
