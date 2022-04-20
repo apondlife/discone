@@ -10196,6 +10196,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6946443411796736371, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
   m_PrefabInstance: {fileID: 4801873552238145184}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3032161264613087381 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7545719702053008949, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
+  m_PrefabInstance: {fileID: 4801873552238145184}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3760618876817645504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0cce15f68687b342b161d35ac99ba14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3760618876817645504 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8544393354180784480, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
@@ -10301,3 +10312,46 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
   m_PrefabInstance: {fileID: 7238456180043233938}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7238456180043201584 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
+  m_PrefabInstance: {fileID: 7238456180043233938}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2378687711281893709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7238456180043201584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ff3c0249fd2a304c8238577d0fe9ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ResizeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -1.1805496
+      outSlope: -1.1805496
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.11018711
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.15103072
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_MinSize: 0.1
+  m_GroundTarget: {fileID: 3032161264613087381}
