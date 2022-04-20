@@ -235,6 +235,7 @@ public sealed class CharacterState {
             Tilt = f.Tilt;
             Collision = f.Collision;
             JumpSquatFrame = f.JumpSquatFrame;
+            IdleTime = f.IdleTime;
         }
 
         // -- queries --
@@ -273,7 +274,8 @@ public sealed class CharacterState {
                 IsOnWall == o.IsOnWall &&
                 Tilt == o.Tilt &&
                 Collision == o.Collision &&
-                JumpSquatFrame == o.JumpSquatFrame
+                JumpSquatFrame == o.JumpSquatFrame &&
+                IdleTime == o.IdleTime
             );
         }
     }
