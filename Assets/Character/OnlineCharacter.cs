@@ -9,6 +9,12 @@ sealed class OnlineCharacter: NetworkBehaviour {
     /// a parent "folder" for the characters
     static Transform k_Characters;
 
+    /// the min y-position the character wraps from
+    const float k_WrapMinY = -1000.0f;
+
+    /// the max y-position the character wraps to
+    const float k_WrapMaxY = 1000.0f;
+
     // -- fields --
     /// if this character is available
     [Header("fields")]
@@ -52,16 +58,7 @@ sealed class OnlineCharacter: NetworkBehaviour {
     }
 
     void FixedUpdate() {
-        // if we have authority
-        if (hasAuthority && isClient) {
-            // and the state changed
-            var state = m_Character.CurrentState;
-            if (!m_CurrentState.Equals(state)) {
-                // push state
-                m_CurrentState = state;
-                Server_SyncState(state);
-            }
-        }
+        Wrap();
     }
 
     // -- l/mirror
@@ -73,24 +70,63 @@ sealed class OnlineCharacter: NetworkBehaviour {
     }
 
     // -- commands --
-    /// mark this character as unavaialble
+    /// wrap the character from the bottom -> top of the world, if necessary
+    void Wrap() {
+        // if we don't have authority, do nothing
+        if (!hasAuthority || !isClient) {
+            return;
+        }
+
+        var state = m_Character.CurrentState;
+
+        // if we haven't reached the min y, do nothing
+        if (state.Position.y > k_WrapMinY) {
+            return;
+        }
+
+        // wrap to the max y (we shouldn't need to force state b/c the frame
+        // is a reference type, but in case that changes...)
+        state.Position.y = k_WrapMaxY;
+        m_Character.ForceState(state);
+    }
+
+    /// sync state from client -> server, if necessary
+    void SyncState() {
+        // if we don't have authority, do nothing
+        if (!hasAuthority || !isClient) {
+            return;
+        }
+
+        // if the state did not change, do nothing
+        var state = m_Character.CurrentState;
+        if (m_CurrentState.Equals(state)) {
+            return;
+        }
+
+        // sync the current state frame
+        m_CurrentState = state;
+        Server_SyncState(state);
+    }
+
+    // -- c/server
+    /// sync this character's current state from the client
+    [Command]
+    void Server_SyncState(CharacterState.Frame state) {
+        m_CurrentState = state;
+    }
+
+    /// mark this character as unavaialble; only call on the server
     public void Server_AssignClientAuthority(NetworkConnection connection) {
         m_IsAvailable = false;
         netIdentity.RemoveClientAuthority();
         netIdentity.AssignClientAuthority(connection);
     }
 
-    /// mark this character as available
+    /// mark this character as available; only call this on the server
     public void Server_RemoveClientAuthority() {
         m_IsAvailable = true;
         netIdentity.RemoveClientAuthority();
         netIdentity.AssignClientAuthority(NetworkServer.localConnection);
-    }
-
-    /// sync this character's current state from the client
-    [Command]
-    void Server_SyncState(CharacterState.Frame state) {
-        m_CurrentState = state;
     }
 
     // -- queries --
