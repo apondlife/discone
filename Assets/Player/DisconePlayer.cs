@@ -20,6 +20,12 @@ sealed class DisconePlayer: MonoBehaviour {
     [Tooltip("the input source")]
     [SerializeField] PlayerInputSource m_InputSource;
 
+    [Tooltip("the player's camera")]
+    [SerializeField] UnityEngine.Camera m_Camera;
+
+    [Tooltip("the distance to the far clip plane")]
+    [SerializeField] FloatReference m_FarClipPlane;
+
     // -- props --
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
@@ -31,6 +37,9 @@ sealed class DisconePlayer: MonoBehaviour {
             .Add(m_DriveStart, OnDriveStart)
             .Add(m_DriveStop, OnDriveStop)
             .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
+
+        // config camera
+        m_Camera.farClipPlane = m_FarClipPlane.Value;
     }
 
     void OnDestroy() {
@@ -39,6 +48,11 @@ sealed class DisconePlayer: MonoBehaviour {
     }
 
     // -- queries --
+    /// the player's camera
+    public UnityEngine.Camera Camera {
+        get => m_Camera;
+    }
+
     /// get the dialogue attached to a character
     NPCDialogue FindDialogue(Character character) {
         var dialogue = character.GetComponentInChildren<NPCDialogue>();
