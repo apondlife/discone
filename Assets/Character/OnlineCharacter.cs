@@ -34,14 +34,25 @@ sealed class OnlineCharacter: NetworkBehaviour {
     [SyncVar(hook = nameof(Client_OnStateReceived))]
     [SerializeField] CharacterState.Frame m_CurrentState;
 
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("the character's music")]
+    [SerializeField] GameObject m_Music;
+
     // -- props --
     /// the underlying character
     Character m_Character;
+
+    /// if the character is simulating
+    bool m_IsPerceived;
 
     // -- lifecycle --
     void Awake() {
         // set deps
         m_Character = GetComponent<Character>();
+
+        // default to not simulating
+        OnIsPerceivedChanged();
 
         // debug
         #if UNITY_EDITOR
@@ -70,6 +81,14 @@ sealed class OnlineCharacter: NetworkBehaviour {
     }
 
     // -- commands --
+    /// start simulating this character
+    public void StartSimulating() {
+    }
+
+    /// stop simulating this character
+    public void StopSimulating() {
+    }
+
     /// wrap the character from the bottom -> top of the world, if necessary
     void Wrap() {
         // if we don't have authority, do nothing
@@ -129,6 +148,18 @@ sealed class OnlineCharacter: NetworkBehaviour {
         netIdentity.AssignClientAuthority(NetworkServer.localConnection);
     }
 
+    // -- props/hot --
+    /// if the character is perceived
+    public bool IsPerceived {
+        get => m_IsPerceived;
+        set {
+            if (m_IsPerceived != value) {
+                m_IsPerceived = value;
+                OnIsPerceivedChanged();
+            }
+        }
+    }
+
     // -- queries --
     /// if this character is available
     public bool IsAvailable {
@@ -149,6 +180,13 @@ sealed class OnlineCharacter: NetworkBehaviour {
     #endif
 
     // -- events --
+    /// when the perceived state changes
+    void OnIsPerceivedChanged() {
+        m_Music.SetActive(m_IsPerceived);
+        // TODO: if not host, also stop simulating characters that aren't perceived
+    }
+
+    // -- e/client
     void Client_OnStateReceived(CharacterState.Frame src, CharacterState.Frame dst) {
         // ignore state if we have authority
         if (hasAuthority) {
