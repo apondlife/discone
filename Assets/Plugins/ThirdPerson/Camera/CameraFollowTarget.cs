@@ -46,10 +46,10 @@ public class CameraFollowTarget : MonoBehaviour {
 
     // -- props --
     /// the current yaw relative to the zero dir
-    float m_Yaw = 0;
+    float m_Yaw = 0.0f;
 
     /// the current pitch
-    float m_Pitch = 0;
+    float m_Pitch = 0.0f;
 
     /// the direction for zero yaw
     Vector3 m_ZeroYawDir;
@@ -79,13 +79,11 @@ public class CameraFollowTarget : MonoBehaviour {
         var yawDir = Mathf.Sign(yawAngle);
         var yawMag = Mathf.Abs(yawAngle);
 
-        // we want to rotate around the character's up axis, to maintain the distance
-
         // check if the character has been idle for long enough
-        var yawSpeed =
-            m_State.IdleTime > m_Recenter_IdleTime
-                ? Mathf.Lerp(0, m_Recenter_YawSpeed, m_Recenter_YawCurve.Evaluate(yawMag / 180.0f))
-                : Mathf.Lerp(0, m_YawSpeed, m_YawCurve.Evaluate(yawMag / 180.0f));
+        var yawSpeed = m_State.IdleTime > m_Recenter_IdleTime
+            ? Mathf.Lerp(0, m_Recenter_YawSpeed, m_Recenter_YawCurve.Evaluate(yawMag / 180.0f))
+            : Mathf.Lerp(0, m_YawSpeed, m_YawCurve.Evaluate(yawMag / 180.0f));
+
         var yawDelta = yawDir * yawSpeed * Time.deltaTime;
         var yaw = Mathf.MoveTowardsAngle(m_Yaw, m_Yaw + yawDelta, yawMag);
         var yawRot = Quaternion.AngleAxis(yaw, Vector3.up);

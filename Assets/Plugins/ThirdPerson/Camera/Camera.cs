@@ -11,11 +11,6 @@ public sealed class Camera: MonoBehaviour {
     [Tooltip("the cinemachine camera")]
     [SerializeField] CinemachineVirtualCamera m_Camera;
 
-    // -- hacks --
-    [Header("hacks")]
-    [Tooltip("the recenter action")]
-    [SerializeField] InputActionReference m_Recenter;
-
     // -- props --
     /// the character's current state
     CharacterState m_State;
@@ -24,26 +19,11 @@ public sealed class Camera: MonoBehaviour {
     CharacterTunablesBase m_Tunables;
 
     // -- lifecycle --
-    void Awake() {
-    }
-
     void Start() {
         // set deps
         var character = GetComponentInParent<Character>();
         m_State = character.State;
         m_Tunables = character.Tunables;
-
-        // set initial damping
-        SetDamping(m_Tunables.Damping);
-    }
-
-    void Update() {
-        var recenter = m_Recenter.action;
-        if (recenter.WasPressedThisFrame()) {
-            SetDamping(m_Tunables.FastDamping);
-        } else if (recenter.WasReleasedThisFrame()) {
-            SetDamping(m_Tunables.Damping);
-        }
     }
 
     void FixedUpdate() {
@@ -65,11 +45,6 @@ public sealed class Camera: MonoBehaviour {
             tilt * m_Tunables.DutchScale,
             m_Tunables.DutchSmoothing
         );
-    }
-
-    // -- commands --
-    /// set the camera's yaw damping to control recentering speed (lower is faster)
-    void SetDamping(float damping) {
     }
 }
 

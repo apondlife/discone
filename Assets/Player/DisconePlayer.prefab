@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5395824357718612107}
   - component: {fileID: 2087496062607543009}
-  - component: {fileID: 2672670865356377172}
   m_Layer: 0
   m_Name: UselessCamera
   m_TagString: Untagged
@@ -76,14 +75,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &2672670865356377172
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 34794128543102416}
-  m_Enabled: 1
 --- !u!1 &926867812887982162
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,6 +150,65 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!1 &2541381794746075499
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4174218972569985137}
+  - component: {fileID: 2851129947434278236}
+  - component: {fileID: 1875264780798432568}
+  m_Layer: 11
+  m_Name: Perception
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4174218972569985137
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2541381794746075499}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2221735472310936064}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2851129947434278236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2541381794746075499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 390002ee3bd7445d1b740bed48499e3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Collider: {fileID: 1875264780798432568}
+--- !u!135 &1875264780798432568
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2541381794746075499}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 500
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3648003501874756158
 GameObject:
   m_ObjectHideFlags: 0
@@ -4991,7 +5041,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9071458443034765547}
   - component: {fileID: 1039892473557440476}
-  - component: {fileID: 3287238004649583012}
   m_Layer: 0
   m_Name: SkyboxCam
   m_TagString: Untagged
@@ -5045,7 +5094,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: f3838b90b6c3cb948ab1c46b3fec11aa, type: 2}
   m_TargetDisplay: 0
@@ -5057,14 +5106,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &3287238004649583012
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3855645309635599082}
-  m_Enabled: 1
 --- !u!1001 &1629207476000309594
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5206,22 +5247,6 @@ PrefabInstance:
       value: -36.87
       objectReference: {fileID: 0}
     - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
@@ -5249,6 +5274,10 @@ PrefabInstance:
       propertyPath: m_TargetTexture
       value: 
       objectReference: {fileID: 8400000, guid: 3e9b166e85c9d1145813b99f63c87b00, type: 2}
+    - target: {fileID: 8363059297454598032, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 2147484663
+      objectReference: {fileID: 0}
     - target: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1120.319
@@ -5314,6 +5343,13 @@ MonoBehaviour:
   m_DriveStop: {fileID: 11400000, guid: a20131d6441f0476d85d19e4e9f1c56b, type: 2}
   m_IsDialogueActiveChanged: {fileID: 11400000, guid: e9934c9706c7948238d271c8498ab275, type: 2}
   m_InputSource: {fileID: 2221735472539933566}
+  m_Camera: {fileID: 6394791424242754204}
+  m_FarClipPlane:
+    _usage: 1
+    _value: 0
+    _constant: {fileID: 11400000, guid: 49193c1bd8230472ebbaecba2376517f, type: 2}
+    _variable: {fileID: 0}
+    _variableInstancer: {fileID: 0}
 --- !u!114 &4035751057648511154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5452,5 +5488,10 @@ MonoBehaviour:
 --- !u!4 &6083958641782784743 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
+  m_PrefabInstance: {fileID: 3220446418401166604}
+  m_PrefabAsset: {fileID: 0}
+--- !u!20 &6394791424242754204 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 8363059297454598032, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
   m_PrefabInstance: {fileID: 3220446418401166604}
   m_PrefabAsset: {fileID: 0}
