@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5395824357718612107}
   - component: {fileID: 2087496062607543009}
-  - component: {fileID: 2672670865356377172}
   m_Layer: 0
   m_Name: UselessCamera
   m_TagString: Untagged
@@ -76,14 +75,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &2672670865356377172
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 34794128543102416}
-  m_Enabled: 1
 --- !u!1 &926867812887982162
 GameObject:
   m_ObjectHideFlags: 0
@@ -5050,7 +5041,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9071458443034765547}
   - component: {fileID: 1039892473557440476}
-  - component: {fileID: 3287238004649583012}
   m_Layer: 0
   m_Name: SkyboxCam
   m_TagString: Untagged
@@ -5116,14 +5106,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &3287238004649583012
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3855645309635599082}
-  m_Enabled: 1
 --- !u!1001 &1629207476000309594
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5263,22 +5245,6 @@ PrefabInstance:
     - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalPosition.z
       value: -36.87
-      objectReference: {fileID: 0}
-    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
