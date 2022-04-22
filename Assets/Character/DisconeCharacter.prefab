@@ -67,6 +67,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DisconeCharacter
       objectReference: {fileID: 0}
+    - target: {fileID: 7614967429340073447, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_TagString
+      value: Character
+      objectReference: {fileID: 0}
     - target: {fileID: 7614967429340073450, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_Controller.m_GroundedGravity
       value: 0.042
@@ -156,6 +160,8 @@ MonoBehaviour:
     IsOnWall: 0
     Tilt: {x: 0, y: 0, z: 0, w: 1}
     JumpSquatFrame: -1
+    IdleTime: 0
+  m_Music: {fileID: 1029445836574466050}
 --- !u!114 &1731996866325999123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,10 +276,15 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
     - target: {fileID: 5077628810954296242, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
       propertyPath: m_Name
-      value: Sound
+      value: Music
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+--- !u!1 &1029445836574466050 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5077628810954296242, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+  m_PrefabInstance: {fileID: 5205614750460734384}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6292055739539103624
 PrefabInstance:
   m_ObjectHideFlags: 0

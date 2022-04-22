@@ -13,7 +13,7 @@ sealed class IdleSystem: CharacterSystem {
         return Idle;
     }
 
-    // -- Idle --
+    // -- NotIdle --
     CharacterPhase NotIdle => new CharacterPhase(
         name: "NotIdle",
         update: NotIdle_Update,
@@ -21,17 +21,16 @@ sealed class IdleSystem: CharacterSystem {
     );
 
     void NotIdle_Enter() {
-        m_State.IdleTime = 0;
+        m_State.IdleTime = 0.0f;
     }
 
     void NotIdle_Update() {
-        Debug.Log($"not idle, {m_State.Velocity}, {m_State.VerticalSpeed}, {m_State.PlanarVelocity}");
-        if(m_State.Velocity.sqrMagnitude <= 0.1f) {
+        if (m_State.Velocity.sqrMagnitude <= 0.1f) {
            ChangeTo(Idle);
         }
     }
 
-    // -- Airborne --
+    // -- Idle --
     CharacterPhase Idle => new CharacterPhase(
         name: "Idle",
         update: Idle_Update
@@ -39,8 +38,8 @@ sealed class IdleSystem: CharacterSystem {
 
     void Idle_Update() {
         m_State.IdleTime += Time.deltaTime;
-        //Debug.Log("idle");
-        if(m_State.Velocity.sqrMagnitude > 0.1f) {
+
+        if (m_State.Velocity.sqrMagnitude > 0.1f) {
            ChangeTo(NotIdle);
         }
     }

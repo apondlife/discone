@@ -20,6 +20,9 @@ sealed class DisconePlayer: MonoBehaviour {
     [Tooltip("the input source")]
     [SerializeField] PlayerInputSource m_InputSource;
 
+    [Tooltip("the distance to the far clip plane")]
+    [SerializeField] FloatReference m_FarClipPlane;
+
     // -- props --
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
@@ -31,6 +34,12 @@ sealed class DisconePlayer: MonoBehaviour {
             .Add(m_DriveStart, OnDriveStart)
             .Add(m_DriveStop, OnDriveStop)
             .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
+
+        // configure cameras
+        var cameras = GetComponentsInChildren<UnityEngine.Camera>();
+        foreach (var camera in cameras) {
+            camera.farClipPlane = m_FarClipPlane.Value;
+        }
     }
 
     void OnDestroy() {
