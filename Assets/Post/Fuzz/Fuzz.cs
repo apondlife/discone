@@ -9,7 +9,6 @@ public class Fuzz: MonoBehaviour {
     [Header("config")]
     [Tooltip("the post-processing material (shader)")]
     [SerializeField] Material m_Material;
-    [SerializeField] RenderTexture m_Texture;
 
     // -- lifecycle --
     void Awake() {
