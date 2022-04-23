@@ -54,7 +54,7 @@ public class VertexAttributeModifier : MonoBehaviour
         m_TextComponent = GetComponent<TMP_Text>();
     }
 
-//    [Button("Play")]
+    // [Button("Play")]
     private void Play()
     {
         PlayAnimation(MeshAnimationMode);
