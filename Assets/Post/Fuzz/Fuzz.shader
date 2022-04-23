@@ -12,8 +12,6 @@ Shader "Image/Fuzz" {
         _DissolveBand ("Dissolve Band", Range(0, 1.0)) = 0.1
 
         _FuzzOffset ("Fuzz Offset", float) = 0.1
-        _ConvolutionOffsetX ("Convolution Offset X", Range(-1.0, 1.0)) = 0.0
-        _ConvolutionOffsetY ("Convolution Offset Y", Range(-1.0, 1.0)) = 0.0
         _ConvolutionDelta ("Convolution Delta", Range(0, 1.0)) = 0.1
         _HueScale ("Hue Scale", Range(0, 1.0)) = 0.1
         _SaturationScale ("Saturation Scale", Range(0, 1.0)) = 0.1
@@ -94,8 +92,6 @@ Shader "Image/Fuzz" {
             float _DissolveDepth;
 
             float _FuzzOffset;
-            float _ConvolutionOffsetX;
-            float _ConvolutionOffsetY;
 
             // the fragment distance for convolution
             float _ConvolutionDelta;
@@ -143,7 +139,7 @@ Shader "Image/Fuzz" {
 
                 float3 colavg = float3(0.0f, 0.0f, 0.0f);
                 float3 hsvavg = float3(0.0f, 0.0f, 0.0f);
-                float2 offset = float2(-_ConvolutionDelta/2.0f, -_ConvolutionDelta/2.0f);
+                float2 offset = float2(-_ConvolutionDelta, -_ConvolutionDelta);
 
                 for (int j = 0; j < 9; j++) {
                     int x = j % 3;
@@ -178,10 +174,11 @@ Shader "Image/Fuzz" {
                 // lookup depth and normal at uv
                 float sobel_c = sqrt(conv_ch * conv_ch + conv_cv * conv_cv);
                 float sobel_d = sqrt(conv_dh * conv_dh + conv_dv * conv_dv);
-                float sobel = max(sobel_c, sobel_d);
+                float sobel = sobel_c * sobel_d;
 
                 // noise shit up
-                float4 other_col = tex2D(_MainTex, i.uv + float2(Rand(i.uv) - 0.5, Rand(i.uv + 0.69f) - 0.5) * _FuzzOffset);
+                float3 other_col = tex2D(_MainTex, i.uv + normalize(dn0.normal.xy) * _FuzzOffset).rgb;
+                // float4 other_col = tex2D(_MainTex, i.uv + float2(Rand(i.uv) - 0.5, Rand(i.uv + 0.69f) - 0.5) * _FuzzOffset);
                 // float4 other_col = tex2D(_MainTex, i.uv + float2(tex2D(_Texture, i.uv).r - 0.5, tex2D(_Texture, i.uv + 0.69f).r - 0.5) * _FuzzOffset);
 
                 // col = lerp(col, colavg, sobel);
@@ -195,9 +192,13 @@ Shader "Image/Fuzz" {
                 // col = lerp()
                 // col = IntoRgb(float3(hsv2.x, hsv2.y, hsv.z));
                 // hsv.x = lerp(hsv.x, hue, sobel);
-                // return float4(lerp(col, lerp(col, other_col, sobel), step(tex2D(_Texture, i.uv).r, sobel)), 1.0f);
-                return float4(lerp(col, other_col, step(tex2D(_Texture, i.uv).r, sobel)), 1.0f);
-                return float4(col, 1.0f);
+                // return float4(other_col.r, col.r, 0.0f, 1.0f);
+                return float4(normalize(dn0.normal.xy), 0.0f, 1.0f);
+                return float4(lerp(col, other_col, sobel * step(Rand(i.uv), 0.5f)), 1.0f);
+                return float4(lerp(col, lerp(col, other_col, sobel), sobel*step(Rand(i.uv), 0.5f)), 1.0f);
+                // return float4(lerp(col, lerp(col, other_col, Rand(i.uv + 0.24f)), step(0.2f, sobel)), 1.0f);
+                // return float4(lerp(col, other_col, step(tex2D(_Texture, i.uv).r, sobel)), 1.0f);
+                return float4(sobel+col.r, col.g, col.b, 1.0f);
                 return float4(sobel, sobel, sobel, 1.0f);
                 // return float4(abs(conv_dh), 0.0f, abs(conv_dv), 1.0f);
                 // return float4(conv_dh + 0.5f, 0.0f, conv_dv + 0.5f, 1.0f);
