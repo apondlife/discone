@@ -9911,24 +9911,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1061133086809451152}
     - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_YawSpeed
-      value: 56
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_IdleTime
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawSpeed
-      value: 80
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_YawRecenterCurve.m_Curve.Array.size
       value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.size
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_YawRecenterCurve.m_Curve.Array.data[1].time
@@ -9947,20 +9931,8 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[1].time
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_YawRecenterCurve.m_Curve.Array.data[2].value
       value: 1.0044463
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[0].value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[1].value
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_YawRecenterCurve.m_Curve.Array.data[0].inSlope
@@ -9973,14 +9945,6 @@ PrefabInstance:
     - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_YawRecenterCurve.m_Curve.Array.data[3].inSlope
       value: -0.06780722
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[0].inSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[1].inSlope
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_YawRecenterCurve.m_Curve.Array.data[0].inWeight
@@ -10011,22 +9975,6 @@ PrefabInstance:
       value: 0.547909
       objectReference: {fileID: 0}
     - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[0].inWeight
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[0].outSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[1].inWeight
-      value: 0.15103072
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[1].outSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_YawRecenterCurve.m_Curve.Array.data[0].outWeight
       value: 0.0978628
       objectReference: {fileID: 0}
@@ -10040,14 +9988,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_YawRecenterCurve.m_Curve.Array.data[4].outWeight
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[0].outWeight
-      value: 0.052630637
-      objectReference: {fileID: 0}
-    - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-      propertyPath: m_Recenter_YawCurve.m_Curve.Array.data[1].outWeight
       value: 0.33333334
       objectReference: {fileID: 0}
     - target: {fileID: 3025936753336903602, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
@@ -10084,7 +10024,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.00001001358
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalPosition.y
@@ -10092,7 +10032,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: -10.000044
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10100,15 +10040,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.08207173
+      value: -0.08207192
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000016974182
+      value: 0.0000004172325
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.000000001397816
+      value: 0.000000035390258
       objectReference: {fileID: 0}
     - target: {fileID: 5258442826006515759, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_Icon
@@ -10162,6 +10102,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7545719702053008949, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
+      propertyPath: m_GroundLayers.m_Bits
+      value: 385
+      objectReference: {fileID: 0}
     - target: {fileID: 7821159961700856696, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_Name
       value: Follow
@@ -10201,39 +10145,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7545719702053008949, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
   m_PrefabInstance: {fileID: 4801873552238145184}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3760618876817645504}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0cce15f68687b342b161d35ac99ba14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &3760618876817645504 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8544393354180784480, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-  m_PrefabInstance: {fileID: 4801873552238145184}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &8561073781885561511
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3760618876817645504}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0cce15f68687b342b161d35ac99ba14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_MaxDistance: 20
-  m_GroundLayers:
-    serializedVersion: 2
-    m_Bits: 385
-  m_Target: {fileID: 5081405195371850226}
---- !u!4 &5081405195371850226 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 299324000264898386, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
-  m_PrefabInstance: {fileID: 4801873552238145184}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7238456180043233938
 PrefabInstance:
   m_ObjectHideFlags: 0
