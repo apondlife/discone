@@ -24,7 +24,8 @@ public class NewDialogueView : DialogueViewBase
 
     LocalizedLine currentLine = null;
 
-    TextShakeChars textAnimator;
+    //TextShakeChars textAnimator;
+    VertexAttributeModifier textAnimator;
 
     // -- events --
     [Header("events")]
@@ -33,7 +34,7 @@ public class NewDialogueView : DialogueViewBase
 
     // -- lifecycle --
     void Start() {
-        textAnimator = GetComponent<TextShakeChars>();
+        //textAnimator = GetComponent<TextShakeChars>();
         canvasGroup.alpha = 0;
     }
 
@@ -62,9 +63,9 @@ public class NewDialogueView : DialogueViewBase
         //lineText.text = dialogueLine.TextWithoutCharacterName.Text;
         lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
 
-
+        // textAnimator.StartShakeText(lineText, 2, 10);
         
-        StartCoroutine(AnimateColors());
+        //StartCoroutine(AnimateColors());
 
         // Immediately appear
         canvasGroup.interactable = true;
