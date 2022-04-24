@@ -128,7 +128,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4801873551099959023}
-  m_LocalRotation: {x: -0.7009091, y: 0.00050343544, z: 0.0004947246, w: 0.71325034}
+  m_LocalRotation: {x: -0.70090914, y: 0.0004196997, z: 0.00041243774, w: 0.71325034}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -266,8 +266,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4801873551099959025}
-  - {fileID: 3497060394157475409}
   - {fileID: 2705787981773572327}
+  - {fileID: 3497060394157475409}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -284,7 +284,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Camera: {fileID: 4801873551099959024}
-  m_Recenter: {fileID: 8933728331239388776, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
 --- !u!1 &7821159961700856696
 GameObject:
   m_ObjectHideFlags: 0
@@ -316,7 +315,7 @@ Transform:
   m_Children:
   - {fileID: 8096046607654868996}
   m_Father: {fileID: 6946443411796736371}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3025936753336903602
 MonoBehaviour:
@@ -382,12 +381,42 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_MaxYawSpeed: 80
+  m_YawSpeed: 30
   m_MinPitch: 25.5
   m_MaxPitch: 60
+  m_FreeLook_YawSpeed: 45
+  m_FreeLook_PitchSpeed: 45
+  m_FreeLook_Timeout: 3
+  m_Recenter_IdleTime: 0.7
+  m_Recenter_YawSpeed: 80
+  m_Recenter_YawCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.052630637
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.15103072
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   m_Model: {fileID: 0}
   m_LookAtTarget: {fileID: 7545719702053008949}
   m_Target: {fileID: 8096046607654868996}
+  m_FreeLook: {fileID: 4626327253638621584, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
 --- !u!1 &8544393354180784480
 GameObject:
   m_ObjectHideFlags: 0
@@ -419,7 +448,7 @@ Transform:
   m_Children:
   - {fileID: 299324000264898386}
   m_Father: {fileID: 6946443411796736371}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7545719702053008949
 MonoBehaviour:

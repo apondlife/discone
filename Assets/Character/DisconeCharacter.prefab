@@ -51,6 +51,10 @@ PrefabInstance:
       propertyPath: m_GroundLayers.m_Bits
       value: 385
       objectReference: {fileID: 0}
+    - target: {fileID: 6542079319371145381, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_Name
+      value: LookAtTarget
+      objectReference: {fileID: 0}
     - target: {fileID: 7614967428711631637, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_AvoidObstacles
       value: 1
@@ -118,6 +122,14 @@ PrefabInstance:
     - target: {fileID: 7614967429340073451, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7736594804511770898, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_YawCurve.m_Curve.Array.data[2].inSlope
+      value: 0.08988013
+      objectReference: {fileID: 0}
+    - target: {fileID: 7736594804511770898, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_YawCurve.m_Curve.Array.data[2].inWeight
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
