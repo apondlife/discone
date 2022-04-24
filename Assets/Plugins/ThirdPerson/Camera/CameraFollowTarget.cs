@@ -31,6 +31,9 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the speed the free look camera pitches")]
     [SerializeField] float m_FreeLook_PitchSpeed;
 
+    [Tooltip("the minimum pitch when in free look mode")]
+    [SerializeField] float m_FreeLook_MinPitch;
+
     [Tooltip("the delay in seconds after free look when the camera returns to active mode")]
     [SerializeField] float m_FreeLook_Timeout;
 
@@ -111,8 +114,16 @@ public class CameraFollowTarget: MonoBehaviour {
         // run free look camera if active
         if (m_FreeLook_Enabled) {
             var dir = freeLook.ReadValue<Vector2>();
-            m_Yaw += m_FreeLook_YawSpeed * -dir.x * Time.deltaTime;
-            m_Pitch += m_FreeLook_PitchSpeed * dir.y * Time.deltaTime;
+
+            var yaw = m_Yaw;
+            yaw += m_FreeLook_YawSpeed * -dir.x * Time.deltaTime;
+
+            var pitch = m_Pitch;
+            pitch += m_FreeLook_PitchSpeed * dir.y * Time.deltaTime;
+            pitch = Mathf.Max(pitch, m_FreeLook_MinPitch);
+
+            m_Yaw = yaw;
+            m_Pitch = pitch;
         }
         // otherwise, run the active/idle camera
         else {
