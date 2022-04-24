@@ -108,9 +108,6 @@ public class CameraFollowTarget: MonoBehaviour {
         var isFreeLookExpired = time - m_FreeLook_Time > m_FreeLook_Timeout;
         m_FreeLook_Enabled = m_FreeLook_Enabled && isIdle || !isFreeLookExpired;
 
-        // get current position relative to model
-        var p0 = Vector3.ProjectOnPlane(m_Target.position - m_Model.position, Vector3.up);
-
         // run free look camera if active
         if (m_FreeLook_Enabled) {
             var dir = freeLook.ReadValue<Vector2>();
@@ -131,7 +128,7 @@ public class CameraFollowTarget: MonoBehaviour {
             var pt = -Vector3.ProjectOnPlane(m_Model.forward, Vector3.up).normalized * m_Distance;
 
             // get yaw angle between those two positions
-            var yawAngle = Vector3.SignedAngle(p0, pt, Vector3.up);
+            var yawAngle = Vector3.SignedAngle(m_Target.forward, pt, Vector3.up);
             var yawDir = Mathf.Sign(yawAngle);
             var yawMag = Mathf.Abs(yawAngle);
 
@@ -154,13 +151,18 @@ public class CameraFollowTarget: MonoBehaviour {
 
         // rotate yaw
         var yawRot = Quaternion.AngleAxis(m_Yaw, Vector3.up);
+        // calculate new forward from yaw rotation
+        var forward = yawRot * m_ZeroYawDir;
 
         // rotate pitch on the plane containing the target's position and up
-        var pitchAxis = Vector3.Cross(p0, Vector3.up).normalized;
+        var pitchAxis = Vector3.Cross(m_Target.forward, Vector3.up).normalized;
         var pitchRot = Quaternion.AngleAxis(m_Pitch, pitchAxis);
 
         // update target position
-        m_Target.position = m_Model.position + pitchRot * yawRot * m_ZeroYawDir * m_Distance;
+        m_Target.position = m_Model.position + pitchRot * forward * m_Distance;
+
+        // store the forward rotation of the target
+        m_Target.forward = forward;
     }
 
     // -- debug --
