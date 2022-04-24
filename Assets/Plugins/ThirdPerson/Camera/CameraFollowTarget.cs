@@ -31,6 +31,9 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the speed the free look camera pitches")]
     [SerializeField] float m_FreeLook_PitchSpeed;
 
+    [Tooltip("the minimum pitch when in free look mode")]
+    [SerializeField] float m_FreeLook_MinPitch;
+
     [Tooltip("the delay in seconds after free look when the camera returns to active mode")]
     [SerializeField] float m_FreeLook_Timeout;
 
@@ -111,8 +114,16 @@ public class CameraFollowTarget: MonoBehaviour {
         // run free look camera if active
         if (m_FreeLook_Enabled) {
             var dir = freeLook.ReadValue<Vector2>();
-            m_Yaw += m_FreeLook_YawSpeed * -dir.x * Time.deltaTime;
-            m_Pitch += m_FreeLook_PitchSpeed * dir.y * Time.deltaTime;
+
+            var yaw = m_Yaw;
+            yaw += m_FreeLook_YawSpeed * -dir.x * Time.deltaTime;
+
+            var pitch = m_Pitch;
+            pitch += m_FreeLook_PitchSpeed * dir.y * Time.deltaTime;
+            pitch = Mathf.Max(pitch, m_FreeLook_MinPitch);
+
+            m_Yaw = yaw;
+            m_Pitch = pitch;
         }
         // otherwise, run the active/idle camera
         else {
@@ -147,6 +158,7 @@ public class CameraFollowTarget: MonoBehaviour {
         // rotate pitch on the plane containing the target's position and up
         var pitchAxis = Vector3.Cross(p0, Vector3.up).normalized;
         var pitchRot = Quaternion.AngleAxis(m_Pitch, pitchAxis);
+        // Debug.Log($"pitch {m_Pitch} axis {pitchAxis}");
 
         // update target position
         m_Target.position = m_Model.position + pitchRot * yawRot * m_ZeroYawDir * m_Distance;
@@ -154,11 +166,19 @@ public class CameraFollowTarget: MonoBehaviour {
 
     // -- debug --
     void OnDrawGizmos() {
+        var p0 = Vector3.ProjectOnPlane(m_Target.position, Vector3.up);
         var pt = m_Model.position - Vector3.ProjectOnPlane(m_Model.forward, Vector3.up).normalized * m_Distance;
+        var pa = p0 + Vector3.Cross(p0, Vector3.up).normalized * 2.0f;
+
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(m_Model.position, 0.1f);
-        Gizmos.DrawSphere(pt, 0.1f);
         Gizmos.DrawLine(pt, m_Target.position);
+        Gizmos.DrawSphere(pt, 0.1f);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(p0, 0.1f);
+        Gizmos.DrawLine(p0, pa);
+        Gizmos.DrawSphere(pa, 0.1f);
     }
 }
 
