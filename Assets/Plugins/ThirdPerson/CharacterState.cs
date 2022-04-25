@@ -145,6 +145,11 @@ public sealed class CharacterState {
         }
     }
 
+    /// the character's ground collision
+    public CharacterCollision GroundCollision {
+        get => m_Frames[0].GroundCollision;
+    }
+
     // -- types --
     /// a single frame of character state
     [Serializable]
@@ -224,6 +229,11 @@ public sealed class CharacterState {
             get {
                 return Tilt * Quaternion.LookRotation(FacingDirection, Up);
             }
+        }
+
+        /// the character's ground collision
+        public CharacterCollision GroundCollision {
+            get => Collision;
         }
 
         // -- IEquatable --

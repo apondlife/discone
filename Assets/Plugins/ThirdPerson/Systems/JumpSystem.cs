@@ -17,14 +17,6 @@ sealed class JumpSystem: CharacterSystem {
         return NotJumping;
     }
 
-    // -- lifecycle --
-    public override void Update() {
-        base.Update();
-
-        // always add gravity
-        AddGravity();
-    }
-
     // -- NotJumping --
     CharacterPhase NotJumping => new CharacterPhase(
         name: "NotJumping",
@@ -190,11 +182,6 @@ sealed class JumpSystem: CharacterSystem {
             ChangeTo(NotJumping);
             return;
         }
-    }
-
-    // -- commands --
-    void AddGravity() {
-        m_State.Velocity += m_Tunables.Gravity * Time.deltaTime * Vector3.up;
     }
 }
 

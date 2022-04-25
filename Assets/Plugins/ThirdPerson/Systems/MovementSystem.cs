@@ -32,13 +32,15 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // calculate next velocity, integrating drag
-        var v0 = m_State.PlanarVelocity;
+        var v0 = Vector3.ProjectOnPlane(m_State.Velocity, m_State.GroundCollision.Normal);
+        var vn = m_State.Velocity - v0;
+
         if (v0.sqrMagnitude != 0.0f) {
             var d0 = v0 * m_Tunables.Deceleration;
             var vt = v0 - d0 * Time.deltaTime;
 
             // update planar velocity
-            m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
+            m_State.Velocity = vt + vn;
         }
     }
 
@@ -80,17 +82,24 @@ sealed class MovementSystem: CharacterSystem {
 
         // calculate next velocity, integrating input & drag
         // vt = v0 + (input acceleration - drag - turning friction) * t
-        var v0 = m_State.PlanarVelocity;
-        var ai = m_Tunables.Acceleration * dirInput.magnitude * m_State.FacingDirection;
+        var v0 = Vector3.ProjectOnPlane(m_State.Velocity, m_State.GroundCollision.Normal);
+
+        // the remainder of the velocity, non-projected
+        var vn = m_State.Velocity - v0;
+
+        // the direction along the ground the character is moving towards
+        var groundTangent = Vector3.ProjectOnPlane(m_State.FacingDirection, m_State.GroundCollision.Normal).normalized;
+
+        var ai = m_Tunables.Acceleration * dirInput.magnitude * groundTangent;
         var cf = hasInput ? m_Tunables.TurningFriction * (1.0f - Mathf.Abs(Vector3.Dot(v0.normalized, ai.normalized))) : 0.0f;
         var d0 = v0 * (m_Tunables.Deceleration + cf);
         var vt = v0 + (ai - d0) * Time.deltaTime;
 
         // update planar velocity
-        m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
+        m_State.Velocity = vt + vn;// + m_State.Velocity.y * Vector3.up;
 
         // once speed is zero, stop moving
-        if(!hasInput && m_State.PlanarVelocity.magnitude < m_Tunables.MinPlanarSpeed) {
+        if (!hasInput && vt.magnitude < m_Tunables.MinPlanarSpeed) {
             ChangeTo(NotMoving);
         }
     }
@@ -126,14 +135,15 @@ sealed class MovementSystem: CharacterSystem {
         m_State.SetProjectedFacingDirection(dirFacing);
 
         // calculate next velocity, decelerating towards zero to finish pivot
-        var v0 = m_State.PlanarVelocity;
+        var v0 = Vector3.ProjectOnPlane(m_State.Velocity, m_State.GroundCollision.Normal);
+        var vn = m_State.Velocity - v0;
         var vt = v0 - Mathf.Min(v0.magnitude, m_Tunables.PivotDeceleration * Time.deltaTime) * v0.normalized;
 
         // update planar velociy
-        m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
+        m_State.Velocity = vt + vn;
 
         // if the character has stopped, switch to not moving
-        if(vt.sqrMagnitude == 0.0f) {
+        if (vt.sqrMagnitude == 0.0f) {
             ChangeTo(NotMoving);
             return;
         }

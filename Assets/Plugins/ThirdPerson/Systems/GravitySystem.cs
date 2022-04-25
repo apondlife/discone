@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace ThirdPerson {
 
 /// how the character is affected by gravity
@@ -21,6 +23,18 @@ sealed class GravitySystem: CharacterSystem {
         if (!m_State.IsGrounded) {
             ChangeTo(Airborne);
         }
+
+        // the normal force of the floor
+        var v = m_State.Velocity;
+        v += m_Tunables.Gravity * Time.deltaTime * Vector3.up;
+        v += -Vector3.Project(m_Tunables.Gravity * Time.deltaTime * Vector3.up, m_State.GroundCollision.Normal);
+        // v += Vector3.Project(v, m_State.GroundCollision.Normal);
+        // tiny force that keeps you grounded;
+        v -= 0.1f * m_State.GroundCollision.Normal;
+
+        m_State.Velocity = v;
+        Debug.Log($"We are grounded {m_State.Velocity.y}");
+
         SetGrounded();
     }
 
@@ -35,6 +49,8 @@ sealed class GravitySystem: CharacterSystem {
             ChangeTo(Grounded);
         }
 
+        m_State.Velocity += m_Tunables.Gravity * Time.deltaTime * Vector3.up;
+        Debug.Log($"We are flying {m_State.Velocity.y}");
         SetGrounded();
     }
 
