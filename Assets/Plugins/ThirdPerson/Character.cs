@@ -85,7 +85,7 @@ public partial class Character: MonoBehaviour {
         }
 
         // sync controller state back to character state
-        m_State.SetVelocity(m_Controller.Velocity);
+        m_State.Velocity = m_Controller.Velocity;
         m_State.Position = transform.position;
     }
 

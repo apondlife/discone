@@ -37,7 +37,7 @@ sealed class JumpSystem: CharacterSystem {
             return;
         }
 
-        if (!m_State.IsGrounded && m_State.VerticalSpeed < 0.0f)  {
+        if (!m_State.IsGrounded && m_State.Velocity.y < 0.0f)  {
             m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
             ChangeTo(Falling);
             return;
@@ -60,7 +60,7 @@ sealed class JumpSystem: CharacterSystem {
     void JumpSquat_Update() {
         // apply fall acceleration if not grounded
         if (!m_State.IsGrounded && !m_State.IsOnWall) {
-            m_State.VerticalSpeed += m_Tunables.FallAcceleration * Time.deltaTime;
+            m_State.Velocity += m_Tunables.FallAcceleration * Time.deltaTime * Vector3.up;
         }
 
         // jump if jump was released or jump squat ended
@@ -128,8 +128,11 @@ sealed class JumpSystem: CharacterSystem {
         );
 
         // cancel downwards momentum and apply initial jump
-        m_State.VerticalSpeed = Mathf.Max(m_State.VerticalSpeed, 0.0f) + verticalSpeed;
-        m_State.SetProjectedPlanarVelocity(m_State.PlanarVelocity + m_State.FacingDirection * planarSpeed);
+        var v = m_State.Velocity;
+        v += (Mathf.Max(m_State.Velocity.y, 0.0f) + verticalSpeed) * Vector3.up;
+        v += m_State.FacingDirection * planarSpeed;
+
+        m_State.Velocity = v;
         m_State.IsInJumpStart = true;
     }
 
@@ -140,7 +143,7 @@ sealed class JumpSystem: CharacterSystem {
 
         // apply jump acceleration while holding jump
         if (m_Input.IsJumpPressed) {
-            m_State.VerticalSpeed += m_Tunables.JumpAcceleration * Time.deltaTime;
+            m_State.Velocity += m_Tunables.JumpAcceleration * Time.deltaTime * Vector3.up;
         }
 
         // transition out of jump
@@ -149,7 +152,7 @@ sealed class JumpSystem: CharacterSystem {
             return;
         }
 
-        if (m_State.VerticalSpeed < 0.0f) {
+        if (m_State.Velocity.y < 0.0f) {
             m_CoyoteFrames = 0;
             ChangeTo(Falling);
             return;
@@ -166,7 +169,7 @@ sealed class JumpSystem: CharacterSystem {
         // apply fall acceleration while holding jump
         // TODO: is this bad?
         if (m_Input.IsJumpPressed && !m_State.IsOnWall) {
-            m_State.VerticalSpeed += m_Tunables.FallAcceleration * Time.deltaTime;
+            m_State.Velocity += m_Tunables.FallAcceleration * Time.deltaTime * Vector3.up;
         }
 
         // count coyote frames
@@ -191,7 +194,7 @@ sealed class JumpSystem: CharacterSystem {
 
     // -- commands --
     void AddGravity() {
-        m_State.VerticalSpeed += m_Tunables.Gravity * Time.deltaTime;
+        m_State.Velocity += m_Tunables.Gravity * Time.deltaTime * Vector3.up;
     }
 }
 

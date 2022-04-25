@@ -35,7 +35,7 @@ sealed partial class Character {
         }
 
         // draw state labels
-        DrawLabel($"vy{m_State.VerticalSpeed}");
+        DrawLabel($"vy{m_State.Velocity.y}");
 
         if(m_State.IsInJumpSquat) {
             DrawLabel("JumpSquat");
