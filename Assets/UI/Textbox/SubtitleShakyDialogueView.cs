@@ -5,7 +5,7 @@ using Yarn.Markup;
 using TMPro;
 using UnityAtoms.BaseAtoms;
 
-public class IvanDialogueView : DialogueViewBase
+public class SubtitleShakyDialogueView : DialogueViewBase
 {
 
     [SerializeField]
@@ -13,13 +13,6 @@ public class IvanDialogueView : DialogueViewBase
 
     [SerializeField]
     internal TextMeshProUGUI lineText = null;
-
-    [SerializeField]
-    internal bool inlineCharacterName = true;
-
-
-    [SerializeField]
-    internal TextMeshProUGUI characterNameText = null;
 
     LocalizedLine currentLine = null;
 
@@ -45,25 +38,12 @@ public class IvanDialogueView : DialogueViewBase
         lineText.gameObject.SetActive(true);
         canvasGroup.gameObject.SetActive(true);
 
-        if (inlineCharacterName) {
-            characterNameText.text = "";
-            lineText.text = dialogueLine.Text.Text;
+        lineText.text = dialogueLine.Text.Text;
 
-            // This is where i would do animations... if i had any!!!
-            foreach (MarkupAttribute attr in dialogueLine.Text.Attributes) {
-                if (attr.Name == "shake") {
-                    textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
-                }
-            }
-        }
-        else {
-            characterNameText.text = dialogueLine.CharacterName;
-            lineText.text = dialogueLine.TextWithoutCharacterName.Text;
-
-            foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
-                if (attr.Name == "shake") {
-                    textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
-                }
+        // shake!
+        foreach (MarkupAttribute attr in dialogueLine.Text.Attributes) {
+            if (attr.Name == "shake") {
+                textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
             }
         }
 
