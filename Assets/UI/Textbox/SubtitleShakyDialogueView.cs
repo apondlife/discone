@@ -42,7 +42,7 @@ public class SubtitleShakyDialogueView : DialogueViewBase
 
         // shake!
         foreach (MarkupAttribute attr in dialogueLine.Text.Attributes) {
-            if (attr.Name == "shake") {
+            if (attr.Name == "em") {
                 textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
             }
         }
