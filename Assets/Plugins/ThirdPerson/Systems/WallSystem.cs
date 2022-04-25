@@ -49,7 +49,7 @@ sealed class WallSystem: CharacterSystem {
 
         // calculate initial slide velocity
         var transferred = FindTransferredVelocity(collision.Normal);
-        m_State.VerticalSpeed += transferred.magnitude;
+        m_State.Velocity += transferred.magnitude * Vector3.up;
 
         // update state
         m_State.IsOnWall = true;
@@ -65,11 +65,11 @@ sealed class WallSystem: CharacterSystem {
 
         // transfer velocity
         var transferred = FindTransferredVelocity(collision.Normal);
-        m_State.VerticalSpeed += transferred.magnitude;
+        m_State.Velocity += transferred.magnitude * Vector3.up;
 
         // accelerate while holding button
         if (m_Input.IsHoldingWall) {
-            m_State.VerticalSpeed += m_Tunables.WallAcceleration * Time.deltaTime;
+            m_State.Velocity += m_Tunables.WallAcceleration * Time.deltaTime * Vector3.up;
         }
     }
 
@@ -100,7 +100,7 @@ sealed class WallSystem: CharacterSystem {
     /// find the velocity to transfer to the wall
     Vector3 FindTransferredVelocity(Vector3 normal) {
         normal = Vector3.ProjectOnPlane(normal, Vector3.up).normalized;
-        var transferred = Vector3.Project(m_State.GetFrame(1).PlanarVelocity, normal);
+        var transferred = Vector3.Project(m_State.GetFrame(1).Velocity.XNZ(), normal);
         return transferred;
     }
 }

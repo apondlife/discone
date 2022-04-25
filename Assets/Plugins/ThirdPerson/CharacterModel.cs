@@ -91,7 +91,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         anim.SetFloat(
             "VerticalSpeed",
-            m_State.VerticalSpeed
+            m_State.Velocity.y
         );
     }
 
