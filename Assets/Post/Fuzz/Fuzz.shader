@@ -37,9 +37,6 @@ Shader "Image/Fuzz" {
             #include "../Core/Math.cginc"
             #include "../Core/Color.cginc"
 
-            // -- defines --
-            #define float1 float
-
             // -- constants --
             const float3 k_Right = float3(1.0f, 0.0f, 0.0f);
 

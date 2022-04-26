@@ -141,7 +141,7 @@ public class NewDialogueView : DialogueViewBase
 
         for (int i = 0; i < characterCount; i++) {
             ShowCharacter(randArr[i]);
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.02f);
         }
 
         yield return new WaitForSeconds(0.05f);
