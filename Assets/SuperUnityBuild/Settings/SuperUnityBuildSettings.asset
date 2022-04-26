@@ -58,7 +58,7 @@ MonoBehaviour:
   pathToButlerExe: C:\Users\gusta\AppData\Roaming\itch\apps\butler\butler.exe
   nameOfItchUser: frogfrogforg
   nameOfItchGame: discone
-  useGeneratedBuildVersion: 0
+  useGeneratedBuildVersion: 1
   channelName: $PLATFORM-$ARCHITECTURE
   showUploadProgress: 1
   itchChannelOverride: 
@@ -112,9 +112,9 @@ MonoBehaviour:
     buildPath: $PRODUCT_NAME.$VERSION/$PRODUCT_NAME-$RELEASE_TYPE-$PLATFORM-$ARCHITECTURE
     openFolderPostBuild: 1
   _productParameters:
-    buildCounter: 75
-    buildVersion: 2022.%MONTH.26.75
-    versionTemplate: $YEAR.%MONTH.$DAY.$BUILD
+    buildCounter: 76
+    buildVersion: 2022.%MONTH.26.76
+    versionTemplate: $YEAR.$MONTH.$DAY.$BUILD
     autoGenerate: 1
     syncWithPlayerSettings: 0
   _releaseTypeList:
