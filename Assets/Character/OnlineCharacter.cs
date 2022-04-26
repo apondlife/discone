@@ -31,10 +31,10 @@ sealed class OnlineCharacter: NetworkBehaviour {
     [SerializeField] CharacterState.Frame m_CurrentState;
 
     /// the min y-position the character wraps from
-    const float k_WrapMinY = -2000.0f;
+    const float k_WrapMinY = -200.0f;
 
     /// the max y-position the character wraps to
-    const float k_WrapMaxY = 5000.0f;
+    const float k_WrapMaxY = 6000.0f;
 
     // -- refs --
     [Header("refs")]
@@ -72,6 +72,7 @@ sealed class OnlineCharacter: NetworkBehaviour {
 
     void FixedUpdate() {
         Wrap();
+        SyncState();
     }
 
     // -- l/mirror
@@ -83,14 +84,6 @@ sealed class OnlineCharacter: NetworkBehaviour {
     }
 
     // -- commands --
-    /// start simulating this character
-    public void StartSimulating() {
-    }
-
-    /// stop simulating this character
-    public void StopSimulating() {
-    }
-
     /// wrap the character from the bottom -> top of the world, if necessary
     void Wrap() {
         // if we don't have authority, do nothing

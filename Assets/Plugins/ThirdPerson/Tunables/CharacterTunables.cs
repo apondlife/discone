@@ -152,9 +152,12 @@ public sealed class CharacterTunables: CharacterTunablesBase {
 
     /// the vertical acceleration while holding jump and Walling
     public override float WallAcceleration {
-        get => m_WallGravity - m_Gravity;
+        get => m_WallGravity - m_Gravity + m_FallGravity;
     }
 
+    [Tooltip("the force the wall pull the character to make it stick")]
+    [SerializeField] public float m_WallMagnet;
+    public override float WallMagnet => m_WallMagnet;
     #endregion
 
     #region model / animation

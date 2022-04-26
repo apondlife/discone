@@ -37,9 +37,6 @@ Shader "Image/Fuzz" {
             #include "../Core/Math.cginc"
             #include "../Core/Color.cginc"
 
-            // -- defines --
-            #define float1 float
-
             // -- constants --
             const float3 k_Right = float3(1.0f, 0.0f, 0.0f);
 
@@ -195,10 +192,15 @@ Shader "Image/Fuzz" {
                 // col = lerp()
                 // col = IntoRgb(float3(hsv2.x, hsv2.y, hsv.z));
                 // hsv.x = lerp(hsv.x, hue, sobel);
+
+                // the actual good return value here v
                 // return float4(lerp(col, lerp(col, other_col, sobel), step(tex2D(_Texture, i.uv).r, sobel)), 1.0f);
-                return float4(lerp(col, other_col, step(tex2D(_Texture, i.uv).r, sobel)), 1.0f);
-                return float4(col, 1.0f);
-                return float4(sobel, sobel, sobel, 1.0f);
+                col = lerp(col, other_col, step(tex2D(_Texture, i.uv).r, sobel));
+
+                // some debug values
+                // return float4(lerp(col, other_col, step(tex2D(_Texture, i.uv).r, sobel)), 1.0f);
+                // return float4(col, 1.0f);
+                // return float4(sobel, sobel, sobel, 1.0f);
                 // return float4(abs(conv_dh), 0.0f, abs(conv_dv), 1.0f);
                 // return float4(conv_dh + 0.5f, 0.0f, conv_dv + 0.5f, 1.0f);
 
@@ -217,8 +219,6 @@ Shader "Image/Fuzz" {
                 fuzz *= saturate(dn0.depth * _DepthScale);
                 fuzz *= tex2D(_Texture, i.uv * _TextureScale).r;
 
-
-
                 // fuzz between the base and shifted color
                 col = lerp(col, IntoRgb(hsv), fuzz);
 
@@ -230,7 +230,7 @@ Shader "Image/Fuzz" {
                 // dissolve far away objects
                 float a = 1.0f;
                 float p = saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, dn0.depth));
-                a = step(p, 0.997f * Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
+                a = step(p*p, 0.997f * Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
 
                 return fixed4(col, a);
             }
