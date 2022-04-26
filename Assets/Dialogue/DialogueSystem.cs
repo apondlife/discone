@@ -45,7 +45,7 @@ public class DialogueSystem: MonoBehaviour {
             .Add(m_Complete, OnDialogueComplete);
     }
 
-    private void OnDestroy() {
+    void OnDestroy() {
         // unbind events
         m_Subscriptions.Dispose();
     }

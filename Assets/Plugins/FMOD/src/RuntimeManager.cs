@@ -76,7 +76,7 @@ namespace FMODUnity
             FMOD.StringWrapper file = new FMOD.StringWrapper(filePtr);
             FMOD.StringWrapper func = new FMOD.StringWrapper(funcPtr);
             FMOD.StringWrapper message = new FMOD.StringWrapper(messagePtr);
-            
+
             if (flags == FMOD.DEBUG_FLAGS.ERROR)
             {
                 RuntimeUtils.DebugLogError(string.Format(("[FMOD] {0} : {1}"), (string)func, (string)message));
@@ -608,7 +608,7 @@ retry:
                     break;
                 }
             }
-            
+
             if (force || playInstance != emitter.IsPlaying())
             {
                 if (playInstance)
@@ -1386,8 +1386,8 @@ retry:
         public static void SetListenerLocation(GameObject gameObject, GameObject attenuationObject = null)
         {
             SetListenerLocation(0, gameObject, attenuationObject);
-        }       
-        
+        }
+
         public static void SetListenerLocation(int listenerIndex, GameObject gameObject, GameObject attenuationObject = null)
         {
             if (attenuationObject)
