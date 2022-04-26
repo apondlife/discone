@@ -72,6 +72,7 @@ sealed class OnlineCharacter: NetworkBehaviour {
 
     void FixedUpdate() {
         Wrap();
+        SyncState();
     }
 
     // -- l/mirror
@@ -83,14 +84,6 @@ sealed class OnlineCharacter: NetworkBehaviour {
     }
 
     // -- commands --
-    /// start simulating this character
-    public void StartSimulating() {
-    }
-
-    /// stop simulating this character
-    public void StopSimulating() {
-    }
-
     /// wrap the character from the bottom -> top of the world, if necessary
     void Wrap() {
         // if we don't have authority, do nothing
