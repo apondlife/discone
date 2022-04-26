@@ -21,6 +21,7 @@ sealed class GravitySystem: CharacterSystem {
         if (!m_State.IsGrounded) {
             ChangeTo(Airborne);
         }
+
         SetGrounded();
     }
 

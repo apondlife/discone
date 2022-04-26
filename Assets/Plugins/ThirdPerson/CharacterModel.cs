@@ -117,7 +117,7 @@ public sealed class CharacterModel: MonoBehaviour {
             targetScale = (1.0f + sign * Mathf.Abs(m_State.Acceleration.y) * VerticalAccelerationStretch);
         }
 
-        m_CurrentSquashStretch = Mathf.Lerp(m_CurrentSquashStretch, targetScale, StretchAndSquashLerp);
+        m_CurrentSquashStretch = Mathf.MoveTowards(m_CurrentSquashStretch, targetScale, StretchAndSquashLerp);
         m_CurrentSquashStretch = Mathf.Clamp(m_CurrentSquashStretch, MinSquashScale, MaxSquashScale);
 
         var newScale = c_BaseScale;
