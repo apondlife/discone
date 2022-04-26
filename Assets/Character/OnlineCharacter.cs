@@ -31,10 +31,10 @@ sealed class OnlineCharacter: NetworkBehaviour {
     [SerializeField] CharacterState.Frame m_CurrentState;
 
     /// the min y-position the character wraps from
-    const float k_WrapMinY = -2000.0f;
+    const float k_WrapMinY = -200.0f;
 
     /// the max y-position the character wraps to
-    const float k_WrapMaxY = 5000.0f;
+    const float k_WrapMaxY = 6000.0f;
 
     // -- refs --
     [Header("refs")]
