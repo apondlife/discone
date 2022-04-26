@@ -74,15 +74,20 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
+    - _ConvolutionDelta: 0.0015
+    - _ConvolutionOffsetX: 0
+    - _ConvolutionOffsetY: 0
     - _Cutoff: 0.5
     - _DepthScale: 8.8
     - _DetailNormalMapScale: 1
     - _DissolveBand: 0.962
     - _DissolveDepth: 1
     - _DstBlend: 0
+    - _FuzzOffset: 0.003
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _HueScale: 0.1
     - _HueShift: 0.05
     - _MaxOrthogonality: 1
     - _Metallic: 0
@@ -91,12 +96,14 @@ Material:
     - _NormalMin: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _SaturationScale: 0.1
     - _SaturationShift: -1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _TextureScale: -3.64
     - _UVSec: 0
+    - _ValueScale: 0.1
     - _ValueShift: -0.29
     - _ZWrite: 1
     m_Colors:

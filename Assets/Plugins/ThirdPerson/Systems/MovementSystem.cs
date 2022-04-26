@@ -20,7 +20,7 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void NotMoving_Update() {
-        if(m_Input.MoveAxis.magnitude > 0) {
+        if (m_Input.MoveAxis.magnitude > 0) {
             ChangeTo(Moving);
             return;
         }
@@ -38,7 +38,7 @@ sealed class MovementSystem: CharacterSystem {
             var vt = v0 - d0 * Time.deltaTime;
 
             // update planar velocity
-            m_State.SetProjectedPlanarVelocity(vt);
+            m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
         }
     }
 
@@ -87,10 +87,10 @@ sealed class MovementSystem: CharacterSystem {
         var vt = v0 + (ai - d0) * Time.deltaTime;
 
         // update planar velocity
-        m_State.SetProjectedPlanarVelocity(vt);
+        m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
 
         // once speed is zero, stop moving
-        if(!hasInput && m_State.PlanarVelocity.magnitude < m_Tunables.MinPlanarSpeed) {
+        if(!hasInput && v0.magnitude < m_Tunables.MinPlanarSpeed) {
             ChangeTo(NotMoving);
         }
     }
@@ -130,7 +130,7 @@ sealed class MovementSystem: CharacterSystem {
         var vt = v0 - Mathf.Min(v0.magnitude, m_Tunables.PivotDeceleration * Time.deltaTime) * v0.normalized;
 
         // update planar velociy
-        m_State.SetProjectedPlanarVelocity(vt);
+        m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
 
         // if the character has stopped, switch to not moving
         if(vt.sqrMagnitude == 0.0f) {
@@ -153,7 +153,7 @@ sealed class MovementSystem: CharacterSystem {
 
         var v0 = m_State.PlanarVelocity;
         var vt = v0 + m_Input.MoveAxis * m_Tunables.AerialDriftAcceleration * Time.deltaTime;
-        m_State.SetProjectedPlanarVelocity(vt);
+        m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
     }
 }
 

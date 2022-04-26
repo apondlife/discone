@@ -42,6 +42,8 @@ static class RayExt {
         var plane = new Plane(n, b.origin);
         if (!plane.Raycast(a, out var distance)) {
             intersection = Vector3.zero;
+            // TODO: maybe try intersecting with another plane, perpendicular to the first
+            // TODO: maybe try pointing a in the other direction as well
             return false;
         }
 

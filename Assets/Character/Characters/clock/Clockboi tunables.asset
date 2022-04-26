@@ -21,7 +21,7 @@ MonoBehaviour:
   m_TimeToPivot: 0.6
   m_PivotStartThreshold: -0.5
   m_TurningFriction: 7
-  m_FloatAcceleration: 10
+  m_AerialDriftAcceleration: 10
   m_Gravity: -130
   m_JumpBuffer: 10
   m_MinJumpSquatFrames: 0
@@ -55,10 +55,19 @@ MonoBehaviour:
   m_MaxJumpSpeed: 40
   m_JumpGravity: -130
   m_FallGravity: -130
+  m_JumpSpeedCurve_Horizontal:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_MinJumpSpeed_Horizontal: 0
+  m_MaxJumpSpeed_Horizontal: 0
   m_WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295
   m_WallGravity: -85
+  m_WallMagnet: 0.5
   m_TiltForBaseAcceleration: 30
   m_MaxTilt: 69
   m_TiltSmoothing: 0.1
