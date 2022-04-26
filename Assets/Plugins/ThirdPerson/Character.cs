@@ -50,6 +50,8 @@ public partial class Character: MonoBehaviour {
 
         // init systems
         m_Systems = new CharacterSystem[] {
+            // has to run first, because it should run after character controller calculations
+            new IdleSystem(data),
             new WallSystem(data),
             new GravitySystem(data),
             new MovementSystem(data),
@@ -83,7 +85,7 @@ public partial class Character: MonoBehaviour {
         }
 
         // sync controller state back to character state
-        m_State.SetVelocity(m_Controller.Velocity);
+        m_State.Velocity = m_Controller.Velocity;
         m_State.Position = transform.position;
     }
 

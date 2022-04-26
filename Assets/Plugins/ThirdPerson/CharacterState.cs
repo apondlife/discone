@@ -28,16 +28,10 @@ public sealed class CharacterState {
         set => m_Frames[0].Position = value;
     }
 
-    /// the velocity on the xz-plane
-    public Vector3 PlanarVelocity {
-        get => m_Frames[0].PlanarVelocity;
-        set => m_Frames[0].PlanarVelocity = value;
-    }
-
-    /// the speed on the y-axis
-    public float VerticalSpeed {
-        get => m_Frames[0].VerticalSpeed;
-        set => m_Frames[0].VerticalSpeed = value;
+    /// the character's velocity in 3d-space
+    public Vector3 Velocity {
+        get => m_Frames[0].Velocity;
+        set => m_Frames[0].Velocity = value;
     }
 
     /// the current facing direction
@@ -88,6 +82,12 @@ public sealed class CharacterState {
         set => m_Frames[0].JumpSquatFrame = value;
     }
 
+    /// the current jump squat frame
+    public float IdleTime {
+        get => m_Frames[0].IdleTime;
+        set => m_Frames[0].IdleTime = value;
+    }
+
     // -- commands --
     /// snapshot the current state
     public void Snapshot() {
@@ -97,22 +97,6 @@ public sealed class CharacterState {
     /// fill the queue with the frame
     public void Fill(CharacterState.Frame frame) {
         m_Frames.Fill(frame);
-    }
-
-    /// sets the velocity
-    public void SetVelocity(Vector3 v) {
-        VerticalSpeed = v.y;
-        PlanarVelocity = v.XNZ();
-    }
-
-    /// sets the planar direction on the xz plane
-    public void SetProjectedPlanarVelocity(Vector3 dir) {
-        var projected = Vector3.ProjectOnPlane(dir, Up);
-
-        // if zero, use the original direction
-        if (projected.sqrMagnitude > 0.0f) {
-            PlanarVelocity = projected;
-        }
     }
 
     /// sets the facing direction on the xz plane
@@ -141,14 +125,15 @@ public sealed class CharacterState {
         get => m_Frames[0].Up;
     }
 
-    /// the character's velocity in 3d-space
-    public Vector3 Velocity {
-        get => m_Frames[0].Velocity;
-    }
-
     /// the character's look rotation (facing & tilt)
     public Quaternion LookRotation {
         get => m_Frames[0].LookRotation;
+    }
+
+    /// the velocity on the xz-plane
+    /// TODO: maybe this should be grounded velocity, since the places its been used are ground related
+    public Vector3 PlanarVelocity {
+        get => m_Frames[0].Velocity.XNZ();
     }
 
     /// the character's current acceleration
@@ -168,11 +153,8 @@ public sealed class CharacterState {
         /// the world position
         public Vector3 Position;
 
-        /// the velocity on the xz-plane
-        public Vector3 PlanarVelocity = Vector3.zero;
-
-        /// the speed on the y-axis
-        public float VerticalSpeed = 0.0f;
+        /// the character's velocity
+        public Vector3 Velocity = Vector3.zero;
 
         /// how much velocity changed since last update
         public Vector3 Acceleration = Vector3.zero;
@@ -201,6 +183,9 @@ public sealed class CharacterState {
         /// the current frame in the jump squat
         public int JumpSquatFrame = -1;
 
+        /// the current frame in the jump squat
+        public float IdleTime = 0;
+
         // -- lifetime --
         /// create an empty frame
         public Frame() {
@@ -215,8 +200,7 @@ public sealed class CharacterState {
         /// create a copy of an existing frame
         public Frame(CharacterState.Frame f) {
             Position = f.Position;
-            PlanarVelocity = f.PlanarVelocity;
-            VerticalSpeed = f.VerticalSpeed;
+            Velocity = f.Velocity;
             Acceleration = f.Acceleration;
             FacingDirection = f.FacingDirection;
             IsGrounded = f.IsGrounded;
@@ -226,17 +210,13 @@ public sealed class CharacterState {
             Tilt = f.Tilt;
             Collision = f.Collision;
             JumpSquatFrame = f.JumpSquatFrame;
+            IdleTime = f.IdleTime;
         }
 
         // -- queries --
         /// the character's up vector (hardcoded to Vector3.up)
         public Vector3 Up {
             get => Vector3.up;
-        }
-
-        /// the character's velocity in 3d-space
-        public Vector3 Velocity {
-            get => PlanarVelocity + VerticalSpeed * Up;
         }
 
         /// the character's look rotation (facing & tilt)
@@ -254,8 +234,7 @@ public sealed class CharacterState {
 
             return (
                 Position == o.Position &&
-                PlanarVelocity == o.PlanarVelocity &&
-                VerticalSpeed == o.VerticalSpeed &&
+                Velocity == o.Velocity &&
                 Acceleration == o.Acceleration &&
                 FacingDirection == o.FacingDirection &&
                 IsGrounded == o.IsGrounded &&
@@ -264,7 +243,8 @@ public sealed class CharacterState {
                 IsOnWall == o.IsOnWall &&
                 Tilt == o.Tilt &&
                 Collision == o.Collision &&
-                JumpSquatFrame == o.JumpSquatFrame
+                JumpSquatFrame == o.JumpSquatFrame &&
+                IdleTime == o.IdleTime
             );
         }
     }

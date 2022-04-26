@@ -116,10 +116,15 @@ public sealed class CharacterController {
         var moveDelta = delta;
         var moveContactOffset = Vector3.zero;
 
+        var isGrounded = false;
+
         // cancel movement towards the ground in case the character is grounded
         if (m_IsGrounded) {
             // check if there's movement towards the ground;
             if (Vector3.Dot(m_HitNormal, moveDelta) < 0) {
+
+                // TODO: this should probably go into the movement system, with some fun stuff to do with it =)
+
                 // "cancel" the normal part (ie project the vector)
                 moveDelta = Vector3.ProjectOnPlane(moveDelta, m_HitNormal);
 
@@ -129,7 +134,6 @@ public sealed class CharacterController {
         }
 
         // temporary grounded calculation
-        var isGrounded = false;
 
         // DEBUG: reset state
         #if UNITY_EDITOR
@@ -158,7 +162,8 @@ public sealed class CharacterController {
             // capsule cast the remaining move
             var castDir = moveDelta.normalized;
             var castLen = moveMag + m_CastOffset + m_ContactOffset;
-            var castPos = moveEnd - castDir * m_CastOffset;
+            var movePos = moveEnd;
+            var castPos = movePos - castDir * m_CastOffset;
 
             var cast = capsule.IntoCast(
                 castPos,
@@ -208,7 +213,7 @@ public sealed class CharacterController {
             // |'.  ‖  .'|
             // |   ‾‖‾   |
             // |->  C    |
-            var axisPoint = (hit.point - castPos) + hit.normal * cast.Radius;
+            var axisPoint = hit.point + hit.normal * cast.Radius;
 
             // check the cast's colinearity with the capsule's axis
             var castDotUp = Vector3.Dot(cast.Direction, capsule.Up);
@@ -226,25 +231,23 @@ public sealed class CharacterController {
                 // with float precision errors, we intersect the cast with a plane containing the axis
                 // and that is orthogonal to the plane containing the axis and cast
                 var axis = new Ray(axisPoint, capsule.Up);
-                var localCast = new Ray(c.center, cast.Direction);
+                // var localCast = new Ray(movePos, cast.Direction);
 
                 // try to intersect the ray and the plane
-                if (localCast.TryIntersectIncidencePlane(axis, out var intersection)) {
+                if (cast.IntoRay().TryIntersectIncidencePlane(axis, out var intersection)) {
                     hitCapsuleCenter = intersection;
                 }
                 // this should not happen; but if it does abort the collision from the last
                 // successful cast
                 else {
-                    Debug.LogError("[controller] HUGE MISTAKE, THIS SHOULD NEVER HAPPEN EVER EVER...");
+                    Debug.LogError($"[controller] HUGE MISTAKE, THIS SHOULD NEVER HAPPEN EVER EVER..., {Mathf.Abs(castDotUp)}");
                     break;
                 }
             }
 
-            // get the contact offset for this hit
-            var hitContactOffset = hit.normal * m_ContactOffset;
 
             // update move state; next move starts from capsule center and remaining distance
-            moveEnd = castPos + hitCapsuleCenter + hitContactOffset;
+            moveEnd = hitCapsuleCenter;
 
             // calculate the remaining movement
             // TODO: should have something to do with the angle, considering wall hits
@@ -259,18 +262,25 @@ public sealed class CharacterController {
                 moveDelta *= LimitSlopeToWallAngle(groundAngle);
             }
 
-            moveContactOffset += hitContactOffset;
+            // apply the contact offset
+            moveEnd += hit.normal * m_ContactOffset;
 
             // if we touch any ground surface, we're grounded
-            if (!isGrounded && Vector3.Angle(hit.normal, Vector3.up) <= m_WallAngle) {
-                isGrounded = true;
+            var surface = CharacterCollision.CollisionSurface.Ground;
+
+            if(Vector3.Angle(hit.normal, Vector3.up) <= m_WallAngle) {
+                if (!isGrounded) {
+                    isGrounded = true;
+                }
+            } else {
+                surface = CharacterCollision.CollisionSurface.Wall;
             }
 
             // update hit normal each cast
             m_HitNormal = hit.normal;
 
             // add this collision to the list
-            m_Collisions.Add(new CharacterCollision(hit.normal, hit.point));
+            m_Collisions.Add(new CharacterCollision(hit.normal, hit.point, surface));
 
             // update state
             i++;
@@ -281,7 +291,7 @@ public sealed class CharacterController {
 
         // move character; subtract total contact offset when calculating velocity
         t.position = moveEnd;
-        m_Velocity = (moveEnd - moveStart - moveContactOffset) / Time.deltaTime;
+        m_Velocity = (moveEnd - moveStart) / Time.deltaTime;
     }
 
     // -- queries --
