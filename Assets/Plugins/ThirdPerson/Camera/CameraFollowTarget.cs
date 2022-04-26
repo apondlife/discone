@@ -20,7 +20,7 @@ public class CameraFollowTarget: MonoBehaviour {
     [UnityEngine.Serialization.FormerlySerializedAs("m_YawSpeed")]
     [SerializeField] float m_MaxYawSpeed;
 
-    [Tooltip("the acceleration / deceleration of the camera's yaw")]
+    [Tooltip("the acceleration of the camera yaw")]
     [SerializeField] float m_YawAcceleration;
 
     [Tooltip("the minimum angle the camera rotates around the character vertically")]
@@ -30,6 +30,12 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the maximum angle the camera rotates around the character vertically")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_MaxAngle")]
     [SerializeField] float m_MaxPitch;
+
+    [Tooltip("the maximum pitch speed")]
+    [SerializeField] float m_MaxPitchSpeed;
+
+    [Tooltip("the acceleration of the camera pitch")]
+    [SerializeField] float m_PitchAcceleration;
 
     [Tooltip("the speed the free look camera yaws")]
     [SerializeField] float m_FreeLook_YawSpeed;
@@ -84,6 +90,9 @@ public class CameraFollowTarget: MonoBehaviour {
 
     /// the current pitch
     float m_Pitch = 0.0f;
+
+    /// the current pitch speed
+    float m_PitchSpeed = 0.0f;
 
     /// the direction for zero yaw
     Vector3 m_ZeroYawDir;
@@ -201,7 +210,14 @@ public class CameraFollowTarget: MonoBehaviour {
             var yaw = Mathf.MoveTowardsAngle(m_Yaw, m_Yaw + yawDelta, yawMag);
 
             // rotate pitch on the plane containing the target's position and up
-            var pitch = Mathf.LerpAngle(m_Pitch, Mathf.LerpAngle(m_MinPitch, m_MaxPitch, m_LookAtTarget.PercentExtended), 0.5f);
+            var targetPitch = Mathf.LerpAngle(m_MinPitch, m_MaxPitch, m_LookAtTarget.PercentExtended);
+            if (m_Pitch == targetPitch) {
+                m_PitchSpeed = 0.0f;
+            } else  {
+                m_PitchSpeed = Mathf.MoveTowards(m_PitchSpeed, m_MaxPitchSpeed, m_PitchAcceleration * Time.deltaTime);
+            }
+
+            var pitch = Mathf.MoveTowardsAngle(m_Pitch, targetPitch, m_PitchSpeed * Time.deltaTime);
 
             // update state
             m_Yaw = yaw;

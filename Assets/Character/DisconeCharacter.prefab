@@ -39,6 +39,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Effects
       objectReference: {fileID: 0}
+    - target: {fileID: 2009803952, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1061133086809451152, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -158,8 +162,7 @@ MonoBehaviour:
   m_IsDebug: 0
   m_CurrentState:
     Position: {x: 0, y: 0, z: 0}
-    PlanarVelocity: {x: 0, y: 0, z: 0}
-    VerticalSpeed: 0
+    Velocity: {x: 0, y: 0, z: 0}
     Acceleration: {x: 0, y: 0, z: 0}
     FacingDirection: {x: 0, y: 0, z: 0}
     IsGrounded: 0
