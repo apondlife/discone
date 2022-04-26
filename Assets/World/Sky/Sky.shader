@@ -129,10 +129,10 @@ SubShader {
             c *= _Exposure;
 
             // apply fog
-            float fog = max(1.0f - (i.wPosY - _FogMin) / _FogHeight, 0.0f);
-            fog = fog > 1.0f ? 0.0f : fog;
-            fog = fog * fog * fog;
-            c = lerp(c, _Fog, fog);
+            // float fog = max(1.0f - (i.wPosY - _FogMin) / _FogHeight, 0.0f);
+            // fog = fog > 1.0f ? 0.0f : fog;
+            // fog = fog * fog * fog;
+            // c = lerp(c, _Fog, fog);
 
             return half4(c, 1.0f);
         }
