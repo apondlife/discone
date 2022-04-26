@@ -32,8 +32,9 @@ public class CameraLookAtTarget: MonoBehaviour {
     }
 
     // -- queries --
+    /// how close the look at target is to full extension
     public float PercentExtended {
-        get => Mathf.Clamp01(Vector3.Distance(transform.position, m_Target.position)/m_MaxDistance);
+        get => Mathf.Clamp01(Vector3.Distance(transform.position, m_Target.position) / m_MaxDistance);
     }
 
     // -- debug --
