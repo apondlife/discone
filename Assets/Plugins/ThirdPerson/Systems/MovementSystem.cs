@@ -90,7 +90,7 @@ sealed class MovementSystem: CharacterSystem {
         m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
 
         // once speed is zero, stop moving
-        if(!hasInput && m_State.PlanarVelocity.magnitude < m_Tunables.MinPlanarSpeed) {
+        if(!hasInput && v0.magnitude < m_Tunables.MinPlanarSpeed) {
             ChangeTo(NotMoving);
         }
     }

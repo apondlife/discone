@@ -131,7 +131,7 @@ public sealed class CharacterState {
     }
 
     /// the velocity on the xz-plane
-    // TODO: maybe this should be grounded velocity, since the places its been used are ground related
+    /// TODO: maybe this should be grounded velocity, since the places its been used are ground related
     public Vector3 PlanarVelocity {
         get => m_Frames[0].Velocity.XNZ();
     }

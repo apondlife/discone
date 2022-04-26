@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 361040688}
   - component: {fileID: 361040687}
   m_Layer: 6
-  m_Name: WallParticles
+  m_Name: Dust-wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4833,7 +4833,7 @@ GameObject:
   - component: {fileID: 1378686940}
   - component: {fileID: 1378686939}
   m_Layer: 6
-  m_Name: FloorParticles
+  m_Name: Dust-floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9644,7 +9644,7 @@ GameObject:
   - component: {fileID: 2009803952}
   - component: {fileID: 2009803953}
   m_Layer: 6
-  m_Name: CharacterFX
+  m_Name: Effects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9666,7 +9666,7 @@ Transform:
   - {fileID: 1378686938}
   - {fileID: 7238456180043096080}
   m_Father: {fileID: 7614967429340073451}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!114 &2009803953
 MonoBehaviour:
@@ -9680,7 +9680,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b8caf1437dfd1545a9456404a5582bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FloorParticlesBaseEmission: 0.04
+  m_FloorParticlesBaseEmission: 0.6
   m_WallParticles: {fileID: 361040688}
   m_FloorParticles: {fileID: 1378686940}
 --- !u!1 &7562501268775911199
@@ -9713,7 +9713,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7614967429340073451}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7250430580801210356
 MonoBehaviour:
@@ -9796,8 +9796,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2009803952}
   - {fileID: 1061133086809451152}
+  - {fileID: 2009803952}
   - {fileID: 2505435118483560403}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -10056,15 +10056,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.08207173
+      value: -0.08207172
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000016974179
+      value: 0.000000018036019
       objectReference: {fileID: 0}
     - target: {fileID: 4801873551099959025, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000013978156
+      value: 0.0000000014852577
       objectReference: {fileID: 0}
     - target: {fileID: 5258442826006515759, guid: c6b3cc78cb5428e4cb39798fbaa69930, type: 3}
       propertyPath: m_Icon
