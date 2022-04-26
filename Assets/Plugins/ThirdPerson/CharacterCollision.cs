@@ -5,6 +5,12 @@ namespace ThirdPerson {
 
 /// the collision info
 public readonly struct CharacterCollision: IEquatable<CharacterCollision> {
+
+    public enum CollisionSurface {
+        Ground,
+        Wall,
+    }
+
     // -- props --
     /// the normal at the on the collision surface
     public readonly Vector3 Normal;
@@ -12,11 +18,14 @@ public readonly struct CharacterCollision: IEquatable<CharacterCollision> {
     /// the collision point
     public readonly Vector3 Point;
 
+    public readonly CollisionSurface Surface;
+
     // -- lifetime --
     /// create a new collision
-    public CharacterCollision(Vector3 normal, Vector3 point) {
+    public CharacterCollision(Vector3 normal, Vector3 point, CollisionSurface surface) {
         Normal = normal;
         Point = point;
+        Surface = surface;
     }
 
     // -- queries --
