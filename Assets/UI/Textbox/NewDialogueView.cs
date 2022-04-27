@@ -80,7 +80,6 @@ public class NewDialogueView : DialogueViewBase
         // Immediately appear
         canvasGroup.interactable = true;
         canvasGroup.alpha = 1;
-        canvasGroup.blocksRaycasts = true;
 
         onDialogueLineFinished();
     }
@@ -173,7 +172,6 @@ public class NewDialogueView : DialogueViewBase
 
         canvasGroup.interactable = false;
         canvasGroup.alpha = 0;
-        canvasGroup.blocksRaycasts = false;
         onDismissalComplete();
     }
 
