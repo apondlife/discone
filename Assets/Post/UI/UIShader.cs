@@ -1,10 +1,9 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityAtoms.BaseAtoms;
 
 /// blit a post processing effect
-[ExecuteInEditMode]
+[ExecuteAlways]
 [RequireComponent(typeof(RawImage))]
 public class UIShader: MonoBehaviour {
     // -- config --
@@ -27,7 +26,6 @@ public class UIShader: MonoBehaviour {
     void Awake() {
         m_Material = GetComponent<RawImage>().material;
     }
-
 
     void Update() {
         m_Material.SetFloat("_DissolveAmount", m_DissolveAmount.Value);
