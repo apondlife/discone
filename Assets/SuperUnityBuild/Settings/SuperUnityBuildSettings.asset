@@ -1,6 +1,68 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4890373150655689217
+--- !u!114 &-1607542946273068002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d962d142a259c394da2bdb301b72eeb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enabled: 1
+  distributionList:
+    distributions: []
+  architectures:
+  - target: 2
+    name: macOS
+    enabled: 1
+    binaryNameFormat: '{0}.app'
+  variants:
+  - variantName: macOS Architecture
+    selectedIndex: 0
+    values:
+    - Intelx64
+    - Apple Silicon
+    - Universal
+  - variantName: Build Output
+    selectedIndex: 0
+    values:
+    - App
+    - Xcode Project
+  platformName: macOS
+  dataDirNameFormat: '{0}.app/Contents'
+  targetGroup: 1
+--- !u!114 &-1038928378574261671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97d88f7d353534a4fbdeb11196057db7, type: 3}
+  m_Name: UploadItch
+  m_EditorClassIdentifier: 
+  actionType: 1
+  actionName: UploadItch
+  note: 
+  actionEnabled: 1
+  configureEditor: 0
+  filter:
+    condition: 0
+    clauses: []
+  pathToButlerExe: C:\Users\gusta\AppData\Roaming\itch\apps\butler\butler.exe
+  nameOfItchUser: frogfrogforg
+  nameOfItchGame: discone
+  useGeneratedBuildVersion: 1
+  channelName: $PLATFORM-$ARCHITECTURE
+  showUploadProgress: 1
+  itchChannelOverride: 
+--- !u!114 &-989986784425349925
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -33,33 +95,6 @@ MonoBehaviour:
   platformName: PC
   dataDirNameFormat: '{0}_Data'
   targetGroup: 1
---- !u!114 &-3132922106993771653
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97d88f7d353534a4fbdeb11196057db7, type: 3}
-  m_Name: UploadItch
-  m_EditorClassIdentifier: 
-  actionType: 1
-  actionName: UploadItch
-  note: 
-  actionEnabled: 1
-  configureEditor: 0
-  filter:
-    condition: 0
-    clauses: []
-  pathToButlerExe: /Users/ty/Library/Application\ Support/itch/apps/butler/butler
-  nameOfItchUser: frogfrogforg
-  nameOfItchGame: discone
-  useGeneratedBuildVersion: 0
-  channelName: $PLATFORM-$ARCHITECTURE
-  showUploadProgress: 1
-  itchChannelOverride: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,12 +109,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _basicSettings:
     baseBuildFolder: Artifacts\Builds
-    buildPath: $VERSION/$RELEASE_TYPE-$PLATFORM-$ARCHITECTURE
+    buildPath: $PRODUCT_NAME.$VERSION/$PRODUCT_NAME-$RELEASE_TYPE-$PLATFORM-$ARCHITECTURE
     openFolderPostBuild: 1
   _productParameters:
-    buildCounter: 71
-    buildVersion: discone.2022.04.21.71
-    versionTemplate: discone.$YEAR.$MONTH.$DAY.$BUILD
+    buildCounter: 76
+    buildVersion: 2022.%MONTH.26.76
+    versionTemplate: $YEAR.$MONTH.$DAY.$BUILD
     autoGenerate: 1
     syncWithPlayerSettings: 0
   _releaseTypeList:
@@ -95,8 +130,8 @@ MonoBehaviour:
         - fileGUID: 3da4a01a1c52a1e40935e78e6f152d85
   _platformList:
     platforms:
-    - {fileID: -4890373150655689217}
-    - {fileID: 9141539422439069234}
+    - {fileID: -989986784425349925}
+    - {fileID: -1607542946273068002}
   _projectConfigurations:
     configSet:
       _Buckets: 0100000003000000ffffffff0400000002000000ffffffffffffffff
@@ -143,39 +178,4 @@ MonoBehaviour:
     buildActions: []
   _postBuildActions:
     buildActions:
-    - {fileID: -3132922106993771653}
---- !u!114 &9141539422439069234
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d962d142a259c394da2bdb301b72eeb5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enabled: 1
-  distributionList:
-    distributions: []
-  architectures:
-  - target: 2
-    name: macOS
-    enabled: 1
-    binaryNameFormat: '{0}.app'
-  variants:
-  - variantName: macOS Architecture
-    selectedIndex: 0
-    values:
-    - Intelx64
-    - Apple Silicon
-    - Universal
-  - variantName: Build Output
-    selectedIndex: 0
-    values:
-    - App
-    - Xcode Project
-  platformName: macOS
-  dataDirNameFormat: '{0}.app/Contents'
-  targetGroup: 1
+    - {fileID: -1038928378574261671}
