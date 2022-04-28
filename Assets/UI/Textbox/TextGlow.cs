@@ -39,11 +39,10 @@ public class TextGlow : MonoBehaviour
 
         int loopCount = 0;
 
-        // Cache the vertex data of the text object as the Jitter FX is applied to the original position of the characters.
         TMP_MeshInfo[] cachedMeshInfo = textInfo.CopyMeshInfoVertexData();
 
-        while (true)
-        {
+        // while (true)
+        // {
 
             for (int i = startPos; i < startPos + length; i++)
             {
@@ -55,8 +54,8 @@ public class TextGlow : MonoBehaviour
                 // Get the vertex colors of the mesh used by this text element (character or sprite).
                 newVertexColors = textInfo.meshInfo[materialIndex].colors32;
 
-                Debug.Log(i);
-                Debug.Log(textInfo.characterInfo[i].character);
+                // Debug.Log(i);
+                // Debug.Log(textInfo.characterInfo[i].character);
 
                 // Get the index of the first vertex used by this text element.
                 int vertexIndex = textInfo.characterInfo[i].vertexIndex;
@@ -78,7 +77,7 @@ public class TextGlow : MonoBehaviour
             // }
 
             yield return new WaitForSeconds(0.1f);
-        }
+        // }
 
     }
 }

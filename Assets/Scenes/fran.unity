@@ -1266,6 +1266,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 170570684519084188, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 678411839616086626, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: dialogueViews.Array.size
       value: 1
@@ -1324,15 +1328,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2338946522108840937, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2408367973998133241, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719241127756806312, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+      propertyPath: m_fontColor.b
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719241127756806312, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719241127756806312, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719241127756806312, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
       objectReference: {fileID: 0}
     - target: {fileID: 5367794493683897512, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5713826784118993935, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1352,10 +1372,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5713826784118993935, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6922708554992012790, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7649788963322039250, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}

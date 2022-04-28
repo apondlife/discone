@@ -20,6 +20,10 @@ public class NewDialogueView : DialogueViewBase
     internal TextMeshProUGUI characterNameText = null;
 
     LocalizedLine currentLine = null;
+
+    TextboxPlacement placement = null;
+
+    
     TextGlow textGlower;
 
     // -- events --
@@ -40,27 +44,30 @@ public class NewDialogueView : DialogueViewBase
     }
 
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
-        currentLine = dialogueLine;
-
-        // choose a random placement
-        // there are more than one possible "placements" for how 
-        // the dialogue UI will be laid out        
-        var placement = placements[UnityEngine.Random.Range(0, placements.Length - 1)];
-        lineText = placement.lineText;
-        characterNameText = placement.characterNameText;
-
-        canvasGroup.gameObject.SetActive(true);
-        // set only the chosen placement active
-        placement.gameObject.SetActive(true);
-        for (int i = 0; i < placements.Length; i++) {
-            if (placements[i] != placement) {
-                placements[i].gameObject.SetActive(false);
-                Debug.Log("Setting " + placements[i].gameObject.name + " inactive");
-            }
-        }
         
 
+        // if we're a new character, or have changed characters, choose a random placement
+        // there are more than one possible "placements" for how 
+        // the dialogue UI will be laid out 
+        if (currentLine == null || currentLine.CharacterName != dialogueLine.CharacterName) {
+            currentLine = dialogueLine;
+            Debug.Log(dialogueLine.CharacterName);
+            Debug.Log(dialogueLine.CharacterName);
+            placement = placements[UnityEngine.Random.Range(0, placements.Length - 1)];
+            lineText = placement.lineText;
+            characterNameText = placement.characterNameText;
 
+            // set only the chosen placement active
+            placement.gameObject.SetActive(true);
+            for (int i = 0; i < placements.Length; i++) {
+                if (placements[i] != placement) {
+                    placements[i].gameObject.SetActive(false);
+                }
+            }          
+        }    
+        
+        
+        canvasGroup.gameObject.SetActive(true);
         characterNameText.SetText(dialogueLine.CharacterName);
         lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
         
@@ -70,7 +77,7 @@ public class NewDialogueView : DialogueViewBase
         // shake!
         foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
             if (attr.Name == "em") {
-                Color32 color = characterNameText.color;
+                Color32 color = placement.color;
                 textGlower.StartGlowText(lineText, color, attr.Position, attr.Length);
             }
         }
@@ -119,6 +126,9 @@ public class NewDialogueView : DialogueViewBase
         for (int i = 0; i < characterCount; i++) {
             // Get the index of the material used by the current character.
             int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
+
+            // the color might be different because of the specific coloring we do for the attribute
+            //Color32 currentColor = textInfo.meshInfo[materialIndex].colors32;
 
             // Get the vertex colors of the mesh used by this text element (character or sprite).
             newVertexColors = textInfo.meshInfo[materialIndex].colors32;
