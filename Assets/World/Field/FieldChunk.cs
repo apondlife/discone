@@ -54,7 +54,7 @@ public class FieldChunk: MonoBehaviour {
 
         // load the custom chunk data, if it exists
         // TODO: cache this? (https://forum.unity.com/threads/does-unity-cache-results-of-resources-load.270861/)
-        m_CustomData = Resources.Load<FieldChunkData>(name);
+        m_CustomData = FieldChunkData.Find(name);
 
         // if missing, use the generated data
         var td = m_CustomData?.TerrainData;

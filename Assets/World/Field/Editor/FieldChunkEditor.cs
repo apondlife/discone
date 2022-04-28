@@ -51,33 +51,37 @@ public class FieldChunkEditor: Editor {
             chunkData = ScriptableObject.CreateInstance<FieldChunkData>();
         }
 
-        // save terrain data if necessary
+        // find or init terrain data
         var terrainData = chunkData?.TerrainData;
         if (terrainData == null) {
             terrainData = Instantiate(m_Chunk.TerrainData) as TerrainData;
             terrainData.name = $"{m_Chunk.name}-data";
-            AssetDatabase.CreateAsset(terrainData, TerrainAssetPath);
         }
 
         // update chunk data
         chunkData.Material = m_Chunk.Material;
         chunkData.TerrainData = terrainData;
 
-        // create or save asset
-        var chunkDataId = AssetDatabase.AssetPathToGUID(
-            ChunkAssetPath,
-            AssetPathToGUIDOptions.OnlyExistingAssets
-        );
-
-        Debug.Log($"chunk data id {chunkDataId}");
-        if (chunkDataId == null || chunkDataId == "") {
-            AssetDatabase.CreateAsset(chunkData, ChunkAssetPath);
-        } else {
-            AssetDatabase.SaveAssetIfDirty(chunkData);
-        }
+        // create or update assets
+        CreateOrUpdateAsset(terrainData, TerrainAssetPath);
+        CreateOrUpdateAsset(chunkData, ChunkAssetPath);
 
         // reload the chunk
         m_Chunk.Reload();
+    }
+
+    /// create or update an asset at the given path
+    void CreateOrUpdateAsset(Object obj, string path) {
+        var id = AssetDatabase.AssetPathToGUID(
+            path,
+            AssetPathToGUIDOptions.OnlyExistingAssets
+        );
+
+        if (id == null || id == "") {
+            AssetDatabase.CreateAsset(obj, path);
+        } else {
+            AssetDatabase.SaveAssetIfDirty(obj);
+        }
     }
 
     // -- queries --
@@ -88,11 +92,11 @@ public class FieldChunkEditor: Editor {
 
     /// path to the chunk asset
     string ChunkAssetPath {
-        get => $"{Dir}/{m_Chunk.name}.asset";
+        get => $"{Dir}/{FieldChunkData.ChunkAssetName(m_Chunk.name)}.asset";
     }
 
     /// path to the terrain data asset
     string TerrainAssetPath {
-        get => $"{Dir}/{m_Chunk.name}-terrain.asset";
+        get => $"{Dir}/{FieldChunkData.TerrainAssetName(m_Chunk.name)}.asset";
     }
 }
