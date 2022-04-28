@@ -10,4 +10,6 @@ public class TextboxPlacement : MonoBehaviour
  
     public TextMeshProUGUI characterNameText = null;
 
+    public Color32 color;
+
 }
