@@ -27,15 +27,15 @@ Shader "Image/Fuzz" {
         ZTest Always
 
         Pass {
-            CGPROGRAM
+            HLSLPROGRAM
             // -- config --
-            #pragma vertex DrawVert
+            #pragma vertex VertDefault
             #pragma fragment DrawFrag
 
             // -- includes --
-            #include "UnityCG.cginc"
-            #include "../Core/Math.cginc"
-            #include "../Core/Color.cginc"
+            #include "../Core/Math.hlsl"
+            #include "../Core/Color.hlsl"
+            #include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
 
             // -- constants --
             const float3 k_Right = float3(1.0f, 0.0f, 0.0f);
@@ -57,11 +57,9 @@ Shader "Image/Fuzz" {
             };
 
             // -- props --
-            /// the main texture; set by unity to the screen buffer if used in an effect
-            sampler2D _MainTex;
-
+            TEXTURE2D_SAMPLER2D(_MainTex, sampler_MainTex);
             /// the depth & normals texture; set by unity if the camera uses DepthTextureMode.DepthNormals
-            sampler2D _CameraDepthNormalsTexture;
+            TEXTURE2D_SAMPLER2D(_CameraDepthNormalsTexture, sampler_CameraDepthNormalsTexture);
 
             /// the fuzz texture to apply to the edges
             sampler2D _Texture;
@@ -104,19 +102,14 @@ Shader "Image/Fuzz" {
             DepthNormal SampleDepthNormal(float2 uv);
 
             // -- program --
-            FragIn DrawVert(VertIn v) {
-                FragIn o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
-                return o;
-            }
 
-            fixed4 DrawFrag(FragIn i) : SV_Target {
+            float4 DrawFrag(FragIn i) : SV_Target {
                 // fuzz texture color based on its horizontalness
-                fixed4 tex = tex2D(_MainTex, i.uv);
-                fixed3 col = tex.rgb;
-                fixed3 hsv = IntoHsv(col);
+                float4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                float3 col = tex.rgb;
+                float3 hsv = IntoHsv(col);
                 DepthNormal dn0 = SampleDepthNormal(i.uv);
+                // return float4(float3(1.0f - tex.rgb), 1.0f);
 
                 // constatns
                 const float3x3 _KernelH = {
@@ -148,8 +141,8 @@ Shader "Image/Fuzz" {
                     float2 pos = i.uv + float2(x, y) * _ConvolutionDelta + offset;
 
                     DepthNormal dn = SampleDepthNormal(pos);
-                    float4 col = tex2D(_MainTex, pos);
-                    fixed3 hsv = IntoHsv(col);
+                    float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, pos);
+                    float3 hsv = IntoHsv(col);
 
                     // conv += tex2D(_MainTex, i.uv + float2(x, y) * _Delta).r * _Kernel[x][y];
                     // convolution with color value
@@ -163,7 +156,7 @@ Shader "Image/Fuzz" {
                     // conv_nh += abs(dot(dn.normal, float3(0.0f, 0.0f, 1.0f)));
 
                     // float4 col = tex2D(_MainTex, pos);
-                    // fixed3 hsv = IntoHsv(col);
+                    // float3 hsv = IntoHsv(col);
                     colavg += col;
                     hsvavg += hsv;
                 }
@@ -178,7 +171,7 @@ Shader "Image/Fuzz" {
                 float sobel = max(sobel_c, sobel_d);
 
                 // noise shit up
-                float4 other_col = tex2D(_MainTex, i.uv + float2(Rand(i.uv) - 0.5, Rand(i.uv + 0.69f) - 0.5) * _FuzzOffset);
+                float4 other_col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv + float2(Rand(i.uv) - 0.5, Rand(i.uv + 0.69f) - 0.5) * _FuzzOffset);
                 // float4 other_col = tex2D(_MainTex, i.uv + float2(tex2D(_Texture, i.uv).r - 0.5, tex2D(_Texture, i.uv + 0.69f).r - 0.5) * _FuzzOffset);
 
                 // col = lerp(col, colavg, sobel);
@@ -224,7 +217,7 @@ Shader "Image/Fuzz" {
 
                 // donst dissolve objects that dont write to the depth buffer
                 if (tex.a > 0.0f && dn0.depth >= 1.0f) {
-                    return fixed4(col, 1.0f);
+                    return float4(col, 1.0f);
                 }
 
                 // dissolve far away objects
@@ -232,14 +225,18 @@ Shader "Image/Fuzz" {
                 float p = saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, dn0.depth));
                 a = step(p*p, 0.997f * Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
 
-                return fixed4(col, a);
+                return float4(col, a);
             }
 
             // -- helpers --
             DepthNormal SampleDepthNormal(float2 uv) {
-                float1 depth;
-                float3 normal;
-                DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, uv), depth, normal);
+                float4 enc = SAMPLE_TEXTURE2D(_CameraDepthNormalsTexture, sampler_CameraDepthNormalsTexture, uv);
+
+                // from unity default library stuff, DecodeFloatRG
+                float2 kDecodeDot = float2(1.0f, 1/255.0f);
+                float1 depth =  dot( enc.zw, kDecodeDot );
+
+                float3 normal = DecodeViewNormalStereo (enc);
 
                 DepthNormal o;
                 o.depth = depth;
@@ -247,7 +244,7 @@ Shader "Image/Fuzz" {
 
                 return o;
             }
-            ENDCG
+            ENDHLSL
         }
     }
 }

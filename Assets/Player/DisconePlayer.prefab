@@ -5170,6 +5170,10 @@ PrefabInstance:
       propertyPath: m_DefaultBlend.m_Style
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2132299862377982991, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 3631135297334503179, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_CurrentCharacter
       value: 
@@ -5445,7 +5449,7 @@ MonoBehaviour:
   volumeTrigger: {fileID: 6083958641782784743}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2147483648
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
   antialiasingMode: 0
@@ -5490,20 +5494,6 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
---- !u!114 &6355166514911937530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3541555098412673283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6ba4486e04404252abb7e0dc8294158, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: c967b86a272f14f279abca58200a7d10, type: 2}
-  m_Texture: {fileID: 0}
 --- !u!4 &6083958641782784743 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
