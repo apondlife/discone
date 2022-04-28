@@ -20,9 +20,7 @@ public class NewDialogueView : DialogueViewBase
     internal TextMeshProUGUI characterNameText = null;
 
     LocalizedLine currentLine = null;
-
-    //TextShakeChars textAnimator;
-    VertexAttributeModifier textAnimator;
+    TextGlow textGlower;
 
     // -- events --
     [Header("events")]
@@ -33,8 +31,8 @@ public class NewDialogueView : DialogueViewBase
 
     // -- lifecycle --
     void Start() {
-        //textAnimator = GetComponent<TextShakeChars>();
         canvasGroup.alpha = 0;
+        textGlower = GetComponent<TextGlow>();
     }
 
     public void Reset() {
@@ -44,13 +42,10 @@ public class NewDialogueView : DialogueViewBase
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
         currentLine = dialogueLine;
 
-        Debug.Log("running line");
-
         // choose a random placement
         // there are more than one possible "placements" for how 
         // the dialogue UI will be laid out        
         var placement = placements[UnityEngine.Random.Range(0, placements.Length - 1)];
-        //Debug.Log(placement.gameObject.name);
         lineText = placement.lineText;
         characterNameText = placement.characterNameText;
 
@@ -65,15 +60,20 @@ public class NewDialogueView : DialogueViewBase
         }
         
 
-        //Debug.Log("RUNNING LINE!");
 
         characterNameText.SetText(dialogueLine.CharacterName);
-        //lineText.text = dialogueLine.TextWithoutCharacterName.Text;
         lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
-
-        // textAnimator.StartShakeText(lineText, 2, 10);
         
-        StartCoroutine(PopInCharactersRandomly());
+        //StartCoroutine(PopInCharactersRandomly());
+        // textGlower.StartGlowText();
+
+        // shake!
+        foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
+            if (attr.Name == "em") {
+                Color32 color = characterNameText.color;
+                textGlower.StartGlowText(lineText, color, attr.Position, attr.Length);
+            }
+        }
 
 
 
@@ -106,8 +106,6 @@ public class NewDialogueView : DialogueViewBase
         // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
         lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
 
-        // This last process could be done to only update the vertex data that has changed as opposed to all of the vertex data but it would require extra steps and knowing what type of renderer is used.
-        // These extra steps would be a performance optimization but it is unlikely that such optimization will be necessary.
     }
 
     private void HideCharacters() {
