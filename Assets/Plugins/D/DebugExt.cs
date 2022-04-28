@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace D {
 
 /// debugging utilities
-static class Dbg {
+public static class Dbg {
     /// dump enumerable as a list-like string
     public static string Dump<T>(IEnumerable<T> list) {
         var sb = new StringBuilder();
