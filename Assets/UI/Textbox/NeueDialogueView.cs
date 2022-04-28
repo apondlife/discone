@@ -7,7 +7,7 @@ using Yarn.Markup;
 using TMPro;
 using UnityAtoms.BaseAtoms;
 
-public class NewDialogueView : DialogueViewBase
+public class NeueDialogueView : DialogueViewBase
 {
 
     [SerializeField]
@@ -24,7 +24,7 @@ public class NewDialogueView : DialogueViewBase
     TextboxPlacement placement = null;
 
     
-    TextGlow textGlower;
+    TextColor textColorer;
 
     // -- events --
     [Header("events")]
@@ -36,7 +36,7 @@ public class NewDialogueView : DialogueViewBase
     // -- lifecycle --
     void Start() {
         canvasGroup.alpha = 0;
-        textGlower = GetComponent<TextGlow>();
+        textColorer = GetComponent<TextColor>();
     }
 
     public void Reset() {
@@ -70,19 +70,30 @@ public class NewDialogueView : DialogueViewBase
         canvasGroup.gameObject.SetActive(true);
         characterNameText.SetText(dialogueLine.CharacterName);
         lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
+
+        lineText.renderMode = TextRenderFlags.DontRender;
         
         
 
-        HideCharacters();
+        //HideCharacters();
 
         // shake!
         foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
             if (attr.Name == "em") {
                 Color32 color = placement.color;
-                textGlower.StartGlowText(lineText, color, attr.Position, attr.Length);
+                textColorer.ColorText(lineText, color, attr.Position, attr.Length);
             }
+            // // TEST
+            // Debug.Log("TEST");
+            // TMP_TextInfo textInfo = lineText.textInfo;
+            // var charInfo = textInfo.characterInfo[attr.Position];
+            // Debug.Log(charInfo.character);
+            // int materialIndex = charInfo.materialReferenceIndex;
+            // Debug.Log(textInfo.meshInfo[materialIndex].colors32[charInfo.vertexIndex]);
         }
 
+
+        HideCharacters();
         StartCoroutine(PopInCharactersRandomly());
 
 
@@ -98,7 +109,6 @@ public class NewDialogueView : DialogueViewBase
         TMP_TextInfo textInfo = lineText.textInfo;
 
         Color32[] newVertexColors;
-        Color32 c0 = lineText.color;
 
         int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
 
@@ -107,6 +117,9 @@ public class NewDialogueView : DialogueViewBase
 
         // Get the index of the first vertex used by this text element.
         int vertexIndex = textInfo.characterInfo[i].vertexIndex;
+
+        Color32 c0 = newVertexColors[vertexIndex];
+        c0.a = 255;
 
         newVertexColors[vertexIndex + 0] = c0;
         newVertexColors[vertexIndex + 1] = c0;
@@ -119,7 +132,7 @@ public class NewDialogueView : DialogueViewBase
     }
 
     private void HideCharacters() {
-        lineText.ForceMeshUpdate();
+        //lineText.ForceMeshUpdate();
         TMP_TextInfo textInfo = lineText.textInfo;
 
         Color32[] newVertexColors;
@@ -143,13 +156,16 @@ public class NewDialogueView : DialogueViewBase
             c0 = newVertexColors[vertexIndex];
             c0.a = 0;
 
+            Debug.Log(textInfo.characterInfo[i].character);
+            Debug.Log(c0);
+
             newVertexColors[vertexIndex + 0] = c0;
             newVertexColors[vertexIndex + 1] = c0;
             newVertexColors[vertexIndex + 2] = c0;
             newVertexColors[vertexIndex + 3] = c0;
 
             // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
-            //lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
+            lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
         }
     }
 
