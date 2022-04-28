@@ -24,14 +24,13 @@ public class TextGlow : MonoBehaviour
     public void StartGlowText(TMP_Text text, Color32 glowColor, int startPos, int length) {
         m_TextComponent = text;
         m_Color = glowColor;
-        Coroutine coroutine = StartCoroutine(GlowText(startPos, length));
+        //Coroutine coroutine = StartCoroutine(GlowText(startPos, length));
 
-        Debug.Log(startPos);
-        Debug.Log(length);
+        GlowText(startPos, length);
 
     }
 
-    IEnumerator GlowText(int startPos, int length)
+    void GlowText(int startPos, int length)
     {
         m_TextComponent.ForceMeshUpdate();
 
@@ -41,6 +40,7 @@ public class TextGlow : MonoBehaviour
 
         TMP_MeshInfo[] cachedMeshInfo = textInfo.CopyMeshInfoVertexData();
 
+        // yield return new WaitForSeconds(0.1f);
         // while (true)
         // {
 
@@ -60,6 +60,14 @@ public class TextGlow : MonoBehaviour
                 // Get the index of the first vertex used by this text element.
                 int vertexIndex = textInfo.characterInfo[i].vertexIndex;
 
+                // overwrite all color channels except alpha
+                c0 = newVertexColors[vertexIndex];
+                Debug.Log(textInfo.characterInfo[i].character);
+                Debug.Log(c0);
+                c0.r = m_Color.r;
+                c0.g = m_Color.g;
+                c0.b = m_Color.b;
+
                 newVertexColors[vertexIndex + 0] = c0;
                 newVertexColors[vertexIndex + 1] = c0;
                 newVertexColors[vertexIndex + 2] = c0;
@@ -76,7 +84,7 @@ public class TextGlow : MonoBehaviour
             //     m_TextComponent.UpdateGeometry(textInfo.meshInfo[i].mesh, i);
             // }
 
-            yield return new WaitForSeconds(0.1f);
+            // yield return new WaitForSeconds(0.1f);
         // }
 
     }

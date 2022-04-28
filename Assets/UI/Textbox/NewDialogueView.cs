@@ -71,8 +71,9 @@ public class NewDialogueView : DialogueViewBase
         characterNameText.SetText(dialogueLine.CharacterName);
         lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
         
-        //StartCoroutine(PopInCharactersRandomly());
-        // textGlower.StartGlowText();
+        
+
+        HideCharacters();
 
         // shake!
         foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
@@ -81,6 +82,8 @@ public class NewDialogueView : DialogueViewBase
                 textGlower.StartGlowText(lineText, color, attr.Position, attr.Length);
             }
         }
+
+        StartCoroutine(PopInCharactersRandomly());
 
 
 
@@ -120,7 +123,7 @@ public class NewDialogueView : DialogueViewBase
         TMP_TextInfo textInfo = lineText.textInfo;
 
         Color32[] newVertexColors;
-        Color32 c0 = lineText.color;
+        Color32 c0;
         int characterCount = textInfo.characterCount;
 
         for (int i = 0; i < characterCount; i++) {
@@ -136,7 +139,8 @@ public class NewDialogueView : DialogueViewBase
             // Get the index of the first vertex used by this text element.
             int vertexIndex = textInfo.characterInfo[i].vertexIndex;
 
-            c0 = lineText.color;
+            //c0 = lineText.color;
+            c0 = newVertexColors[vertexIndex];
             c0.a = 0;
 
             newVertexColors[vertexIndex + 0] = c0;
@@ -145,12 +149,12 @@ public class NewDialogueView : DialogueViewBase
             newVertexColors[vertexIndex + 3] = c0;
 
             // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
-            lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
+            //lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
         }
     }
 
     IEnumerator PopInCharactersRandomly() {
-        HideCharacters();
+        //HideCharacters();
 
         //lineText.ForceMeshUpdate();
         TMP_TextInfo textInfo = lineText.textInfo;
