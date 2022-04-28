@@ -148,14 +148,14 @@ Shader "Custom/Field" {
                 f.saturation = lerp(_SatMin, _SatMax, dist);
                 f.value = lerp(_ValMin, _ValMax, dist);
 
-                TRANSFER_VERTEX_TO_FRAGMENT(f);
-                UNITY_TRANSFER_FOG(f, f.pos);
-
                 f.uvControl = v.uvControl;
                 f.uvSplat0 = v.uvSplat0;
                 f.uvSplat1 = v.uvSplat1;
                 f.uvSplat2 = v.uvSplat2;
                 f.uvSplat3 = v.uvSplat3;
+
+                TRANSFER_VERTEX_TO_FRAGMENT(f);
+                UNITY_TRANSFER_FOG(f, f.pos);
 
                 return f;
             }
