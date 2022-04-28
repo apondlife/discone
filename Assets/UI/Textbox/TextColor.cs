@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class TextGlow : MonoBehaviour
+public class TextColor: MonoBehaviour
 {
 
     private TMP_Text m_TextComponent;
@@ -21,24 +21,19 @@ public class TextGlow : MonoBehaviour
         
     }
 
-    public void StartGlowText(TMP_Text text, Color32 glowColor, int startPos, int length) {
+
+    public void ColorText(TMP_Text text, Color32 glowColor, int startPos, int length)
+    {
         m_TextComponent = text;
         m_Color = glowColor;
-        //Coroutine coroutine = StartCoroutine(GlowText(startPos, length));
-
-        GlowText(startPos, length);
-
-    }
-
-    void GlowText(int startPos, int length)
-    {
-        m_TextComponent.ForceMeshUpdate();
 
         TMP_TextInfo textInfo = m_TextComponent.textInfo;
+        Debug.Log(text);
+        Debug.Log(textInfo);
 
         int loopCount = 0;
 
-        TMP_MeshInfo[] cachedMeshInfo = textInfo.CopyMeshInfoVertexData();
+        //TMP_MeshInfo[] cachedMeshInfo = textInfo.CopyMeshInfoVertexData();
 
         // yield return new WaitForSeconds(0.1f);
         // while (true)
@@ -62,11 +57,11 @@ public class TextGlow : MonoBehaviour
 
                 // overwrite all color channels except alpha
                 c0 = newVertexColors[vertexIndex];
-                Debug.Log(textInfo.characterInfo[i].character);
-                Debug.Log(c0);
                 c0.r = m_Color.r;
                 c0.g = m_Color.g;
                 c0.b = m_Color.b;
+                Debug.Log(textInfo.characterInfo[i].character);
+                Debug.Log(c0);
 
                 newVertexColors[vertexIndex + 0] = c0;
                 newVertexColors[vertexIndex + 1] = c0;
@@ -75,6 +70,8 @@ public class TextGlow : MonoBehaviour
 
                 // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
                 m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
+
+                Debug.Log(textInfo.meshInfo[materialIndex].colors32[vertexIndex]);
             }
 
             // // Push changes into meshes
