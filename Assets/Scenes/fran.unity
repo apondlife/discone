@@ -287,6 +287,10 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 3571385290831870575, guid: 6766f07a37c4ca84d892728a923da5ac, type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 4174218972569985137, guid: 6766f07a37c4ca84d892728a923da5ac, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -338,6 +342,14 @@ PrefabInstance:
     - target: {fileID: 6303833354308215146, guid: 6766f07a37c4ca84d892728a923da5ac, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6303833354308215146, guid: 6766f07a37c4ca84d892728a923da5ac, type: 3}
+      propertyPath: m_AfterStackBundles.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6303833354308215146, guid: 6766f07a37c4ca84d892728a923da5ac, type: 3}
+      propertyPath: m_AfterStackBundles.Array.data[0].assemblyQualifiedName
+      value: FuzzProcessing, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       objectReference: {fileID: 0}
     - target: {fileID: 6394791424242754204, guid: 6766f07a37c4ca84d892728a923da5ac, type: 3}
       propertyPath: m_ClearFlags
@@ -1266,10 +1278,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 170570684519084188, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 678411839616086626, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: dialogueViews.Array.size
       value: 1
@@ -1325,34 +1333,6 @@ PrefabInstance:
     - target: {fileID: 2034220523717006716, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2338946522108840937, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2408367973998133241, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2719241127756806312, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-      propertyPath: m_fontColor.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2719241127756806312, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-      propertyPath: m_fontColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2719241127756806312, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-      propertyPath: m_fontColor.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2719241127756806312, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4278190080
-      objectReference: {fileID: 0}
-    - target: {fileID: 5367794493683897512, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5713826784118993935, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_AnchorMax.y
