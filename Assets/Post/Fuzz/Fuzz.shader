@@ -12,8 +12,6 @@ Shader "Image/Fuzz" {
         _DissolveBand ("Dissolve Band", Range(0, 1.0)) = 0.1
 
         _FuzzOffset ("Fuzz Offset", float) = 0.1
-        _ConvolutionOffsetX ("Convolution Offset X", Range(-1.0, 1.0)) = 0.0
-        _ConvolutionOffsetY ("Convolution Offset Y", Range(-1.0, 1.0)) = 0.0
         _ConvolutionDelta ("Convolution Delta", Range(0, 1.0)) = 0.1
         _HueScale ("Hue Scale", Range(0, 1.0)) = 0.1
         _SaturationScale ("Saturation Scale", Range(0, 1.0)) = 0.1
@@ -115,8 +113,6 @@ Shader "Image/Fuzz" {
             float _DissolveDepth;
 
             float _FuzzOffset;
-            float _ConvolutionOffsetX;
-            float _ConvolutionOffsetY;
 
             // the fragment distance for convolution
             float _ConvolutionDelta;
@@ -203,7 +199,7 @@ Shader "Image/Fuzz" {
 
                 // dissolve far away objects
                 float a = 1.0f;
-                float p = -log2(1.0f - saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, dn0.depth)));
+                float p = saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, dn0.depth));
                 a = step(p, 0.997f * Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
 
                 return float4(col, a);
