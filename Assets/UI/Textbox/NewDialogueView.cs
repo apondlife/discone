@@ -17,10 +17,6 @@ public class NewDialogueView : DialogueViewBase
     internal TextMeshProUGUI lineText = null;
 
     [SerializeField]
-    internal bool inlineCharacterName = true;
-
-
-    [SerializeField]
     internal TextMeshProUGUI characterNameText = null;
 
     LocalizedLine currentLine = null;
@@ -32,6 +28,8 @@ public class NewDialogueView : DialogueViewBase
     [Header("events")]
     [Tooltip("when the next line runs")]
     [SerializeField] VoidEvent m_RunNextLine;
+
+    [SerializeField] TextboxPlacement[] placements;
 
     // -- lifecycle --
     void Start() {
@@ -45,8 +43,27 @@ public class NewDialogueView : DialogueViewBase
 
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
         currentLine = dialogueLine;
-        lineText.gameObject.SetActive(true);
+
+        Debug.Log("running line");
+
+        // choose a random placement
+        // there are more than one possible "placements" for how 
+        // the dialogue UI will be laid out        
+        var placement = placements[UnityEngine.Random.Range(0, placements.Length - 1)];
+        //Debug.Log(placement.gameObject.name);
+        lineText = placement.lineText;
+        characterNameText = placement.characterNameText;
+
         canvasGroup.gameObject.SetActive(true);
+        // set only the chosen placement active
+        placement.gameObject.SetActive(true);
+        for (int i = 0; i < placements.Length; i++) {
+            if (placements[i] != placement) {
+                placements[i].gameObject.SetActive(false);
+                Debug.Log("Setting " + placements[i].gameObject.name + " inactive");
+            }
+        }
+        
 
         //Debug.Log("RUNNING LINE!");
 
@@ -63,7 +80,6 @@ public class NewDialogueView : DialogueViewBase
         // Immediately appear
         canvasGroup.interactable = true;
         canvasGroup.alpha = 1;
-        canvasGroup.blocksRaycasts = true;
 
         onDialogueLineFinished();
     }
@@ -156,7 +172,6 @@ public class NewDialogueView : DialogueViewBase
 
         canvasGroup.interactable = false;
         canvasGroup.alpha = 0;
-        canvasGroup.blocksRaycasts = false;
         onDismissalComplete();
     }
 
