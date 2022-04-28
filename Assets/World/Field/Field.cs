@@ -223,6 +223,12 @@ public sealed class Field: MonoBehaviour {
             return;
         }
 
+        // don't create chunks in prefab mode
+        var preview = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+        if (preview != null) {
+            return;
+        }
+
         // get the look position and direction
         var ct = camera.transform;
         var lp = ct.position;
@@ -268,6 +274,9 @@ public sealed class Field: MonoBehaviour {
         while (t.childCount > 0) {
             DestroyImmediate(t.GetChild(0).gameObject);
         }
+
+        // reset target coord to sentinel
+        m_TargetCoord = new Vector2Int(69, 420);
         #endif
     }
 
