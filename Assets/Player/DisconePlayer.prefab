@@ -4939,8 +4939,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d1a9dd0a871fa749abd0092c76174bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_SwitchCharacter: {fileID: 11400000, guid: 1ffcf622465e24d1f82887e4c9b64359, type: 2}
 --- !u!114 &8277217553599077214
 MonoBehaviour:
@@ -4952,8 +4952,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f47328428d54ff43952147249a7a7f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   InputAction: {fileID: -416993907950900620, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   Type: 0
   Event:
@@ -4968,7 +4968,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument:
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!1 &2541381794746075499
@@ -5014,8 +5014,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 390002ee3bd7445d1b740bed48499e3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Collider: {fileID: 1875264780798432568}
 --- !u!135 &1875264780798432568
 SphereCollider:
@@ -9991,9 +9991,13 @@ PrefabInstance:
       propertyPath: m_DefaultBlend.m_Style
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2132299862377982991, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
+      propertyPath: m_Layer
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 3631135297334503179, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_CurrentCharacter
-      value: 
+      value:
       objectReference: {fileID: 0}
     - target: {fileID: 3631135297334503179, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_OnDriveStop.m_PersistentCalls.m_Calls.Array.size
@@ -10013,11 +10017,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3631135297334503179, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_OnDriveStop.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
+      value:
       objectReference: {fileID: 11400000, guid: a20131d6441f0476d85d19e4e9f1c56b, type: 2}
     - target: {fileID: 3631135297334503179, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_OnDriveStart.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
+      value:
       objectReference: {fileID: 11400000, guid: 0deed690cad61482db6659a55125900d, type: 2}
     - target: {fileID: 3631135297334503179, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_OnDriveStop.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -10097,7 +10101,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8363059297454598032, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_TargetTexture
-      value: 
+      value:
       objectReference: {fileID: 8400000, guid: 3e9b166e85c9d1145813b99f63c87b00, type: 2}
     - target: {fileID: 8363059297454598032, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_BackGroundColor.a
@@ -10178,8 +10182,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2896fe1bec46646a68ead9d88066cbb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_DriveStart: {fileID: 11400000, guid: 0deed690cad61482db6659a55125900d, type: 2}
   m_DriveStop: {fileID: 11400000, guid: a20131d6441f0476d85d19e4e9f1c56b, type: 2}
   m_IsDialogueActiveChanged: {fileID: 11400000, guid: e9934c9706c7948238d271c8498ab275, type: 2}
@@ -10200,8 +10204,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   attenuationObject: {fileID: 0}
   ListenerNumber: -1
 --- !u!114 &6036783965226970554
@@ -10214,8 +10218,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 290f4e363fc1d6d4e89a96bb495b8255, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Variable: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
   m_IsTransient: 0
 --- !u!114 &2221735472539933566 stripped
@@ -10227,8 +10231,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f4eb074780c6da48ab6b084a8051722, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1 &3541555098412673283 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2132299862377982991, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
@@ -10244,8 +10248,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   sharedProfile: {fileID: 11400000, guid: 0fbe39ccb0ff72f449e1f20637bc8690, type: 2}
   isGlobal: 1
   blendDistance: 0
@@ -10261,12 +10265,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   volumeTrigger: {fileID: 6083958641782784743}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2147483648
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
   antialiasingMode: 0
@@ -10311,19 +10315,6 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
---- !u!114 &6355166514911937530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3541555098412673283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6ba4486e04404252abb7e0dc8294158, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: c967b86a272f14f279abca58200a7d10, type: 2}
 --- !u!4 &6083958641782784743 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
