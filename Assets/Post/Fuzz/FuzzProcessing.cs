@@ -12,7 +12,11 @@ public sealed class FuzzProcessing : PostProcessEffectSettings {
     public FloatParameter HueShift = new FloatParameter { value = 0.0f };
     public FloatParameter SaturationShift = new FloatParameter { value = 0.0f };
     public FloatParameter ValueShift = new FloatParameter { value = 0.0f };
+
+    [Range(0, 1)]
     public FloatParameter DissolveDepth = new FloatParameter { value = 0.1f };
+
+    [Range(0, 1)]
     public FloatParameter DissolveBand = new FloatParameter { value = 0.1f };
     public FloatParameter FuzzOffset = new FloatParameter { value = 0.1f };
     public FloatParameter ConvolutionDelta = new FloatParameter { value = 0.1f };
