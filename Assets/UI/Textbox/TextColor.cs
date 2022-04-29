@@ -22,16 +22,17 @@ public class TextColor: MonoBehaviour
     }
 
 
-    public void ColorText(TMP_Text text, Color32 glowColor, int startPos, int length)
+    public async void ColorText(TMP_Text text, Color32 glowColor, int startPos, int length)
     {
         m_TextComponent = text;
         m_Color = glowColor;
+        
+        m_TextComponent.ForceMeshUpdate();
 
         TMP_TextInfo textInfo = m_TextComponent.textInfo;
-        Debug.Log(text);
-        Debug.Log(textInfo);
-
-        int loopCount = 0;
+        Debug.Log(text.text);
+        Debug.Log(textInfo.characterCount);
+        // Debug.Log(textInfo.);
 
         //TMP_MeshInfo[] cachedMeshInfo = textInfo.CopyMeshInfoVertexData();
 
@@ -44,6 +45,7 @@ public class TextColor: MonoBehaviour
                 Color32[] newVertexColors;
                 Color32 c0 = m_Color;
 
+                Debug.Log(i);
                 int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
 
                 // Get the vertex colors of the mesh used by this text element (character or sprite).
