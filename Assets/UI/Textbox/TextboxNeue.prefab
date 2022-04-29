@@ -161,7 +161,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Jumping up and down on this spot is actually
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5a0cd71629d2141499106f7fdf979bcd, type: 2}
   m_sharedMaterial: {fileID: -1352112186242232113, guid: 5a0cd71629d2141499106f7fdf979bcd, type: 2}
@@ -303,7 +303,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -237, y: 290}
+  m_AnchoredPosition: {x: -231, y: 488}
   m_SizeDelta: {x: 293.8883, y: 125.3061}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1511296259019260871
@@ -486,7 +486,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  m_text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit  dolor sit amet,
+    consectetur   dolor sit amet, consectetur  dolor sit amet, consectetur   dolor
+    sit amet, consectetur '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5a0cd71629d2141499106f7fdf979bcd, type: 2}
   m_sharedMaterial: {fileID: -1352112186242232113, guid: 5a0cd71629d2141499106f7fdf979bcd, type: 2}
@@ -533,7 +535,7 @@ MonoBehaviour:
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 5027981888430096835}
   m_enableKerning: 1
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
@@ -3117,8 +3119,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -152.2703}
-  m_SizeDelta: {x: 961.3386, y: 304.5407}
+  m_AnchoredPosition: {x: -843.3537, y: 303.7796}
+  m_SizeDelta: {x: 389.4781, y: 384.4095}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &6469862975477117766
 GameObject:
@@ -3347,7 +3349,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4646140719416559489
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3614,7 +3616,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 9.804016, y: 6.0789948}
+  m_AnchoredPosition: {x: 9.804016, y: 6.0790253}
   m_SizeDelta: {x: -98.75903, y: -80.55499}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6515358109286397818
@@ -3645,7 +3647,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  m_text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit  dolor sit amet,
+    consectetur   dolor sit amet, consectetur  dolor sit amet, consectetur   dolor
+    sit amet, consectetur '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5a0cd71629d2141499106f7fdf979bcd, type: 2}
   m_sharedMaterial: {fileID: -1352112186242232113, guid: 5a0cd71629d2141499106f7fdf979bcd, type: 2}
@@ -3690,7 +3694,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 6
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
@@ -3707,7 +3711,7 @@ MonoBehaviour:
   m_IsTextObjectScaleStatic: 0
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
+  m_pageToDisplay: 3
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0

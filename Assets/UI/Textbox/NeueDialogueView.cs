@@ -52,8 +52,8 @@ public class NeueDialogueView : DialogueViewBase
         if (currentLine == null || currentLine.CharacterName != dialogueLine.CharacterName) {
             currentLine = dialogueLine;
             Debug.Log(dialogueLine.CharacterName);
-            Debug.Log(dialogueLine.CharacterName);
-            placement = placements[UnityEngine.Random.Range(0, placements.Length - 1)];
+            //placement = placements[UnityEngine.Random.Range(0, placements.Length - 1)];
+            placement = placements[0];
             lineText = placement.lineText;
             characterNameText = placement.characterNameText;
 
@@ -77,7 +77,7 @@ public class NeueDialogueView : DialogueViewBase
 
         //HideCharacters();
 
-        // shake!
+        // color the text
         foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
             if (attr.Name == "em") {
                 Color32 color = placement.color;
