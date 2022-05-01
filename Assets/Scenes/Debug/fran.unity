@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.8293769, g: 0.52099943, b: 0.8073387, a: 1}
+  m_IndirectSpecularColor: {r: 0.82932997, g: 0.520942, b: 0.80729127, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -787,6 +787,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dea54f7fccc0b4e99966e567280c1593, type: 3}
+--- !u!114 &804434204 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1691391751399296973, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+  m_PrefabInstance: {fileID: 542221790792341997}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f09f00ad79b2448286a499eca51a9b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1067834493
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -912,17 +923,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbee4fbcb00d71f4aad16e754a74fddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1489338769 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 237454419305321278, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-  m_PrefabInstance: {fileID: 542221790792341997}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a90d98e5b8f3c4ca7b9608e8e3ecf071, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1562734968 stripped
@@ -1109,7 +1109,7 @@ PrefabInstance:
     - target: {fileID: 678411839616086626, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: dialogueViews.Array.data[0]
       value: 
-      objectReference: {fileID: 1489338769}
+      objectReference: {fileID: 804434204}
     - target: {fileID: 678411839616086626, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: dialogueViews.Array.data[1]
       value: 
@@ -1157,6 +1157,14 @@ PrefabInstance:
     - target: {fileID: 2034220523717006716, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3932881770393435795, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+      propertyPath: m_Name
+      value: TextboxNeueArtfulLinebreak
+      objectReference: {fileID: 0}
+    - target: {fileID: 5554201779145699671, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+      propertyPath: m_Name
+      value: TextboxNeue
       objectReference: {fileID: 0}
     - target: {fileID: 5713826784118993935, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_AnchorMax.y
