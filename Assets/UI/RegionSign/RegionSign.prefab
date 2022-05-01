@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1875366868501240738}
   - component: {fileID: 7738913042890572298}
   - component: {fileID: 7864171175502885902}
-  - component: {fileID: 4201571782177765910}
   m_Layer: 5
   m_Name: RegionSign
   m_TagString: Untagged
@@ -69,47 +68,10 @@ MonoBehaviour:
   m_UIShader: {fileID: 0}
   m_DissolveAmount: {fileID: 11400000, guid: d2ce29af87c924424bbabdd7693b8c4e, type: 2}
   m_LetterboxAmount: {fileID: 11400000, guid: a7700f11af7a846d8b682a93f0649797, type: 2}
+  m_RegionEntered: {fileID: 11400000, guid: 2e7aa35edf29f6c418f1cf45dd2488c9, type: 2}
   dissolveTime: 2.76
   textDuration: 6.25
   letterboxTweenTime: 0.35
---- !u!114 &4201571782177765910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5198444820025073509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 775f7409782fa4b619d9153405dd1c25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _developerDescription: 
-  _unityEventResponse:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7864171175502885902}
-        m_TargetAssemblyTypeName: RegionSign, Assembly-CSharp
-        m_MethodName: OnRegionEntered
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _actionResponses: []
-  _conditions: []
-  _operator: 0
-  _replayEventBufferOnRegister: 1
-  _eventReference:
-    _usage: 0
-    _event: {fileID: 11400000, guid: a22850600f92d43339cf47574830c16d, type: 2}
-    _eventInstancer: {fileID: 0}
-    _variable: {fileID: 0}
-    _variableInstancer: {fileID: 0}
 --- !u!1 &8914262258817738477
 GameObject:
   m_ObjectHideFlags: 0
