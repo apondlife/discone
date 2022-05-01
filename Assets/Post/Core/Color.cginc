@@ -26,7 +26,7 @@ float3 IntoRgb(float3 c) {
 /// get the lumninance from an rgb color using an arbitrary mix found on the internet
 /// at some point
 float1 GetLuminance(float3 c) {
-    return 0.3f * c.r + 0.6f * c.g + 0.11f * c.b;
+    return dot(c, float3(0.3f, 0.6f, 0.11f));
 }
 
 #endif
