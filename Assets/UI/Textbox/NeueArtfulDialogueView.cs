@@ -7,7 +7,7 @@ using Yarn.Markup;
 using TMPro;
 using UnityAtoms.BaseAtoms;
 
-public class NeueDialogueView : DialogueViewBase
+public class NeueArtfulDialogueView : DialogueViewBase
 {
 
     [SerializeField]
@@ -21,7 +21,7 @@ public class NeueDialogueView : DialogueViewBase
 
     LocalizedLine currentLine = null;
 
-    TextboxPlacement placement = null;
+    // NeueArtfulBox box = null;
 
     
     TextColor textColorer;
@@ -31,7 +31,7 @@ public class NeueDialogueView : DialogueViewBase
     [Tooltip("when the next line runs")]
     [SerializeField] VoidEvent m_RunNextLine;
 
-    [SerializeField] TextboxPlacement[] placements;
+    [SerializeField] NeueArtfulBox[] boxes;
 
     // -- lifecycle --
     void Start() {
@@ -46,55 +46,80 @@ public class NeueDialogueView : DialogueViewBase
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
         
 
-        // if we're a new character, or have changed characters, choose a random placement
-        // there are more than one possible "placements" for how 
-        // the dialogue UI will be laid out 
+        // if we're a new character, or have changed characters, try to fit
+        // the line in the smallest possible placement
+        // the placements are sorted from smallest to largest
         if (currentLine == null || currentLine.CharacterName != dialogueLine.CharacterName) {
             currentLine = dialogueLine;
+            Debug.Log("artful!");
             Debug.Log(dialogueLine.CharacterName);
-            //placement = placements[UnityEngine.Random.Range(0, placements.Length - 1)];
-            placement = placements[0];
-            lineText = placement.lineText;
-            characterNameText = placement.characterNameText;
 
-            // set only the chosen placement active
-            placement.gameObject.SetActive(true);
-            for (int i = 0; i < placements.Length; i++) {
-                if (placements[i] != placement) {
-                    placements[i].gameObject.SetActive(false);
+            
+
+            
+            for (int i = 0; i < boxes.Length; i++) {
+
+                NeueArtfulBox tryBox = boxes[i];
+                if (tryBox.currentlyUsed) {
+                    continue;
                 }
+
+                lineText = tryBox.lineText;
+
+                // try to fit line in trybox
+                lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
+                lineText.ForceMeshUpdate();
+                TMP_TextInfo textInfo = lineText.textInfo;
+
+                Debug.Log(dialogueLine.TextWithoutCharacterName.Text);
+                Debug.Log(textInfo.characterCount);
+                Debug.Log(dialogueLine.TextWithoutCharacterName.Text.Length);
+                
+                
+
+            
+
+            //         lineText = placement.lineText;
+            // characterNameText = placement.characterNameText;
+
+            // // set only the chosen placement active
+            // placement.gameObject.SetActive(true);
+
+            //     // if (placements[i] != placement) {
+                //     placements[i].gameObject.SetActive(false);
+                // }
             }          
         }    
         
         
         canvasGroup.gameObject.SetActive(true);
-        characterNameText.SetText(dialogueLine.CharacterName);
-        lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
+        // characterNameText.SetText(dialogueLine.CharacterName);
+        // lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
 
-        lineText.renderMode = TextRenderFlags.DontRender;
+        // lineText.renderMode = TextRenderFlags.DontRender;
         
         
 
         //HideCharacters();
 
         // color the text
-        foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
-            if (attr.Name == "em") {
-                Color32 color = placement.color;
-                textColorer.ColorText(lineText, color, attr.Position, attr.Length);
-            }
-            // // TEST
-            // Debug.Log("TEST");
-            // TMP_TextInfo textInfo = lineText.textInfo;
-            // var charInfo = textInfo.characterInfo[attr.Position];
-            // Debug.Log(charInfo.character);
-            // int materialIndex = charInfo.materialReferenceIndex;
-            // Debug.Log(textInfo.meshInfo[materialIndex].colors32[charInfo.vertexIndex]);
-        }
+        // foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
+        //     if (attr.Name == "em") {
+        //         Color32 color = placement.color;
+        //         textColorer.ColorText(lineText, color, attr.Position, attr.Length);
+        //     }
+        //     // // TEST
+        //     // Debug.Log("TEST");
+        //     // TMP_TextInfo textInfo = lineText.textInfo;
+        //     // var charInfo = textInfo.characterInfo[attr.Position];
+        //     // Debug.Log(charInfo.character);
+        //     // int materialIndex = charInfo.materialReferenceIndex;
+        //     // Debug.Log(textInfo.meshInfo[materialIndex].colors32[charInfo.vertexIndex]);
+        // }
 
 
-        HideCharacters();
-        StartCoroutine(PopInCharactersRandomly());
+        // HideCharacters();
+        // StartCoroutine(PopInCharactersRandomly());
 
 
 
