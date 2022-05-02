@@ -10,4 +10,6 @@ public class NeueArtfulBox : MonoBehaviour
 
     public TextMeshProUGUI lineText = null;
 
+    public GameObject continueSignal;
+
 }
