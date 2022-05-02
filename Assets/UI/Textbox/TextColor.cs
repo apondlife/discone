@@ -27,12 +27,9 @@ public class TextColor: MonoBehaviour
         m_TextComponent = text;
         m_Color = glowColor;
         
-        m_TextComponent.ForceMeshUpdate();
 
         TMP_TextInfo textInfo = m_TextComponent.textInfo;
-        Debug.Log(text.text);
-        Debug.Log(textInfo.characterCount);
-        // Debug.Log(textInfo.);
+
 
         //TMP_MeshInfo[] cachedMeshInfo = textInfo.CopyMeshInfoVertexData();
 
@@ -45,14 +42,11 @@ public class TextColor: MonoBehaviour
                 Color32[] newVertexColors;
                 Color32 c0 = m_Color;
 
-                Debug.Log(i);
                 int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
 
                 // Get the vertex colors of the mesh used by this text element (character or sprite).
                 newVertexColors = textInfo.meshInfo[materialIndex].colors32;
 
-                // Debug.Log(i);
-                // Debug.Log(textInfo.characterInfo[i].character);
 
                 // Get the index of the first vertex used by this text element.
                 int vertexIndex = textInfo.characterInfo[i].vertexIndex;
@@ -62,8 +56,6 @@ public class TextColor: MonoBehaviour
                 c0.r = m_Color.r;
                 c0.g = m_Color.g;
                 c0.b = m_Color.b;
-                Debug.Log(textInfo.characterInfo[i].character);
-                Debug.Log(c0);
 
                 newVertexColors[vertexIndex + 0] = c0;
                 newVertexColors[vertexIndex + 1] = c0;
@@ -72,8 +64,6 @@ public class TextColor: MonoBehaviour
 
                 // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
                 m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
-
-                Debug.Log(textInfo.meshInfo[materialIndex].colors32[vertexIndex]);
             }
 
             // // Push changes into meshes

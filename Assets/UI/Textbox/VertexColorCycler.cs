@@ -57,14 +57,16 @@ namespace TMPro.Examples
                 // Only change the vertex color if the text element is visible.
                 if (textInfo.characterInfo[currentCharacter].isVisible)
                 {
-                    c0 = new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), 0);
+                    c0 = new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), 255);
 
                     newVertexColors[vertexIndex + 0] = c0;
                     newVertexColors[vertexIndex + 1] = c0;
                     newVertexColors[vertexIndex + 2] = c0;
                     newVertexColors[vertexIndex + 3] = c0;
 
-                    textInfo.characterInfo[currentCharacter].isVisible = false;
+                    Debug.Log("COLOR: " + textInfo.characterInfo[currentCharacter].character);
+
+                    // textInfo.characterInfo[currentCharacter].isVisible = false;
 
                     // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
                     m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
@@ -75,7 +77,7 @@ namespace TMPro.Examples
 
                 currentCharacter = (currentCharacter + 1) % characterCount;
 
-                yield return new WaitForSeconds(0.05f);
+                yield return new WaitForSeconds(1f);
             }
         }
 

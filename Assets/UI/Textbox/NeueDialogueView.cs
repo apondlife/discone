@@ -78,19 +78,19 @@ public class NeueDialogueView : DialogueViewBase
         //HideCharacters();
 
         // color the text
-        foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
-            if (attr.Name == "em") {
-                Color32 color = placement.color;
-                textColorer.ColorText(lineText, color, attr.Position, attr.Length);
-            }
-            // // TEST
-            // Debug.Log("TEST");
-            // TMP_TextInfo textInfo = lineText.textInfo;
-            // var charInfo = textInfo.characterInfo[attr.Position];
-            // Debug.Log(charInfo.character);
-            // int materialIndex = charInfo.materialReferenceIndex;
-            // Debug.Log(textInfo.meshInfo[materialIndex].colors32[charInfo.vertexIndex]);
-        }
+        // foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
+        //     if (attr.Name == "em") {
+        //         Color32 color = placement.color;
+        //         textColorer.ColorText(lineText, color, attr.Position, attr.Length);
+        //     }
+        //     // // TEST
+        //     // Debug.Log("TEST");
+        //     // TMP_TextInfo textInfo = lineText.textInfo;
+        //     // var charInfo = textInfo.characterInfo[attr.Position];
+        //     // Debug.Log(charInfo.character);
+        //     // int materialIndex = charInfo.materialReferenceIndex;
+        //     // Debug.Log(textInfo.meshInfo[materialIndex].colors32[charInfo.vertexIndex]);
+        // }
 
 
         HideCharacters();
