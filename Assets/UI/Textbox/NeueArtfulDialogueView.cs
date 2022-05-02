@@ -80,7 +80,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
         }
 
         HideCharacters(currentBox.lineText);
-        PopInCharactersRandomly(currentBox.lineText);
+        //PopInCharactersRandomly(currentBox.lineText);
 
         // Immediately appear
         canvasGroup.interactable = true;
@@ -171,6 +171,8 @@ public class NeueArtfulDialogueView : DialogueViewBase
     private void HideCharacters(TextMeshProUGUI lineText) {
         //lineText.ForceMeshUpdate();
         TMP_TextInfo textInfo = lineText.textInfo;
+
+        Debug.Log("HIDE CHARACTERS");
 
         Color32[] newVertexColors;
         Color32 c0;
