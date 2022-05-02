@@ -1,14 +1,13 @@
-Shader "Custom/Field" {
+Shader "Custom/Sculpture" {
     Properties {
-        _Scale ("Scale", Float) = 1.0
-        _Bands ("Bands", Int) = -1
-        _ViewDist ("View Distance", Float) = 0.0
-        _HueMin ("Hue Min", Range(0.0, 2.0)) = 0.0
-        _HueMax ("Hue Max", Range(0.0, 2.0)) = 0.0
-        _SatMin ("Saturation Min", Range(0.0, 1.0)) = 0.4
-        _SatMax ("Saturation Max", Range(0.0, 1.0)) = 0.4
-        _ValMin ("Value Min", Range(0.0, 1.0)) = 0.87
-        _ValMax ("Value Max", Range(0.0, 1.0)) = 0.87
+        _Tex1 ("Texture 1", 2D) = "white" {}
+        _Tex2 ("Texture 2", 2D) = "white" {}
+        [ShowAsVector2] _HeightSpan ("Height Span", Vector) = (0.0, 0.0, 0.0, 0.0)
+        [ShowAsVector2] _ViewDistSpan ("View Dist Span", Vector) = (0.0, 0.0, 0.0, 0.0)
+        [ShowAsVector2] _HueSpanSrc ("Hue Span (Src)", Vector) = (0.0, 0.0, 0.0, 0.0)
+        [ShowAsVector2] _HueSpanDst ("Hue Span (Dst)", Vector) = (0.0, 0.0, 0.0, 0.0)
+        [ShowAsVector2] _SatSpan ("Sat Span", Vector) = (0.0, 0.0, 0.0, 0.0)
+        [ShowAsVector2] _ValSpan ("Val Span", Vector) = (0.0, 0.0, 0.0, 0.0)
     }
 
     SubShader {
@@ -39,79 +38,99 @@ Shader "Custom/Field" {
             struct VertIn {
                 // NOTE: shadow shader macros require this name
                 float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
             };
 
             /// the fragment shader input
             struct FragIn {
                 // NOTE: shadow shader macros require this name
                 float4 pos : SV_POSITION;
-                float3 wPos : TEXCOORD0;
-                float  saturation : TEXCOORD1;
-                float  value : TEXCOORD2;
+                float2 uv1 : TEXCOORD0;
+                float2 uv2 : TEXCOORD1;
+                float3 pct : TEXCOORD2;
                 LIGHTING_COORDS(3,4)
                 UNITY_FOG_COORDS(5)
-
             };
 
             // -- props --
-            /// the noise scale
-            float _Scale;
+            /// the 1st texture
+            sampler2D _Tex1;
 
-            /// the number of bands
-            float _Bands;
+            /// the 1st texture offset and tiling
+            float4 _Tex1_ST;
 
-            /// the view distance
-            float _ViewDist;
+            /// the 2nd texture
+            sampler2D _Tex2;
 
-            /// the minimum hue
-            float _HueMin;
+            /// the 2nd texture offset and tiling
+            float4 _Tex2_ST;
 
-            /// the maximum hue
-            float _HueMax;
+            /// the world height span of the object
+            float2 _HeightSpan;
 
-            /// the min saturation
-            float _SatMin;
+            /// the view distance span
+            float2 _ViewDistSpan;
 
-            /// the max saturation
-            float _SatMax;
+            /// the source hue span
+            float2 _HueSpanSrc;
 
-            /// the min value
-            float _ValMin;
+            /// the destination hue span
+            float2 _HueSpanDst;
 
-            /// the max value
-            float _ValMax;
+            /// the saturation span
+            float2 _SatSpan;
+
+            /// the value span
+            float2 _ValSpan;
 
             // -- program --
             FragIn DrawVert(VertIn v) {
-                float3 pos = v.vertex.xyz;
+                float3 wPos = mul(unity_ObjectToWorld, v.vertex);
 
-                FragIn o;
-                o.pos = UnityObjectToClipPos(v.vertex);
-                o.wPos = mul(unity_ObjectToWorld, float4(pos, 1.0));
+                FragIn f;
+                f.pos = UnityObjectToClipPos(v.vertex);
 
-                float dist = saturate(distance(_WorldSpaceCameraPos, o.wPos) / _ViewDist);
-                o.saturation = lerp(_SatMin, _SatMax, dist);
-                o.value = lerp(_ValMin, _ValMax, dist);
+                // calculate pct vector
+                f.pct.y = Unlerp(_HeightSpan.x, _HeightSpan.y, wPos.y);
+                f.pct.z = UnlerpSpan(_ViewDistSpan, distance(_WorldSpaceCameraPos, wPos));
 
-                TRANSFER_VERTEX_TO_FRAGMENT(o);
-                UNITY_TRANSFER_FOG(o, o.pos);
+                // build uvs (override y with height pct)
+                f.uv1 = v.uv * _Tex1_ST.xy + _Tex1_ST.zw;
+                f.uv1.y = f.pct.y;
 
-                return o;
+                f.uv2 = v.uv * _Tex2_ST.xy + _Tex2_ST.zw;
+                // f.uv2.y = f.pct.y;
+
+                TRANSFER_VERTEX_TO_FRAGMENT(f);
+                UNITY_TRANSFER_FOG(f, f.pos);
+
+                return f;
             }
 
             fixed4 DrawFrag(FragIn f) : SV_Target {
-                // scale by uniform
-                // float2 st = f.wPos.xz * _Scale;
+                // sample textures
+                float3 tex1 = tex2D(_Tex1, f.uv1).rgb;
+                float3 tex2 = tex2D(_Tex2, f.uv2).rgb;
 
-                // generate image
-                float3 c = IntoRgb(float3(
-                    lerp(_HueMin, _HueMax, f.wPos.y),
-                    f.saturation,
-                    f.value
-                ));
+                // sample hues based from spans
+                float1 huePct = f.pct.y;
+                float1 hueSrc = fmod(LerpSpan(_HueSpanSrc, huePct), 1.0f);
+                float1 hueDst = fmod(LerpSpan(_HueSpanDst, huePct), 1.0f);
+
+                // mix based on some other factor
+                float1 hueMix = GetLuminance(tex1);
+                float1 hue = lerp(hueSrc, hueDst, hueMix);
+
+                // sample saturation based on view distance
+                float1 satPct = 1.0f - tex2.r;
+                float1 sat = LerpSpan(_SatSpan, satPct);
+
+                // sample saturation based on view distance
+                float1 valPct = satPct;
+                float1 val = LerpSpan(_ValSpan, valPct);
 
                 // produce color
-                fixed4 col = fixed4(c, 1.0f);
+                fixed4 col = fixed4(IntoRgb(float3(hue, sat, val)), 1.0f);
 
                 // apply lighting & fog
                 col *= LIGHT_ATTENUATION(f);
