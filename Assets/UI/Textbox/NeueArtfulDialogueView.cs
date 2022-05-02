@@ -31,7 +31,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
 
     NeueArtfulBox currentBox = null;
 
-    
+
     TextColor textColorer;
     Color32 color;
 
@@ -54,7 +54,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
     }
 
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
-        
+
         // if we're a new character, or have changed characters,
         // hide all the boxes to start
         if (lastLine == null || lastLine.CharacterName != dialogueLine.CharacterName) {
@@ -69,7 +69,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
                 boxes[i].gameObject.SetActive(false);
                 boxes[i].currentlyUsed = false;
             }
-        }    
+        }
 
         bool foundFit = FindBoxFit(dialogueLine, true);
 
@@ -120,8 +120,8 @@ public class NeueArtfulDialogueView : DialogueViewBase
             if (textInfo.characterCount == dialogueLine.TextWithoutCharacterName.Text.Length) {
                 // Debug.Log(dialogueLine.TextWithoutCharacterName.Text);
                 // Debug.Log("fits!");
-                tryBox.lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
                 tryBox.gameObject.SetActive(true);
+                tryBox.lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
                 tryBox.currentlyUsed = true;
 
                 // turn off previous continue thing - turn on new one
@@ -136,10 +136,10 @@ public class NeueArtfulDialogueView : DialogueViewBase
             } else {
                 tryBox.lineText.SetText(cachedText);
             }
-            
-        }  
 
-        return false; 
+        }
+
+        return false;
     }
 
     private void ShowCharacter(int i) {
@@ -191,7 +191,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
 
             //c0 = lineText.color;
             c0 = newVertexColors[vertexIndex];
-            c0.a = 0;
+            // c0.a = 0;
 
             Debug.Log(textInfo.characterInfo[i].character);
             Debug.Log(c0);
