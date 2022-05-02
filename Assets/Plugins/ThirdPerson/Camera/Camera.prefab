@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 299324000264898386}
   m_Layer: 6
-  m_Name: LookAtTarget
+  m_Name: LootAtTarget
   m_TagString: Untagged
   m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 4801873550519773364}
   - component: {fileID: 4801873550519773367}
   - component: {fileID: 4801873550519773366}
+  - component: {fileID: 2649978871504103257}
   m_Layer: 6
   m_Name: cm
   m_TagString: Untagged
@@ -88,7 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4044717213e31446939f7bd49c896ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  m_TrackedObjectOffset: {x: 0, y: 1, z: 0}
   m_LookaheadTime: 0.362
   m_LookaheadSmoothing: 7.6
   m_LookaheadIgnoreY: 0
@@ -98,11 +99,24 @@ MonoBehaviour:
   m_ScreenY: 0.71
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
-  m_SoftZoneWidth: 0.32
+  m_SoftZoneWidth: 0
   m_SoftZoneHeight: 0.38
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
+--- !u!114 &2649978871504103257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4801873550519773363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36d1163fa822e8b418a0a603ec078d5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Damping: 0
 --- !u!1 &4801873551099959023
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,8 +142,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4801873551099959023}
-  m_LocalRotation: {x: -0.70090914, y: 0.0004196997, z: 0.00041243774, w: 0.71325034}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.10354017, y: -0.000000059604638, z: -0.00000001117587, w: 0.99462533}
+  m_LocalPosition: {x: 0.0000006854534, y: 1, z: -10.000002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -158,7 +172,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 299324000264898386}
   m_Follow: {fileID: 8096046607654868996}
   m_Lens:
-    FieldOfView: 60
+    FieldOfView: 69
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 5000
@@ -217,7 +231,7 @@ GameObject:
   m_Layer: 0
   m_Name: FollowTarget
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -1412012063857583412, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -309,7 +323,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7821159961700856696}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -398,8 +412,8 @@ MonoBehaviour:
   m_PitchAcceleration: 100
   m_FreeLook_YawSpeed: 45
   m_FreeLook_PitchSpeed: 45
-  m_FreeLook_MinPitch: 0.6
-  m_FreeLook_MaxPitch: 0.6
+  m_FreeLook_MinPitch: -45
+  m_FreeLook_MaxPitch: 80
   m_UndershootCurve:
     serializedVersion: 2
     m_Curve:
@@ -499,7 +513,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8544393354180784480}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.79999995, z: 0}
+  m_LocalPosition: {x: 0, y: -0.737, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -522,5 +536,5 @@ MonoBehaviour:
   m_MaxDistance: 20
   m_GroundLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 385
   m_Target: {fileID: 299324000264898386}
