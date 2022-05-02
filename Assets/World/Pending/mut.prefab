@@ -1,5 +1,52 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &920384005731252759
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6356264435020396499}
+  - component: {fileID: 95166120247690346}
+  m_Layer: 0
+  m_Name: SkyboxRegionChanger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6356264435020396499
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920384005731252759}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3400257479618877372}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &95166120247690346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920384005731252759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8b4df4913b581b4d99e0fcf54acd0b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ChangeDuration: 6.9
+  m_SkyboxMaterial: {fileID: 2100000, guid: 2643f8c982658e2429b3abdb9eb18c7b, type: 2}
+  m_RegionEntered: {fileID: 11400000, guid: 2e7aa35edf29f6c418f1cf45dd2488c9, type: 2}
 --- !u!1 &1037596584765127908
 GameObject:
   m_ObjectHideFlags: 0
@@ -233,6 +280,7 @@ Transform:
   - {fileID: 2393996822344915342}
   - {fileID: 7318736953752771078}
   - {fileID: 5622423850439994297}
+  - {fileID: 6356264435020396499}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -373,7 +421,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1157838640010231973, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
       propertyPath: m_AssetId
-      value: 028479e9d066144b09e4c9ebdd70e6eb
+      value: 2d028df88f4417e4fa80f72d46d8b418
       objectReference: {fileID: 0}
     - target: {fileID: 2771430499345863989, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
       propertyPath: m_RootOrder
@@ -571,7 +619,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1157838640010231973, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
       propertyPath: m_AssetId
-      value: 028479e9d066144b09e4c9ebdd70e6eb
+      value: 2d028df88f4417e4fa80f72d46d8b418
       objectReference: {fileID: 0}
     - target: {fileID: 2771430499345863989, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
       propertyPath: m_RootOrder
@@ -637,7 +685,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1157838640010231973, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
       propertyPath: m_AssetId
-      value: 028479e9d066144b09e4c9ebdd70e6eb
+      value: 2d028df88f4417e4fa80f72d46d8b418
       objectReference: {fileID: 0}
     - target: {fileID: 2771430499345863989, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
       propertyPath: m_RootOrder
