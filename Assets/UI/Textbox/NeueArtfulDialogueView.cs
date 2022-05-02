@@ -14,8 +14,8 @@ public class NeueArtfulDialogueView : DialogueViewBase
     [SerializeField]
     internal CanvasGroup canvasGroup;
 
-    [SerializeField]
-    internal TextMeshProUGUI lineText = null;
+    // [SerializeField]
+    // internal TextMeshProUGUI lineText = null;
 
     [SerializeField]
     internal TextMeshProUGUI characterNameText = null;
@@ -47,6 +47,10 @@ public class NeueArtfulDialogueView : DialogueViewBase
         canvasGroup.alpha = 0;
         textColorer = GetComponent<TextColor>();
         color = nameBackground.color;
+
+        foreach (var box in boxes) {
+            box.continueSignal.gameObject.SetActive(false);
+        }
     }
 
     public void Reset() {
@@ -58,10 +62,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
         // if we're a new character, or have changed characters,
         // hide all the boxes to start
         if (lastLine == null || lastLine.CharacterName != dialogueLine.CharacterName) {
-            // Debug.Log(currentLine)
             lastLine = dialogueLine;
-            Debug.Log("artful commence!");
-            Debug.Log(dialogueLine.CharacterName);
             canvasGroup.gameObject.SetActive(true);
             characterNameText.SetText(dialogueLine.CharacterName);
 
@@ -72,6 +73,15 @@ public class NeueArtfulDialogueView : DialogueViewBase
         }
 
         bool foundFit = FindBoxFit(dialogueLine, true);
+        // currentBox = boxes[0];
+        // currentBox.gameObject.SetActive(true);
+        // currentBox.lineText.text = dialogueLine.TextWithoutCharacterName.Text;
+        //currentBox.lineText.renderMode = TextRenderFlags.DontRender;
+
+        // this just gets rid of the render that's queue'd by setting the text
+        currentBox.lineText.ForceMeshUpdate();
+
+        
 
         foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
             if (attr.Name == "em") {
@@ -80,7 +90,8 @@ public class NeueArtfulDialogueView : DialogueViewBase
         }
 
         HideCharacters(currentBox.lineText);
-        //PopInCharactersRandomly(currentBox.lineText);
+        StartCoroutine(PopInCharactersRandomly(currentBox.lineText));
+
 
         // Immediately appear
         canvasGroup.interactable = true;
@@ -93,34 +104,19 @@ public class NeueArtfulDialogueView : DialogueViewBase
         for (int i = 0; i < boxes.Length; i++) {
 
             NeueArtfulBox tryBox = boxes[i];
-            Debug.Log("currently used?");
-            Debug.Log(tryBox.gameObject.name);
-            Debug.Log(tryBox.currentlyUsed);
             if (!overwriteOkay && tryBox.currentlyUsed) {
-                Debug.Log(tryBox.gameObject.name + " is currently used");
                 continue;
             }
 
-            lineText = tryBox.lineText;
-            //lineText.renderMode = TextRenderFlags.DontRender;
-
-            // try to fit line in trybox
-            //lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
-            //lineText.ForceMeshUpdate();
-            // TMP_TextInfo textInfo = lineText.textInfo;
             string cachedText = tryBox.lineText.text;
 
             // this actually sets the text of the lint text too
             TMP_TextInfo textInfo = tryBox.lineText.GetTextInfo(dialogueLine.TextWithoutCharacterName.Text);
-
-            Debug.Log(dialogueLine.TextWithoutCharacterName.Text);
-            Debug.Log(textInfo.characterCount);
-            Debug.Log(dialogueLine.TextWithoutCharacterName.Text.Length);
+            tryBox.lineText.SetText(cachedText);
 
             if (textInfo.characterCount == dialogueLine.TextWithoutCharacterName.Text.Length) {
-                // Debug.Log(dialogueLine.TextWithoutCharacterName.Text);
-                // Debug.Log("fits!");
                 tryBox.gameObject.SetActive(true);
+                
                 tryBox.lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
                 tryBox.currentlyUsed = true;
 
@@ -132,7 +128,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
                 currentBox = tryBox;
 
                 return true;
-                break;
+                // break;
             } else {
                 tryBox.lineText.SetText(cachedText);
             }
@@ -142,7 +138,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
         return false;
     }
 
-    private void ShowCharacter(int i) {
+    private async void ShowCharacter(TextMeshProUGUI lineText, int i) {
         TMP_TextInfo textInfo = lineText.textInfo;
 
         Color32[] newVertexColors;
@@ -169,16 +165,14 @@ public class NeueArtfulDialogueView : DialogueViewBase
     }
 
     private void HideCharacters(TextMeshProUGUI lineText) {
-        //lineText.ForceMeshUpdate();
         TMP_TextInfo textInfo = lineText.textInfo;
-
-        Debug.Log("HIDE CHARACTERS");
 
         Color32[] newVertexColors;
         Color32 c0;
         int characterCount = textInfo.characterCount;
 
         for (int i = 0; i < characterCount; i++) {
+
             // Get the index of the material used by the current character.
             int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
 
@@ -191,12 +185,8 @@ public class NeueArtfulDialogueView : DialogueViewBase
             // Get the index of the first vertex used by this text element.
             int vertexIndex = textInfo.characterInfo[i].vertexIndex;
 
-            //c0 = lineText.color;
             c0 = newVertexColors[vertexIndex];
-            // c0.a = 0;
-
-            Debug.Log(textInfo.characterInfo[i].character);
-            Debug.Log(c0);
+            c0.a = 0;
 
             newVertexColors[vertexIndex + 0] = c0;
             newVertexColors[vertexIndex + 1] = c0;
@@ -204,14 +194,15 @@ public class NeueArtfulDialogueView : DialogueViewBase
             newVertexColors[vertexIndex + 3] = c0;
 
             // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
-            lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
+            //lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
+            
         }
+        lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
     }
 
     IEnumerator PopInCharactersRandomly(TextMeshProUGUI lineText) {
         //HideCharacters();
 
-        //lineText.ForceMeshUpdate();
         TMP_TextInfo textInfo = lineText.textInfo;
         int characterCount = textInfo.characterCount;
 
@@ -223,13 +214,30 @@ public class NeueArtfulDialogueView : DialogueViewBase
         int[] randArr = orderedArr.OrderBy(x => rnd.Next()).ToArray();
 
         for (int i = 0; i < characterCount; i++) {
-            ShowCharacter(randArr[i]);
+            ShowCharacter(lineText, randArr[i]);
+
             yield return new WaitForSeconds(0.02f);
         }
 
         yield return new WaitForSeconds(0.05f);
 
     }
+
+    Color32 ProbeColorDebug(TextMeshProUGUI text, int characterIdx) {
+        TMP_TextInfo textInfo = text.textInfo;
+
+        int materialIndex = textInfo.characterInfo[characterIdx].materialReferenceIndex;
+
+        int vertexIndex = textInfo.characterInfo[characterIdx].vertexIndex;
+
+        Color32 c0 = new Color32();
+
+        if (textInfo != null) {
+            c0 = textInfo.meshInfo[materialIndex].colors32[vertexIndex];
+
+        }
+        return c0;
+    } 
 
 
 

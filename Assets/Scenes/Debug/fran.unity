@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.82932997, g: 0.520942, b: 0.80729127, a: 1}
+  m_IndirectSpecularColor: {r: 0.30400288, g: 0.36634344, b: 0.61422855, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -898,6 +898,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0a8b42bd3eb5164cb61a09d312b777c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1335141743 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3571021123347224286, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+  m_PrefabInstance: {fileID: 542221790792341997}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f09f00ad79b2448286a499eca51a9b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1369443635 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2960029541259181285, guid: d3c90f4064219c34d92fa16228c6f295, type: 3}
@@ -907,17 +918,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbee4fbcb00d71f4aad16e754a74fddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1562734968 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5369644482837740118, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-  m_PrefabInstance: {fileID: 542221790792341997}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c6f75446d5564ced986805b81733c43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &2020802413
@@ -1093,11 +1093,19 @@ PrefabInstance:
     - target: {fileID: 678411839616086626, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: dialogueViews.Array.data[0]
       value: 
-      objectReference: {fileID: 542221790792341998}
+      objectReference: {fileID: 1335141743}
     - target: {fileID: 678411839616086626, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: dialogueViews.Array.data[1]
       value: 
-      objectReference: {fileID: 1562734968}
+      objectReference: {fileID: 1335141743}
+    - target: {fileID: 1180981309837780864, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1314024174780785368, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.00048828125
+      objectReference: {fileID: 0}
     - target: {fileID: 1867360895456733522, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
       propertyPath: m_text
       value: Jumping
@@ -1224,17 +1232,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
---- !u!114 &542221790792341998 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3571021123347224286, guid: 6920e7699e57108419bd1fd1b7e77cab, type: 3}
-  m_PrefabInstance: {fileID: 542221790792341997}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f09f00ad79b2448286a499eca51a9b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &8074664019981332516
 PrefabInstance:
   m_ObjectHideFlags: 0
