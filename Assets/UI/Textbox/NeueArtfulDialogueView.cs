@@ -6,6 +6,7 @@ using Yarn.Unity;
 using Yarn.Markup;
 using TMPro;
 using UnityAtoms.BaseAtoms;
+using UnityEngine.UI;
 
 public class NeueArtfulDialogueView : DialogueViewBase
 {
@@ -19,12 +20,20 @@ public class NeueArtfulDialogueView : DialogueViewBase
     [SerializeField]
     internal TextMeshProUGUI characterNameText = null;
 
+    [SerializeField]
+    internal Image nameBackground = null;
+
     LocalizedLine currentLine = null;
 
-    // NeueArtfulBox box = null;
+    LocalizedLine lastLine = null;
+
+    GameObject continueSignal = null;
+
+    NeueArtfulBox currentBox = null;
 
     
     TextColor textColorer;
+    Color32 color;
 
     // -- events --
     [Header("events")]
@@ -37,6 +46,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
     void Start() {
         canvasGroup.alpha = 0;
         textColorer = GetComponent<TextColor>();
+        color = nameBackground.color;
     }
 
     public void Reset() {
@@ -45,89 +55,91 @@ public class NeueArtfulDialogueView : DialogueViewBase
 
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
         
-
-        // if we're a new character, or have changed characters, try to fit
-        // the line in the smallest possible placement
-        // the placements are sorted from smallest to largest
-        if (currentLine == null || currentLine.CharacterName != dialogueLine.CharacterName) {
-            currentLine = dialogueLine;
-            Debug.Log("artful!");
+        // if we're a new character, or have changed characters,
+        // hide all the boxes to start
+        if (lastLine == null || lastLine.CharacterName != dialogueLine.CharacterName) {
+            // Debug.Log(currentLine)
+            lastLine = dialogueLine;
+            Debug.Log("artful commence!");
             Debug.Log(dialogueLine.CharacterName);
+            canvasGroup.gameObject.SetActive(true);
+            characterNameText.SetText(dialogueLine.CharacterName);
 
-            
-
-            
             for (int i = 0; i < boxes.Length; i++) {
-
-                NeueArtfulBox tryBox = boxes[i];
-                if (tryBox.currentlyUsed) {
-                    continue;
-                }
-
-                lineText = tryBox.lineText;
-
-                // try to fit line in trybox
-                lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
-                lineText.ForceMeshUpdate();
-                TMP_TextInfo textInfo = lineText.textInfo;
-
-                Debug.Log(dialogueLine.TextWithoutCharacterName.Text);
-                Debug.Log(textInfo.characterCount);
-                Debug.Log(dialogueLine.TextWithoutCharacterName.Text.Length);
-                
-                
-
-            
-
-            //         lineText = placement.lineText;
-            // characterNameText = placement.characterNameText;
-
-            // // set only the chosen placement active
-            // placement.gameObject.SetActive(true);
-
-            //     // if (placements[i] != placement) {
-                //     placements[i].gameObject.SetActive(false);
-                // }
-            }          
+                boxes[i].gameObject.SetActive(false);
+                boxes[i].currentlyUsed = false;
+            }
         }    
-        
-        
-        canvasGroup.gameObject.SetActive(true);
-        // characterNameText.SetText(dialogueLine.CharacterName);
-        // lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
 
-        // lineText.renderMode = TextRenderFlags.DontRender;
-        
-        
+        bool foundFit = FindBoxFit(dialogueLine, true);
 
-        //HideCharacters();
+        foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
+            if (attr.Name == "em") {
+                textColorer.ColorText(currentBox.lineText, color, attr.Position, attr.Length);
+            }
+        }
 
-        // color the text
-        // foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
-        //     if (attr.Name == "em") {
-        //         Color32 color = placement.color;
-        //         textColorer.ColorText(lineText, color, attr.Position, attr.Length);
-        //     }
-        //     // // TEST
-        //     // Debug.Log("TEST");
-        //     // TMP_TextInfo textInfo = lineText.textInfo;
-        //     // var charInfo = textInfo.characterInfo[attr.Position];
-        //     // Debug.Log(charInfo.character);
-        //     // int materialIndex = charInfo.materialReferenceIndex;
-        //     // Debug.Log(textInfo.meshInfo[materialIndex].colors32[charInfo.vertexIndex]);
-        // }
-
-
-        // HideCharacters();
-        // StartCoroutine(PopInCharactersRandomly());
-
-
+        HideCharacters(currentBox.lineText);
+        PopInCharactersRandomly(currentBox.lineText);
 
         // Immediately appear
         canvasGroup.interactable = true;
         canvasGroup.alpha = 1;
 
         onDialogueLineFinished();
+    }
+
+    private bool FindBoxFit(LocalizedLine dialogueLine, bool overwriteOkay) {
+        for (int i = 0; i < boxes.Length; i++) {
+
+            NeueArtfulBox tryBox = boxes[i];
+            Debug.Log("currently used?");
+            Debug.Log(tryBox.gameObject.name);
+            Debug.Log(tryBox.currentlyUsed);
+            if (!overwriteOkay && tryBox.currentlyUsed) {
+                Debug.Log(tryBox.gameObject.name + " is currently used");
+                continue;
+            }
+
+            lineText = tryBox.lineText;
+            //lineText.renderMode = TextRenderFlags.DontRender;
+
+            // try to fit line in trybox
+            //lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
+            //lineText.ForceMeshUpdate();
+            // TMP_TextInfo textInfo = lineText.textInfo;
+            string cachedText = tryBox.lineText.text;
+
+            // this actually sets the text of the lint text too
+            TMP_TextInfo textInfo = tryBox.lineText.GetTextInfo(dialogueLine.TextWithoutCharacterName.Text);
+
+            Debug.Log(dialogueLine.TextWithoutCharacterName.Text);
+            Debug.Log(textInfo.characterCount);
+            Debug.Log(dialogueLine.TextWithoutCharacterName.Text.Length);
+
+            if (textInfo.characterCount == dialogueLine.TextWithoutCharacterName.Text.Length) {
+                // Debug.Log(dialogueLine.TextWithoutCharacterName.Text);
+                // Debug.Log("fits!");
+                tryBox.lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
+                tryBox.gameObject.SetActive(true);
+                tryBox.currentlyUsed = true;
+
+                // turn off previous continue thing - turn on new one
+                continueSignal?.SetActive(false);
+                continueSignal = tryBox.continueSignal;
+                continueSignal.SetActive(true);
+
+                currentBox = tryBox;
+
+                return true;
+                break;
+            } else {
+                tryBox.lineText.SetText(cachedText);
+            }
+            
+        }  
+
+        return false; 
     }
 
     private void ShowCharacter(int i) {
@@ -156,7 +168,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
 
     }
 
-    private void HideCharacters() {
+    private void HideCharacters(TextMeshProUGUI lineText) {
         //lineText.ForceMeshUpdate();
         TMP_TextInfo textInfo = lineText.textInfo;
 
@@ -194,7 +206,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
         }
     }
 
-    IEnumerator PopInCharactersRandomly() {
+    IEnumerator PopInCharactersRandomly(TextMeshProUGUI lineText) {
         //HideCharacters();
 
         //lineText.ForceMeshUpdate();
