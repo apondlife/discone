@@ -33,6 +33,14 @@ public class DialogueSystem: MonoBehaviour {
     [Tooltip("the dialogue runner")]
     [SerializeField] DialogueRunner yarnDialogueRunner;
 
+    [Header("textboxes")]
+    [Tooltip("ivan textbox")]
+    [SerializeField] DialogueViewBase ivanTextbox;
+
+    [Tooltip("default textbox")]
+    [SerializeField] DialogueViewBase defaultTextbox;
+
+
     // -- props --
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
@@ -63,6 +71,10 @@ public class DialogueSystem: MonoBehaviour {
         }
 
         Debug.Log($"[dialogue] start dialgoue <{dialogue.NodeTitle}>");
+
+        DialogueViewBase textbox = ChooseTextbox(dialogue.NodeTitle);
+        DialogueViewBase[] textboxArray = { textbox };
+        yarnDialogueRunner.SetDialogueViews(textboxArray);
 
         // show the dialogue for this character
         m_IsActive.Value = true;
@@ -95,6 +107,17 @@ public class DialogueSystem: MonoBehaviour {
 
         // stop listening for the continue talking event
         m_Talk.action.performed -= OnTalkPressed;
+    }
+
+    /// choose textbox/dialogue view
+    DialogueViewBase ChooseTextbox(string nodeName) {
+        // choose dialogue view (depending on character)
+        // TODO: probably a lot more elegant way to do this
+        if (nodeName == "Ivan") {
+            return ivanTextbox;
+        } else {
+            return defaultTextbox;
+        }
     }
 
     // -- events --

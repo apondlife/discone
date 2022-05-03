@@ -137,6 +137,8 @@ MonoBehaviour:
   m_SwitchCharacter: {fileID: 11400000, guid: 1ffcf622465e24d1f82887e4c9b64359, type: 2}
   m_Talk: {fileID: -8194012608305008080, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   yarnDialogueRunner: {fileID: 678411839616086626}
+  ivanTextbox: {fileID: 5369644482837740118}
+  defaultTextbox: {fileID: 3571021123347224286}
 --- !u!1001 &1177216996790519631
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -266,7 +268,7 @@ PrefabInstance:
       objectReference: {fileID: -7426864514221199054, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
     - target: {fileID: 1818437640680912173, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
       propertyPath: dialogueViews.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1818437640680912173, guid: 371681db958a1af40adad5da7e97f7f5, type: 3}
       propertyPath: dialogueViews.Array.data[0]
@@ -552,6 +554,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 360164324263414066, guid: 91b48e52def4f414da62a78924f11b59, type: 3}
   m_PrefabInstance: {fileID: 5583241948691205908}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5369644482837740118 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 576293410569286978, guid: 91b48e52def4f414da62a78924f11b59, type: 3}
+  m_PrefabInstance: {fileID: 5583241948691205908}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c6f75446d5564ced986805b81733c43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6641903677837551761
 PrefabInstance:
   m_ObjectHideFlags: 0
