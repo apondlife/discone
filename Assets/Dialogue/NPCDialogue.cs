@@ -2,6 +2,7 @@
 using UnityEngine.InputSystem;
 using UnityAtoms.BaseAtoms;
 using ThirdPerson;
+using Yarn.Unity;
 
 [RequireComponent(typeof(Collider))]
 public class NPCDialogue: MonoBehaviour {
@@ -84,7 +85,7 @@ public class NPCDialogue: MonoBehaviour {
     public string NodeTitle {
         get => m_NodeTitle;
     }
-
+    
     /// the character for this dialogue
     public GameObject Character {
         get => m_Character;
