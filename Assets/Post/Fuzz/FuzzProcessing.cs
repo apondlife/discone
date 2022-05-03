@@ -19,6 +19,9 @@ public sealed class FuzzProcessing : PostProcessEffectSettings {
     [Range(0, 1)]
     public FloatParameter DissolveBand = new FloatParameter { value = 0.1f };
     public FloatParameter FuzzOffset = new FloatParameter { value = 0.1f };
+    public FloatParameter NoiseTimeScale= new FloatParameter { value = 0.1f };
+    public FloatParameter NoiseScale= new FloatParameter { value = 1000f };
+
     public FloatParameter ConvolutionDelta = new FloatParameter { value = 0.1f };
     public FloatParameter HueScale = new FloatParameter { value = 0.1f };
     public FloatParameter SaturationScale = new FloatParameter { value = 0.1f };
@@ -42,6 +45,9 @@ public sealed class FuzzProcessingRenderer : PostProcessEffectRenderer<FuzzProce
         sheet.properties.SetFloat("_HueScale", settings.HueScale);
         sheet.properties.SetFloat("_SaturationScale", settings.SaturationScale);
         sheet.properties.SetFloat("_ValueScale", settings.ValueScale);
+        sheet.properties.SetFloat("_NoiseTimeScale", settings.NoiseTimeScale);
+        sheet.properties.SetFloat("_NoiseScale", settings.NoiseScale);
+
 
         context.command.BlitFullscreenTriangle(context.source, context.destination, sheet, 0, clear: true, preserveDepth: true);
     }
