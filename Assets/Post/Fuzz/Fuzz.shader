@@ -10,6 +10,8 @@ Shader "Image/Fuzz" {
 
         _DissolveDepth ("Dissolve Depth", Range(0, 1.0)) = 0.1
         _DissolveBand ("Dissolve Band", Range(0, 1.0)) = 0.1
+        _NoiseTimeScale ("Noise Time Scale", Float) = 0.1
+        _NoiseScale ("Noise Scale", Float) = 1000
 
         _FuzzOffset ("Fuzz Offset", float) = 0.1
         _ConvolutionDelta ("Convolution Delta", Range(0, 1.0)) = 0.1
@@ -34,6 +36,7 @@ Shader "Image/Fuzz" {
             #include "../Core/Math.hlsl"
             #include "../Core/Color.hlsl"
             #include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
+            #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 
             // -- constants --
             /// a right direction vector
@@ -109,6 +112,11 @@ Shader "Image/Fuzz" {
 
             // the size of the dissolve band
             float _DissolveBand;
+
+            // the speed the noise changes
+            float _NoiseTimeScale;
+
+            float _NoiseScale;
 
             // where the world should start dissolving
             float _DissolveDepth;
@@ -201,7 +209,8 @@ Shader "Image/Fuzz" {
                 // dissolve far away objects
                 float a = 1.0f;
                 float p = saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, dn0.depth));
-                a = step(p*p*p*p, 0.997f * Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
+                a = step(p,//*p*p*p,
+                    0.997f * (0.5f + 0.5*SimplexNoise(float3(_NoiseScale * i.uv, 0.01f * floor(_Time.y*_NoiseTimeScale)))) + 0.002f); // this number is magic; it avoids dropping close pixels
 
                 return float4(col, a);
             }
