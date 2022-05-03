@@ -12,7 +12,8 @@ public class CameraLookAtTarget: MonoBehaviour {
     [UnityEngine.Serialization.FormerlySerializedAs("m_TargetSpeed")]
     [SerializeField] private float m_MaxSpeed;
 
-    [SerializeField] private float m_TargetAcceleration;
+    [SerializeField] private float m_TargetSpring;
+    [SerializeField] private float m_TargetDamp;
 
     [Tooltip("the max distance from the character to cast for the ground")]
     [SerializeField] private float m_MinFallingSpeed;
@@ -63,14 +64,20 @@ public class CameraLookAtTarget: MonoBehaviour {
             target = transform.localPosition + delta;
         }
 
-        if (m_Target.position == target) {
-            m_TargetSpeed = 0.0f;
+        if (m_Target.localPosition == target) {
+            // m_TargetSpeed = 0.0f;
         } else {
-            m_TargetSpeed = Mathf.MoveTowards(m_TargetSpeed, m_MaxSpeed, m_TargetAcceleration * Time.deltaTime);
+            var dist = (m_Target.localPosition - target);
+            var acceleration = m_TargetSpring * dist.y - m_TargetDamp * m_TargetSpeed;
+            m_TargetSpeed += Time.deltaTime * acceleration;
         }
 
-        m_Target.localPosition = Vector3.MoveTowards(m_Target.localPosition, target, m_TargetSpeed * Time.deltaTime);
+
+        m_Target.localPosition = Vector3.MoveTowards(m_Target.localPosition, target, Mathf.Abs(m_TargetSpeed * Time.deltaTime));
     }
+
+
+
 
     // -- queries --
     /// how close the look at target is to full extension
