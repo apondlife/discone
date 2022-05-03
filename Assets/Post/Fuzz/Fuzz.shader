@@ -84,6 +84,7 @@ Shader "Image/Fuzz" {
 
             /// the depth & normals texture; set by unity if the camera uses DepthTextureMode.DepthNormals
             TEXTURE2D_SAMPLER2D(_CameraDepthNormalsTexture, sampler_CameraDepthNormalsTexture);
+            TEXTURE2D_SAMPLER2D(_CameraDepthTexture, sampler_CameraDepthTexture);
 
             /// the fuzz texture to apply to the edges
             sampler2D _Texture;
@@ -200,7 +201,7 @@ Shader "Image/Fuzz" {
                 // dissolve far away objects
                 float a = 1.0f;
                 float p = saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, dn0.depth));
-                a = step(p, 0.997f * Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
+                a = step(p*p*p*p, 0.997f * Rand(i.uv + 0.1f * _Time.x) + 0.002f); // this number is magic; it avoids dropping close pixels
 
                 return float4(col, a);
             }
@@ -209,12 +210,13 @@ Shader "Image/Fuzz" {
             DepthNormal SampleDepthNormal(float2 uv) {
                 // sample texture
                 float4 enc = SAMPLE_TEXTURE2D(_CameraDepthNormalsTexture, sampler_CameraDepthNormalsTexture, uv);
+                float4 d = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, uv);
 
                 // decode values
                 DepthNormal dn;
 
                 // see UnityCG.cginc: DecodeDepthNormal & DecodeFloatRG
-                dn.depth = dot(enc.zw, float2(1.0f, 1.0f / 255.0f));;
+                dn.depth = Linear01Depth(d);//dot(enc.zw, float2(1.0f, 1.0f / 255.0f));
                 dn.normal = DecodeViewNormalStereo(enc);
 
                 return dn;
