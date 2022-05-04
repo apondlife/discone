@@ -8,8 +8,9 @@ Shader "Image/Fuzz" {
         _SaturationShift ("Saturation Shift", Range(-1.0, 1.0)) = 0.0
         _ValueShift ("Value Shift", Range(-1.0, 1.0)) = 0.0
 
-        _DissolveDepth ("Dissolve Depth", Range(0, 1.0)) = 0.1
-        _DissolveBand ("Dissolve Band", Range(0, 1.0)) = 0.1
+        _DepthPower ("Depth Power", Range(0, 1.0)) = 1
+        _DissolveDepthMin ("Dissolve Depth Min", Range(0, 1.0)) = 0.8
+        _DissolveDepthMax ("Dissolve Depth Max", Range(0, 1.0)) = 1.0
         _NoiseTimeScale ("Noise Time Scale", Float) = 0.1
         _NoiseScale ("Noise Scale", Float) = 1000
 
@@ -110,16 +111,17 @@ Shader "Image/Fuzz" {
             /// the amount to shift the fuzz value by
             float _ValueShift;
 
-            // the size of the dissolve band
-            float _DissolveBand;
+            // the power to transform depth with
+            float _DepthPower;
 
             // the speed the noise changes
             float _NoiseTimeScale;
 
             float _NoiseScale;
 
-            // where the world should start dissolving
-            float _DissolveDepth;
+            // where the world should start and stop dissolving
+            float _DissolveDepthMin;
+            float _DissolveDepthMax;
 
             float _FuzzOffset;
 
@@ -208,10 +210,11 @@ Shader "Image/Fuzz" {
 
                 // dissolve far away objects
                 float a = 1.0f;
-                float p = saturate(Unlerp(_DissolveDepth - _DissolveBand, _DissolveDepth, dn0.depth));
-                a = step(p,//*p*p*p,
+                float p = saturate(Unlerp(_DissolveDepthMin, _DissolveDepthMax, dn0.depth));
+                a = step(pow(p, _DepthPower),
                     0.997f * (0.5f + 0.5*SimplexNoise(float3(_NoiseScale * i.uv, 0.01f * floor(_Time.y*_NoiseTimeScale)))) + 0.002f); // this number is magic; it avoids dropping close pixels
 
+                // return float4(b, b, b, 1.0f);
                 return float4(col, a);
             }
 

@@ -12,8 +12,13 @@ public class CameraLookAtTarget: MonoBehaviour {
     [UnityEngine.Serialization.FormerlySerializedAs("m_TargetSpeed")]
     [SerializeField] private float m_MaxSpeed;
 
-    [SerializeField] private float m_TargetSpring;
-    [SerializeField] private float m_TargetDamp;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_TargetSpring")]
+    [SerializeField] private float m_TargetSpringDown;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_TargetDamp")]
+    [SerializeField] private float m_TargetDampDown;
+
+    [SerializeField] private float m_TargetSpringUp;
+    [SerializeField] private float m_TargetDampUp;
 
     [Tooltip("the max distance from the character to cast for the ground")]
     [SerializeField] private float m_MinFallingSpeed;
@@ -68,7 +73,10 @@ public class CameraLookAtTarget: MonoBehaviour {
             // m_TargetSpeed = 0.0f;
         } else {
             var dist = (m_Target.localPosition - target);
-            var acceleration = m_TargetSpring * dist.y - m_TargetDamp * m_TargetSpeed;
+            var up = dist.y < 0;
+            var spring = up ? m_TargetSpringUp : m_TargetSpringDown;
+            var damp = up ? m_TargetDampUp : m_TargetDampDown;
+            var acceleration = spring * dist.y - damp * m_TargetSpeed;
             m_TargetSpeed += Time.deltaTime * acceleration;
         }
 
