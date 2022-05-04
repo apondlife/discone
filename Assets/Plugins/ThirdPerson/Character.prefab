@@ -4846,7 +4846,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.10354013, y: -0.000000004279194, z: -4.454625e-10, w: 0.9946253}
+  m_LocalRotation: {x: -0.10354013, y: -0.0000000042784754, z: -4.453877e-10, w: 0.9946253}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -10214,8 +10214,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MaxDistance: 20
   m_MaxSpeed: 19
-  m_TargetSpring: 4
-  m_TargetDamp: 12
+  m_TargetSpringDown: 4
+  m_TargetDampDown: 12
+  m_TargetSpringUp: 10
+  m_TargetDampUp: 10
   m_MinFallingSpeed: -2
   m_MaxFallingSpeed: 1
   m_GroundLayers:
