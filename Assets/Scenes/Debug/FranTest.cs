@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
+using UnityAtoms.Discone;
 using Yarn.Unity;
 
 public class FranTest : MonoBehaviour
@@ -15,11 +16,16 @@ public class FranTest : MonoBehaviour
     [Tooltip("the dialogue runner")]
     [SerializeField] DialogueRunner yarnDialogueRunner;
 
+    [Tooltip("region event")]
+    [SerializeField] RegionEvent m_RegionEntered;
+    [SerializeField] private RegionConstant m_Region;
+
     // Start is called before the first frame update
     void Start()
     {
-
-        StartCoroutine(RunDialogueNodeWhenItsLoaded());
+        Debug.Log("going to raise the regiopn event");
+        m_RegionEntered.Raise(m_Region.Value);
+        //StartCoroutine(RunDialogueNodeWhenItsLoaded());
         
     }
 
