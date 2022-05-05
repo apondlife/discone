@@ -95,6 +95,7 @@ public class RegionSign : MonoBehaviour
 
     public void OnRegionEntered(Region region) {
         // if(m_CurrentRegion?.DisplayName == region.DisplayName) return;
+        Debug.Log("woiewfoijwef");
 
         m_CurrentRegion = region;
         canvasGroup.alpha = 1;
