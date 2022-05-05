@@ -35,8 +35,8 @@ public class RegionSign : MonoBehaviour
 
     Subscriptions m_Subscriptions = new Subscriptions();
 
-    // Start is called before the first frame update
-    void Start()
+    // Awake is called before Start
+    void Awake()
     {
         letterboxDuration = textDuration + dissolveTime;
 
@@ -95,7 +95,6 @@ public class RegionSign : MonoBehaviour
 
     public void OnRegionEntered(Region region) {
         // if(m_CurrentRegion?.DisplayName == region.DisplayName) return;
-        Debug.Log("woiewfoijwef");
 
         m_CurrentRegion = region;
         canvasGroup.alpha = 1;
@@ -105,6 +104,8 @@ public class RegionSign : MonoBehaviour
         m_DissolveAmount.Value = 1;
 
         m_Text.SetText(region.DisplayName);
+
+        StopAllCoroutines();
 
         // tween in letterbox (and start dissolving when letterbox is done)
         StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxIn, StartDissolveIn));
