@@ -23,10 +23,11 @@ public class FranTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_RegionEntered.Raise(m_Region.Value);
-        //StartCoroutine(RunDialogueNodeWhenItsLoaded());
 
-        StartCoroutine(CoroutineHelpers.DoAfterRealtimeTimeCoroutine(3, RaiseRegionEvent));
+        //Debug.Log("going to raise the regiopn event");
+        //m_RegionEntered.Raise(m_Region.Value);
+        StartCoroutine(RunDialogueNodeWhenItsLoaded());
+
         
     }
 

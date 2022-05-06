@@ -41,12 +41,11 @@ public class RegionSign : MonoBehaviour
         letterboxDuration = textDuration + dissolveTime;
 
         canvasGroup.alpha = 0;
-        //m_UIShader.letterboxAmount = 0;
 
         m_LetterboxAmount.Value = 0;
-        //m_UIShader.dissolveAmount = 1;
 
-        m_DissolveAmount.Value = 1;
+        //m_DissolveAmount.Value = 1;
+        m_DissolveAmount.Value = 0;
 
         m_Subscriptions.Add(m_RegionEntered, OnRegionEntered);
     }
