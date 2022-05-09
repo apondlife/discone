@@ -25,6 +25,11 @@ public class SkyboxRegionChanger : MonoBehaviour
 
     }
 
+    void OnDestroy() {
+        // unbind events
+        m_Subscriptions.Dispose();
+    }
+
     void OnRegionEntered(Region region)
     {
         var background = m_SkyboxMaterial.GetColor("_Background");

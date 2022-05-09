@@ -12,7 +12,8 @@ public sealed class CharacterState {
     // -- lifetime --
     public CharacterState(Vector3 position, Vector3 forward) {
         m_Frames = new Queue<Frame>(5);
-        m_Frames.Add(new Frame(position, forward));
+        var frame = new Frame(position, forward);
+        Fill(frame);
     }
 
     // -- props/hot --
