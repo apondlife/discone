@@ -46,8 +46,13 @@ public class RegionSign : MonoBehaviour
 
         //m_DissolveAmount.Value = 1;
         m_DissolveAmount.Value = 0;
-
         m_Subscriptions.Add(m_RegionEntered, OnRegionEntered);
+
+    }
+
+    void OnDestroy() {
+        // unbind events
+        m_Subscriptions.Dispose();
     }
 
     // Update is called once per frame
