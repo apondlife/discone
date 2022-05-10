@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -11,6 +9,21 @@ public class CameraLookAtTarget: MonoBehaviour {
     [Tooltip("the max distance from the character to cast for the ground")]
     [SerializeField] private float m_MaxDistance;
 
+    [UnityEngine.Serialization.FormerlySerializedAs("m_TargetSpeed")]
+    [SerializeField] private float m_MaxSpeed;
+
+    [UnityEngine.Serialization.FormerlySerializedAs("m_TargetSpring")]
+    [SerializeField] private float m_TargetSpringDown;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_TargetDamp")]
+    [SerializeField] private float m_TargetDampDown;
+
+    [SerializeField] private float m_TargetSpringUp;
+    [SerializeField] private float m_TargetDampUp;
+
+    [Tooltip("the max distance from the character to cast for the ground")]
+    [SerializeField] private float m_MinFallingSpeed;
+    [SerializeField] private float m_MaxFallingSpeed;
+
     [Tooltip("the layer mask for the ground")]
     [SerializeField] private LayerMask m_GroundLayers;
 
@@ -19,17 +32,60 @@ public class CameraLookAtTarget: MonoBehaviour {
     [Tooltip("the target transform")]
     [SerializeField] private Transform m_Target;
 
+    // -- props --
+    /// a reference to the character state
+    CharacterState m_State;
+
+    float m_TargetSpeed;
+
     // -- lifecycle --
-    void Update() {
-        // move target to ground position underneath character
-        if (Physics.Raycast(transform.position, Vector3.down, out var hit, m_MaxDistance, m_GroundLayers)) {
-            m_Target.position = hit.point;
-        }
-        // snap to the lowest possible position
-        else {
-            m_Target.position = transform.position + Vector3.down * m_MaxDistance;
-        }
+    void Start() {
+        // set deps
+        var character = GetComponentInParent<Character>();
+        m_State = character.State;
     }
+
+    void Update() {
+        var pos = transform.localPosition;
+        var target = m_Target.localPosition;
+
+        // if falling
+        if (m_State.IsGrounded) {
+            target = pos;
+        }
+        // move target to ground position underneath character
+        else {
+            // snap to the lowest possible position
+            var delta = Vector3.down * m_MaxDistance;
+            // move to ground if there's a ground layer closer
+            if (Physics.Raycast(pos, Vector3.down, out var hit, m_MaxDistance, m_GroundLayers)) {
+                delta = hit.point - transform.position;
+            }
+
+            // lerp based on fall speed
+            var fallParam = Mathf.InverseLerp(m_MinFallingSpeed, m_MaxFallingSpeed, -m_State.Velocity.y);
+            delta *= fallParam;
+
+            target = transform.localPosition + delta;
+        }
+
+        if (m_Target.localPosition == target) {
+            // m_TargetSpeed = 0.0f;
+        } else {
+            var dist = (m_Target.localPosition - target);
+            var up = dist.y < 0;
+            var spring = up ? m_TargetSpringUp : m_TargetSpringDown;
+            var damp = up ? m_TargetDampUp : m_TargetDampDown;
+            var acceleration = spring * dist.y - damp * m_TargetSpeed;
+            m_TargetSpeed += Time.deltaTime * acceleration;
+        }
+
+
+        m_Target.localPosition = Vector3.MoveTowards(m_Target.localPosition, target, Mathf.Abs(m_TargetSpeed * Time.deltaTime));
+    }
+
+
+
 
     // -- queries --
     /// how close the look at target is to full extension

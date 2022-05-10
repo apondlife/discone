@@ -37,6 +37,20 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the acceleration of the camera pitch")]
     [SerializeField] float m_PitchAcceleration;
 
+    [Header("target speed")]
+    [Tooltip("the camera speed to camera distance curve")]
+    [SerializeField] AnimationCurve m_TargetSpeed_DistanceCurve;
+
+    [Tooltip("the minimum speed for curving camera distance")]
+    [SerializeField] float m_TargetSpeed_MinSpeed;
+
+    [Tooltip("the maximum speed for curving camera distance")]
+    [SerializeField] float m_TargetSpeed_MaxSpeed;
+
+    [Tooltip("the maximum speed to camera distance")]
+    [SerializeField] float m_TargetSpeed_MaxDistance;
+
+    [Header("freelook")]
     [Tooltip("the speed the free look camera yaws")]
     [SerializeField] float m_FreeLook_YawSpeed;
 
@@ -58,6 +72,7 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the delay in seconds after free look when the camera returns to active mode")]
     [SerializeField] float m_FreeLook_Timeout;
 
+    [Header("Recenter")]
     [Tooltip("the time the camera can be idle before recentering")]
     [SerializeField] float m_Recenter_IdleTime;
 
@@ -66,6 +81,12 @@ public class CameraFollowTarget: MonoBehaviour {
 
     [Tooltip("the curve the camera recenters looking at the character")]
     [SerializeField] AnimationCurve m_Recenter_YawCurve;
+
+    [Header("Settings")]
+    [Tooltip("if the camera moves around the X axis inverted")]
+    [SerializeField] private bool m_InvertX;
+    [Tooltip("if the camera moves around the Y axis inverted")]
+    [SerializeField] private bool m_InvertY;
 
     // -- refs --
     [Header("refs")]
@@ -176,6 +197,8 @@ public class CameraFollowTarget: MonoBehaviour {
         // run free look camera if active
         if (m_FreeLook_Enabled) {
             var dir = freeLook.ReadValue<Vector2>();
+            dir.x = m_InvertX ? -dir.x : dir.x;
+            dir.y = m_InvertY ? -dir.y : dir.y;
 
             var yaw = m_Yaw;
             yaw += m_FreeLook_YawSpeed * -dir.x * Time.deltaTime;
@@ -231,8 +254,19 @@ public class CameraFollowTarget: MonoBehaviour {
         var pitchAxis = Vector3.Cross(m_Target.forward, Vector3.up).normalized;
         var pitchRot = Quaternion.AngleAxis(m_Pitch, pitchAxis);
 
-        // update the distance if undershooting
-        var distance = Mathf.Lerp(m_MinUndershootDistance, m_BaseDistance, m_UndershootCurve.Evaluate(Mathf.InverseLerp(m_FreeLook_MinPitch, m_MinPitch, m_Pitch)));
+        // update distance based on target speed
+        var distance = Mathf.Lerp(
+            m_BaseDistance,
+            m_TargetSpeed_MaxDistance,
+            m_TargetSpeed_DistanceCurve.Evaluate(Mathf.InverseLerp(m_TargetSpeed_MinSpeed, m_TargetSpeed_MaxSpeed, m_State.PlanarVelocity.magnitude))
+        );
+
+        // update distance if undershooting
+        distance = Mathf.Lerp(
+            m_MinUndershootDistance,
+            distance,
+            m_UndershootCurve.Evaluate(Mathf.InverseLerp(m_FreeLook_MinPitch, m_MinPitch, m_Pitch))
+        );
 
         // calculate new forward from yaw rotation
         var forward = yawRot * m_ZeroYawDir;
@@ -240,6 +274,15 @@ public class CameraFollowTarget: MonoBehaviour {
 
         // store the forward rotation of the target
         m_Target.forward = forward;
+    }
+
+    // -- queries --
+    public void SetInvertY(bool value) {
+        m_InvertY = value;
+    }
+
+    public void SetInvertX(bool value) {
+        m_InvertX = value;
     }
 
     // -- debug --
@@ -250,6 +293,7 @@ public class CameraFollowTarget: MonoBehaviour {
         Gizmos.DrawSphere(pt, 0.1f);
         Gizmos.DrawLine(pt, m_Target.position);
     }
+
 }
 
 }

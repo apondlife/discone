@@ -65,7 +65,6 @@ sealed class WallSystem: CharacterSystem {
 
         // transfer velocity
         var transferred = FindTransferredVelocity(collision.Normal);
-        Debug.Log($"transferring {transferred.magnitude}");
 
         var v = m_State.Velocity;
         v += transferred.magnitude * Vector3.up;

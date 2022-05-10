@@ -6,8 +6,13 @@ Shader "Unlit/UIShader"
         _DissolveTex("Dissolve Tex", 2D) = "white" {}
         _DissolveAmount("Dissolve Amount", Range(0,1)) = 0.5
         _DissolveScale("Dissolve Scale", Float) = 1
+        
         _LetterboxAmount("Letterbox Amount", Range(0,1)) = 0.5
         _LetterboxSize("Letterbox Size", Range(0,.5)) = .2
+
+        _BlurDirections("Blur Directions", Float) = 16.0 // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
+        _BlurQuality("Blur Quality", Float) = 3.0 // BLUR QUALITY (Default 4.0 - More is better but slower)
+        _BlurSize("Blur Size", Float) = 8.0 // BLUR SIZE (Radius)
     }
     SubShader
     {
@@ -55,7 +60,10 @@ Shader "Unlit/UIShader"
 
             half _LetterboxAmount;
             half _LetterboxSize;
-            
+
+            half _BlurDirections;
+            half _BlurQuality;
+            half _BlurSize;
 
             v2f vert (appdata v)
             {
@@ -84,26 +92,9 @@ Shader "Unlit/UIShader"
                     clip(avg - _DissolveAmount);
                 }
 
-              
-
-  
-
-                // if (false) {
-                //     discard;
-                // }
-
-                // if (col.a == 0) {
-                //     col.r = 0;
-                // }
-
-                // fixed alpha = step(noise.r, _DissolveAmount);
-                // col.a = alpha;
-                // if ()
-                //col.r = 1;
-
-                //clip (col.a - .001);
-
-                
+                // // blur
+                // for ( float d = 0.0; d < 6; d+= Pi/Di
+            
 
                 return col;
             }

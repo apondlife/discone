@@ -1,3 +1,8 @@
+#ifndef CORE_COLOR_CGINC
+#define CORE_COLOR_CGINC
+
+#include "./Math.cginc"
+
 /// convert rgb color into hsv
 /// see: https://stackoverflow.com/questions/15095909/from-rgb-to-hsv-in-opengl-glsl
 float3 IntoHsv(float3 c) {
@@ -17,3 +22,11 @@ float3 IntoRgb(float3 c) {
     float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
+
+/// get the lumninance from an rgb color using an arbitrary mix found on the internet
+/// at some point
+float1 GetLuminance(float3 c) {
+    return dot(c, float3(0.3f, 0.6f, 0.11f));
+}
+
+#endif
