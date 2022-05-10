@@ -13,8 +13,7 @@
 
 #include "Packages/jp.keijiro.noiseshader/Shader/Common.hlsl"
 
-float3 SimplexNoiseGrad(float2 v)
-{
+float3 SimplexNoiseGrad(float2 v) {
     const float C1 = (3 - sqrt(3)) / 6;
     const float C2 = (sqrt(3) - 1) / 2;
 
@@ -55,8 +54,7 @@ float3 SimplexNoiseGrad(float2 v)
     return 99.2 * float3(grad, dot(m4, px));
 }
 
-float SimplexNoise(float2 v)
-{
+float SimplexNoise(float2 v) {
     return SimplexNoiseGrad(v).z;
 }
 
