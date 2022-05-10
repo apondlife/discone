@@ -314,6 +314,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2484703360071206894}
   - component: {fileID: 8918368689448347413}
+  - component: {fileID: 7548277473436126107}
+  - component: {fileID: 5478214268089884976}
   m_Layer: 0
   m_Name: Camera-skybox
   m_TagString: Untagged
@@ -379,6 +381,87 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &7548277473436126107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8936087552012177431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 11400000, guid: 0fbe39ccb0ff72f449e1f20637bc8690, type: 2}
+  isGlobal: 0
+  blendDistance: 0
+  weight: 1
+  priority: 0
+--- !u!114 &5478214268089884976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8936087552012177431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volumeTrigger: {fileID: 2484703360071206894}
+  volumeLayer:
+    serializedVersion: 2
+    m_Bits: 2147483648
+  stopNaNPropagation: 1
+  finalBlitToCameraTarget: 0
+  antialiasingMode: 0
+  temporalAntialiasing:
+    jitterSpread: 0.75
+    sharpness: 0.25
+    stationaryBlending: 0.95
+    motionBlending: 0.85
+  subpixelMorphologicalAntialiasing:
+    quality: 2
+  fastApproximateAntialiasing:
+    fastMode: 0
+    keepAlpha: 0
+  fog:
+    enabled: 1
+    excludeSkybox: 1
+  debugLayer:
+    lightMeter:
+      width: 512
+      height: 256
+      showCurves: 1
+    histogram:
+      width: 512
+      height: 256
+      channel: 3
+    waveform:
+      exposure: 0.12
+      height: 256
+    vectorscope:
+      size: 256
+      exposure: 0.12
+    overlaySettings:
+      linearDepth: 0
+      motionColorIntensity: 4
+      motionGridSize: 64
+      colorBlindnessType: 0
+      colorBlindnessStrength: 1
+  m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  m_ShowToolkit: 1
+  m_ShowCustomSorter: 1
+  breakBeforeColorGrading: 0
+  m_BeforeTransparentBundles: []
+  m_BeforeStackBundles: []
+  m_AfterStackBundles:
+  - assemblyQualifiedName: FuzzProcessing, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - assemblyQualifiedName: UnityEngine.Rendering.PostProcessing.Blur, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!1 &9160621442445072036
 GameObject:
   m_ObjectHideFlags: 0
@@ -3073,6 +3156,22 @@ PrefabInstance:
       propertyPath: m_AssetId
       value: 028479e9d066144b09e4c9ebdd70e6eb
       objectReference: {fileID: 0}
+    - target: {fileID: 2108106793072610514, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2108106793072610514, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
+      propertyPath: m_SelectedEdges.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2108106793072610514, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
+      propertyPath: m_SelectedFaces.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2108106793072610514, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
+      propertyPath: m_SelectedVertices.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2258854901557555241, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
       propertyPath: m_AssetId
       value: 028479e9d066144b09e4c9ebdd70e6eb
@@ -3141,6 +3240,10 @@ PrefabInstance:
       propertyPath: m_AssetId
       value: 028479e9d066144b09e4c9ebdd70e6eb
       objectReference: {fileID: 0}
+    - target: {fileID: 4327944173553914019, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4378054712717952948, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
       propertyPath: m_Name
       value: mut
@@ -3164,6 +3267,10 @@ PrefabInstance:
     - target: {fileID: 7319636395476963282, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
       propertyPath: m_AssetId
       value: 028479e9d066144b09e4c9ebdd70e6eb
+      objectReference: {fileID: 0}
+    - target: {fileID: 7600189076987444282, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8674423209506995753, guid: 2d028df88f4417e4fa80f72d46d8b418, type: 3}
       propertyPath: m_AssetId
