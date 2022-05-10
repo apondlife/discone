@@ -1,5 +1,73 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-344202265985228543
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdb7a61d89da32440bba3d111cb748b5, type: 3}
+  m_Name: Fuzz
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  texture:
+    overrideState: 0
+    value: {fileID: 0}
+    defaultState: 1
+  TextureScale:
+    overrideState: 0
+    value: 1
+  MaxOrthogonality:
+    overrideState: 0
+    value: 1
+  DepthScale:
+    overrideState: 0
+    value: 0
+  HueShift:
+    overrideState: 0
+    value: 0
+  SaturationShift:
+    overrideState: 0
+    value: 0
+  ValueShift:
+    overrideState: 0
+    value: 0
+  DepthPower:
+    overrideState: 0
+    value: 0.1
+  DissolveDepthMin:
+    overrideState: 0
+    value: 0.7
+  DissolveDepthMax:
+    overrideState: 0
+    value: 0.99
+  NoiseTimeScale:
+    overrideState: 0
+    value: 0.1
+  NoiseScale:
+    overrideState: 0
+    value: 1000
+  FuzzOffset:
+    overrideState: 0
+    value: 0.1
+  ConvolutionDelta:
+    overrideState: 0
+    value: 0.1
+  HueScale:
+    overrideState: 0
+    value: 0.1
+  SaturationScale:
+    overrideState: 0
+    value: 0.1
+  ValueScale:
+    overrideState: 0
+    value: 0.1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14,7 +82,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings:
   - {fileID: 6299805623106301013}
-  - {fileID: 5839678600411947314}
+  - {fileID: -344202265985228543}
 --- !u!114 &5839678600411947314
 MonoBehaviour:
   m_ObjectHideFlags: 3
