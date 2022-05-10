@@ -82,6 +82,12 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the curve the camera recenters looking at the character")]
     [SerializeField] AnimationCurve m_Recenter_YawCurve;
 
+    [Header("Settings")]
+    [Tooltip("if the camera moves around the X axis inverted")]
+    [SerializeField] private bool m_InvertX;
+    [Tooltip("if the camera moves around the Y axis inverted")]
+    [SerializeField] private bool m_InvertY;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the character model position we are trying to follow")]
@@ -191,6 +197,8 @@ public class CameraFollowTarget: MonoBehaviour {
         // run free look camera if active
         if (m_FreeLook_Enabled) {
             var dir = freeLook.ReadValue<Vector2>();
+            dir.x = m_InvertX ? -dir.x : dir.x;
+            dir.y = m_InvertY ? -dir.y : dir.y;
 
             var yaw = m_Yaw;
             yaw += m_FreeLook_YawSpeed * -dir.x * Time.deltaTime;
@@ -268,6 +276,15 @@ public class CameraFollowTarget: MonoBehaviour {
         m_Target.forward = forward;
     }
 
+    // -- queries --
+    public void SetInvertY(bool value) {
+        m_InvertY = value;
+    }
+
+    public void SetInvertX(bool value) {
+        m_InvertX = value;
+    }
+
     // -- debug --
     void OnDrawGizmos() {
         var pt = m_Model.position - Vector3.ProjectOnPlane(m_Model.forward, Vector3.up).normalized * m_BaseDistance;
@@ -276,6 +293,7 @@ public class CameraFollowTarget: MonoBehaviour {
         Gizmos.DrawSphere(pt, 0.1f);
         Gizmos.DrawLine(pt, m_Target.position);
     }
+
 }
 
 }
