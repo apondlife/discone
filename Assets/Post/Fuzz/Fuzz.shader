@@ -30,7 +30,7 @@ Shader "Image/Fuzz" {
         Pass {
             HLSLPROGRAM
             // -- config --
-            #pragma vertex VertDefault
+            #pragma vertex DrawVert
             #pragma fragment DrawFrag
 
             // -- includes --
@@ -69,7 +69,6 @@ Shader "Image/Fuzz" {
             // -- types --
             struct VertIn {
                 float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
             };
 
             struct FragIn {
@@ -135,12 +134,25 @@ Shader "Image/Fuzz" {
             DepthNormal SampleDepthNormal(float2 uv);
 
             // -- program --
-            float4 DrawFrag(FragIn i) : SV_Target {
+            FragIn DrawVert(VertIn v) {
+                // mostly copied from VertDefault in StdLib.hlsl
+                FragIn f;
+                f.vertex = float4(v.vertex.xy, 0.0f, 1.0f);
+                f.uv = TransformTriangleVertexToUV(v.vertex.xy);
+
+                #if UNITY_UV_STARTS_AT_TOP
+                f.uv = f.uv * float2(1.0f, -1.0f) + float2(0.0f, 1.0f);
+                #endif
+
+                return f;
+            }
+
+            float4 DrawFrag(FragIn f) : SV_Target {
                 // fuzz texture color based on its horizontalness
-                float4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                float4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, f.uv);
                 float3 col = tex.rgb;
                 float3 hsv = IntoHsv(col);
-                DepthNormal dn0 = SampleDepthNormal(i.uv);
+                DepthNormal dn0 = SampleDepthNormal(f.uv);
 
                 // convolution values
                 float conv_ch = 0.0f;
@@ -158,7 +170,7 @@ Shader "Image/Fuzz" {
                     int y = j / k_CookieWidth;
 
                     // offset to position in cookie
-                    float2 pos = i.uv + float2(x, y) * _ConvolutionDelta + offset;
+                    float2 pos = f.uv + float2(x, y) * _ConvolutionDelta + offset;
 
                     DepthNormal dn = SampleDepthNormal(pos);
                     float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, pos);
@@ -181,11 +193,11 @@ Shader "Image/Fuzz" {
                 float sobel = max(sobel_c, sobel_d);
 
                 // noise shit up
-                float4 other_col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv + float2(Rand(i.uv) - 0.5, Rand(i.uv + 0.69f) - 0.5) * _FuzzOffset);
+                float4 other_col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, f.uv + float2(Rand(f.uv) - 0.5, Rand(f.uv + 0.69f) - 0.5) * _FuzzOffset);
 
                 // the actual good return value here v
-                // return float4(lerp(col, lerp(col, other_col, sobel), step(tex2D(_Texture, i.uv).r, sobel)), 1.0f);
-                col = lerp(col, other_col, step(tex2D(_Texture, i.uv).r, sobel));
+                // return float4(lerp(col, lerp(col, other_col, sobel), step(tex2D(_Texture, f.uv).r, sobel)), 1.0f);
+                col = lerp(col, other_col, step(tex2D(_Texture, f.uv).r, sobel));
 
                 // get max fuzz angle
                 // float nmax = _MaxOrthogonality * _DepthScale * depth;
@@ -198,7 +210,7 @@ Shader "Image/Fuzz" {
 
                 // fuzz more based on the depth
                 fuzz *= saturate(dn0.depth * _DepthScale);
-                fuzz *= tex2D(_Texture, i.uv * _TextureScale).r;
+                fuzz *= tex2D(_Texture, f.uv * _TextureScale).r;
 
                 // fuzz between the base and shifted color
                 col = lerp(col, IntoRgb(hsv), fuzz);
@@ -209,10 +221,14 @@ Shader "Image/Fuzz" {
                 }
 
                 // dissolve far away objects
-                float a = 1.0f;
-                float p = saturate(Unlerp(_DissolveDepthMin, _DissolveDepthMax, dn0.depth));
-                a = step(pow(p, _DepthPower),
-                    0.997f * (0.5f + 0.5*SimplexNoise(float3(_NoiseScale * i.uv, 0.01f * floor(_Time.y*_NoiseTimeScale)))) + 0.002f); // this number is magic; it avoids dropping close pixels
+                float1 a = 1.0f;
+                float1 pct = saturate(Unlerp(_DissolveDepthMin, _DissolveDepthMax, dn0.depth));
+                float2 uvn = _NoiseScale * f.uv;
+
+                a = step(
+                    pow(pct, _DepthPower),
+                    0.997f * (0.5f + 0.5f * SimplexNoise(float3(uvn, 0.01f * floor(_Time.y * _NoiseTimeScale)))) + 0.002f // this number is magic; it avoids dropping close pixels
+                );
 
                 // return float4(b, b, b, 1.0f);
                 return float4(col, a);
