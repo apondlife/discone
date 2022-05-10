@@ -16,6 +16,7 @@ public class SubtitleShakyDialogueView : DialogueViewBase
 
     LocalizedLine currentLine = null;
 
+    [SerializeField]
     TextShakeChars textAnimator;
 
     // -- events --
@@ -25,7 +26,6 @@ public class SubtitleShakyDialogueView : DialogueViewBase
 
     // -- lifecycle --
     void Start() {
-        textAnimator = GetComponent<TextShakeChars>();
         canvasGroup.alpha = 0;
     }
 
@@ -43,6 +43,7 @@ public class SubtitleShakyDialogueView : DialogueViewBase
         // shake!
         foreach (MarkupAttribute attr in dialogueLine.Text.Attributes) {
             if (attr.Name == "em") {
+                Debug.Log(name + textAnimator);
                 textAnimator.StartShakeText(lineText, attr.Position, attr.Length);
             }
         }

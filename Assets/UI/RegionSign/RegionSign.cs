@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using MutCommon;
 using UnityAtoms.BaseAtoms;
+using UnityAtoms.Discone;
 
 public class RegionSign : MonoBehaviour
 {
@@ -13,43 +14,45 @@ public class RegionSign : MonoBehaviour
     [SerializeField]
     internal TextMeshProUGUI m_Text;
 
-
     [SerializeField]
     internal UIShader m_UIShader;
 
-
     [Header("atoms")]
     [SerializeField] FloatVariable m_DissolveAmount;
-
     [SerializeField] FloatVariable m_LetterboxAmount;
-
+    [SerializeField] RegionEvent m_RegionEntered;
 
     [SerializeField]
     internal float dissolveTime = 1f;
-
-     [SerializeField]
+    [SerializeField]
     internal float textDuration = 4f;
-
     [SerializeField]
     internal float letterboxTweenTime = 1f;
-
-     //[SerializeField]
+    //[SerializeField]
     internal float letterboxDuration;
 
+    internal Region m_CurrentRegion;
 
-    // Start is called before the first frame update
-    void Start()
+    Subscriptions m_Subscriptions = new Subscriptions();
+
+    // Awake is called before Start
+    void Awake()
     {
         letterboxDuration = textDuration + dissolveTime;
 
         canvasGroup.alpha = 0;
-        //m_UIShader.letterboxAmount = 0;
 
         m_LetterboxAmount.Value = 0;
-        //m_UIShader.dissolveAmount = 1;
 
-        m_DissolveAmount.Value = 1;
-        
+        //m_DissolveAmount.Value = 1;
+        m_DissolveAmount.Value = 0;
+        m_Subscriptions.Add(m_RegionEntered, OnRegionEntered);
+
+    }
+
+    void OnDestroy() {
+        // unbind events
+        m_Subscriptions.Dispose();
     }
 
     // Update is called once per frame
@@ -65,7 +68,6 @@ public class RegionSign : MonoBehaviour
     void DissolveOut(float k) {
         //m_UIShader.dissolveAmount = k;
         m_DissolveAmount.Value = k;
-        
     }
 
     void StartDissolveIn() {
@@ -95,27 +97,27 @@ public class RegionSign : MonoBehaviour
         StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxOut));
     }
 
+    public void OnRegionEntered(Region region) {
+        // if(m_CurrentRegion?.DisplayName == region.DisplayName) return;
 
-
-
-    public void OnRegionEntered(string regionName) {
+        m_CurrentRegion = region;
         canvasGroup.alpha = 1;
         // m_UIShader.letterboxAmount = 0;
         // m_UIShader.dissolveAmount = 1;
         m_LetterboxAmount.Value = 0;
         m_DissolveAmount.Value = 1;
 
-        m_Text.SetText(regionName);
+        m_Text.SetText(region.DisplayName);
+
+        StopAllCoroutines();
 
         // tween in letterbox (and start dissolving when letterbox is done)
         StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxIn, StartDissolveIn));
 
         // set dissolve out to start after textDuration
         StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(textDuration, StartDissolveOut));
-        
+
         // set letterbox to start after letterboxDuration
         StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(letterboxDuration, StartLetterboxOut));
-    
-
     }
 }
