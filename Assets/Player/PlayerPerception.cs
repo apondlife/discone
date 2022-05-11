@@ -49,6 +49,7 @@ class PlayerPerception: MonoBehaviour {
         foreach (var collision in all) {
             var target = FindPerceptionTarget(collision.collider);
             if (target != null) {
+                Debug.Log($"");
                 target.IsPerceived = true;
             }
         }
