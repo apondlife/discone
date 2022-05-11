@@ -29,6 +29,7 @@ sealed class DisconePlayer: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
+        Debug.Log("good morning!!!");
         // bind events
         m_Subscriptions
             .Add(m_DriveStart, OnDriveStart)
