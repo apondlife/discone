@@ -38,7 +38,7 @@ public class DialogueSystem: MonoBehaviour {
     [SerializeField] DialogueViewBase ivanTextbox;
 
     [Tooltip("default textbox")]
-    [SerializeField] DialogueViewBase defaultTextbox;
+    [SerializeField] NeueArtfulDialogueView defaultTextbox;
 
 
     // -- props --
@@ -116,6 +116,8 @@ public class DialogueSystem: MonoBehaviour {
         if (nodeName == "Ivan") {
             return ivanTextbox;
         } else {
+            // HACK
+            defaultTextbox.lastLine = null;
             return defaultTextbox;
         }
     }

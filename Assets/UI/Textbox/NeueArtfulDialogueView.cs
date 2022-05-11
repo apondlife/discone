@@ -25,7 +25,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
 
     LocalizedLine currentLine = null;
 
-    LocalizedLine lastLine = null;
+    public LocalizedLine lastLine = null;
 
     GameObject continueSignal = null;
 
@@ -66,6 +66,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
             canvasGroup.gameObject.SetActive(true);
             characterNameText.SetText(dialogueLine.CharacterName);
 
+            // clear and deactivate boxes
             for (int i = 0; i < boxes.Length; i++) {
                 boxes[i].gameObject.SetActive(false);
                 boxes[i].currentlyUsed = false;
