@@ -28,6 +28,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
     // -- NetworkBehaviour --
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
+        Debug.Log("[online] starting local player");
 
         // drive any character
         DriveInitialCharacter();

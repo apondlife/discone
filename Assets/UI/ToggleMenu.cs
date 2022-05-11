@@ -18,6 +18,10 @@ class ToggleMenu: MonoBehaviour {
         m_Toggle.action.performed += OnToggle;
     }
 
+    void OnDestroy() {
+        m_Toggle.action.performed -= OnToggle;
+    }
+
     // -- events --
     /// when the toggle input is performed
     void OnToggle(InputAction.CallbackContext _) {
