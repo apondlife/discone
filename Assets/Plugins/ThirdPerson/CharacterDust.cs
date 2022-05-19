@@ -17,6 +17,9 @@ public class CharacterDust: MonoBehaviour {
     [Tooltip("the floor particle emitter")]
     [SerializeField] ParticleSystem m_FloorParticles;
 
+    [Tooltip("the jump particle emitter")]
+    [SerializeField] ParticleSystem m_JumpParticles;
+
     // -- props --
     /// the character's state
     CharacterState m_State;
@@ -31,7 +34,7 @@ public class CharacterDust: MonoBehaviour {
         isDebug = character.name == "icecream.1";
     }
 
-    void Update() {
+    void FixedUpdate() {
         if (m_WallParticles.isPlaying && !m_State.IsOnWall) {
             m_WallParticles.Stop();
         }
@@ -67,6 +70,12 @@ public class CharacterDust: MonoBehaviour {
             var emission = m_FloorParticles.emission;
             var emissionRate = m_FloorParticlesBaseEmission * m_State.PlanarVelocity.sqrMagnitude;
             emission.rateOverTimeMultiplier = emissionRate;
+        }
+
+        if (!m_State.GetFrame(1).IsGrounded && m_State.GetFrame(0).IsGrounded) {
+            if(!m_JumpParticles.isPlaying) {
+                m_JumpParticles.Play();
+            }
         }
     }
 }
