@@ -20,6 +20,9 @@ public class CharacterDust: MonoBehaviour {
     [Tooltip("the jump particle emitter")]
     [SerializeField] ParticleSystem m_JumpParticles;
 
+    [Tooltip("the particle that shows horizontal speed")]
+    [SerializeField] ParticleSystem m_SpeedLine;
+
     // -- props --
     /// the character's state
     CharacterState m_State;
@@ -77,6 +80,15 @@ public class CharacterDust: MonoBehaviour {
                 m_JumpParticles.Play();
             }
         }
+
+
+        UpdateSpeedLine();
+    }
+
+    void UpdateSpeedLine() {
+        var main = m_SpeedLine.main;
+        main.startSpeed = m_State.PlanarVelocity.magnitude;
+        m_SpeedLine.transform.forward = -m_State.PlanarVelocity.normalized;
     }
 }
 }
