@@ -5,22 +5,19 @@ using UnityAtoms.BaseAtoms;
 /// blit a post processing effect
 [ExecuteAlways]
 [RequireComponent(typeof(RawImage))]
-public class UIShader: MonoBehaviour {
-    // -- config --
-    [Header("config")]
+class UIShader: MonoBehaviour {
+    // -- state --
+    [Header("state")]
+    [Tooltip("the percent to dissolve the text")]
+    [SerializeField] FloatReference m_DissolveAmount;
+
+    [Tooltip("the percent to letterbox the text")]
+    [SerializeField] FloatReference m_LetterboxAmount;
+
+    // -- refs --
+    [Header("refs")]
     [Tooltip("the post-processing material (shader)")]
     [SerializeField] Material m_Material;
-
-    // [Range(0, 1)]
-    // [SerializeField] public float dissolveAmount;
-
-    // [Range(0, 1f)]
-    // [SerializeField] public float letterboxAmount;
-
-    [SerializeField] FloatVariable m_DissolveAmount;
-
-    [SerializeField] FloatVariable m_LetterboxAmount;
-
 
     // -- lifecycle --
     void Awake() {
