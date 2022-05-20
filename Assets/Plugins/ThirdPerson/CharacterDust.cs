@@ -86,9 +86,16 @@ public class CharacterDust: MonoBehaviour {
     }
 
     void UpdateSpeedLine() {
+        var v = m_State.PlanarVelocity;
+
+        // match speed line length to planar velocity
         var main = m_SpeedLine.main;
-        main.startSpeed = m_State.PlanarVelocity.magnitude;
-        m_SpeedLine.transform.forward = -m_State.PlanarVelocity.normalized;
+        main.startSpeed = v.magnitude;
+
+        // rotate speed line emitter opposite planar movement
+        if (v != Vector3.zero) {
+            m_SpeedLine.transform.forward = -v.normalized;
+        }
     }
 }
 }
