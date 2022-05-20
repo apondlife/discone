@@ -85,7 +85,7 @@ public class CharacterDust: MonoBehaviour {
             }
         }
 
-        if(m_State.GetFrame(1).PivotFrame == -1 && m_State.PivotFrame >= ) {
+        if(m_State.GetFrame(1).PivotFrame == -1 && m_State.PivotFrame >= 0) {
             m_PivotParticles.Play();
             m_PivotParticles.transform.forward = -m_State.PivotDirection;
         }
