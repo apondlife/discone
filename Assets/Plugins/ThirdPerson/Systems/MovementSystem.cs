@@ -99,13 +99,13 @@ sealed class MovementSystem: CharacterSystem {
     CharacterPhase Pivot => new CharacterPhase(
         "Pivot",
         enter: Pivot_Enter,
-        update: Pivot_Update
+        update: Pivot_Update,
+        exit: Pivot_Exit
     );
 
-    Vector3 m_DirPivot;
-
     void Pivot_Enter() {
-        m_DirPivot = m_Input.MoveAxis;
+        m_State.PivotDirection = m_Input.MoveAxis;
+        m_State.PivotFrame = 0;
     }
 
     void Pivot_Update() {
@@ -114,11 +114,13 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
+        m_State.PivotFrame += 1;
+
         // rotate towards pivot direction
         var dirFacing = m_State.FacingDirection;
         dirFacing = Vector3.RotateTowards(
             m_State.FacingDirection,
-            m_DirPivot,
+            m_State.PivotDirection,
             m_Tunables.PivotSpeed * Mathf.Deg2Rad * Time.deltaTime,
             Mathf.Infinity
         );
@@ -137,6 +139,10 @@ sealed class MovementSystem: CharacterSystem {
             ChangeTo(NotMoving);
             return;
         }
+    }
+
+    void Pivot_Exit() {
+        m_State.PivotFrame = -1;
     }
 
     // -- Floating --

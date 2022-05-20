@@ -41,6 +41,16 @@ public sealed class CharacterState {
         set => m_Frames[0].FacingDirection = value;
     }
 
+    public int PivotFrame {
+        get => m_Frames[0].PivotFrame;
+        set => m_Frames[0].PivotFrame = value;
+    }
+
+    public Vector3 PivotDirection {
+        get => m_Frames[0].PivotDirection;
+        set => m_Frames[0].PivotDirection = value;
+    }
+
     /// if the character is grounded
     public bool IsGrounded {
         get => m_Frames[0].IsGrounded;
@@ -81,7 +91,9 @@ public sealed class CharacterState {
     public int JumpSquatFrame {
         get => m_Frames[0].JumpSquatFrame;
         set => m_Frames[0].JumpSquatFrame = value;
+
     }
+
 
     /// the current jump squat frame
     public float IdleTime {
@@ -184,8 +196,14 @@ public sealed class CharacterState {
         /// the current frame in the jump squat
         public int JumpSquatFrame = -1;
 
-        /// the current frame in the jump squat
+        /// the current time the character hasn't moved
         public float IdleTime = 0;
+
+        ///  the current frame in pivot animation
+        public int PivotFrame = -1;
+
+        ///  the direction of the current pivot
+        public Vector3 PivotDirection = Vector3.zero;
 
         // -- lifetime --
         /// create an empty frame
@@ -212,6 +230,8 @@ public sealed class CharacterState {
             Collision = f.Collision;
             JumpSquatFrame = f.JumpSquatFrame;
             IdleTime = f.IdleTime;
+            PivotFrame = f.PivotFrame;
+            PivotDirection = f.PivotDirection;
         }
 
         // -- queries --
@@ -227,8 +247,9 @@ public sealed class CharacterState {
             }
         }
 
-        // -- IEquatable --
-        public bool Equals(Frame o) {
+
+            // -- IEquatable --
+            public bool Equals(Frame o) {
             if (o == null) {
                 return false;
             }
@@ -245,7 +266,10 @@ public sealed class CharacterState {
                 Tilt == o.Tilt &&
                 Collision == o.Collision &&
                 JumpSquatFrame == o.JumpSquatFrame &&
-                IdleTime == o.IdleTime
+                IdleTime == o.IdleTime &&
+                PivotFrame == o.PivotFrame &&
+                PivotDirection == o.PivotDirection
+
             );
         }
     }

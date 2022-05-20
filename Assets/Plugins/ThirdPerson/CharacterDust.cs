@@ -20,6 +20,9 @@ public class CharacterDust: MonoBehaviour {
     [Tooltip("the jump particle emitter")]
     [SerializeField] ParticleSystem m_JumpParticles;
 
+    [Tooltip("the pivot particle emitter")]
+    [SerializeField] ParticleSystem m_PivotParticles;
+
     [Tooltip("the particle that shows horizontal speed")]
     [SerializeField] ParticleSystem m_SpeedLine;
 
@@ -77,8 +80,14 @@ public class CharacterDust: MonoBehaviour {
 
         if (!m_State.GetFrame(1).IsGrounded && m_State.GetFrame(0).IsGrounded) {
             if(!m_JumpParticles.isPlaying) {
+                m_JumpParticles.transform.up = m_State.Collision.Normal;
                 m_JumpParticles.Play();
             }
+        }
+
+        if(m_State.GetFrame(1).PivotFrame == -1 && m_State.PivotFrame >= ) {
+            m_PivotParticles.Play();
+            m_PivotParticles.transform.forward = -m_State.PivotDirection;
         }
 
 
