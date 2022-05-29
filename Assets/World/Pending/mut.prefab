@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6356264435020396499}
   - component: {fileID: 95166120247690346}
   m_Layer: 0
-  m_Name: SkyboxRegionChanger
+  m_Name: SkyboxRegion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,11 +41,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 920384005731252759}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8b4df4913b581b4d99e0fcf54acd0b4, type: 3}
+  m_Script: {fileID: 11500000, guid: e123972a837714f66a549f2071460e50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_ChangeDuration: 6.9
-  m_SkyboxMaterial: {fileID: 2100000, guid: 2643f8c982658e2429b3abdb9eb18c7b, type: 2}
   m_RegionEntered: {fileID: 11400000, guid: 2e7aa35edf29f6c418f1cf45dd2488c9, type: 2}
 --- !u!1 &1037596584765127908
 GameObject:
@@ -3912,17 +3911,9 @@ MonoBehaviour:
   m_Mesh: {fileID: 0}
   m_VersionIndex: 3293
   m_IsSelectable: 1
-  m_SelectedFaces: 52000000
-  m_SelectedEdges:
-  - a: 328
-    b: 329
-  - a: 330
-    b: 328
-  - a: 329
-    b: 331
-  - a: 331
-    b: 330
-  m_SelectedVertices: 48010000490100004a0100004b010000
+  m_SelectedFaces: 
+  m_SelectedEdges: []
+  m_SelectedVertices: 
 --- !u!114 &8799096972842353128
 MonoBehaviour:
   m_ObjectHideFlags: 0

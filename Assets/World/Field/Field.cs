@@ -59,6 +59,11 @@ public sealed class Field: MonoBehaviour {
     float m_ChunkSize;
 
     // -- lifecycle --
+    void Awake() {
+        // dont persist changes to the editor
+        // m_FieldHeight = m_FieldHeight.Unsaved();
+    }
+
     void Start() {
         // capture chunk size
         Debug.Assert(m_Chunk.Size.x == m_Chunk.Size.z, "field's terrain chunk was not square");
