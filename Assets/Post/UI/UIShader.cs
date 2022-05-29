@@ -17,11 +17,16 @@ class UIShader: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the post-processing material (shader)")]
-    [SerializeField] Material m_Material;
+    [SerializeField] RawImage m_Image;
+
+    // -- props --
+    /// the underlying material
+    Material m_Material;
 
     // -- lifecycle --
     void Awake() {
-        m_Material = GetComponent<RawImage>().material;
+        m_Material = m_Image.material.Unsaved();
+        m_Image.material = m_Material;
     }
 
     void Update() {
