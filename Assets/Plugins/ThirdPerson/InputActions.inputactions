@@ -67,24 +67,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "SaveState",
-                    "type": "Button",
-                    "id": "87fa9328-093b-4050-8904-159700f5d4ad",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "LoadState",
-                    "type": "Button",
-                    "id": "a0ecc366-6818-4b4e-ba13-db4b2d5e7d69",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -470,28 +452,6 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "ToggleMenu",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ddcda22e-b734-4a31-bdb8-992f828399d0",
-                    "path": "<Keyboard>/f7",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SaveState",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a2d688ed-5750-416f-b49f-cc4289b53376",
-                    "path": "<Keyboard>/f5",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LoadState",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
