@@ -11,6 +11,14 @@ PrefabInstance:
       propertyPath: EmissionModule.rateOverTime.scalar
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 676918594969115258, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.002
+      objectReference: {fileID: 0}
+    - target: {fileID: 676918594969115258, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.071
+      objectReference: {fileID: 0}
     - target: {fileID: 825638066272478885, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.05
@@ -103,6 +111,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: FX
       objectReference: {fileID: 0}
+    - target: {fileID: 5243335814077143966, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5285072794697494767, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Head
+      value: 
+      objectReference: {fileID: 5730620147798107482}
     - target: {fileID: 5598734104122165758, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -195,3 +211,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5f193421ea3f2184d9a5a6ab2182387d, type: 3}
+--- !u!4 &5730620147798107482 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6546258106076780390, guid: 5f193421ea3f2184d9a5a6ab2182387d, type: 3}
+  m_PrefabInstance: {fileID: 7683216032528747968}
+  m_PrefabAsset: {fileID: 0}

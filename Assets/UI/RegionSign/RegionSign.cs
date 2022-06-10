@@ -6,6 +6,7 @@ using MutCommon;
 using UnityAtoms.BaseAtoms;
 using UnityAtoms.Discone;
 
+[ExecuteAlways]
 public class RegionSign : MonoBehaviour
 {
     [SerializeField]

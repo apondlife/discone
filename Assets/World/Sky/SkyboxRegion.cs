@@ -38,12 +38,18 @@ public class SkyboxRegion: MonoBehaviour {
 
     // -- events --
     void OnRegionEntered(Region region) {
-        var exposure = m_Material.GetFloat("_Exposure");
+        var exposureBg = m_Material.GetFloat("_ExposureBackground");
+        var exposureFg = m_Material.GetFloat("_ExposureForeground");
         var background = m_Material.GetColor("_Background");
         var foreground = m_Material.GetColor("_Foreground");
 
         StartCoroutine(CoroutineHelpers.InterpolateByTime(m_ChangeDuration, (k) => {
-            m_Material.SetFloat("_Exposure", Mathf.Lerp(exposure, region.SkyboxExposure, k));
+            m_Material.SetFloat(
+                "_ExposureBackground",
+                Mathf.Lerp(exposureBg, region.SkyboxExposureBackground, k));
+            m_Material.SetFloat(
+                "_ExposureForeground",
+                Mathf.Lerp(exposureFg, region.SkyboxExposureForeground, k));
             m_Material.SetColor("_Background", Color.Lerp(background, region.SkyboxColorBackground, k));
             m_Material.SetColor("_Foreground", Color.Lerp(foreground, region.SkyboxColorForeground, k));
         }));
