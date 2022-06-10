@@ -29,7 +29,7 @@ class SkyChart: MonoBehaviour {
 
         // move bodies into position
         foreach (var body in m_Bodies) {
-            body.Reposition(pos, m_Radius);
+            body.Reposition(pos, 0.9f*m_Radius);
         }
     }
 }
