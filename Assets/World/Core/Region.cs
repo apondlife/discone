@@ -9,8 +9,16 @@ public class Region {
 
     [Header("Skybox Stuff")]
     public Color SkyboxColorForeground;
-    public Color SkyboxColorBackground;
+
+    [UnityEngine.Serialization.FormerlySerializedAs("SkyboxExposure")]
     [Range(0.0f, 8.0f)]
-    public float SkyboxExposure;
+    public float SkyboxExposureForeground;
+
+    public Color SkyboxColorBackground;
+
+    [UnityEngine.Serialization.FormerlySerializedAs("SkyboxExposure")]
+    [Range(0.0f, 8.0f)]
+    public float SkyboxExposureBackground;
+
     public Color SkyboxFog;
 }

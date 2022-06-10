@@ -5,8 +5,9 @@ Properties {
     _Scale ("Scale", Float) = 1.0
     _Rotation ("Rotation", Range(0.0, 360.0)) = 0.0
     _Foreground ("Foreground", Color) = (0.5, 0.5, 0.5, 1.0)
+    [Gamma] _ExposureForeground ("Exposure Foreground", Range(0.0, 8.0)) = 1.0
     _Background ("Background", Color) = (0.0, 0.0, 0.0, 1.0)
-    [Gamma] _Exposure ("Exposure", Range(0.0, 8.0)) = 1.0
+    [Gamma] _ExposureBackground ("Exposure Background", Range(0.0, 8.0)) = 1.0
     _Fog ("Fog", Color) = (0.0, 0.0, 0.0, 0.0)
     _FogMin ("Fog Min (Horizon)", Float) = 100.0
     _FogHeight ("Fog Height", Float) = 20.0
@@ -54,7 +55,8 @@ SubShader {
         half4 _Background;
 
         /// the color exposure (gamma multiplier)
-        half _Exposure;
+        half _ExposureBackground;
+        half _ExposureForeground;
 
         /// the fog color
         half4 _Fog;
@@ -126,7 +128,7 @@ SubShader {
             // sample a color from the texture
             half3 c = tex2D(_MainTex, tc);
             c = lerp(_Foreground.rgb, _Background.rgb, c.r);
-            c *= _Exposure;
+            c *= lerp(_ExposureBackground, _ExposureForeground, c.r);
 
             // apply fog
             // float fog = max(1.0f - (i.wPosY - _FogMin) / _FogHeight, 0.0f);
