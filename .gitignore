@@ -6,15 +6,15 @@
 # This .gitignore file should be placed at the root of your Unity project directory
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Aa]rtifacts/
-/[Bb]uilds/
-/[Ll]ogs/
-/[Uu]ser[Ss]ettings/
-/[Aa]ssets/[Pp]lugins/[Ee]xternal
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Aa]rtifacts/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Aa]ssets/[Pp]lugins/[Ee]xternal
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -105,7 +105,7 @@ Audio/.unsaved
 # Ignore bank files in the StreamingAssets folder.
 /[Aa]ssets/StreamingAssets/**/*.bank
 /[Aa]ssets/StreamingAssets/**/*.bank.meta
-                    
+
 # If the source bank files are kept outside of the StreamingAssets folder then these can be ignored.
 # Log files can be ignored.
 fmod_editor.log

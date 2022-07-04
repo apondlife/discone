@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the character's authoritative state
-public sealed class CharacterState {
+public sealed partial class CharacterState {
     // -- props --
     /// the queue of frames
     Queue<Frame> m_Frames;
@@ -21,84 +21,6 @@ public sealed class CharacterState {
     public Frame CurrentFrame {
         get => m_Frames[0];
         set => m_Frames[0] = value;
-    }
-
-    /// the position
-    public Vector3 Position {
-        get => m_Frames[0].Position;
-        set => m_Frames[0].Position = value;
-    }
-
-    /// the character's velocity in 3d-space
-    public Vector3 Velocity {
-        get => m_Frames[0].Velocity;
-        set => m_Frames[0].Velocity = value;
-    }
-
-    /// the current facing direction
-    public Vector3 FacingDirection {
-        get => m_Frames[0].FacingDirection;
-        set => m_Frames[0].FacingDirection = value;
-    }
-
-    public int PivotFrame {
-        get => m_Frames[0].PivotFrame;
-        set => m_Frames[0].PivotFrame = value;
-    }
-
-    public Vector3 PivotDirection {
-        get => m_Frames[0].PivotDirection;
-        set => m_Frames[0].PivotDirection = value;
-    }
-
-    /// if the character is grounded
-    public bool IsGrounded {
-        get => m_Frames[0].IsGrounded;
-        set => m_Frames[0].IsGrounded = value;
-    }
-
-    /// if the character is in jump squat
-    public bool IsInJumpSquat {
-        get => m_Frames[0].IsInJumpSquat;
-        set => m_Frames[0].IsInJumpSquat = value;
-    }
-
-    /// if the character is in its first jump frame
-    public bool IsInJumpStart {
-        get => m_Frames[0].IsInJumpStart;
-        set => m_Frames[0].IsInJumpStart = value;
-    }
-
-    /// if the characer is on the wall
-    public bool IsOnWall {
-        get => m_Frames[0].IsOnWall;
-        set => m_Frames[0].IsOnWall = value;
-    }
-
-    /// how much tilted the character is
-    public Quaternion Tilt {
-        get => m_Frames[0].Tilt;
-        set => m_Frames[0].Tilt = value;
-    }
-
-    /// the most recent collision
-    public CharacterCollision Collision {
-        get => m_Frames[0].Collision;
-        set => m_Frames[0].Collision = value;
-    }
-
-    /// the current jump squat frame
-    public int JumpSquatFrame {
-        get => m_Frames[0].JumpSquatFrame;
-        set => m_Frames[0].JumpSquatFrame = value;
-
-    }
-
-
-    /// the current jump squat frame
-    public float IdleTime {
-        get => m_Frames[0].IdleTime;
-        set => m_Frames[0].IdleTime = value;
     }
 
     // -- commands --
@@ -161,16 +83,13 @@ public sealed class CharacterState {
     // -- types --
     /// a single frame of character state
     [Serializable]
-    public sealed class Frame: IEquatable<Frame> {
+    public sealed partial class Frame: IEquatable<Frame> {
         // -- props --
         /// the world position
         public Vector3 Position;
 
         /// the character's velocity
         public Vector3 Velocity = Vector3.zero;
-
-        /// how much velocity changed since last update
-        public Vector3 Acceleration = Vector3.zero;
 
         /// the current facing direction
         public Vector3 FacingDirection;
@@ -205,6 +124,9 @@ public sealed class CharacterState {
         ///  the direction of the current pivot
         public Vector3 PivotDirection = Vector3.zero;
 
+        /// the number of jumps executed since last grounded
+        public int Jumps = 0;
+
         // -- lifetime --
         /// create an empty frame
         public Frame() {
@@ -214,24 +136,6 @@ public sealed class CharacterState {
         public Frame(Vector3 position, Vector3 forward) {
             Position = position;
             FacingDirection = forward;
-        }
-
-        /// create a copy of an existing frame
-        public Frame(CharacterState.Frame f) {
-            Position = f.Position;
-            Velocity = f.Velocity;
-            Acceleration = f.Acceleration;
-            FacingDirection = f.FacingDirection;
-            IsGrounded = f.IsGrounded;
-            IsInJumpSquat = f.IsInJumpSquat;
-            IsInJumpStart = f.IsInJumpStart;
-            IsOnWall = f.IsOnWall;
-            Tilt = f.Tilt;
-            Collision = f.Collision;
-            JumpSquatFrame = f.JumpSquatFrame;
-            IdleTime = f.IdleTime;
-            PivotFrame = f.PivotFrame;
-            PivotDirection = f.PivotDirection;
         }
 
         // -- queries --
@@ -245,32 +149,6 @@ public sealed class CharacterState {
             get {
                 return Tilt * Quaternion.LookRotation(FacingDirection, Up);
             }
-        }
-
-
-            // -- IEquatable --
-            public bool Equals(Frame o) {
-            if (o == null) {
-                return false;
-            }
-
-            return (
-                Position == o.Position &&
-                Velocity == o.Velocity &&
-                Acceleration == o.Acceleration &&
-                FacingDirection == o.FacingDirection &&
-                IsGrounded == o.IsGrounded &&
-                IsInJumpSquat == o.IsInJumpSquat &&
-                IsInJumpStart == o.IsInJumpStart &&
-                IsOnWall == o.IsOnWall &&
-                Tilt == o.Tilt &&
-                Collision == o.Collision &&
-                JumpSquatFrame == o.JumpSquatFrame &&
-                IdleTime == o.IdleTime &&
-                PivotFrame == o.PivotFrame &&
-                PivotDirection == o.PivotDirection
-
-            );
         }
     }
 }

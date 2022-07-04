@@ -41,6 +41,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float MinJumpSpeed_Horizontal { get; }
     public abstract float MaxJumpSpeed_Horizontal { get; }
     public abstract AnimationCurve JumpSpeedCurve_Horizontal { get; }
+    public abstract uint MaxJumps { get; }
 
     // -- wall --
     public abstract LayerMask WallLayer { get; }
@@ -58,6 +59,6 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float DutchSmoothing { get; }
     public abstract float Damping { get; }
     public abstract float FastDamping { get; }
-}
 
+    }
 }
