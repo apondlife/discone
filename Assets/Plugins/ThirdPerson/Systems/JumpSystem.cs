@@ -8,6 +8,11 @@ sealed class JumpSystem: CharacterSystem {
     /// the number of coyote frames the available
     int m_CoyoteFrames = 0;
 
+    /// the number of jumps executed since last grounded
+    int m_Jumps = 0;
+
+    const int k_MaxJumps = 1;
+
     // -- lifetime --
     public JumpSystem(CharacterData character)
         : base(character) {
@@ -28,18 +33,33 @@ sealed class JumpSystem: CharacterSystem {
     // -- NotJumping --
     CharacterPhase NotJumping => new CharacterPhase(
         name: "NotJumping",
+        enter: NotJumping_Enter,
         update: NotJumping_Update
     );
 
+    void NotJumping_Enter() {
+        m_Jumps = 0;
+    }
+
     void NotJumping_Update() {
-        if (m_State.IsGrounded && m_Input.IsJumpDown(m_Tunables.JumpBuffer)) {
-            ChangeTo(JumpSquat);
+        // count coyote frames; reset to max whenever grounded
+        if (m_State.IsGrounded) {
+            m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
+        }
+        // but if not, subtract a frame
+        else {
+            m_CoyoteFrames -= 1;
+        }
+
+        // fall once coyote time expires
+        if (m_CoyoteFrames < 0) {
+            ChangeTo(Falling);
             return;
         }
 
-        if (!m_State.IsGrounded && m_State.Velocity.y < 0.0f)  {
-            m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
-            ChangeTo(Falling);
+        // if you jump
+        if (m_Input.IsJumpDown(m_Tunables.JumpBuffer)) {
+            ChangeTo(JumpSquat);
             return;
         }
     }
@@ -54,7 +74,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void JumpSquat_Enter() {
         m_State.IsInJumpSquat = true;
-        m_State.JumpSquatFrame  = 0;
+        m_State.JumpSquatFrame = 0;
     }
 
     void JumpSquat_Update() {
@@ -72,23 +92,27 @@ sealed class JumpSystem: CharacterSystem {
         );
 
         if (shouldJump) {
-            ChangeTo(Jumping);
-            return;
-        }
-
-        // count coyote frames; reset to max whenever grounded
-        if (m_State.IsGrounded) {
-            m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
-        }
-        // but if not, subtract a frame
-        else {
-            m_CoyoteFrames -= 1;
-        }
-
-        // fall once coyote time expires
-        if (m_CoyoteFrames < 0) {
+            Jump();
             ChangeTo(Falling);
             return;
+        }
+
+        // if this is the first jump, you might be in coyote time
+        if(m_Jumps == 0) {
+            // count coyote frames; reset to max whenever grounded
+            if (m_State.IsGrounded) {
+                m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
+            }
+            // but if not, subtract a frame
+            else {
+                m_CoyoteFrames -= 1;
+            }
+
+            // fall once coyote time expires
+            if (m_CoyoteFrames < 0) {
+                ChangeTo(Falling);
+                return;
+            }
         }
 
         // count jump squat frames
@@ -96,17 +120,65 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void JumpSquat_Exit() {
+        // NOTE: do we force the jump here?
         m_State.IsInJumpSquat = false;
     }
 
-    // -- Jumping --
-    CharacterPhase Jumping => new CharacterPhase(
-        name: "Jumping",
-        enter: Jumping_Enter,
-        update: Jumping_Update
+    // -- Falling --
+    CharacterPhase Falling => new CharacterPhase(
+        name: "Falling",
+        enter: Falling_Enter,
+        update: Falling_Update
     );
 
-    void Jumping_Enter() {
+    void Falling_Enter() {
+        // consume a jump whenever falling
+        m_Jumps += 1;
+    }
+
+    void Falling_Update() {
+        // apply fall acceleration while holding jump
+        // TODO: is this bad?
+        // apply jump acceleration while holding jump
+        if (m_Input.IsJumpPressed && !m_State.IsOnWall) {
+            var acceleration = m_State.Velocity.y > 0.0f
+                ? m_Tunables.JumpAcceleration
+                : m_Tunables.FallAcceleration;
+
+            m_State.Velocity += acceleration * Time.deltaTime * Vector3.up;
+        }
+
+        // count coyote frames
+        m_CoyoteFrames -= 1;
+
+        // start jump if jump is pressed before coyote frames expire
+        // a few frames in jump squat before falling again
+        // NOTE: we could sorta fix this by skipping jump squat, requiring the whole
+        // jump finish here, and transitioning directly to jump
+        if (m_CoyoteFrames >= 0 && m_Input.IsJumpDown()) {
+            ChangeTo(JumpSquat);
+            return;
+        }
+
+        // start an air jump if available
+        if (m_Jumps < k_MaxJumps && m_Input.IsJumpDown()) {
+            ChangeTo(JumpSquat);
+            return;
+        }
+
+        // transition out of jump
+        if (m_State.IsGrounded) {
+            ChangeTo(NotJumping);
+            return;
+        }
+    }
+
+    // -- commands --
+    void AddGravity() {
+        m_State.Velocity += m_Tunables.Gravity * Time.deltaTime * Vector3.up;
+    }
+
+    void Jump() {
         // get curved percent complete through jump squat
         var pct = Mathf.InverseLerp(
             m_Tunables.MinJumpSquatFrames,
@@ -134,67 +206,6 @@ sealed class JumpSystem: CharacterSystem {
 
         m_State.Velocity = v;
         m_State.IsInJumpStart = true;
-    }
-
-    void Jumping_Update() {
-        // only in jump start first frame
-        // TODO: reason about frames -- when should enter be called? what is frame one?
-        m_State.IsInJumpStart = false;
-
-        // apply jump acceleration while holding jump
-        if (m_Input.IsJumpPressed) {
-            m_State.Velocity += m_Tunables.JumpAcceleration * Time.deltaTime * Vector3.up;
-        }
-
-        // transition out of jump
-        if (m_State.IsGrounded) {
-            ChangeTo(NotJumping);
-            return;
-        }
-
-        if (m_State.Velocity.y < 0.0f) {
-            m_CoyoteFrames = 0;
-            ChangeTo(Falling);
-            return;
-        }
-    }
-
-    // -- Falling --
-    CharacterPhase Falling => new CharacterPhase(
-        name: "Falling",
-        update: Falling_Update
-    );
-
-    void Falling_Update() {
-        // apply fall acceleration while holding jump
-        // TODO: is this bad?
-        if (m_Input.IsJumpPressed && !m_State.IsOnWall) {
-            m_State.Velocity += m_Tunables.FallAcceleration * Time.deltaTime * Vector3.up;
-        }
-
-        // count coyote frames
-        m_CoyoteFrames -= 1;
-
-        // start jump if jump is pressed before coyote frames expire
-        // NOTE: it's possible to start a jump you can't or don't finish and spend
-        // a few frames in jump squat before falling again
-        // NOTE: we could sorta fix this by skipping jump squat, requiring the whole
-        // jump finish here, and transitioning directly to jump
-        if (m_CoyoteFrames >= 0 && m_Input.IsJumpDown()) {
-            ChangeTo(JumpSquat);
-            return;
-        }
-
-        // transition out of jump
-        if (m_State.IsGrounded) {
-            ChangeTo(NotJumping);
-            return;
-        }
-    }
-
-    // -- commands --
-    void AddGravity() {
-        m_State.Velocity += m_Tunables.Gravity * Time.deltaTime * Vector3.up;
     }
 }
 
