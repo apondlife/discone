@@ -137,6 +137,10 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private float m_MaxJumpSpeed_Horizontal;
     public override float MaxJumpSpeed_Horizontal => m_MaxJumpSpeed_Horizontal;
 
+    [Tooltip("the maximum amount of jumps a character can do")]
+    [SerializeField] private uint m_MaxJumps = 1;
+    public override uint MaxJumps => m_MaxJumps;
+
     #endregion
 
     #region wall
@@ -195,10 +199,11 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [Range(0.0f, 20.0f)]
     [SerializeField] private float m_FastDamping;
     public override float FastDamping => m_FastDamping;
+
     #endregion
 
-    // -- queries --
-    public float TimeToPercentMaxSpeed(float pct) {
+        // -- queries --
+        public float TimeToPercentMaxSpeed(float pct) {
         return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Deceleration;
     }
 

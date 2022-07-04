@@ -8,11 +8,6 @@ sealed class JumpSystem: CharacterSystem {
     /// the number of coyote frames the available
     int m_CoyoteFrames = 0;
 
-    /// the number of jumps executed since last grounded
-    int m_Jumps = 0;
-
-    const int k_MaxJumps = 1;
-
     // -- lifetime --
     public JumpSystem(CharacterData character)
         : base(character) {
@@ -38,7 +33,7 @@ sealed class JumpSystem: CharacterSystem {
     );
 
     void NotJumping_Enter() {
-        m_Jumps = 0;
+        m_State.Jumps = 0;
     }
 
     void NotJumping_Update() {
@@ -98,7 +93,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if this is the first jump, you might be in coyote time
-        if(m_Jumps == 0) {
+        if(m_State.Jumps == 0) {
             // count coyote frames; reset to max whenever grounded
             if (m_State.IsGrounded) {
                 m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
@@ -133,7 +128,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void Falling_Enter() {
         // consume a jump whenever falling
-        m_Jumps += 1;
+        m_State.Jumps += 1;
     }
 
     void Falling_Update() {
@@ -155,13 +150,13 @@ sealed class JumpSystem: CharacterSystem {
         // a few frames in jump squat before falling again
         // NOTE: we could sorta fix this by skipping jump squat, requiring the whole
         // jump finish here, and transitioning directly to jump
-        if (m_CoyoteFrames >= 0 && m_Input.IsJumpDown()) {
+        if (m_State.Jumps == 0 && m_CoyoteFrames >= 0 && m_Input.IsJumpDown()) {
             ChangeTo(JumpSquat);
             return;
         }
 
         // start an air jump if available
-        if (m_Jumps < k_MaxJumps && m_Input.IsJumpDown()) {
+        if (m_State.Jumps < m_Tunables.MaxJumps && m_Input.IsJumpDown()) {
             ChangeTo(JumpSquat);
             return;
         }
