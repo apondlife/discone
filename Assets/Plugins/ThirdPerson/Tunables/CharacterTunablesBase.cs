@@ -39,6 +39,8 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract class JumpTunablesBase {
         public abstract uint Count { get; }
 
+        public abstract uint CooldownFrames { get; }
+
         public abstract uint MinJumpSquatFrames { get; }
         public abstract uint MaxJumpSquatFrames { get; }
 

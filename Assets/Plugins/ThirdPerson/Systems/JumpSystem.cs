@@ -8,6 +8,9 @@ sealed class JumpSystem: CharacterSystem {
     /// the number of coyote frames the available
     int m_CoyoteFrames = 0;
 
+    /// the number of cooldown frames available
+    int m_CooldownFrames = 0;
+
     /// the current number of jumps in the current tunable
     uint m_JumpTunablesJumpIndex;
 
@@ -53,7 +56,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // fall once coyote time expires
-        if (m_CoyoteFrames < 0) {
+        if (m_CoyoteFrames <= 0) {
             ChangeTo(Falling);
             return;
         }
@@ -110,7 +113,7 @@ sealed class JumpSystem: CharacterSystem {
             }
 
             // fall once coyote time expires
-            if (m_CoyoteFrames < 0) {
+            if (m_CoyoteFrames <= 0) {
                 ChangeTo(Falling);
                 return;
             }
@@ -150,6 +153,7 @@ sealed class JumpSystem: CharacterSystem {
 
         // count coyote frames
         m_CoyoteFrames -= 1;
+        m_CooldownFrames -= 1;
 
         // start jump if jump is pressed before coyote frames expire
         // a few frames in jump squat before falling again
@@ -211,6 +215,7 @@ sealed class JumpSystem: CharacterSystem {
 
         m_State.Velocity = v;
         m_State.IsInJumpStart = true;
+        m_CooldownFrames = (int)JumpTunables.CooldownFrames;
     }
 
     /// track jump and switch to the correct jump if necessary
@@ -266,6 +271,10 @@ sealed class JumpSystem: CharacterSystem {
         // if it's your first jump, account for coyote time
         if (IsFirstJump && m_CoyoteFrames >= 0) {
             return true;
+        }
+
+        if(m_CooldownFrames > 0) {
+            return false;
         }
 
         // Zero count means infinite jumps
