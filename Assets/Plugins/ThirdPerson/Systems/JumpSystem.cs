@@ -187,16 +187,27 @@ sealed class JumpSystem: CharacterSystem {
             JumpTunables.Vertical_SpeedCurve.Evaluate(pct)
         );
 
-        var planarSpeed = Mathf.Lerp(
+        var horizontalSpeed = Mathf.Lerp(
             JumpTunables.Horizontal_MinSpeed,
             JumpTunables.Horizontal_MaxSpeed,
             JumpTunables.Horizontal_SpeedCurve.Evaluate(pct)
         );
 
-        // cancel downwards momentum and apply initial jump
         var v = m_State.Velocity;
-        v += (Mathf.Max(m_State.Velocity.y, 0.0f) + verticalSpeed) * Vector3.up;
-        v += m_State.FacingDirection * planarSpeed;
+        // cancel vertical momentum if falling.
+        // according to tunables if going up
+        // (we don't want to lose upwards speed in general, but not jumping if too fast is too weird)
+        var verticalLoss = m_State.Velocity.y > 0 ? JumpTunables.Upwards_MomentumLoss : 1;
+        v -= m_State.Velocity.y * verticalLoss * Vector3.up;
+
+        // cancel vertical momentum if falling
+        // cancel horizontal momentum
+        v -= m_State.PlanarVelocity * JumpTunables.Horizontal_MomentumLoss;
+
+        // add vertical jump
+        v += verticalSpeed * Vector3.up;
+        // add horizontal jump
+        v += horizontalSpeed * m_State.FacingDirection;
 
         m_State.Velocity = v;
         m_State.IsInJumpStart = true;
@@ -257,11 +268,17 @@ sealed class JumpSystem: CharacterSystem {
             return true;
         }
 
+        // Zero count means infinite jumps
+        if(JumpTunables.Count == 0) {
+            return true;
+        }
+
         // start an air jump if available
         // if there's still jumps available in the current jump definition
         if (m_JumpTunablesJumpIndex < JumpTunables.Count) {
             return true;
         }
+
 
         return false;
     }
