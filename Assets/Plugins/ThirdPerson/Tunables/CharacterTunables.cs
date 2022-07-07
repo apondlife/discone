@@ -78,10 +78,6 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private uint m_MaxCoyoteFrames;
     public override uint MaxCoyoteFrames => m_MaxCoyoteFrames;
 
-    [Tooltip("the maximum amount of jumps a character can do")]
-    [SerializeField] private uint m_MaxJumps = 1;
-    public override uint MaxJumps => m_MaxJumps;
-
     [Tooltip("the gravity while holding jump and moving up")]
     [SerializeField] private float m_JumpGravity;
     public override float JumpGravity => m_JumpGravity;
@@ -118,10 +114,6 @@ public sealed class CharacterTunables: CharacterTunablesBase {
         [SerializeField] private uint m_MaxJumpSquatFrames = 5;
         public override uint MaxJumpSquatFrames => m_MaxJumpSquatFrames;
 
-        [Tooltip("how the jump speed changes from holding the squat")]
-        [SerializeField] private AnimationCurve m_Vertical_SpeedCurve;
-        public override AnimationCurve Vertical_SpeedCurve => m_Vertical_SpeedCurve;
-
         [Tooltip("the minimum jump speed (minimum length jump squat)")]
         [SerializeField] private float m_Vertical_MinSpeed;
         public override float Vertical_MinSpeed => m_Vertical_MinSpeed;
@@ -131,8 +123,12 @@ public sealed class CharacterTunables: CharacterTunablesBase {
         public override float Vertical_MaxSpeed => m_Vertical_MaxSpeed;
 
         [Tooltip("how the jump speed changes from holding the squat")]
-        [SerializeField] private AnimationCurve m_Horizontal_SpeedCurve;
-        public override AnimationCurve Horizontal_SpeedCurve => m_Horizontal_SpeedCurve;
+        [SerializeField] private AnimationCurve m_Vertical_SpeedCurve;
+        public override AnimationCurve Vertical_SpeedCurve => m_Vertical_SpeedCurve;
+
+        [Tooltip("how much upwards speed is cancelled on jump")]
+        [SerializeField] private float m_Upwards_MomentumLoss;
+        public override float Upwards_MomentumLoss => m_Upwards_MomentumLoss;
 
         [Tooltip("the minimum horizontal jump speed (minimum length jump squat)")]
         [SerializeField] private float m_Horizontal_MinSpeed;
@@ -141,6 +137,14 @@ public sealed class CharacterTunables: CharacterTunablesBase {
         [Tooltip("the maximum horizontal jump speed (maximum length jump squat)")]
         [SerializeField] private float m_Horizontal_MaxSpeed;
         public override float Horizontal_MaxSpeed => m_Horizontal_MaxSpeed;
+
+        [Tooltip("how the jump speed changes from holding the squat")]
+        [SerializeField] private AnimationCurve m_Horizontal_SpeedCurve;
+        public override AnimationCurve Horizontal_SpeedCurve => m_Horizontal_SpeedCurve;
+
+        [Tooltip("how much vertical speed is cancelled on jump")]
+        [SerializeField] private float m_Horizontal_MomentumLoss;
+        public override float Horizontal_MomentumLoss => m_Horizontal_MomentumLoss;
     }
 
     #endregion

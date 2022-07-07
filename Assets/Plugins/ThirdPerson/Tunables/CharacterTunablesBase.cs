@@ -27,7 +27,6 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     // -- jump --
     public abstract uint JumpBuffer { get; }
     public abstract uint MaxCoyoteFrames { get; }
-    public abstract uint MaxJumps { get; }
 
     // regrabs
     public abstract float JumpGravity { get; }
@@ -46,10 +45,13 @@ public abstract class CharacterTunablesBase: ScriptableObject {
         public abstract float Vertical_MinSpeed { get; }
         public abstract float Vertical_MaxSpeed { get; }
         public abstract AnimationCurve Vertical_SpeedCurve { get; }
+        public abstract float Upwards_MomentumLoss { get; }
 
         public abstract float Horizontal_MinSpeed { get; }
         public abstract float Horizontal_MaxSpeed { get; }
         public abstract AnimationCurve Horizontal_SpeedCurve { get; }
+        public abstract float Horizontal_MomentumLoss { get; }
+
     }
 
     // -- wall --
