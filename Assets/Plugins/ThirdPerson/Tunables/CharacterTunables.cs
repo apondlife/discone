@@ -106,6 +106,10 @@ public sealed class CharacterTunables: CharacterTunablesBase {
         [SerializeField] private uint m_Count = 1;
         public override uint Count => m_Count;
 
+        [Tooltip("how long after this jump the character can jump again")]
+        [SerializeField] private uint m_CooldownFrames;
+        public override uint CooldownFrames => m_CooldownFrames;
+
         [Tooltip("the min number of frames jump squat lasts")]
         [SerializeField] private uint m_MinJumpSquatFrames = 5;
         public override uint MinJumpSquatFrames => m_MinJumpSquatFrames;
