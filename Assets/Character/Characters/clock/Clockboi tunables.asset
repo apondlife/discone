@@ -24,45 +24,103 @@ MonoBehaviour:
   m_AerialDriftAcceleration: 10
   m_Gravity: -130
   m_JumpBuffer: 10
-  m_MinJumpSquatFrames: 0
-  m_MaxJumpSquatFrames: 0
   m_MaxCoyoteFrames: 8
-  m_JumpSpeedCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0.029391985
-      outSlope: 0.029391985
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.13501143
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2.9582162
-      outSlope: 2.9582162
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.11670482
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  m_MinJumpSpeed: 40
-  m_MaxJumpSpeed: 40
+  m_MaxJumps: 2
   m_JumpGravity: -130
   m_FallGravity: -130
-  m_JumpSpeedCurve_Horizontal:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  m_MinJumpSpeed_Horizontal: 0
-  m_MaxJumpSpeed_Horizontal: 0
+  m_Jumps:
+  - m_Count: 1
+    m_MinJumpSquatFrames: 0
+    m_MaxJumpSquatFrames: 0
+    m_Vertical_SpeedCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.029391985
+        outSlope: 0.029391985
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.13501143
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2.9582162
+        outSlope: 2.9582162
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.11670482
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    m_Vertical_MinSpeed: 40
+    m_Vertical_MaxSpeed: 40
+    m_Horizontal_SpeedCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 0
+    m_Horizontal_MinSpeed: 0
+    m_Horizontal_MaxSpeed: 0
+  - m_Count: 1
+    m_MinJumpSquatFrames: 0
+    m_MaxJumpSquatFrames: 0
+    m_Vertical_SpeedCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.029391985
+        outSlope: 0.029391985
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.13501143
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2.9582162
+        outSlope: 2.9582162
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.11670482
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    m_Vertical_MinSpeed: 50
+    m_Vertical_MaxSpeed: 50
+    m_Horizontal_SpeedCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.029391985
+        outSlope: 0.029391985
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.13501143
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2.9582162
+        outSlope: 2.9582162
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.11670482
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    m_Horizontal_MinSpeed: 60
+    m_Horizontal_MaxSpeed: 60
   m_WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295

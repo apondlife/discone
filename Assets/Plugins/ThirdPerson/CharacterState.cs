@@ -125,7 +125,7 @@ public sealed partial class CharacterState {
         public Vector3 PivotDirection = Vector3.zero;
 
         /// the number of jumps executed since last grounded
-        public int Jumps = 0;
+        public uint Jumps = 0;
 
         // -- lifetime --
         /// create an empty frame

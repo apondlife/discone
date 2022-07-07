@@ -26,22 +26,31 @@ public abstract class CharacterTunablesBase: ScriptableObject {
 
     // -- jump --
     public abstract uint JumpBuffer { get; }
-    public abstract uint MinJumpSquatFrames { get; }
-    public abstract uint MaxJumpSquatFrames { get; }
     public abstract uint MaxCoyoteFrames { get; }
-    public abstract float MinJumpSpeed { get; }
-    public abstract float MaxJumpSpeed { get; }
-    public abstract AnimationCurve JumpSpeedCurve { get; }
-    public abstract float MinJumpHeight { get; }
-    public abstract float MaxJumpHeight { get; }
+    public abstract uint MaxJumps { get; }
+
+    // regrabs
     public abstract float JumpGravity { get; }
     public abstract float JumpAcceleration { get; }
     public abstract float FallGravity { get; }
     public abstract float FallAcceleration { get; }
-    public abstract float MinJumpSpeed_Horizontal { get; }
-    public abstract float MaxJumpSpeed_Horizontal { get; }
-    public abstract AnimationCurve JumpSpeedCurve_Horizontal { get; }
-    public abstract uint MaxJumps { get; }
+
+    public abstract JumpTunablesBase[] Jumps { get; }
+
+    public abstract class JumpTunablesBase {
+        public abstract uint Count { get; }
+
+        public abstract uint MinJumpSquatFrames { get; }
+        public abstract uint MaxJumpSquatFrames { get; }
+
+        public abstract float Vertical_MinSpeed { get; }
+        public abstract float Vertical_MaxSpeed { get; }
+        public abstract AnimationCurve Vertical_SpeedCurve { get; }
+
+        public abstract float Horizontal_MinSpeed { get; }
+        public abstract float Horizontal_MaxSpeed { get; }
+        public abstract AnimationCurve Horizontal_SpeedCurve { get; }
+    }
 
     // -- wall --
     public abstract LayerMask WallLayer { get; }
