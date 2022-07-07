@@ -108,7 +108,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         var targetScale = 0.0f;
         if(m_State.IsInJumpSquat) {
-            var jumpSquatPct = m_Tunables.MaxJumpSquatFrames == 0 ? 1.0f : (float)m_State.JumpSquatFrame / m_Tunables.MaxJumpSquatFrames;
+            var jumpSquatPct = m_Tunables.Jumps[0].MaxJumpSquatFrames == 0 ? 1.0f : (float)m_State.JumpSquatFrame / m_Tunables.Jumps[0].MaxJumpSquatFrames;
             var jumpSquatDiff = 1.0f - MaxJumpSquatSquash;
             targetScale = (1.0f - jumpSquatDiff * (1.0f-JumpSquatSquashCurve.Evaluate(jumpSquatPct)));
         } else {

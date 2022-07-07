@@ -8,6 +8,12 @@ sealed class JumpSystem: CharacterSystem {
     /// the number of coyote frames the available
     int m_CoyoteFrames = 0;
 
+    /// the current number of jumps in the current tunable
+    uint m_JumpTunablesJumpIndex;
+
+    /// the index of the current jump tunable
+    uint m_JumpTunablesIndex;
+
     // -- lifetime --
     public JumpSystem(CharacterData character)
         : base(character) {
@@ -33,7 +39,7 @@ sealed class JumpSystem: CharacterSystem {
     );
 
     void NotJumping_Enter() {
-        m_State.Jumps = 0;
+        ResetJumps();
     }
 
     void NotJumping_Update() {
@@ -53,7 +59,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if you jump
-        if (m_Input.IsJumpDown(m_Tunables.JumpBuffer)) {
+        if (CanJump() && m_Input.IsJumpDown(m_Tunables.JumpBuffer)) {
             ChangeTo(JumpSquat);
             return;
         }
@@ -81,9 +87,9 @@ sealed class JumpSystem: CharacterSystem {
         // jump if jump was released or jump squat ended
         var shouldJump = (
             // if the jump squat finished
-            m_State.JumpSquatFrame >= m_Tunables.MaxJumpSquatFrames ||
+            m_State.JumpSquatFrame >= JumpTunables.MaxJumpSquatFrames ||
             // or jump was released after the minimum
-            (!m_Input.IsJumpPressed && m_State.JumpSquatFrame >= m_Tunables.MinJumpSquatFrames)
+            (!m_Input.IsJumpPressed && m_State.JumpSquatFrame >= JumpTunables.MinJumpSquatFrames)
         );
 
         if (shouldJump) {
@@ -93,7 +99,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if this is the first jump, you might be in coyote time
-        if(m_State.Jumps == 0) {
+        if (m_JumpTunablesJumpIndex == 0) {
             // count coyote frames; reset to max whenever grounded
             if (m_State.IsGrounded) {
                 m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
@@ -127,8 +133,7 @@ sealed class JumpSystem: CharacterSystem {
     );
 
     void Falling_Enter() {
-        // consume a jump whenever falling
-        m_State.Jumps += 1;
+        IncrementJumps();
     }
 
     void Falling_Update() {
@@ -150,13 +155,7 @@ sealed class JumpSystem: CharacterSystem {
         // a few frames in jump squat before falling again
         // NOTE: we could sorta fix this by skipping jump squat, requiring the whole
         // jump finish here, and transitioning directly to jump
-        if (m_State.Jumps == 0 && m_CoyoteFrames >= 0 && m_Input.IsJumpDown()) {
-            ChangeTo(JumpSquat);
-            return;
-        }
-
-        // start an air jump if available
-        if (m_State.Jumps < m_Tunables.MaxJumps && m_Input.IsJumpDown()) {
+        if (CanJump() && m_Input.IsJumpDown()) {
             ChangeTo(JumpSquat);
             return;
         }
@@ -176,22 +175,22 @@ sealed class JumpSystem: CharacterSystem {
     void Jump() {
         // get curved percent complete through jump squat
         var pct = Mathf.InverseLerp(
-            m_Tunables.MinJumpSquatFrames,
-            m_Tunables.MaxJumpSquatFrames,
+            JumpTunables.MinJumpSquatFrames,
+            JumpTunables.MaxJumpSquatFrames,
             m_State.JumpSquatFrame
         );
 
         // interpolate initial jump speed
         var verticalSpeed = Mathf.Lerp(
-            m_Tunables.MinJumpSpeed,
-            m_Tunables.MaxJumpSpeed,
-            m_Tunables.JumpSpeedCurve.Evaluate(pct)
+            JumpTunables.Vertical_MinSpeed,
+            JumpTunables.Vertical_MaxSpeed,
+            JumpTunables.Vertical_SpeedCurve.Evaluate(pct)
         );
 
         var planarSpeed = Mathf.Lerp(
-            m_Tunables.MinJumpSpeed_Horizontal,
-            m_Tunables.MaxJumpSpeed_Horizontal,
-            m_Tunables.JumpSpeedCurve_Horizontal.Evaluate(pct)
+            JumpTunables.Horizontal_MinSpeed,
+            JumpTunables.Horizontal_MaxSpeed,
+            JumpTunables.Horizontal_SpeedCurve.Evaluate(pct)
         );
 
         // cancel downwards momentum and apply initial jump
@@ -201,6 +200,70 @@ sealed class JumpSystem: CharacterSystem {
 
         m_State.Velocity = v;
         m_State.IsInJumpStart = true;
+    }
+
+    /// track jump and switch to the correct jump if necessary
+    void IncrementJumps() {
+        m_State.Jumps += 1;
+        m_JumpTunablesJumpIndex += 1;
+
+        if (JumpTunables.Count == 0) {
+            return;
+        }
+
+        var shouldAdvanceJump = (
+            m_JumpTunablesJumpIndex >= JumpTunables.Count &&
+            m_JumpTunablesIndex < m_Tunables.Jumps.Length - 1
+        );
+
+        if (shouldAdvanceJump) {
+            m_JumpTunablesJumpIndex = 0;
+            m_JumpTunablesIndex += 1;
+        }
+    }
+
+    /// reset the jump count to its initial state
+    void ResetJumps() {
+        m_State.Jumps = 0;
+        m_JumpTunablesJumpIndex = 0;
+        m_JumpTunablesIndex = 0;
+    }
+
+    // -- queries --
+    /// the current jump tunables
+    CharacterTunablesBase.JumpTunablesBase JumpTunables {
+        get => m_Tunables.Jumps[m_JumpTunablesIndex];
+    }
+
+    /// if this is the character's first (grounded) jump
+    bool IsFirstJump {
+        get => m_JumpTunablesIndex == 0 && m_JumpTunablesJumpIndex == 0;
+    }
+
+    /// if the character has a jump available to execute
+    bool CanJump() {
+        // if the character can't ever jump
+        if (m_Tunables.Jumps.Length == 0) {
+            return false;
+        }
+
+        // start jump if jump is pressed before coyote frames expire
+        // a few frames in jump squat before falling again
+        // NOTE: we could sorta fix this by skipping jump squat, requiring the whole
+        // jump finish here, and transitioning directly to jump
+
+        // if it's your first jump, account for coyote time
+        if (IsFirstJump && m_CoyoteFrames >= 0) {
+            return true;
+        }
+
+        // start an air jump if available
+        // if there's still jumps available in the current jump definition
+        if (m_JumpTunablesJumpIndex < JumpTunables.Count) {
+            return true;
+        }
+
+        return false;
     }
 }
 

@@ -70,42 +70,17 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     public override float Gravity => m_Gravity;
 
     [Tooltip("how many frames you can have pressed jump before landing to execute the jump")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_JumpBuffer")]
     [SerializeField] private uint m_JumpBuffer;
     public override uint JumpBuffer => m_JumpBuffer;
-
-    [Tooltip("the min number of frames jump squat lasts")]
-    [SerializeField] private uint m_MinJumpSquatFrames = 5;
-    public override uint MinJumpSquatFrames => m_MinJumpSquatFrames;
-
-    [Tooltip("the max number of frames jump squat lasts")]
-    [SerializeField] private uint m_MaxJumpSquatFrames = 5;
-    public override uint MaxJumpSquatFrames => m_MaxJumpSquatFrames;
 
     [Tooltip("max number of frames the character can be in the air and still jump")]
     [SerializeField] private uint m_MaxCoyoteFrames;
     public override uint MaxCoyoteFrames => m_MaxCoyoteFrames;
 
-    [Tooltip("how the jump speed changes from holding the squat")]
-    [SerializeField] private AnimationCurve m_JumpSpeedCurve;
-    public override AnimationCurve JumpSpeedCurve => m_JumpSpeedCurve;
-
-    [Tooltip("the minimum jump speed (minimum length jump squat)")]
-    [SerializeField] private float m_MinJumpSpeed;
-    public override float MinJumpSpeed => m_MinJumpSpeed;
-
-    /// the minimum jump speed (1-frame jump)
-    public override float MinJumpHeight {
-        get => MinJumpSpeed * MinJumpSpeed / -(2.0f * Gravity);
-    }
-
-    [Tooltip("the maximum jump speed (maximum length jump squat)")]
-    [SerializeField] private float m_MaxJumpSpeed;
-    public override float MaxJumpSpeed => m_MaxJumpSpeed;
-
-    /// the maximum jump speed (hold jump for duration)
-    public override float MaxJumpHeight {
-        get => m_MinJumpSpeed * m_MaxJumpSpeed / -(2.0f * (Gravity + JumpAcceleration));
-    }
+    [Tooltip("the maximum amount of jumps a character can do")]
+    [SerializeField] private uint m_MaxJumps = 1;
+    public override uint MaxJumps => m_MaxJumps;
 
     [Tooltip("the gravity while holding jump and moving up")]
     [SerializeField] private float m_JumpGravity;
@@ -125,21 +100,48 @@ public sealed class CharacterTunables: CharacterTunablesBase {
         get => m_FallGravity - m_Gravity;
     }
 
-    [Tooltip("how the jump speed changes from holding the squat")]
-    [SerializeField] private AnimationCurve m_JumpSpeedCurve_Horizontal;
-    public override AnimationCurve JumpSpeedCurve_Horizontal => m_JumpSpeedCurve_Horizontal;
+    [Tooltip("the tunables for each jump, sequentially")]
+    [SerializeField] private JumpTunables[] m_Jumps;
+    public override JumpTunablesBase[] Jumps => m_Jumps;
 
-    [Tooltip("the minimum horizontal jump speed (minimum length jump squat)")]
-    [SerializeField] private float m_MinJumpSpeed_Horizontal;
-    public override float MinJumpSpeed_Horizontal => m_MinJumpSpeed_Horizontal;
+    [System.Serializable]
+    public class JumpTunables : JumpTunablesBase {
+        [Tooltip("the number of times this jump can be executed; 0 = infinite")]
+        [SerializeField] private uint m_Count = 1;
+        public override uint Count => m_Count;
 
-    [Tooltip("the maximum horizontal jump speed (maximum length jump squat)")]
-    [SerializeField] private float m_MaxJumpSpeed_Horizontal;
-    public override float MaxJumpSpeed_Horizontal => m_MaxJumpSpeed_Horizontal;
+        [Tooltip("the min number of frames jump squat lasts")]
+        [SerializeField] private uint m_MinJumpSquatFrames = 5;
+        public override uint MinJumpSquatFrames => m_MinJumpSquatFrames;
 
-    [Tooltip("the maximum amount of jumps a character can do")]
-    [SerializeField] private uint m_MaxJumps = 1;
-    public override uint MaxJumps => m_MaxJumps;
+        [Tooltip("the max number of frames jump squat lasts")]
+        [SerializeField] private uint m_MaxJumpSquatFrames = 5;
+        public override uint MaxJumpSquatFrames => m_MaxJumpSquatFrames;
+
+        [Tooltip("how the jump speed changes from holding the squat")]
+        [SerializeField] private AnimationCurve m_Vertical_SpeedCurve;
+        public override AnimationCurve Vertical_SpeedCurve => m_Vertical_SpeedCurve;
+
+        [Tooltip("the minimum jump speed (minimum length jump squat)")]
+        [SerializeField] private float m_Vertical_MinSpeed;
+        public override float Vertical_MinSpeed => m_Vertical_MinSpeed;
+
+        [Tooltip("the maximum jump speed (maximum length jump squat)")]
+        [SerializeField] private float m_Vertical_MaxSpeed;
+        public override float Vertical_MaxSpeed => m_Vertical_MaxSpeed;
+
+        [Tooltip("how the jump speed changes from holding the squat")]
+        [SerializeField] private AnimationCurve m_Horizontal_SpeedCurve;
+        public override AnimationCurve Horizontal_SpeedCurve => m_Horizontal_SpeedCurve;
+
+        [Tooltip("the minimum horizontal jump speed (minimum length jump squat)")]
+        [SerializeField] private float m_Horizontal_MinSpeed;
+        public override float Horizontal_MinSpeed => m_Horizontal_MinSpeed;
+
+        [Tooltip("the maximum horizontal jump speed (maximum length jump squat)")]
+        [SerializeField] private float m_Horizontal_MaxSpeed;
+        public override float Horizontal_MaxSpeed => m_Horizontal_MaxSpeed;
+    }
 
     #endregion
 
@@ -202,13 +204,17 @@ public sealed class CharacterTunables: CharacterTunablesBase {
 
     #endregion
 
-        // -- queries --
-        public float TimeToPercentMaxSpeed(float pct) {
+    // -- queries --
+    public float TimeToPercentMaxSpeed(float pct) {
         return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Deceleration;
     }
 
     public void OnValidate() {
-        m_MaxCoyoteFrames = System.Math.Max(m_MaxCoyoteFrames, m_MinJumpSquatFrames);
+        if (m_Jumps.Length == 0) {
+            m_MaxCoyoteFrames = 0;
+        } else {
+            m_MaxCoyoteFrames = System.Math.Max(m_MaxCoyoteFrames, m_Jumps[0].MinJumpSquatFrames);
+        }
     }
 }
 
