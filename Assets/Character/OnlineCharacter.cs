@@ -9,7 +9,11 @@ sealed class OnlineCharacter: NetworkBehaviour {
     /// a parent "folder" for the characters
     static Transform k_Characters;
 
+    /// the min y-position the character wraps from
+    const float k_WrapMinY = -4000.0f;
 
+    /// the max y-position the character wraps to
+    const float k_WrapMaxY = 6000.0f;
 
     // -- fields --
     /// if this character is available
@@ -29,12 +33,6 @@ sealed class OnlineCharacter: NetworkBehaviour {
     [Tooltip("the character's most recent state frame")]
     [SyncVar(hook = nameof(Client_OnStateReceived))]
     [SerializeField] CharacterState.Frame m_CurrentState;
-
-    /// the min y-position the character wraps from
-    const float k_WrapMinY = -200.0f;
-
-    /// the max y-position the character wraps to
-    const float k_WrapMaxY = 6000.0f;
 
     // -- refs --
     [Header("refs")]
