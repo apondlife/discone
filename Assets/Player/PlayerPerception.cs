@@ -57,8 +57,8 @@ class PlayerPerception: MonoBehaviour {
     // -- queries --
     /// find the nearest perceivable object
     /// TODO: this could use an interface like IPerceptionTarget if necessary
-    OnlineCharacter FindPerceptionTarget(Collider other) {
-        return other.GetComponentInParent<OnlineCharacter>();
+    DisconeCharacter FindPerceptionTarget(Collider other) {
+        return other.GetComponentInParent<DisconeCharacter>();
     }
 
     // -- events --

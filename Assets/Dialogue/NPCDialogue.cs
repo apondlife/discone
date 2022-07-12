@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityAtoms.BaseAtoms;
-using ThirdPerson;
-using Yarn.Unity;
 
 [RequireComponent(typeof(Collider))]
 public class NPCDialogue: MonoBehaviour {
@@ -85,7 +83,7 @@ public class NPCDialogue: MonoBehaviour {
     public string NodeTitle {
         get => m_NodeTitle;
     }
-    
+
     /// the character for this dialogue
     public GameObject Character {
         get => m_Character;
@@ -99,6 +97,7 @@ public class NPCDialogue: MonoBehaviour {
 
     // when the player stops driving a character
     public void StopListening() {
+        Debug.Log($"i, {name}, am no longer listening!");
         m_IsListening = false;
 
         // by doing this, the player has to come in and out of range again to redo a dialogue with a character
@@ -121,7 +120,6 @@ public class NPCDialogue: MonoBehaviour {
         if (other.CompareTag(_dialogueTargetTag)) {
             Debug.Log($"[dialogue] character in range <{m_NodeTitle}>");
             m_IsInRange = true;
-
         }
     }
 

@@ -46,7 +46,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
     void DriveInitialCharacter() {
         // find all available characters
         var all = GameObject
-            .FindObjectsOfType<OnlineCharacter>();
+            .FindObjectsOfType<DisconeCharacter>();
 
         // use debug characters if available, otherwise the first initial character
         var sets = new[] {
@@ -78,15 +78,15 @@ sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     /// drive a new character
-    void DriveCharacter(OnlineCharacter character) {
+    void DriveCharacter(DisconeCharacter character) {
         Server_SwitchCharacter(m_CurrentCharacter.Value, character.gameObject);
     }
 
     // -- c/network
     [Command]
     public void Server_SwitchCharacter(GameObject src, GameObject dst) {
-        var srcCharacter = src?.GetComponent<OnlineCharacter>();
-        var dstCharacter = dst.GetComponent<OnlineCharacter>();
+        var srcCharacter = src?.GetComponent<DisconeCharacter>();
+        var dstCharacter = dst.GetComponent<DisconeCharacter>();
 
         // if the server doesn't have authority over this character, another player
         // already does
@@ -138,9 +138,9 @@ sealed class OnlinePlayer: NetworkBehaviour {
     // -- events --
     /// when the character should switch
     void OnSwitchCharacter(GameObject obj) {
-        var character = obj.GetComponent<OnlineCharacter>();
+        var character = obj.GetComponent<DisconeCharacter>();
         if (character == null) {
-            Debug.Log($"[player] tried to switch to an character w/ no OnlineCharacter");
+            Debug.Log($"[player] tried to switch to an character w/ no DisconeCharacter");
             return;
         }
 

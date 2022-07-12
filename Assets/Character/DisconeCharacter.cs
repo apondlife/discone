@@ -4,7 +4,8 @@ using ThirdPerson;
 
 /// an online character
 [RequireComponent(typeof(Character))]
-sealed class OnlineCharacter: NetworkBehaviour {
+[RequireComponent(typeof(CharacterCheckpoint))]
+sealed class DisconeCharacter: NetworkBehaviour {
     // -- constants --
     /// a parent "folder" for the characters
     static Transform k_Characters;
@@ -14,8 +15,6 @@ sealed class OnlineCharacter: NetworkBehaviour {
 
     /// the max y-position the character wraps to
     const float k_WrapMaxY = 6000.0f;
-
-    // const TeleportSystem teleport;
 
     // -- fields --
     /// if this character is available
@@ -42,16 +41,24 @@ sealed class OnlineCharacter: NetworkBehaviour {
     [SerializeField] GameObject m_Music;
 
     // -- props --
+    /// if the character is simulating
+    bool m_IsPerceived;
+
     /// the underlying character
     Character m_Character;
 
-    /// if the character is simulating
-    bool m_IsPerceived;
+    /// the dialogue
+    NPCDialogue m_Dialogue;
+
+    /// the checkpoint spawner
+    CharacterCheckpoint m_Checkpoint;
 
     // -- lifecycle --
     void Awake() {
         // set deps
         m_Character = GetComponent<Character>();
+        m_Checkpoint = GetComponent<CharacterCheckpoint>();
+        m_Dialogue = GetComponentInChildren<NPCDialogue>();
 
         // default to not simulating
         OnIsPerceivedChanged();
@@ -84,11 +91,6 @@ sealed class OnlineCharacter: NetworkBehaviour {
     }
 
     // -- commands --
-
-    [System.Serializable]
-    sealed class Teleport {
-    }
-
     /// wrap the character from the bottom -> top of the world, if necessary
     void Wrap() {
         // if we don't have authority, do nothing
@@ -125,6 +127,30 @@ sealed class OnlineCharacter: NetworkBehaviour {
         // sync the current state frame
         m_CurrentState = state;
         Server_SyncState(state);
+    }
+
+    // -- c/drive
+    /// start driving this character
+    public void Drive() {
+        // don't listen to your own dialogue
+        m_Dialogue.StopListening();
+    }
+
+    /// release this character
+    public void Release() {
+        // start listening again
+        m_Dialogue.StartListening();
+    }
+
+    // -- c/checkpooint
+    /// save a new checkpoint
+    public void SaveCheckpoint() {
+        m_Checkpoint.Save();
+    }
+
+    /// load the most recent checkpoint
+    public void LoadCheckpoint() {
+        m_Checkpoint.Load();
     }
 
     // -- c/server

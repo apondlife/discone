@@ -5,12 +5,20 @@ using UnityEngine;
 /// the world, like planting a flag.
 [RequireComponent(typeof(Character))]
 public class CharacterCheckpoint: MonoBehaviour {
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("the prefab for the in-world checkpoint")]
+    [SerializeField] GameObject m_FlagPrefab;
+
     // -- props --
     // the character
     Character m_Character;
 
     /// the saved state, if any
     Checkpoint m_Checkpoint;
+
+    /// the visual representation of the current checkpoint
+    GameObject m_Flag;
 
     // -- lifecycle --
     void Awake() {
@@ -21,12 +29,21 @@ public class CharacterCheckpoint: MonoBehaviour {
     // -- commands --
     /// save a checkpoint at the character's current position
     public void Save() {
+        // store position
         m_Checkpoint = Checkpoint.FromState(m_Character.CurrentState);
+
+        // create a new flag
+        m_Flag = Instantiate(m_FlagPrefab);
+
+        // move flag to the correct position
+        var t = m_Flag.transform;
+        t.position = m_Checkpoint.Position;
+        t.forward = m_Checkpoint.Forward;
     }
 
     /// restore to the current checkpoint, if any
     public void Load() {
-        if(m_Checkpoint == null) {
+        if (m_Checkpoint == null) {
             return;
         }
 

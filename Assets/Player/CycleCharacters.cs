@@ -20,8 +20,8 @@ public class CycleCharacters : MonoBehaviour
         CycleList(c => c.IsAvailable && c.IsInitial);
     }
 
-    private void CycleList(Func<OnlineCharacter, bool> filter) {
-        var characters = FindObjectsOfType<OnlineCharacter>().Where(filter);
+    private void CycleList(Func<DisconeCharacter, bool> filter) {
+        var characters = FindObjectsOfType<DisconeCharacter>().Where(filter);
         var player = GetComponentInParent<DisconePlayer>();
         current = (current + 1) % characters.Count();
         m_SwitchCharacter?.Raise(characters.ElementAt(current).gameObject);

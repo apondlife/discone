@@ -32,6 +32,9 @@ sealed class DisconePlayer: MonoBehaviour {
     [SerializeField] FloatReference m_FarClipPlane;
 
     // -- props --
+    /// the current game character
+    DisconeCharacter m_Character;
+
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
@@ -59,27 +62,17 @@ sealed class DisconePlayer: MonoBehaviour {
         m_Subscriptions.Dispose();
     }
 
-    // -- queries --
-    /// get the dialogue attached to a character
-    NPCDialogue FindDialogue(Character character) {
-        var dialogue = character.GetComponentInChildren<NPCDialogue>();
-        Debug.Assert(dialogue != null, $"character {character.name} has no dialogue attached.");
-        return dialogue;
-    }
-
-    CharacterCheckpoint m_CharacterCheckpoint;
-
     // -- events --
     // when the player starts driving a character
     void OnDriveStart(Character character) {
-        FindDialogue(character)?.StopListening();
-        m_CharacterCheckpoint = character.GetComponent<CharacterCheckpoint>();
+        m_Character = character.GetComponent<DisconeCharacter>();
+        m_Character.Drive();
     }
 
     // when the player stops driving a character
     void OnDriveStop(Character character) {
-        FindDialogue(character)?.StartListening();
-        m_CharacterCheckpoint = null;
+        m_Character.Release();
+        m_Character = null;
     }
 
     /// when the dialog becomes in/active
@@ -89,13 +82,11 @@ sealed class DisconePlayer: MonoBehaviour {
 
     /// when the player presses the save checkpoint action
     void OnSaveCheckpointPressed(InputAction.CallbackContext _) {
-        Debug.Log($"pressed save checkpoint");
-        m_CharacterCheckpoint?.Save();
+        m_Character.SaveCheckpoint();
     }
 
     /// when the player presses the load checkpoint action
     void OnLoadCheckpointPressed(InputAction.CallbackContext _) {
-        Debug.Log($"pressed load checkpoint");
-        m_CharacterCheckpoint?.Load();
+        m_Character.LoadCheckpoint();
     }
 }
