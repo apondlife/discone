@@ -55,12 +55,12 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // get current facing & input direction
-        var dirFacing = m_State.FacingDirection;
+        // get current forward & input direction
+        var dirForward = m_State.Forward;
         var dirInput = m_Input.MoveAxis;
 
         // pivot if direction change was significant
-        if (Vector3.Dot(dirFacing, dirInput) < m_Tunables.PivotStartThreshold) {
+        if (Vector3.Dot(dirForward, dirInput) < m_Tunables.PivotStartThreshold) {
             ChangeTo(Pivot);
             return;
         }
@@ -68,20 +68,20 @@ sealed class MovementSystem: CharacterSystem {
         // rotate towards input direction
         var hasInput = dirInput.sqrMagnitude != 0.0f;
         if (hasInput) {
-            dirFacing = Vector3.RotateTowards(
-                m_State.FacingDirection,
+            dirForward = Vector3.RotateTowards(
+                m_State.Forward,
                 dirInput,
                 m_Tunables.TurnSpeed * Mathf.Deg2Rad * Time.deltaTime,
                 Mathf.Infinity
             );
 
-            m_State.SetProjectedFacingDirection(dirFacing);
+            m_State.SetProjectedForward(dirForward);
         }
 
         // calculate next velocity, integrating input & drag
         // vt = v0 + (input acceleration - drag - turning friction) * t
         var v0 = m_State.PlanarVelocity;
-        var ai = m_Tunables.Acceleration * dirInput.magnitude * m_State.FacingDirection;
+        var ai = m_Tunables.Acceleration * dirInput.magnitude * m_State.Forward;
         var cf = hasInput ? m_Tunables.TurningFriction * (1.0f - Mathf.Abs(Vector3.Dot(v0.normalized, ai.normalized))) : 0.0f;
         var d0 = v0 * (m_Tunables.Deceleration + cf);
         var vt = v0 + (ai - d0) * Time.deltaTime;
@@ -117,15 +117,15 @@ sealed class MovementSystem: CharacterSystem {
         m_State.PivotFrame += 1;
 
         // rotate towards pivot direction
-        var dirFacing = m_State.FacingDirection;
+        var dirFacing = m_State.Forward;
         dirFacing = Vector3.RotateTowards(
-            m_State.FacingDirection,
+            m_State.Forward,
             m_State.PivotDirection,
             m_Tunables.PivotSpeed * Mathf.Deg2Rad * Time.deltaTime,
             Mathf.Infinity
         );
 
-        m_State.SetProjectedFacingDirection(dirFacing);
+        m_State.SetProjectedForward(dirFacing);
 
         // calculate next velocity, decelerating towards zero to finish pivot
         var v0 = m_State.PlanarVelocity;

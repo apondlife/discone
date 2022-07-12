@@ -328,8 +328,7 @@ MonoBehaviour:
   m_CurrentState:
     Position: {x: 0, y: 0, z: 0}
     Velocity: {x: 0, y: 0, z: 0}
-    Acceleration: {x: 0, y: 0, z: 0}
-    FacingDirection: {x: 0, y: 0, z: 0}
+    Forward: {x: 0, y: 0, z: 0}
     IsGrounded: 0
     IsInJumpSquat: 0
     IsInJumpStart: 0
@@ -339,6 +338,7 @@ MonoBehaviour:
     IdleTime: 0
     PivotFrame: -1
     PivotDirection: {x: 0, y: 0, z: 0}
+    Jumps: 0
   m_Music: {fileID: 1029445836574466050}
 --- !u!114 &1731996866325999123
 MonoBehaviour:
@@ -372,6 +372,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_CurrentHat: none
+--- !u!114 &126916745437603396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3345656352466467727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6679b1258e4fb4827bfe39d0b0135b66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SaveCheckpointAction: {fileID: -1762270237703457392, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
+  m_LoadCheckpointAction: {fileID: -5483817469226027952, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
 --- !u!4 &5294547428429929720 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1061133086809451152, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}

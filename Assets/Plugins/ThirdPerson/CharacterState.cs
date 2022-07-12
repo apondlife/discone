@@ -34,13 +34,13 @@ public sealed partial class CharacterState {
         m_Frames.Fill(frame);
     }
 
-    /// sets the facing direction on the xz plane
-    public void SetProjectedFacingDirection(Vector3 dir) {
+    /// sets the forward direction on the xz plane
+    public void SetProjectedForward(Vector3 dir) {
         var projected = Vector3.ProjectOnPlane(dir, Up);
 
         // if zero, use the original direction
         if (projected.sqrMagnitude > 0.0f) {
-            FacingDirection = projected.normalized;
+            Forward = projected.normalized;
         }
     }
 
@@ -92,7 +92,7 @@ public sealed partial class CharacterState {
         public Vector3 Velocity = Vector3.zero;
 
         /// the current facing direction
-        public Vector3 FacingDirection;
+        public Vector3 Forward;
 
         /// if the character is grounded
         public bool IsGrounded = false;
@@ -135,7 +135,7 @@ public sealed partial class CharacterState {
         /// create an initial frame
         public Frame(Vector3 position, Vector3 forward) {
             Position = position;
-            FacingDirection = forward;
+            Forward = forward;
         }
 
         // -- queries --
@@ -147,7 +147,7 @@ public sealed partial class CharacterState {
         /// the character's look rotation (facing & tilt)
         public Quaternion LookRotation {
             get {
-                return Tilt * Quaternion.LookRotation(FacingDirection, Up);
+                return Tilt * Quaternion.LookRotation(Forward, Up);
             }
         }
     }

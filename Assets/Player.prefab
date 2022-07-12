@@ -10168,7 +10168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3631135297334503181, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_Name
-      value: DisconePlayer
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6319360700672517084, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: sceneId
@@ -10275,6 +10275,8 @@ MonoBehaviour:
   m_DriveStop: {fileID: 11400000, guid: a20131d6441f0476d85d19e4e9f1c56b, type: 2}
   m_IsDialogueActiveChanged: {fileID: 11400000, guid: e9934c9706c7948238d271c8498ab275, type: 2}
   m_InputSource: {fileID: 2221735472539933566}
+  m_SaveCheckpointAction: {fileID: -1762270237703457392, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
+  m_LoadCheckpointAction: {fileID: -5483817469226027952, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   m_FarClipPlane:
     _usage: 1
     _value: 0
