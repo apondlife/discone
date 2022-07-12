@@ -143,14 +143,24 @@ sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     // -- c/checkpooint
-    /// save a new checkpoint
-    public void SaveCheckpoint() {
-        m_Checkpoint.Save();
+    /// start saving the checkpoint
+    public void StartSaveCheckpoint() {
+        m_Checkpoint.StartSave();
     }
 
-    /// load the most recent checkpoint
-    public void LoadCheckpoint() {
-        m_Checkpoint.Load();
+    /// start loading the most recent checkpoint
+    public void StartLoadCheckpoint() {
+        m_Checkpoint.StartLoad();
+    }
+
+    /// cancel saving the checkpoint
+    public void CancelSaveCheckpoint() {
+        m_Checkpoint.CancelSave();
+    }
+
+    /// cancel loadind the checkpoint
+    public void CancelLoadCheckpoint() {
+        m_Checkpoint.CancelLoad();
     }
 
     // -- c/server

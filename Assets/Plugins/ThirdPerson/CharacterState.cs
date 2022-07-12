@@ -50,6 +50,11 @@ public sealed partial class CharacterState {
         get => m_Frames.IsEmpty;
     }
 
+    /// if currently idle
+    public bool IsIdle {
+        get => m_Frames[0].IdleTime > 0.0f;
+    }
+
     /// get the nth most recent frame
     public Frame GetFrame(uint i) {
         return m_Frames[i];

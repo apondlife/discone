@@ -57,6 +57,26 @@ sealed class DisconePlayer: MonoBehaviour {
         }
     }
 
+    void Update() {
+        // save/cancel checkpoint on press/release
+        var save = m_SaveCheckpointAction.action;
+        if (save.WasPressedThisFrame()) {
+            m_Character.StartSaveCheckpoint();
+        }
+        if (save.WasReleasedThisFrame()) {
+            m_Character.CancelSaveCheckpoint();
+        }
+
+        // load/cancel checkpoint on press/release
+        var load = m_LoadCheckpointAction.action;
+        if (load.WasPressedThisFrame()) {
+            m_Character.StartLoadCheckpoint();
+        }
+        if (load.WasReleasedThisFrame()) {
+            m_Character.CancelLoadCheckpoint();
+        }
+    }
+
     void OnDestroy() {
         // unbind events
         m_Subscriptions.Dispose();
@@ -82,11 +102,11 @@ sealed class DisconePlayer: MonoBehaviour {
 
     /// when the player presses the save checkpoint action
     void OnSaveCheckpointPressed(InputAction.CallbackContext _) {
-        m_Character.SaveCheckpoint();
+        m_Character.StartSaveCheckpoint();
     }
 
     /// when the player presses the load checkpoint action
     void OnLoadCheckpointPressed(InputAction.CallbackContext _) {
-        m_Character.LoadCheckpoint();
+        m_Character.StartLoadCheckpoint();
     }
 }
