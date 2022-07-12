@@ -1,8 +1,10 @@
+using ThirdPerson;
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
-using ThirdPerson;
+using UnityEngine.InputSystem;
 
 /// the discone player
+[RequireComponent(typeof(ThirdPerson.Player))]
 sealed class DisconePlayer: MonoBehaviour {
     // -- events --
     [Header("events")]
@@ -20,6 +22,12 @@ sealed class DisconePlayer: MonoBehaviour {
     [Tooltip("the input source")]
     [SerializeField] PlayerInputSource m_InputSource;
 
+    [Tooltip("the save checkpoint input")]
+    [SerializeField] InputActionReference m_SaveCheckpointAction;
+
+    [Tooltip("the load checkpoint input")]
+    [SerializeField] InputActionReference m_LoadCheckpointAction;
+
     [Tooltip("the distance to the far clip plane")]
     [SerializeField] FloatReference m_FarClipPlane;
 
@@ -34,6 +42,10 @@ sealed class DisconePlayer: MonoBehaviour {
             .Add(m_DriveStart, OnDriveStart)
             .Add(m_DriveStop, OnDriveStop)
             .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
+
+        // bind events
+        m_SaveCheckpointAction.action.performed += OnSaveCheckpointPressed;
+        m_LoadCheckpointAction.action.performed += OnLoadCheckpointPressed;
 
         // configure cameras
         var cameras = GetComponentsInChildren<UnityEngine.Camera>();
@@ -55,19 +67,35 @@ sealed class DisconePlayer: MonoBehaviour {
         return dialogue;
     }
 
+    CharacterCheckpoint m_CharacterCheckpoint;
+
     // -- events --
     // when the player starts driving a character
     void OnDriveStart(Character character) {
         FindDialogue(character)?.StopListening();
+        m_CharacterCheckpoint = character.GetComponent<CharacterCheckpoint>();
     }
 
     // when the player stops driving a character
     void OnDriveStop(Character character) {
         FindDialogue(character)?.StartListening();
+        m_CharacterCheckpoint = null;
     }
 
     /// when the dialog becomes in/active
     void OnIsDialogueActiveChanged(bool isDialogueActive) {
         m_InputSource.enabled = !isDialogueActive;
+    }
+
+    /// when the player presses the save checkpoint action
+    void OnSaveCheckpointPressed(InputAction.CallbackContext _) {
+        Debug.Log($"pressed save checkpoint");
+        m_CharacterCheckpoint?.Save();
+    }
+
+    /// when the player presses the load checkpoint action
+    void OnLoadCheckpointPressed(InputAction.CallbackContext _) {
+        Debug.Log($"pressed load checkpoint");
+        m_CharacterCheckpoint?.Load();
     }
 }

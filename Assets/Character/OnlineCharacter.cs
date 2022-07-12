@@ -15,6 +15,8 @@ sealed class OnlineCharacter: NetworkBehaviour {
     /// the max y-position the character wraps to
     const float k_WrapMaxY = 6000.0f;
 
+    // const TeleportSystem teleport;
+
     // -- fields --
     /// if this character is available
     [Header("fields")]
@@ -82,6 +84,11 @@ sealed class OnlineCharacter: NetworkBehaviour {
     }
 
     // -- commands --
+
+    [System.Serializable]
+    sealed class Teleport {
+    }
+
     /// wrap the character from the bottom -> top of the world, if necessary
     void Wrap() {
         // if we don't have authority, do nothing

@@ -211,7 +211,7 @@ sealed class JumpSystem: CharacterSystem {
         // add vertical jump
         v += verticalSpeed * Vector3.up;
         // add horizontal jump
-        v += horizontalSpeed * m_State.FacingDirection;
+        v += horizontalSpeed * m_State.Forward;
 
         m_State.Velocity = v;
         m_State.IsInJumpStart = true;
