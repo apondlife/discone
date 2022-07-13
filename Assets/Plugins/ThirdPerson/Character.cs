@@ -61,6 +61,11 @@ public partial class Character: MonoBehaviour {
     }
 
     void FixedUpdate() {
+        // don't simulate when paused
+        if (IsPaused) {
+            return;
+        }
+
         // store the previous frame
         m_State.Snapshot();
 
@@ -89,6 +94,10 @@ public partial class Character: MonoBehaviour {
         m_State.Position = transform.position;
     }
 
+    // -- props/hot --
+    /// if the character simulation is paused
+    public bool IsPaused { get; set; }
+
     // -- commands --
     /// drive the character with a new input source
     public void Drive(PlayerInputSource source) {
@@ -103,6 +112,16 @@ public partial class Character: MonoBehaviour {
         } else {
             m_State.CurrentFrame = frame;
         }
+    }
+
+    /// pause the character
+    public void Pause() {
+        IsPaused = true;
+    }
+
+    /// unpause the character
+    public void Unpause() {
+        IsPaused = false;
     }
 
     // -- queries --
