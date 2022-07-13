@@ -9,12 +9,18 @@ public class CharacterCheckpoint: MonoBehaviour {
     private const float k_CastInactive = -1.0f;
 
     // -- fields --
-    [Header("fields")]
+    [Header("tuning")]
     [Tooltip("how long it takes to save")]
     [SerializeField] float m_SaveCastTime;
 
-    [Tooltip("a multiplier on load cast speed")]
-    [SerializeField] float m_LoadCastMultiplier;
+    [Tooltip("the time it takes to get to the half distance")]
+    [SerializeField] float m_LoadCastMaxTime;
+
+    [Tooltip("the time it takes to the load to travel the point distance")]
+    [SerializeField] float m_LoadCastPointTime;
+
+    [Tooltip("the distance the load travels by the point time")]
+    [SerializeField] float m_LoadCastPointDistance;
 
     // -- refs --
     [Header("refs")]
@@ -34,6 +40,9 @@ public class CharacterCheckpoint: MonoBehaviour {
     /// the visual representation of the current checkpoint
     GameObject m_Flag;
 
+    /// if the character is trying to save
+    bool m_IsSaveDown;
+
     /// the current save cast time
     float m_SaveElapsed = k_CastInactive;
 
@@ -51,17 +60,24 @@ public class CharacterCheckpoint: MonoBehaviour {
 
     void Update() {
         // if saving a checkpoint
-        if (m_SaveElapsed >= 0) {
-            // if we can no longer save, cancel it
-            if (!CanSave()) {
-                CancelSave();
+        if (m_IsSaveDown) {
+            // stop saving if moving
+            if (!CanSave) {
+                m_SaveElapsed = k_CastInactive;
+                m_NewCheckpoint = null;
             }
-            // otherwise, aggregate until complete
+            // start a save if there isn't one
+            else if (m_SaveElapsed == k_CastInactive) {
+                m_SaveElapsed = 0.0f;
+                m_NewCheckpoint = Checkpoint.FromState(m_Character.CurrentState);
+            }
+            // otherwise, keep saving
             else {
                 m_SaveElapsed += Time.deltaTime;
 
                 if (m_SaveElapsed > m_SaveCastTime) {
                     Save();
+                    m_IsSaveDown = false;
                 }
             }
         }
@@ -69,7 +85,7 @@ public class CharacterCheckpoint: MonoBehaviour {
         // if loading a checkpoint
         if (m_LoadElapsed >= 0) {
             // if we can no longer load, cancel it
-            if (!CanLoad()) {
+            if (!CanLoad) {
                 CancelLoad();
             }
             // otherwise, aggregate until complete
@@ -86,26 +102,12 @@ public class CharacterCheckpoint: MonoBehaviour {
     // -- commands --
     /// start saving a checkpoint
     public void StartSave() {
-        // only save if not moving
-        if (!CanSave()) {
-            return;
-        }
-
-        // start saving new checkpoint
-        m_SaveElapsed = 0.0f;
-        m_NewCheckpoint = Checkpoint.FromState(m_Character.CurrentState);
+        m_IsSaveDown = true;
    }
 
     /// cancel a save if active
     public void CancelSave() {
-        // if there is an active save
-        if (m_SaveElapsed < 0.0f) {
-            return;
-        }
-
-        // cancel it
-        m_SaveElapsed = k_CastInactive;
-        m_NewCheckpoint = null;
+        m_IsSaveDown = false;
     }
 
     void Save() {
@@ -128,17 +130,24 @@ public class CharacterCheckpoint: MonoBehaviour {
     /// restore to the current checkpoint, if any
     public void StartLoad() {
         // only load if not moving
-        if (!CanLoad()) {
+        if (!CanLoad) {
             return;
         }
 
-        // start loading current checkpoint
+        // get distance to current checkpoint
         var distance = Vector3.Distance(
             m_Character.CurrentState.Position,
             m_Checkpoint.Position
         );
 
-        m_LoadCastTime = Mathf.Log10(distance) * m_LoadCastMultiplier;
+        // calculate cast time
+        var f_d = m_LoadCastPointTime / m_LoadCastMaxTime;
+        var d = m_LoadCastPointDistance;
+        var k = f_d / (d * (1 - f_d));
+        m_LoadCastTime = m_LoadCastMaxTime * (1 - 1 / (k * distance + 1));
+        Debug.Log($"time is {m_LoadCastTime} for distance {distance}");
+
+        // and start load
         m_LoadElapsed = 0.0f;
     }
 
@@ -187,17 +196,15 @@ public class CharacterCheckpoint: MonoBehaviour {
     }
 
     // if the character can currently save
-    bool CanSave() {
-        var s = m_Character.State;
-
-        return (
-            s.IsGrounded &&
-            s.IsIdle
-        );
+    bool CanSave {
+        get {
+            var s = m_Character.State;
+            return s.IsGrounded && s.IsIdle;
+        }
     }
 
     // if the character can currently load
-    bool CanLoad() {
-        return CanSave();
+    bool CanLoad {
+        get => CanSave;
     }
 }

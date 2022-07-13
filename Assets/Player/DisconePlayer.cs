@@ -62,8 +62,7 @@ sealed class DisconePlayer: MonoBehaviour {
         var save = m_SaveCheckpointAction.action;
         if (save.WasPressedThisFrame()) {
             m_Character.StartSaveCheckpoint();
-        }
-        if (save.WasReleasedThisFrame()) {
+        } else if (save.WasReleasedThisFrame()) {
             m_Character.CancelSaveCheckpoint();
         }
 
@@ -71,8 +70,7 @@ sealed class DisconePlayer: MonoBehaviour {
         var load = m_LoadCheckpointAction.action;
         if (load.WasPressedThisFrame()) {
             m_Character.StartLoadCheckpoint();
-        }
-        if (load.WasReleasedThisFrame()) {
+        } else if (load.WasReleasedThisFrame()) {
             m_Character.CancelLoadCheckpoint();
         }
     }
