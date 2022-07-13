@@ -22,6 +22,9 @@ public class CharacterCheckpoint: MonoBehaviour {
     [Tooltip("the distance the load travels by the point time")]
     [SerializeField] float m_LoadCastPointDistance;
 
+    [Tooltip("how faster cancelling a load is than the load itself")]
+    [SerializeField] float m_LoadCancelMultiplier = 1;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the prefab for the in-world checkpoint")]
@@ -46,11 +49,20 @@ public class CharacterCheckpoint: MonoBehaviour {
     /// the current save cast time
     float m_SaveElapsed = k_CastInactive;
 
+    /// if the character is trying to load
+    bool m_IsLoadDown;
+
     /// the current save cast time
     float m_LoadElapsed = k_CastInactive;
 
     /// how long it takes to load
     float m_LoadCastTime = 0.0f;
+
+    /// the position when the load starts
+    Vector3 m_LoadStartPosition;
+
+    /// the forward direction when the load starts
+    Vector3 m_LoadStartForward;
 
     // -- lifecycle --
     void Awake() {
@@ -63,38 +75,47 @@ public class CharacterCheckpoint: MonoBehaviour {
         if (m_IsSaveDown) {
             // stop saving if moving
             if (!CanSave) {
-                m_SaveElapsed = k_CastInactive;
-                m_NewCheckpoint = null;
+                StopSave();
             }
             // start a save if there isn't one
             else if (m_SaveElapsed == k_CastInactive) {
-                m_SaveElapsed = 0.0f;
-                m_NewCheckpoint = Checkpoint.FromState(m_Character.CurrentState);
+                InitSave();
             }
             // otherwise, keep saving
             else {
                 m_SaveElapsed += Time.deltaTime;
 
                 if (m_SaveElapsed > m_SaveCastTime) {
-                    Save();
+                    FinishSave();
                     m_IsSaveDown = false;
                 }
             }
         }
 
-        // if loading a checkpoint
-        if (m_LoadElapsed >= 0) {
-            // if we can no longer load, cancel it
-            if (!CanLoad) {
-                CancelLoad();
-            }
-            // otherwise, aggregate until complete
-            else {
-                m_LoadElapsed += Time.deltaTime;
+        // if loading, aggregate time
+        if (m_IsLoadDown) {
+            m_LoadElapsed += Time.deltaTime;
+        } else if (m_LoadElapsed >= 0.0f) {
+            m_LoadElapsed -= Time.deltaTime * m_LoadCancelMultiplier;
+        }
 
-                if (m_LoadElapsed > m_LoadCastTime) {
-                    Load();
-                }
+        // if we returned to the start point, stop
+        if (m_LoadElapsed < 0.0f) {
+            StopLoad();
+        }
+        // otherwise, interpoloate
+        else {
+            // interpolate position during load
+            var t = transform;
+            var c = m_Checkpoint;
+            var pct = LoadPercent;
+            var k = pct * pct;
+            t.position = Vector3.Lerp(m_LoadStartPosition, c.Position, k);
+            t.forward = Vector3.Lerp(m_LoadStartForward, c.Forward, k);
+
+            // finish the load once elapsed
+            if (m_LoadElapsed > m_LoadCastTime) {
+                FinishLoad();
             }
         }
     }
@@ -110,7 +131,20 @@ public class CharacterCheckpoint: MonoBehaviour {
         m_IsSaveDown = false;
     }
 
-    void Save() {
+    /// start a new save
+    void InitSave() {
+        m_SaveElapsed = 0.0f;
+        m_NewCheckpoint = Checkpoint.FromState(m_Character.CurrentState);
+    }
+
+    /// stop the new save
+    void StopSave() {
+        m_SaveElapsed = k_CastInactive;
+        m_NewCheckpoint = null;
+    }
+
+    /// finish the new save
+    void FinishSave() {
         // store position
         m_Checkpoint = m_NewCheckpoint;
 
@@ -129,8 +163,16 @@ public class CharacterCheckpoint: MonoBehaviour {
 
     /// restore to the current checkpoint, if any
     public void StartLoad() {
-        // only load if not moving
-        if (!CanLoad) {
+        // must have a checkpoint
+        if (m_Checkpoint == null) {
+            return;
+        }
+
+        // track input
+        m_IsLoadDown = true;
+
+        // if we're already loading, don't initializ
+        if (m_LoadCastMaxTime < 0.0f) {
             return;
         }
 
@@ -141,30 +183,40 @@ public class CharacterCheckpoint: MonoBehaviour {
         );
 
         // calculate cast time
-        var f_d = m_LoadCastPointTime / m_LoadCastMaxTime;
+        var f = m_LoadCastPointTime / m_LoadCastMaxTime;
         var d = m_LoadCastPointDistance;
-        var k = f_d / (d * (1 - f_d));
+        var k = f / (d * (1 - f));
         m_LoadCastTime = m_LoadCastMaxTime * (1 - 1 / (k * distance + 1));
-        Debug.Log($"time is {m_LoadCastTime} for distance {distance}");
+
+        // pause the character
+        m_Character.Pause();
 
         // and start load
         m_LoadElapsed = 0.0f;
+        m_LoadStartPosition = transform.position;
+        m_LoadStartForward = transform.forward;
     }
 
-    /// cancel a save if active
+    /// cancel a load if active
     public void CancelLoad() {
-        if (m_LoadElapsed >= 0.0f) {
-            m_LoadElapsed = k_CastInactive;
-            m_LoadCastTime = k_CastInactive;
-        }
+        m_IsLoadDown = false;
     }
 
-    public void Load() {
-        if (m_Checkpoint == null) {
-            return;
-        }
+    // stop loading wherever the character is
+    void StopLoad() {
+        // reset state
+        m_IsLoadDown = false;
+        m_LoadElapsed = k_CastInactive;
+        m_LoadCastTime = k_CastInactive;
 
+        // resume simulation
+        m_Character.Unpause();
+    }
+
+    /// restore to the state
+    void FinishLoad() {
         m_Character.ForceState(m_Checkpoint.IntoState());
+        StopLoad();
     }
 
     // -- checkpoint --
@@ -197,14 +249,6 @@ public class CharacterCheckpoint: MonoBehaviour {
 
     // if the character can currently save
     bool CanSave {
-        get {
-            var s = m_Character.State;
-            return s.IsGrounded && s.IsIdle;
-        }
-    }
-
-    // if the character can currently load
-    bool CanLoad {
-        get => CanSave;
+        get => m_Character.State.IsGrounded && m_Character.State.IsIdle;
     }
 }

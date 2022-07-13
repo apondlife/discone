@@ -151,9 +151,7 @@ public sealed partial class CharacterState {
 
         /// the character's look rotation (facing & tilt)
         public Quaternion LookRotation {
-            get {
-                return Tilt * Quaternion.LookRotation(Forward, Up);
-            }
+            get => Tilt * Quaternion.LookRotation(Forward, Up);
         }
     }
 }
