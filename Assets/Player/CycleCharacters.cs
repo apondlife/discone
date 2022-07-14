@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using ThirdPerson;
 using System.Linq;
 using System;
 using UnityAtoms.BaseAtoms;

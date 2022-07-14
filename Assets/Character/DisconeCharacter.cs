@@ -5,16 +5,11 @@ using ThirdPerson;
 /// an online character
 [RequireComponent(typeof(Character))]
 [RequireComponent(typeof(CharacterCheckpoint))]
-sealed class DisconeCharacter: NetworkBehaviour {
+[RequireComponent(typeof(CharacterWrap))]
+public sealed class DisconeCharacter: NetworkBehaviour {
     // -- constants --
     /// a parent "folder" for the characters
     static Transform k_Characters;
-
-    /// the min y-position the character wraps from
-    const float k_WrapMinY = -4000.0f;
-
-    /// the max y-position the character wraps to
-    const float k_WrapMaxY = 6000.0f;
 
     // -- fields --
     /// if this character is available
@@ -78,7 +73,6 @@ sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     void FixedUpdate() {
-        Wrap();
         SyncState();
     }
 
@@ -91,26 +85,6 @@ sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     // -- commands --
-    /// wrap the character from the bottom -> top of the world, if necessary
-    void Wrap() {
-        // if we don't have authority, do nothing
-        if (!hasAuthority || !isClient) {
-            return;
-        }
-
-        var state = m_Character.CurrentState;
-
-        // if we haven't reached the min y, do nothing
-        if (state.Position.y > k_WrapMinY) {
-            return;
-        }
-
-        // wrap to the max y (we shouldn't need to force state b/c the frame
-        // is a reference type, but in case that changes...)
-        state.Position.y = k_WrapMaxY;
-        m_Character.ForceState(state);
-    }
-
     /// sync state from client -> server, if necessary
     void SyncState() {
         // if we don't have authority, do nothing
@@ -127,19 +101,6 @@ sealed class DisconeCharacter: NetworkBehaviour {
         // sync the current state frame
         m_CurrentState = state;
         Server_SyncState(state);
-    }
-
-    // -- c/drive
-    /// start driving this character
-    public void Drive() {
-        // don't listen to your own dialogue
-        m_Dialogue.StopListening();
-    }
-
-    /// release this character
-    public void Release() {
-        // start listening again
-        m_Dialogue.StartListening();
     }
 
     // -- c/server
@@ -186,6 +147,11 @@ sealed class DisconeCharacter: NetworkBehaviour {
         get => m_IsInitial;
     }
 
+    /// the third person character
+    public ThirdPerson.Character Character {
+        get => m_Character;
+    }
+
     /// the character checkpoint
     public CharacterCheckpoint Checkpoint {
         get => m_Checkpoint;
@@ -215,5 +181,18 @@ sealed class DisconeCharacter: NetworkBehaviour {
 
         // update character's current state frame
         m_Character.ForceState(dst);
+    }
+
+    // -- e/drive
+    /// start driving this character
+    public void OnDrive() {
+        // don't listen to your own dialogue
+        m_Dialogue.StopListening();
+    }
+
+    /// release this character
+    public void OnRelease() {
+        // start listening again
+        m_Dialogue.StartListening();
     }
 }

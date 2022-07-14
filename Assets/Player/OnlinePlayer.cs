@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using ThirdPerson;
 using System.Linq;
@@ -8,13 +9,13 @@ using System.Linq;
 /// TODO: swap (drive) characters by setting m_CurrentCharacter
 /// TODO: what to do for multiple players? variable instancer?
 sealed class OnlinePlayer: NetworkBehaviour {
-    // -- references --
-    [Header("references")]
+    // -- atoms --
+    [Header("atoms")]
     [Tooltip("the current player")]
-    [SerializeField] GameObjectVariable m_CurrentPlayer;
+    [SerializeField] DisconePlayerVariable m_CurrentPlayer;
 
     [Tooltip("the current player's character")]
-    [SerializeField] GameObjectVariable m_CurrentCharacter;
+    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
 
     // -- events --
     [Header("events")]
@@ -79,7 +80,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
     /// drive a new character
     void DriveCharacter(DisconeCharacter character) {
-        Server_SwitchCharacter(m_CurrentCharacter.Value, character.gameObject);
+        Server_SwitchCharacter(m_CurrentCharacter.Value?.gameObject, character.gameObject);
     }
 
     // -- c/network
@@ -116,15 +117,15 @@ sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // and the character exists
-        var character = dst.GetComponent<ThirdPerson.Character>();
+        var character = dst.GetComponent<DisconeCharacter>();
         if (character == null || !character.enabled) {
             Debug.Assert(false, "[player] missing character");
             return;
         }
 
         // drive this character
-        m_CurrentCharacter.Value = dst;
-        player.Drive(character);
+        m_CurrentCharacter.Value = character;
+        player.Drive(character.Character);
     }
 
     [TargetRpc]

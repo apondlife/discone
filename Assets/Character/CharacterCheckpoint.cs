@@ -1,10 +1,11 @@
 using ThirdPerson;
 using UnityEngine;
+using Mirror;
 
 /// the character's ability to save and reload to a particular state in
 /// the world, like planting a flag.
 [RequireComponent(typeof(Character))]
-public class CharacterCheckpoint: MonoBehaviour {
+public class CharacterCheckpoint: NetworkBehaviour {
     // -- constants --
     private const float k_CastInactive = -1.0f;
 
@@ -71,12 +72,18 @@ public class CharacterCheckpoint: MonoBehaviour {
     }
 
     void Update() {
+        // if we don't have authority, do nothing
+        if (!hasAuthority || !isClient) {
+            return;
+        }
+
         // if saving a checkpoint
         if (m_IsSaveDown) {
             // stop saving if moving
             if (!CanSave) {
                 StopSave();
             }
+
             // start a save if there isn't one
             else if (m_SaveElapsed == k_CastInactive) {
                 InitSave();

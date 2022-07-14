@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 
 /// the sky-based navigation system
@@ -7,7 +8,7 @@ class SkyChart: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the target player")]
-    [SerializeField] GameObjectVariable m_Target;
+    [SerializeField] DisconePlayerVariable m_Target;
 
     [Tooltip("the radius of the chart")]
     [SerializeField] FloatReference m_Radius;
@@ -23,8 +24,14 @@ class SkyChart: MonoBehaviour {
     }
 
     void FixedUpdate() {
+        var target = m_Target.Value;
+        if (target == null) {
+            Debug.Log($"the target is null!");
+            return;
+        }
+
         // reposition chart on target
-        var pos = m_Target.Value.transform.position;
+        var pos = target.transform.position;
         transform.position = pos;
 
         // move bodies into position

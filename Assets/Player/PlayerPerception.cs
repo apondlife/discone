@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// the player's sphere of perception
-class PlayerPerception: MonoBehaviour {
+sealed class PlayerPerception: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the collider for perceiving objects")]
