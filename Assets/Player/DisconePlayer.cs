@@ -31,6 +31,14 @@ sealed class DisconePlayer: MonoBehaviour {
     [Tooltip("the distance to the far clip plane")]
     [SerializeField] FloatReference m_FarClipPlane;
 
+    // -- atoms --
+    [Header("atoms")]
+    [Tooltip("the progress of the checkpoint save")]
+    [SerializeField] FloatVariable m_SaveProgress;
+
+    [Tooltip("the progress of the checkpoint load")]
+    [SerializeField] FloatVariable m_LoadProgress;
+
     // -- props --
     /// the current game character
     DisconeCharacter m_Character;
@@ -46,10 +54,6 @@ sealed class DisconePlayer: MonoBehaviour {
             .Add(m_DriveStop, OnDriveStop)
             .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
 
-        // bind events
-        m_SaveCheckpointAction.action.performed += OnSaveCheckpointPressed;
-        m_LoadCheckpointAction.action.performed += OnLoadCheckpointPressed;
-
         // configure cameras
         var cameras = GetComponentsInChildren<UnityEngine.Camera>();
         foreach (var camera in cameras) {
@@ -58,21 +62,32 @@ sealed class DisconePlayer: MonoBehaviour {
     }
 
     void Update() {
+        if (m_Character == null) {
+            return;
+        }
+
+        // coordinate input & current character's checkpoint
+        var checkpoint = m_Character.Checkpoint;
+
         // save/cancel checkpoint on press/release
         var save = m_SaveCheckpointAction.action;
         if (save.WasPressedThisFrame()) {
-            m_Character.StartSaveCheckpoint();
+            checkpoint.StartSave();
         } else if (save.WasReleasedThisFrame()) {
-            m_Character.CancelSaveCheckpoint();
+            checkpoint.CancelSave();
         }
 
         // load/cancel checkpoint on press/release
         var load = m_LoadCheckpointAction.action;
         if (load.WasPressedThisFrame()) {
-            m_Character.StartLoadCheckpoint();
+            checkpoint.StartLoad();
         } else if (load.WasReleasedThisFrame()) {
-            m_Character.CancelLoadCheckpoint();
+            checkpoint.CancelLoad();
         }
+
+        // update external atoms
+        m_SaveProgress?.SetValue(checkpoint.SaveElapsed);
+        m_LoadProgress?.SetValue(checkpoint.LoadPercent);
     }
 
     void OnDestroy() {
@@ -96,15 +111,5 @@ sealed class DisconePlayer: MonoBehaviour {
     /// when the dialog becomes in/active
     void OnIsDialogueActiveChanged(bool isDialogueActive) {
         m_InputSource.enabled = !isDialogueActive;
-    }
-
-    /// when the player presses the save checkpoint action
-    void OnSaveCheckpointPressed(InputAction.CallbackContext _) {
-        m_Character.StartSaveCheckpoint();
-    }
-
-    /// when the player presses the load checkpoint action
-    void OnLoadCheckpointPressed(InputAction.CallbackContext _) {
-        m_Character.StartLoadCheckpoint();
     }
 }

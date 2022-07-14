@@ -142,27 +142,6 @@ sealed class DisconeCharacter: NetworkBehaviour {
         m_Dialogue.StartListening();
     }
 
-    // -- c/checkpooint
-    /// start saving the checkpoint
-    public void StartSaveCheckpoint() {
-        m_Checkpoint.StartSave();
-    }
-
-    /// start loading the most recent checkpoint
-    public void StartLoadCheckpoint() {
-        m_Checkpoint.StartLoad();
-    }
-
-    /// cancel saving the checkpoint
-    public void CancelSaveCheckpoint() {
-        m_Checkpoint.CancelSave();
-    }
-
-    /// cancel loadind the checkpoint
-    public void CancelLoadCheckpoint() {
-        m_Checkpoint.CancelLoad();
-    }
-
     // -- c/server
     /// sync this character's current state from the client
     [Command]
@@ -205,6 +184,11 @@ sealed class DisconeCharacter: NetworkBehaviour {
     /// if the character is selected initially
     public bool IsInitial {
         get => m_IsInitial;
+    }
+
+    /// the character checkpoint
+    public CharacterCheckpoint Checkpoint {
+        get => m_Checkpoint;
     }
 
     // -- q/debug
