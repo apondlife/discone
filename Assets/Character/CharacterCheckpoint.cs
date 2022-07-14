@@ -67,8 +67,8 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// the position when the load starts
     Vector3 m_LoadStartPosition;
 
-    /// the forward direction when the load starts
-    Vector3 m_LoadStartForward;
+    /// the rotation when the load starts
+    Quaternion m_LoadStartRotation;
 
     /// pre-allocated buffer for ground raycasts
     RaycastHit[] m_Hits = new RaycastHit[1];
@@ -127,8 +127,12 @@ public class CharacterCheckpoint: NetworkBehaviour {
             var c = m_Checkpoint;
             var pct = LoadPercent;
             var k = pct * pct;
-            t.position = Vector3.Lerp(m_LoadStartPosition, c.Position, k);
-            t.forward = Vector3.Lerp(m_LoadStartForward, c.Forward, k);
+            var pos = Vector3.Lerp(m_LoadStartPosition, c.Position, k);
+
+            var rot = Quaternion.Slerp(m_LoadStartRotation, c.Rotation, k);
+            var fwd = rot * Vector3.forward;
+            var state = new ThirdPerson.CharacterState.Frame(pos, fwd);
+            m_Character.ForceState(state);
 
             // finish the load once elapsed
             if (m_LoadElapsed > m_LoadCastTime) {
@@ -242,8 +246,9 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
         // and start load
         m_LoadElapsed = 0.0f;
-        m_LoadStartPosition = transform.position;
-        m_LoadStartForward = transform.forward;
+        m_LoadStartPosition = m_Character.State.Position;
+        m_LoadStartRotation = Quaternion.LookRotation(m_Character.State.Forward, Vector3.up);
+
     }
 
     /// cancel a load if active
@@ -272,16 +277,21 @@ public class CharacterCheckpoint: NetworkBehaviour {
     private sealed class Checkpoint {
         public Vector3 Position { get; private set; }
         public Vector3 Forward { get; private set; }
+        public Quaternion Rotation { get; private set; }
 
         public static Checkpoint FromState(CharacterState.Frame frame) {
             return new Checkpoint() {
                 Position = frame.Position,
-                Forward = frame.Forward
+                Forward = frame.Forward,
+                Rotation = Quaternion.LookRotation(frame.Forward, Vector3.up),
             };
         }
 
         public CharacterState.Frame IntoState() {
-            return new CharacterState.Frame(Position, Forward);
+            return new CharacterState.Frame(
+                Position,
+                Forward
+            );
         }
     }
 

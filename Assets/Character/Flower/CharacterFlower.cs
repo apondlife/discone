@@ -12,10 +12,10 @@ class CharacterFlower: NetworkBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("the texture to use for the flower")]
-    [SerializeField] private Texture m_Texture;
+    [SerializeField] Texture m_Texture;
 
     [Tooltip("the saturation of the released flower")]
-    [SerializeField] private float m_Saturation = 0.8f;
+    [SerializeField] float m_Saturation = 0.8f;
 
     [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
     private bool m_IsFree = false;
@@ -23,20 +23,12 @@ class CharacterFlower: NetworkBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the renderer for the flower")]
-    [SerializeField] private Renderer m_Renderer;
+    [SerializeField] Renderer m_Renderer;
 
     // -- lifecycle
-    private void Awake() {
-        // create instanced material for the texture if not cached
-        if (!s_MaterialCache.TryGetValue(m_Texture.name, out var material)) {
-            material = Instantiate(m_Renderer.sharedMaterial);
-            material.mainTexture = m_Texture;
-            s_MaterialCache.Add(m_Texture.name, material);
-        }
-
-        m_Renderer.material = material;
+    void Awake() {
+        m_Renderer.material = FindMaterial();
     }
-
 
     // -- commands --
     // called when the flower is no longer owned by a character
@@ -45,9 +37,26 @@ class CharacterFlower: NetworkBehaviour {
     }
 
     // -- events --
-    private void Client_OnIsFreeReceieved(bool oldFree, bool newFree) {
+    void Client_OnIsFreeReceieved(bool oldFree, bool newFree) {
         if (newFree) {
-            m_Renderer.material.SetFloat("_Saturation", m_Saturation);
+            m_Renderer.material = FindMaterial(m_Saturation);
         }
+    }
+
+    // -- queries --
+    /// find cached material for texture and saturation
+    Material FindMaterial(float saturation = 1.0f) {
+        var key = $"{m_Texture.name}/{saturation}";
+
+        // create instanced material for the texture if not cached
+        if (!s_MaterialCache.TryGetValue(key, out var material)) {
+            material = Instantiate(m_Renderer.sharedMaterial);
+            material.mainTexture = m_Texture;
+            material.SetFloat("_Saturation", saturation);
+
+            s_MaterialCache.Add(key, material);
+        }
+
+        return material;
     }
 }

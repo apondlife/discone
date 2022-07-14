@@ -61,16 +61,19 @@ public partial class Character: MonoBehaviour {
     }
 
     void FixedUpdate() {
-        // don't simulate when paused
-        if (IsPaused) {
-            return;
+        // run simulation
+        if (!IsPaused) {
+            Simulate();
         }
 
+        // update external state
+        transform.position = m_State.Position;
+    }
+
+    // run character simulation
+    void Simulate() {
         // store the previous frame
         m_State.Snapshot();
-
-        // calculate the next one
-        var v0 = m_State.Velocity;
 
         // update the character's systems
         m_Input.Read();
@@ -80,7 +83,11 @@ public partial class Character: MonoBehaviour {
 
         // update controller state from character state
         if (m_State.Velocity.sqrMagnitude > 0) {
-            m_Controller.Move(m_State.Position, m_State.Velocity * Time.deltaTime);
+            m_Controller.Move(
+                m_State.Position,
+                m_State.Velocity * Time.deltaTime,
+                transform.up
+            );
         }
 
         if(m_Controller.Collisions.Count > 0) {
@@ -91,7 +98,7 @@ public partial class Character: MonoBehaviour {
 
         // sync controller state back to character state
         m_State.Velocity = m_Controller.Velocity;
-        m_State.Position = transform.position;
+        m_State.Position = m_Controller.Position;
     }
 
     // -- props/hot --
