@@ -90,6 +90,8 @@ public class CharacterCheckpoint: MonoBehaviour {
                     m_IsSaveDown = false;
                 }
             }
+        } else {
+            m_SaveElapsed = k_CastInactive;
         }
 
         // if loading, aggregate time
@@ -238,8 +240,8 @@ public class CharacterCheckpoint: MonoBehaviour {
 
     // -- queries --
     /// the active save's percent complete
-    public float SavePercent {
-        get => Mathf.Clamp01(m_SaveElapsed / m_SaveCastTime);
+    public float SaveElapsed {
+        get => m_SaveElapsed;
     }
 
     /// the active load's percent complete
