@@ -34,14 +34,14 @@ public sealed class CharacterController {
     [Tooltip("the amount of fake gravity that is applied in the first move to maintain the character grounded")]
     [SerializeField] float m_GroundedGravity;
 
-    [Header("references")]
-    [Tooltip("the character's transform")]
-    [SerializeField] Transform m_Transform;
-
+    [Header("refs")]
     [Tooltip("the character's capsule")]
     [SerializeField] CapsuleCollider m_Capsule;
 
     // -- props --
+    /// the character's current velocity
+    Vector3 m_Position;
+
     /// the character's current velocity
     Vector3 m_Velocity;
 
@@ -79,7 +79,7 @@ public sealed class CharacterController {
 
     // -- commands --
     /// move the character by a position delta
-    public void Move(Vector3 position, Vector3 delta) {
+    public void Move(Vector3 position, Vector3 delta, Vector3 up) {
         // if the move was big enough to fire
         var mag = delta.magnitude;
         if (delta.magnitude <= m_MinMove) {
@@ -98,16 +98,13 @@ public sealed class CharacterController {
             }
         }
 
-        // capture shorthand
-        var t = m_Transform;
-
         // calculate capsule
         var c = m_Capsule;
         var capsule = new Capsule(
             c.center,
             c.radius,
             c.height,
-            t.up
+            up
         );
 
         // track start and end position to calculate velocity
@@ -122,9 +119,7 @@ public sealed class CharacterController {
         if (m_IsGrounded) {
             // check if there's movement towards the ground;
             if (Vector3.Dot(m_HitNormal, moveDelta) < 0) {
-
                 // TODO: this should probably go into the movement system, with some fun stuff to do with it =)
-
                 // "cancel" the normal part (ie project the vector)
                 moveDelta = Vector3.ProjectOnPlane(moveDelta, m_HitNormal);
 
@@ -134,7 +129,6 @@ public sealed class CharacterController {
         }
 
         // temporary grounded calculation
-
         // DEBUG: reset state
         #if UNITY_EDITOR
         m_DebugCasts.Clear();
@@ -245,7 +239,6 @@ public sealed class CharacterController {
                 }
             }
 
-
             // update move state; next move starts from capsule center and remaining distance
             moveEnd = hitCapsuleCenter;
 
@@ -289,13 +282,18 @@ public sealed class CharacterController {
         // grounded if any cast hit ground
         m_IsGrounded = isGrounded;
 
-        // move character; subtract total contact offset when calculating velocity
-        t.position = moveEnd;
+        // store movement; subtract total contact offset when calculating velocity
+        m_Position = moveEnd;
         m_Velocity = (moveEnd - moveStart) / Time.deltaTime;
     }
 
     // -- queries --
-    /// the character's curent velocity
+    /// the stored final position of the movement
+    public Vector3 Position {
+        get => m_Position;
+    }
+
+    /// the stored final velocity of the movement
     public Vector3 Velocity {
         get => m_Velocity;
     }
@@ -343,13 +341,14 @@ public sealed class CharacterController {
         }
 
         UnityEditor.Handles.color = Color.yellow;
+        var right = Quaternion.AngleAxis(90, Vector3.up) * m_Velocity.normalized;
         UnityEditor.Handles.Label(
-            m_Transform.position - m_Transform.right * 1.5f,
+            m_Position - right * 1.5f,
             $"casts: {m_DebugCasts.Count} hits: {m_DebugHits.Count}"
         );
 
         Gizmos.color = Color.cyan;
-        Gizmos.DrawSphere(m_Transform.position, 0.1f);
+        Gizmos.DrawSphere(m_Position, 0.1f);
     }
     #endif
 }
