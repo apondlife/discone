@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 708376110c05a4e20b0ce756930c3bb0, type: 3}
-  m_Name: Camera_FarClipPlane
+  m_Script: {fileID: 11500000, guid: eae7dec614d3f46e59c81a0f284838f1, type: 3}
+  m_Name: Player_CurrentCharacter_ChangedWithHistory
   m_EditorClassIdentifier: 
   _developerDescription: 
-  _id: 
-  _value: 5000
+  _replayBufferSize: 1
+  _inspectorRaiseValue:
+    _item1: {fileID: 0}
+    _item2: {fileID: 0}

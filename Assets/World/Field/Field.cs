@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using UnityAtoms.BaseAtoms;
+using UnityAtoms;
 
 /// an infinite field
 [ExecuteAlways]
@@ -15,8 +15,8 @@ public sealed class Field: MonoBehaviour {
 
     // -- fields --
     [Header("config")]
-    [Tooltip("the target to follow")]
-    [SerializeField] GameObjectReference m_TargetObject;
+    [Tooltip("the player to follow")]
+    [SerializeField] DisconePlayerVariable m_Player;
 
     [Header("references")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_Terrain")]
@@ -93,11 +93,11 @@ public sealed class Field: MonoBehaviour {
         #endif
 
         // if the target is active
-        if (!m_TargetObject.Value) {
+        if (!m_Player.Value) {
             return;
         }
 
-        var tt = m_TargetObject.Value.transform;
+        var tt = m_Player.Value.transform;
 
         // if the target changed chunks, create neighbors
         var coord = IntoCoordinate(tt.position);
