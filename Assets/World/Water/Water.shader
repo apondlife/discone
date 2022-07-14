@@ -29,7 +29,7 @@ Shader "Custom/Water" {
 
             // -- includes --
             #include "UnityCG.cginc"
-			#include "../../Post/Core/Math.cginc"
+            #include "Assets/Shaders/Core/Math.cginc"
 
             // -- types --
             struct VertIn {
@@ -83,7 +83,7 @@ Shader "Custom/Water" {
 
             // -- includes --
             #include "UnityCG.cginc"
-			#include "../../Post/Core/Math.cginc"
+            #include "Assets/Shaders/Core/Math.cginc"
 
             // -- types --
 			struct VertIn {

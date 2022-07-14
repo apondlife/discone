@@ -10,28 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
-  m_Name: icecream Tunables
+  m_Name: Frog_Tunables
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
-  m_Acceleration: 30
-  m_Deceleration: 2
+  m_Acceleration: 1
+  m_Deceleration: 5
   m_MinPlanarSpeed: 0.85
-  m_TurnSpeed: 360
+  m_TurnSpeed: 200
   m_PivotSpeed: 1080
   m_TimeToPivot: 0.6
   m_PivotStartThreshold: -0.5
   m_TurningFriction: 7
-  m_AerialDriftAcceleration: 10
-  m_Gravity: -70
+  m_AerialDriftAcceleration: 20
+  m_Gravity: -130
   m_JumpBuffer: 10
-  m_MaxCoyoteFrames: 8
+  m_MaxCoyoteFrames: 10
   m_MaxJumps: 1
   m_JumpGravity: -30
-  m_FallGravity: -40
+  m_FallGravity: -60
   m_Jumps:
   - m_Count: 1
-    m_MinJumpSquatFrames: 0
-    m_MaxJumpSquatFrames: 20
+    m_MinJumpSquatFrames: 10
+    m_MaxJumpSquatFrames: 120
     m_Vertical_SpeedCurve:
       serializedVersion: 2
       m_Curve:
@@ -57,22 +57,40 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
     m_Vertical_MinSpeed: 20
-    m_Vertical_MaxSpeed: 20
+    m_Vertical_MaxSpeed: 100
     m_Horizontal_SpeedCurve:
       serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0.007119988
+        outSlope: 0.007119988
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.6625
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.35833335
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
       m_RotationOrder: 0
     m_Horizontal_MinSpeed: 0
-    m_Horizontal_MaxSpeed: 0
+    m_Horizontal_MaxSpeed: 5
   m_WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_WallGravity: -10
+  m_WallGravity: -85
   m_WallMagnet: 0.5
-  m_TiltForBaseAcceleration: 30
-  m_MaxTilt: 69
+  m_TiltForBaseAcceleration: 10
+  m_MaxTilt: 20
   m_TiltSmoothing: 0.1
   m_DutchScale: 0.2
   m_DutchSmoothing: 0.2

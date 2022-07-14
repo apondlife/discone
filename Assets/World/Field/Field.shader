@@ -42,7 +42,7 @@ Shader "Custom/Field" {
             // -- includes --
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
-            #include "../../Post/Core/Color.cginc"
+            #include "Assets/Shaders/Core/Color.cginc"
 
             // -- types --
             /// the vertex shader input

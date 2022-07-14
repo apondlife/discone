@@ -97,7 +97,6 @@ public class NPCDialogue: MonoBehaviour {
 
     // when the player stops driving a character
     public void StopListening() {
-        Debug.Log($"i, {name}, am no longer listening!");
         m_IsListening = false;
 
         // by doing this, the player has to come in and out of range again to redo a dialogue with a character

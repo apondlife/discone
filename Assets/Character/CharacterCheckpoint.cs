@@ -26,10 +26,15 @@ public class CharacterCheckpoint: NetworkBehaviour {
     [Tooltip("how faster cancelling a load is than the load itself")]
     [SerializeField] float m_LoadCancelMultiplier = 1;
 
+    // -- config --
+    [Header("config")]
+    [Tooltip("the layer mask for the ground")]
+    [SerializeField] LayerMask m_GroundMask;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the prefab for the in-world checkpoint")]
-    [SerializeField] GameObject m_FlagPrefab;
+    [SerializeField] CharacterFlower m_FlowerPrefab;
 
     // -- props --
     // the character
@@ -42,7 +47,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
     Checkpoint m_NewCheckpoint;
 
     /// the visual representation of the current checkpoint
-    GameObject m_Flag;
+    CharacterFlower m_Flower;
 
     /// if the character is trying to save
     bool m_IsSaveDown;
@@ -64,6 +69,9 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// the forward direction when the load starts
     Vector3 m_LoadStartForward;
+
+    /// pre-allocated buffer for ground raycasts
+    RaycastHit[] m_Hits = new RaycastHit[1];
 
     // -- lifecycle --
     void Awake() {
@@ -157,17 +165,49 @@ public class CharacterCheckpoint: NetworkBehaviour {
         // store position
         m_Checkpoint = m_NewCheckpoint;
 
-        // create a new flag
-        m_Flag = Instantiate(m_FlagPrefab);
+        // release old flower
+        // m_Flower?.Release();
 
-        // move flag to the correct position
-        var t = m_Flag.transform;
-        t.position = m_Checkpoint.Position;
-        t.forward = m_Checkpoint.Forward;
+        // create a new flower
+        // m_Flower = SpawnFlower();
+
+        Server_SpawnFlower();
 
         // clear active save
         m_SaveElapsed = k_CastInactive;
         m_NewCheckpoint = null;
+    }
+
+    // -- c/network
+    [Command]
+    public void Server_SpawnFlower() {
+        m_Flower?.Server_Release();
+
+        // find ground position
+        var hits = Physics.RaycastNonAlloc(
+            m_Character.transform.position,
+            Vector3.down,
+            m_Hits,
+            3.0f,
+            m_GroundMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        if (hits <= 0) {
+            Debug.LogError("[checkpoint] failed to find flower ground point");
+            return;
+        }
+
+        // instantiate flower at hit point
+        var hit = m_Hits[0];
+        m_Flower = Instantiate(
+            m_FlowerPrefab,
+            hit.point,
+            Quaternion.identity
+        );
+
+        // spawn the game object for everyone
+        NetworkServer.Spawn(m_Flower.gameObject);
     }
 
     /// restore to the current checkpoint, if any
