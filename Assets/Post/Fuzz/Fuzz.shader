@@ -34,8 +34,8 @@ Shader "Image/Fuzz" {
             #pragma fragment DrawFrag
 
             // -- includes --
-            #include "../Core/Math.hlsl"
-            #include "../Core/Color.hlsl"
+            #include "Assets/Shaders/Core/Math.hlsl"
+            #include "Assets/Shaders/Core/Color.hlsl"
             #include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
             #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 

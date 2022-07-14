@@ -26,7 +26,6 @@ class SkyChart: MonoBehaviour {
     void FixedUpdate() {
         var target = m_Target.Value;
         if (target == null) {
-            Debug.Log($"the target is null!");
             return;
         }
 
