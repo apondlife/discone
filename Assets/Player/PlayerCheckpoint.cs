@@ -38,7 +38,7 @@ sealed class PlayerCheckpoint: MonoBehaviour {
         if (save.WasPressedThisFrame()) {
             checkpoint.StartSave();
         } else if (save.WasReleasedThisFrame()) {
-            checkpoint.CancelSave();
+            checkpoint.StopSave();
         }
 
         // load/cancel checkpoint on press/release
@@ -46,7 +46,7 @@ sealed class PlayerCheckpoint: MonoBehaviour {
         if (load.WasPressedThisFrame()) {
             checkpoint.StartLoad();
         } else if (load.WasReleasedThisFrame()) {
-            checkpoint.CancelLoad();
+            checkpoint.StopLoad();
         }
 
         // update external atoms
