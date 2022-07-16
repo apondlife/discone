@@ -62,13 +62,10 @@ public class CharacterCheckpoint: NetworkBehaviour {
     float m_LoadElapsed = k_CastInactive;
 
     /// how long it takes to load
-    float m_LoadCastTime = 0.0f;
+    float m_LoadCastTime = k_CastInactive;
 
-    /// the position when the load starts
-    Vector3 m_LoadStartPosition;
-
-    /// the rotation when the load starts
-    Quaternion m_LoadStartRotation;
+    /// the state when the load starts
+    CharacterState.Frame m_LoadStartState;
 
     /// pre-allocated buffer for ground raycasts
     RaycastHit[] m_Hits = new RaycastHit[1];
@@ -89,7 +86,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         if (m_IsSaveDown) {
             // stop saving if moving
             if (!CanSave) {
-                StopSave();
+                CancelSave();
             }
 
             // start a save if there isn't one
@@ -113,42 +110,46 @@ public class CharacterCheckpoint: NetworkBehaviour {
         if (m_IsLoadDown) {
             m_LoadElapsed += Time.deltaTime;
         } else if (m_LoadElapsed >= 0.0f) {
-            m_LoadElapsed -= Time.deltaTime * m_LoadCancelMultiplier;
+            m_LoadElapsed -= Mathf.Max(0, Time.deltaTime * m_LoadCancelMultiplier);
         }
 
-        // if we returned to the start point, stop
-        if (m_LoadElapsed < 0.0f) {
-            StopLoad();
-        }
-        // otherwise, interpoloate
-        else {
-            // interpolate position during load
-            var t = transform;
-            var c = m_Checkpoint;
-            var pct = LoadPercent;
-            var k = pct * pct;
-            var pos = Vector3.Lerp(m_LoadStartPosition, c.Position, k);
+        // if we are currently loading
+        if (m_LoadCastTime != k_CastInactive) {
+            // if we returned to the start point, stop
+            if (m_LoadElapsed < 0.0f) {
+                CancelLoad();
+            }
+            // otherwise, interpoloate
+            else {
+                // interpolate position during load
+                var t = transform;
+                var c = m_Checkpoint;
+                var pct = LoadPercent;
+                var k = pct * pct;
+                var pos = Vector3.Lerp(m_LoadStartState.Position, c.Position, k);
 
-            var rot = Quaternion.Slerp(m_LoadStartRotation, c.Rotation, k);
-            var fwd = rot * Vector3.forward;
-            var state = new ThirdPerson.CharacterState.Frame(pos, fwd);
-            m_Character.ForceState(state);
+                var rot = Quaternion.Slerp(m_LoadStartState.LookRotation, c.Rotation, k);
+                var fwd = rot * Vector3.forward;
+                var state = new ThirdPerson.CharacterState.Frame(pos, fwd);
+                m_Character.ForceState(state);
 
-            // finish the load once elapsed
-            if (m_LoadElapsed > m_LoadCastTime) {
-                FinishLoad();
+                // finish the load once elapsed
+                if (m_LoadElapsed > m_LoadCastTime) {
+                    FinishLoad();
+                }
             }
         }
     }
 
     // -- commands --
+    // -- c/save
     /// start saving a checkpoint
     public void StartSave() {
         m_IsSaveDown = true;
    }
 
-    /// cancel a save if active
-    public void CancelSave() {
+    /// stop a save if active
+    public void StopSave() {
         m_IsSaveDown = false;
     }
 
@@ -158,33 +159,33 @@ public class CharacterCheckpoint: NetworkBehaviour {
         m_NewCheckpoint = Checkpoint.FromState(m_Character.CurrentState);
     }
 
-    /// stop the new save
-    void StopSave() {
-        m_SaveElapsed = k_CastInactive;
-        m_NewCheckpoint = null;
-    }
-
     /// finish the new save
     void FinishSave() {
         // store position
         m_Checkpoint = m_NewCheckpoint;
 
-        // release old flower
-        // m_Flower?.Release();
-
-        // create a new flower
-        // m_Flower = SpawnFlower();
-
+        // spawn flower
         Server_SpawnFlower();
 
-        // clear active save
+        // reset state
+        ResetSave();
+    }
+
+    /// cancel the active save
+    void CancelSave() {
+        ResetSave();
+    }
+
+    /// reset save to initial state
+    void ResetSave() {
         m_SaveElapsed = k_CastInactive;
         m_NewCheckpoint = null;
     }
 
-    // -- c/network
+    // -- c/s/server
+    /// spawn a flower on the ground underneath the character
     [Command]
-    public void Server_SpawnFlower() {
+    void Server_SpawnFlower() {
         m_Flower?.Server_Release();
 
         // find ground position
@@ -214,6 +215,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         NetworkServer.Spawn(m_Flower.gameObject);
     }
 
+    /// -- c/load
     /// restore to the current checkpoint, if any
     public void StartLoad() {
         // must have a checkpoint
@@ -246,18 +248,28 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
         // and start load
         m_LoadElapsed = 0.0f;
-        m_LoadStartPosition = m_Character.State.Position;
-        m_LoadStartRotation = Quaternion.LookRotation(m_Character.State.Forward, Vector3.up);
-
+        m_LoadStartState = m_Character.CurrentState;
     }
 
     /// cancel a load if active
-    public void CancelLoad() {
+    public void StopLoad() {
         m_IsLoadDown = false;
     }
 
+    /// restore to the state
+    void FinishLoad() {
+        m_Character.ForceState(m_Checkpoint.IntoState());
+        ResetLoad();
+    }
+
     // stop loading wherever the character is
-    void StopLoad() {
+    void CancelLoad() {
+        m_Character.ForceState(m_LoadStartState);
+        ResetLoad();
+    }
+
+    // reset loading state
+    void ResetLoad() {
         // reset state
         m_IsLoadDown = false;
         m_LoadElapsed = k_CastInactive;
@@ -265,12 +277,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
         // resume simulation
         m_Character.Unpause();
-    }
-
-    /// restore to the state
-    void FinishLoad() {
-        m_Character.ForceState(m_Checkpoint.IntoState());
-        StopLoad();
     }
 
     // -- checkpoint --
