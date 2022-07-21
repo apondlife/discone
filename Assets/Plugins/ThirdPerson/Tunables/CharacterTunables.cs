@@ -11,27 +11,40 @@ public sealed class CharacterTunables: CharacterTunablesBase {
 
     #region movement system
     [Header("movement system")]
+    [Tooltip("the horizontal speed at which the character stops")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_MinPlanarSpeed")]
+    [SerializeField] float m_Horizontal_MinSpeed;
+    public override float Horizontal_MinSpeed => m_Horizontal_MinSpeed;
+
+    /// the character's theoretical max horizontal speed
+    public override float Horizontal_MaxSpeed
+        => Mathf.Sqrt((Horizontal_Acceleration - Horizontal_Friction) / Horizontal_Drag);
+
     [Tooltip("the acceleration from 0 to max speed in units")]
-    [SerializeField] private float m_Acceleration;
-    public override float Acceleration => m_Acceleration;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Acceleration")]
+    [SerializeField] private float m_Horizontal_Acceleration;
+    public override float Horizontal_Acceleration => m_Horizontal_Acceleration;
 
     /// the deceleration from 0 to max speed in units
     [Tooltip("the time to stop from max speed")]
-    [SerializeField] private float m_Deceleration;
-    public override float Deceleration => m_Deceleration;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Deceleration")]
+    [SerializeField] private float m_Horizontal_Drag;
+    public override float Horizontal_Drag => m_Horizontal_Drag;
 
-    [Tooltip("the planar speed when the character stops w/o input")]
-    [SerializeField] float m_MinPlanarSpeed;
-    public override float MinPlanarSpeed => m_MinPlanarSpeed;
-
-    /// the max speed on the xz plane
-    public override float MaxPlanarSpeed => Acceleration / Deceleration;
+    [Tooltip("the friciton multiplier when turning (max on 90deg turn) ")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_TurningFriction")]
+    [SerializeField] private float m_Horizontal_Friction;
+    public override float Horizontal_Friction => m_Horizontal_Friction;
 
     /// the time to to reach max speed from zero.
-    public override float TimeToMaxSpeed => TimeToPercentMaxSpeed((MaxPlanarSpeed - MinPlanarSpeed)/MaxPlanarSpeed);
+    public override float TimeToMaxSpeed => TimeToPercentMaxSpeed(
+        (Horizontal_MaxSpeed - Horizontal_MinSpeed) / Horizontal_MaxSpeed
+    );
 
     /// the time to stop from max speed
-    public override float TimeToStop => TimeToPercentMaxSpeed(MinPlanarSpeed/MaxPlanarSpeed);
+    public override float TimeToStop => TimeToPercentMaxSpeed(
+        Horizontal_MinSpeed / Horizontal_MaxSpeed
+    );
 
     [Tooltip("the turn speed in radians")]
     [SerializeField] private float m_TurnSpeed;
@@ -50,11 +63,7 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     public override float PivotStartThreshold => m_PivotStartThreshold;
 
     /// the deceleration of the character while pivoting
-    public override float PivotDeceleration => MaxPlanarSpeed / TimeToPivot;
-
-    [Tooltip("the friciton multiplier when turning (max on 90deg turn) ")]
-    [SerializeField] private float m_TurningFriction;
-    public override float TurningFriction => m_TurningFriction;
+    public override float PivotDeceleration => Horizontal_MaxSpeed / TimeToPivot;
 
     [Tooltip("the planar acceleration while floating")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_FloatAcceleration")]
@@ -214,7 +223,7 @@ public sealed class CharacterTunables: CharacterTunablesBase {
 
     // -- queries --
     public float TimeToPercentMaxSpeed(float pct) {
-        return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Deceleration;
+        return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Horizontal_Drag;
     }
 
     public void OnValidate() {

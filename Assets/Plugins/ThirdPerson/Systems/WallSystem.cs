@@ -21,7 +21,7 @@ sealed class WallSystem: CharacterSystem {
     );
 
     void NotOnWall_Enter() {
-        m_State.IsOnWall = false;
+        m_State.Curr.IsOnWall = false;
     }
 
     void NotOnWall_Update() {
@@ -49,10 +49,10 @@ sealed class WallSystem: CharacterSystem {
 
         // transfer initial velocity
         var transferred = FindTransferredVelocity(collision.Normal);
-        m_State.Velocity += transferred.magnitude * Vector3.up;
+        m_State.Curr.Velocity += transferred.magnitude * Vector3.up;
 
         // update state
-        m_State.IsOnWall = true;
+        m_State.Curr.IsOnWall = true;
     }
 
     void WallSlide_Update() {
@@ -66,17 +66,17 @@ sealed class WallSystem: CharacterSystem {
         // transfer velocity
         var transferred = FindTransferredVelocity(collision.Normal);
 
-        var v = m_State.Velocity;
-        v += transferred.magnitude * Vector3.up;
-        v += -collision.Normal * m_Tunables.WallMagnet;
+        var dv = Vector3.zero;
+        dv += transferred.magnitude * Vector3.up;
+        dv += -collision.Normal * m_Tunables.WallMagnet;
 
         // accelerate while holding button
         if (m_Input.IsHoldingWall) {
-            v += m_Tunables.WallAcceleration * Time.deltaTime * Vector3.up;
+            dv += m_Tunables.WallAcceleration * Time.deltaTime * Vector3.up;
         }
 
         // update state
-        m_State.Velocity = v;
+        m_State.Curr.Velocity += dv;
     }
 
     // -- queries --
@@ -106,7 +106,7 @@ sealed class WallSystem: CharacterSystem {
     /// find the velocity to transfer to the wall
     Vector3 FindTransferredVelocity(Vector3 normal) {
         var projected = Vector3.ProjectOnPlane(normal, Vector3.up).normalized;
-        var transferred = Vector3.Project(m_State.GetFrame(1).Velocity.XNZ(), projected);
+        var transferred = Vector3.Project(m_State.Prev.Velocity.XNZ(), projected);
         return transferred;
     }
 }

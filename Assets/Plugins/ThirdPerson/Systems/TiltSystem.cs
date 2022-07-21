@@ -20,6 +20,7 @@ sealed class TiltSystem : CharacterSystem {
     );
 
     void NotTilting_Update() {
+        // TODO: acceleration should probably be set per frame and not calculated
         var acceleration = Vector3.ProjectOnPlane(m_State.Acceleration, Vector3.up);
         if (acceleration.sqrMagnitude != 0.0f) {
             ChangeTo(Tilting);
@@ -43,7 +44,7 @@ sealed class TiltSystem : CharacterSystem {
         }
 
         var tiltAngle = Mathf.Clamp(
-            acceleration.magnitude / m_Tunables.Acceleration * m_Tunables.TiltForBaseAcceleration,
+            acceleration.magnitude / m_Tunables.Horizontal_Acceleration * m_Tunables.TiltForBaseAcceleration,
             0,
             m_Tunables.MaxTilt
         );
@@ -64,8 +65,8 @@ sealed class TiltSystem : CharacterSystem {
     // -- commands --
     /// smooth tilt towards target
     void InterpolateTilt(Quaternion target) {
-        m_State.Tilt = Quaternion.Slerp(
-            m_State.Tilt,
+        m_State.Curr.Tilt = Quaternion.Slerp(
+            m_State.Curr.Tilt,
             target,
             m_Tunables.TiltSmoothing
         );

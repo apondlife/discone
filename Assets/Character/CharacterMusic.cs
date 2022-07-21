@@ -186,6 +186,6 @@ class CharacterMusic: MonoBehaviour {
     // -- queries --
     /// the character's step (planar) velocity
     Vector3 StepVelocity {
-        get => m_State.PlanarVelocity;
+        get => m_State.Curr.GroundVelocity;
     }
 }

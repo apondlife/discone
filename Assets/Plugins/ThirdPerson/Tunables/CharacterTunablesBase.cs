@@ -8,17 +8,19 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float Gravity { get; }
 
     // -- movement --
-    public abstract float MaxPlanarSpeed { get; }
-    public abstract float MinPlanarSpeed { get; }
-    public abstract float Acceleration { get; }
-    public abstract float TimeToMaxSpeed { get; }
-    public abstract float Deceleration { get; }
-    public abstract float TimeToStop { get; }
+    public abstract float Horizontal_MinSpeed { get; }
+    public abstract float Horizontal_MaxSpeed { get; }
+    public abstract float Horizontal_Acceleration { get; }
+    public abstract float Horizontal_Drag { get; }
+    public abstract float Horizontal_Friction { get; }
+
     public abstract float TurnSpeed { get; }
     public abstract float PivotSpeed { get; }
     public abstract float PivotDeceleration { get; }
     public abstract float PivotStartThreshold { get; }
-    public abstract float TurningFriction { get; }
+
+    public abstract float TimeToMaxSpeed { get; }
+    public abstract float TimeToStop { get; }
     public abstract float TimeToPivot { get; }
 
     // -- air movement --
@@ -38,9 +40,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
 
     public abstract class JumpTunablesBase {
         public abstract uint Count { get; }
-
         public abstract uint CooldownFrames { get; }
-
         public abstract uint MinJumpSquatFrames { get; }
         public abstract uint MaxJumpSquatFrames { get; }
 
@@ -53,7 +53,6 @@ public abstract class CharacterTunablesBase: ScriptableObject {
         public abstract float Horizontal_MaxSpeed { get; }
         public abstract AnimationCurve Horizontal_SpeedCurve { get; }
         public abstract float Horizontal_MomentumLoss { get; }
-
     }
 
     // -- wall --

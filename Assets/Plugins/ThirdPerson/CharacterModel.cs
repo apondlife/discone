@@ -72,9 +72,9 @@ public sealed class CharacterModel: MonoBehaviour {
         anim.SetFloat(
             "MoveSpeed",
             Mathf.InverseLerp(
-                m_Tunables.MinPlanarSpeed,
-                m_Tunables.MaxPlanarSpeed,
-                m_State.PlanarVelocity.magnitude
+                m_Tunables.Horizontal_MinSpeed,
+                m_Tunables.Horizontal_MaxSpeed,
+                m_State.Curr.GroundVelocity.magnitude
             )
         );
 
@@ -98,7 +98,7 @@ public sealed class CharacterModel: MonoBehaviour {
     /// tilt the model as a fn of character acceleration
     void Tilt() {
         // is this a fundamental misunderstanding of quaternions? maybe
-        transform.rotation = m_State.LookRotation;
+        transform.rotation = m_State.Curr.LookRotation;
     }
 
     void StretchAndSquash() {
