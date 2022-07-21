@@ -3,12 +3,6 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// the type of collision surface
-public enum CollisionSurface {
-    Ground,
-    Wall,
-}
-
 /// the collision info
 public readonly struct CharacterCollision: IEquatable<CharacterCollision> {
     // -- props --
@@ -18,15 +12,11 @@ public readonly struct CharacterCollision: IEquatable<CharacterCollision> {
     /// the collision point
     public readonly Vector3 Point;
 
-    /// the surface for the collision, if any
-    public readonly CollisionSurface Surface;
-
     // -- lifetime --
     /// create a new collision
-    public CharacterCollision(Vector3 normal, Vector3 point, CollisionSurface surface) {
+    public CharacterCollision(Vector3 normal, Vector3 point) {
         Normal = normal;
         Point = point;
-        Surface = surface;
     }
 
     // -- queries --

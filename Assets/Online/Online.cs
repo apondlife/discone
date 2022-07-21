@@ -63,6 +63,7 @@ public class Online: NetworkManager {
     public override void Start() {
         base.Start();
 
+        // set the initial address
         var addr = m_HostAddress?.Value;
         if (addr != null && addr != "") {
             networkAddress = addr;

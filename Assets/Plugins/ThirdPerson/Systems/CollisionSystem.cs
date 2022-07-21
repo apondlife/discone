@@ -33,11 +33,8 @@ sealed class CollisionSystem: CharacterSystem {
         }
 
         // find the ground collision if it exists
-        m_State.Curr.Ground = m_Controller.Collisions
-            .LastOrDefault((c) => c.Surface == CollisionSurface.Ground);
-
-        m_State.Curr.Wall = m_Controller.Collisions
-            .LastOrDefault((c) => c.Surface == CollisionSurface.Wall);
+        m_State.Curr.Ground = m_Controller.Ground;
+        m_State.Curr.Wall = m_Controller.Wall;
 
         // sync controller state back to character state
         m_State.Curr.Velocity = m_Controller.Velocity;
