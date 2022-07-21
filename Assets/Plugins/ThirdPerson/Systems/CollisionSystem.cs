@@ -41,6 +41,7 @@ sealed class CollisionSystem: CharacterSystem {
 
         // sync controller state back to character state
         m_State.Curr.Velocity = m_Controller.Velocity;
+        m_State.Curr.Acceleration = (m_State.Curr.Velocity - m_State.Prev.Velocity) / Time.deltaTime;
         m_State.Curr.Position = m_Controller.Position;
     }
 }

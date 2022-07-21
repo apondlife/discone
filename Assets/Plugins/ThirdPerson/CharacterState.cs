@@ -58,15 +58,6 @@ public sealed partial class CharacterState {
         get => Curr.IdleTime > 0.0f;
     }
 
-    /// the character's current acceleration
-    public Vector3 Acceleration {
-        get {
-            var v0 = m_Frames[1].Velocity;
-            var v1 = m_Frames[0].Velocity;
-            return (v1 - v0) / Time.fixedDeltaTime;
-        }
-    }
-
     // -- types --
     /// a single frame of character state
     [Serializable]
@@ -77,6 +68,9 @@ public sealed partial class CharacterState {
 
         /// the character's velocity
         public Vector3 Velocity = Vector3.zero;
+
+        /// how much the velocity changed since last frame
+        public Vector3 Acceleration = Vector3.zero;
 
         /// the current facing direction
         public Vector3 Forward;
