@@ -38,6 +38,16 @@ sealed class OnlinePlayer: NetworkBehaviour {
         m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
     }
 
+    public override void OnStopServer() {
+        base.OnStopServer();
+
+        // release this player's character when they disconnect
+        var character = m_CurrentCharacter?.Value;
+        if (character != null) {
+            character.Server_RemoveClientAuthority();
+        }
+    }
+
     void OnDestroy() {
         m_Subscriptions.Dispose();
     }
@@ -80,7 +90,9 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
     /// drive a new character
     void DriveCharacter(DisconeCharacter character) {
-        Server_SwitchCharacter(m_CurrentCharacter.Value?.gameObject, character.gameObject);
+        var src = m_CurrentCharacter.Value?.gameObject;
+        var dst = character.gameObject;
+        Server_SwitchCharacter(src, dst);
     }
 
     // -- c/network
