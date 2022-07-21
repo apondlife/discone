@@ -54,7 +54,6 @@ public partial class Character: MonoBehaviour {
             // has to run first, because it should run after character controller calculations
             new IdleSystem(data),
             new WallSystem(data),
-            new GravitySystem(data),
             new MovementSystem(data),
             new JumpSystem(data),
             new TiltSystem(data),

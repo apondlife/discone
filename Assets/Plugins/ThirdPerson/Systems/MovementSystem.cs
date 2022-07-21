@@ -27,10 +27,20 @@ sealed class MovementSystem: CharacterSystem {
 
     void NotMoving_Update() {
         // start floating if no longer grounded
-        if (!m_State.Curr.IsGrounded) {
+        if (!m_State.Prev.IsGrounded) {
             ChangeTo(Floating);
             return;
         }
+
+        // simulate friction
+        var vd = SimulateMove(
+            m_State.Curr.GroundVelocity,
+            Vector3.zero,
+            m_Tunables.Horizontal_StaticFriction,
+            0.0f
+        );
+
+        m_State.Curr.Velocity += vd;
 
         // change to moving once moving
         if (HasInput || !IsStopped) {
@@ -47,7 +57,7 @@ sealed class MovementSystem: CharacterSystem {
 
     void Moving_Update() {
         // start floating if no longer grounded
-        if (!m_State.Curr.IsGrounded) {
+        if (!m_State.Prev.IsGrounded) {
             ChangeTo(Floating);
             return;
         }
@@ -74,39 +84,15 @@ sealed class MovementSystem: CharacterSystem {
             m_State.Curr.SetProjectedForward(dirForward);
         }
 
-        // calculate next velocity, integrating input & drag
-        // vt = v0 + (acceleration - drag - friction) * t
-        var v0 = m_State.Prev.GroundVelocity;
-
-        var v0_mag = v0.magnitude;
-        var v0_dir = v0.normalized;
-
-        // calculate acceleration due to input
-        var acceleration = m_Tunables.Horizontal_Acceleration * dirInput.magnitude * m_State.Curr.Forward;
-
-        // calculate friction
-        var friction = m_Tunables.Horizontal_Friction;
-
-        // calculate quadratic drag
-        var drag = v0.sqrMagnitude * m_Tunables.Horizontal_Drag;
-
-        // deceleration opposes to movement, drag + friction
-        var deceleration = v0_dir * (friction + drag);
-
-        // calculate velocity change this frame (velocity delta)
-        var vd = (acceleration - deceleration) * Time.deltaTime;
-
-        // split the velocity delta into tangent (colinear) and normal (turning)
-        var vd_tan = Vector3.Project(vd, v0_dir);
-        var vd_nrm = vd - vd_tan;
-
-        // if the aligned velocity delta produces a aligned-direction change, just stop
-        if (vd_tan.magnitude > v0_mag && Vector3.Dot(vd_tan, v0) < 0.0f) {
-            vd_tan = -v0;
-        }
+        var vd = SimulateMove(
+            m_State.Prev.GroundVelocity,
+            m_Tunables.Horizontal_Acceleration * dirInput.magnitude * m_State.Curr.Forward,
+            m_Tunables.Horizontal_KineticFriction,
+            m_Tunables.Horizontal_Drag
+        );
 
         // update velocity
-        m_State.Curr.Velocity += vd_tan + vd_nrm;
+        m_State.Curr.Velocity += vd;
 
         // once speed is zero, stop moving
         if (!HasInput && IsStopped) {
@@ -128,7 +114,7 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     void Pivot_Update() {
-        if (!m_State.Curr.IsGrounded) {
+        if (!m_State.Prev.IsGrounded) {
             ChangeTo(Floating);
             return;
         }
@@ -170,7 +156,7 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void Floating_Update() {
-        if (m_State.Curr.IsGrounded) {
+        if (m_State.Prev.IsGrounded) {
             ChangeTo(Moving);
             return;
         }
@@ -182,13 +168,43 @@ sealed class MovementSystem: CharacterSystem {
 
     // -- queries --
     /// if there is any user input
-    private bool HasInput {
+    bool HasInput {
         get => m_Input.MoveAxis.sqrMagnitude > 0.0f;
     }
 
     /// if the ground speed is below the movement threshold
-    private bool IsStopped {
+    bool IsStopped {
         get => m_State.Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+    }
+
+    /// calculate the velocity delta as a result of all movement forces
+    Vector3 SimulateMove(
+        Vector3 v0,
+        Vector3 thrust,
+        float friction,
+        float drag
+    ) {
+        // calculate next velocity, integrating input & drag
+        // vt = v0 + (acceleration - drag - friction) * t
+        var v0_mag = v0.magnitude;
+        var v0_dir = v0.normalized;
+
+        // deceleration opposes to movement, drag + friction
+        var deceleration = v0_dir * (friction + drag * v0.sqrMagnitude);
+
+        // calculate velocity change this frame (velocity delta)
+        var vd = (thrust - deceleration) * Time.deltaTime;
+
+        // split the velocity delta into tangent (colinear) and normal (turning)
+        var vd_tan = Vector3.Project(vd, v0_dir);
+        var vd_nrm = vd - vd_tan;
+
+        // if the aligned velocity delta produces a aligned-direction change, just stop
+        if (vd_tan.magnitude > v0_mag && Vector3.Dot(vd_tan, v0) < 0.0f) {
+            vd_tan = -v0;
+        }
+
+        return vd_tan + vd_nrm;
     }
 }
 }

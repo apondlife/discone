@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
   m_Name: Icecream_Tunables
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
-  m_Description: high friction, pretty good
-  m_Acceleration: 30
-  m_Deceleration: 2
-  m_MinPlanarSpeed: 0.85
+  m_Description: iced cream
+  m_Horizontal_MinSpeed: 0.85
+  m_Horizontal_Acceleration: 30
+  m_Horizontal_Drag: 0.1
+  m_Horizontal_StaticFriction: 25
+  m_Horizontal_KineticFriction: 5
   m_TurnSpeed: 360
   m_PivotSpeed: 1080
   m_TimeToPivot: 0.6
   m_PivotStartThreshold: -0.5
-  m_TurningFriction: 7
   m_AerialDriftAcceleration: 10
   m_Gravity: -70
   m_JumpBuffer: 10
   m_MaxCoyoteFrames: 8
-  m_MaxJumps: 1
   m_JumpGravity: -30
   m_FallGravity: -40
   m_Jumps:
   - m_Count: 1
+    m_CooldownFrames: 0
     m_MinJumpSquatFrames: 0
     m_MaxJumpSquatFrames: 20
+    m_Vertical_MinSpeed: 20
+    m_Vertical_MaxSpeed: 20
     m_Vertical_SpeedCurve:
       serializedVersion: 2
       m_Curve:
@@ -56,16 +59,16 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-    m_Vertical_MinSpeed: 20
-    m_Vertical_MaxSpeed: 20
+    m_Upwards_MomentumLoss: 0
+    m_Horizontal_MinSpeed: 0
+    m_Horizontal_MaxSpeed: 0
     m_Horizontal_SpeedCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 0
       m_PostInfinity: 0
       m_RotationOrder: 0
-    m_Horizontal_MinSpeed: 0
-    m_Horizontal_MaxSpeed: 0
+    m_Horizontal_MomentumLoss: 0
   m_WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295
