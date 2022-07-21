@@ -19,6 +19,7 @@ namespace ThirdPerson.SourceGeneration {
             // get the received frame class
             var frameClass = receiver.FrameClass;
 
+            // find all generatable fields
             var frameFields = frameClass.Members
                 .Select((m) => m as FieldDeclarationSyntax)
                 .Where((m) => !(m is null))
@@ -29,37 +30,37 @@ namespace ThirdPerson.SourceGeneration {
                     )))
                 );
 
-            // produce the generated impls
+            // frame constructor
             var frameCtorImpl = IntoLines(
                 frameFields,
                 "{0} = f.{0};",
                 (f) => f.name
             );
 
+            // frame equality
             var frameEqualsImpl = IntoLines(
                 frameFields,
                 "{0} == o.{0}", " && ",
                 (f) => f.name
             );
 
-            /// the position
+            // readonly accessors for properties on the current frame
             var stateFieldsImpl = IntoLines(
                 frameFields,
                 @"public {1} {0} {{
                     get => m_Frames[0].{0};
-                    set => m_Frames[0].{0} = value;
                 }}",
                 (f) => f.name,
                 (f) => f.type
             );
 
-            var characterState = $@"
+            // the state
+            var stateImpl = $@"
                 using UnityEngine;
 
                 namespace ThirdPerson {{
 
                 public partial class CharacterState {{
-
                     {stateFieldsImpl}
 
                     public partial class Frame {{
@@ -106,7 +107,7 @@ namespace ThirdPerson.SourceGeneration {
 
             // produce the frame extensions
             context.AddSource("CharacterState.Generated.cs",
-                SourceText.From(characterState, Encoding.UTF8)
+                SourceText.From(stateImpl, Encoding.UTF8)
             );
         }
 
@@ -141,7 +142,7 @@ namespace ThirdPerson.SourceGeneration {
         }
 
         // -- helpers --
-        private string FindFullyQualifiedName(SyntaxNode node) {
+        string FindFullyQualifiedName(SyntaxNode node) {
             var names = new List<string>();
 
             do {
