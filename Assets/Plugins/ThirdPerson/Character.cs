@@ -54,8 +54,9 @@ public partial class Character: MonoBehaviour {
             // has to run first, because it should run after character controller calculations
             new IdleSystem(data),
             new WallSystem(data),
-            new MovementSystem(data),
             new JumpSystem(data),
+            // movement system uses gravity information to calculate friciton, so it should run after it
+            new MovementSystem(data),
             new TiltSystem(data),
             // the last state, where the controller move is calculated and all move stuff is fixed
             new CollisionSystem(data),

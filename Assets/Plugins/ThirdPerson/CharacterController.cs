@@ -112,21 +112,7 @@ public sealed class CharacterController {
         var moveEnd = moveStart;
         var moveDelta = delta;
         var moveContactOffset = Vector3.zero;
-
         var isGrounded = false;
-
-        // cancel movement towards the ground in case the character is grounded
-        if (m_IsGrounded) {
-            // check if there's movement towards the ground;
-            if (Vector3.Dot(m_HitNormal, moveDelta) < 0) {
-                // TODO: this should probably go into the movement system, with some fun stuff to do with it =)
-                // "cancel" the normal part (ie project the vector)
-                moveDelta = Vector3.ProjectOnPlane(moveDelta, m_HitNormal);
-
-                // leave a constant factor so the grounded check works
-                moveDelta -= m_HitNormal * m_GroundedGravity;
-            }
-        }
 
         // temporary grounded calculation
         // DEBUG: reset state
