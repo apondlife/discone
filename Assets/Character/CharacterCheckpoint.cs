@@ -279,28 +279,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
         m_Character.Unpause();
     }
 
-    // -- checkpoint --
-    private sealed class Checkpoint {
-        public Vector3 Position { get; private set; }
-        public Vector3 Forward { get; private set; }
-        public Quaternion Rotation { get; private set; }
-
-        public static Checkpoint FromState(CharacterState.Frame frame) {
-            return new Checkpoint() {
-                Position = frame.Position,
-                Forward = frame.Forward,
-                Rotation = Quaternion.LookRotation(frame.Forward, Vector3.up),
-            };
-        }
-
-        public CharacterState.Frame IntoState() {
-            return new CharacterState.Frame(
-                Position,
-                Forward
-            );
-        }
-    }
-
     // -- queries --
     /// the active save's percent complete
     public float SaveElapsed {
@@ -315,5 +293,45 @@ public class CharacterCheckpoint: NetworkBehaviour {
     // if the character can currently save
     bool CanSave {
         get => m_Character.State.IsGrounded && m_Character.State.IsIdle;
+    }
+
+    // -- types --
+    /// a checkpoint state
+    private sealed class Checkpoint {
+        // -- props --
+        /// the position
+        public readonly Vector3 Position;
+
+        /// the character facing
+        public readonly Vector3 Forward;
+
+        /// the character rotation
+        public readonly Quaternion Rotation;
+
+        // -- lifetime --
+        /// create a new checkpoint
+        public Checkpoint(Vector3 position, Vector3 forward, Quaternion rotation) {
+            Position = position;
+            Forward = forward;
+            Rotation = rotation;
+        }
+
+        // -- conversions --
+        /// create checkpoint from the current state frame
+        public static Checkpoint FromState(CharacterState.Frame frame) {
+            return new Checkpoint(
+                frame.Position,
+                frame.Forward,
+                Quaternion.LookRotation(frame.Forward, Vector3.up)
+            );
+        }
+
+        /// create state frame from checkpoint
+        public CharacterState.Frame IntoState() {
+            return new CharacterState.Frame(
+                Position,
+                Forward
+            );
+        }
     }
 }

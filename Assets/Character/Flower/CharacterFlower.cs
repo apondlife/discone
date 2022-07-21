@@ -18,7 +18,7 @@ class CharacterFlower: NetworkBehaviour {
     [SerializeField] float m_Saturation = 0.8f;
 
     [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
-    private bool m_IsFree = false;
+    bool m_IsFree = false;
 
     // -- refs --
     [Header("refs")]
