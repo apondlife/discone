@@ -63,9 +63,21 @@ public class Online: NetworkManager {
     public override void Start() {
         base.Start();
 
+        var addr = m_HostAddress?.Value;
+        if (addr != null && addr != "") {
+            networkAddress = addr;
+        }
+
         // start a host for every player, immediately
         // TODO: is this a good idea? for now at least
-        SwitchToHost();
+        try {
+            SwitchToHost();
+        } catch (System.Net.Sockets.SocketException err) {
+            var code = err.ErrorCode;
+            if (code == 10048 && (addr == "localhost" || addr == "127.0.0.1")) {
+                SwitchToClient();
+            }
+        }
     }
 
     void Update() {
