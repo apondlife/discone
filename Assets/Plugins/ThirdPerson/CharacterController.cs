@@ -45,26 +45,17 @@ public sealed class CharacterController {
     /// the character's current velocity
     Vector3 m_Velocity;
 
-    /// if the character is touching the ground
-    bool m_IsGrounded;
-
-    /// the normal of the last collision surface
-    Vector3 m_HitNormal = Vector3.up;
-
-    // how much movement should be lost when hitting a slope
-    // parameters an angle from 0 to 1 (0 deg to 90 deg)
-    // returns a value between 0 and 1 to multiply the next movement by
-    private Func<float, float> CustomSlopeAngleLossFunction = null;
-
-    private float LimitSlopeToWallAngle(float angle) {
-        return angle < m_WallAngle ? 1.0f : 0.0f;
-    }
-
-    /// the collisions this frame
-    Buffer<CharacterCollision> m_Collisions = new Buffer<CharacterCollision>(5);
-
     /// pending move delta, if there is any
     Vector3 m_PendingMoveDelta;
+
+    /// the number of collisions this frame
+    int m_Collisions;
+
+    /// the last wall collision this frame
+    CharacterCollision m_Wall;
+
+    /// the last ground collision this frame
+    CharacterCollision m_Ground;
 
     // -- debug --
     #if UNITY_EDITOR
@@ -112,17 +103,17 @@ public sealed class CharacterController {
         var moveEnd = moveStart;
         var moveDelta = delta;
         var moveContactOffset = Vector3.zero;
-        var isGrounded = false;
 
-        // temporary grounded calculation
+        // clear the collisions
+        m_Collisions = 0;
+        m_Wall = default;
+        m_Ground = default;
+
         // DEBUG: reset state
         #if UNITY_EDITOR
         m_DebugCasts.Clear();
         m_DebugHits.Clear();
         #endif
-
-        // clear the collision buffer
-        m_Collisions.Clear();
 
         // while there is any more to move
         var i = 0;
@@ -134,7 +125,7 @@ public sealed class CharacterController {
             }
 
             // if we cast an unlikely number of times, stop
-            if (i > 5) {
+            if (i > 4) {
                 Debug.LogError("[controller] cast more than 5 times in a single frame!");
                 break;
             }
@@ -235,38 +226,24 @@ public sealed class CharacterController {
             var groundAngle = Vector3.Angle(overshoot, moveDelta);
 
             // limit the move delta when hitting walls or over some custom slope function
-            if(CustomSlopeAngleLossFunction != null) {
-                moveDelta *= CustomSlopeAngleLossFunction(groundAngle);
-            } else {
-                moveDelta *= LimitSlopeToWallAngle(groundAngle);
-            }
+            moveDelta *= groundAngle < m_WallAngle ? 1.0f : 0.0f;
 
             // apply the contact offset
             moveEnd += hit.normal * m_ContactOffset;
 
             // if we touch any ground surface, we're grounded
-            var surface = CollisionSurface.Ground;
+            m_Collisions += 1;
 
+            var collision = new CharacterCollision(hit.normal, hit.point);
             if (Vector3.Angle(hit.normal, Vector3.up) <= m_WallAngle) {
-                if (!isGrounded) {
-                    isGrounded = true;
-                }
+                m_Ground = collision;
             } else {
-                surface = CollisionSurface.Wall;
+                m_Wall = collision;
             }
-
-            // update hit normal each cast
-            m_HitNormal = hit.normal;
-
-            // add this collision to the list
-            m_Collisions.Add(new CharacterCollision(hit.normal, hit.point, surface));
 
             // update state
             i++;
         }
-
-        // grounded if any cast hit ground
-        m_IsGrounded = isGrounded;
 
         // store movement; subtract total contact offset when calculating velocity
         m_Position = moveEnd;
@@ -284,19 +261,19 @@ public sealed class CharacterController {
         get => m_Velocity;
     }
 
+    /// the wall collision
+    public CharacterCollision Wall {
+        get => m_Wall;
+    }
+
+    /// the ground collision
+    public CharacterCollision Ground {
+        get => m_Ground;
+    }
+
     /// the angle considered a wall
     public float WallAngle {
         get => m_WallAngle;
-    }
-
-    /// if the character is touching the ground
-    public bool IsGrounded {
-        get => m_IsGrounded;
-    }
-
-    /// the collisions this frame
-    public Buffer<CharacterCollision> Collisions {
-        get => m_Collisions;
     }
 
     // -- gizmos --
