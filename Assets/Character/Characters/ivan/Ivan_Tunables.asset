@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
   m_Horizontal_MinSpeed: 0.85
-  m_Horizontal_Acceleration: 40
-  m_Horizontal_Drag: 0.2
-  m_Horizontal_StaticFriction: 1
-  m_Horizontal_KineticFriction: 1
+  m_Horizontal_Acceleration: 100
+  m_Horizontal_Drag: 0.004
+  m_Horizontal_StaticFriction: 30
+  m_Horizontal_KineticFriction: 6
   m_TurnSpeed: 200
   m_PivotSpeed: 1080
   m_TimeToPivot: 0.6
