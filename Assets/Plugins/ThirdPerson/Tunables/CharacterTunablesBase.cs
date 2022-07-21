@@ -12,7 +12,8 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float Horizontal_MaxSpeed { get; }
     public abstract float Horizontal_Acceleration { get; }
     public abstract float Horizontal_Drag { get; }
-    public abstract float Horizontal_Friction { get; }
+    public abstract float Horizontal_StaticFriction { get; }
+    public abstract float Horizontal_KineticFriction { get; }
 
     public abstract float TurnSpeed { get; }
     public abstract float PivotSpeed { get; }

@@ -48,9 +48,14 @@ public sealed partial class CharacterState {
         get => m_Frames.IsEmpty;
     }
 
+    /// if currently grounded
+    public bool IsGrounded {
+        get => Curr.IsGrounded;
+    }
+
     /// if currently idle
     public bool IsIdle {
-        get => m_Frames[0].IdleTime > 0.0f;
+        get => Curr.IdleTime > 0.0f;
     }
 
     /// the character's current acceleration
@@ -75,9 +80,6 @@ public sealed partial class CharacterState {
 
         /// the current facing direction
         public Vector3 Forward;
-
-        /// if the character is grounded
-        public bool IsGrounded = false;
 
         /// if the character is in jump squat
         public bool IsInJumpSquat = false;
@@ -143,6 +145,11 @@ public sealed partial class CharacterState {
         /// the normal in relation to the current surface
         public Vector3 Normal {
             get => Ground.Normal;
+        }
+
+        /// if the character is grounded
+        public bool IsGrounded {
+            get => !Ground.IsNone;
         }
 
         /// the character's look rotation (facing & tilt)

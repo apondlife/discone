@@ -18,7 +18,7 @@ public sealed class CharacterTunables: CharacterTunablesBase {
 
     /// the character's theoretical max horizontal speed
     public override float Horizontal_MaxSpeed
-        => Mathf.Sqrt((Horizontal_Acceleration - Horizontal_Friction) / Horizontal_Drag);
+        => Mathf.Sqrt((Horizontal_Acceleration - Horizontal_KineticFriction) / Horizontal_Drag);
 
     [Tooltip("the acceleration from 0 to max speed in units")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_Acceleration")]
@@ -31,10 +31,15 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private float m_Horizontal_Drag;
     public override float Horizontal_Drag => m_Horizontal_Drag;
 
-    [Tooltip("the friciton multiplier when turning (max on 90deg turn) ")]
+    [Tooltip("the coefficient of friction when not moving")]
+    [SerializeField] private float m_Horizontal_StaticFriction;
+    public override float Horizontal_StaticFriction => m_Horizontal_StaticFriction;
+
+    [Tooltip("the coefficient of friction when moving")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_TurningFriction")]
-    [SerializeField] private float m_Horizontal_Friction;
-    public override float Horizontal_Friction => m_Horizontal_Friction;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Horizontal_Friction")]
+    [SerializeField] private float m_Horizontal_KineticFriction;
+    public override float Horizontal_KineticFriction => m_Horizontal_KineticFriction;
 
     /// the time to to reach max speed from zero.
     public override float TimeToMaxSpeed => TimeToPercentMaxSpeed(
