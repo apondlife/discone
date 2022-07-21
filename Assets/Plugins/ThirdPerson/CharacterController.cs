@@ -259,14 +259,14 @@ public sealed class CharacterController {
             moveEnd += hit.normal * m_ContactOffset;
 
             // if we touch any ground surface, we're grounded
-            var surface = CharacterCollision.CollisionSurface.Ground;
+            var surface = CollisionSurface.Ground;
 
-            if(Vector3.Angle(hit.normal, Vector3.up) <= m_WallAngle) {
+            if (Vector3.Angle(hit.normal, Vector3.up) <= m_WallAngle) {
                 if (!isGrounded) {
                     isGrounded = true;
                 }
             } else {
-                surface = CharacterCollision.CollisionSurface.Wall;
+                surface = CollisionSurface.Wall;
             }
 
             // update hit normal each cast

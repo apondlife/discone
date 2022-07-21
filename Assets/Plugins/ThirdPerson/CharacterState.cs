@@ -16,13 +16,6 @@ public sealed partial class CharacterState {
         Fill(frame);
     }
 
-    // -- props/hot --
-    /// the current frame
-    public Frame CurrentFrame {
-        get => m_Frames[0];
-        set => m_Frames[0] = value;
-    }
-
     // -- commands --
     /// snapshot the current state
     public void Snapshot() {
@@ -34,17 +27,22 @@ public sealed partial class CharacterState {
         m_Frames.Fill(frame);
     }
 
-    /// sets the forward direction on the xz plane
-    public void SetProjectedForward(Vector3 dir) {
-        var projected = Vector3.ProjectOnPlane(dir, Up);
-
-        // if zero, use the original direction
-        if (projected.sqrMagnitude > 0.0f) {
-            Forward = projected.normalized;
-        }
+    /// force the current frame
+    public void Force(CharacterState.Frame frame) {
+        m_Frames[0] = frame;
     }
 
     // -- queries --
+    /// the current frame
+    public Frame Curr {
+        get => m_Frames[0];
+    }
+
+    /// the previous frame
+    public Frame Prev {
+        get => m_Frames[1];
+    }
+
     /// if the state has no frames
     public bool IsEmpty {
         get => m_Frames.IsEmpty;
@@ -53,27 +51,6 @@ public sealed partial class CharacterState {
     /// if currently idle
     public bool IsIdle {
         get => m_Frames[0].IdleTime > 0.0f;
-    }
-
-    /// get the nth most recent frame
-    public Frame GetFrame(uint i) {
-        return m_Frames[i];
-    }
-
-    /// the character's up vector (hardcoded to Vector3.up)
-    public Vector3 Up {
-        get => m_Frames[0].Up;
-    }
-
-    /// the character's look rotation (facing & tilt)
-    public Quaternion LookRotation {
-        get => m_Frames[0].LookRotation;
-    }
-
-    /// the velocity on the xz-plane
-    /// TODO: maybe this should be grounded velocity, since the places its been used are ground related
-    public Vector3 PlanarVelocity {
-        get => m_Frames[0].Velocity.XNZ();
     }
 
     /// the character's current acceleration
@@ -114,8 +91,11 @@ public sealed partial class CharacterState {
         /// how much tilted the character is
         public Quaternion Tilt = Quaternion.identity;
 
-        /// the collision information for the previous frame
-        public CharacterCollision Collision;
+        /// the ground collision for the previous frame
+        public CharacterCollision Ground;
+
+        /// the wall collision for the previous frame
+        public CharacterCollision Wall;
 
         /// the current frame in the jump squat
         public int JumpSquatFrame = -1;
@@ -143,15 +123,47 @@ public sealed partial class CharacterState {
             Forward = forward;
         }
 
+        // -- commands --
+        /// sets the forward direction on the xz plane
+        public void SetProjectedForward(Vector3 dir) {
+            var projected = Vector3.ProjectOnPlane(dir, Up);
+
+            // if zero, use the original direction
+            if (projected.sqrMagnitude > 0.0f) {
+                Forward = projected.normalized;
+            }
+        }
+
         // -- queries --
         /// the character's up vector (hardcoded to Vector3.up)
         public Vector3 Up {
             get => Vector3.up;
         }
 
+        /// the normal in relation to the current surface
+        public Vector3 Normal {
+            get => Ground.Normal;
+        }
+
         /// the character's look rotation (facing & tilt)
         public Quaternion LookRotation {
             get => Tilt * Quaternion.LookRotation(Forward, Up);
+        }
+
+        /// the velocity on the xz-plane
+        public Vector3 PlanarVelocity {
+            get => Velocity.XNZ();
+        }
+
+        /// the velocity in the ground plane, or planar velocity if not grounded
+        public Vector3 GroundVelocity {
+            get {
+                if (Ground.IsNone) {
+                    return PlanarVelocity;
+                } else {
+                    return Vector3.ProjectOnPlane(Velocity, Normal);
+                }
+            }
         }
     }
 }

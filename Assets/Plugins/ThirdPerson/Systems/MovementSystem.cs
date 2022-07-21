@@ -16,29 +16,26 @@ sealed class MovementSystem: CharacterSystem {
     // -- NotMoving --
     CharacterPhase NotMoving => new CharacterPhase(
         name: "NotMoving",
+        enter: NotMoving_Enter,
         update: NotMoving_Update
     );
 
-    void NotMoving_Update() {
-        if (m_Input.MoveAxis.magnitude > 0) {
-            ChangeTo(Moving);
-            return;
-        }
+    void NotMoving_Enter() {
+        // cancel horizontal movement
+        m_State.Curr.Velocity -= m_State.Curr.GroundVelocity;
+    }
 
+    void NotMoving_Update() {
         // start floating if no longer grounded
-        if (!m_State.IsGrounded) {
+        if (!m_State.Curr.IsGrounded) {
             ChangeTo(Floating);
             return;
         }
 
-        // calculate next velocity, integrating drag
-        var v0 = m_State.PlanarVelocity;
-        if (v0.sqrMagnitude != 0.0f) {
-            var d0 = v0 * m_Tunables.Deceleration;
-            var vt = v0 - d0 * Time.deltaTime;
-
-            // update planar velocity
-            m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
+        // change to moving once moving
+        if (HasInput || !IsStopped) {
+            ChangeTo(Moving);
+            return;
         }
     }
 
@@ -50,13 +47,13 @@ sealed class MovementSystem: CharacterSystem {
 
     void Moving_Update() {
         // start floating if no longer grounded
-        if (!m_State.IsGrounded) {
+        if (!m_State.Curr.IsGrounded) {
             ChangeTo(Floating);
             return;
         }
 
         // get current forward & input direction
-        var dirForward = m_State.Forward;
+        var dirForward = m_State.Curr.Forward;
         var dirInput = m_Input.MoveAxis;
 
         // pivot if direction change was significant
@@ -66,31 +63,53 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // rotate towards input direction
-        var hasInput = dirInput.sqrMagnitude != 0.0f;
-        if (hasInput) {
+        if (HasInput) {
             dirForward = Vector3.RotateTowards(
-                m_State.Forward,
+                dirForward,
                 dirInput,
                 m_Tunables.TurnSpeed * Mathf.Deg2Rad * Time.deltaTime,
                 Mathf.Infinity
             );
 
-            m_State.SetProjectedForward(dirForward);
+            m_State.Curr.SetProjectedForward(dirForward);
         }
 
         // calculate next velocity, integrating input & drag
-        // vt = v0 + (input acceleration - drag - turning friction) * t
-        var v0 = m_State.PlanarVelocity;
-        var ai = m_Tunables.Acceleration * dirInput.magnitude * m_State.Forward;
-        var cf = hasInput ? m_Tunables.TurningFriction * (1.0f - Mathf.Abs(Vector3.Dot(v0.normalized, ai.normalized))) : 0.0f;
-        var d0 = v0 * (m_Tunables.Deceleration + cf);
-        var vt = v0 + (ai - d0) * Time.deltaTime;
+        // vt = v0 + (acceleration - drag - friction) * t
+        var v0 = m_State.Prev.GroundVelocity;
 
-        // update planar velocity
-        m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
+        var v0_mag = v0.magnitude;
+        var v0_dir = v0.normalized;
+
+        // calculate acceleration due to input
+        var acceleration = m_Tunables.Horizontal_Acceleration * dirInput.magnitude * m_State.Curr.Forward;
+
+        // calculate friction
+        var friction = m_Tunables.Horizontal_Friction;
+
+        // calculate quadratic drag
+        var drag = v0.sqrMagnitude * m_Tunables.Horizontal_Drag;
+
+        // deceleration opposes to movement, drag + friction
+        var deceleration = v0_dir * (friction + drag);
+
+        // calculate velocity change this frame (velocity delta)
+        var vd = (acceleration - deceleration) * Time.deltaTime;
+
+        // split the velocity delta into tangent (colinear) and normal (turning)
+        var vd_tan = Vector3.Project(vd, v0_dir);
+        var vd_nrm = vd - vd_tan;
+
+        // if the aligned velocity delta produces a aligned-direction change, just stop
+        if (vd_tan.magnitude > v0_mag && Vector3.Dot(vd_tan, v0) < 0.0f) {
+            vd_tan = -v0;
+        }
+
+        // update velocity
+        m_State.Curr.Velocity += vd_tan + vd_nrm;
 
         // once speed is zero, stop moving
-        if(!hasInput && v0.magnitude < m_Tunables.MinPlanarSpeed) {
+        if (!HasInput && IsStopped) {
             ChangeTo(NotMoving);
         }
     }
@@ -104,45 +123,44 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void Pivot_Enter() {
-        m_State.PivotDirection = m_Input.MoveAxis;
-        m_State.PivotFrame = 0;
+        m_State.Curr.PivotDirection = m_Input.MoveAxis;
+        m_State.Curr.PivotFrame = 0;
     }
 
     void Pivot_Update() {
-        if (!m_State.IsGrounded) {
+        if (!m_State.Curr.IsGrounded) {
             ChangeTo(Floating);
             return;
         }
 
-        m_State.PivotFrame += 1;
+        m_State.Curr.PivotFrame += 1;
 
         // rotate towards pivot direction
-        var dirFacing = m_State.Forward;
+        var dirFacing = m_State.Curr.Forward;
         dirFacing = Vector3.RotateTowards(
-            m_State.Forward,
-            m_State.PivotDirection,
+            dirFacing,
+            m_State.Prev.PivotDirection,
             m_Tunables.PivotSpeed * Mathf.Deg2Rad * Time.deltaTime,
             Mathf.Infinity
         );
 
-        m_State.SetProjectedForward(dirFacing);
+        m_State.Curr.SetProjectedForward(dirFacing);
 
         // calculate next velocity, decelerating towards zero to finish pivot
-        var v0 = m_State.PlanarVelocity;
-        var vt = v0 - Mathf.Min(v0.magnitude, m_Tunables.PivotDeceleration * Time.deltaTime) * v0.normalized;
+        var v0 = m_State.Prev.GroundVelocity;
+        var vd = Mathf.Min(v0.magnitude, m_Tunables.PivotDeceleration * Time.deltaTime) * v0.normalized;
 
-        // update planar velociy
-        m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
+        // update velocity
+        m_State.Curr.Velocity -= vd;
 
-        // if the character has stopped, switch to not moving
-        if(vt.sqrMagnitude == 0.0f) {
-            ChangeTo(NotMoving);
-            return;
+        // once speed is zero, transition to next state
+        if (IsStopped) {
+            ChangeTo(HasInput ? Moving : NotMoving);
         }
     }
 
     void Pivot_Exit() {
-        m_State.PivotFrame = -1;
+        m_State.Curr.PivotFrame = -1;
     }
 
     // -- Floating --
@@ -152,15 +170,25 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void Floating_Update() {
-        if (m_State.IsGrounded) {
+        if (m_State.Curr.IsGrounded) {
             ChangeTo(Moving);
             return;
         }
 
-        var v0 = m_State.PlanarVelocity;
-        var vt = v0 + m_Input.MoveAxis * m_Tunables.AerialDriftAcceleration * Time.deltaTime;
-        m_State.Velocity = vt + m_State.Velocity.y * Vector3.up;
+        var v0 = m_State.Prev.PlanarVelocity;
+        var vd = m_Input.MoveAxis * m_Tunables.AerialDriftAcceleration * Time.deltaTime;
+        m_State.Curr.Velocity += vd;
+    }
+
+    // -- queries --
+    /// if there is any user input
+    private bool HasInput {
+        get => m_Input.MoveAxis.sqrMagnitude > 0.0f;
+    }
+
+    /// if the ground speed is below the movement threshold
+    private bool IsStopped {
+        get => m_State.Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
     }
 }
-
 }

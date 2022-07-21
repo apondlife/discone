@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Linq;
 
 namespace ThirdPerson {
 
@@ -57,6 +58,8 @@ public partial class Character: MonoBehaviour {
             new MovementSystem(data),
             new JumpSystem(data),
             new TiltSystem(data),
+            // the last state, where the controller move is calculated and all move stuff is fixed
+            new CollisionSystem(data),
         };
     }
 
@@ -80,25 +83,6 @@ public partial class Character: MonoBehaviour {
         foreach (var system in m_Systems) {
             system.Update();
         }
-
-        // update controller state from character state
-        if (m_State.Velocity.sqrMagnitude > 0) {
-            m_Controller.Move(
-                m_State.Position,
-                m_State.Velocity * Time.deltaTime,
-                transform.up
-            );
-        }
-
-        if(m_Controller.Collisions.Count > 0) {
-            m_State.Collision = m_Controller.Collisions.Last;
-        } else {
-            m_State.Collision = default;
-        }
-
-        // sync controller state back to character state
-        m_State.Velocity = m_Controller.Velocity;
-        m_State.Position = m_Controller.Position;
     }
 
     // -- props/hot --
@@ -117,7 +101,7 @@ public partial class Character: MonoBehaviour {
         if (m_State.IsEmpty) {
             m_State.Fill(frame);
         } else {
-            m_State.CurrentFrame = frame;
+            m_State.Force(frame);
         }
     }
 
@@ -150,7 +134,7 @@ public partial class Character: MonoBehaviour {
 
     /// the character's current state
     public CharacterState.Frame CurrentState {
-        get => m_State.CurrentFrame;
+        get => m_State.Curr;
     }
 
     // -- events --

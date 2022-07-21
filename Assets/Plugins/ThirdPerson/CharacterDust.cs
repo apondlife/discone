@@ -50,8 +50,8 @@ public class CharacterDust: MonoBehaviour {
                 m_WallParticles.Play();
             }
 
-            if (!m_State.Collision.IsNone) {
-                var c = m_State.Collision;
+            if (!m_State.Wall.IsNone) {
+                var c = m_State.Wall;
                 var t = m_WallParticles.transform;
                 t.position = c.Point;
                 t.forward = -c.Normal;
@@ -67,25 +67,25 @@ public class CharacterDust: MonoBehaviour {
                 m_FloorParticles.Play();
             }
 
-            if (!m_State.Collision.IsNone) {
+            if (!m_State.Ground.IsNone) {
                 var t = m_FloorParticles.transform;
-                var c = m_State.Collision;
+                var c = m_State.Ground;
                 t.position = c.Point;
             }
 
             var emission = m_FloorParticles.emission;
-            var emissionRate = m_FloorParticlesBaseEmission * m_State.PlanarVelocity.sqrMagnitude;
+            var emissionRate = m_FloorParticlesBaseEmission * m_State.Curr.PlanarVelocity.sqrMagnitude;
             emission.rateOverTimeMultiplier = emissionRate;
         }
 
-        if (!m_State.GetFrame(1).IsGrounded && m_State.GetFrame(0).IsGrounded) {
-            if(!m_JumpParticles.isPlaying) {
-                m_JumpParticles.transform.up = m_State.Collision.Normal;
+        if (!m_State.Prev.IsGrounded && m_State.Curr.IsGrounded) {
+            if (!m_JumpParticles.isPlaying) {
+                m_JumpParticles.transform.up = m_State.Ground.Normal;
                 m_JumpParticles.Play();
             }
         }
 
-        if(m_State.GetFrame(1).PivotFrame == -1 && m_State.PivotFrame >= 0) {
+        if (m_State.Prev.PivotFrame == -1 && m_State.PivotFrame >= 0) {
             m_PivotParticles.Play();
             m_PivotParticles.transform.forward = -m_State.PivotDirection;
         }
@@ -95,7 +95,7 @@ public class CharacterDust: MonoBehaviour {
     }
 
     void UpdateSpeedLine() {
-        var v = m_State.PlanarVelocity;
+        var v = m_State.Curr.GroundVelocity;
 
         // match speed line length to planar velocity
         var main = m_SpeedLine.main;

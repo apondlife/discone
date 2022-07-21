@@ -18,7 +18,7 @@ sealed class GravitySystem: CharacterSystem {
     );
 
     void Grounded_Update() {
-        if (!m_State.IsGrounded) {
+        if (!m_State.Prev.IsGrounded) {
             ChangeTo(Airborne);
         }
 
@@ -32,7 +32,7 @@ sealed class GravitySystem: CharacterSystem {
     );
 
     void Airborne_Update() {
-        if (m_State.IsGrounded) {
+        if (m_State.Prev.IsGrounded) {
             ChangeTo(Grounded);
         }
 
@@ -41,7 +41,7 @@ sealed class GravitySystem: CharacterSystem {
 
     // -- commands --
     void SetGrounded() {
-        m_State.IsGrounded = m_Controller.IsGrounded;
+        m_State.Curr.IsGrounded = m_Controller.IsGrounded;
     }
 }
 

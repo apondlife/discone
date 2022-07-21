@@ -258,7 +258,11 @@ public class CameraFollowTarget: MonoBehaviour {
         var distance = Mathf.Lerp(
             m_BaseDistance,
             m_TargetSpeed_MaxDistance,
-            m_TargetSpeed_DistanceCurve.Evaluate(Mathf.InverseLerp(m_TargetSpeed_MinSpeed, m_TargetSpeed_MaxSpeed, m_State.PlanarVelocity.magnitude))
+            m_TargetSpeed_DistanceCurve.Evaluate(Mathf.InverseLerp(
+                m_TargetSpeed_MinSpeed,
+                m_TargetSpeed_MaxSpeed,
+                m_State.Curr.PlanarVelocity.magnitude
+            ))
         );
 
         // update distance if undershooting
