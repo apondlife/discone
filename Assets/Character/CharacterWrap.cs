@@ -4,19 +4,25 @@ using ThirdPerson;
 
 /// wrap the character from the bottom -> top of the world, if necessary
 public class CharacterWrap : NetworkBehaviour {
-    /// the min y-position the character wraps from
+    // -- config --
+    [Header("config")]
+    [Tooltip("the min y-position the character wraps from")]
     [SerializeField] float m_WrapMinY = -4000.0f;
 
-    /// the max y-position the character wraps to
+    [Tooltip("the max y-position the character wraps to")]
     [SerializeField] float m_WrapMaxY = 6000.0f;
 
+    // -- props --
+    /// a reference to the character
     Character m_Character;
 
-    private void Awake() {
+    // -- lifecycle --
+    void Awake() {
+        // set deps
         m_Character = GetComponent<Character>();
     }
 
-    private void FixedUpdate() {
+    void FixedUpdate() {
         // if we don't have authority, do nothing
         if (!hasAuthority || !isClient) {
             return;
