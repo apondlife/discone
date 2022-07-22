@@ -61,6 +61,7 @@ class CharacterMusic: MonoBehaviour {
         // set deps
         var container = GetComponentInParent<ThirdPerson.Character>();
         m_State = container.State;
+        container.Events.Subscribe(CharacterEvent.Jump, PlayJump);
 
         // set props
         m_Key = new Key(m_Root);
@@ -73,7 +74,6 @@ class CharacterMusic: MonoBehaviour {
 
         // play audio
         PlayStep();
-        PlayJump();
         PlayFlutter();
     }
 
@@ -158,10 +158,6 @@ class CharacterMusic: MonoBehaviour {
 
     /// play jump audio
     void PlayJump() {
-        if (!m_State.IsInJumpStart) {
-            return;
-        }
-
         m_Source.PlayProgression(
             m_Jump.Value,
             m_JumpInterval,

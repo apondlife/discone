@@ -18,6 +18,9 @@ abstract class CharacterSystem {
     /// a ref to the character's state
     protected CharacterState m_State;
 
+    /// a ref to the character's events
+    protected CharacterEvents m_Events;
+
     /// a ref to the character's tunables
     protected CharacterTunablesBase m_Tunables;
 
@@ -39,6 +42,7 @@ abstract class CharacterSystem {
         m_State = d.State;
         m_Tunables = d.Tunables;
         m_Controller = d.Controller;
+        m_Events = d.Events;
 
         // set props
         m_Name = this.GetType().Name;
