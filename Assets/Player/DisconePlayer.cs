@@ -42,7 +42,6 @@ public sealed class DisconePlayer: MonoBehaviour {
     void Awake() {
         // this is the current player
         m_Current.Value = this;
-        Debug.Log($"the current player is {m_Current.Value}");
 
         // bind events
         m_Subscriptions

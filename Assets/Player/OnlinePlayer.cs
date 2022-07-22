@@ -77,10 +77,6 @@ sealed class OnlinePlayer: NetworkBehaviour {
             .First()
             .ToArray();
 
-        #if UNITY_EDITOR
-        Debug.Log($"found {available.Length} characters");
-        #endif
-
         // if there is nothing to drive
         var character = available[Random.Range(0, available.Length)];
         if (character == null) {
