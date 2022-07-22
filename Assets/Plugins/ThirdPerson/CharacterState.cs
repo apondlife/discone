@@ -162,7 +162,7 @@ public sealed partial class CharacterState {
                 if (Ground.IsNone) {
                     return PlanarVelocity;
                 } else {
-                    return Vector3.ProjectOnPlane(Velocity, Normal);
+                    return Vector3.ProjectOnPlane(Velocity, Ground.Normal);
                 }
             }
         }

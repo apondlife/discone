@@ -26,7 +26,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
-    // -- NetworkBehaviour --
+    // -- lifecycle --
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
         Debug.Log("[online] starting local player");
@@ -40,6 +40,11 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
     public override void OnStopServer() {
         base.OnStopServer();
+
+        // don't do anything if server is shutting down
+        if (!NetworkServer.active) {
+            return;
+        }
 
         // release this player's character when they disconnect
         var character = m_CurrentCharacter?.Value;
