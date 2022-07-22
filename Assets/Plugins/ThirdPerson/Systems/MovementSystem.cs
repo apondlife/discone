@@ -186,11 +186,12 @@ sealed class MovementSystem: CharacterSystem {
     ) {
         // calculate next velocity, integrating input & drag
         // vt = v0 + (acceleration - drag - friction) * t
-        var v0_mag = v0.magnitude;
         var v0_dir = v0.normalized;
+        var v0_mag = v0.magnitude;
+        var v0_mag2 = v0.sqrMagnitude;
 
         // deceleration opposes to movement, drag + friction
-        var deceleration = v0_dir * (friction + drag * v0.sqrMagnitude);
+        var deceleration = v0_dir * (friction + drag * v0_mag2);
 
         // calculate velocity change this frame (velocity delta)
         var vd = (thrust - deceleration) * Time.deltaTime;
@@ -200,7 +201,7 @@ sealed class MovementSystem: CharacterSystem {
         var vd_nrm = vd - vd_tan;
 
         // if the aligned velocity delta produces a aligned-direction change, just stop
-        if (vd_tan.magnitude > v0_mag && Vector3.Dot(vd_tan, v0) < 0.0f) {
+        if (vd_tan.sqrMagnitude > v0_mag2 && Vector3.Dot(vd_tan, v0) < 0.0f) {
             vd_tan = -v0;
         }
 
