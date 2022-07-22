@@ -19,7 +19,7 @@ public sealed partial class CharacterState {
     // -- commands --
     /// snapshot the current state
     public void Snapshot() {
-        m_Frames.Add(new Frame(m_Frames[0]));
+        m_Frames.Add(Frame.Copy(m_Frames[0]));
     }
 
     /// fill the queue with the frame
@@ -108,6 +108,9 @@ public sealed partial class CharacterState {
         /// the number of jumps executed since last grounded
         public uint Jumps = 0;
 
+        /// the container of events that happened this frame
+        public CharacterEventSet Events;
+
         // -- lifetime --
         /// create an empty frame
         public Frame() {
@@ -120,6 +123,12 @@ public sealed partial class CharacterState {
         }
 
         // -- commands --
+
+        public static Frame Copy(Frame f) {
+            var copy = new Frame(f);
+            copy.Events.Clear();
+            return copy;
+        }
         /// sets the forward direction on the xz plane
         public void SetProjectedForward(Vector3 dir) {
             var projected = Vector3.ProjectOnPlane(dir, Up);

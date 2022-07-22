@@ -18,6 +18,9 @@ readonly struct CharacterData {
     /// the raw unity character controller
     public readonly CharacterController Controller;
 
+    /// the character events
+    public readonly CharacterEvents Events;
+
     // -- lifetime --
     /// create a new container
     public CharacterData(
@@ -25,13 +28,15 @@ readonly struct CharacterData {
         CharacterInput input,
         CharacterState state,
         CharacterTunablesBase tunables,
-        CharacterController controller
+        CharacterController controller,
+        CharacterEvents events
     ) {
         Name = name;
         Input = input;
         State = state;
         Tunables = tunables;
         Controller = controller;
+        Events = events;
     }
 }
 

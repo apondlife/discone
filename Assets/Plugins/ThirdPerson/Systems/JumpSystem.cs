@@ -215,6 +215,7 @@ sealed class JumpSystem: CharacterSystem {
         m_State.Curr.Velocity += dv;
         m_State.Curr.IsInJumpStart = true;
         m_CooldownFrames = (int)JumpTunables.CooldownFrames;
+        m_Events.Schedule(CharacterEvent.Jump);
     }
 
     /// track jump and switch to the correct jump if necessary

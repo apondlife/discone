@@ -21,6 +21,9 @@ public partial class Character: MonoBehaviour {
     /// the character's state
     CharacterState m_State;
 
+    /// the character's state
+    CharacterEvents m_Events;
+
     ///the input wrapper
     CharacterInput m_Input = new CharacterInput();
 
@@ -31,6 +34,8 @@ public partial class Character: MonoBehaviour {
             transform.position,
             transform.forward
         );
+
+        m_Events = new CharacterEvents(m_State);
 
         // reset rotation; model is the only transform that rotates
         transform.rotation = Quaternion.identity;
@@ -46,7 +51,8 @@ public partial class Character: MonoBehaviour {
             m_Input,
             m_State,
             m_Tunables,
-            m_Controller
+            m_Controller,
+            m_Events
         );
 
         // init systems
@@ -67,6 +73,7 @@ public partial class Character: MonoBehaviour {
         // run simulation
         if (!IsPaused) {
             Simulate();
+            m_Events.DispatchAll();
         }
 
         // update external state
@@ -130,6 +137,10 @@ public partial class Character: MonoBehaviour {
     // TODO: how should we make state immutable outside the class
     public CharacterState State {
         get => m_State;
+    }
+
+    public CharacterEvents Events {
+        get => m_Events;
     }
 
     /// the character's current state
