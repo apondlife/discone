@@ -17,16 +17,27 @@ sealed class OnlinePlayer: NetworkBehaviour {
     [Tooltip("the current player's character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
 
+    // -- atom refs --
+    [Tooltip("the number of players connected")]
+    [SerializeField] IntVariable m_PlayerCount;
+
     // -- events --
     [Header("events")]
     [Tooltip("switch the character")]
     [SerializeField] GameObjectEvent m_SwitchCharacter;
 
+
     // -- props --
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
+
     // -- lifecycle --
+    private void Start() {
+        // TODO: onOnlinePlayerJoin / onOnlinePlayerLeave events
+        m_PlayerCount.Value++;
+    }
+
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
         Debug.Log("[online] starting local player");
@@ -36,6 +47,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
         /// listen to switch events
         m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
+
     }
 
     public override void OnStopServer() {
@@ -54,6 +66,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     void OnDestroy() {
+        m_PlayerCount.Value--;
         m_Subscriptions.Dispose();
     }
 

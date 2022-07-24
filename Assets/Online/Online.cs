@@ -24,9 +24,6 @@ public class Online: NetworkManager {
     [Tooltip("the host address to connect to")]
     [SerializeField] StringReference m_HostAddress;
 
-    [Tooltip("the current number of players")]
-    [SerializeField] IntReference m_PlayerCount;
-
     [Header("input events")]
     [Tooltip("an event when the client starts")]
     [SerializeField] VoidEvent m_StartClientEvent;
@@ -79,10 +76,6 @@ public class Online: NetworkManager {
                 SwitchToClient();
             }
         }
-    }
-
-    void Update() {
-        m_PlayerCount.Value = numPlayers;
     }
 
     public override void OnDestroy() {
