@@ -104,7 +104,11 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
     /// drive a new character
     void DriveCharacter(DisconeCharacter character) {
-        var src = m_CurrentCharacter.Value?.gameObject;
+        var srcChar = m_CurrentCharacter.Value;
+        if (srcChar == null) {
+            srcChar = null;
+        }
+        var src = srcChar?.gameObject;
         var dst = character.gameObject;
         Server_SwitchCharacter(src, dst);
     }
