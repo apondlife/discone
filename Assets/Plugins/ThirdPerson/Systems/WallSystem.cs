@@ -4,6 +4,13 @@ namespace ThirdPerson {
 
 /// how the character interacts with walls
 sealed class WallSystem: CharacterSystem {
+    // -- props --
+    /// the current wall normal
+    Vector3 m_WallNormal;
+
+    /// the up vector projected onto the current wall
+    Vector3 m_WallUp;
+
     // -- lifetime --
     public WallSystem(CharacterData character)
         : base(character) {
@@ -40,11 +47,13 @@ sealed class WallSystem: CharacterSystem {
     );
 
     void WallSlide_Enter() {
-        var wall = m_State.Prev.Wall;
+        // update to new wall collision
+        UpdateWall(m_State.Prev.Wall);
 
         // transfer initial velocity
-        var transferred = FindTransferredVelocity(wall.Normal);
-        m_State.Velocity += transferred.magnitude * Vector3.up;
+        var vd = Vector3.zero;
+        vd += TransferVelocity();
+        m_State.Velocity += vd;
 
         // update state
         m_State.IsOnWall = true;
@@ -58,28 +67,40 @@ sealed class WallSystem: CharacterSystem {
             return;
         }
 
-        // transfer velocity
-        var transferred = FindTransferredVelocity(wall.Normal);
+        // update to new wall collision
+        UpdateWall(wall);
 
-        var v = m_State.Velocity;
-        v += transferred.magnitude * Vector3.up;
-        v -= wall.Normal * m_Tunables.WallMagnet;
+        // transfer velocity
+        var vd = Vector3.zero;
+        vd += TransferVelocity();
+        vd -= m_WallNormal * m_Tunables.WallMagnet;
 
         // accelerate while holding button
         if (m_Input.IsHoldingWall) {
-            v += m_Tunables.WallAcceleration * Time.deltaTime * Vector3.up;
+            vd += m_Tunables.WallAcceleration * Time.deltaTime * m_WallUp;
         }
 
         // update state
-        m_State.Velocity = v;
+        m_State.Velocity += vd;
+    }
+    // -- commands --
+    /// update w/ the current wall collision
+    void UpdateWall(CharacterCollision wall) {
+        m_WallNormal = wall.Normal;
+        m_WallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
     }
 
     // -- queries --
-    /// find the velocity to transfer to the wall
-    Vector3 FindTransferredVelocity(Vector3 normal) {
-        var projected = Vector3.ProjectOnPlane(normal, Vector3.up).normalized;
-        var transferred = Vector3.Project(m_State.Prev.PlanarVelocity, projected);
-        return transferred;
+    /// find the speed to transfer to the wall
+    Vector3 TransferVelocity() {
+        // get wall normal
+        var velocity = m_State.Prev.PlanarVelocity;
+        var velocityInRelationToWall = Vector3.ProjectOnPlane(velocity, m_WallNormal);
+
+        // the speed in the wall's direction
+        var transferSpeed = (velocity - velocityInRelationToWall).magnitude;
+
+        return m_WallUp * transferSpeed;
     }
 }
 
