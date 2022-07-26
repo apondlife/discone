@@ -281,6 +281,11 @@ public class CharacterCheckpoint: NetworkBehaviour {
     }
 
     // -- queries --
+    /// if the character is currently saving
+    public bool IsSaving {
+        get => m_SaveElapsed > 0.0f;
+    }
+
     /// the active load's percent complete
     float LoadPercent {
         get => m_LoadCastTime > 0.0f ? Mathf.Clamp01(m_LoadElapsed / m_LoadCastTime) : 0.0f;

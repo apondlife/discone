@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8192349844739034829}
   - component: {fileID: 6364962602504999987}
   - component: {fileID: 7758237061482947550}
-  - component: {fileID: 7435512878103028248}
+  - component: {fileID: 7086729851176909528}
   m_Layer: 5
   m_Name: PlayerEyelid
   m_TagString: Untagged
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &7435512878103028248
+--- !u!114 &7086729851176909528
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,37 +112,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 96966611648447736}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcdcf28ccb398dc4da69600289ab09d8, type: 3}
+  m_Script: {fileID: 11500000, guid: 2351d3508d81b4dd6b10d9abdeac092d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Duration: 0.3
+  m_Duration: 0
   m_Curve:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2.4881399
-      outSlope: 2.4881399
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.052630637
-    - serializedVersion: 3
-      time: 0.2
-      value: 1
-      inSlope: 0.052549157
-      outSlope: 0.052549157
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.15103072
-      outWeight: 0.33333334
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   m_TopEyelid: {fileID: 7244359769653384000}
   m_BottomEyelid: {fileID: 2306223185518007345}
-  m_CloseEyesAction: {fileID: -1762270237703457392, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
+  m_Player: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
 --- !u!1 &3578791517409189936
 GameObject:
   m_ObjectHideFlags: 0

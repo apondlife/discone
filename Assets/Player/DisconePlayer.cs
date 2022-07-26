@@ -2,7 +2,6 @@ using ThirdPerson;
 using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
-using UnityEngine.InputSystem;
 
 /// the discone (local) player; there is only one of these!
 [RequireComponent(typeof(ThirdPerson.Player))]
@@ -35,6 +34,9 @@ public sealed class DisconePlayer: MonoBehaviour {
     [SerializeField] FloatReference m_FarClipPlane;
 
     // -- props --
+    /// the checkpoint
+    PlayerCheckpoint m_Checkpoint;
+
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
@@ -42,6 +44,9 @@ public sealed class DisconePlayer: MonoBehaviour {
     void Awake() {
         // this is the current player
         m_Current.Value = this;
+
+        // set deps
+        m_Checkpoint = GetComponent<PlayerCheckpoint>();
 
         // bind events
         m_Subscriptions
@@ -58,6 +63,12 @@ public sealed class DisconePlayer: MonoBehaviour {
     void OnDestroy() {
         // unbind events
         m_Subscriptions.Dispose();
+    }
+
+    // -- queries --
+    // the checkpoint
+    public PlayerCheckpoint Checkpoint {
+        get => m_Checkpoint;
     }
 
     // -- events --

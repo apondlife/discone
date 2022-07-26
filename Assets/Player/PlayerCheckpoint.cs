@@ -1,11 +1,10 @@
 using UnityEngine;
 using UnityAtoms;
-using UnityAtoms.BaseAtoms;
 using UnityEngine.InputSystem;
 
 /// the discone checkpoint controller
 [RequireComponent(typeof(ThirdPerson.Player))]
-sealed class PlayerCheckpoint: MonoBehaviour {
+public sealed class PlayerCheckpoint: MonoBehaviour {
     // -- atoms --
     [Header("atoms")]
     [Tooltip("the progress of the checkpoint save")]
@@ -18,6 +17,10 @@ sealed class PlayerCheckpoint: MonoBehaviour {
 
     [Tooltip("the load checkpoint input")]
     [SerializeField] InputActionReference m_LoadCheckpointAction;
+
+    // -- props --
+    /// if currently saving a checkpoint
+    bool m_IsSaving = false;
 
     // -- lifecycle --
     void Update() {
@@ -35,6 +38,13 @@ sealed class PlayerCheckpoint: MonoBehaviour {
             checkpoint.StopSave();
         }
 
+        // start saving once character begins save
+        if (save.IsPressed() && checkpoint.IsSaving) {
+            m_IsSaving = true;
+        } else if (save.WasReleasedThisFrame()) {
+            m_IsSaving = false;
+        }
+
         // load/cancel checkpoint on press/release
         var load = m_LoadCheckpointAction.action;
         if (load.WasPressedThisFrame()) {
@@ -42,5 +52,11 @@ sealed class PlayerCheckpoint: MonoBehaviour {
         } else if (load.WasReleasedThisFrame()) {
             checkpoint.StopLoad();
         }
+    }
+
+    // -- queries --
+    /// if currently saving a checkpoint
+    public bool IsSaving {
+        get => m_IsSaving;
     }
 }
