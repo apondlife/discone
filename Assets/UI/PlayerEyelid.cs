@@ -2,17 +2,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-/// the player's eyelid animation
-public class PlayerEyelid: MonoBehaviour {
+/// the checkpoint's eyelid animation
+public class Eyelid: MonoBehaviour {
     // -- config --
     [Header("config")]
-    [Tooltip("the duration of the animation")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_CheckpointEyelidCloseDuration")]
-    [SerializeField] float m_Duration;
-
-    [Tooltip("the curve for the animation")]
+    [Tooltip("the image for the bottom eyelid")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_EyelidCloseCurve")]
     [SerializeField] private AnimationCurve m_Curve;
+
+    [Tooltip("the percent at which the eyelid is closed during checkpoint save")]
+    [SerializeField] float m_CheckpointEyelidCloseDuration;
 
     // -- refs --
     [Header("refs")]
@@ -22,7 +21,7 @@ public class PlayerEyelid: MonoBehaviour {
     [Tooltip("the image for the bottom eyelid")]
     [SerializeField] private Image m_BottomEyelid;
 
-    [Tooltip("the close eyes input")]
+    [Tooltip("the save checkpoint input")]
     [SerializeField] InputActionReference m_CloseEyesAction;
 
     // -- props --
@@ -42,7 +41,7 @@ public class PlayerEyelid: MonoBehaviour {
         // update eyelid visibility
         var pct = m_Curve.Evaluate(Mathf.InverseLerp(
             0.0f,
-            m_Duration,
+            m_CheckpointEyelidCloseDuration,
             m_ClosingElapsed
         ));
 
@@ -56,7 +55,7 @@ public class PlayerEyelid: MonoBehaviour {
         m_ClosingElapsed = Mathf.Clamp(
             m_ClosingElapsed + delta,
             0.0f,
-            m_Duration
+            m_CheckpointEyelidCloseDuration
         );
     }
 }

@@ -104,10 +104,13 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
     /// drive a new character
     void DriveCharacter(DisconeCharacter character) {
+        // don't carry over destroyed characters from scene change
         var srcChar = m_CurrentCharacter.Value;
         if (srcChar == null) {
             srcChar = null;
         }
+
+        // switch to the new character
         var src = srcChar?.gameObject;
         var dst = character.gameObject;
         Server_SwitchCharacter(src, dst);
