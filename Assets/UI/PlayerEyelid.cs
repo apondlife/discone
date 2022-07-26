@@ -1,17 +1,18 @@
+using UnityAtoms;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-/// the checkpoint's eyelid animation
-public class Eyelid: MonoBehaviour {
+/// the player's eyelid animation
+public class PlayerEyelid: MonoBehaviour {
     // -- config --
     [Header("config")]
-    [Tooltip("the image for the bottom eyelid")]
+    [Tooltip("the duration of the animation")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_CheckpointEyelidCloseDuration")]
+    [SerializeField] float m_Duration;
+
+    [Tooltip("the curve for the animation")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_EyelidCloseCurve")]
     [SerializeField] private AnimationCurve m_Curve;
-
-    [Tooltip("the percent at which the eyelid is closed during checkpoint save")]
-    [SerializeField] float m_CheckpointEyelidCloseDuration;
 
     // -- refs --
     [Header("refs")]
@@ -21,8 +22,8 @@ public class Eyelid: MonoBehaviour {
     [Tooltip("the image for the bottom eyelid")]
     [SerializeField] private Image m_BottomEyelid;
 
-    [Tooltip("the save checkpoint input")]
-    [SerializeField] InputActionReference m_CloseEyesAction;
+    [Tooltip("the current character")]
+    [SerializeField] DisconePlayerVariable m_Player;
 
     // -- props --
     /// the elapsed time in the close animation
@@ -31,8 +32,7 @@ public class Eyelid: MonoBehaviour {
     // -- lifecycle --
     void Update() {
         // update elapsed time
-        var close = m_CloseEyesAction.action;
-        if (close.IsPressed()) {
+        if (m_Player.Value.Checkpoint.IsSaving) {
             UpdateElapsed(Time.deltaTime);
         } else if (m_ClosingElapsed > 0.0f) {
             UpdateElapsed(-Time.deltaTime);
@@ -41,7 +41,7 @@ public class Eyelid: MonoBehaviour {
         // update eyelid visibility
         var pct = m_Curve.Evaluate(Mathf.InverseLerp(
             0.0f,
-            m_CheckpointEyelidCloseDuration,
+            m_Duration,
             m_ClosingElapsed
         ));
 
@@ -55,7 +55,7 @@ public class Eyelid: MonoBehaviour {
         m_ClosingElapsed = Mathf.Clamp(
             m_ClosingElapsed + delta,
             0.0f,
-            m_CheckpointEyelidCloseDuration
+            m_Duration
         );
     }
 }
