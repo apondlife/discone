@@ -7,6 +7,7 @@ using Mirror;
 [RequireComponent(typeof(Character))]
 public class CharacterCheckpoint: NetworkBehaviour {
     // -- constants --
+    /// a sentinel for inactive casts
     private const float k_CastInactive = -1.0f;
 
     // -- fields --
@@ -280,13 +281,8 @@ public class CharacterCheckpoint: NetworkBehaviour {
     }
 
     // -- queries --
-    /// the active save's percent complete
-    public float SaveElapsed {
-        get => m_SaveElapsed;
-    }
-
     /// the active load's percent complete
-    public float LoadPercent {
+    float LoadPercent {
         get => m_LoadCastTime > 0.0f ? Mathf.Clamp01(m_LoadElapsed / m_LoadCastTime) : 0.0f;
     }
 

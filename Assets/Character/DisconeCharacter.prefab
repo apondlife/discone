@@ -323,7 +323,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_SaveCastTime: 3
-  m_LoadCastMaxTime: 60
+  m_LoadCastMaxTime: 30
   m_LoadCastPointTime: 1
   m_LoadCastPointDistance: 35
   m_LoadCancelMultiplier: 1
@@ -367,8 +367,8 @@ MonoBehaviour:
   m_CurrentState:
     Position: {x: 0, y: 0, z: 0}
     Velocity: {x: 0, y: 0, z: 0}
+    Acceleration: {x: 0, y: 0, z: 0}
     Forward: {x: 0, y: 0, z: 0}
-    IsGrounded: 0
     IsInJumpSquat: 0
     IsInJumpStart: 0
     IsOnWall: 0
@@ -378,6 +378,8 @@ MonoBehaviour:
     PivotFrame: -1
     PivotDirection: {x: 0, y: 0, z: 0}
     Jumps: 0
+    Events:
+      m_Events: 0
   m_Music: {fileID: 1029445836574466050}
 --- !u!114 &1731996866325999123
 MonoBehaviour:
