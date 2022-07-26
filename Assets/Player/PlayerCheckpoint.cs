@@ -11,12 +11,6 @@ sealed class PlayerCheckpoint: MonoBehaviour {
     [Tooltip("the progress of the checkpoint save")]
     [SerializeField] DisconeCharacterVariable m_Character;
 
-    [Tooltip("the progress of the checkpoint save")]
-    [SerializeField] FloatVariable m_SaveProgress;
-
-    [Tooltip("the progress of the checkpoint load")]
-    [SerializeField] FloatVariable m_LoadProgress;
-
     // -- refs --
     [Header("refs")]
     [Tooltip("the save checkpoint input")]
@@ -48,9 +42,5 @@ sealed class PlayerCheckpoint: MonoBehaviour {
         } else if (load.WasReleasedThisFrame()) {
             checkpoint.StopLoad();
         }
-
-        // update external atoms
-        m_SaveProgress?.SetValue(checkpoint.SaveElapsed);
-        m_LoadProgress?.SetValue(checkpoint.LoadPercent);
     }
 }
