@@ -28,6 +28,10 @@ class CharacterFlower: NetworkBehaviour {
     // -- lifecycle
     void Awake() {
         m_Renderer.material = FindMaterial();
+
+        #if UNITY_EDITOR
+        Dbg.AddToParent("Flowers", this);
+        #endif
     }
 
     // -- commands --
