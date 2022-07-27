@@ -32,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6311038941346133000}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1405147893
 MeshFilter:
@@ -127,7 +127,6 @@ Transform:
   m_Children:
   - {fileID: 7681164637137349762}
   - {fileID: 2962146045447920376}
-  - {fileID: 3459712550837877980}
   - {fileID: 1405147890}
   - {fileID: 2292462693349463982}
   - {fileID: 2742838859763919750}
@@ -288,54 +287,8 @@ Transform:
   - {fileID: 4548682893111393869}
   - {fileID: 7426649456954710767}
   m_Father: {fileID: 6311038941346133000}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7274296979084013848
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3459712550837877980}
-  - component: {fileID: 7594401557197885285}
-  m_Layer: 0
-  m_Name: SkyboxRegionChange
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3459712550837877980
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7274296979084013848}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6311038941346133000}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7594401557197885285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7274296979084013848}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e123972a837714f66a549f2071460e50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ChangeDuration: 6.9
-  m_RegionEntered: {fileID: 11400000, guid: 2e7aa35edf29f6c418f1cf45dd2488c9, type: 2}
 --- !u!1 &9160621442445072036
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,7 +322,7 @@ Transform:
   - {fileID: 2718147505449770377}
   - {fileID: 279700444189245928}
   m_Father: {fileID: 6311038941346133000}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &759112623244364341
 PrefabInstance:
@@ -1534,19 +1487,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 258077852323132191, guid: da7a5c9ea1a8147a9a9bdda26a56df13, type: 3}
       propertyPath: m_Name
-      value: SkyChart
+      value: Sky
       objectReference: {fileID: 0}
     - target: {fileID: 643495097748549938, guid: da7a5c9ea1a8147a9a9bdda26a56df13, type: 3}
       propertyPath: m_Target
       value: 
       objectReference: {fileID: 6081490370802405287}
+    - target: {fileID: 2493838014503354771, guid: da7a5c9ea1a8147a9a9bdda26a56df13, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4726597189005723515, guid: da7a5c9ea1a8147a9a9bdda26a56df13, type: 3}
       propertyPath: m_Target
       value: 
       objectReference: {fileID: 6081490370802405287}
     - target: {fileID: 5509592097533476979, guid: da7a5c9ea1a8147a9a9bdda26a56df13, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5509592097533476979, guid: da7a5c9ea1a8147a9a9bdda26a56df13, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1592,6 +1549,10 @@ PrefabInstance:
       propertyPath: m_Target
       value: 
       objectReference: {fileID: 7634223704204738368}
+    - target: {fileID: 6995499231452604578, guid: da7a5c9ea1a8147a9a9bdda26a56df13, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da7a5c9ea1a8147a9a9bdda26a56df13, type: 3}
 --- !u!4 &2292462693349463982 stripped
@@ -2226,7 +2187,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5638509555357792750, guid: c1bf8395b0359e84e9f895616fb73b4d, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5638509555357792750, guid: c1bf8395b0359e84e9f895616fb73b4d, type: 3}
       propertyPath: m_LocalPosition.x

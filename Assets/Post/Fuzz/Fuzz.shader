@@ -193,11 +193,14 @@ Shader "Image/Fuzz" {
                 float sobel = max(sobel_c, sobel_d);
 
                 // noise shit up
-                float4 other_col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, f.uv + float2(Rand(f.uv) - 0.5, Rand(f.uv + 0.69f) - 0.5) * _FuzzOffset);
+                float4 other_tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, f.uv + float2(Rand(f.uv) - 0.5, Rand(f.uv + 0.69f) - 0.5) * _FuzzOffset);
+                float3 other_col = other_tex.rgb;
 
                 // the actual good return value here v
                 // return float4(lerp(col, lerp(col, other_col, sobel), step(tex2D(_Texture, f.uv).r, sobel)), 1.0f);
+
                 col = lerp(col, other_col, step(tex2D(_Texture, f.uv).r, sobel));
+
 
                 // get max fuzz angle
                 // float nmax = _MaxOrthogonality * _DepthScale * depth;
@@ -213,24 +216,22 @@ Shader "Image/Fuzz" {
                 fuzz *= tex2D(_Texture, f.uv * _TextureScale).r;
 
                 // fuzz between the base and shifted color
-                col = lerp(col, IntoRgb(hsv), fuzz);
+                col = lerp(col, IntoRgb(hsv).rgb, fuzz);
 
                 // don't dissolve objects that dont write to the depth buffer
                 if (tex.a > 0.0f && dn0.depth >= 1.0f) {
-                    return float4(col, 1.0f);
+                    return float4(col, tex.a);
                 }
 
                 // dissolve far away objects
-                float1 a = 1.0f;
                 float1 pct = saturate(Unlerp(_DissolveDepthMin, _DissolveDepthMax, dn0.depth));
                 float2 uvn = _NoiseScale * f.uv;
 
-                a = step(
+                float1 a = other_tex.a * step(
                     pow(pct, _DepthPower),
                     0.997f * (0.5f + 0.5f * SimplexNoise(float3(uvn, 0.01f * floor(_Time.y * _NoiseTimeScale)))) + 0.002f // this number is magic; it avoids dropping close pixels
                 );
 
-                // return float4(b, b, b, 1.0f);
                 return float4(col, a);
             }
 
