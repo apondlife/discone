@@ -7,10 +7,6 @@ using ThirdPerson;
 [RequireComponent(typeof(CharacterCheckpoint))]
 [RequireComponent(typeof(CharacterWrap))]
 public sealed class DisconeCharacter: NetworkBehaviour {
-    // -- constants --
-    /// a parent "folder" for the characters
-    static Transform k_Characters;
-
     // -- fields --
     /// if this character is available
     [Header("fields")]
@@ -60,15 +56,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
         // debug
         #if UNITY_EDITOR
-        // create shared characters go
-        if (k_Characters == null) {
-            var obj = new GameObject();
-            obj.name = "Characters";
-            k_Characters = obj.transform;
-        }
-
-        // move character to parent
-        transform.parent = k_Characters.transform;
+        Dbg.AddToParent("Characters", this);
         #endif
     }
 

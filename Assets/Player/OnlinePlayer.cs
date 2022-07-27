@@ -31,15 +31,21 @@ sealed class OnlinePlayer: NetworkBehaviour {
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
-
     // -- lifecycle --
-    private void Start() {
+    void Awake() {
+        #if UNITY_EDITOR
+        Dbg.AddToParent("Players", this);
+        #endif
+    }
+
+    void Start() {
         // TODO: onOnlinePlayerJoin / onOnlinePlayerLeave events
         m_PlayerCount.Value++;
     }
 
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
+
         Debug.Log("[online] starting local player");
 
         // drive any character
@@ -47,7 +53,6 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
         /// listen to switch events
         m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
-
     }
 
     public override void OnStopServer() {
