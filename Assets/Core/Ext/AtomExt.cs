@@ -7,23 +7,23 @@ using UnityEngine;
 public static class AtomExt {
     // -- queries --
     /// get a component in this game object atom
-    public static T GetComponent<T>(
+    public static C GetComponent<C>(
         this GameObjectVariable obj
-    ) where T: MonoBehaviour {
-        return obj.Value.GetComponent<T>();
+    ) where C: Component {
+        return obj.Value.GetComponent<C>();
     }
 
     /// get a component in this player atom
-    public static T GetComponent<T>(
+    public static C GetComponent<C>(
         this DisconePlayerVariable obj
-    ) where T: MonoBehaviour {
-        return obj.Value.GetComponent<T>();
+    ) where C: Component {
+        return obj.Value.GetComponent<C>();
     }
 
     /// get a component in this character atom
-    public static T GetComponent<T>(
+    public static C GetComponent<C>(
         this DisconeCharacterVariable obj
-    ) where T: MonoBehaviour {
-        return obj.Value.GetComponent<T>();
+    ) where C: Component {
+        return obj.Value.GetComponent<C>();
     }
 }

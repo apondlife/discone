@@ -20,6 +20,16 @@ class SkyChartBody: MonoBehaviour {
     }
 
     // -- lifecycle --
+    void Awake() {
+        // turn off shadows on all renderers
+        var renderers = GetComponentsInChildren<Renderer>();
+
+        foreach (var r in renderers) {
+            r.receiveShadows = false;
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+    }
+
     void OnValidate() {
         SyncPosition();
     }
@@ -27,18 +37,7 @@ class SkyChartBody: MonoBehaviour {
     // -- commands --
     /// reposition the body given the player's world position
     void SyncPosition() {
-        // calculate new position from polar coordinate
-        var s = m_Coordinate;
-        var r = (s.Radius);
-        var z = (s.Zenith - 90.0f) * Mathf.Deg2Rad;
-        var a = (s.Azimuth) * Mathf.Deg2Rad;
-
-        var pos = Vector3.zero;
-        pos.x = r * Mathf.Sin(z) * Mathf.Cos(a);
-        pos.y = r * Mathf.Cos(z);
-        pos.z = r * Mathf.Sin(z) * Mathf.Sin(a);
-
         // update position from body
-        transform.localPosition = pos;
+        transform.localPosition = m_Coordinate.IntoCartesian();
     }
 }
