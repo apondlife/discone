@@ -1,7 +1,7 @@
 Shader "Custom/SkyChartBody" {
     Properties {
         _Texture ("Texture", 2D) = "white" {}
-        _Color ("Color", Color) = (1.0, 1.0, 1.0, 1.0)
+        [HDR] _Color ("Color", Color) = (1.0, 1.0, 1.0, 1.0)
     }
 
     SubShader {
