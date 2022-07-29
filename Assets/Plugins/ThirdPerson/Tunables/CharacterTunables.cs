@@ -18,7 +18,7 @@ public sealed class CharacterTunables: CharacterTunablesBase {
 
     /// the character's theoretical max horizontal speed
     public override float Horizontal_MaxSpeed
-        => Mathf.Sqrt((Horizontal_Acceleration - Horizontal_KineticFriction) / Horizontal_Drag);
+        => Mathf.Sqrt(Mathf.Max(0.0f, Horizontal_Acceleration - Horizontal_KineticFriction) / Horizontal_Drag);
 
     [Tooltip("the acceleration from 0 to max speed in units")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_Acceleration")]
@@ -68,7 +68,7 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     public override float PivotStartThreshold => m_PivotStartThreshold;
 
     /// the deceleration of the character while pivoting
-    public override float PivotDeceleration => Horizontal_MaxSpeed / TimeToPivot;
+    public override float PivotDeceleration => TimeToPivot > 0 ? Horizontal_MaxSpeed / TimeToPivot : float.PositiveInfinity;
 
     [Tooltip("the planar acceleration while floating")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_FloatAcceleration")]
