@@ -364,6 +364,39 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "One Modifier",
+                    "id": "34218fb5-c8b4-462b-b40e-554e2099fc67",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "76e18b28-eb3b-490c-afdd-d67cbd60d201",
+                    "path": "<HID::Nintendo GameCube Controller Adapter>/button5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "e24c49bf-ee8a-4a14-92f0-bcbc1b8472ab",
+                    "path": "<Joystick>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "c8d6f5b5-2167-4d00-b3ab-b2b1b14863e4",
                     "path": "<Keyboard>/space",
@@ -378,6 +411,28 @@
                     "name": "",
                     "id": "c72ece87-90b6-4fc3-991a-d358a31e44bc",
                     "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0b9ddc9c-d2e7-4c3b-8b2e-ef6c805277fd",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "54c14d74-6cc9-4257-82de-a3afc44fdf15",
+                    "path": "<HID::Nintendo GameCube Controller Adapter>/button2",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -425,6 +480,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "Talk",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7ac05a80-0b19-4dc2-9794-702676c38ac6",
+                    "path": "<HID::Nintendo GameCube Controller Adapter>/button2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Talk",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -487,10 +553,43 @@
                 {
                     "name": "",
                     "id": "bb3ef244-b20f-49cd-aff9-85115f48bdc4",
-                    "path": "<Gamepad>/select",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "SaveCheckpoint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dec212cc-2710-4e60-b6cf-d05626f9a78e",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SaveCheckpoint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0a32861e-5d95-48ff-a561-fb353431aaaa",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SaveCheckpoint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5590d476-acba-41b2-ad01-3482ace1fbf9",
+                    "path": "<HID::Nintendo GameCube Controller Adapter>/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "SaveCheckpoint",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -513,6 +612,28 @@
                     "interactions": "Hold",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "LoadCheckpoint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ab347a98-d4d4-4afe-9eb4-0258a0968f9f",
+                    "path": "<HID::Nintendo GameCube Controller Adapter>/button10",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LoadCheckpoint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "993a6d3e-766a-4277-b911-596661ef3216",
+                    "path": "<HID::Nintendo GameCube Controller Adapter>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "LoadCheckpoint",
                     "isComposite": false,
                     "isPartOfComposite": false
