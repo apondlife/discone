@@ -33,7 +33,7 @@ Shader "Sprite/Billboard" {
             #pragma fragment frag
 
             #include "UnityCG.cginc"
-            #include "Assets/Shadersders/Core/Color.cginc"
+            #include "Assets/Shaders/Core/Color.cginc"
 
             struct VertIn {
                 float4 vertex : POSITION;
