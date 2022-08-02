@@ -25,6 +25,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Density: 0.99
     - _Exposure: 1.46
     - _ExposureBackground: 0.63
     - _ExposureForeground: 4.45
@@ -34,9 +35,13 @@ Material:
     - _ImageType: 0
     - _Layout: 2
     - _Mapping: 1
+    - _MaxRadius: 0.001
+    - _MinRadius: 0.0005
     - _MirrorOnBack: 0
     - _Rotation: 168
     - _Scale: 7.11
+    - _Seed: 4.05
+    - _StarChance: 0.09
     m_Colors:
     - _BG: {r: 0.2658859, g: 0.112273075, b: 0.8207547, a: 1}
     - _Background: {r: 0.29089534, g: 0.2226771, b: 0.33962262, a: 1}
