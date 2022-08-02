@@ -3,6 +3,14 @@
 #define float1 float
 #endif
 
+#ifndef fixed1
+#define fixed1 fixed
+#endif
+
+#ifndef half1
+#define half1 half
+#endif
+
 // -- functions --
 /// inverse lerp a value (v) given a min (a) and max (b): (a, b) -> (0, 1)
 float3 Unlerp(float a, float b, float v) {

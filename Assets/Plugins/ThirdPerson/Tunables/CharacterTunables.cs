@@ -226,17 +226,18 @@ public sealed class CharacterTunables: CharacterTunablesBase {
 
     #endregion
 
-    // -- queries --
-    public float TimeToPercentMaxSpeed(float pct) {
-        return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Horizontal_Drag;
-    }
-
-    public void OnValidate() {
-        if (m_Jumps.Length == 0) {
+    // -- lifecycle --
+    void OnValidate() {
+        if (m_Jumps == null || m_Jumps.Length == 0) {
             m_MaxCoyoteFrames = 0;
         } else {
             m_MaxCoyoteFrames = System.Math.Max(m_MaxCoyoteFrames, m_Jumps[0].MinJumpSquatFrames);
         }
+    }
+
+    // -- queries --
+    public float TimeToPercentMaxSpeed(float pct) {
+        return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Horizontal_Drag;
     }
 }
 

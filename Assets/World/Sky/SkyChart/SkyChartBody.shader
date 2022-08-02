@@ -1,6 +1,6 @@
-Shader "Custom/SkyChartBody" {
+Shader "Custom/SkyChart/Body" {
     Properties {
-        _Texture ("Texture", 2D) = "white" {}
+        _MainTex ("Texture", 2D) = "white" {}
         [HDR] _Color ("Color", Color) = (1.0, 1.0, 1.0, 1.0)
     }
 
@@ -33,10 +33,10 @@ Shader "Custom/SkyChartBody" {
 
             // -- props --
             /// the texture
-            sampler2D _Texture;
+            sampler2D _MainTex;
 
             /// the texture coordinate
-            float4 _Texture_ST;
+            float4 _MainTex_ST;
 
             /// the texture color
             fixed4 _Color;
@@ -45,12 +45,12 @@ Shader "Custom/SkyChartBody" {
             FragIn DrawVert (VertIn v) {
                 FragIn o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _Texture);
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
             }
 
             fixed4 DrawFrag (FragIn i) : SV_Target {
-                return tex2D(_Texture, i.uv) * _Color;
+                return tex2D(_MainTex, i.uv) * _Color;
             }
             ENDCG
         }
