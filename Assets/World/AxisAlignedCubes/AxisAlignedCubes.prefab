@@ -29,6 +29,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5109521499110140384}
+  - {fileID: 8367331553739809066}
   - {fileID: 5112834838264147523}
   - {fileID: 639260291180427127}
   m_Father: {fileID: 0}
@@ -209,6 +210,55 @@ Transform:
   m_Father: {fileID: 639260291180427127}
   m_RootOrder: 100
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5536880127292422094
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8367331553739809066}
+  - component: {fileID: 2963526541139987485}
+  m_Layer: 0
+  m_Name: SkyChart_AxisAlignedCubes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8367331553739809066
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5536880127292422094}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5519341161366388341}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2963526541139987485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5536880127292422094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f83710d0f259c04e9c3e7237400aaca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FarZenith: 30
+  m_CloseZenith: -10
+  m_BodyPrefab: {fileID: 6793397137367393458, guid: b61154ab01d06487ca8e9c112774063b, type: 3}
+  m_Player: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
+  m_Bodies: {fileID: 11400000, guid: 3ed5e9dbf156a45ac96fb027f74f811c, type: 2}
 --- !u!1 &5668730499395795134
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,7 +320,7 @@ Transform:
   m_Children:
   - {fileID: 8616211320963189166}
   m_Father: {fileID: 5519341161366388341}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6612251103491752866
 GameObject:
@@ -448,7 +498,7 @@ Transform:
   - {fileID: 3429897150411948546}
   - {fileID: 6454082080605218199}
   m_Father: {fileID: 5519341161366388341}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8299543401443133971
 GameObject:
