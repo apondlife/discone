@@ -1,16 +1,27 @@
 Shader "Custom/Sky" {
 
 Properties {
-    _MainTex ("Texture", 2D) = "grey" {}
+    [Header(Sky)] _MainTex ("Texture", 2D) = "grey" {}
     _Scale ("Scale", Float) = 1.0
     _Rotation ("Rotation", Range(0.0, 360.0)) = 0.0
     _Foreground ("Foreground", Color) = (0.5, 0.5, 0.5, 1.0)
     [Gamma] _ExposureForeground ("Exposure Foreground", Range(0.0, 8.0)) = 1.0
     _Background ("Background", Color) = (0.0, 0.0, 0.0, 1.0)
     [Gamma] _ExposureBackground ("Exposure Background", Range(0.0, 8.0)) = 1.0
-    _Fog ("Fog", Color) = (0.0, 0.0, 0.0, 0.0)
+
+    [Header(Fog)] _Fog ("Fog", Color) = (0.0, 0.0, 0.0, 0.0)
     _FogMin ("Fog Min (Horizon)", Float) = 100.0
     _FogHeight ("Fog Height", Float) = 20.0
+
+    [Header(Stars)] _Seed("Random Seed", Float) = 0.69
+    _Density("Density", Range(0.0, 1.0)) = 0.98
+    _MinRadius("Smallest Radius", Range(0.0, 0.5)) = 0.02
+    _MaxRadius("Largest Radius", Range(0.0, 0.5)) = 0.04
+    _PulseScale("Pulse Max Scale", Range(0.0, 1.0)) = 0.04
+    _PulsePeriodMin("Max Pulse Period", Float) = 1
+    _PulsePeriodMax("Min Pulse Period", Float) = 1
+    _StarChance("Chance of Star", Range(0.0, 1.0)) = 0.9
+
 }
 
 SubShader {
@@ -33,6 +44,7 @@ SubShader {
 
         // -- includes --
         #include "UnityCG.cginc"
+        #include "Assets/Shaders/Core/Math.cginc"
 
         // -- constants --
         /// i don't know what this is, it's for the "over-under 3d layout"
@@ -67,6 +79,17 @@ SubShader {
         /// the height of the fog gradient
         float _FogHeight;
 
+        float _Seed;
+        float _Density;
+        float _MinRadius;
+        float _MaxRadius;
+        float _StarChance;
+        float _PulseScale;
+        float _PulsePeriodMin;
+        float _PulsePeriodMax;
+
+
+
         // -- helpers --
         /// rotate a position around the y-axis
         /// TODO: why is this fn not inline
@@ -78,13 +101,10 @@ SubShader {
             return float3(mul(m, pos.xz), pos.y).xzy;
         }
 
-        inline float2 IntoSpherical(float3 pos) {
-        }
-
         /// convert cartesian coordinate into radial (spherical?) coord
         /// TODO: this math is similar to (but the arguments differ from):
         /// https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-        inline float2 IntoRadial(float3 pos) {
+        inline float2 IntoSpherical(float3 pos) {
             float3 normalized = normalize(pos);
             float lat = acos(normalized.y);
             float lon = atan2(normalized.z, normalized.x);
@@ -120,23 +140,49 @@ SubShader {
         /// the fragment shader
         fixed4 DrawFrag(FragIn i): SV_Target {
             // get the radial texture coordinate and do weird math i don't understand
-            float2 tc = IntoRadial(i.oPos);
+            float2 tc = IntoSpherical(i.oPos);
+
+            float2 seed = float2(_Seed, _Seed);
+
+            float3 star = float3(1.0f, 1.0f, 1.0f);
+            float2 mod = float2(1-_Density, 1-_Density);
+            float2 starTc = fmod(tc, mod)/mod;
+            float2 quadr = floor(tc / mod);
+
+            float1 radius = lerp(_MinRadius, _MaxRadius, Rand(quadr)) / mod.x;
+            float1 pulsePeriod = lerp(_PulsePeriodMin, _PulsePeriodMax, Rand(quadr)) / mod.x;
+
+            radius += radius * sin(2 * 3.1415 * (_Time.y / pulsePeriod + Rand(quadr + 1*seed))) * _PulseScale;
+
+            float2 sOffset = float2(
+                Rand(quadr + 2*seed),
+                Rand(quadr + 3*seed)
+            );
+            float center = float2(0.5, 0.5) + sOffset * max(0, 0.5 - radius);
+
+            star *= step(distance(starTc, center), radius);
+            // drop stars
+            star *= step(Rand(quadr + 1*seed), _StarChance);
+
+            // render the sky texture
             tc.x = fmod(tc.x, 1.0f);
             tc = (tc + kLayout.xy) * kLayout.zw;
             tc *= _Scale;
 
             // sample a color from the texture
-            half3 c = tex2D(_MainTex, tc);
-            c = lerp(_Foreground.rgb, _Background.rgb, c.r);
-            c *= lerp(_ExposureBackground, _ExposureForeground, c.r);
+            half3 sky = tex2D(_MainTex, tc);
+            sky = lerp(_Foreground.rgb, _Background.rgb, sky.r);
+            sky *= lerp(_ExposureBackground, _ExposureForeground, sky.r);
+
+
 
             // apply fog
             // float fog = max(1.0f - (i.wPosY - _FogMin) / _FogHeight, 0.0f);
             // fog = fog > 1.0f ? 0.0f : fog;
             // fog = fog * fog * fog;
-            // c = lerp(c, _Fog, fog);
+            // sky = lerp(sky, _Fog, fog);
 
-            return half4(c, 1.0f);
+            return half4(sky + star, 1.0f);
         }
 
         ENDCG
