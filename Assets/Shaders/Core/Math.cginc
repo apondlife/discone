@@ -10,6 +10,10 @@
 #define fixed1 fixed
 #endif
 
+#ifndef half1
+#define half1 half
+#endif
+
 // -- functions --
 /// lerp a span vector (min and length)
 float1 LerpSpan(float2 span, float t) {
