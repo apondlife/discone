@@ -41,13 +41,13 @@ class SkyChartOrbit: MonoBehaviour {
         coord.Azimuth = m_Initial.Azimuth + Mathf.Lerp(
             -180.0f,
             +180.0f,
-            (float)m_AzimuthElapsed / m_AzimuthPeriod
+            m_AzimuthElapsed / m_AzimuthPeriod
         );
 
         coord.Zenith = m_Initial.Zenith + Mathf.Lerp(
             -180.0f,
             +180.0f,
-            (float)m_ZenithElapsed / m_ZenithPeriod
+            m_ZenithElapsed / m_ZenithPeriod
         );
 
         m_Body.Coordinate = coord;

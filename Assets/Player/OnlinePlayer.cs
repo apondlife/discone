@@ -26,10 +26,13 @@ sealed class OnlinePlayer: NetworkBehaviour {
     [Tooltip("switch the character")]
     [SerializeField] GameObjectEvent m_SwitchCharacter;
 
-
     // -- props --
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
+
+    /// the player's synchronized character
+    [SyncVar]
+    GameObject m_Character;
 
     // -- lifecycle --
     void Awake() {
@@ -43,6 +46,12 @@ sealed class OnlinePlayer: NetworkBehaviour {
         m_PlayerCount.Value++;
     }
 
+    void Update() {
+        if (m_Character != null) {
+            transform.position = m_Character.transform.position;
+        }
+    }
+
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
 
@@ -51,7 +60,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
         // drive any character
         DriveInitialCharacter();
 
-        /// listen to switch events
+        // listen to switch events
         m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
     }
 
@@ -134,8 +143,9 @@ sealed class OnlinePlayer: NetworkBehaviour {
             return;
         }
 
-        // assign authority to this client
+        // give this client authority over the character
         dstCharacter.Server_AssignClientAuthority(connectionToClient);
+        m_Character = dstCharacter.gameObject;
 
         if (srcCharacter != null) {
             srcCharacter.Server_RemoveClientAuthority();
