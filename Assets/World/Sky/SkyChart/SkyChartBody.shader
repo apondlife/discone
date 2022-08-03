@@ -51,7 +51,7 @@ Shader "Custom/SkyChart/Body" {
 
             fixed4 DrawFrag(FragIn i): SV_Target {
                 fixed4 c = tex2D(_MainTex, i.uv) * _Color;
-                return fixed4(c, 1.0f);
+                return fixed4(c.rgb, 1.0f);
             }
             ENDCG
         }
