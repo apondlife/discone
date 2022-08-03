@@ -70,6 +70,11 @@ class SkyChartTarget: MonoBehaviour {
     }
 
     void OnDestroy() {
+        // destroy the attached body
+        if (m_Body != null) {
+            Destroy(m_Body);
+        }
+
         // unbind events
         m_Subscriptions.Dispose();
     }

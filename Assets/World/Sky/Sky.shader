@@ -9,10 +9,6 @@ Properties {
     _Background ("Background", Color) = (0.0, 0.0, 0.0, 1.0)
     [Gamma] _ExposureBackground ("Exposure Background", Range(0.0, 8.0)) = 1.0
 
-    [Header(Fog)] _Fog ("Fog", Color) = (0.0, 0.0, 0.0, 0.0)
-    _FogMin ("Fog Min (Horizon)", Float) = 100.0
-    _FogHeight ("Fog Height", Float) = 20.0
-
     [Header(Stars)] _Seed("Random Seed", Float) = 0.69
     _Density("Density", Range(0.0, 1.0)) = 0.98
     _MinRadius("Smallest Radius", Range(0.0, 0.5)) = 0.02
@@ -70,15 +66,6 @@ SubShader {
         half _ExposureBackground;
         half _ExposureForeground;
 
-        /// the fog color
-        half4 _Fog;
-
-        /// the world y-position to begin fog
-        float _FogMin;
-
-        /// the height of the fog gradient
-        float _FogHeight;
-
         float _Seed;
         float _Density;
         float _MinRadius;
@@ -87,8 +74,6 @@ SubShader {
         float _PulseScale;
         float _PulsePeriodMin;
         float _PulsePeriodMax;
-
-
 
         // -- helpers --
         /// rotate a position around the y-axis
@@ -170,19 +155,11 @@ SubShader {
             tc *= _Scale;
 
             // sample a color from the texture
-            half3 sky = tex2D(_MainTex, tc);
+            fixed3 sky = tex2D(_MainTex, tc);
             sky = lerp(_Foreground.rgb, _Background.rgb, sky.r);
             sky *= lerp(_ExposureBackground, _ExposureForeground, sky.r);
 
-
-
-            // apply fog
-            // float fog = max(1.0f - (i.wPosY - _FogMin) / _FogHeight, 0.0f);
-            // fog = fog > 1.0f ? 0.0f : fog;
-            // fog = fog * fog * fog;
-            // sky = lerp(sky, _Fog, fog);
-
-            return half4(sky + star, 1.0f);
+            return fixed4(sky + star, 1.0f);
         }
 
         ENDCG
