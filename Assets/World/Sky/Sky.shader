@@ -135,9 +135,9 @@ SubShader {
             float2 quadr = floor(tc / mod);
 
             float1 radius = lerp(_MinRadius, _MaxRadius, Rand(quadr)) / mod.x;
-            float1 pulsePeriod = lerp(_PulsePeriodMin, _PulsePeriodMax, Rand(quadr)) / mod.x;
+            float1 pulsePeriod = lerp(_PulsePeriodMin, _PulsePeriodMax, Rand(quadr));
 
-            radius += radius * sin(2 * 3.1415 * (_Time.y / pulsePeriod + Rand(quadr + 1*seed))) * _PulseScale;
+            radius += radius * sin(2 * 3.1415 * (_Time.y / pulsePeriod + Rand(quadr + 1*seed) * 10)) * _PulseScale;
 
             float2 sOffset = float2(
                 Rand(quadr + 2*seed),

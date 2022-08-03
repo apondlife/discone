@@ -72,7 +72,7 @@ class SkyChartTarget: MonoBehaviour {
     void OnDestroy() {
         // destroy the attached body
         if (m_Body != null) {
-            Destroy(m_Body);
+            Destroy(m_Body.gameObject);
         }
 
         // unbind events
