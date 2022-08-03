@@ -63,7 +63,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
         // destroy your own star
         var target = GetComponentInChildren<SkyChartTarget>();
         if (target != null) {
-            Destroy(target.gameObject);
+            Destroy(target);
         }
 
         // listen to switch events
