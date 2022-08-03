@@ -60,6 +60,12 @@ sealed class OnlinePlayer: NetworkBehaviour {
         // drive any character
         DriveInitialCharacter();
 
+        // destroy your own star
+        var target = GetComponentInChildren<SkyChartTarget>();
+        if (target != null) {
+            Destroy(target.gameObject);
+        }
+
         // listen to switch events
         m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
     }
