@@ -21,6 +21,14 @@ class SkyChartBody: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
+        // set initial state
+        Init();
+    }
+
+    void OnValidate() {
+        // re-run initializers
+        Init();
+
         // turn off shadows on all renderers
         var renderers = GetComponentsInChildren<Renderer>();
 
@@ -30,14 +38,14 @@ class SkyChartBody: MonoBehaviour {
         }
     }
 
-    void OnValidate() {
+    // -- commands --
+    /// set initial state
+    void Init() {
         SyncPosition();
     }
 
-    // -- commands --
     /// reposition the body given the player's world position
     void SyncPosition() {
-        // update position from body
         transform.localPosition = m_Coordinate.IntoCartesian();
     }
 }
