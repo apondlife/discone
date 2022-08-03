@@ -1,3 +1,4 @@
+using System;
 using ThirdPerson;
 using UnityEngine;
 using UnityAtoms;
@@ -7,12 +8,15 @@ using UnityAtoms.BaseAtoms;
 [RequireComponent(typeof(ThirdPerson.Player))]
 public sealed class DisconePlayer: MonoBehaviour {
     // -- atoms --
-    [Header("atoms")]
+    [Header("state")]
     [Tooltip("the current player")]
     [SerializeField] DisconePlayerVariable m_Current;
 
     [Tooltip("the current player")]
     [SerializeField] DisconeCharacterVariable m_Character;
+
+    [Tooltip("if this player is ready with a character")]
+    [SerializeField] BoolVariable m_IsReady;
 
     [Tooltip("the progress of the checkpoint save")]
     [SerializeField] FloatVariable m_SaveProgress;
@@ -52,12 +56,6 @@ public sealed class DisconePlayer: MonoBehaviour {
         m_Subscriptions
             .Add(m_Character.ChangedWithHistory, OnDriveCharacter)
             .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
-
-        // configure cameras
-        var cameras = GetComponentsInChildren<UnityEngine.Camera>();
-        foreach (var camera in cameras) {
-            camera.farClipPlane = m_FarClipPlane.Value;
-        }
     }
 
     void OnDestroy() {
@@ -66,9 +64,14 @@ public sealed class DisconePlayer: MonoBehaviour {
     }
 
     // -- queries --
-    // the checkpoint
+    /// the checkpoint
     public PlayerCheckpoint Checkpoint {
         get => m_Checkpoint;
+    }
+
+    /// an event when player is ready with a character
+    public BoolEvent IsReadyChanged {
+        get => m_IsReady.Changed;
     }
 
     // -- events --
@@ -79,6 +82,11 @@ public sealed class DisconePlayer: MonoBehaviour {
 
         var curr = characters.Item1;
         curr?.OnDrive();
+
+        // set ready on first drive
+        if (!m_IsReady.Value) {
+            m_IsReady.Value = true;
+        }
     }
 
     /// when the dialog becomes in/active
