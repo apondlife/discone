@@ -1,3 +1,4 @@
+using Mirror;
 using UnityEngine;
 
 /// the orbit for a sky chart body
@@ -32,30 +33,29 @@ class SkyChartOrbit: MonoBehaviour {
 
     void FixedUpdate() {
         // track progress through period
-        m_AzimuthElapsed = Mathf.Repeat(
-            m_AzimuthElapsed + Time.deltaTime,
-            m_AzimuthPeriod
-        );
-
-        m_ZenithElapsed = Mathf.Repeat(
-            m_ZenithElapsed + Time.deltaTime,
-            m_ZenithPeriod
-        );
+        m_AzimuthElapsed = FindElapsed(m_AzimuthPeriod);
+        m_ZenithElapsed = FindElapsed(m_ZenithPeriod);
 
         // update orbit
         var coord = m_Body.Coordinate;
         coord.Azimuth = m_Initial.Azimuth + Mathf.Lerp(
             -180.0f,
             +180.0f,
-            m_AzimuthElapsed / m_AzimuthPeriod
+            (float)m_AzimuthElapsed / m_AzimuthPeriod
         );
 
         coord.Zenith = m_Initial.Zenith + Mathf.Lerp(
             -180.0f,
             +180.0f,
-            m_ZenithElapsed / m_ZenithPeriod
+            (float)m_ZenithElapsed / m_ZenithPeriod
         );
 
         m_Body.Coordinate = coord;
+    }
+
+    // -- queries --
+    /// find the lossless elapsed time
+    float FindElapsed(float period) {
+        return (float)(NetworkTime.time % (double)period);
     }
 }
