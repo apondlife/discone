@@ -23,13 +23,21 @@ public class Sun: MonoBehaviour {
   /// the list of renderers
   Renderer[] m_Renderers;
 
+  /// a set of event subscriptions
+  Subscriptions m_Subscriptions = new Subscriptions();
+
   // -- lifecycle --
   private void Awake() {
     // set props
     m_Renderers = GetComponentsInChildren<Renderer>();
 
     // bind events
-    m_IsHost.Changed.Register(OnIsHostChanged);
+    m_Subscriptions.Add(m_IsHost.Changed, OnIsHostChanged);
+  }
+
+  void OnDestroy() {
+      // unbind events
+      m_Subscriptions.Dispose();
   }
 
   // -- events --
