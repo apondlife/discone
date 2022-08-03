@@ -20,21 +20,28 @@ public class Online: NetworkManager {
     [Tooltip("should the host restart on client disconnect")]
     [SerializeField] bool m_RestartHostOnDisconnect;
 
+    // -- state --
     [Header("state")]
     [Tooltip("the host address to connect to")]
     [SerializeField] StringReference m_HostAddress;
 
-    [Header("input events")]
+    [Tooltip("if the player is the host")]
+    [SerializeField] BoolVariable m_IsHost;
+
+    // -- inputs --
+    [Header("inputs")]
     [Tooltip("an event when the client starts")]
     [SerializeField] VoidEvent m_StartClientEvent;
 
     [Tooltip("an event when the client disconnects")]
     [SerializeField] VoidEvent m_DisconnectEvent;
 
-    [Header("output events")]
+    // -- outputs --
+    [Header("outputs")]
     [Tooltip("an event for logging errors")]
     [SerializeField] StringEvent m_ErrorEvent;
 
+    // -- deps --
     [Header("deps")]
     [Tooltip("a reference to the player character")]
     [FormerlySerializedAs("m_PlayerCharacter")]
@@ -89,15 +96,18 @@ public class Online: NetworkManager {
     /// start game as host
     void SwitchToHost() {
         m_State = State.Host;
+        m_IsHost.Value = true;
+
         StartHost();
     }
 
+    /// start game as client
     void SwitchToClient() {
         m_State = State.Connecting;
+        m_IsHost.Value = false;
+
         StartClient();
     }
-
-    // void TryStartclient()
 
     // -- l/mirror
     public override void OnClientError(Exception exception) {

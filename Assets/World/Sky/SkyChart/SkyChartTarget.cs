@@ -14,8 +14,14 @@ class SkyChartTarget: MonoBehaviour {
     [UnityEngine.Range(-90.0f, 90.0f)]
     [SerializeField] float m_CloseZenith;
 
+    [Tooltip("the speed of the target for it to lerp")]
+    [SerializeField] float m_AngularSpeed;
+
     [Tooltip("the prefab for the body")]
     [SerializeField] GameObject m_BodyPrefab;
+
+    [Tooltip("the custom material for the body, if any")]
+    [SerializeField] Material m_BodyMaterial;
 
     // -- refs --
     [Header("refs")]
@@ -37,6 +43,17 @@ class SkyChartTarget: MonoBehaviour {
             m_Bodies.GetComponent<Transform>()
         );
 
+        body.name = $"Sky_{m_BodyPrefab.name}-{name}";
+
+        // if we have a custom body material, set it
+        if (m_BodyMaterial != null) {
+            var renderers = body.GetComponentsInChildren<Renderer>();
+            foreach (var r in renderers) {
+                r.material = m_BodyMaterial;
+            }
+        }
+
+        // store it
         m_Body = body.GetComponent<SkyChartBody>();
     }
 
@@ -52,19 +69,34 @@ class SkyChartTarget: MonoBehaviour {
         var dir = Vector3.ProjectOnPlane(delta, Vector3.up).normalized;
 
         // calculate new coordinate
-        var coord = m_Body.Coordinate;
-        coord.Azimuth = Vector3.SignedAngle(
+        var target = m_Body.Coordinate;
+        target.Azimuth = Vector3.SignedAngle(
             dir,
             Vector3.left,
             Vector3.up
         );
 
-        coord.Zenith = Mathf.Lerp(
+        target.Zenith = Mathf.Lerp(
             m_CloseZenith,
             m_FarZenith,
             2.0f * Mathf.Atan(dist) / Mathf.PI
         );
-;
+
+        // lerp towards target
+        // TODO: moves not always in same speed
+        var coord = m_Body.Coordinate;
+        coord.Azimuth = Mathf.MoveTowards(
+            coord.Azimuth,
+            target.Azimuth,
+            m_AngularSpeed * Time.deltaTime
+        );
+
+        coord.Zenith = Mathf.MoveTowards(
+            coord.Zenith,
+            target.Zenith,
+            m_AngularSpeed * Time.deltaTime
+        );
+
         // update body
         m_Body.Coordinate = coord;
     }
