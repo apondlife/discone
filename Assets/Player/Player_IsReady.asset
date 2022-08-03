@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8de5c59a4569c445d9046d2299ad4e05, type: 3}
-  m_Name: Player_CurrentCharacter
+  m_Script: {fileID: 11500000, guid: 593b70f10d7bb41c78d42c7e8b6609da, type: 3}
+  m_Name: Player_IsReady
   m_EditorClassIdentifier: 
-  _developerDescription: The character the player (client) is currently controlling
+  _developerDescription: If the player has taken control of their first character
   _id: 
-  _value: {fileID: 0}
-  _changed: {fileID: 0}
-  _changedWithHistory: {fileID: 11400000, guid: 3decf7ea46b8f4396a586324307a0b94, type: 2}
+  _value: 0
+  _changed: {fileID: 11400000, guid: b80ce835f83466c49a206d934b7c7685, type: 2}
+  _changedWithHistory: {fileID: 0}
   _triggerChangedOnOnEnable: 0
   _triggerChangedWithHistoryOnOnEnable: 0
-  _oldValue: {fileID: 0}
-  _initialValue: {fileID: 0}
+  _oldValue: 0
+  _initialValue: 0
   _preChangeTransformers: []

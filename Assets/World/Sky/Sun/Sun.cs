@@ -25,14 +25,18 @@ public class Sun: MonoBehaviour {
 
   // -- lifecycle --
   private void Awake() {
+    // set props
     m_Renderers = GetComponentsInChildren<Renderer>();
-    m_IsHost.Changed.Register(isHost => {
-      SetColor(isHost ? m_HostColor : m_ClientColor);
-    });
+
+    // bind events
+    m_IsHost.Changed.Register(OnIsHostChanged);
   }
 
-  // -- commands --
-  private void SetColor(Color c) {
+  // -- events --
+  /// when the player switches between host/client
+  void OnIsHostChanged(bool isHost) {
+    // change to the correct color
+    var c = isHost ? m_HostColor : m_ClientColor;
     foreach(var r in m_Renderers) {
       r.sharedMaterial.color = c;
     }

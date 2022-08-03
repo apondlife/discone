@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6778905939929046923}
   - component: {fileID: 8853880560132148512}
   - component: {fileID: 5751620394363521566}
+  - component: {fileID: 73168218410530611}
   m_Layer: 0
   m_Name: OnlinePlayer
   m_TagString: Untagged
@@ -68,3 +69,28 @@ MonoBehaviour:
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
   m_PlayerCount: {fileID: 11400000, guid: 5707d8e6e5a97f740ba3d27d2b61bd8c, type: 2}
   m_SwitchCharacter: {fileID: 11400000, guid: 1ffcf622465e24d1f82887e4c9b64359, type: 2}
+--- !u!114 &73168218410530611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8685233576683617771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f83710d0f259c04e9c3e7237400aaca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FarZenith: 70
+  m_CloseZenith: 15
+  m_Far:
+    _usage: 1
+    _value: 1000
+    _constant: {fileID: 11400000, guid: 209fceba14b713f4bb750272d33569e6, type: 2}
+    _variable: {fileID: 0}
+    _variableInstancer: {fileID: 0}
+  m_AngularSpeed: 1
+  m_BodyPrefab: {fileID: 7821177187954094533, guid: af4b0304df5f943b087f52138acb62b5, type: 3}
+  m_BodyMaterial: {fileID: 2100000, guid: 95d08cdfd00504dada31a4995e1bba73, type: 2}
+  m_Player: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
+  m_Bodies: {fileID: 11400000, guid: 3ed5e9dbf156a45ac96fb027f74f811c, type: 2}

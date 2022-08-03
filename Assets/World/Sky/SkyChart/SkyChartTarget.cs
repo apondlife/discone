@@ -6,13 +6,16 @@ using UnityAtoms.BaseAtoms;
 class SkyChartTarget: MonoBehaviour {
     // -- config --
     [Header("config")]
-    [Tooltip("the zenith of the object when we are far from it")]
+    [Tooltip("the zenith of the object when we are Far from it")]
     [UnityEngine.Range(-90.0f, 90.0f)]
     [SerializeField] float m_FarZenith;
 
-    [Tooltip("the zenith of the object when we are close to it")]
+    [Tooltip("the zenith of the object when we are at the same position as it")]
     [UnityEngine.Range(-90.0f, 90.0f)]
     [SerializeField] float m_CloseZenith;
+
+    [Tooltip("the max distance where the star zenith stops changing")]
+    [SerializeField] FloatReference m_Far;
 
     [Tooltip("the speed of the target for it to lerp")]
     [SerializeField] float m_AngularSpeed;
@@ -25,7 +28,7 @@ class SkyChartTarget: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the player")]
+    [Tooltip("the current player")]
     [SerializeField] DisconePlayerVariable m_Player;
 
     [Tooltip("the parent for sky chart bodies")]
@@ -34,6 +37,9 @@ class SkyChartTarget: MonoBehaviour {
     // -- props --
     /// the celestial body
     SkyChartBody m_Body;
+
+    /// a set of event subscriptions
+    Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifeycle --
     void Awake() {
@@ -57,47 +63,70 @@ class SkyChartTarget: MonoBehaviour {
         m_Body = body.GetComponent<SkyChartBody>();
     }
 
+    void Start() {
+        // bind events
+        m_Subscriptions
+            .Add(m_Player.Value.IsReadyChanged, OnPlayerIsReady);
+    }
+
+    void OnDestroy() {
+        // unbind events
+        m_Subscriptions.Dispose();
+    }
+
     void FixedUpdate() {
-        var pt = transform.position;
-        var pc = m_Player.Value.transform.position;
+        var desire = FindDesiredPosition();
 
-        // get delta to the target
-        var delta = pt - pc;
-        var dist = delta.magnitude;
-
-        // update azimuth based on center position
-        var dir = Vector3.ProjectOnPlane(delta, Vector3.up).normalized;
-
-        // calculate new coordinate
-        var target = m_Body.Coordinate;
-        target.Azimuth = Vector3.SignedAngle(
-            dir,
-            Vector3.left,
-            Vector3.up
-        );
-
-        target.Zenith = Mathf.Lerp(
-            m_CloseZenith,
-            m_FarZenith,
-            2.0f * Mathf.Atan(dist) / Mathf.PI
-        );
-
-        // lerp towards target
+        // move the body towards its target position
         // TODO: moves not always in same speed
         var coord = m_Body.Coordinate;
-        coord.Azimuth = Mathf.MoveTowards(
+        coord.Azimuth = Mathf.MoveTowardsAngle(
             coord.Azimuth,
-            target.Azimuth,
+            desire.Azimuth,
             m_AngularSpeed * Time.deltaTime
         );
 
-        coord.Zenith = Mathf.MoveTowards(
+        coord.Zenith = Mathf.MoveTowardsAngle(
             coord.Zenith,
-            target.Zenith,
+            desire.Zenith,
             m_AngularSpeed * Time.deltaTime
         );
 
         // update body
         m_Body.Coordinate = coord;
+    }
+
+    // -- events --
+    /// when the player becomes ready with a character
+    void OnPlayerIsReady(bool _) {
+        m_Body.Coordinate = FindDesiredPosition();
+    }
+
+    // -- queries --
+    /// get the body's current target position
+    Spherical FindDesiredPosition() {
+        var pt = transform.position;
+        var pc = m_Player.Value.transform.position;
+
+        // get delta to the target
+        var delta = Vector3.ProjectOnPlane(pt - pc, Vector3.up);
+
+        // calculate new coordinate
+        var target = m_Body.Coordinate;
+        target.Azimuth = Vector3.SignedAngle(
+            delta.normalized,
+            Vector3.left,
+            Vector3.up
+        );
+
+        target.Zenith = Mathx.Remap(
+            0.0f,
+            m_Far.Value,
+            m_CloseZenith,
+            m_FarZenith,
+            delta.magnitude
+        );
+
+        return target;
     }
 }
