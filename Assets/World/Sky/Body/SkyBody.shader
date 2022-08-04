@@ -1,4 +1,4 @@
-Shader "Custom/SkyChart/Body" {
+Shader "Custom/Sky/Body" {
     Properties {
         _MainTex ("Texture", 2D) = "white" {}
         [HDR] _Color ("Color", Color) = (1.0, 1.0, 1.0, 1.0)

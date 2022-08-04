@@ -31,8 +31,6 @@ Transform:
   - {fileID: 1211699233898172182}
   - {fileID: 2493838014503354771}
   - {fileID: 2432629883032242310}
-  - {fileID: 3271895772915209822}
-  - {fileID: 2020649436877692017}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -48,7 +46,7 @@ GameObject:
   - component: {fileID: 4373979943295591104}
   - component: {fileID: 7713099562054586486}
   m_Layer: 12
-  m_Name: Sky_Constellation1
+  m_Name: Sky_Consetllation.0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,11 +61,11 @@ Transform:
   m_GameObject: {fileID: 454747099738311233}
   m_LocalRotation: {x: -0, y: 0.52847666, z: -0, w: 0.8489479}
   m_LocalPosition: {x: 1.1500771, y: 6.3287783, z: 16.446869}
-  m_LocalScale: {x: 0.75251, y: 0.75251, z: 0.75251}
+  m_LocalScale: {x: 0.75250995, y: 0.75251, z: 0.75250995}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5509592097533476979}
-  m_RootOrder: 3
+  m_Father: {fileID: 1211699233898172182}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 63.805, z: 0}
 --- !u!120 &4373979943295591104
 LineRenderer:
@@ -89,7 +87,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -219,6 +217,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1467772517285794813}
+  - {fileID: 3271895772915209822}
+  - {fileID: 2020649436877692017}
   m_Father: {fileID: 5509592097533476979}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -419,7 +419,7 @@ GameObject:
   - component: {fileID: 2493838014503354771}
   - component: {fileID: 7093507511837815515}
   m_Layer: 0
-  m_Name: SkyboxRegionChange
+  m_Name: SkyRegionColor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -466,7 +466,7 @@ GameObject:
   - component: {fileID: 7440889232370642134}
   - component: {fileID: 2194390757016325871}
   m_Layer: 12
-  m_Name: Sky_Constellation2
+  m_Name: Sky_Consetllation.1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -479,13 +479,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8862013696102873625}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -7.5473948, y: 4.2788277, z: -3.8455896}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5509592097533476979}
-  m_RootOrder: 4
+  m_Father: {fileID: 1211699233898172182}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &7440889232370642134
 LineRenderer:

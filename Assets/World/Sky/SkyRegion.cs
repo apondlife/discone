@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityAtoms.Discone;
 
-/// the current skybox region
-public class SkyboxRegion: MonoBehaviour {
+/// changes the skybox color based on region
+public class SkyRegionColor: MonoBehaviour {
     // -- tunables --
     [Header("tunables")]
     [Tooltip("the transition duration between region colors")]
@@ -28,7 +28,8 @@ public class SkyboxRegion: MonoBehaviour {
 
     void Start() {
         // bind events
-        m_Subscriptions.Add(m_RegionEntered, OnRegionEntered);
+        m_Subscriptions
+            .Add(m_RegionEntered, OnRegionEntered);
     }
 
     void OnDestroy() {
@@ -37,6 +38,7 @@ public class SkyboxRegion: MonoBehaviour {
     }
 
     // -- events --
+    /// when the region changes
     void OnRegionEntered(Region region) {
         var exposureBg = m_Material.GetFloat("_ExposureBackground");
         var exposureFg = m_Material.GetFloat("_ExposureForeground");
@@ -46,12 +48,23 @@ public class SkyboxRegion: MonoBehaviour {
         StartCoroutine(CoroutineHelpers.InterpolateByTime(m_ChangeDuration, (k) => {
             m_Material.SetFloat(
                 "_ExposureBackground",
-                Mathf.Lerp(exposureBg, region.SkyboxExposureBackground, k));
+                Mathf.Lerp(exposureBg, region.SkyboxExposureBackground, k)
+            );
+
             m_Material.SetFloat(
                 "_ExposureForeground",
-                Mathf.Lerp(exposureFg, region.SkyboxExposureForeground, k));
-            m_Material.SetColor("_Background", Color.Lerp(background, region.SkyboxColorBackground, k));
-            m_Material.SetColor("_Foreground", Color.Lerp(foreground, region.SkyboxColorForeground, k));
+                Mathf.Lerp(exposureFg, region.SkyboxExposureForeground, k)
+            );
+
+            m_Material.SetColor(
+                "_Background",
+                Color.Lerp(background, region.SkyboxColorBackground, k)
+            );
+
+            m_Material.SetColor(
+                "_Foreground",
+                Color.Lerp(foreground, region.SkyboxColorForeground, k)
+            );
         }));
     }
 }

@@ -2,8 +2,8 @@ using Mirror;
 using UnityEngine;
 
 /// the orbit for a sky chart body
-[RequireComponent(typeof(SkyChartBody))]
-class SkyChartOrbit: MonoBehaviour {
+[RequireComponent(typeof(SkyBody))]
+class SkyBodyOrbit: MonoBehaviour {
     // -- fields --
     [Header("fields")]
     [Tooltip("the orbital period of the azimuth in seconds")]
@@ -14,7 +14,7 @@ class SkyChartOrbit: MonoBehaviour {
 
     // -- props --
     /// the body
-    SkyChartBody m_Body;
+    SkyBody m_Body;
 
     /// the initial position
     Spherical m_Initial;
@@ -27,7 +27,7 @@ class SkyChartOrbit: MonoBehaviour {
 
     // -- lifeycle --
     void Awake() {
-        m_Body = GetComponent<SkyChartBody>();
+        m_Body = GetComponent<SkyBody>();
         m_Initial = m_Body.Coordinate;
     }
 

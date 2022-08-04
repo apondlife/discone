@@ -1,9 +1,8 @@
-using System;
 using UnityEngine;
 
 /// the sky-based navigation system
 [ExecuteAlways]
-class SkyChartBody: MonoBehaviour {
+class SkyBody: MonoBehaviour {
     // -- fields --
     [Header("fields")]
     [Tooltip("the spherical coordinate")]

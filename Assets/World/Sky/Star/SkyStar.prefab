@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3807745228882858680
+--- !u!1 &2169244257140976080
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4717339052814314761}
-  - component: {fileID: 751659286747916356}
-  - component: {fileID: 8205632918090044409}
-  - component: {fileID: 1253170219338843212}
+  - component: {fileID: 2804347851607844818}
+  - component: {fileID: 1893590161910200201}
+  - component: {fileID: 5232432638634783413}
+  - component: {fileID: 111325760894162231}
   m_Layer: 12
-  m_Name: Sun
+  m_Name: Star
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4717339052814314761
+--- !u!4 &2804347851607844818
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3807745228882858680}
+  m_GameObject: {fileID: 2169244257140976080}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4853974119601684710}
+  m_Father: {fileID: 2174779234548163217}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &751659286747916356
+--- !u!33 &1893590161910200201
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3807745228882858680}
+  m_GameObject: {fileID: 2169244257140976080}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &8205632918090044409
+--- !u!23 &5232432638634783413
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3807745228882858680}
+  m_GameObject: {fileID: 2169244257140976080}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 711a5d9e8e46944a9b563c2f95fd9714, type: 2}
+  - {fileID: 2100000, guid: 8e60e7551abc049ddaf5fc672d625501, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84,20 +84,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &1253170219338843212
+--- !u!135 &111325760894162231
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3807745228882858680}
+  m_GameObject: {fileID: 2169244257140976080}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1001 &3069019435620665850
+--- !u!1001 &8639524099231542157
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -106,11 +106,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1976981633336285768, guid: b42c1f12c1b3846989f6c3eb6fb55528, type: 3}
       propertyPath: m_Name
-      value: Sky_Sun
+      value: SkyStar
       objectReference: {fileID: 0}
     - target: {fileID: 4381200545032117862, guid: b42c1f12c1b3846989f6c3eb6fb55528, type: 3}
       propertyPath: m_Coordinate.Radius
-      value: 2.2
+      value: 81
       objectReference: {fileID: 0}
     - target: {fileID: 7623361977904843036, guid: b42c1f12c1b3846989f6c3eb6fb55528, type: 3}
       propertyPath: m_RootOrder
@@ -118,11 +118,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7623361977904843036, guid: b42c1f12c1b3846989f6c3eb6fb55528, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.2
+      value: -81
       objectReference: {fileID: 0}
     - target: {fileID: 7623361977904843036, guid: b42c1f12c1b3846989f6c3eb6fb55528, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.00000009616505
+      value: -0.0000035406224
       objectReference: {fileID: 0}
     - target: {fileID: 7623361977904843036, guid: b42c1f12c1b3846989f6c3eb6fb55528, type: 3}
       propertyPath: m_LocalPosition.z
@@ -158,42 +158,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b42c1f12c1b3846989f6c3eb6fb55528, type: 3}
---- !u!1 &3600907971439858610 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1976981633336285768, guid: b42c1f12c1b3846989f6c3eb6fb55528, type: 3}
-  m_PrefabInstance: {fileID: 3069019435620665850}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &3780816513031448172
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3600907971439858610}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0de8a79979daf42a0a769e9d40c67b9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AzimuthPeriod: 3600
-  m_ZenithPeriod: 600
---- !u!114 &8899869393480421399
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3600907971439858610}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1092011348c644dba9038aed204745c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HostColor: {r: 1, g: 0.07421358, b: 0.043735042, a: 1}
-  m_ClientColor: {r: 0.9528302, g: 0.91237986, b: 0.91237986, a: 1}
-  m_IsHost: {fileID: 11400000, guid: 562ea9c4c723d4ba2a26fc6eb3e9c7c9, type: 2}
---- !u!4 &4853974119601684710 stripped
+--- !u!4 &2174779234548163217 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7623361977904843036, guid: b42c1f12c1b3846989f6c3eb6fb55528, type: 3}
-  m_PrefabInstance: {fileID: 3069019435620665850}
+  m_PrefabInstance: {fileID: 8639524099231542157}
   m_PrefabAsset: {fileID: 0}

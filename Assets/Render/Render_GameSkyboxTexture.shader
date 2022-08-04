@@ -1,5 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 Shader "Custom/Render/GameSkyboxTexture" {
 
 Properties {
@@ -57,7 +55,6 @@ SubShader {
         fixed4 DrawFrag(FragIn i): SV_Target {
             return tex2Dproj(_MainTex, UNITY_PROJ_COORD(i.uv));
         }
-
         ENDCG
     }
 }
