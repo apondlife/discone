@@ -3,7 +3,7 @@ using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 
 /// the sky-based navigation system
-class SkyChartTarget: MonoBehaviour {
+class SkyTarget: MonoBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("the zenith of the object when we are Far from it")]
@@ -36,7 +36,7 @@ class SkyChartTarget: MonoBehaviour {
 
     // -- props --
     /// the celestial body
-    SkyChartBody m_Body;
+    SkyBody m_Body;
 
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
@@ -60,7 +60,7 @@ class SkyChartTarget: MonoBehaviour {
         }
 
         // store it
-        m_Body = body.GetComponent<SkyChartBody>();
+        m_Body = body.GetComponent<SkyBody>();
     }
 
     void Start() {

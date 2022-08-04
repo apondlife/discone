@@ -15,7 +15,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &5395824357718612107
 Transform:
@@ -9943,7 +9943,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8363059297454598032, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_ClearFlags
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8363059297454598032, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: field of view
@@ -10096,6 +10096,15 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2132299862377982991, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
   m_PrefabInstance: {fileID: 3220446418401166604}
   m_PrefabAsset: {fileID: 0}
+--- !u!45 &8191108097399792315
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3541555098412673283}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 2100000, guid: edc90128c90db1940a62a23a6f4a39dd, type: 2}
 --- !u!114 &1986602497521474683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10160,6 +10169,20 @@ MonoBehaviour:
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   - assemblyQualifiedName: Fuzz, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
+--- !u!114 &5039900847155102199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3541555098412673283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 290f4e363fc1d6d4e89a96bb495b8255, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Variable: {fileID: 11400000, guid: 7e55515a48c0bda4d9cb1a2c606e3a0e, type: 2}
+  m_IsTransient: 0
 --- !u!114 &5995224202122854074
 MonoBehaviour:
   m_ObjectHideFlags: 0

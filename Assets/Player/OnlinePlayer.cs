@@ -61,7 +61,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
         DriveInitialCharacter();
 
         // destroy your own star
-        var target = GetComponentInChildren<SkyChartTarget>();
+        var target = GetComponentInChildren<SkyTarget>();
         if (target != null) {
             Destroy(target);
         }
