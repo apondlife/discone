@@ -51,7 +51,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4424841150647737964
 Transform:
@@ -392,6 +392,10 @@ PrefabInstance:
     - target: {fileID: 6346913528997419844, guid: 3386ee11b97785846b1b5f67fbf5fcdf, type: 3}
       propertyPath: m_Name
       value: StairsToSlide
+      objectReference: {fileID: 0}
+    - target: {fileID: 6346913528997419844, guid: 3386ee11b97785846b1b5f67fbf5fcdf, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 6346913528997419846, guid: 3386ee11b97785846b1b5f67fbf5fcdf, type: 3}
       propertyPath: m_Mesh
