@@ -30,12 +30,44 @@ Transform:
   m_Children:
   - {fileID: 476778851240449720}
   - {fileID: 7527748669150650656}
-  - {fileID: 5669806990502542107}
-  - {fileID: 2535467435859351278}
-  - {fileID: 5021473710922028080}
+  - {fileID: 3012138812000586442}
   - {fileID: 1988505877466518448}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3444565572287697120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3012138812000586442}
+  m_Layer: 0
+  m_Name: Tower
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!4 &3012138812000586442
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3444565572287697120}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5669806990502542107}
+  - {fileID: 2535467435859351278}
+  - {fileID: 5021473710922028080}
+  m_Father: {fileID: 3483855118685029630}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7847870909074998699
 GameObject:
@@ -93,11 +125,11 @@ GameObject:
   - component: {fileID: 7201274003422414470}
   - component: {fileID: 3929014042084731423}
   m_Layer: 0
-  m_Name: AbyssLook
+  m_Name: Overlook
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1988505877466518448
 Transform:
@@ -112,7 +144,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3483855118685029630}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4809454296560491255
 MonoBehaviour:
@@ -4045,11 +4077,11 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 3483855118685029630}
+    m_TransformParent: {fileID: 3012138812000586442}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
       propertyPath: m_LocalScale.y
@@ -4098,6 +4130,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
       propertyPath: m_Name
       value: tower.fbx_OtherTower
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
@@ -4243,11 +4279,11 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 3483855118685029630}
+    m_TransformParent: {fileID: 3012138812000586442}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d431b8e7a502b81458311214ca9b0b4c, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d431b8e7a502b81458311214ca9b0b4c, type: 3}
       propertyPath: m_LocalScale.x
@@ -4305,6 +4341,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: tower.fbx_Tower
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d431b8e7a502b81458311214ca9b0b4c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d431b8e7a502b81458311214ca9b0b4c, type: 3}
 --- !u!4 &5021473710922028080 stripped
@@ -4317,11 +4357,11 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 3483855118685029630}
+    m_TransformParent: {fileID: 3012138812000586442}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
       propertyPath: m_LocalScale.y
@@ -4370,6 +4410,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
       propertyPath: m_Name
       value: tower.fbx_OtherTower.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 189b195d7c998eb4bb46dcafbc736648, type: 3}
