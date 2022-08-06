@@ -39,7 +39,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     Character m_Character;
 
     /// the dialogue
-    NPCDialogue m_Dialogue;
+    CharacterDialogue m_Dialogue;
 
     /// the checkpoint spawner
     CharacterCheckpoint m_Checkpoint;
@@ -49,7 +49,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // set deps
         m_Character = GetComponent<Character>();
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
-        m_Dialogue = GetComponentInChildren<NPCDialogue>();
+        m_Dialogue = GetComponentInChildren<CharacterDialogue>();
 
         // default to not simulating
         OnIsPerceivedChanged();

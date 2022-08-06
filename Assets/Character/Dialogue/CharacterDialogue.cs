@@ -3,19 +3,19 @@ using UnityEngine.InputSystem;
 using UnityAtoms.BaseAtoms;
 
 [RequireComponent(typeof(Collider))]
-public class NPCDialogue: MonoBehaviour {
+public class CharacterDialogue: MonoBehaviour {
     // -- constants --
     private const string _dialogueTargetTag = "PlayerDialogueTarget";
 
     // -- config --
     [Header("config")]
-    [Tooltip("IMPORTANT: the title of the yarn node for this npc's dialogue")]
+    [Tooltip("IMPORTANT: the title of the yarn node for this characters's dialogue")]
     [UnityEngine.Serialization.FormerlySerializedAs("dialogueMessage")]
     [SerializeField] private string m_NodeTitle;
 
     [Tooltip("the character's talk indicator")]
     [UnityEngine.Serialization.FormerlySerializedAs("talkable")]
-    [SerializeField] private TalkableIndicator m_TalkIndicator;
+    [SerializeField] private CharacterDialogueIndicator m_TalkIndicator;
 
     // -- refs --
     [Header("refs")]
@@ -121,7 +121,6 @@ public class NPCDialogue: MonoBehaviour {
             m_IsInRange = true;
         }
     }
-
 
     void OnTriggerExit(Collider other) {
         if (!m_IsListening) {

@@ -1,7 +1,7 @@
 using Mirror;
 using UnityEngine;
 
-/// the orbit for a sky chart body
+/// an orbit for a celestial body
 [RequireComponent(typeof(SkyBody))]
 class SkyBodyOrbit: MonoBehaviour {
     // -- fields --

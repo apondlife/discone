@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// the sky-based navigation system
+/// a celestial body positioned spherically in the sky
 [ExecuteAlways]
 class SkyBody: MonoBehaviour {
     // -- fields --
@@ -30,7 +30,6 @@ class SkyBody: MonoBehaviour {
 
         // turn off shadows on all renderers
         var renderers = GetComponentsInChildren<Renderer>();
-
         foreach (var r in renderers) {
             r.receiveShadows = false;
             r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
