@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityAtoms;
+using UnityAtoms.BaseAtoms;
 
 /// an infinite field
 [ExecuteAlways]
@@ -13,12 +14,16 @@ public sealed class Field: MonoBehaviour {
     /// the duration between purges
     private const float k_PurgeChunksInterval = 2.0f;
 
-    // -- fields --
+    // -- state --
+    [Header("state")]
+    [Tooltip("the size of a world chunk")]
+    [SerializeField] FloatVariable m_ChunkSize;
+
+    // -- config --
     [Header("config")]
     [Tooltip("the player to follow")]
     [SerializeField] DisconePlayerVariable m_Player;
 
-    [Header("references")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_Terrain")]
     [Tooltip("the prefab for creating chunks")]
     [SerializeField] FieldChunk m_Chunk;
@@ -54,22 +59,21 @@ public sealed class Field: MonoBehaviour {
     /// a pool of free chunk instances
     Queue<FieldChunk> m_ChunkPool = new Queue<FieldChunk>();
 
-    // -- p/cache
-    /// the size of a chunk
-    float m_ChunkSize;
-
     // -- lifecycle --
     void Awake() {
+        // capture chunk size
+        m_ChunkSize.Value = m_Chunk.Size.x;
+
         // dont persist changes to the editor
         // m_FieldHeight = m_FieldHeight.Unsaved();
     }
 
     void Start() {
+        #if UNITY_EDITOR
         // capture chunk size
         Debug.Assert(m_Chunk.Size.x == m_Chunk.Size.z, "field's terrain chunk was not square");
-        m_ChunkSize = m_Chunk.Size.x;
+        m_ChunkSize.Value = m_Chunk.Size.x;
 
-        #if UNITY_EDITOR
         // destroy any editor terrain
         ClearEditorChunks();
 
@@ -83,15 +87,17 @@ public sealed class Field: MonoBehaviour {
         StartCoroutine(Coroutines.Interval(k_PurgeChunksInterval, PurgeChunks));
     }
 
+    #if UNITY_EDITOR
     void Update() {
-        #if UNITY_EDITOR
         // if editor, create editor chunks
         if (!Application.IsPlaying(gameObject)) {
             CreateEditorChunks();
             return;
         }
-        #endif
+    }
+    #endif
 
+    void FixedUpdate() {
         // if the target is active
         if (!m_Player.Value) {
             return;
@@ -288,7 +294,7 @@ public sealed class Field: MonoBehaviour {
     // -- queries --
     /// finds the chunk coordinate at the position
     Vector2Int IntoCoordinate(Vector3 pos) {
-        var cs = m_ChunkSize;
+        var cs = m_ChunkSize.Value;
         var ch = cs * 0.5f;
 
         // get x and y coord for this position
@@ -300,7 +306,7 @@ public sealed class Field: MonoBehaviour {
 
     /// finds the position of this coordinate
     Vector3 IntoPosition(Vector2Int coord) {
-        var cs = m_ChunkSize;
+        var cs = m_ChunkSize.Value;
         var ch = cs * 0.5f;
 
         // get x and z position for this coordinate

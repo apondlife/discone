@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1757268876551938599}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1757268876249147286
 MonoBehaviour:
@@ -86,7 +86,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1757268876551938599}
   m_Layer: 0
-  m_Name: Global
+  m_Name: Game
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -105,11 +105,71 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2674195566811002176}
-  - {fileID: 1757268876249147287}
   - {fileID: 5947641462065686014}
+  - {fileID: 1757268876249147287}
+  - {fileID: 6953808792171881285}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6104642340150211912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6953808792171881285}
+  - component: {fileID: 8017956411561824438}
+  m_Layer: 0
+  m_Name: Collisions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!4 &6953808792171881285
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6104642340150211912}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1757268876551938599}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8017956411561824438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6104642340150211912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ecf894bc0866420a9d1bf58d7746f88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CharacterTag: Character
+  m_PlayerConnected: {fileID: 11400000, guid: 241e9fa7bdb084b3f80950fd6fa40bfa, type: 2}
+  m_PlayerDisconnected: {fileID: 11400000, guid: fa04c622b172747cf8a63e0e443e93ff, type: 2}
+  m_IsHost:
+    _usage: 2
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 11400000, guid: 562ea9c4c723d4ba2a26fc6eb3e9c7c9, type: 2}
+    _variableInstancer: {fileID: 0}
+  m_ChunkSize:
+    _usage: 2
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 11400000, guid: f7610f4785cf8493ca76dfc06c4cba63, type: 2}
+    _variableInstancer: {fileID: 0}
 --- !u!1 &7544251945499638037
 GameObject:
   m_ObjectHideFlags: 0
@@ -140,7 +200,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1757268876551938599}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2956812828455233343
 MonoBehaviour:
@@ -225,12 +285,24 @@ MonoBehaviour:
     m_ActionName: Player/Restart[/Keyboard/r,/XboxOneGampadMacOSWireless/start,/XboxOneGampadMacOSWireless1/start]
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: f5b46e8d-f7b3-47d8-8ca2-e0627182e565
-    m_ActionName: Player/Camera[/Keyboard/c]
-  - m_PersistentCalls:
-      m_Calls: []
     m_ActionId: 92bd5ce6-633f-4731-8f6d-69a8587f37cd
     m_ActionName: Player/Talk[/Keyboard/space]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 80c66058-c79f-4d40-b472-f18d706f0d04
+    m_ActionName: Player/Cycle[/Keyboard/tab]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: f278d584-2daf-4e29-8a22-84608a1e1e96
+    m_ActionName: Player/ToggleMenu[/Keyboard/enter]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: dc83049e-8a38-4c1a-a8e5-0742734904c1
+    m_ActionName: Player/SaveCheckpoint[/Keyboard/5]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 391ae238-b7ec-4c46-b125-b2734b10d182
+    m_ActionName: Player/LoadCheckpoint[/Keyboard/6]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
