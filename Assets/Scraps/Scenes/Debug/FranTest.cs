@@ -28,7 +28,7 @@ public class FranTest : MonoBehaviour
         //m_RegionEntered.Raise(m_Region.Value);
         StartCoroutine(RunDialogueNodeWhenItsLoaded());
 
-        
+
     }
 
     void RaiseRegionEvent() {
@@ -38,7 +38,7 @@ public class FranTest : MonoBehaviour
 
     IEnumerator RunDialogueNodeWhenItsLoaded() {
         while (true) {
-            if (yarnDialogueRunner.NodeExists(testNPC.GetComponent<NPCDialogue>().NodeTitle)) {
+            if (yarnDialogueRunner.NodeExists(testNPC.GetComponent<CharacterDialogue>().NodeTitle)) {
                 m_StartDialogue.Raise(testNPC);
                 break;
             }
@@ -49,6 +49,6 @@ public class FranTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

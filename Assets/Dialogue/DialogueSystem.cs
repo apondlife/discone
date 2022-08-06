@@ -12,7 +12,7 @@ public class DialogueSystem: MonoBehaviour {
     [SerializeField] BoolVariable m_IsActive;
 
     [Tooltip("the dialogue for the character we're talking to")]
-    [SerializeField] NPCDialogue m_ActiveDialogue;
+    [SerializeField] CharacterDialogue m_ActiveDialogue;
 
     // -- events --
     [Header("events")]
@@ -60,9 +60,9 @@ public class DialogueSystem: MonoBehaviour {
 
     // -- commands --
     /// start dialogue with a particular character
-    void StartDialogue(NPCDialogue dialogue) {
+    void StartDialogue(CharacterDialogue dialogue) {
         if (dialogue == null) {
-            Debug.LogError($"[dialogue] tried to start dialogue w/ a character w/ no NPCDialogue");
+            Debug.LogError($"[dialogue] tried to start dialogue w/ a character w/ no CharacterDialogue");
             return;
         }
 
@@ -94,7 +94,7 @@ public class DialogueSystem: MonoBehaviour {
     /// complete dialgoue with the current character
     void CompleteDialogue() {
         if (m_ActiveDialogue == null) {
-            Debug.LogError($"[dialogue] tried to complete dialogue w/ no active NPCDialogue");
+            Debug.LogError($"[dialogue] tried to complete dialogue w/ no active CharacterDialogue");
             return;
         }
 
@@ -125,13 +125,13 @@ public class DialogueSystem: MonoBehaviour {
     // -- events --
     /// when a dialogue node is started
     void OnStartDialogue(GameObject obj) {
-        var dialogue = obj.GetComponent<NPCDialogue>();
+        var dialogue = obj.GetComponent<CharacterDialogue>();
         StartDialogue(dialogue);
     }
 
     /// when the talk button is pressed
     void OnTalkPressed(InputAction.CallbackContext _) {
-        // if there's an active dialgoue, continue. see NPCDialogue#StartTalking to see
+        // if there's an active dialgoue, continue. see CharacterDialogue#StartTalking to see
         // how dialogue starts
         if (m_ActiveDialogue != null) {
             RunNextLine();

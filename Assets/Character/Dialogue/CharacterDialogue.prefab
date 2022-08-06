@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5426690310298381734}
   - component: {fileID: 5426690310298381735}
   m_Layer: 6
-  m_Name: NPCTalkBox
+  m_Name: CharacterDialogue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -60,7 +60,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_NodeTitle: Ivan
-  m_Textbox: {fileID: 7899904178839436879, guid: aaa61c1c26a5d45958949fe7d789240b, type: 3}
   m_TalkIndicator: {fileID: 5284837337348471500}
   m_Character: {fileID: 0}
   m_TalkInput: {fileID: -8194012608305008080, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
@@ -76,7 +75,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1687693433773622100, guid: 92fbe3faea79a1548a1dc9bc60bfbf98, type: 3}
       propertyPath: m_Name
-      value: TalkableIndicator
+      value: Indicator
       objectReference: {fileID: 0}
     - target: {fileID: 1687693433773622100, guid: 92fbe3faea79a1548a1dc9bc60bfbf98, type: 3}
       propertyPath: m_Layer

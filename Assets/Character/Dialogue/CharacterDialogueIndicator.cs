@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(TMP_Text))]
-public class TalkableIndicator : MonoBehaviour
+public class CharacterDialogueIndicator: MonoBehaviour
 {
     [Header("Fade")]
     [Tooltip("how much time it takes for the indicator to appear")]
