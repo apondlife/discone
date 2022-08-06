@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityAtoms;
-using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
 /// a repository of entities in the world; pretty anemic rn
