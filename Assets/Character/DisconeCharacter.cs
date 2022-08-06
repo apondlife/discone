@@ -26,6 +26,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     [SyncVar(hook = nameof(Client_OnStateReceived))]
     [SerializeField] CharacterState.Frame m_CurrentState;
 
+    // -- config --
+    [Header("config")]
+    [Tooltip("the character's perception")]
+    [SerializeField] CharacterPerception m_Perception;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the character's music")]
@@ -143,6 +148,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the character checkpoint
     public CharacterCheckpoint Checkpoint {
         get => m_Checkpoint;
+    }
+
+    /// the character's perception
+    public CharacterPerception Perception {
+        get => m_Perception;
     }
 
     // -- q/debug

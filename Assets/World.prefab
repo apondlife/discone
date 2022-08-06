@@ -106,6 +106,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6311038941346133000}
+  - component: {fileID: 2803300835655193505}
+  - component: {fileID: 8677490359349136579}
+  - component: {fileID: 3927419822190241647}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -135,6 +138,62 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2803300835655193505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5000541250416934005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41b1d9b67a494419194492d44079b5af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8677490359349136579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5000541250416934005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d146be3427124bf2aa3a467819ecccf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CharacterTag: Character
+  m_PlayerConnected: {fileID: 11400000, guid: 241e9fa7bdb084b3f80950fd6fa40bfa, type: 2}
+  m_PlayerDisconnected: {fileID: 11400000, guid: fa04c622b172747cf8a63e0e443e93ff, type: 2}
+--- !u!114 &3927419822190241647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5000541250416934005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f660ef8f120b4374af7efe1d2a439f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UnloadDelay: 10
+  m_EnteredChunk: {fileID: 11400000, guid: 61495b5a5b35f4057867f5d384af0f51, type: 2}
+  m_ExitedChunk: {fileID: 11400000, guid: d83ce34c0af99400395a8354eee66e91, type: 2}
+  m_UnloadedChunk: {fileID: 11400000, guid: f2493412529ec4d85a7e608bce180b9b, type: 2}
+  m_Entities: {fileID: 8677490359349136579}
+  m_ChunkSize:
+    _usage: 2
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 11400000, guid: f7610f4785cf8493ca76dfc06c4cba63, type: 2}
+    _variableInstancer: {fileID: 0}
+  m_IsHost:
+    _usage: 2
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 11400000, guid: 562ea9c4c723d4ba2a26fc6eb3e9c7c9, type: 2}
+    _variableInstancer: {fileID: 0}
 --- !u!1 &6071659673618703643
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,17 +8,10 @@ using System.Linq;
 /// an online player
 /// TODO: swap (drive) characters by setting m_CurrentCharacter
 /// TODO: what to do for multiple players? variable instancer?
-sealed class OnlinePlayer: NetworkBehaviour {
-    // -- atoms --
-    [Header("atoms")]
-    [Tooltip("the current player")]
-    [SerializeField] DisconePlayerVariable m_CurrentPlayer;
-
-    [Tooltip("the current player's character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
-
-    // -- atom refs --
-    [Tooltip("the number of players connected")]
+[RequireComponent(typeof(WorldCoord))]
+public sealed class OnlinePlayer: NetworkBehaviour {
+    // -- state --
+    [Tooltip("the number of connected players")]
     [SerializeField] IntVariable m_PlayerCount;
 
     // -- events --
@@ -26,24 +19,47 @@ sealed class OnlinePlayer: NetworkBehaviour {
     [Tooltip("switch the character")]
     [SerializeField] GameObjectEvent m_SwitchCharacter;
 
+    [Tooltip("when the played joins")]
+    [SerializeField] OnlinePlayerEvent m_Connected;
+
+    [Tooltip("when the player leaves")]
+    [SerializeField] OnlinePlayerEvent m_Disconnected;
+
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("the current player")]
+    [SerializeField] DisconePlayerVariable m_CurrentPlayer;
+
+    [Tooltip("the current player's character")]
+    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+
     // -- props --
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
     /// the player's synchronized character
-    [SyncVar]
-    GameObject m_Character;
+    [SyncVar(hook = nameof(Client_OnCharacterReceived))]
+    GameObject m_CharacterObj;
+
+    /// a reference to the discone character
+    DisconeCharacter m_Character;
+
+    /// the world coordinate
+    WorldCoord m_Coord;
 
     // -- lifecycle --
     void Awake() {
+        // set props
+        m_Coord = GetComponent<WorldCoord>();
+
         #if UNITY_EDITOR
         Dbg.AddToParent("Players", this);
         #endif
     }
 
     void Start() {
-        // TODO: onOnlinePlayerJoin / onOnlinePlayerLeave events
         m_PlayerCount.Value++;
+        m_Connected.Raise(this);
     }
 
     void Update() {
@@ -87,6 +103,8 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
     void OnDestroy() {
         m_PlayerCount.Value--;
+        m_Disconnected.Raise(this);
+
         m_Subscriptions.Dispose();
     }
 
@@ -151,7 +169,7 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
         // give this client authority over the character
         dstCharacter.Server_AssignClientAuthority(connectionToClient);
-        m_Character = dstCharacter.gameObject;
+        m_CharacterObj = dstCharacter.gameObject;
 
         if (srcCharacter != null) {
             srcCharacter.Server_RemoveClientAuthority();
@@ -190,6 +208,17 @@ sealed class OnlinePlayer: NetworkBehaviour {
         }
     }
 
+    // -- queries --
+    /// the player's current character
+    public DisconeCharacter Character {
+        get => m_Character;
+    }
+
+    /// the world coordinate
+    public WorldCoord Coord {
+        get => m_Coord;
+    }
+
     // -- events --
     /// when the character should switch
     void OnSwitchCharacter(GameObject obj) {
@@ -201,4 +230,16 @@ sealed class OnlinePlayer: NetworkBehaviour {
 
         DriveCharacter(character);
     }
+
+    /// when a new character syncs
+    void Client_OnCharacterReceived(GameObject prev, GameObject curr) {
+        // TODO: gotta be a better way
+        if (curr == null) {
+            curr = null;
+        }
+
+        // update the character
+        m_Character = curr?.GetComponent<DisconeCharacter>();
+    }
+
 }
