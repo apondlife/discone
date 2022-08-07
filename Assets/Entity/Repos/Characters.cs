@@ -11,19 +11,19 @@ public sealed class Characters: MonoBehaviour {
 
     // -- props --
     /// the list of characters
-    List<DisconeCharacter> m_All;
+    DisconeCharacter[] m_All;
 
     // -- lifecycle --
     void Awake() {
         m_All = GameObject
             .FindGameObjectsWithTag(m_Tag)
             .Select((o) => o.GetComponent<DisconeCharacter>())
-            .ToList();
+            .ToArray();
     }
 
     // -- queries -
     /// the list of all characters
-    public List<DisconeCharacter> All {
+    public IEnumerable<DisconeCharacter> All {
         get => m_All;
     }
 }

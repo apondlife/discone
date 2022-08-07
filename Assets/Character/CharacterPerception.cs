@@ -2,7 +2,7 @@ using System;
 
 /// the characters ability to perceive others
 [Serializable]
-public struct CharacterPerception {
+public sealed class CharacterPerception {
     /// how far the character can see others
     public float VisionRadius;
 

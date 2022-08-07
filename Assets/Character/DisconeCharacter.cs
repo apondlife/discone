@@ -6,6 +6,7 @@ using ThirdPerson;
 [RequireComponent(typeof(Character))]
 [RequireComponent(typeof(CharacterCheckpoint))]
 [RequireComponent(typeof(CharacterWrap))]
+[RequireComponent(typeof(WorldCoord))]
 public sealed class DisconeCharacter: NetworkBehaviour {
     // -- fields --
     /// if this character is available
@@ -49,12 +50,16 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the checkpoint spawner
     CharacterCheckpoint m_Checkpoint;
 
+    /// the world coordinate
+    WorldCoord m_Coord;
+
     // -- lifecycle --
     void Awake() {
-        // set deps
+        // set props
         m_Character = GetComponent<Character>();
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
         m_Dialogue = GetComponentInChildren<CharacterDialogue>();
+        m_Coord = GetComponent<WorldCoord>();
 
         // default to not simulating
         OnIsPerceivedChanged();
@@ -129,40 +134,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         }
     }
 
-    // -- queries --
-    /// if this character is available
-    public bool IsAvailable {
-        get => m_IsAvailable;
-    }
-
-    /// if the character is selected initially
-    public bool IsInitial {
-        get => m_IsInitial;
-    }
-
-    /// the third person character
-    public ThirdPerson.Character Character {
-        get => m_Character;
-    }
-
-    /// the character checkpoint
-    public CharacterCheckpoint Checkpoint {
-        get => m_Checkpoint;
-    }
-
-    /// the character's perception
-    public CharacterPerception Perception {
-        get => m_Perception;
-    }
-
-    // -- q/debug
-    #if UNITY_EDITOR
-    /// if this is the debug character
-    public bool IsDebug {
-        get => m_IsDebug;
-    }
-    #endif
-
     // -- events --
     /// when the perceived state changes
     void OnIsPerceivedChanged() {
@@ -193,4 +164,43 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // start listening again
         m_Dialogue.StartListening();
     }
+
+    // -- queries --
+    /// if this character is available
+    public bool IsAvailable {
+        get => m_IsAvailable;
+    }
+
+    /// if the character is selected initially
+    public bool IsInitial {
+        get => m_IsInitial;
+    }
+
+    /// the third person character
+    public ThirdPerson.Character Character {
+        get => m_Character;
+    }
+
+    /// the character checkpoint
+    public CharacterCheckpoint Checkpoint {
+        get => m_Checkpoint;
+    }
+
+    /// the character's perception
+    public CharacterPerception Perception {
+        get => m_Perception;
+    }
+
+    /// the world coord
+    public WorldCoord Coord {
+        get => m_Coord;
+    }
+
+    // -- q/debug
+    #if UNITY_EDITOR
+    /// if this is the debug character
+    public bool IsDebug {
+        get => m_IsDebug;
+    }
+    #endif
 }
