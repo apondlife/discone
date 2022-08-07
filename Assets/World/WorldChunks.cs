@@ -29,8 +29,8 @@ public sealed class WorldChunks: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the entities")]
-    [SerializeField] WorldEntities m_Entities;
+    [Tooltip("the entities singleton")]
+    [SerializeField] EntitiesVariable m_Entities;
 
     [Tooltip("the size of a world chunk")]
     [SerializeField] FloatReference m_ChunkSize;
@@ -69,13 +69,15 @@ public sealed class WorldChunks: MonoBehaviour {
     #endif
 
     void FixedUpdate() {
+        var players = m_Entities.Value.Players;
+
         // if client, track own chunks
         if (!m_IsHost) {
-            TrackChunksForPlayer(m_Entities.CurrentPlayer);
+            TrackChunksForPlayer(players.Current);
         }
         // if host, track everyone's chunks
         else {
-            foreach (var player in m_Entities.Players) {
+            foreach (var player in players.All) {
                 TrackChunksForPlayer(player);
             }
         }
