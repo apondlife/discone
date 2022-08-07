@@ -35,9 +35,6 @@ public sealed class WorldChunks: MonoBehaviour {
     [Tooltip("the size of a world chunk")]
     [SerializeField] FloatReference m_ChunkSize;
 
-    [Tooltip("if the player is the host")]
-    [SerializeField] BoolReference m_IsHost;
-
     // -- props --
     /// the number of players in each chunk
     Dictionary<Vector2Int, int> m_Chunks = new Dictionary<Vector2Int, int>();
@@ -69,17 +66,11 @@ public sealed class WorldChunks: MonoBehaviour {
     #endif
 
     void FixedUpdate() {
-        var players = m_Entities.Value.Players;
+        var players = m_Entities.Value.Players
+            .FindCullers();
 
-        // if client, track own chunks
-        if (!m_IsHost) {
-            TrackChunksForPlayer(players.Current);
-        }
-        // if host, track everyone's chunks
-        else {
-            foreach (var player in players.All) {
-                TrackChunksForPlayer(player);
-            }
+        foreach (var player in players) {
+            TrackChunksForPlayer(player);
         }
     }
 
@@ -182,7 +173,24 @@ public sealed class WorldChunks: MonoBehaviour {
         }
     }
 
-    // -- c/editor
+    // -- queries --
+    /// the chunk size
+    public float ChunkSize {
+        get => m_ChunkSize;
+    }
+
+    /// if the chunk is active
+    public bool IsChunkActive(Vector2Int coord) {
+        var count = 0;
+
+        if (!m_Chunks.TryGetValue(coord, out count)) {
+            return false;
+        }
+
+        return count > 0;
+    }
+
+    // -- editor --
     #if UNITY_EDITOR
     /// the editor's world coordinate
     Vector2Int m_EditorCoord = WorldCoord.None;

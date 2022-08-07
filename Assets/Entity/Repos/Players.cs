@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityAtoms;
+using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
 /// a repository of players
@@ -12,9 +13,14 @@ public sealed class Players: MonoBehaviour {
     [Tooltip("when a player disconnets")]
     [SerializeField] OnlinePlayerEvent m_PlayerDisconnected;
 
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("if the player is the host")]
+    [SerializeField] BoolReference m_IsHost;
+
     // -- props --
     /// the current (local) player
-    OnlinePlayer m_Current;
+    OnlinePlayer[] m_Current;
 
     /// the list of players
     List<OnlinePlayer> m_All = new List<OnlinePlayer>();
@@ -38,12 +44,17 @@ public sealed class Players: MonoBehaviour {
     // -- queries -
     /// the current (local) player
     public OnlinePlayer Current {
-        get => m_Current;
+        get => m_Current?[0];
     }
 
     /// the list of all players
-    public List<OnlinePlayer> All {
+    public IEnumerable<OnlinePlayer> All {
         get => m_All;
+    }
+
+    /// the list of players used to cull other entities
+    public IEnumerable<OnlinePlayer> FindCullers() {
+        return m_IsHost ? m_All : m_Current;
     }
 
     // -- events --
@@ -52,7 +63,7 @@ public sealed class Players: MonoBehaviour {
         m_All.Add(player);
 
         if (player.isLocalPlayer) {
-            m_Current = player;
+            m_Current = new[] { player };
         }
     }
 
