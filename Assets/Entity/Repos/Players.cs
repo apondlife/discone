@@ -20,7 +20,7 @@ public sealed class Players: MonoBehaviour {
 
     // -- props --
     /// the current (local) player
-    OnlinePlayer[] m_Current;
+    OnlinePlayer[] m_Current = new OnlinePlayer[0];
 
     /// the list of players
     List<OnlinePlayer> m_All = new List<OnlinePlayer>();
@@ -44,7 +44,7 @@ public sealed class Players: MonoBehaviour {
     // -- queries -
     /// the current (local) player
     public OnlinePlayer Current {
-        get => m_Current?[0];
+        get => m_Current.Length == 0 ? null : m_Current[0];
     }
 
     /// the list of all players
@@ -72,7 +72,7 @@ public sealed class Players: MonoBehaviour {
         m_All.Remove(player);
 
         if (player.isLocalPlayer) {
-            m_Current = null;
+            m_Current = new OnlinePlayer[0];
         }
     }
 }
