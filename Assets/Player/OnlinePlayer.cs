@@ -33,6 +33,9 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     [Tooltip("the current player's character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
 
+    [Tooltip("the entities repos")]
+    [SerializeField] EntitiesVariable m_Entities;
+
     // -- props --
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
@@ -112,26 +115,11 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     /// drive the first available character in the world
     void DriveInitialCharacter() {
         // find all available characters
-        var all = GameObject
-            .FindObjectsOfType<DisconeCharacter>();
+        var character = m_Entities.Value.Characters.FindInitialCharacter();
 
-        // use debug characters if available, otherwise the first initial character
-        var sets = new[] {
-            #if UNITY_EDITOR
-            all.Where(c => c.IsDebug),
-            #endif
-            all.Where(c => c.IsAvailable && c.IsInitial)
-        };
-
-        var available = sets
-            .Where((cs) => cs.Any())
-            .First()
-            .ToArray();
-
-        // if there is nothing to drive
-        var character = available[Random.Range(0, available.Length)];
         if (character == null) {
-            Debug.LogError("[player] the was no character to drive");
+            Debug.LogError("[player] there was no character to drive");
+            // TODO: not this
             Application.Quit();
             return;
         }

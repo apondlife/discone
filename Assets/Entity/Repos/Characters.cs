@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -26,4 +27,27 @@ public sealed class Characters: MonoBehaviour {
     public IEnumerable<DisconeCharacter> All {
         get => m_All;
     }
+
+    public DisconeCharacter FindInitialCharacter()
+    {
+        // use debug characters if available, otherwise the first initial character
+        var sets = new[] {
+            #if UNITY_EDITOR
+            m_All.Where(c => c.IsDebug),
+            #endif
+            m_All.Where(c => c.IsAvailable && c.IsInitial)
+        };
+
+        var available = sets
+            .Where((cs) => cs.Any())
+            .First()
+            .ToArray();
+
+        // if there is nothing to drive
+        var character = available[UnityEngine.Random.Range(0, available.Length)];
+
+        return character;
+    }
+
+
 }
