@@ -38,7 +38,7 @@ sealed class EntityCollisions: MonoBehaviour {
 
         // for every character
         foreach (var character in cs) {
-            // set the character tranform once we need it
+            // get components refs (only get transform once we need it)
             var ct = null as Transform;
             var co = character.gameObject;
 
