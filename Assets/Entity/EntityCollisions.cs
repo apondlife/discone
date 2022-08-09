@@ -46,48 +46,61 @@ sealed class EntityCollisions: MonoBehaviour {
             var isActive = co.activeSelf;
             var isActivePrev = isActive;
 
-            // first pass: cull any characters in inactive chunks
-            var coord = character.Coord.Value;
+            // zeroth pass: don't cull a player's character
+            var isPlayerControlled = false;
 
-            // update coord for previously active (e.g. potentially moving) characters
-            if (isActivePrev) {
-                // get transforms
-                if (ct == null) {
-                    ct = character.transform;
+            foreach (var player in players.All) {
+                if (player.Character == character) {
+                    isActive = true;
+                    isPlayerControlled = true;
+                    break;
                 }
-
-                // update coord
-                coord = WorldCoord.FromPosition(ct.position, chunks.ChunkSize);
-                character.Coord.Value = coord;
             }
 
-            isActive = chunks.IsChunkActive(coord);
+            if (!isPlayerControlled) {
+                // first pass: cull any characters in inactive chunks
+                var coord = character.Coord.Value;
 
-            // second pass: check against proximity to players
-            if (isActive) {
-                isActive = false;
-
-                // see if any player has vision
-                foreach (var player in ps) {
-                    // skip players with no character
-                    var pp = player.Character?.Perception;
-                    if (pp == null) {
-                        continue;
-                    }
-
+                // update coord for previously active (e.g. potentially moving) characters
+                if (isActivePrev) {
                     // get transforms
-                    var pt = player.transform;
                     if (ct == null) {
                         ct = character.transform;
                     }
 
-                    // check for vision
-                    var dist = Vector3.Distance(pt.position, ct.position);
-                    isActive = dist < pp.VisionRadius;
+                    // update coord
+                    coord = WorldCoord.FromPosition(ct.position, chunks.ChunkSize);
+                    character.Coord.Value = coord;
+                }
 
-                    // end if we find one
-                    if (isActive) {
-                        break;
+                isActive = chunks.IsChunkActive(coord);
+
+                // second pass: check against proximity to players
+                if (isActive) {
+                    isActive = false;
+
+                    // see if any player has vision
+                    foreach (var player in ps) {
+                        // skip players with no character
+                        var pp = player.Character?.Perception;
+                        if (pp == null) {
+                            continue;
+                        }
+
+                        // get transforms
+                        var pt = player.transform;
+                        if (ct == null) {
+                            ct = character.transform;
+                        }
+
+                        // check for vision
+                        var dist = Vector3.Distance(pt.position, ct.position);
+                        isActive = dist < pp.VisionRadius;
+
+                        // end if we find one
+                        if (isActive) {
+                            break;
+                        }
                     }
                 }
             }
