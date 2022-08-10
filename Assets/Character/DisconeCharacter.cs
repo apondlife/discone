@@ -55,7 +55,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     WorldCoord m_Coord;
 
     /// whether or not the character is being simulated (not being culled)
-    bool m_IsSimulating;
+    bool m_IsSimulating = true;
 
     // -- lifecycle --
     void Awake() {
@@ -75,7 +75,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     void FixedUpdate() {
-        SyncState();
+        if (m_IsSimulating) {
+            SyncState();
+        }
     }
 
     // -- l/mirror
