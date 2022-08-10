@@ -89,6 +89,7 @@ public sealed class Field: MonoBehaviour {
     #endif
 
     void OnValidate () {
+#if UNITY_EDITOR
         m_FieldHeight.SetFloat("_FloorScale", m_FloorScale);
         m_FieldHeight.SetFloat("_MinFloor", m_MinFloor);
         m_FieldHeight.SetFloat("_MaxFloor", m_MaxFloor);
@@ -97,6 +98,7 @@ public sealed class Field: MonoBehaviour {
         m_FieldHeight.SetFloat("_MaxElevation", m_MaxElevation);
 
         ReloadEditorChunks();
+#endif
     }
 
     void OnDestroy() {
