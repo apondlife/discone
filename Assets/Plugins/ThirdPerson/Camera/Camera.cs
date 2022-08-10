@@ -24,6 +24,7 @@ public sealed class Camera: MonoBehaviour {
         var character = GetComponentInParent<Character>();
         m_State = character.State;
         m_Tunables = character.Tunables;
+
     }
 
     void FixedUpdate() {
