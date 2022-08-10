@@ -89,21 +89,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
     }
 
-    public override void OnStopServer() {
-        base.OnStopServer();
-
-        // don't do anything if server is shutting down
-        if (!NetworkServer.active) {
-            return;
-        }
-
-        // release this player's character when they disconnect
-        var character = m_CurrentCharacter?.Value;
-        if (character != null) {
-            character.Server_RemoveClientAuthority();
-        }
-    }
-
     void OnDestroy() {
         m_PlayerCount.Value--;
         m_Disconnected.Raise(this);
@@ -224,4 +209,17 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         m_Character = curr?.GetComponent<DisconeCharacter>();
     }
 
+    /// when the player disconnects on the server
+    public void Server_OnDisconnect() {
+        // don't do anything if server is shutting down
+        if (!NetworkServer.active) {
+            return;
+        }
+
+        // release this player's character when they disconnect
+        var character = m_CurrentCharacter?.Value;
+        if (character != null) {
+            character.Server_RemoveClientAuthority();
+        }
+    }
 }

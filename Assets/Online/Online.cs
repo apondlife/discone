@@ -92,23 +92,6 @@ public class Online: NetworkManager {
         subscriptions.Dispose();
     }
 
-    // -- commands --
-    /// start game as host
-    void SwitchToHost() {
-        m_State = State.Host;
-        m_IsHost.Value = true;
-
-        StartHost();
-    }
-
-    /// start game as client
-    void SwitchToClient() {
-        m_State = State.Connecting;
-        m_IsHost.Value = false;
-
-        StartClient();
-    }
-
     // -- l/mirror
     public override void OnClientError(Exception exception) {
         base.OnClientError(exception);
@@ -152,21 +135,34 @@ public class Online: NetworkManager {
         }
     }
 
-    // -- l/mirror/server
-    public override void OnServerDisconnect(NetworkConnection c) {
-        base.OnServerDisconnect(c);
+    public override void OnServerDisconnect(NetworkConnection conn) {
+        // give player a chance to clean up before being destroyed
+        var player = conn.identity.gameObject.GetComponent<OnlinePlayer>();
+        if (player == null) {
+            Debug.LogError($"[Error] diconnected player has no OnlinePlayer object");
+        } else {
+            player.Server_OnDisconnect();
+        }
+
+        // destroy the player
+        base.OnServerDisconnect(conn);
     }
 
-    public override void OnServerConnect(NetworkConnection c) {
-        base.OnServerConnect(c);
+    // -- commands --
+    /// start game as host
+    void SwitchToHost() {
+        m_State = State.Host;
+        m_IsHost.Value = true;
+
+        StartHost();
     }
 
-    public override void OnServerError(NetworkConnection c, Exception e) {
-        base.OnServerError(c, e);
-    }
+    /// start game as client
+    void SwitchToClient() {
+        m_State = State.Connecting;
+        m_IsHost.Value = false;
 
-    public override void OnStartHost() {
-        base.OnStartHost();
+        StartClient();
     }
 
     // -- queries --

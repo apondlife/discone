@@ -40,10 +40,9 @@ sealed class EntityCollisions: MonoBehaviour {
         foreach (var character in cs) {
             // get components refs (only get transform once we need it)
             var ct = null as Transform;
-            var co = character;
 
             // track activity
-            var isSimulating = co.IsSimulating;
+            var isSimulating = character.IsSimulating;
             var isSimulatingPrev = isSimulating;
 
             // zeroth pass: don't cull a player's character
@@ -107,7 +106,7 @@ sealed class EntityCollisions: MonoBehaviour {
 
             // finally, update active if changed (very slow to make redundant calls to SetActive)
             if (isSimulating != isSimulatingPrev) {
-                co.SetSimulating(isSimulating);
+                character.SetSimulating(isSimulating);
             }
         }
     }
