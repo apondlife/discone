@@ -114,15 +114,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     // -- commands --
     /// drive the first available character in the world
     void DriveInitialCharacter() {
-        // find all available characters
+        // find any available character
         var character = m_Entities.Value.Characters.FindInitialCharacter();
-
-        if (character == null) {
-            Debug.LogError("[player] there was no character to drive");
-            // TODO: not this
-            Application.Quit();
-            return;
-        }
 
         // drive the initial character
         DriveCharacter(character);
@@ -217,11 +210,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     /// when the character should switch
     void OnSwitchCharacter(GameObject obj) {
         var character = obj.GetComponent<DisconeCharacter>();
-        if (character == null) {
-            Debug.Log($"[player] tried to switch to an character w/ no DisconeCharacter");
-            return;
-        }
-
         DriveCharacter(character);
     }
 

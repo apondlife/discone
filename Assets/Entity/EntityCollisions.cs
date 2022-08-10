@@ -40,18 +40,18 @@ sealed class EntityCollisions: MonoBehaviour {
         foreach (var character in cs) {
             // get components refs (only get transform once we need it)
             var ct = null as Transform;
-            var co = character.gameObject;
+            var co = character;
 
             // track activity
-            var isActive = co.activeSelf;
-            var isActivePrev = isActive;
+            var isSimulating = co.IsSimulating;
+            var isSimulatingPrev = isSimulating;
 
             // zeroth pass: don't cull a player's character
             var isPlayerControlled = false;
 
             foreach (var player in players.All) {
                 if (player.Character == character) {
-                    isActive = true;
+                    isSimulating = true;
                     isPlayerControlled = true;
                     break;
                 }
@@ -62,7 +62,7 @@ sealed class EntityCollisions: MonoBehaviour {
                 var coord = character.Coord.Value;
 
                 // update coord for previously active (e.g. potentially moving) characters
-                if (isActivePrev) {
+                if (isSimulatingPrev) {
                     // get transforms
                     if (ct == null) {
                         ct = character.transform;
@@ -73,11 +73,11 @@ sealed class EntityCollisions: MonoBehaviour {
                     character.Coord.Value = coord;
                 }
 
-                isActive = chunks.IsChunkActive(coord);
+                isSimulating = chunks.IsChunkActive(coord);
 
                 // second pass: check against proximity to players
-                if (isActive) {
-                    isActive = false;
+                if (isSimulating) {
+                    isSimulating = false;
 
                     // see if any player has vision
                     foreach (var player in ps) {
@@ -95,10 +95,10 @@ sealed class EntityCollisions: MonoBehaviour {
 
                         // check for vision
                         var dist = Vector3.Distance(pt.position, ct.position);
-                        isActive = dist < pp.VisionRadius;
+                        isSimulating = dist < pp.VisionRadius;
 
                         // end if we find one
-                        if (isActive) {
+                        if (isSimulating) {
                             break;
                         }
                     }
@@ -106,8 +106,8 @@ sealed class EntityCollisions: MonoBehaviour {
             }
 
             // finally, update active if changed (very slow to make redundant calls to SetActive)
-            if (isActive != isActivePrev) {
-                co.SetActive(isActive);
+            if (isSimulating != isSimulatingPrev) {
+                co.SetSimulating(isSimulating);
             }
         }
     }
