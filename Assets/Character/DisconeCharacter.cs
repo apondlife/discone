@@ -2,6 +2,7 @@ using UnityEngine;
 using Mirror;
 using ThirdPerson;
 using System;
+using System.Linq;
 
 /// an online character
 [RequireComponent(typeof(Character))]
@@ -57,6 +58,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// whether or not the character is being simulated (not being culled)
     bool m_IsSimulating = true;
 
+    /// the list of simulated children
+    GameObject[] m_Simulated;
+
     // -- lifecycle --
     void Awake() {
         // set props
@@ -65,7 +69,14 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Dialogue = GetComponentInChildren<CharacterDialogue>();
         m_Coord = GetComponent<WorldCoord>();
 
-        // default to not simulating
+        // cache list of simulated children -- anything that's active in the prefab
+        // TODO: this if for the camera, it's a bit hacky right now
+        m_Simulated = Enumerable.Range(0, transform.childCount)
+            .Select((i) => transform.GetChild(i).gameObject)
+            .Where((c) => c.activeSelf)
+            .ToArray();
+
+        // default to not being perceived
         OnIsPerceivedChanged();
 
         // debug
@@ -121,8 +132,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Character.IsPaused = !isSimulating;
 
         // toggle activity on all the children to turn off rendering, effects, &c
-        foreach (Transform c in m_Character.transform) {
-            c.gameObject.SetActive(isSimulating);
+        foreach (var c in m_Simulated) {
+            c.SetActive(isSimulating);
         }
     }
 
@@ -162,8 +173,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     // -- events --
     /// when the perceived state changes
     void OnIsPerceivedChanged() {
+        // TODO: run this through the EntityCollisions
         m_Music.SetActive(m_IsPerceived);
-        // TODO: if not host, also stop simulating characters that aren't perceived
     }
 
     // -- e/client
