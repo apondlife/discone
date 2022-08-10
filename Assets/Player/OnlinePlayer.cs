@@ -129,7 +129,13 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     /// drive a new character
-    void DriveCharacter(DisconeCharacter character) {
+    void DriveCharacter(DisconeCharacter dstChar) {
+        // ensure we have a destination character
+        if (dstChar == null) {
+            Debug.LogError($"[player] cannot drive a null character");
+            return;
+        }
+
         // don't carry over destroyed characters from scene change
         var srcChar = m_CurrentCharacter.Value;
         if (srcChar == null) {
@@ -138,7 +144,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
         // switch to the new character
         var src = srcChar?.gameObject;
-        var dst = character.gameObject;
+        var dst = dstChar.gameObject;
         Server_SwitchCharacter(src, dst);
     }
 
