@@ -1,6 +1,7 @@
 using UnityEngine;
 using Mirror;
 using ThirdPerson;
+using System;
 
 /// an online character
 [RequireComponent(typeof(Character))]
@@ -53,6 +54,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the world coordinate
     WorldCoord m_Coord;
 
+    /// whether or not the character is being simulated (not being culled)
+    bool m_IsSimulating;
+
     // -- lifecycle --
     void Awake() {
         // set props
@@ -99,6 +103,25 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // sync the current state frame
         m_CurrentState = state;
         Server_SyncState(state);
+    }
+
+    // set the character to simluating or not (basically, isActive but w/ network identity)
+    public void SetSimulating(bool isSimulating) {
+        // ignore redundant calls
+        if (m_IsSimulating == isSimulating) {
+            return;
+        }
+
+        // update state
+        m_IsSimulating = isSimulating;
+
+        // toggle pause for the third person simulation
+        m_Character.IsPaused = !isSimulating;
+
+        // toggle activity on all the children to turn off rendering, effects, &c
+        foreach (Transform c in m_Character.transform) {
+            c.gameObject.SetActive(isSimulating);
+        }
     }
 
     // -- c/server
@@ -174,6 +197,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// if the character is selected initially
     public bool IsInitial {
         get => m_IsInitial;
+    }
+
+    /// if the character is simulating
+    public bool IsSimulating {
+        get => m_IsSimulating;
     }
 
     /// the third person character
