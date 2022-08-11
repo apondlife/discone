@@ -1,14 +1,12 @@
+using System;
 using UnityEngine;
 
 namespace ThirdPerson {
 
 /// how the character moves on the ground & air
+[Serializable]
 sealed class MovementSystem: CharacterSystem {
     // -- lifetime --
-    public MovementSystem(CharacterData character)
-        : base(character) {
-    }
-
     protected override CharacterPhase InitInitialPhase() {
         return NotMoving;
     }

@@ -13,7 +13,7 @@ namespace Mirror
         // Do NOT check for active server or client here.
         // Awake must always set the static aoi references.
         void Awake()
-        {
+    {
             if (NetworkServer.aoi == null)
             {
                 NetworkServer.aoi = this;

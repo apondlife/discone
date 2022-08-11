@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 namespace ThirdPerson {
 
 /// how the character jumps
+[Serializable]
 sealed class JumpSystem: CharacterSystem {
     // -- props --
     /// the number of coyote frames the available
@@ -18,10 +20,6 @@ sealed class JumpSystem: CharacterSystem {
     uint m_JumpTunablesIndex;
 
     // -- lifetime --
-    public JumpSystem(CharacterData character)
-        : base(character) {
-    }
-
     protected override CharacterPhase InitInitialPhase() {
         return NotJumping;
     }

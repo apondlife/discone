@@ -1,15 +1,12 @@
+using System;
 using UnityEngine;
-using System.Linq;
 
 namespace ThirdPerson {
 
 /// how the character is affected by gravity
+[Serializable]
 sealed class CollisionSystem: CharacterSystem {
     // -- lifetime --
-    public CollisionSystem(CharacterData character)
-        : base(character) {
-    }
-
     protected override CharacterPhase InitInitialPhase() {
         return Active;
     }

@@ -1,31 +1,42 @@
+using System;
+using UnityEngine;
+
 namespace ThirdPerson {
 
 /// a character system; may be a state machine
+[Serializable]
 abstract class CharacterSystem {
+    // -- fields --
+    [Tooltip("if the system is paused")]
+    [SerializeField] bool m_IsPaused;
+
+    [Tooltip("the current phase")]
+    [SerializeField] protected CharacterPhase m_Phase;
+
     // -- props --
     /// a name for this system
     protected string m_Name;
 
+    // TODO: (refactor) remove m_Data and this can just be a reference to the character
     /// the character name
-    protected string m_CharacterName;
-
-    /// the current phase
-    protected CharacterPhase m_Phase;
+    protected string m_CharacterName => m_Data.Name;
 
     /// a ref to the character's input
-    protected CharacterInput m_Input;
+    protected CharacterInput m_Input => m_Data.Input;
 
     /// a ref to the character's state
-    protected CharacterState m_State;
+    protected CharacterState m_State => m_Data.State;
 
     /// a ref to the character's events
-    protected CharacterEvents m_Events;
+    protected CharacterEvents m_Events => m_Data.Events;
 
     /// a ref to the character's tunables
-    protected CharacterTunablesBase m_Tunables;
+    protected CharacterTunablesBase m_Tunables => m_Data.Tunables;
 
     /// a ref to the character's controller
-    protected CharacterController m_Controller;
+    protected CharacterController m_Controller => m_Data.Controller;
+
+    private CharacterData m_Data;
 
     // -- p/debug
     #if UNITY_EDITOR
@@ -35,18 +46,14 @@ abstract class CharacterSystem {
 
     // -- lifetime --
     /// create a new system
-    public CharacterSystem(CharacterData d) {
-        // set dependencies
-        m_CharacterName = d.Name;
-        m_Input = d.Input;
-        m_State = d.State;
-        m_Tunables = d.Tunables;
-        m_Controller = d.Controller;
-        m_Events = d.Events;
-
+    public CharacterSystem() {
         // set props
         m_Name = this.GetType().Name;
         m_Phase = InitInitialPhase();
+    }
+
+    public void Init(CharacterData d) {
+        m_Data = d;
     }
 
     /// construct the initial phase
@@ -55,6 +62,10 @@ abstract class CharacterSystem {
     // -- commands --
     /// update the system's current phase
     public virtual void Update() {
+        if (m_IsPaused) {
+            return;
+        }
+
         m_Phase.Update();
     }
 
