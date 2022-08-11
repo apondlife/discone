@@ -24,8 +24,8 @@ sealed class EntityCollisions: MonoBehaviour {
         var players = m_Entities.Players;
         var characters = m_Entities.Characters;
 
-        // wait until we have a current player
-        if (players.Current == null) {
+        // wait until there is player with a character
+        if (players.Current?.Character == null) {
             return;
         }
 
