@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 namespace ThirdPerson {
 
 /// how the character interacts with walls
+[Serializable]
 sealed class WallSystem: CharacterSystem {
     // -- props --
     /// the current wall normal
@@ -12,17 +14,13 @@ sealed class WallSystem: CharacterSystem {
     Vector3 m_WallUp;
 
     // -- lifetime --
-    public WallSystem(CharacterData character)
-        : base(character) {
-    }
-
     protected override CharacterPhase InitInitialPhase() {
         return NotOnWall;
     }
 
     // -- Grounded --
     CharacterPhase NotOnWall => new CharacterPhase(
-        name: "NotOnWall",
+        "NotOnWall",
         enter: NotOnWall_Enter,
         update: NotOnWall_Update
     );

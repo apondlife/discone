@@ -3,10 +3,11 @@ using System;
 namespace ThirdPerson {
 
 /// a character phase, a composition of an enter, update, and exit action
-readonly struct CharacterPhase: IEquatable<CharacterPhase> {
+[Serializable]
+public struct CharacterPhase: IEquatable<CharacterPhase> {
     // -- props --
     /// a unique name for this phase
-    readonly public string Name;
+    public string Name;
 
     /// the action to call the phase the frame starts
     readonly public Action Enter;

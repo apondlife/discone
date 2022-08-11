@@ -1,21 +1,19 @@
 using UnityEngine;
+using System;
 
 namespace ThirdPerson {
 
 /// how the character tilts on the ground
+[Serializable]
 sealed class TiltSystem : CharacterSystem {
     // -- lifetime --
-    public TiltSystem(CharacterData character)
-        : base(character) {
-    }
-
     protected override CharacterPhase InitInitialPhase() {
         return NotTilting;
     }
 
     // -- NotTilting --
     CharacterPhase NotTilting => new CharacterPhase(
-        name: "NotTilting",
+        "NotTilting",
         update: NotTilting_Update
     );
 
@@ -32,7 +30,7 @@ sealed class TiltSystem : CharacterSystem {
 
     // -- Tilting --
     CharacterPhase Tilting => new CharacterPhase(
-        name: "Tilting",
+        "Tilting",
         update: Tilting_Update
     );
 

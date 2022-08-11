@@ -1,14 +1,12 @@
+using System;
 using UnityEngine;
 
 namespace ThirdPerson {
 
 /// how the character is affected by gravity
+[Serializable]
 sealed class IdleSystem: CharacterSystem {
     // -- lifetime --
-    public IdleSystem(CharacterData character)
-        : base(character) {
-    }
-
     protected override CharacterPhase InitInitialPhase() {
         return Idle;
     }

@@ -5,11 +5,32 @@ namespace ThirdPerson {
 
 /// the main third person controller
 public partial class Character: MonoBehaviour {
-    // -- fields --
+    // -- data --
     [Header("data")]
     [Tooltip("the tunables; for tweaking the player's attributes")]
     [SerializeField] CharacterTunablesBase m_Tunables;
 
+    // -- systems --
+    [Header("systems")]
+    [Tooltip("the idle system")]
+    [SerializeField] IdleSystem m_Idle;
+
+    [Tooltip("the wall system")]
+    [SerializeField] WallSystem m_Wall;
+
+    [Tooltip("the jump system")]
+    [SerializeField] JumpSystem m_Jump;
+
+    [Tooltip("the movement system")]
+    [SerializeField] MovementSystem m_Movement;
+
+    [Tooltip("the tilt system")]
+    [SerializeField] TiltSystem m_Tilt;
+
+    [Tooltip("the collision system")]
+    [SerializeField] CollisionSystem m_Collision;
+
+    // -- children --
     [Header("children")]
     [Tooltip("the underlying character controller")]
     [SerializeField] CharacterController m_Controller;
@@ -57,16 +78,23 @@ public partial class Character: MonoBehaviour {
 
         // init systems
         m_Systems = new CharacterSystem[] {
-            // has to run first, because it should run after character controller calculations
-            new IdleSystem(data),
-            new WallSystem(data),
-            new JumpSystem(data),
-            // movement system uses gravity information to calculate friciton, so it should run after it
-            new MovementSystem(data),
-            new TiltSystem(data),
-            // the last state, where the controller move is calculated and all move stuff is fixed
-            new CollisionSystem(data),
+            // has to run first, because it should run after character
+            // controller calculations
+            m_Idle,
+            m_Wall,
+            m_Jump,
+            // movement system uses gravity information to calculate friciton,
+            // so it should run after it
+            m_Movement,
+            m_Tilt,
+            // the last state, where the controller move is calculated and
+            // all move stuff is fixed
+            m_Collision,
         };
+
+        foreach (var system in m_Systems) {
+            system.Init(data);
+        }
     }
 
     void FixedUpdate() {
@@ -85,8 +113,10 @@ public partial class Character: MonoBehaviour {
         // store the previous frame
         m_State.Snapshot();
 
-        // update the character's systems
+        // read input
         m_Input.Read();
+
+        // run the character systems
         foreach (var system in m_Systems) {
             system.Update();
         }
