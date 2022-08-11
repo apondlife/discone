@@ -78,7 +78,7 @@ public class CharacterDust: MonoBehaviour {
             emission.rateOverTimeMultiplier = emissionRate;
         }
 
-        if (!m_State.Prev.IsGrounded && m_State.Prev.IsGrounded) {
+        if (!m_State.Prev.IsGrounded && m_State.IsGrounded) {
             if (!m_JumpParticles.isPlaying) {
                 m_JumpParticles.transform.up = m_State.Ground.Normal;
                 m_JumpParticles.Play();
