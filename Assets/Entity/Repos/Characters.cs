@@ -28,8 +28,8 @@ public sealed class Characters: MonoBehaviour {
         get => m_All;
     }
 
-    public DisconeCharacter FindInitialCharacter()
-    {
+    /// find an available character to play
+    public DisconeCharacter FindInitialCharacter() {
         // use debug characters if available, otherwise the first initial character
         var sets = new[] {
             #if UNITY_EDITOR
@@ -43,7 +43,7 @@ public sealed class Characters: MonoBehaviour {
             .First()
             .ToArray();
 
-        // if there is nothing to drive
+        // pick a random character from the list
         var character = available[UnityEngine.Random.Range(0, available.Length)];
 
         return character;

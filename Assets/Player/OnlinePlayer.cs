@@ -6,8 +6,9 @@ using ThirdPerson;
 using System.Linq;
 
 /// an online player
-/// TODO: swap (drive) characters by setting m_CurrentCharacter
+/// TODO: swap (drive) characters by setting m_LocalCharacter
 /// TODO: what to do for multiple players? variable instancer?
+/// TODO: rename to something like player sync?
 [RequireComponent(typeof(WorldCoord))]
 public sealed class OnlinePlayer: NetworkBehaviour {
     // -- state --
@@ -28,10 +29,12 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the current player")]
-    [SerializeField] DisconePlayerVariable m_CurrentPlayer;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_CurrentPlayer")]
+    [SerializeField] DisconePlayerVariable m_LocalPlayer;
 
-    [Tooltip("the current player's character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+    [Tooltip("the local player's character")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_CurrentCharacter")]
+    [SerializeField] DisconeCharacterVariable m_LocalCharacter;
 
     [Tooltip("the entities repos")]
     [SerializeField] EntitiesVariable m_Entities;
@@ -115,7 +118,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // don't carry over destroyed characters from scene change
-        var srcChar = m_CurrentCharacter.Value;
+        var srcChar = m_LocalCharacter.Value;
         if (srcChar == null) {
             srcChar = null;
         }
@@ -154,7 +157,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     [TargetRpc]
     void Client_SwitchCharacter(NetworkConnection target, GameObject dst) {
         // if the player exists
-        var player = m_CurrentPlayer.GetComponent<Player>();
+        var player = m_LocalPlayer.GetComponent<Player>();
         if (player == null || !player.enabled) {
             Debug.Assert(false, "[player] missing player!");
             return;
@@ -168,7 +171,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // drive this character
-        m_CurrentCharacter.Value = character;
+        m_LocalCharacter.Value = character;
         player.Drive(character.Character);
     }
 
@@ -217,9 +220,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // release this player's character when they disconnect
-        var character = m_CurrentCharacter?.Value;
-        if (character != null) {
-            character.Server_RemoveClientAuthority();
+        if (m_Character != null) {
+            m_Character.Server_RemoveClientAuthority();
         }
     }
 }
