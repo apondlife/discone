@@ -12,30 +12,34 @@ public sealed class Characters: MonoBehaviour {
 
     // -- props --
     /// the list of characters
-    DisconeCharacter[] m_All;
+    Lazy<DisconeCharacter[]> m_All;
 
     // -- lifecycle --
     void Awake() {
-        m_All = GameObject
-            .FindGameObjectsWithTag(m_Tag)
-            .Select((o) => o.GetComponent<DisconeCharacter>())
-            .ToArray();
+        m_All = new Lazy<DisconeCharacter[]>(() =>
+            GameObject
+                .FindGameObjectsWithTag(m_Tag)
+                .Select((o) => o.GetComponent<DisconeCharacter>())
+                .ToArray()
+        );
     }
 
     // -- queries -
     /// the list of all characters
     public IEnumerable<DisconeCharacter> All {
-        get => m_All;
+        get => m_All.Value;
     }
 
     /// find an available character to play
     public DisconeCharacter FindInitialCharacter() {
+        var all = m_All.Value;
+
         // use debug characters if available, otherwise the first initial character
         var sets = new[] {
             #if UNITY_EDITOR
-            m_All.Where(c => c.IsDebug),
+            all.Where(c => c.IsDebug),
             #endif
-            m_All.Where(c => c.IsAvailable && c.IsInitial)
+            all.Where(c => c.IsAvailable && c.IsInitial)
         };
 
         var available = sets
