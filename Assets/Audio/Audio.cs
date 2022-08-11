@@ -7,7 +7,7 @@ using UnityAtoms.BaseAtoms;
 public class Audio: MonoBehaviour {
     // -- constants --
     /// the maximum volume in decibels
-    const float k_MaxVolumeScale = 0.5f;
+    const float k_MaxVolumeScale = 0.63f;
 
     /// the name of the main bus
     const string k_MainBusName = "bus:/";
@@ -66,6 +66,12 @@ public class Audio: MonoBehaviour {
             .Add(m_MusicVolume.Changed, OnMusicVolumeChanged)
             .Add(m_SfxVolume.Changed, OnSfxVolumeChanged)
             .Add(m_CharacterChangedWithHistory, OnCharacterChanged);
+
+
+        // set it up from player prefs
+        m_MainVolume.SetupPlayerPrefs();
+        m_MusicVolume.SetupPlayerPrefs();
+        m_SfxVolume.SetupPlayerPrefs();
     }
 
     void OnDestroy() {
