@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1244464915308659324}
   - component: {fileID: 1244464915308659202}
   - component: {fileID: 745588075}
+  - component: {fileID: 944412279076409312}
   m_Layer: 0
   m_Name: Online
   m_TagString: Untagged
@@ -110,6 +111,22 @@ MonoBehaviour:
   m_ErrorEvent: {fileID: 11400000, guid: e9711abafc73c0746b74246738baaff4, type: 2}
   m_Player: {fileID: 0}
   m_State: 0
+--- !u!114 &944412279076409312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1244464915308659200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39adc6e09d5544ed955a50ce8600355a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visRange: 1000
+  rebuildInterval: 1
+  checkMethod: 0
+  showSlider: 1
 --- !u!1 &5984576550194437987
 GameObject:
   m_ObjectHideFlags: 0
