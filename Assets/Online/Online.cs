@@ -139,7 +139,7 @@ public class Online: NetworkManager {
         // give player a chance to clean up before being destroyed
         var player = conn.identity.gameObject.GetComponent<OnlinePlayer>();
         if (player == null) {
-            Debug.LogError($"[Error] diconnected player has no OnlinePlayer object");
+            Debug.LogError($"[Error] diconnected player has no OnlinePlayer!");
         } else {
             player.Server_OnDisconnect();
         }
