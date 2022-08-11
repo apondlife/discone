@@ -29,7 +29,7 @@ public sealed class WorldChunks: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the entities singleton")]
+    [Tooltip("the entity singleton")]
     [SerializeField] EntitiesVariable m_Entities;
 
     [Tooltip("the size of a world chunk")]

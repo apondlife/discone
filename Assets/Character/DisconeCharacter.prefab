@@ -285,7 +285,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7614967429340073445, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+    - {fileID: 7614967429340073444, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
 --- !u!114 &3215011315793297274 stripped
 MonoBehaviour:
@@ -331,6 +333,19 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 385
   m_FlowerPrefab: {fileID: 0}
+--- !u!114 &315037361225936347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3345656352466467727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a5a78b241ae64a77ae06ab24d41e463, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Value: {x: 69, y: 420}
 --- !u!114 &1315896245521232624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -417,19 +432,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_CurrentHat: none
---- !u!114 &315037361225936347
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3345656352466467727}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a5a78b241ae64a77ae06ab24d41e463, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Coord: {x: 69, y: 420}
 --- !u!4 &5294547428429929720 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1061133086809451152, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
