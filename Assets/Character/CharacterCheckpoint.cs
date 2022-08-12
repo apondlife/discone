@@ -27,6 +27,9 @@ public class CharacterCheckpoint: NetworkBehaviour {
     [Tooltip("how faster cancelling a load is than the load itself")]
     [SerializeField] float m_LoadCancelMultiplier = 1;
 
+    [Tooltip("how offset the flower is forward, so it doesn't spawn under the character")]
+    [SerializeField] float m_FlowerForwardOffset = 0.2f;
+
     // -- config --
     [Header("config")]
     [Tooltip("the layer mask for the ground")]
@@ -42,10 +45,11 @@ public class CharacterCheckpoint: NetworkBehaviour {
     Character m_Character;
 
     /// the saved state, if any
+    [SyncVar]
     Checkpoint m_Checkpoint;
 
-    /// a new checkpoint being placed
-    Checkpoint m_NewCheckpoint;
+    /// a new Checkpoint that is attempted to be created
+    Checkpoint m_TentativeCheckpoint;
 
     /// the visual representation of the current checkpoint
     CharacterFlower m_Flower;
@@ -157,16 +161,13 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// start a new save
     void InitSave() {
         m_SaveElapsed = 0.0f;
-        m_NewCheckpoint = Checkpoint.FromState(m_Character.CurrentState);
+        m_TentativeCheckpoint = Checkpoint.FromState(m_Character.CurrentState);
     }
 
     /// finish the new save
     void FinishSave() {
-        // store position
-        m_Checkpoint = m_NewCheckpoint;
-
         // spawn flower
-        Server_SpawnFlower();
+        Server_CreateCheckpoint(m_TentativeCheckpoint);
 
         // reset state
         ResetSave();
@@ -180,18 +181,22 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// reset save to initial state
     void ResetSave() {
         m_SaveElapsed = k_CastInactive;
-        m_NewCheckpoint = null;
+        m_TentativeCheckpoint = null;
     }
 
     // -- c/s/server
     /// spawn a flower on the ground underneath the character
     [Command]
-    void Server_SpawnFlower() {
+    void Server_CreateCheckpoint(Checkpoint newCheckpoint) {
+        // store position
+        m_Checkpoint = newCheckpoint;
+
         m_Flower?.Server_Release();
 
+        // TODO: maybe move this to Flower.Spawn?
         // find ground position
         var hits = Physics.RaycastNonAlloc(
-            m_Character.transform.position,
+            newCheckpoint.Position + newCheckpoint.Forward * m_FlowerForwardOffset,
             Vector3.down,
             m_Hits,
             3.0f,
@@ -298,19 +303,21 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     // -- types --
     /// a checkpoint state
-    private sealed class Checkpoint {
+    [System.Serializable]
+    public sealed class Checkpoint {
         // -- props --
         /// the position
-        public readonly Vector3 Position;
+        public Vector3 Position;
 
         /// the character facing
-        public readonly Vector3 Forward;
+        public Vector3 Forward;
 
         /// the character rotation
-        public readonly Quaternion Rotation;
+        public Quaternion Rotation;
 
         // -- lifetime --
         /// create a new checkpoint
+        public Checkpoint() { }
         public Checkpoint(Vector3 position, Vector3 forward, Quaternion rotation) {
             Position = position;
             Forward = forward;

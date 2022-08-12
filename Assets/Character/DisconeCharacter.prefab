@@ -329,6 +329,7 @@ MonoBehaviour:
   m_LoadCastPointTime: 1
   m_LoadCastPointDistance: 35
   m_LoadCancelMultiplier: 1
+  m_FlowerForwardOffset: 1.7
   m_GroundMask:
     serializedVersion: 2
     m_Bits: 385
@@ -379,7 +380,7 @@ MonoBehaviour:
   m_IsInitial: 0
   m_IsAvailable: 1
   m_IsDebug: 0
-  m_CurrentState:
+  m_ReceivedState:
     Position: {x: 0, y: 0, z: 0}
     Velocity: {x: 0, y: 0, z: 0}
     Acceleration: {x: 0, y: 0, z: 0}
@@ -399,7 +400,9 @@ MonoBehaviour:
     VisionRadius: 1000
     HearingRadius: 500
     TalkingRadius: 2
+  m_InterpolationTime: 0.2
   m_Music: {fileID: 1029445836574466050}
+  m_Simulation: 2
 --- !u!114 &1731996866325999123
 MonoBehaviour:
   m_ObjectHideFlags: 0
