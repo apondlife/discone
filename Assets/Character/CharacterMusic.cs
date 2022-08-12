@@ -1,6 +1,7 @@
 using UnityEngine;
 using Musicker;
 using ThirdPerson;
+using System;
 
 /// the character's music ("m***** mousing")
 class CharacterMusic: MonoBehaviour {
@@ -31,10 +32,11 @@ class CharacterMusic: MonoBehaviour {
     [Tooltip("the music source")]
     [SerializeField] FmodMusicSource m_Source;
 
-    [Tooltip("the character state")]
-    [SerializeField] CharacterState m_State;
-
     // -- props --
+    /// the containing DisconeCharacter
+    // TODO: inject this better in the future (parent call these events)
+    DisconeCharacter m_Container;
+
     /// the current key root
     Root m_Root = Root.C;
 
@@ -59,9 +61,11 @@ class CharacterMusic: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         // set deps
-        var container = GetComponentInParent<ThirdPerson.Character>();
-        m_State = container.State;
-        container.Events.Subscribe(CharacterEvent.Jump, PlayJump);
+        m_Container = GetComponentInParent<DisconeCharacter>();
+
+        //  set events
+        m_Container.Character.Events.Bind(CharacterEvent.Jump, PlayJump);
+        m_Container.OnSimulationChanged += OnSimulationChanged;
 
         // set props
         m_Key = new Key(m_Root);
@@ -80,7 +84,7 @@ class CharacterMusic: MonoBehaviour {
     // -- commands --
     // update current step progress
     void Step() {
-        if (!m_State.IsGrounded) {
+        if (!State.IsGrounded) {
             return;
         }
 
@@ -120,7 +124,7 @@ class CharacterMusic: MonoBehaviour {
 
     /// flutter when airborne
     void Flutter() {
-        if (m_State.IsGrounded) {
+        if (State.IsGrounded) {
             m_FlutterTime = -1.0f;
             return;
         }
@@ -179,9 +183,19 @@ class CharacterMusic: MonoBehaviour {
         m_FlutterTime += 0.1f;
     }
 
+    // -- events --
+    private void OnSimulationChanged(DisconeCharacter.Simulation sim)
+    {
+        enabled = sim != DisconeCharacter.Simulation.None;
+    }
+
     // -- queries --
     /// the character's step (planar) velocity
     Vector3 StepVelocity {
-        get => m_State.Curr.GroundVelocity;
+        get => State.Curr.GroundVelocity;
+    }
+
+    ThirdPerson.CharacterState State {
+        get => m_Container.Character.State;
     }
 }
