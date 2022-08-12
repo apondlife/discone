@@ -28,11 +28,22 @@ public sealed class CharacterEvents {
 
     // -- commands --
     /// subscribe to a particular event
-    public AnyDisposable Subscribe(CharacterEvent e, Action action) {
+    public AnyDisposable Bind(CharacterEvent e, Action action) {
         m_Subscribers.TryAdd(e, null);
         m_Subscribers[e] += action;
 
         return new AnyDisposable(() => m_Subscribers[e] -= action);
+    }
+
+    /// subscribe to the next time the event happens
+    public AnyDisposable Once(CharacterEvent e, Action action) {
+        void onceAction() {
+            action();
+            m_Subscribers[e] -= action;
+            m_Subscribers[e] -= onceAction;
+        }
+
+        return Bind(e, onceAction);
     }
 
     internal void Schedule(CharacterEvent evt) {

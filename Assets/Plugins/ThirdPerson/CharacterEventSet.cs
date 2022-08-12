@@ -6,6 +6,7 @@ namespace ThirdPerson {
 [Flags]
 public enum CharacterEvent {
     Jump = 1 << 0,
+    Idle = 2 << 0,
 }
 
 // -- impl --

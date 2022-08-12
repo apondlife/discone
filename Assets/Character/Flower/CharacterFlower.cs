@@ -9,6 +9,7 @@ class CharacterFlower: NetworkBehaviour {
     /// the cache of per-texture materials
     static Dictionary<string, Material> s_MaterialCache = new Dictionary<string, Material>();
 
+
     // -- config --
     [Header("config")]
     [Tooltip("the texture to use for the flower")]
@@ -16,6 +17,10 @@ class CharacterFlower: NetworkBehaviour {
 
     [Tooltip("the saturation of the released flower")]
     [SerializeField] float m_Saturation = 0.8f;
+
+    [Tooltip("the saturation of the released flower")]
+    [SerializeField] float m_SpawnTime = 0.5f;
+
 
     [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
     bool m_IsFree = false;
@@ -32,7 +37,15 @@ class CharacterFlower: NetworkBehaviour {
         #if UNITY_EDITOR
         Dbg.AddToParent("Flowers", this);
         #endif
+
+        var targetScale = transform.localScale;
+        transform.localScale = Vector3.Scale(transform.localScale, new Vector3(1, 0, 1));
+        StartCoroutine(CoroutineHelpers.InterpolateByTime(m_SpawnTime, (k) => {
+            transform.localScale = Vector3.Scale(targetScale, new Vector3(1, k*k, 1));
+        }));
     }
+
+
 
     // -- commands --
     // called when the flower is no longer owned by a character

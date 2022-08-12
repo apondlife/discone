@@ -31,8 +31,13 @@ sealed class IdleSystem: CharacterSystem {
     // -- Idle --
     CharacterPhase Idle => new CharacterPhase(
         name: "Idle",
+        enter: Idle_Enter,
         update: Idle_Update
     );
+
+    void Idle_Enter() {
+        m_Events.Schedule(CharacterEvent.Idle);
+    }
 
     void Idle_Update() {
         m_State.Curr.IdleTime += Time.deltaTime;

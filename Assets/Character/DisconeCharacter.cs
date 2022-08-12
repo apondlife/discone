@@ -101,6 +101,10 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         #endif
     }
 
+    void OnDestroy() {
+        OnSimulationChanged = null;
+    }
+
 
     void FixedUpdate() {
         if (m_Simulation == Simulation.Local) {
@@ -171,6 +175,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     // set the character's simulation location
+    // TODO: lifecycle events? OnSimulatingLocal/OnSimulatingRemote/OnStopSimulating
     public void SetSimulating(bool isSimulating) {
         m_IsSimulating = isSimulating;
         SyncSimulation();
@@ -204,6 +209,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         foreach (var c in m_Simulated) {
             c.SetActive(isSimulated);
         }
+
+        OnSimulationChanged?.Invoke(m_Simulation);
     }
 
     // -- c/server
@@ -244,6 +251,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     // -- events --
     /// when the perceived state changes
+    public delegate void SimulationChangedEvent(Simulation sim);
+
+    public SimulationChangedEvent OnSimulationChanged;
     void OnIsPerceivedChanged() {
         // TODO: run this through the EntityCollisions
         m_Music.SetActive(m_IsPerceived);
