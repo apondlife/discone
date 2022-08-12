@@ -11,5 +11,4 @@ public sealed class CharacterPhaseDrawer: PropertyDrawer {
         EditorGUI.EndProperty();
     }
 }
-
 }
