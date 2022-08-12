@@ -66,12 +66,6 @@ public class Audio: MonoBehaviour {
             .Add(m_MusicVolume.Changed, OnMusicVolumeChanged)
             .Add(m_SfxVolume.Changed, OnSfxVolumeChanged)
             .Add(m_CharacterChangedWithHistory, OnCharacterChanged);
-
-
-        // set it up from player prefs
-        m_MainVolume.SetupPlayerPrefs();
-        m_MusicVolume.SetupPlayerPrefs();
-        m_SfxVolume.SetupPlayerPrefs();
     }
 
     void OnDestroy() {
