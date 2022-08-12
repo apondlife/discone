@@ -25,8 +25,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.10354012, y: -0.000000059604638, z: -0.00000001117587, w: 0.99462533}
-  m_LocalPosition: {x: 0.0000006854534, y: 1, z: -10.000002}
+  m_LocalRotation: {x: -0.10354013, y: 0.0000000042784754, z: 4.453877e-10, w: 0.9946253}
+  m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -319,44 +319,53 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: -0.07486133
-      outSlope: -0.07486133
+      inSlope: -0.0039499043
+      outSlope: -0.0039499043
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.0978628
+      outWeight: 0.42439348
     - serializedVersion: 3
-      time: 0.044444446
-      value: 0
-      inSlope: -0
+      time: 0.21468762
+      value: 0.045855977
+      inSlope: 0.7736388
+      outSlope: 1.1899492
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.3583635
+      value: 0.21682298
+      inSlope: 1.1899492
       outSlope: 2.9161344
       tangentMode: 5
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.22222222
-      value: 1
+      time: 0.45298088
+      value: 0.9946823
       inSlope: 0.08988013
-      outSlope: 0
+      outSlope: -0.059889928
       tangentMode: 1
       weightedMode: 0
       inWeight: 1
-      outWeight: 0.33333334
+      outWeight: 1
     - serializedVersion: 3
-      time: 0.3888889
-      value: 1
-      inSlope: -0
+      time: 0.59472996
+      value: 0.9999924
+      inSlope: 0.03746097
       outSlope: -0.7517467
       tangentMode: 5
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.9
-      value: 0
+      time: 0.810614
+      value: 0.0027160645
       inSlope: -0.06780722
-      outSlope: 0
+      outSlope: -0.0143414205
       tangentMode: 65
       weightedMode: 0
       inWeight: 0.1342596
@@ -373,12 +382,13 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_MaxYawSpeed: 90
-  m_YawAcceleration: 110
+  m_MaxYawSpeed: 300
+  m_YawAcceleration: 80
   m_MinPitch: 25.5
   m_MaxPitch: 60
   m_MaxPitchSpeed: 50
   m_PitchAcceleration: 100
+  m_LocalSpeed: 20
   m_TargetSpeed_DistanceCurve:
     serializedVersion: 2
     m_Curve:
@@ -756,6 +766,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Tunables: {fileID: 11400000, guid: bd25c329fc87d4c929c635a6754cb2e1, type: 2}
+  m_IsPaused: 0
+  m_Idle:
+    m_Phase:
+      Name: Idle
+  m_Wall:
+    m_Phase:
+      Name: NotOnWall
+  m_Jump:
+    m_Phase:
+      Name: NotJumping
+  m_Movement:
+    m_Phase:
+      Name: NotMoving
+  m_Tilt:
+    m_Phase:
+      Name: NotTilting
+  m_Collision:
+    m_Phase:
+      Name: Active
   m_Controller:
     m_CollisionMask:
       serializedVersion: 2
@@ -765,7 +794,6 @@ MonoBehaviour:
     m_CastOffset: 0.01
     m_ContactOffset: 0.01
     m_GroundedGravity: 0.42
-    m_Transform: {fileID: 7614967429340073451}
     m_Capsule: {fileID: 1972163625}
   m_ShowGizmos: 1
 --- !u!136 &1972163625

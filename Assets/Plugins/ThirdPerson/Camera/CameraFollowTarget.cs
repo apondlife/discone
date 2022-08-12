@@ -37,6 +37,9 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the acceleration of the camera pitch")]
     [SerializeField] float m_PitchAcceleration;
 
+    [Tooltip("the rate of change of local distance of the camera to the target")]
+    [SerializeField] float m_LocalSpeed;
+
     [Header("target speed")]
     [Tooltip("the camera speed to camera distance curve")]
     [SerializeField] AnimationCurve m_TargetSpeed_DistanceCurve;
@@ -132,6 +135,9 @@ public class CameraFollowTarget: MonoBehaviour {
 
     /// the current character state
     CharacterState m_State;
+
+    /// the distance the camera is from the target (radius)
+    float m_Distance;
 
     // -- lifecycle --
     void OnValidate() {
@@ -255,7 +261,7 @@ public class CameraFollowTarget: MonoBehaviour {
         var pitchRot = Quaternion.AngleAxis(m_Pitch, pitchAxis);
 
         // update distance based on target speed
-        var distance = Mathf.Lerp(
+        var targetDistance = Mathf.Lerp(
             m_BaseDistance,
             m_TargetSpeed_MaxDistance,
             m_TargetSpeed_DistanceCurve.Evaluate(Mathf.InverseLerp(
@@ -266,15 +272,17 @@ public class CameraFollowTarget: MonoBehaviour {
         );
 
         // update distance if undershooting
-        distance = Mathf.Lerp(
+        targetDistance = Mathf.Lerp(
             m_MinUndershootDistance,
-            distance,
+            targetDistance,
             m_UndershootCurve.Evaluate(Mathf.InverseLerp(m_FreeLook_MinPitch, m_MinPitch, m_Pitch))
         );
 
+        m_Distance = Mathf.MoveTowards(m_Distance, targetDistance, m_LocalSpeed * Time.deltaTime);
+
         // calculate new forward from yaw rotation
         var forward = yawRot * m_ZeroYawDir;
-        m_Target.position = m_Model.position + pitchRot * forward * distance;
+        m_Target.position = m_Model.position + pitchRot * forward * m_Distance;
 
         // store the forward rotation of the target
         m_Target.forward = forward;
