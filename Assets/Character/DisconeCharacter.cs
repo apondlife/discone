@@ -166,7 +166,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
         // sync the current state frame
         m_ReceivedState = state;
-        Server_SendState(state);
+        m_LastSync = NetworkTime.time;
+        Server_SendState(state, m_LastSync);
     }
 
     // set the character's simulation location
@@ -208,9 +209,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     // -- c/server
     /// sync this character's current state from the client
     [Command]
-    void Server_SendState(CharacterState.Frame state) {
+    void Server_SendState(CharacterState.Frame state, double time) {
         m_ReceivedState = state;
-        m_LastSync = NetworkTime.time;
+        m_LastSync = time;
     }
 
     /// mark this character as unavaialble; only call on the server
