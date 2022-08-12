@@ -34,23 +34,22 @@ public class CameraLookAtTarget: MonoBehaviour {
 
     // -- props --
     /// a reference to the character state
-    CharacterState m_State;
+    Character m_Character;
 
     float m_TargetSpeed;
 
     // -- lifecycle --
     void Start() {
         // set deps
-        var character = GetComponentInParent<Character>();
-        m_State = character.State;
+        m_Character = GetComponentInParent<Character>();
     }
 
     void Update() {
         var pos = transform.localPosition;
         var target = m_Target.localPosition;
 
-        // if falling
-        if (m_State.IsGrounded) {
+        // if not falling falling
+        if (m_Character.IsPaused || m_Character.State.IsGrounded) {
             target = pos;
         }
         // move target to ground position underneath character
@@ -63,7 +62,7 @@ public class CameraLookAtTarget: MonoBehaviour {
             }
 
             // lerp based on fall speed
-            var fallParam = Mathf.InverseLerp(m_MinFallingSpeed, m_MaxFallingSpeed, -m_State.Velocity.y);
+            var fallParam = Mathf.InverseLerp(m_MinFallingSpeed, m_MaxFallingSpeed, -m_Character.State.Velocity.y);
             delta *= fallParam;
 
             target = transform.localPosition + delta;
