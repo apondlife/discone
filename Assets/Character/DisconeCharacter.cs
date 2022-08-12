@@ -1,7 +1,6 @@
 using UnityEngine;
 using Mirror;
 using ThirdPerson;
-using System;
 using System.Linq;
 
 /// an online character
@@ -10,6 +9,14 @@ using System.Linq;
 [RequireComponent(typeof(CharacterWrap))]
 [RequireComponent(typeof(WorldCoord))]
 public sealed class DisconeCharacter: NetworkBehaviour {
+    // -- types --
+    /// how the character is simulated on the client
+    public enum Simulation {
+        None, // no simulation
+        Remote, // state is received from the server and extrapolated naively
+        Local // state is being simulated locally and sent to the server
+    }
+
     // -- fields --
     /// if this character is available
     [Header("fields")]
@@ -27,12 +34,15 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     [Tooltip("the character's most recent state frame")]
     [SyncVar(hook = nameof(Client_OnStateReceived))]
-    [SerializeField] CharacterState.Frame m_CurrentState;
+    [SerializeField] CharacterState.Frame m_ReceivedState;
 
     // -- config --
     [Header("config")]
     [Tooltip("the character's perception")]
     [SerializeField] CharacterPerception m_Perception;
+
+    [Tooltip("how long does the character take to interpolate to the current received state")]
+    [SerializeField] float m_InterpolationTime = 0.2f;
 
     // -- refs --
     [Header("refs")]
@@ -55,11 +65,17 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the world coordinate
     WorldCoord m_Coord;
 
-    /// whether or not the character is being simulated (not being culled)
+    /// if the character is currently simulating
     bool m_IsSimulating = true;
+
+    /// where the simulation for this character takes place
+    public Simulation m_Simulation = Simulation.Local;
 
     /// the list of simulated children
     GameObject[] m_Simulated;
+
+    [SyncVar]
+    double m_LastSync;
 
     // -- lifecycle --
     void Awake() {
@@ -85,9 +101,29 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         #endif
     }
 
+
     void FixedUpdate() {
-        if (m_IsSimulating) {
-            SyncState();
+        if (m_Simulation == Simulation.Local) {
+            SendState();
+        } else if (m_Simulation == Simulation.Remote) {
+            var interpolate = m_Character.State.Curr.Copy();
+            var target = m_ReceivedState.Copy();
+            var delta = (float)(NetworkTime.time - m_LastSync);
+
+            // TODO: attempt to also extrapolate...
+            // target.Velocity += m_CurrentState.Acceleration * delta;
+            // target.Position += target.Velocity * delta;
+
+            var k = Mathf.Clamp01(delta/m_InterpolationTime);
+            interpolate.Position = Vector3.Lerp(interpolate.Position, target.Position, k);
+            interpolate.Velocity = Vector3.Lerp(interpolate.Velocity, target.Velocity, k);
+            interpolate.Acceleration = Vector3.Lerp(interpolate.Acceleration, target.Acceleration, k);
+
+            interpolate.Forward = Vector3.Slerp(interpolate.Forward, target.Forward, k);
+
+            interpolate.Tilt = Quaternion.Slerp(interpolate.Tilt, target.Tilt, k);
+
+            m_Character.ForceState(interpolate);
         }
     }
 
@@ -99,9 +135,24 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         Server_RemoveClientAuthority();
     }
 
+    public override void OnStartAuthority() {
+        base.OnStartAuthority();
+
+        // we may move to local simulation if we lose this authority over this character
+        SyncSimulation();
+    }
+
+    public override void OnStopAuthority() {
+        base.OnStopAuthority();
+
+        // we may move to remote simulation if we lose this authority over this character
+        SyncSimulation();
+    }
+
     // -- commands --
-    /// sync state from client -> server, if necessary
-    void SyncState() {
+    /// send state from client -> server, if necessary
+    void SendState() {
+        var dontSend = !hasAuthority || !isClient;
         // if we don't have authority, do nothing
         if (!hasAuthority || !isClient) {
             return;
@@ -109,42 +160,61 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
         // if the state did not change, do nothing
         var state = m_Character.CurrentState;
-        if (m_CurrentState.Equals(state)) {
+        if (m_ReceivedState.Equals(state)) {
             return;
         }
 
         // sync the current state frame
-        m_CurrentState = state;
-        Server_SyncState(state);
+        m_ReceivedState = state;
+        Server_SendState(state);
     }
 
-    // set the character to simluating or not (basically, isActive but w/ network identity)
+    // set the character's simulation location
     public void SetSimulating(bool isSimulating) {
+        m_IsSimulating = isSimulating;
+        SyncSimulation();
+    }
+
+    // update the character's simulation location
+    void SyncSimulation() {
+        var simulation = (m_IsSimulating, hasAuthority) switch {
+            (false, _) => Simulation.None,
+            (_, true) => Simulation.Local,
+            (_, false) => Simulation.Remote,
+        };
+
         // ignore redundant calls
-        if (m_IsSimulating == isSimulating) {
+        if (m_Simulation == simulation) {
             return;
         }
 
         // update state
-        m_IsSimulating = isSimulating;
+        m_Simulation = simulation;
 
-        // toggle pause for the third person simulation
-        m_Character.IsPaused = !isSimulating;
+        // if the character is simulated at all
+        var isSimulated = simulation != Simulation.None;
+
+        // pause when not simulated at all
+        m_Character.IsPaused = !isSimulated;
+        // TODO: if extrapolating might not need to simulate locally at all
+        // m_Character.IsPaused = simulation != Simulation.Local;
 
         // toggle activity on all the children to turn off rendering, effects, &c
         foreach (var c in m_Simulated) {
-            c.SetActive(isSimulating);
+            c.SetActive(isSimulated);
         }
     }
 
     // -- c/server
     /// sync this character's current state from the client
     [Command]
-    void Server_SyncState(CharacterState.Frame state) {
-        m_CurrentState = state;
+    void Server_SendState(CharacterState.Frame state) {
+        m_ReceivedState = state;
+        m_LastSync = NetworkTime.time;
     }
 
     /// mark this character as unavaialble; only call on the server
+    [Server]
     public void Server_AssignClientAuthority(NetworkConnection connection) {
         m_IsAvailable = false;
         netIdentity.RemoveClientAuthority();
@@ -152,6 +222,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     /// mark this character as available; only call this on the server
+    [Server]
     public void Server_RemoveClientAuthority() {
         m_IsAvailable = true;
         netIdentity.RemoveClientAuthority();
@@ -185,7 +256,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         }
 
         // update character's current state frame
-        m_Character.ForceState(dst);
+        // m_Character.ForceState(dst);
     }
 
     // -- e/drive
@@ -214,7 +285,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     /// if the character is simulating
     public bool IsSimulating {
-        get => m_IsSimulating;
+        get => m_Simulation != Simulation.None;
     }
 
     /// the third person character

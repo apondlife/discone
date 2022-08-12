@@ -29,7 +29,7 @@ public class CharacterWrap : NetworkBehaviour {
         }
 
         if (m_Character.IsPaused) {
-          return;
+            return;
         }
 
         var state = m_Character.CurrentState;

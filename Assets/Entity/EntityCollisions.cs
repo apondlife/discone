@@ -43,7 +43,6 @@ sealed class EntityCollisions: MonoBehaviour {
 
             // track activity
             var isSimulating = character.IsSimulating;
-            var isSimulatingPrev = isSimulating;
 
             // zeroth pass: don't cull a player's character
             var isPlayerControlled = false;
@@ -61,7 +60,7 @@ sealed class EntityCollisions: MonoBehaviour {
                 var coord = character.Coord.Value;
 
                 // update coord for previously active (e.g. potentially moving) characters
-                if (isSimulatingPrev) {
+                if (isSimulating) {
                     // get transforms
                     if (ct == null) {
                         ct = character.transform;
@@ -104,10 +103,8 @@ sealed class EntityCollisions: MonoBehaviour {
                 }
             }
 
-            // finally, update active if changed (very slow to make redundant calls to SetActive)
-            if (isSimulating != isSimulatingPrev) {
-                character.SetSimulating(isSimulating);
-            }
+            // finally, update simulating state
+            character.SetSimulating(isSimulating);
         }
     }
 }

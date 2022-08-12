@@ -6,10 +6,8 @@ namespace ThirdPerson {
 /// a character system; may be a state machine
 [Serializable]
 abstract class CharacterSystem {
-    // -- fields --
-    [Tooltip("if the system is paused")]
-    [SerializeField] bool m_IsPaused;
-
+    // -- state --
+    [Header("state")]
     [Tooltip("the current phase")]
     [SerializeField] protected CharacterPhase m_Phase;
 
@@ -62,10 +60,6 @@ abstract class CharacterSystem {
     // -- commands --
     /// update the system's current phase
     public virtual void Update() {
-        if (m_IsPaused) {
-            return;
-        }
-
         m_Phase.Update();
     }
 
@@ -91,7 +85,7 @@ abstract class CharacterSystem {
         #endif
     }
 
-    // -- c/debug
+    // -- debug --
     #if UNITY_EDITOR
     /// log debug information for this system
     protected void UseLogging(bool isLogging = true) {

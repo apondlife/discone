@@ -10,6 +10,11 @@ public partial class Character: MonoBehaviour {
     [Tooltip("the tunables; for tweaking the player's attributes")]
     [SerializeField] CharacterTunablesBase m_Tunables;
 
+    // -- state --
+    [Header("state")]
+    [Tooltip("if all simulation is paused")]
+    [SerializeField] bool m_IsPaused;
+
     // -- systems --
     [Header("systems")]
     [Tooltip("the idle system")]
@@ -99,7 +104,7 @@ public partial class Character: MonoBehaviour {
 
     void FixedUpdate() {
         // run simulation
-        if (!IsPaused) {
+        if (!m_IsPaused) {
             Simulate();
             m_Events.DispatchAll();
         }
@@ -124,7 +129,10 @@ public partial class Character: MonoBehaviour {
 
     // -- props/hot --
     /// if the character simulation is paused
-    public bool IsPaused { get; set; }
+    public bool IsPaused {
+        get => m_IsPaused;
+        set => m_IsPaused = value;
+    }
 
     // -- commands --
     /// drive the character with a new input source
