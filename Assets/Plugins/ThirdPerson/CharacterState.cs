@@ -73,7 +73,7 @@ public sealed partial class CharacterState {
         public Vector3 Acceleration = Vector3.zero;
 
         /// the current facing direction
-        public Vector3 Forward;
+        public Vector3 Forward = Vector3.forward;
 
         /// if the character is in jump squat
         public bool IsInJumpSquat = false;

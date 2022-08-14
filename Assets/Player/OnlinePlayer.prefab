@@ -66,12 +66,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  m_Character: {fileID: 0}
   m_PlayerCount: {fileID: 11400000, guid: 5707d8e6e5a97f740ba3d27d2b61bd8c, type: 2}
   m_SwitchCharacter: {fileID: 11400000, guid: 1ffcf622465e24d1f82887e4c9b64359, type: 2}
   m_Connected: {fileID: 11400000, guid: 241e9fa7bdb084b3f80950fd6fa40bfa, type: 2}
   m_Disconnected: {fileID: 11400000, guid: fa04c622b172747cf8a63e0e443e93ff, type: 2}
-  m_CurrentPlayer: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
-  m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
+  m_LocalPlayer: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
+  m_LocalCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
   m_Entities: {fileID: 11400000, guid: 8ad8e32d8125540e8b5040f0b6c0d78c, type: 2}
 --- !u!114 &5968853854138464468
 MonoBehaviour:
@@ -86,6 +87,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Value: {x: 69, y: 420}
+  m_ChunkSize:
+    _usage: 2
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 11400000, guid: f7610f4785cf8493ca76dfc06c4cba63, type: 2}
+    _variableInstancer: {fileID: 0}
 --- !u!114 &73168218410530611
 MonoBehaviour:
   m_ObjectHideFlags: 0

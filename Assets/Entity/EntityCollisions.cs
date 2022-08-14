@@ -24,8 +24,8 @@ sealed class EntityCollisions: MonoBehaviour {
         var players = m_Entities.Players;
         var characters = m_Entities.Characters;
 
-        // wait until there is player with a character
-        if (players.Current?.Character == null) {
+        // if there are no players, don't try culling
+        if (!players.Any) {
             return;
         }
 
@@ -47,6 +47,8 @@ sealed class EntityCollisions: MonoBehaviour {
             // zeroth pass: don't cull a player's character
             var isPlayerControlled = false;
 
+            // TODO: online player sends events when a character is captured/released
+            // and the characters repo listens to those events to manage a set of characters
             foreach (var player in players.All) {
                 if (player.Character == character) {
                     isSimulating = true;
@@ -57,7 +59,7 @@ sealed class EntityCollisions: MonoBehaviour {
 
             if (!isPlayerControlled) {
                 // first pass: cull any characters in inactive chunks
-                var coord = character.Coord.Value;
+                var coord = character.Coord;
 
                 // update coord for previously active (e.g. potentially moving) characters
                 if (isSimulating) {
@@ -67,11 +69,10 @@ sealed class EntityCollisions: MonoBehaviour {
                     }
 
                     // update coord
-                    coord = WorldCoord.FromPosition(ct.position, chunks.ChunkSize);
-                    character.Coord.Value = coord;
+                    coord.Value = coord.FromPosition(ct.position);
                 }
 
-                isSimulating = chunks.IsChunkActive(coord);
+                isSimulating = chunks.IsChunkActive(coord.Value);
 
                 // second pass: check against proximity to players
                 if (isSimulating) {
@@ -92,7 +93,7 @@ sealed class EntityCollisions: MonoBehaviour {
                         }
 
                         // check for vision
-                        var dist = Vector3.Distance(pt.position, ct.position);
+                        var dist = Vector3.Distance(pt.position.XNZ(), ct.position.XNZ());
                         isSimulating = dist < pp.VisionRadius;
 
                         // end if we find one

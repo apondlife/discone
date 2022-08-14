@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{0df8a1da-7477-4690-b5bd-43fbd9175325}">
 		<property name="name">
-			<value>Mousing-ivan</value>
+			<value>Mousing-gerby</value>
 		</property>
 		<property name="outputFormat">
 			<value>2</value>
@@ -156,7 +156,11 @@
 	</object>
 	<object class="MixerBusPanner" id="{8d14e140-3c99-4683-b511-0c86387e466f}" />
 	<object class="MixerBusFader" id="{f20f8123-3aea-4510-9fa7-b1c97459f531}" />
-	<object class="SpatialiserEffect" id="{7c8c48f2-5bba-4bc6-8c31-cc674f8787ec}" />
+	<object class="SpatialiserEffect" id="{7c8c48f2-5bba-4bc6-8c31-cc674f8787ec}">
+		<property name="maximumDistance">
+			<value>60</value>
+		</property>
+	</object>
 	<object class="Automator" id="{30a605b0-d282-4b3a-a78f-7aae724797e3}">
 		<property name="nameOfPropertyBeingAutomated">
 			<value>duration</value>

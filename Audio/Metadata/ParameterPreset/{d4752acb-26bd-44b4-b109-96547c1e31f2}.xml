@@ -24,5 +24,13 @@
 		<property name="initialValue">
 			<value>-1</value>
 		</property>
+		<relationship name="modulators">
+			<destination>{4173068a-8a0e-465a-b30f-75ecc75234dd}</destination>
+		</relationship>
+	</object>
+	<object class="ADSRModulator" id="{4173068a-8a0e-465a-b30f-75ecc75234dd}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>cursorPosition</value>
+		</property>
 	</object>
 </objects>

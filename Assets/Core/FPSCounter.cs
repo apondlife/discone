@@ -1,36 +1,52 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityAtoms.BaseAtoms;
+using UnityEngine;
 
-public class FPSCounter : MonoBehaviour
-{
+/// calculates average fps
+/// - todo: AverageFps/CurrentFps
+public class FPSCounter: MonoBehaviour {
+    // -- configs --
     [Header("config")]
-    [Tooltip("the Period to log the fps")]
-    [SerializeField] private float m_LogPeriod;
+    [Tooltip("the period over which to average fps")]
+    [SerializeField] float m_LogPeriod;
 
+    [Tooltip("the delta threshold before logging the fps")]
+    [SerializeField] float m_LogThreshold;
+
+    // -- refs --
     [Header("refs")]
     [Tooltip("the last updated fps")]
-    [SerializeField] private FloatVariable m_FPS;
+    [SerializeField] FloatVariable m_FPS;
 
-    private float m_Timer;
-    private int m_Frames;
+    // -- props --
+    /// the accumulated time this period
+    float m_PeriodTime;
 
+    /// the number of frames this period
+    int m_PeriodFrames;
+    /// the last logged fps
+    float m_LastLoggedFps = 0.0f;
 
     // Update is called once per frame
-    void Update()
-    {
-        m_Timer += Time.deltaTime;
-        m_Frames ++;
+    void Update() {
+        // accumulate data this period
+        m_PeriodTime += Time.deltaTime;
+        m_PeriodFrames += 1;
 
-        if(m_Timer > m_LogPeriod) {
-            var fps = (float)m_Frames / m_Timer;
+        // if period completes, output data
+        if (m_PeriodTime > m_LogPeriod) {
+            // update the fps
+            var fps = (float)m_PeriodFrames / m_PeriodTime;
+            m_FPS.SetValue(fps);
 
-            m_FPS?.SetValue(fps);
-            Debug.Log($"[FPS] Total frames: {m_Frames}. FPS: {fps}");
+            // log if significant
+            if (Mathf.Abs(fps - m_LastLoggedFps) >= m_LogThreshold) {
+                m_LastLoggedFps = fps;
+                Debug.Log($"[report] {fps} fps over {m_PeriodFrames}");
+            }
 
-            m_Timer = 0;
-            m_Frames = 0;
+            // reset period
+            m_PeriodTime = 0;
+            m_PeriodFrames = 0;
         }
     }
 }

@@ -21,7 +21,6 @@ class CharacterFlower: NetworkBehaviour {
     [Tooltip("the saturation of the released flower")]
     [SerializeField] float m_SpawnTime = 0.5f;
 
-
     [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
     bool m_IsFree = false;
 

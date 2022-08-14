@@ -80,13 +80,16 @@ public sealed class WorldChunks: MonoBehaviour {
         // if the target is active
         var pt = player.transform;
 
-        // if the target changed chunks, create neighbors
-        var next = WorldCoord.FromPosition(pt.position, m_ChunkSize);
+        // get their coord
+        var coord = player.Coord;
 
-        var curr = player.Coord.Value;
+        // if the target changed chunks, create neighbors
+        var next = coord.FromPosition(pt.position);
+        var curr = coord.Value;
+
         if (curr != next) {
             // update coord
-            player.Coord.Value = next;
+            coord.Value = next;
 
             // first enter new chunks, spawning any new ones
             TrackChunks(next, enter: true);

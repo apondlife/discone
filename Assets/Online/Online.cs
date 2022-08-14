@@ -15,11 +15,6 @@ public class Online: NetworkManager {
         Disconnected
     }
 
-    // -- fields --
-    [Header("config")]
-    [Tooltip("should the host restart on client disconnect")]
-    [SerializeField] bool m_RestartHostOnDisconnect;
-
     // -- state --
     [Header("state")]
     [Tooltip("the host address to connect to")]
@@ -27,6 +22,14 @@ public class Online: NetworkManager {
 
     [Tooltip("if the player is the host")]
     [SerializeField] BoolVariable m_IsHost;
+
+    // -- fields --
+    [Header("config")]
+    [Tooltip("if this is a standalone server (no host client)")]
+    [SerializeField] bool m_IsStandalone;
+
+    [Tooltip("should the host restart on client disconnect")]
+    [SerializeField] bool m_RestartHostOnDisconnect;
 
     // -- inputs --
     [Header("inputs")]
@@ -41,18 +44,12 @@ public class Online: NetworkManager {
     [Tooltip("an event for logging errors")]
     [SerializeField] StringEvent m_ErrorEvent;
 
-    // -- deps --
-    [Header("deps")]
-    [Tooltip("a reference to the player character")]
-    [FormerlySerializedAs("m_PlayerCharacter")]
-    [SerializeField] GameObjectVariable m_Player;
-
     // -- props --
     /// the set of event subscriptions
     Subscriptions subscriptions = new Subscriptions();
 
     /// the current state
-    public State m_State = State.Host;
+    State m_State = State.Host;
 
     // -- lifecycle --
     public override void Awake() {
@@ -67,21 +64,16 @@ public class Online: NetworkManager {
     public override void Start() {
         base.Start();
 
-        // set the initial address
-        var addr = m_HostAddress?.Value;
-        if (addr != null && addr != "") {
-            networkAddress = addr;
-        }
+        #if UNITY_SERVER
+        m_IsStandalone = true;
+        #elif !UNITY_EDITOR
+        m_IsStandalone = false;
+        #endif
 
-        // start a host for every player, immediately
-        // TODO: is this a good idea? for now at least
-        try {
-            SwitchToHost();
-        } catch (System.Net.Sockets.SocketException err) {
-            var code = err.ErrorCode;
-            if (code == 10048 && (addr == "localhost" || addr == "127.0.0.1")) {
-                SwitchToClient();
-            }
+        if (m_IsStandalone) {
+            StartAsServer();
+        } else {
+            StartAsHost();
         }
     }
 
@@ -96,9 +88,8 @@ public class Online: NetworkManager {
     public override void OnClientError(Exception exception) {
         base.OnClientError(exception);
 
-        m_ErrorEvent?.Raise($"[online] client exception: {exception.Message}");
-
-        Debug.Log($"[online] client error {exception}");
+        Debug.Log($"[online] client error: {exception}");
+        m_ErrorEvent?.Raise($"[online] client error: {exception.Message}");
     }
 
     public override void OnClientConnect() {
@@ -108,6 +99,12 @@ public class Online: NetworkManager {
             m_State = State.Client;
             Debug.Log($"[online] client connected!");
         }
+    }
+
+    public override void OnServerConnect(NetworkConnection conn) {
+        base.OnServerConnect(conn);
+
+        Debug.Log($"[online] new client connected! client[{conn.connectionId}]:{conn.address}");
     }
 
     public override void OnClientNotReady() {
@@ -139,26 +136,61 @@ public class Online: NetworkManager {
         // give player a chance to clean up before being destroyed
         var player = conn.identity.gameObject.GetComponent<OnlinePlayer>();
         if (player == null) {
-            Debug.LogError($"[Error] diconnected player has no OnlinePlayer!");
+            Debug.LogError($"[online] diconnected player is not an OnlinePlayer!");
         } else {
             player.Server_OnDisconnect();
         }
+
+        Debug.Log($"[online] client disconnected client[{conn.connectionId}]:{conn.address}");
 
         // destroy the player
         base.OnServerDisconnect(conn);
     }
 
     // -- commands --
+    /// start the game as a standalone server
+    void StartAsServer() {
+        SwitchToHost();
+    }
+
+    /// start the game as a host (server & client)
+    void StartAsHost() {
+        // set the initial address
+        var addr = m_HostAddress?.Value;
+        if (addr != null && addr != "") {
+            networkAddress = addr;
+        }
+
+        // start a host for every player, immediately
+        // TODO: is this a good idea? for now at least
+        try {
+            SwitchToHost();
+        } catch (System.Net.Sockets.SocketException err) {
+            var code = err.ErrorCode;
+            if (code == 10048 && (addr == "localhost" || addr == "127.0.0.1")) {
+                SwitchToClient();
+            }
+        }
+    }
+
     /// start game as host
     void SwitchToHost() {
+        Debug.Log("[online] switching to host");
+
         m_State = State.Host;
         m_IsHost.Value = true;
 
-        StartHost();
+        if (m_IsStandalone) {
+            StartServer();
+        } else {
+            StartHost();
+        }
     }
 
     /// start game as client
     void SwitchToClient() {
+        Debug.Log("[online] switching to client");
+
         m_State = State.Connecting;
         m_IsHost.Value = false;
 
