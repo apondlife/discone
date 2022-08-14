@@ -1,7 +1,6 @@
 using Mirror;
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
-using UnityEngine.Serialization;
 using System;
 
 /// the online "manager"
@@ -25,9 +24,6 @@ public class Online: NetworkManager {
 
     // -- fields --
     [Header("config")]
-    [Tooltip("if this is a standalone server (no host client)")]
-    [SerializeField] bool m_IsStandalone;
-
     [Tooltip("should the host restart on client disconnect")]
     [SerializeField] bool m_RestartHostOnDisconnect;
 
@@ -43,6 +39,11 @@ public class Online: NetworkManager {
     [Header("outputs")]
     [Tooltip("an event for logging errors")]
     [SerializeField] StringEvent m_ErrorEvent;
+
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("if this is a standalone server (no host client)")]
+    [SerializeField] BoolReference m_IsStandalone;
 
     // -- props --
     /// the set of event subscriptions
@@ -64,13 +65,7 @@ public class Online: NetworkManager {
     public override void Start() {
         base.Start();
 
-        #if UNITY_SERVER
-        m_IsStandalone = true;
-        #elif !UNITY_EDITOR
-        m_IsStandalone = false;
-        #endif
-
-        if (m_IsStandalone) {
+        if (IsStandalone) {
             StartAsServer();
         } else {
             StartAsHost();
@@ -180,7 +175,7 @@ public class Online: NetworkManager {
         m_State = State.Host;
         m_IsHost.Value = true;
 
-        if (m_IsStandalone) {
+        if (IsStandalone) {
             StartServer();
         } else {
             StartHost();
@@ -201,6 +196,19 @@ public class Online: NetworkManager {
     /// if we're acting as the host
     bool IsHost {
         get => NetworkServer.active;
+    }
+
+    /// if the game is running as a standalone server
+    bool IsStandalone {
+        get {
+            #if UNITY_SERVER
+            return true;
+            #elif !UNITY_EDITOR
+            return false;
+            #endif
+
+            return m_IsStandalone;
+        }
     }
 
     // -- events --

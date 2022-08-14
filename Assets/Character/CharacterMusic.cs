@@ -1,6 +1,7 @@
-using UnityEngine;
 using Musicker;
 using ThirdPerson;
+using UnityAtoms.BaseAtoms;
+using UnityEngine;
 
 /// the character's music ("m***** mousing")
 class CharacterMusic: MonoBehaviour {
@@ -37,6 +38,9 @@ class CharacterMusic: MonoBehaviour {
     [Tooltip("the music source")]
     [SerializeField] FmodMusicSource m_Source;
 
+    [Tooltip("if running as a standalone server")]
+    [SerializeField] BoolReference m_IsStandalone;
+
     // -- props --
     /// the containing DisconeCharacter
     // TODO: inject this better in the future (parent call these events)
@@ -66,6 +70,10 @@ class CharacterMusic: MonoBehaviour {
     // -- lifecycle --
     #if !UNITY_SERVER
     void Start() {
+        if (m_IsStandalone) {
+            return;
+        }
+
         // set deps
         m_Container = GetComponentInParent<DisconeCharacter>();
 
@@ -78,6 +86,10 @@ class CharacterMusic: MonoBehaviour {
     }
 
     void Update() {
+        if (m_IsStandalone) {
+            return;
+        }
+
         // update state
         Step();
         Flutter();
