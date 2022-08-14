@@ -44,8 +44,6 @@ class CharacterFlower: NetworkBehaviour {
         }));
     }
 
-
-
     // -- commands --
     // called when the flower is no longer owned by a character
     public void Server_Release() {
