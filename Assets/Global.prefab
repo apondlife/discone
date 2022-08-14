@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1406148602499953224}
   - component: {fileID: 40564771982500791}
+  - component: {fileID: 192987791520122}
   m_Layer: 0
-  m_Name: FPSCounter
+  m_Name: Stats
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,8 +45,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a116937c7c247b84bbfeb0b6b08fed59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LogPeriod: 10
-  m_FPS: {fileID: 11400000, guid: c065a6624a5ea6249818377b320da269, type: 2}
+  m_Fps: {fileID: 11400000, guid: c065a6624a5ea6249818377b320da269, type: 2}
+  m_Interval: 1
+--- !u!114 &192987791520122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 691051543725094715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 963f04e25871e46a48ae52ee02863a6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Interval: 5
+  m_MaxInterval: 60
+  m_FpsDeltaThreshold: 3
+  m_Fps:
+    _usage: 2
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 11400000, guid: c065a6624a5ea6249818377b320da269, type: 2}
+    _variableInstancer: {fileID: 0}
+  m_PlayerCount:
+    _usage: 2
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 11400000, guid: 5707d8e6e5a97f740ba3d27d2b61bd8c, type: 2}
+    _variableInstancer: {fileID: 0}
 --- !u!1 &1757268876249147285
 GameObject:
   m_ObjectHideFlags: 0
