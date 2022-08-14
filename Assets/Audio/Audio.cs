@@ -5,6 +5,9 @@ using UnityAtoms.BaseAtoms;
 
 /// the root audio script
 public class Audio: MonoBehaviour {
+    /// if the music is playing
+    static bool s_IsMusicPlaying = false;
+
     // -- constants --
     /// the maximum volume in decibels
     const float k_MaxVolumeScale = 0.63f;
@@ -46,9 +49,6 @@ public class Audio: MonoBehaviour {
 
     /// the effects bus
     FMOD.Studio.Bus m_SfxBus;
-
-    /// if this music is playing
-    bool m_IsMusicPlaying = false;
 
     /// the subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
@@ -104,8 +104,8 @@ public class Audio: MonoBehaviour {
         var curr = change.Item1;
 
         // the first time the player changes to a character
-        if (!m_IsMusicPlaying && curr != null) {
-            m_IsMusicPlaying = true;
+        if (!s_IsMusicPlaying && curr != null) {
+            s_IsMusicPlaying = true;
             m_Music.Play();
         }
     }
