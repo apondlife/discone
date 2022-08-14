@@ -295,8 +295,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     /// release this character
     public void OnRelease() {
-        // start listening again
-        m_Dialogue.StartListening();
     }
 
     // -- queries --

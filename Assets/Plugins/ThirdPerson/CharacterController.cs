@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// a re-implementation of unity's built-in character controller w/ better
+/// a re-implementation of unity's built-in character cntrlr w/ better
 /// collision handling
 [Serializable]
 public sealed class CharacterController {
@@ -84,7 +84,7 @@ public sealed class CharacterController {
             }
             // until then, stop here
             else {
-                Debug.Log($"[controller] move delta {mag} < {m_MinMove}; accumulating");
+                Debug.Log($"[cntrlr] move delta {mag} < {m_MinMove}; accumulating");
                 return;
             }
         }
@@ -126,7 +126,7 @@ public sealed class CharacterController {
 
             // if we cast an unlikely number of times, stop
             if (i > 4) {
-                Debug.LogError("[controller] cast more than 5 times in a single frame!");
+                Debug.LogError("[cntrlr] cast more than 5 times in a single frame!");
                 break;
             }
 
@@ -211,7 +211,7 @@ public sealed class CharacterController {
                 // this should not happen; but if it does abort the collision from the last
                 // successful cast
                 else {
-                    Debug.LogError($"[controller] HUGE MISTAKE, THIS SHOULD NEVER HAPPEN EVER EVER..., {Mathf.Abs(castDotUp)}");
+                    Debug.LogError($"[cntrlr] HUGE MISTAKE, THIS SHOULD NEVER HAPPEN EVER EVER..., {Mathf.Abs(castDotUp)}");
                     break;
                 }
             }
@@ -278,7 +278,7 @@ public sealed class CharacterController {
 
     // -- gizmos --
     #if UNITY_EDITOR
-    /// draw gizmos for the controller
+    /// draw gizmos for the cntrlr
     public void DrawGizmos() {
         // draw the cast lollipops
         foreach (var cast in m_DebugCasts) {

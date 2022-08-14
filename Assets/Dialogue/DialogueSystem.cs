@@ -62,7 +62,7 @@ public class DialogueSystem: MonoBehaviour {
     /// start dialogue with a particular character
     void StartDialogue(CharacterDialogue dialogue) {
         if (dialogue == null) {
-            Debug.LogError($"[dialogue] tried to start dialogue w/ a character w/ no CharacterDialogue");
+            Debug.LogError($"[dialog] tried to start dialogue w/ a character w/ no CharacterDialogue");
             return;
         }
 
@@ -70,7 +70,7 @@ public class DialogueSystem: MonoBehaviour {
             return;
         }
 
-        Debug.Log($"[dialogue] start dialgoue <{dialogue.NodeTitle}>");
+        Debug.Log($"[dialog] start dialgoue <{dialogue.NodeTitle}>");
 
         DialogueViewBase textbox = ChooseTextbox(dialogue.NodeTitle);
         DialogueViewBase[] textboxArray = { textbox };
@@ -87,18 +87,18 @@ public class DialogueSystem: MonoBehaviour {
 
     /// advance dialgoue to the next line
     void RunNextLine() {
-        Debug.Log($"[dialogue] advance line <{m_ActiveDialogue.NodeTitle}>");
+        Debug.Log($"[dialog] advance line <{m_ActiveDialogue.NodeTitle}>");
         yarnDialogueRunner.OnViewUserIntentNextLine();
     }
 
     /// complete dialgoue with the current character
     void CompleteDialogue() {
         if (m_ActiveDialogue == null) {
-            Debug.LogError($"[dialogue] tried to complete dialogue w/ no active CharacterDialogue");
+            Debug.LogError($"[dialog] tried to complete dialogue w/ no active CharacterDialogue");
             return;
         }
 
-        Debug.Log($"[dialogue] complete dialogue <{m_ActiveDialogue.NodeTitle}>");
+        Debug.Log($"[dialog] complete dialogue <{m_ActiveDialogue.NodeTitle}>");
 
         // complete the active dialgoue
         m_SwitchCharacter.Raise(m_ActiveDialogue.Character);
@@ -125,6 +125,11 @@ public class DialogueSystem: MonoBehaviour {
     // -- events --
     /// when a dialogue node is started
     void OnStartDialogue(GameObject obj) {
+        if (obj == null) {
+            Debug.LogError($"attempting to start dialogue with a destroyed object");
+            return;
+        }
+
         var dialogue = obj.GetComponent<CharacterDialogue>();
         StartDialogue(dialogue);
     }

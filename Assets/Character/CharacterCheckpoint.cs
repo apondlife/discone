@@ -221,7 +221,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         );
 
         if (hits <= 0) {
-            Debug.LogError($"[checkpoint] failed to find flower for {m_Container.name} ground point");
+            Debug.LogError($"[chkpnt] failed to find flower for {m_Container.name} ground point");
         }
 
         // instantiate flower at hit point
