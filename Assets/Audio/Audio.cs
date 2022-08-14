@@ -40,6 +40,9 @@ public class Audio: MonoBehaviour {
     [Tooltip("when the local character changes")]
     [SerializeField] DisconeCharacterPairEvent m_CharacterChangedWithHistory;
 
+    [Tooltip("if running as a standalone server")]
+    [SerializeField] BoolReference m_IsStandalone;
+
     // -- props --
     /// the main bus
     FMOD.Studio.Bus m_MainBus;
@@ -56,6 +59,11 @@ public class Audio: MonoBehaviour {
     // -- lifecycle --
     #if !UNITY_SERVER
     void Start() {
+        // if standalone, there's no audio
+        if (m_IsStandalone) {
+            return;
+        }
+
         // set props
         m_MainBus = FMODUnity.RuntimeManager.GetBus(k_MainBusName);
         m_MusicBus = FMODUnity.RuntimeManager.GetBus(k_MusicBusName);
@@ -70,6 +78,11 @@ public class Audio: MonoBehaviour {
     }
 
     void OnDestroy() {
+        // if standalone, there's no audio
+        if (m_IsStandalone) {
+            return;
+        }
+
         // unbind events
         m_Subscriptions.Dispose();
     }

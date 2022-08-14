@@ -97,7 +97,6 @@ MonoBehaviour:
   - {fileID: 1759957223998774543, guid: 79fd96ee4619948bd95ee8b710b963af, type: 3}
   - {fileID: 2960029541259181288, guid: d3c90f4064219c34d92fa16228c6f295, type: 3}
   - {fileID: 1759957223998774543, guid: 37bb2736011fd4e4f80ace3fb099e7ca, type: 3}
-  m_RestartHostOnDisconnect: 1
   m_HostAddress:
     _usage: 2
     _value: 
@@ -105,10 +104,16 @@ MonoBehaviour:
     _variable: {fileID: 11400000, guid: 9a1de8f959c00404e8f4ea3f74be29c0, type: 2}
     _variableInstancer: {fileID: 0}
   m_IsHost: {fileID: 11400000, guid: 562ea9c4c723d4ba2a26fc6eb3e9c7c9, type: 2}
+  m_RestartHostOnDisconnect: 1
   m_StartClientEvent: {fileID: 11400000, guid: 4317195ff7eed3b459aaacbfbb45ea67, type: 2}
   m_DisconnectEvent: {fileID: 11400000, guid: dd783e5802f7a45bcb8bcd0772fc0c3c, type: 2}
   m_ErrorEvent: {fileID: 11400000, guid: e9711abafc73c0746b74246738baaff4, type: 2}
-  m_State: 0
+  m_IsStandalone:
+    _usage: 1
+    _value: 0
+    _constant: {fileID: 11400000, guid: 344cbe61e6c564b39a84f5d07d7caba7, type: 2}
+    _variable: {fileID: 0}
+    _variableInstancer: {fileID: 0}
 --- !u!1 &5984576550194437987
 GameObject:
   m_ObjectHideFlags: 0
