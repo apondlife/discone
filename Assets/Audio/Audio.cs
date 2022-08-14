@@ -54,6 +54,7 @@ public class Audio: MonoBehaviour {
     Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
+    #if !UNITY_SERVER
     void Start() {
         // set props
         m_MainBus = FMODUnity.RuntimeManager.GetBus(k_MainBusName);
@@ -72,6 +73,7 @@ public class Audio: MonoBehaviour {
         // unbind events
         m_Subscriptions.Dispose();
     }
+    #endif
 
     // -- commands --
     /// set the volume of a particular bus; volume is [0,1]

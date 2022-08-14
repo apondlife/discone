@@ -1,7 +1,6 @@
 using UnityEngine;
 using Musicker;
 using ThirdPerson;
-using System;
 
 /// the character's music ("m***** mousing")
 class CharacterMusic: MonoBehaviour {
@@ -12,6 +11,9 @@ class CharacterMusic: MonoBehaviour {
 
     [Tooltip("the time interval between notes in the jump chord")]
     [SerializeField] float m_JumpInterval = 3.0f / 60.0f;
+
+    [Tooltip("the time interval between notes during flutter")]
+    [SerializeField] float m_FlutterInterval = 0.5f;
 
     // -- music --
     [Header("music")]
@@ -59,6 +61,7 @@ class CharacterMusic: MonoBehaviour {
     float m_FlutterTime = 0.0f;
 
     // -- lifecycle --
+    #if !UNITY_SERVER
     void Start() {
         // set deps
         m_Container = GetComponentInParent<DisconeCharacter>();
@@ -80,6 +83,7 @@ class CharacterMusic: MonoBehaviour {
         PlayStep();
         PlayFlutter();
     }
+    #endif
 
     // -- commands --
     // update current step progress
@@ -130,7 +134,7 @@ class CharacterMusic: MonoBehaviour {
         }
 
         if (m_FlutterTime == -1.0f) {
-            m_FlutterTime = Time.time + 0.5f;
+            m_FlutterTime = Time.time + m_FlutterInterval;
         }
     }
 
@@ -180,7 +184,7 @@ class CharacterMusic: MonoBehaviour {
         }
 
         m_Source.PlayLine(m_Flutter.Value, 0.0f, m_Key);
-        m_FlutterTime += 0.1f;
+        m_FlutterTime += m_FlutterInterval;
     }
 
     // -- events --

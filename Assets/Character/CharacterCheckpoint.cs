@@ -1,8 +1,8 @@
-using ThirdPerson;
-using UnityEngine;
 using Mirror;
 using System.Linq;
 using System;
+using ThirdPerson;
+using UnityEngine;
 
 /// the character's ability to save and reload to a particular state in
 /// the world, like planting a flag.
@@ -85,7 +85,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     void Update() {
         // if we don't have authority, do nothing
-        if (!hasAuthority || !isClient) {
+        if (!netIdentity.IsOwner()) {
             return;
         }
 
@@ -206,6 +206,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         // store position
         m_Checkpoint = newCheckpoint;
 
+        // ???
         m_Flower?.Server_Release();
 
         // TODO: maybe move this to Flower.Spawn?
@@ -305,17 +306,16 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     // -- events --
     [Server]
-    private void Server_OnSimulationChanged(DisconeCharacter.Simulation sim)
-    {
-        if(sim != DisconeCharacter.Simulation.None && m_Checkpoint == null) {
+    void Server_OnSimulationChanged(DisconeCharacter.Simulation sim) {
+        if (sim != DisconeCharacter.Simulation.None && m_Checkpoint == null) {
             // create initial character flower
             // TODO: maybe this should be on build not on "start"?
             // TODO: "floating flowers" maybe this should happen when character is first looked at
 
             // maybe there's an AI
             m_Container.Character.Events.Once(CharacterEvent.Idle, () => {
-                m_TentativeCheckpoint = Checkpoint.FromState(Character.CurrentState);
-                FinishSave();
+                var initialCheckpoint = Checkpoint.FromState(Character.CurrentState);
+                Server_CreateCheckpoint(initialCheckpoint);
             });
         }
     }
@@ -343,7 +343,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     // -- types --
     /// a checkpoint state
-    [System.Serializable]
+    [Serializable]
     public sealed class Checkpoint {
         // -- props --
         /// the position
@@ -352,18 +352,15 @@ public class CharacterCheckpoint: NetworkBehaviour {
         /// the character facing
         public Vector3 Forward;
 
-
-        // -- fields --
         /// the character rotation
-        private Lazy<Quaternion> m_Rotation;
+        Quaternion m_Rotation;
 
         // -- lifetime --
-        /// create a new checkpoint
         public Checkpoint() {
-            m_Rotation = new Lazy<Quaternion>(() => Quaternion.LookRotation(Forward, Vector3.up));
         }
 
-        public Checkpoint(Vector3 position, Vector3 forward) : base() {
+        /// create a new checkpoint
+        public Checkpoint(Vector3 position, Vector3 forward) {
             Position = position;
             Forward = forward;
         }
@@ -386,8 +383,14 @@ public class CharacterCheckpoint: NetworkBehaviour {
         }
 
         /// -- queries --
+        /// the character rotation
         public Quaternion Rotation {
-            get => m_Rotation.Value;
+            get {
+                if (m_Rotation == null) {
+                    m_Rotation = Quaternion.LookRotation(Forward, Vector3.up);
+                }
+                return m_Rotation;
+            }
         }
     }
 }

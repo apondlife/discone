@@ -16,6 +16,5 @@ public class RegionDetector: MonoBehaviour {
     void OnTriggerEnter() {
         Debug.Log($"[region] entered {m_Region.Value.DisplayName}");
         m_RegionEntered.Raise(m_Region.Value);
-
     }
 }

@@ -347,6 +347,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Value: {x: 69, y: 420}
+  m_ChunkSize:
+    _usage: 2
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 11400000, guid: f7610f4785cf8493ca76dfc06c4cba63, type: 2}
+    _variableInstancer: {fileID: 0}
 --- !u!114 &1315896245521232624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,6 +383,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  m_Simulation: 2
   m_IsInitial: 0
   m_IsAvailable: 1
   m_IsDebug: 0
@@ -400,9 +407,8 @@ MonoBehaviour:
     VisionRadius: 1000
     HearingRadius: 500
     TalkingRadius: 2
-  m_InterpolationTime: 0.2
+  m_InterpolationTime: 0
   m_Music: {fileID: 1029445836574466050}
-  m_Simulation: 2
 --- !u!114 &1731996866325999123
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -24,7 +24,7 @@ public class CharacterWrap : NetworkBehaviour {
 
     void FixedUpdate() {
         // if we don't have authority, do nothing
-        if (!hasAuthority || !isClient) {
+        if (!netIdentity.IsOwner()) {
             return;
         }
 

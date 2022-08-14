@@ -12,6 +12,10 @@ using System.Linq;
 [RequireComponent(typeof(WorldCoord))]
 public sealed class OnlinePlayer: NetworkBehaviour {
     // -- state --
+    [Header("state")]
+    [Tooltip("this player's current character")]
+    [SerializeField] DisconeCharacter m_Character;
+
     [Tooltip("the number of connected players")]
     [SerializeField] IntVariable m_PlayerCount;
 
@@ -42,13 +46,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     // -- props --
     /// a set of event subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
-
-    /// the player's synchronized character
-    [SyncVar(hook = nameof(Client_OnCharacterReceived))]
-    GameObject m_CharacterObj;
-
-    /// a reference to the discone character
-    DisconeCharacter m_Character;
 
     /// the world coordinate
     WorldCoord m_Coord;
@@ -130,6 +127,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     // -- c/network
+    /// request to switch the character
     [Command]
     public void Server_SwitchCharacter(GameObject src, GameObject dst) {
         var srcCharacter = src?.GetComponent<DisconeCharacter>();
@@ -138,24 +136,28 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // if the server doesn't have authority over this character, another player
         // already does
         if (!dstCharacter.IsAvailable) {
-            Client_FailedToSwitchCharacter(isInitial: src == null);
+            Target_RetrySwitchCharacter(isInitial: src == null);
             return;
         }
 
         // give this client authority over the character
         dstCharacter.Server_AssignClientAuthority(connectionToClient);
-        m_CharacterObj = dstCharacter.gameObject;
 
         if (srcCharacter != null) {
             srcCharacter.Server_RemoveClientAuthority();
         }
 
-        // call back to the client
-        Client_SwitchCharacter(connectionToClient, dst);
+        // notify target of switch
+        Target_SwitchCharacter(connectionToClient, dst);
+
+        // notify all clients of ownership change
+        m_Character = dstCharacter;
+        Client_ChangeOwnership(dstCharacter.gameObject);
     }
 
+    /// switch to the character
     [TargetRpc]
-    void Client_SwitchCharacter(NetworkConnection target, GameObject dst) {
+    void Target_SwitchCharacter(NetworkConnection target, GameObject dst) {
         // if the player exists
         var player = m_LocalPlayer.GetComponent<Player>();
         if (player == null || !player.enabled) {
@@ -175,12 +177,19 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         player.Drive(character.Character);
     }
 
+    /// try to switch to a new character
     [TargetRpc]
-    void Client_FailedToSwitchCharacter(bool isInitial) {
+    void Target_RetrySwitchCharacter(bool isInitial) {
         // if you can't switch to your initial character, just keep trying
         if (isInitial) {
             DriveInitialCharacter();
         }
+    }
+
+    /// notify all clients that a player switched to a character
+    [ClientRpc]
+    void Client_ChangeOwnership(GameObject character) {
+        m_Character = character.GetComponent<DisconeCharacter>();
     }
 
     // -- queries --
@@ -201,18 +210,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         DriveCharacter(character);
     }
 
-    /// when a new character syncs
-    void Client_OnCharacterReceived(GameObject prev, GameObject curr) {
-        // TODO: gotta be a better way
-        if (curr == null) {
-            curr = null;
-        }
-
-        // update the character
-        m_Character = curr?.GetComponent<DisconeCharacter>();
-    }
-
     /// when the player disconnects on the server
+    [Server]
     public void Server_OnDisconnect() {
         // don't do anything if server is shutting down
         if (!NetworkServer.active) {

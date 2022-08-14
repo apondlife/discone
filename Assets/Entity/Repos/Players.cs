@@ -42,6 +42,11 @@ public sealed class Players: MonoBehaviour {
     }
 
     // -- queries -
+    /// if there are any players
+    public bool Any {
+        get => m_All.Count != 0;
+    }
+
     /// the current (local) player
     public OnlinePlayer Current {
         get => m_Current.Length == 0 ? null : m_Current[0];
