@@ -12,8 +12,11 @@ class CharacterMusic: MonoBehaviour {
     [Tooltip("the time interval between notes in the jump chord")]
     [SerializeField] float m_JumpInterval = 3.0f / 60.0f;
 
+    [Tooltip("the time before the flutter starts")]
+    [SerializeField] float m_FlutterDelay = 0.5f;
+
     [Tooltip("the time interval between notes during flutter")]
-    [SerializeField] float m_FlutterInterval = 0.5f;
+    [SerializeField] float m_FlutterInterval = 0.1f;
 
     // -- music --
     [Header("music")]
@@ -134,7 +137,7 @@ class CharacterMusic: MonoBehaviour {
         }
 
         if (m_FlutterTime == -1.0f) {
-            m_FlutterTime = Time.time + m_FlutterInterval;
+            m_FlutterTime = Time.time + m_FlutterDelay;
         }
     }
 
