@@ -3,34 +3,63 @@
 # run this script from the project root; a portable way of getting
 # a script's path is hard to come by, so we assume .env is in the cwd
 
-# create .env if missing
-if [ ! -f .env ]; then
-  if [ ! -f .env.sample ]; then
-    echo "✘ you need a .env (and a .env.sample to create it from)"
-    echo "- run this script from the project root, e.g."
-    echo "> ./bin/build"
-    exit 1
+# -- parsing --
+Usage() {
+  echo "usage: ./bin/build [-h]"
+  exit -1
+}
+
+while getopts ":h" option; do
+  case "${option}" in
+    h*) Usage ;;
+  esac
+done
+
+# -- commands --
+# build the targets
+Build() {
+  # run the build script; find it in Assets/Editor/Builds/BuildAll.cs
+  "$UNITY_PATH" \
+    -quit -batchmode \
+    -projectPath . \
+    -logfile - \
+    -executeMethod Builds.BuildAll.Call
+}
+
+# load the environment
+CheckEnv() {
+  # create .env if missing
+  if [ ! -f .env ]; then
+    if [ ! -f .env.sample ]; then
+      echo "✘ you need a .env (and a .env.sample to create it from)"
+      echo "- run this script from the project root, e.g."
+      echo "> ./bin/build"
+      exit 1
+    fi
+
+    echo "- creating .env from .env.sample; fill it out and try again"
+    cp .env.sample .env
+
+    exit 2
+  fi
+}
+
+# -- main --
+Main() {
+  CheckEnv
+
+  # load env
+  source .env
+
+  # validate env
+  # TODO: check if unity is running and send nice error message
+  if [ ! -f "$UNITY_PATH" ]; then
+    echo "✘ unity (.env->UNITY_PATH) does not exist at '$UNITY_PATH'"
+    exit 3
   fi
 
-  echo "- creating .env from .env.sample; fill it out and try again"
-  cp .env.sample .env
+  # run build
+  Build
+}
 
-  exit 2
-fi
-
-# load env vars
-source .env
-
-# validate path
-if [ ! -f "$UNITY_PATH" ]; then
-  echo "✘ unity (.env->UNITY_PATH) does not exist at '$UNITY_PATH'"
-  exit 3
-fi
-
-# TODO: check if unity is running and send nice error message
-# run the build script; find it in Assets/Editor/Builds/BuildAll.cs
-"$UNITY_PATH" \
-  -quit -batchmode \
-  -projectPath . \
-  -logfile - \
-  -executeMethod Builds.BuildAll.Call
+Main "$*"
