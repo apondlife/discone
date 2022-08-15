@@ -1,0 +1,12 @@
+#!/bin/sh
+# run this script from the project root; a portable way of getting
+# a script's path is hard to come by, so we assume .env is in the cwd
+source .env
+
+# TODO: check if unity is running and send nice error message
+# run the build script; find it in Assets/Editor/Builds/BuildAll.cs
+$UNITY_PATH \
+  -quit -batchmode \
+  -projectPath . \
+  -logfile - \
+  -executeMethod Builds.BuildAll.Call
