@@ -19,7 +19,7 @@ public class AudioFmodConfig: FMODUnity.PlatformCallbackHandler {
         reportResult(res, "studioSystem.getCoreSystem");
 
         // check if standalone
-        var isStandalone = m_IsStandalone;
+        var isStandalone = m_IsStandalone.Value;
         #if UNITY_SERVER
         isStandalone = true;
         #elif !UNITY_EDITOR
