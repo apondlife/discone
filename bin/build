@@ -1,11 +1,35 @@
 #!/bin/sh
+
 # run this script from the project root; a portable way of getting
 # a script's path is hard to come by, so we assume .env is in the cwd
+
+# create .env if missing
+if [ ! -f .env ]; then
+  if [ ! -f .env.sample ]; then
+    echo "✘ you need a .env (and a .env.sample to create it from)"
+    echo "- run this script from the project root, e.g."
+    echo "> ./bin/build"
+    exit 1
+  fi
+
+  echo "- creating .env from .env.sample; fill it out and try again"
+  cp .env.sample .env
+
+  exit 2
+fi
+
+# load env vars
 source .env
+
+# validate path
+if [ ! -f "$UNITY_PATH" ]; then
+  echo "✘ unity (.env->UNITY_PATH) does not exist at '$UNITY_PATH'"
+  exit 3
+fi
 
 # TODO: check if unity is running and send nice error message
 # run the build script; find it in Assets/Editor/Builds/BuildAll.cs
-$UNITY_PATH \
+"$UNITY_PATH" \
   -quit -batchmode \
   -projectPath . \
   -logfile - \
