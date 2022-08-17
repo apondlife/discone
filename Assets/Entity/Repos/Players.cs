@@ -5,8 +5,8 @@ using UnityEngine;
 
 /// a repository of players
 public sealed class Players: MonoBehaviour {
-    // -- events --
-    [Header("events")]
+    // -- subscribed --
+    [Header("subscribed")]
     [Tooltip("when a player connects")]
     [SerializeField] OnlinePlayerEvent m_PlayerConnected;
 
