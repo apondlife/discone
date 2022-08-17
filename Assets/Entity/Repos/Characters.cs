@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityAtoms;
 using UnityEngine;
+
+// TODO: root collection should probably be a dictionary keyed by
+// by object id?
 
 /// a repository of characters
 public sealed class Characters: MonoBehaviour {
@@ -10,9 +14,20 @@ public sealed class Characters: MonoBehaviour {
     [Tooltip("the tag for characters")]
     [SerializeField] string m_Tag;
 
+    // -- subscribed --
+    [Header("subscribed")]
+    [Tooltip("when a player switches character")]
+    [SerializeField] DisconeCharacterPairEvent m_SwitchedCharacter;
+
     // -- props --
     /// the list of characters
     Lazy<DisconeCharacter[]> m_All;
+
+    /// the set of driven characters (hash codes)
+    HashSet<int> m_Driven;
+
+    /// a bag of subscriptions
+    Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
     void Awake() {
@@ -22,6 +37,17 @@ public sealed class Characters: MonoBehaviour {
                 .Select((o) => o.GetComponent<DisconeCharacter>())
                 .ToArray()
         );
+    }
+
+    void Start() {
+        // bind events
+        m_Subscriptions
+            .Add(m_SwitchedCharacter, OnSwitchedCharacter);
+    }
+
+    void OnDestroy() {
+        // release events
+        m_Subscriptions.Dispose();
     }
 
     // -- queries -
@@ -53,5 +79,20 @@ public sealed class Characters: MonoBehaviour {
         return character;
     }
 
+    /// if the character is driven
+    public bool IsDriven(DisconeCharacter character) {
+        return m_Driven.Contains(character.GetHashCode());
+    }
 
+    // -- events --
+    /// when a player switches character
+    void OnSwitchedCharacter(DisconeCharacterPair characters) {
+        var curr = characters.Item1;
+        var prev = characters.Item2;
+
+        // update player driven characters; we only care about membership
+        // so just store the hash code
+        m_Driven.Remove(prev.GetHashCode());
+        m_Driven.Add(curr.GetHashCode());
+    }
 }

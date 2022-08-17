@@ -36,19 +36,12 @@ sealed class EntityCulling: MonoBehaviour {
             var isSimulating = character.IsSimulating;
 
             // zeroth pass: don't cull a player's character
-            var isPlayerControlled = false;
-
-            // TODO: online player sends events when a character is captured/released
-            // and the characters repo listens to those events to manage a set of characters
-            foreach (var player in players.All) {
-                if (player.Character == character) {
-                    isSimulating = true;
-                    isPlayerControlled = true;
-                    break;
-                }
+            var isPlayerDriven = characters.IsDriven(character);
+            if (isPlayerDriven) {
+                isSimulating = true;
             }
 
-            if (!isPlayerControlled) {
+            if (!isPlayerDriven) {
                 // first pass: cull any characters in inactive chunks
                 var coord = character.Coord;
 

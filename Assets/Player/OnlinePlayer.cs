@@ -19,16 +19,21 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     [Tooltip("the number of connected players")]
     [SerializeField] IntVariable m_PlayerCount;
 
-    // -- events --
-    [Header("events")]
+    // -- subscribed --
+    [Header("subscribed")]
     [Tooltip("switch the character")]
     [SerializeField] GameObjectEvent m_SwitchCharacter;
 
-    [Tooltip("when the played joins")]
+    // -- published --
+    [Header("published")]
+    [Tooltip("when a player joins")]
     [SerializeField] OnlinePlayerEvent m_Connected;
 
-    [Tooltip("when the player leaves")]
+    [Tooltip("when a player leaves")]
     [SerializeField] OnlinePlayerEvent m_Disconnected;
+
+    [Tooltip("when a player switches character")]
+    [SerializeField] DisconeCharacterPairEvent m_SwitchedCharacter;
 
     // -- refs --
     [Header("refs")]
@@ -189,7 +194,16 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     /// notify all clients that a player switched to a character
     [ClientRpc]
     void Client_ChangeOwnership(GameObject character) {
-        m_Character = character.GetComponent<DisconeCharacter>();
+        // change character
+        var prev = m_Character;
+        var next = character.GetComponent<DisconeCharacter>();
+        m_Character = next;
+
+        // publish event
+        var pair = new DisconeCharacterPair();
+        pair.Item1 = next;
+        pair.Item2 = prev;
+        m_SwitchedCharacter.Raise(pair);
     }
 
     // -- queries --
