@@ -4,6 +4,7 @@ using UnityEngine;
 /// the entities in the world
 [RequireComponent(typeof(Players))]
 [RequireComponent(typeof(Characters))]
+[RequireComponent(typeof(EntityCulling))]
 public sealed class Entities: MonoBehaviour {
     // -- state --
     [Header("state")]
@@ -11,6 +12,10 @@ public sealed class Entities: MonoBehaviour {
     [SerializeField] EntitiesVariable m_Single;
 
     // -- props --
+    /// the culling procedure
+    EntityCulling m_Culling;
+
+    // -- p/repos
     /// the players repo
     Players m_Players;
 
@@ -20,11 +25,17 @@ public sealed class Entities: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         // set props
+        m_Culling = GetComponent<EntityCulling>();
         m_Players = GetComponent<Players>();
         m_Characters = GetComponent<Characters>();
 
         // set instance
         m_Single.Value = this;
+    }
+
+    void FixedUpdate() {
+        var entities = this;
+        m_Culling.Run(entities);
     }
 
     // -- queries --

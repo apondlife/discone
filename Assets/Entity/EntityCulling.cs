@@ -1,28 +1,19 @@
 using UnityAtoms;
 using UnityEngine;
 
-/// processes collisions (perception) for all players and characters
-[RequireComponent(typeof(Entities))]
-sealed class EntityCollisions: MonoBehaviour {
+/// culls out-of-range entities, simulating only those near players
+sealed class EntityCulling: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the world")]
     [SerializeField] WorldVariable m_World;
 
-    // -- props --
-    /// the entities
-    Entities m_Entities;
-
-    // -- lifecycle --
-    void Awake() {
-        // set props
-        m_Entities = GetComponent<Entities>();
-    }
-
-    void FixedUpdate() {
+    // -- command --
+    /// recalculate and cull out-of-range entities
+    public void Run(Entities entities) {
         // get repos
-        var players = m_Entities.Players;
-        var characters = m_Entities.Characters;
+        var players = entities.Players;
+        var characters = entities.Characters;
 
         // if there are no players, don't try culling
         if (!players.Any) {
