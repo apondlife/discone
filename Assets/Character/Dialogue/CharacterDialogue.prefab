@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3865053424001678558}
-  - component: {fileID: 5426690310298381734}
   - component: {fileID: 5426690310298381735}
   m_Layer: 6
   m_Name: CharacterDialogue
@@ -34,19 +33,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &5426690310298381734
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4133054794193357108}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 4.03, y: 3.73, z: 3.03}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5426690310298381735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,11 +47,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_NodeTitle: Ivan
   m_TalkIndicator: {fileID: 5284837337348471500}
-  m_Character: {fileID: 0}
+  m_StartDialogue: {fileID: 11400000, guid: e776bc01eb723b046b946fb4461a0501, type: 2}
   m_TalkInput: {fileID: -8194012608305008080, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
-  m_IsInRange: 0
-  m_StartDialogue: {fileID: 11400000, guid: e776bc01eb723b046b946fb4461a0501, type: 2}
 --- !u!1001 &5426690309349161592
 PrefabInstance:
   m_ObjectHideFlags: 0

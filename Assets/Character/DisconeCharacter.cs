@@ -36,7 +36,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     [Tooltip("the character's most recent state frame")]
     [SyncVar(hook = nameof(Client_OnStateReceived))]
-    [SerializeField] CharacterState.Frame m_ReceivedState;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_ReceivedState")]
+    [SerializeField] CharacterState.Frame m_RemoteState;
 
     // -- config --
     [Header("config")]
@@ -46,17 +47,15 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     [Tooltip("how long does the character take to interpolate to the current received state")]
     [SerializeField] float m_InterpolationTime = 0.2f;
 
-    // -- refs --
-    [Header("refs")]
-    [Tooltip("the character's music")]
-    [SerializeField] GameObject m_Music;
-
     // -- props --
     /// if the character is simulating
     bool m_IsPerceived;
 
     /// the underlying character
     Character m_Character;
+
+    /// the music
+    CharacterMusic m_Musics;
 
     /// the dialogue
     CharacterDialogue m_Dialogue;
@@ -80,9 +79,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     void Awake() {
         // set props
         m_Character = GetComponent<Character>();
-        m_Checkpoint = GetComponent<CharacterCheckpoint>();
-        m_Dialogue = GetComponentInChildren<CharacterDialogue>();
         m_Coord = GetComponent<WorldCoord>();
+        m_Musics = GetComponentInChildren<CharacterMusic>();
+        Debug.Assert(m_Musics != null, "MUSIC IS NULL");
+        m_Dialogue = GetComponentInChildren<CharacterDialogue>();
+        m_Checkpoint = GetComponent<CharacterCheckpoint>();
 
         // cache list of simulated children -- anything that's active in the prefab
         // TODO: this if for the camera, it's hacky right now
@@ -93,9 +94,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
         // default to not simulating (note, this relies on the above default values being)
         SetSimulation(Simulation.None);
-
-        // default to not being perceived
-        OnIsPerceivedChanged();
 
         // set initial coordinate, since we are not simulating
         m_Coord.Value = m_Coord.FromPosition(transform.position);
@@ -120,7 +118,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // state to smooth out gaps
         else if (m_InterpolationTime > 0.0f && m_Simulation == Simulation.Remote && isClient) {
             var start = m_Character.State.Curr.Copy();
-            var target = m_ReceivedState.Copy();
+            var target = m_RemoteState.Copy();
             var interpolate = target;
             var delta = (float)(NetworkTime.time - m_LastSync);
 
@@ -171,12 +169,12 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
         // if the state did not change, do nothing
         var state = m_Character.CurrentState;
-        if (m_ReceivedState.Equals(state)) {
+        if (m_RemoteState.Equals(state)) {
             return;
         }
 
         // sync the current state frame
-        m_ReceivedState = state;
+        m_RemoteState = state;
         m_LastSync = NetworkTime.time;
 
         if (hasAuthority) {
@@ -232,7 +230,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     [Command]
     void Server_SendState(CharacterState.Frame state, double time) {
         // broadcast sync vars
-        m_ReceivedState = state;
+        m_RemoteState = state;
         m_LastSync = time;
 
         // place the character in the correct position on the server, since they
@@ -254,27 +252,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         netIdentity.RemoveClientAuthority();
     }
 
-    // -- props/hot --
-    /// if the character is perceived
-    public bool IsPerceived {
-        get => m_IsPerceived;
-        set {
-            if (m_IsPerceived != value) {
-                m_IsPerceived = value;
-                OnIsPerceivedChanged();
-            }
-        }
-    }
-
     // -- events --
     /// when the perceived state changes
     public delegate void SimulationChangedEvent(Simulation sim);
 
     public SimulationChangedEvent OnSimulationChanged;
-    void OnIsPerceivedChanged() {
-        // TODO: run this through the EntityCollisions
-        m_Music.SetActive(m_IsPerceived);
-    }
 
     // -- e/client
     /// when the client receives new state from the server
@@ -289,8 +271,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     // -- e/drive
     /// start driving this character
     public void OnDrive() {
-        // don't listen to your own dialogue
-        m_Dialogue.StopListening();
     }
 
     /// release this character
@@ -318,7 +298,17 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         get => m_Character;
     }
 
-    /// the character checkpoint
+    /// the music
+    public CharacterMusic Music {
+        get => m_Musics;
+    }
+
+    /// the character dialgue
+    public CharacterDialogue Dialogue {
+        get => m_Dialogue;
+    }
+
+    /// the checkpoint spawner
     public CharacterCheckpoint Checkpoint {
         get => m_Checkpoint;
     }

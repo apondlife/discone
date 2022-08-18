@@ -34,23 +34,6 @@ public class CharacterDialogueIndicator: MonoBehaviour
         SetFade(0);
     }
 
-    public void Show() {
-        if(m_IsVisible) return;
-        time = 0;
-        m_IsVisible = true;
-    }
-
-    public void Hide() {
-        if(!m_IsVisible) return;
-
-        hideTime = time;
-        m_IsVisible = false;
-    }
-
-    void SetFade(float alpha) {
-        text.fontSize = alpha * fontSize;
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -80,6 +63,39 @@ public class CharacterDialogueIndicator: MonoBehaviour
         var offset = m_HeightDelta/2 + m_HeightDelta / 2 * Mathf.Sin(2 * Mathf.PI / m_Period * time);
         transform.localPosition = startPosition + Vector3.up * offset;
         time += Time.deltaTime;
+    }
+
+    // -- commands --
+    /// show the indicator
+    public void Show() {
+        SetIsVisible(true);
+    }
+
+    /// hide the indicator
+    public void Hide() {
+        SetIsVisible(false);
+    }
+
+    /// update visibility
+    public void SetIsVisible(bool isVisible) {
+        if (isVisible == m_IsVisible) {
+            return;
+        }
+
+        // update state
+        m_IsVisible = isVisible;
+
+        // set animation time
+        if (isVisible) {
+            time = 0;
+        } else {
+            hideTime = time;
+        }
+    }
+
+    /// set fade pct (shrink)
+    void SetFade(float alpha) {
+        text.fontSize = alpha * fontSize;
     }
 }
 
