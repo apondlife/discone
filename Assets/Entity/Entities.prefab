@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2443362069703871468}
   - component: {fileID: 1117427710589498426}
   - component: {fileID: 2897392744725145097}
+  - component: {fileID: 3957745682249704239}
   m_Layer: 0
   m_Name: Entities
   m_TagString: Untagged
@@ -60,6 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ecf894bc0866420a9d1bf58d7746f88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_VisionRadius: 1000
   m_World: {fileID: 11400000, guid: a828a94e1e62f44a3a732304eba42ffd, type: 2}
 --- !u!114 &1117427710589498426
 MonoBehaviour:
@@ -95,3 +97,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Tag: Character
   m_SwitchedCharacter: {fileID: 11400000, guid: d172e39dd96e14250b5df5e1f06a5402, type: 2}
+--- !u!114 &3957745682249704239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6447162626734944142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8750ecab285b147b4a447783dc603084, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HearingRadius: 100
+  m_TalkingRadius: 3
