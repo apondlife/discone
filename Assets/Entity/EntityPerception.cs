@@ -17,16 +17,19 @@ sealed class EntityPerception: MonoBehaviour {
 
         // get player character details
         var pos = player.transform.position;
-        var chr = player.Character;
-        var perception = chr?.Perception;
+        var character = player.Character;
+        var perception = character?.Perception;
 
-        // track perceivability; we can only talk to one (the first) character
-        // at a time, and not ourselves
-        var isPerceivable = perception != null;
-        var isTalkableFound = false;
+        // we can only talk to one character at a time, not ourselves, and
+        // whoever is closest
+        var talkable = (DisconeCharacter)null;
+        var talkableDist = float.MaxValue;
 
         // for every character we're simulating
-        foreach (var other in characters.Simulating) {
+        var cs = characters.Simulating;
+
+        // check perceivability by player
+        foreach (var other in cs) {
             // get distance to player
             var dist = Vector3.Distance(
                 pos,
@@ -41,16 +44,18 @@ sealed class EntityPerception: MonoBehaviour {
 
             other.Music.SetIsAudible(isAudible);
 
-            // step 2: check talking
-            var isTalkable = false;
-            if (!isTalkableFound && other != chr && perception != null) {
-                isTalkable = dist < perception.TalkingRadius;
-                if (isTalkable) {
-                    isTalkableFound = true;
+            // step 2: find nearest talkable character
+            if (perception != null && other != character) {
+                if (dist < perception.TalkingRadius && dist < talkableDist) {
+                    talkable = other;
+                    talkableDist = dist;
                 }
             }
+        }
 
-            other.Dialogue.SetIsTalkable(isTalkable);
+        // step 3: update talkability
+        foreach (var other in cs) {
+            other.Dialogue.SetIsTalkable(other == talkable);
         }
     }
 }
