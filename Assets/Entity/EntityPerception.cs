@@ -11,11 +11,24 @@ sealed class EntityPerception: MonoBehaviour {
     [SerializeField] float m_TalkingRadius;
 
     // -- props --
+    /// the hearing distance (square dist)
+    float m_MaxHearingDist;
+
+    /// the talking distance (square dist)
+    float m_MaxTalkingDist;
+
     /// the player's last character
     DisconeCharacter m_PrevCharacter;
 
     /// the last talkable character
     DisconeCharacter m_PrevTalkable;
+
+    // -- lifecycle --
+    void Awake() {
+        // pre-calculate distances
+        m_MaxHearingDist = m_HearingRadius * m_HearingRadius;
+        m_MaxTalkingDist = m_TalkingRadius * m_TalkingRadius;
+    }
 
     // -- command --
     /// recalculate and cull out-of-range entities
@@ -50,14 +63,18 @@ sealed class EntityPerception: MonoBehaviour {
         }
 
         if (m_PrevTalkable != null) {
-            var dist = Vector3.Distance(
-                pos,
-                m_PrevTalkable.transform.position
-            );
+            var delta = pos - m_PrevTalkable.transform.position;
+            var distXz = delta.XNZ().sqrMagnitude;
+            var distY = delta.y * delta.y;
 
-            if (dist < m_TalkingRadius) {
+            var talkDist = distXz;
+            if (distY > m_MaxTalkingDist) {
+                talkDist = Mathf.Infinity;
+            }
+
+            if (talkDist < m_MaxTalkingDist) {
                 talkable = m_PrevTalkable;
-                talkableDist = dist;
+                talkableDist = talkDist;
             }
         }
 
@@ -67,31 +84,37 @@ sealed class EntityPerception: MonoBehaviour {
         // check perceivability by player
         foreach (var other in cs) {
             // get distance to player
-            var dist = Vector3.Distance(
-                pos,
-                other.transform.position
-            );
+            var delta = pos - other.transform.position;
+            var distXz = delta.XNZ().sqrMagnitude;
+            var distY = delta.y * delta.y;
 
-            // step 1: check hearing
-            other.Music.SetIsAudible(dist < m_HearingRadius);
+            // step 1: check hearing (spherical)
+            var hearDist = distXz + distY;
+            other.Music.SetIsAudible(hearDist < m_MaxHearingDist);
 
-            // step 2: if prev character exited talking range, change to current character
-            if (other == m_PrevCharacter && dist > m_TalkingRadius) {
+            // step 2: check talking (cylindrical)
+            var talkDist = distXz;
+            if (distY > m_MaxTalkingDist) {
+                talkDist = Mathf.Infinity;
+            }
+
+            // step 2.a: if prev character exited talking range, change to current character
+            if (other == m_PrevCharacter && talkDist > m_MaxTalkingDist) {
                 m_PrevCharacter = character;
             }
 
-            // step 3: find nearest talkable character (only check for changes to the talkable
+            // step 2.b: find nearest talkable character (only check for changes to the talkable
             // character and ignore your previous character)
             if (other != m_PrevTalkable && other != m_PrevCharacter) {
                 var isNextTalkable = (
                     other != character &&
-                    dist < m_TalkingRadius &&
-                    dist < talkableDist
+                    talkDist < m_MaxTalkingDist &&
+                    talkDist < talkableDist
                 );
 
                 if (isNextTalkable) {
                     talkable = other;
-                    talkableDist = dist;
+                    talkableDist = talkDist;
                 }
 
                 other.Dialogue.SetIsTalkable(false);
@@ -109,4 +132,5 @@ sealed class EntityPerception: MonoBehaviour {
 
         m_PrevTalkable = talkable;
     }
+
 }
