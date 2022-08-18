@@ -22,8 +22,8 @@ sealed class EntityPerception: MonoBehaviour {
 
         // track perceivability; we can only talk to one (the first) character
         // at a time, and not ourselves
-        var isTalkable = false;
         var isPerceivable = perception != null;
+        var isTalkableFound = false;
 
         // for every character we're simulating
         foreach (var other in characters.Simulating) {
@@ -42,9 +42,12 @@ sealed class EntityPerception: MonoBehaviour {
             other.Music.SetIsAudible(isAudible);
 
             // step 2: check talking
-            // TODO: set talking
-            if (!isTalkable && other != chr && perception != null) {
+            var isTalkable = false;
+            if (!isTalkableFound && other != chr && perception != null) {
                 isTalkable = dist < perception.TalkingRadius;
+                if (isTalkable) {
+                    isTalkableFound = true;
+                }
             }
 
             other.Dialogue.SetIsTalkable(isTalkable);
