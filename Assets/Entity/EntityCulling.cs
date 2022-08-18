@@ -3,6 +3,11 @@ using UnityEngine;
 
 /// culls out-of-range entities, simulating only those near players
 sealed class EntityCulling: MonoBehaviour {
+    // -- config --
+    [Header("config")]
+    [Tooltip("how far the character can see others")]
+    [SerializeField] float m_VisionRadius;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the world")]
@@ -65,8 +70,7 @@ sealed class EntityCulling: MonoBehaviour {
                     // see if any player has vision
                     foreach (var player in ps) {
                         // skip players with no character
-                        var pp = player.Character?.Perception;
-                        if (pp == null) {
+                        if (player.Character == null) {
                             continue;
                         }
 
@@ -78,7 +82,7 @@ sealed class EntityCulling: MonoBehaviour {
 
                         // check for vision
                         var dist = Vector3.Distance(pt.position.XNZ(), ct.position.XNZ());
-                        isSimulating = dist < pp.VisionRadius;
+                        isSimulating = dist < m_VisionRadius;
 
                         // end if we find one
                         if (isSimulating) {
