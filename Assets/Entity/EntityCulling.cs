@@ -34,9 +34,6 @@ sealed class EntityCulling: MonoBehaviour {
 
         // for every character
         foreach (var character in cs) {
-            // get components refs (only get transform once we need it)
-            var ct = null as Transform;
-
             // track activity
             var isSimulating = character.IsSimulating;
 
@@ -52,13 +49,8 @@ sealed class EntityCulling: MonoBehaviour {
 
                 // update coord for previously active (e.g. potentially moving) characters
                 if (isSimulating) {
-                    // get transforms
-                    if (ct == null) {
-                        ct = character.transform;
-                    }
-
                     // update coord
-                    coord.Value = coord.FromPosition(ct.position);
+                    coord.Value = coord.FromPosition(character.Position);
                 }
 
                 isSimulating = chunks.IsChunkActive(coord.Value);
@@ -74,14 +66,8 @@ sealed class EntityCulling: MonoBehaviour {
                             continue;
                         }
 
-                        // get transforms
-                        var pt = player.transform;
-                        if (ct == null) {
-                            ct = character.transform;
-                        }
-
                         // check for vision
-                        var dist = Vector3.Distance(pt.position.XNZ(), ct.position.XNZ());
+                        var dist = Vector3.Distance(player.Position.XNZ(), character.Position.XNZ());
                         isSimulating = dist < m_VisionRadius;
 
                         // end if we find one

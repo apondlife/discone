@@ -287,6 +287,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         get => m_IsInitial;
     }
 
+    /// the character's current position
+    public Vector3 Position {
+        get => m_RemoteState.Position;
+    }
+
     /// if the character is simulating
     public bool IsSimulating {
         get => m_IsSimulating;
