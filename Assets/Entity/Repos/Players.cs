@@ -5,6 +5,11 @@ using UnityEngine;
 
 /// a repository of players
 public sealed class Players: MonoBehaviour {
+    // -- state --
+    [Header("state")]
+    [Tooltip("the list of players (TODO: readonly)")]
+    [SerializeField] List<OnlinePlayer> m_All = new List<OnlinePlayer>();
+
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("when a player connects")]
@@ -22,13 +27,15 @@ public sealed class Players: MonoBehaviour {
     /// the current (local) player
     OnlinePlayer[] m_Current = new OnlinePlayer[0];
 
-    /// the list of players
-    List<OnlinePlayer> m_All = new List<OnlinePlayer>();
-
     /// the subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
+    void Awake() {
+        // set state
+        m_All = new List<OnlinePlayer>();
+    }
+
     void Start() {
         // bind events
         m_Subscriptions

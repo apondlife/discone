@@ -27,16 +27,16 @@ public class Online: NetworkManager {
     [Tooltip("should the host restart on client disconnect")]
     [SerializeField] bool m_RestartHostOnDisconnect;
 
-    // -- inputs --
-    [Header("inputs")]
+    // -- subscribed --
+    [Header("subscribed")]
     [Tooltip("an event when the client starts")]
     [SerializeField] VoidEvent m_StartClientEvent;
 
     [Tooltip("an event when the client disconnects")]
     [SerializeField] VoidEvent m_DisconnectEvent;
 
-    // -- outputs --
-    [Header("outputs")]
+    // -- published --
+    [Header("published")]
     [Tooltip("an event for logging errors")]
     [SerializeField] StringEvent m_ErrorEvent;
 
@@ -79,7 +79,7 @@ public class Online: NetworkManager {
         subscriptions.Dispose();
     }
 
-    // -- l/mirror
+    // -- l/client
     public override void OnClientError(Exception exception) {
         base.OnClientError(exception);
 
@@ -91,15 +91,14 @@ public class Online: NetworkManager {
         base.OnClientConnect();
 
         if (m_State != State.Host) {
+
             m_State = State.Client;
             Debug.Log($"[online] client connected!");
         }
-    }
 
-    public override void OnServerConnect(NetworkConnection conn) {
-        base.OnServerConnect(conn);
+        var message = new CreatePlayerMessage();
+        NetworkClient.Send(message);
 
-        Debug.Log($"[online] new client connected! client[{conn.connectionId}]:{conn.address}");
     }
 
     public override void OnClientNotReady() {
@@ -125,6 +124,20 @@ public class Online: NetworkManager {
         if (m_RestartHostOnDisconnect) {
             this.DoNextFrame(() => SwitchToHost());
         }
+    }
+
+    // -- l/server
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+
+        NetworkServer.RegisterHandler<CreatePlayerMessage>(Server_OnCreatePlayer);
+    }
+
+    public override void OnServerConnect(NetworkConnection conn) {
+        base.OnServerConnect(conn);
+
+        Debug.Log($"[online] new client connected! client[{conn.connectionId}]:{conn.address}");
     }
 
     public override void OnServerDisconnect(NetworkConnection conn) {
@@ -212,6 +225,15 @@ public class Online: NetworkManager {
     }
 
     // -- events --
+    [Server]
+    void Server_OnCreatePlayer(NetworkConnection conn, CreatePlayerMessage message) {
+        var player = Instantiate(playerPrefab);
+
+        // use message info to populate instance
+
+        NetworkServer.AddPlayerForConnection(conn, player);
+    }
+
     /// when the host starts
     void OnTryStartClient() {
         // ignore repeat presses
@@ -245,4 +267,8 @@ public class Online: NetworkManager {
             StopClient();
         }
     }
+}
+
+public struct CreatePlayerMessage : NetworkMessage {
+
 }

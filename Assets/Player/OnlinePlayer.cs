@@ -212,6 +212,11 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         get => m_Character;
     }
 
+    /// the player's current position
+    public Vector3 Position {
+        get => m_Character.Position;
+    }
+
     /// the world coordinate
     public WorldCoord Coord {
         get => m_Coord;
