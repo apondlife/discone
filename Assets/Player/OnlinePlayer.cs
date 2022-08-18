@@ -66,7 +66,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     void Start() {
-        m_PlayerCount.Value++;
+        m_PlayerCount.Value += 1;
         m_Connected.Raise(this);
     }
 
@@ -95,7 +95,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     void OnDestroy() {
-        m_PlayerCount.Value--;
+        m_PlayerCount.Value -= 1;
         m_Disconnected.Raise(this);
 
         m_Subscriptions.Dispose();

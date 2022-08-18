@@ -81,7 +81,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Character = GetComponent<Character>();
         m_Coord = GetComponent<WorldCoord>();
         m_Musics = GetComponentInChildren<CharacterMusic>();
-        Debug.Assert(m_Musics != null, "MUSIC IS NULL");
         m_Dialogue = GetComponentInChildren<CharacterDialogue>();
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
 

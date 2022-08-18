@@ -9,7 +9,6 @@ class CharacterFlower: NetworkBehaviour {
     /// the cache of per-texture materials
     static Dictionary<string, Material> s_MaterialCache = new Dictionary<string, Material>();
 
-
     // -- config --
     [Header("config")]
     [Tooltip("the texture to use for the flower")]

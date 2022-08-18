@@ -4,11 +4,6 @@ using UnityEngine;
 
 /// debugging utilities
 public static class Dbg {
-    // -- statics --
-    /// a map of named parents
-    static Dictionary<string, Transform> s_Parents
-        = new Dictionary<string, Transform>();
-
     // -- commands --
     /// dump enumerable as a list-like string
     public static string Dump<T>(IEnumerable<T> list) {
@@ -36,12 +31,10 @@ public static class Dbg {
     // -- c/unity
     /// add a transform to a top-level named parent
     public static void AddToParent(string name, Component obj) {
-        var parent = null as Transform;
-
         // create parent if necessary
-        if (!s_Parents.TryGetValue(name, out parent)) {
+        var parent = GameObject.Find(name)?.transform;
+        if (parent == null) {
             parent = new GameObject(name).transform;
-            s_Parents.Add(name, parent);
         }
 
         // add object to parent
