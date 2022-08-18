@@ -17,8 +17,13 @@ MonoBehaviour:
   _value:
     DisplayName: niver
     MusicString: 
+    FogColor: {r: 0.99607843, g: 0.627451, b: 0.38431373, a: 0.6901961}
+    SkyColor:
+      Foreground: {r: 0.6698113, g: 0.32522467, b: 0.0979441, a: 0.6901961}
+      ForegroundExposure: 4.45
+      Background: {r: 0.29089534, g: 0.2226771, b: 0.33962262, a: 1}
+      BackgroundExposure: 0.63
     SkyboxColorForeground: {r: 0.6698113, g: 0.32522467, b: 0.0979441, a: 0.6901961}
-    SkyboxExposureForeground: 4.45
     SkyboxColorBackground: {r: 0.29089534, g: 0.2226771, b: 0.33962262, a: 1}
+    SkyboxExposureForeground: 4.45
     SkyboxExposureBackground: 0.63
-    SkyboxFog: {r: 0.99607843, g: 0.627451, b: 0.38431373, a: 0.6901961}

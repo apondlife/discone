@@ -17,7 +17,13 @@ MonoBehaviour:
   _value:
     DisplayName: far
     MusicString: far
+    FogColor: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
+    SkyColor:
+      Foreground: {r: 0.9528302, g: 0.022472408, b: 0.114770785, a: 1}
+      ForegroundExposure: 0
+      Background: {r: 1, g: 0.922728, b: 0, a: 1}
+      BackgroundExposure: 0
     SkyboxColorForeground: {r: 0.9528302, g: 0.022472408, b: 0.114770785, a: 1}
     SkyboxColorBackground: {r: 1, g: 0.922728, b: 0, a: 1}
-    SkyboxExposure: 1.98
-    SkyboxFog: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
+    SkyboxExposureForeground: 0
+    SkyboxExposureBackground: 0

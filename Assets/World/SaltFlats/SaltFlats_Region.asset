@@ -17,8 +17,13 @@ MonoBehaviour:
   _value:
     DisplayName: salt flats
     MusicString: swamp
+    FogColor: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
+    SkyColor:
+      Foreground: {r: 0.8962264, g: 0.87585, b: 0.2240566, a: 1}
+      ForegroundExposure: 0.76
+      Background: {r: 0.56287825, g: 0.61724806, b: 0.8584906, a: 1}
+      BackgroundExposure: 0.76
     SkyboxColorForeground: {r: 0.8962264, g: 0.87585, b: 0.2240566, a: 1}
-    SkyboxExposureForeground: 0.76
     SkyboxColorBackground: {r: 0.56287825, g: 0.61724806, b: 0.8584906, a: 1}
+    SkyboxExposureForeground: 0.76
     SkyboxExposureBackground: 0.76
-    SkyboxFog: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}

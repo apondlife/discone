@@ -17,7 +17,13 @@ MonoBehaviour:
   _inspectorRaiseValue:
     DisplayName: bbbb
     MusicString: w
+    FogColor: {r: 0.8396226, g: 0.35248306, b: 0.35248306, a: 0}
+    SkyColor:
+      Foreground: {r: 0.43137255, g: 0.75686276, b: 0.90588236, a: 1}
+      ForegroundExposure: 0.78
+      Background: {r: 0.8392157, g: 0.3529412, b: 0.3529412, a: 0}
+      BackgroundExposure: 0.89
     SkyboxColorForeground: {r: 0, g: 0, b: 0, a: 0}
     SkyboxColorBackground: {r: 0, g: 0, b: 0, a: 0}
-    SkyboxExposure: 0
-    SkyboxFog: {r: 0, g: 0, b: 0, a: 0}
+    SkyboxExposureForeground: 0
+    SkyboxExposureBackground: 0

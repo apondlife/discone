@@ -18,10 +18,9 @@ public class RegionCreator : MonoBehaviour
         if(Region == null) return;
         text.text = Region.Value.DisplayName;
         var mat = RenderSettings.skybox;
-        mat.SetFloat("_ExposureForeground", Region.Value.SkyboxExposureForeground);
-        mat.SetFloat("_ExposureBackground", Region.Value.SkyboxExposureBackground);
-        mat.SetColor("_Background", Region.Value.SkyboxColorBackground);
-        mat.SetColor("_Foreground", Region.Value.SkyboxColorForeground);
-
+        mat.SetFloat("_ExposureForeground", Region.Value.SkyColor.ForegroundExposure);
+        mat.SetFloat("_ExposureBackground", Region.Value.SkyColor.BackgroundExposure);
+        mat.SetColor("_Background", Region.Value.SkyColor.Background);
+        mat.SetColor("_Foreground", Region.Value.SkyColor.Foreground);
     }
 }
