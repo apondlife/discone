@@ -17,8 +17,13 @@ MonoBehaviour:
   _value:
     DisplayName: crater
     MusicString: crater
+    FogColor: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
+    SkyColor:
+      Foreground: {r: 0.8784314, g: 0.8784314, b: 0.8784314, a: 1}
+      ForegroundExposure: 1.83
+      Background: {r: 0.3882353, g: 0.19215687, b: 0.37254903, a: 1}
+      BackgroundExposure: 1.83
     SkyboxColorForeground: {r: 0.8784314, g: 0.8784314, b: 0.8784314, a: 1}
-    SkyboxExposureForeground: 1.83
     SkyboxColorBackground: {r: 0.3882353, g: 0.19215687, b: 0.37254903, a: 1}
+    SkyboxExposureForeground: 1.83
     SkyboxExposureBackground: 1.83
-    SkyboxFog: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}

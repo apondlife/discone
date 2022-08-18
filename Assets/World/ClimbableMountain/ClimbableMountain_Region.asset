@@ -17,7 +17,13 @@ MonoBehaviour:
   _value:
     DisplayName: definitely climbable mountain
     MusicString: swamp
+    FogColor: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
+    SkyColor:
+      Foreground: {r: 0.9245283, g: 0.78765035, b: 0.6759523, a: 1}
+      ForegroundExposure: 0
+      Background: {r: 0.6603774, g: 0.16509435, b: 0.6207548, a: 1}
+      BackgroundExposure: 0
     SkyboxColorForeground: {r: 0.9245283, g: 0.78765035, b: 0.6759523, a: 1}
     SkyboxColorBackground: {r: 0.6603774, g: 0.16509435, b: 0.6207548, a: 1}
-    SkyboxExposure: 1.83
-    SkyboxFog: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
+    SkyboxExposureForeground: 0
+    SkyboxExposureBackground: 0

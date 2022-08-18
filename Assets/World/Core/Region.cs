@@ -1,24 +1,21 @@
+using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-[System.Serializable]
+[Serializable]
 public class Region {
+    // -- config --
+    [Header("config")]
+    [Tooltip("the text that displays on the screen for this region")]
     public string DisplayName;
 
-    [Header("FMOD")]
+    [Tooltip("the event string sent to fmod to change audio for this region")]
     public string MusicString;
 
-    [Header("Skybox Stuff")]
-    public Color SkyboxColorForeground;
+    [Tooltip("the color of the fog for this region")]
+    [FormerlySerializedAs("SkyboxFog")]
+    public Color FogColor;
 
-    [UnityEngine.Serialization.FormerlySerializedAs("SkyboxExposure")]
-    [Range(0.0f, 8.0f)]
-    public float SkyboxExposureForeground;
-
-    public Color SkyboxColorBackground;
-
-    [UnityEngine.Serialization.FormerlySerializedAs("SkyboxExposure")]
-    [Range(0.0f, 8.0f)]
-    public float SkyboxExposureBackground;
-
-    public Color SkyboxFog;
+    [Tooltip("the sky color for this region")]
+    public SkyColor SkyColor;
 }
