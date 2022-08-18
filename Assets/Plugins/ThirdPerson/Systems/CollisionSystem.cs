@@ -20,8 +20,8 @@ sealed class CollisionSystem: CharacterSystem {
     void Active_Update() {
         var v = m_State.Curr.Velocity;
 
-        // update controller from character state
-        if (v.sqrMagnitude > 0) {
+        // move character using controller if not idle
+        if (v.sqrMagnitude > 0.0f) {
             m_Controller.Move(
                 m_State.Curr.Position,
                 v * Time.deltaTime,

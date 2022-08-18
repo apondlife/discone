@@ -47,11 +47,12 @@ abstract class CharacterSystem {
     public CharacterSystem() {
         // set props
         m_Name = this.GetType().Name;
-        m_Phase = InitInitialPhase();
     }
 
     public void Init(CharacterData d) {
+        // set more props
         m_Data = d;
+        m_Phase = InitInitialPhase();
     }
 
     /// construct the initial phase
@@ -67,6 +68,7 @@ abstract class CharacterSystem {
     protected void ChangeTo(CharacterPhase next) {
         // if this is the same phase, don't do anything
         if (m_Phase.Equals(next)) {
+            Debug.Log($"phase {m_Phase.Name} == {next.Name}");
             return;
         }
 
@@ -80,7 +82,7 @@ abstract class CharacterSystem {
         // debug
         #if UNITY_EDITOR
         if (m_IsLogging) {
-            UnityEngine.Debug.Log($"{m_Name}: did change  {prev.Name} -> {next.Name}");
+            UnityEngine.Debug.Log($"{m_Name}: did change {prev.Name} -> {next.Name}");
         }
         #endif
     }

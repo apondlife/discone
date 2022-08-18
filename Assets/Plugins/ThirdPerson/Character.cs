@@ -83,17 +83,16 @@ public partial class Character: MonoBehaviour {
 
         // init systems
         m_Systems = new CharacterSystem[] {
-            // has to run first, because it should run after character
-            // controller calculations
+            // runs last/first since it depends on real velocity after collision
             m_Idle,
+            // these run first, they don't have dependencies
             m_Wall,
             m_Jump,
-            // movement system uses gravity information to calculate friciton,
-            // so it should run after it
+            // movement system depends on gravity to calculate friciton,
+            // so it runs nafter jump
             m_Movement,
             m_Tilt,
-            // the last state, where the controller move is calculated and
-            // all move stuff is fixed
+            // resolves state against the world, runs afte ra
             m_Collision,
         };
 

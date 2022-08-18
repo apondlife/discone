@@ -55,7 +55,7 @@ public sealed partial class CharacterState {
 
     /// if currently idle
     public bool IsIdle {
-        get => Curr.IdleTime > 0.0f;
+        get => Curr.IsIdle;
     }
 
     // -- types --
@@ -97,7 +97,7 @@ public sealed partial class CharacterState {
         public int JumpSquatFrame = -1;
 
         /// the current time the character hasn't moved
-        public float IdleTime = 0;
+        public float IdleTime = 0.0f;
 
         ///  the current frame in pivot animation
         public int PivotFrame = -1;
@@ -146,6 +146,11 @@ public sealed partial class CharacterState {
         /// if the character is grounded
         public bool IsGrounded {
             get => !Ground.IsNone;
+        }
+
+        /// if currently idle
+        public bool IsIdle {
+            get => IdleTime > 0.0f;
         }
 
         /// the character's look rotation (facing & tilt)
