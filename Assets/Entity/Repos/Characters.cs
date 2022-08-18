@@ -24,7 +24,7 @@ public sealed class Characters: MonoBehaviour {
     Lazy<DisconeCharacter[]> m_All;
 
     /// the set of driven characters (hash codes)
-    HashSet<int> m_Driven;
+    HashSet<int> m_Driven = new HashSet<int>();
 
     /// a bag of subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
@@ -54,6 +54,11 @@ public sealed class Characters: MonoBehaviour {
     /// the list of all characters
     public IEnumerable<DisconeCharacter> All {
         get => m_All.Value;
+    }
+
+    /// the list of simulating characters
+    public IEnumerable<DisconeCharacter> Simulating {
+        get => m_All.Value.Where((c) => c.IsSimulating);
     }
 
     /// find an available character to play
@@ -92,7 +97,12 @@ public sealed class Characters: MonoBehaviour {
 
         // update player driven characters; we only care about membership
         // so just store the hash code
-        m_Driven.Remove(prev.GetHashCode());
-        m_Driven.Add(curr.GetHashCode());
+        if (prev != null) {
+            m_Driven.Remove(prev.GetHashCode());
+        }
+
+        if (curr != null) {
+            m_Driven.Add(curr.GetHashCode());
+        }
     }
 }

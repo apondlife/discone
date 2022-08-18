@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6559145621683823563}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.405, y: 1.89, z: -0}
+  m_LocalPosition: {x: -0.405, y: 1.89, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -159,7 +159,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1061133086809451152, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1114928914988804812, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_IsActive
@@ -387,7 +387,7 @@ MonoBehaviour:
   m_IsInitial: 0
   m_IsAvailable: 1
   m_IsDebug: 0
-  m_ReceivedState:
+  m_RemoteState:
     Position: {x: 0, y: 0, z: 0}
     Velocity: {x: 0, y: 0, z: 0}
     Acceleration: {x: 0, y: 0, z: 0}
@@ -408,7 +408,6 @@ MonoBehaviour:
     HearingRadius: 500
     TalkingRadius: 2
   m_InterpolationTime: 0.2
-  m_Music: {fileID: 1029445836574466050}
 --- !u!114 &1731996866325999123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -628,11 +627,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
---- !u!1 &1029445836574466050 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5077628810954296242, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
-  m_PrefabInstance: {fileID: 5205614750460734384}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6292055739539103624
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -642,7 +636,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3865053424001678558, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3865053424001678558, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -710,24 +704,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
---- !u!1 &7929238279335007932 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4133054794193357108, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
-  m_PrefabInstance: {fileID: 6292055739539103624}
-  m_PrefabAsset: {fileID: 0}
---- !u!54 &4180341206481137228
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7929238279335007932}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0

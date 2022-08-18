@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Players))]
 [RequireComponent(typeof(Characters))]
 [RequireComponent(typeof(EntityCulling))]
+[RequireComponent(typeof(EntityPerception))]
 public sealed class Entities: MonoBehaviour {
     // -- state --
     [Header("state")]
@@ -14,6 +15,9 @@ public sealed class Entities: MonoBehaviour {
     // -- props --
     /// the culling procedure
     EntityCulling m_Culling;
+
+    /// the culling procedure
+    EntityPerception m_Perception;
 
     // -- p/repos
     /// the players repo
@@ -26,6 +30,7 @@ public sealed class Entities: MonoBehaviour {
     void Awake() {
         // set props
         m_Culling = GetComponent<EntityCulling>();
+        m_Perception = GetComponent<EntityPerception>();
         m_Players = GetComponent<Players>();
         m_Characters = GetComponent<Characters>();
 
@@ -36,6 +41,7 @@ public sealed class Entities: MonoBehaviour {
     void FixedUpdate() {
         var entities = this;
         m_Culling.Run(entities);
+        m_Perception.Run(entities);
     }
 
     // -- queries --

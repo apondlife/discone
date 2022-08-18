@@ -3,20 +3,22 @@ using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Collider))]
-public class CharacterDialogue: MonoBehaviour {
-    // -- constants --
-    private const string _dialogueTargetTag = "PlayerDialogueTarget";
-
+/// talking to the character
+public sealed class CharacterDialogue: MonoBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("IMPORTANT: the title of the yarn node for this characters's dialogue")]
     [UnityEngine.Serialization.FormerlySerializedAs("dialogueMessage")]
-    [SerializeField] private string m_NodeTitle;
+    [SerializeField] string m_NodeTitle;
 
-    [Tooltip("the character's talk indicator")]
+    [Tooltip("the bouncing talkability indicator")]
     [UnityEngine.Serialization.FormerlySerializedAs("talkable")]
-    [SerializeField] private CharacterDialogueIndicator m_TalkIndicator;
+    [SerializeField] CharacterDialogueIndicator m_TalkIndicator;
+
+    // -- published --
+    [Header("published")]
+    [Tooltip("start the dialogue for this character")]
+    [SerializeField] GameObjectEvent m_StartDialogue;
 
     // -- refs --
     [Header("refs")]
@@ -27,19 +29,12 @@ public class CharacterDialogue: MonoBehaviour {
     [Tooltip("a reference to the current character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
 
-    // -- debug --
-    [Header("debug")]
-    [Tooltip("if this is in range to talk")]
-    [SerializeField] bool m_IsInRange = false;
-
-    // -- events --
-    [Header("events")]
-    [Tooltip("start the dialogue for this character")]
-    [SerializeField] private GameObjectEvent m_StartDialogue;
-
     // -- props --
     // the parent character
     DisconeCharacter m_Character;
+
+    /// if this character is currently talkable
+    bool m_IsTalkable;
 
     // -- lifecycle --
     void Start() {
@@ -52,34 +47,34 @@ public class CharacterDialogue: MonoBehaviour {
         }
     }
 
-    void Update() {
-        // update the indicator
-        if (m_TalkIndicator) {
-            if (m_IsInRange && IsListening) {
-                m_TalkIndicator.Show();
-            } else {
-                m_TalkIndicator.Hide();
-            }
+    void OnDestroy() {
+        if (m_IsTalkable) {
+            SetIsTalkable(false);
         }
     }
 
-    void OnEnable() {
-        m_TalkInput.action.performed += OnTalkPressed;
-    }
-
-    void OnDisable() {
-        m_TalkInput.action.performed -= OnTalkPressed;
-    }
-
-    void OnDestroy() {
-        m_TalkInput.action.performed -= OnTalkPressed;
-    }
-
     // -- commands --
-    /// start talking to the character
-    /// NOTE: this should never run if we're already talking, should check for input before this
-    void StartTalking() {
-        m_StartDialogue.Raise(gameObject);
+    /// toggles the character's talkability
+    public void SetIsTalkable(bool isTalkable) {
+        if (isTalkable == m_IsTalkable) {
+            return;
+        }
+
+        // update state
+        m_IsTalkable = isTalkable;
+
+        // toggle indicator
+        m_TalkIndicator.SetIsVisible(isTalkable);
+
+        // toggle input
+        // TODO: move this into PlayerDialogue, raise a character event to change
+        // dialogue target
+        var input = m_TalkInput.action;
+        if (isTalkable) {
+            input.performed += OnTalkPressed;
+        } else {
+            input.performed -= OnTalkPressed;
+        }
     }
 
     // -- queries --
@@ -94,45 +89,9 @@ public class CharacterDialogue: MonoBehaviour {
     }
 
     // -- events --
-    // when the player stops driving a character
-    public void StopListening() {
-        // by doing this, the player has to come in and out of range again to redo a dialogue with a character
-        m_IsInRange = false;
-    }
-
     /// when the player presses talk
     void OnTalkPressed(InputAction.CallbackContext _) {
-        // talk to the character if they're in range
-        if (IsListening && m_IsInRange) {
-            StartTalking();
-        }
-    }
-
-    void OnTriggerEnter(Collider other) {
-        if (!IsListening) {
-            return;
-        }
-
-        if (other.CompareTag(_dialogueTargetTag)) {
-            Debug.Log($"[dialog] character in range <{m_NodeTitle}>");
-            m_IsInRange = true;
-        }
-    }
-
-    void OnTriggerExit(Collider other) {
-        if (!IsListening) {
-            return;
-        }
-
-        if (other.CompareTag(_dialogueTargetTag)) {
-            m_IsInRange = false;
-            // TODO: end dialogue on exit, new atom?
-        }
-    }
-
-    // -- queries --
-    /// if this is listening for nearby players (ie: not being controlled by the local player)
-    bool IsListening {
-        get => m_CurrentCharacter.Value != m_Character;
+        /// TODO: raise DisconeCharacter event?
+        m_StartDialogue.Raise(gameObject);
     }
 }

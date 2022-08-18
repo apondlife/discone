@@ -4,7 +4,7 @@ using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
 /// the character's music ("m***** mousing")
-class CharacterMusic: MonoBehaviour {
+public sealed class CharacterMusic: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the time interval between steps")]
@@ -67,9 +67,14 @@ class CharacterMusic: MonoBehaviour {
     /// the time to start fluttering
     float m_FlutterTime = 0.0f;
 
+    /// if the music is audible
+    bool m_IsAudible = true;
+
     // -- lifecycle --
     #if !UNITY_SERVER
     void Start() {
+        SetIsAudible(false);
+
         if (m_IsStandalone) {
             return;
         }
@@ -200,6 +205,15 @@ class CharacterMusic: MonoBehaviour {
 
         m_Source.PlayLine(m_Flutter.Value, 0.0f, m_Key);
         m_FlutterTime += m_FlutterInterval;
+    }
+
+    // -- c/audibility
+    /// toggles the music
+    public void SetIsAudible(bool isAudible) {
+        if (isAudible != m_IsAudible) {
+            m_IsAudible = isAudible;
+            gameObject.SetActive(isAudible);
+        }
     }
 
     // -- events --
