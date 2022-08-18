@@ -1,54 +1,68 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using MutCommon;
 using UnityAtoms.BaseAtoms;
 using UnityAtoms.Discone;
+using UnityEngine.Serialization;
 
 [ExecuteAlways]
-public class RegionSign : MonoBehaviour
-{
-    [SerializeField]
-    internal CanvasGroup canvasGroup;
+public class RegionSign: MonoBehaviour {
+    // -- config --
+    [Header("config")]
+    [Tooltip("the time it takes to dissolve the text in/out")]
+    [FormerlySerializedAs("dissolveTime")]
+    [SerializeField] float m_DissolveTime = 1.0f;
 
-    [SerializeField]
-    internal TextMeshProUGUI m_Text;
+    [Tooltip("the time the text is visible")]
+    [FormerlySerializedAs("textDuration")]
+    [SerializeField] float m_TextDuration = 4.0f;
 
-    [SerializeField]
-    internal UIShader m_UIShader;
+    [Tooltip("the time it takes the letterbox to transition in/out")]
+    [FormerlySerializedAs("letterboxTweenTime")]
+    [SerializeField] float m_LetterboxFadeTime = 1.0f;
 
-    [Header("atoms")]
+    // -- state --
+    [Header("state")]
+    [Tooltip("the text dissolve percent")]
     [SerializeField] FloatVariable m_DissolveAmount;
+
+    [Tooltip("the letterbox transition percent")]
     [SerializeField] FloatVariable m_LetterboxAmount;
+
+    // -- subscribed --
+    [Header("subscribed")]
+    [Tooltip("when the local player enters a region")]
     [SerializeField] RegionEvent m_RegionEntered;
 
-    [SerializeField]
-    internal float dissolveTime = 1f;
-    [SerializeField]
-    internal float textDuration = 4f;
-    [SerializeField]
-    internal float letterboxTweenTime = 1f;
-    //[SerializeField]
-    internal float letterboxDuration;
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("the text canvas")]
+    [FormerlySerializedAs("canvasGroup")]
+    [SerializeField] CanvasGroup m_CanvasGroup;
 
-    internal Region m_CurrentRegion;
+    [Tooltip("the region name label")]
+    [SerializeField] TextMeshProUGUI m_Text;
 
+    // -- props --
+    /// the local player's current region
+    Region m_CurrentRegion;
+
+    /// if the region sign is visible
+    bool m_IsVisible;
+
+    /// a bag of subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
-    // Awake is called before Start
-    void Awake()
-    {
-        letterboxDuration = textDuration + dissolveTime;
+    // -- lifecycle --
+    void Awake() {
+        // hide by default
+        m_CanvasGroup.alpha = 0.0f;
+        m_LetterboxAmount.Value = 0.0f;
+        m_DissolveAmount.Value = 0.0f;
 
-        canvasGroup.alpha = 0;
-
-        m_LetterboxAmount.Value = 0;
-
-        //m_DissolveAmount.Value = 1;
-        m_DissolveAmount.Value = 0;
-        m_Subscriptions.Add(m_RegionEntered, OnRegionEntered);
-
+        // bind events
+        m_Subscriptions
+            .Add(m_RegionEntered, OnRegionEntered);
     }
 
     void OnDestroy() {
@@ -56,69 +70,63 @@ public class RegionSign : MonoBehaviour
         m_Subscriptions.Dispose();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
+    // -- commands --
     void DissolveIn(float k) {
-        //m_UIShader.dissolveAmount = 1 - k;
         m_DissolveAmount.Value = 1 - k;
     }
 
     void DissolveOut(float k) {
-        //m_UIShader.dissolveAmount = k;
         m_DissolveAmount.Value = k;
     }
 
-    void StartDissolveIn() {
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(dissolveTime, DissolveIn));
-    }
-
-    void StartDissolveOut() {
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(dissolveTime, DissolveOut));
-    }
-
-     void LetterboxIn(float k) {
-        //m_UIShader.letterboxAmount = k;
+    void LetterboxIn(float k) {
         m_LetterboxAmount.Value = k;
     }
 
-    void StartLetterboxIn() {
-        Debug.Log("Starting letterbox in...");
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxIn));
-    }
-
     void LetterboxOut(float k) {
-        //m_UIShader.letterboxAmount = 1 - k;
         m_LetterboxAmount.Value = 1 - k;
     }
 
-    void StartLetterboxOut() {
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxOut));
+    // this should do the following:
+    // start leterbox, once its done, start text fade
+    // once text fade is done, fade letterbox out
+    // maybe states could be:
+    // for FullState => None => LetterIn => TextIn => TextFull => TextOut => LetterOut => None
+    // or (BoxState, TextState): (out, out) => (fadein, out) => (in, fadein) => (in, in) => (in, fadeout) => (fadeout, out) => (out out)
+    // TODO: if interrupted, maybe add new texts to a queue and keep letterbox?
+    IEnumerator FadeCoroutine() {
+        // flag as visible
+        m_IsVisible = true;
+
+        // letterbox fade in
+        yield return CoroutineHelpers.InterpolateByTime(m_LetterboxFadeTime, LetterboxIn);
+
+        // letterbox in, text fade in
+        yield return CoroutineHelpers.InterpolateByTime(m_DissolveTime, DissolveIn);
+
+        // text in
+        yield return new WaitForSeconds(m_TextDuration);
+
+        // text fade out
+        yield return CoroutineHelpers.InterpolateByTime(m_DissolveTime, DissolveOut);
+
+        // text out, letterbox fade out
+        yield return CoroutineHelpers.InterpolateByTime(m_LetterboxFadeTime, LetterboxOut);
+
+        // flag as invisible
+        m_IsVisible = false;
     }
 
     public void OnRegionEntered(Region region) {
-        // if(m_CurrentRegion?.DisplayName == region.DisplayName) return;
-
         m_CurrentRegion = region;
-        canvasGroup.alpha = 1;
-        // m_UIShader.letterboxAmount = 0;
-        // m_UIShader.dissolveAmount = 1;
-        m_LetterboxAmount.Value = 0;
-        m_DissolveAmount.Value = 1;
-
+        m_CanvasGroup.alpha = 1;
         m_Text.SetText(region.DisplayName);
 
-        StopAllCoroutines();
+        // only start a new animation if the current one is over
+        if (m_IsVisible) {
+            return;
+        }
 
-        // tween in letterbox (and start dissolving when letterbox is done)
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(letterboxTweenTime, LetterboxIn, StartDissolveIn));
-
-        // set dissolve out to start after textDuration
-        StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(textDuration, StartDissolveOut));
-
-        // set letterbox to start after letterboxDuration
-        StartCoroutine(CoroutineHelpers.DoAfterTimeCoroutine(letterboxDuration, StartLetterboxOut));
+        StartCoroutine(FadeCoroutine());
     }
 }
