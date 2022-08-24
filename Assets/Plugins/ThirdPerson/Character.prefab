@@ -63,7 +63,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7777778, y: 1}
+    m_SensorSize: {x: 1.7762557, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -312,7 +312,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc3d0067bd335fb419b025c67fd4c1df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_CollisionMask:
+    serializedVersion: 2
+    m_Bits: 385
   m_BaseDistance: 10
+  m_Offset: {x: 0, y: 0.1, z: 0}
   m_YawCurve:
     serializedVersion: 2
     m_Curve:
@@ -388,8 +392,8 @@ MonoBehaviour:
   m_MaxPitch: 60
   m_MaxPitchSpeed: 50
   m_PitchAcceleration: 100
-  m_LocalSpeed: 20
-  m_TargetSpeed_DistanceCurve:
+  m_LocalSpeed: 13
+  m_Distance_SpeedCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -413,14 +417,14 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_TargetSpeed_MinSpeed: 30
-  m_TargetSpeed_MaxSpeed: 200
+  m_TargetMinSpeed: 30
+  m_TargetMaxSpeed: 200
   m_TargetSpeed_MaxDistance: 80
   m_FreeLook_YawSpeed: 90
   m_FreeLook_PitchSpeed: 45
-  m_FreeLook_MinPitch: -45
+  m_FreeLook_MinPitch: 5
   m_FreeLook_MaxPitch: 80
-  m_UndershootCurve:
+  m_Distance_PitchCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -453,8 +457,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_MinUndershootDistance: 0.3
+  m_MinUndershootDistance: 2.8
   m_FreeLook_Timeout: 5
+  m_FreeLook_OvershootLookUp: 0.02
   m_Recenter_IdleTime: 0.7
   m_Recenter_YawSpeed: 100
   m_Recenter_YawCurve:
@@ -496,6 +501,8 @@ MonoBehaviour:
   m_LookAtTarget: {fileID: 3032161264613087381}
   m_Target: {fileID: 3673039484627793572}
   m_FreeLook: {fileID: 4626327253638621584, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
+  m_Yaw: 0
+  m_Pitch: 0
 --- !u!1 &3760618876817645504
 GameObject:
   m_ObjectHideFlags: 0
@@ -553,6 +560,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 385
   m_Target: {fileID: 5081405195371850226}
+  m_OffsetY: 0
 --- !u!1 &6542079319371145381
 GameObject:
   m_ObjectHideFlags: 0
