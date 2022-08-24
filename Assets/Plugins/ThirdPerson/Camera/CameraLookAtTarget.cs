@@ -38,6 +38,8 @@ public class CameraLookAtTarget: MonoBehaviour {
 
     float m_TargetSpeed;
 
+    public float m_OffsetY;
+
     // -- lifecycle --
     void Start() {
         // set deps
@@ -46,16 +48,17 @@ public class CameraLookAtTarget: MonoBehaviour {
 
     void Update() {
         var pos = transform.localPosition;
-        var target = m_Target.localPosition;
+        var destination = m_Target.localPosition;
 
-        // if not falling falling
+        // if not falling or pause
         if (m_Character.IsPaused || m_Character.State.IsGrounded) {
-            target = pos;
+            destination = pos;
         }
         // move target to ground position underneath character
         else {
             // snap to the lowest possible position
             var delta = Vector3.down * m_MaxDistance;
+
             // move to ground if there's a ground layer closer
             if (Physics.Raycast(pos, Vector3.down, out var hit, m_MaxDistance, m_GroundLayers)) {
                 delta = hit.point - transform.position;
@@ -65,13 +68,13 @@ public class CameraLookAtTarget: MonoBehaviour {
             var fallParam = Mathf.InverseLerp(m_MinFallingSpeed, m_MaxFallingSpeed, -m_Character.State.Velocity.y);
             delta *= fallParam;
 
-            target = transform.localPosition + delta;
+            destination = transform.localPosition + delta;
         }
 
-        if (m_Target.localPosition == target) {
+        if (m_Target.localPosition == destination) {
             // m_TargetSpeed = 0.0f;
         } else {
-            var dist = (m_Target.localPosition - target);
+            var dist = (m_Target.localPosition - destination);
             var up = dist.y < 0;
             var spring = up ? m_TargetSpringUp : m_TargetSpringDown;
             var damp = up ? m_TargetDampUp : m_TargetDampDown;
@@ -79,12 +82,14 @@ public class CameraLookAtTarget: MonoBehaviour {
             m_TargetSpeed += Time.deltaTime * acceleration;
         }
 
+        destination += Vector3.up * m_OffsetY;
 
-        m_Target.localPosition = Vector3.MoveTowards(m_Target.localPosition, target, Mathf.Abs(m_TargetSpeed * Time.deltaTime));
+        m_Target.localPosition = Vector3.MoveTowards(
+            m_Target.localPosition,
+            destination,
+            Mathf.Abs(m_TargetSpeed * Time.deltaTime)
+        );
     }
-
-
-
 
     // -- queries --
     /// how close the look at target is to full extension

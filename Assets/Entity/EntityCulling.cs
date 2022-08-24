@@ -26,7 +26,7 @@ sealed class EntityCulling: MonoBehaviour {
         }
 
         // get world chunks
-        var chunks = m_World.Value.Chunks;
+        var chunks = m_World.Value?.Chunks;
 
         // get cullers and cullees
         var ps = players.FindCullers();
@@ -45,15 +45,17 @@ sealed class EntityCulling: MonoBehaviour {
 
             if (!isPlayerDriven) {
                 // first pass: cull any characters in inactive chunks
-                var coord = character.Coord;
+                if (chunks != null) {
+                    var coord = character.Coord;
 
-                // update coord for previously active (e.g. potentially moving) characters
-                if (isSimulating) {
-                    // update coord
-                    coord.Value = coord.FromPosition(character.Position);
+                    // update coord for previously active (e.g. potentially moving) characters
+                    if (isSimulating) {
+                        // update coord
+                        coord.Value = coord.FromPosition(character.Position);
+                    }
+
+                    isSimulating = chunks.IsChunkActive(coord.Value);
                 }
-
-                isSimulating = chunks.IsChunkActive(coord.Value);
 
                 // second pass: check against proximity to players
                 if (isSimulating) {

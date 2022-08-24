@@ -43,6 +43,12 @@ class SkyTarget: MonoBehaviour {
 
     // -- lifeycle --
     void Awake() {
+        // if there is nowhere to place the star, quit
+        if (m_Bodies?.Value == null) {
+           Debug.LogWarning("[sky] no sky bodies container in this scene, ignoring targets");
+           return;
+        }
+
         // create the body in the sky
         var body = Instantiate(
             m_BodyPrefab,

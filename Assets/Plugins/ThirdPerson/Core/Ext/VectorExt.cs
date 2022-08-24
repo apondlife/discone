@@ -24,6 +24,11 @@ static class Vec3 {
     public static Vector3 NNZ(this Vector3 v) {
         return new Vector3(0.0f, 0.0f, v.z);
     }
+
+    /// create a copy of this vector with an overriden y
+    public static Vector3 WithY(this Vector3 v, float y) {
+        return new Vector3(v.x, y, v.z);
+    }
 }
 
 /// static extensions for Vector2
