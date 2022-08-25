@@ -15,9 +15,6 @@ public class CameraFollowTarget: MonoBehaviour {
     [FormerlySerializedAs("m_Distance")]
     [SerializeField] float m_BaseDistance;
 
-    [Tooltip("the offset to follow from the character model position")]
-    [SerializeField] Vector3 m_Offset;
-
     [Tooltip("how much the camera yaws around the character as a fn of angle")]
     [SerializeField] AnimationCurve m_YawCurve;
 
@@ -320,7 +317,7 @@ public class CameraFollowTarget: MonoBehaviour {
         var forward = yawRot * m_ZeroYawDir;
 
         // the center of the camera armature
-        var curveOrigin = m_Model.position + m_Offset;
+        var curveOrigin = transform.position;
 
         // we did a bunch of math and rotations,
         // and we finally figured out where we want the camera to be on the curve
@@ -443,6 +440,21 @@ public class CameraFollowTarget: MonoBehaviour {
         m_InvertX = value;
     }
 
+    /// the target's position
+    public Vector3 Position {
+        get => m_Target.position;
+    }
+
+    /// the base follow distance
+    public float BaseDistance {
+        get => m_BaseDistance;
+    }
+
+    /// the minimum follow distance
+    public float MinDistance {
+        get => m_BaseDistance * Mathf.Cos(Mathf.Deg2Rad * m_FreeLook_MinPitch);
+    }
+
     // -- debug --
     void OnDrawGizmos() {
         var pt = m_Model.position - Vector3.ProjectOnPlane(m_Model.forward, Vector3.up).normalized * m_BaseDistance;
@@ -457,7 +469,7 @@ public class CameraFollowTarget: MonoBehaviour {
         Gizmos.DrawSphere(m_CurvePos + r(), 0.1f);
 
         Gizmos.color = Color.Lerp(Color.yellow, Color.red, 0.5f);
-        Gizmos.DrawLine(m_CurvePos, m_Model.position + m_Offset);
+        Gizmos.DrawLine(m_CurvePos, transform.position);
 
         if (m_VizHit == null) {
             return;
