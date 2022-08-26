@@ -10,16 +10,21 @@ public class CameraLookAtTarget: MonoBehaviour {
     [SerializeField] private float m_MaxDistance;
 
     [Header("Ground Target")]
-    [SerializeField] private float m_TargetSpringDown;
-
     [UnityEngine.Serialization.FormerlySerializedAs("m_TargetDamp")]
     [SerializeField] private float m_TargetSpeed;
 
-    [UnityEngine.Serialization.FormerlySerializedAs("m_TargetDamp")]
-    [SerializeField] private float m_TargetDampDown;
+    // [SerializeField] private float m_TargetSpringDown;
+    // [UnityEngine.Serialization.FormerlySerializedAs("m_TargetDamp")]
+    // [SerializeField] private float m_TargetDampDown;
+    [SerializeField] private SpringDamp m_SpringDamp_Down;
 
-    [SerializeField] private float m_TargetSpringUp;
-    [SerializeField] private float m_TargetDampUp;
+    // [SerializeField] private float m_TargetSpringUp;
+    // [SerializeField] private float m_TargetDampUp;
+    [SerializeField] private SpringDamp m_SpringDamp_Up;
+
+    // [SerializeField] private float m_TargetSpringFreeLook;
+    // [SerializeField] private float m_TargetDampFreeLook;
+    [SerializeField] private SpringDamp m_SpringDamp_FreeLook;
 
     [Tooltip("the max distance from the character to cast for the ground")]
     [SerializeField] private float m_MinFallingSpeed;
@@ -44,9 +49,6 @@ public class CameraLookAtTarget: MonoBehaviour {
     [Tooltip("the follow target")]
     [SerializeField] CameraFollowTarget m_Follow;
 
-    [Tooltip("the character model")]
-    [SerializeField] Transform m_Model;
-
     // -- props --
     /// a reference to the character state
     Character m_Character;
@@ -56,6 +58,23 @@ public class CameraLookAtTarget: MonoBehaviour {
     // the stored position of where we want to look at towards the ground
     Vector3 m_GroundTarget;
 
+    // void OnValidate() {
+    //     m_SpringDamp_FreeLook = new SpringDamp() {
+    //         Spring = m_TargetSpringFreeLook,
+    //         Damp = m_TargetDampFreeLook
+    //     };
+
+    //     m_SpringDamp_Up = new SpringDamp() {
+    //         Spring = m_TargetSpringUp,
+    //         Damp = m_TargetDampUp
+    //     };
+
+    //     m_SpringDamp_Down = new SpringDamp() {
+    //         Spring = m_TargetSpringDown,
+    //         Damp = m_TargetDampDown
+    //     };
+    // }
+
     // -- lifecycle --
     void Start() {
         // set deps
@@ -64,41 +83,21 @@ public class CameraLookAtTarget: MonoBehaviour {
     }
 
     void Update() {
-        Vector3 lookOffset = Vector3.zero;
-
         // first we find the ground target destination
-        Vector3 groundDest = FindGroundDestination();
+        var groundDest = FindGroundDestination();
+        var lookOffset = Vector3.zero;
+        var freelook = m_Follow.IsFreeLookEnabled;
 
-        // if we're at our ground target
-        if (m_GroundTarget == groundDest) {
-            // we may be grounded and want to look up when closej
-            if (m_Character.State.IsGrounded) {
-                // check proximity between model & follow target to push look at up
-                var followDist = Vector3.Distance(
-                    m_Model.position,
-                    m_Follow.Position
-                );
-
-                var proximity = m_VerticalOffset_DistanceCurve.Evaluate(
-                    Mathf.InverseLerp(
-                        m_Follow.MinDistance,
-                        m_Follow.BaseDistance,
-                        followDist
-                    )
-                );
-
-                lookOffset = m_VerticalOffset_MaxHeight * proximity * Vector3.up;
-            }
-
-            m_Target.localPosition = groundDest + lookOffset;
-        }
-        // TODO: add a comment here
-        else {
+        // while airborne, move the ground target towards the ground
+        if (m_GroundTarget != groundDest) {
             var dist = (m_GroundTarget - groundDest);
-            var up = dist.y < 0;
-            var spring = up ? m_TargetSpringUp : m_TargetSpringDown;
-            var damp = up ? m_TargetDampUp : m_TargetDampDown;
-            var acceleration = spring * dist.y - damp * m_GroundTargetSpeed;
+            var sd = (m_Follow.IsFreeLookEnabled, dist.y < 0.0f) switch {
+                (true, _) => m_SpringDamp_FreeLook,
+                (_, true) => m_SpringDamp_Up,
+                (_, false) => m_SpringDamp_Down
+            };
+
+            var acceleration = sd.Spring * dist.y - sd.Damp * m_GroundTargetSpeed;
             m_GroundTargetSpeed += Time.deltaTime * acceleration;
 
             // move the target
@@ -107,9 +106,28 @@ public class CameraLookAtTarget: MonoBehaviour {
                 groundDest,
                 Mathf.Abs(m_GroundTargetSpeed * Time.deltaTime)
             );
-
-            m_Target.localPosition = m_GroundTarget;
         }
+
+        // we may be grounded and want to look up when close
+        if (m_Follow.IsFreeLookEnabled) {
+            // check proximity between model & follow target to push look at up
+            var followDist = Vector3.Distance(
+                m_Follow.transform.position, // TODO: should this be ground target?
+                m_Follow.TargetPosition
+            );
+
+            var proximity = m_VerticalOffset_DistanceCurve.Evaluate(
+                Mathf.InverseLerp(
+                    m_Follow.MinDistance,
+                    m_Follow.BaseDistance,
+                    followDist
+                )
+            );
+
+            lookOffset = m_VerticalOffset_MaxHeight * proximity * Vector3.up;
+        }
+
+        m_Target.localPosition = m_GroundTarget + lookOffset;
     }
 
     /// find destination point for the ground target
@@ -163,6 +181,12 @@ public class CameraLookAtTarget: MonoBehaviour {
         Gizmos.color = Color.green;
         Gizmos.DrawLine(transform.position, m_Target.position);
         Gizmos.DrawSphere(m_Target.position, 0.3f);
+    }
+
+    [System.Serializable]
+    struct SpringDamp {
+        public float Spring;
+        public float Damp;
     }
 }
 

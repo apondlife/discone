@@ -43,6 +43,10 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the rate of change of local distance of the camera to the target")]
     [SerializeField] float m_LocalSpeed;
 
+    [Tooltip("the amount of offset the camera during collision")]
+    [SerializeField] float m_ContactOffset;
+
+    // -- target speed --
     [Header("target speed")]
     [Tooltip("the camera distance multiplier as a function of target speed")]
     [FormerlySerializedAs("m_TargetSpeed_DistanceCurve")]
@@ -59,6 +63,7 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the maximum speed to camera distance")]
     [SerializeField] float m_TargetSpeed_MaxDistance;
 
+    // -- freelook --
     [Header("freelook")]
     [Tooltip("the speed the free look camera yaws")]
     [SerializeField] float m_FreeLook_YawSpeed;
@@ -85,7 +90,8 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the delay in seconds after free look when the camera returns to active mode")]
     [SerializeField] float m_FreeLook_OvershootLookUp;
 
-    [Header("Recenter")]
+    // -- recenter --
+    [Header("recenter")]
     [Tooltip("the time the camera can be idle before recentering")]
     [SerializeField] float m_Recenter_IdleTime;
 
@@ -95,9 +101,11 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the curve the camera recenters looking at the character")]
     [SerializeField] AnimationCurve m_Recenter_YawCurve;
 
-    [Header("Settings")]
+    // -- settings --
+    [Header("settings")]
     [Tooltip("if the camera moves around the X axis inverted")]
     [SerializeField] private bool m_InvertX;
+
     [Tooltip("if the camera moves around the Y axis inverted")]
     [SerializeField] private bool m_InvertY;
 
@@ -153,20 +161,25 @@ public class CameraFollowTarget: MonoBehaviour {
     RaycastHit m_Hit;
 
     // -- p/debug
-    /// the destination position of the camera post-collision
-    Vector3 m_DestPos;
-
-    /// the origin of the collision cast
-    Vector3 m_CastOrigin;
-
+    #if UNITY_EDITOR
     /// the position of the camera pre-collision on the curve
     Vector3 m_CurvePos;
+
+    /// the vision cast hit, if any
+    RaycastHit? m_VizHit;
 
     /// the position of the camera pre-collision on the player's plane
     Vector3 m_PrecastPos;
 
-    /// the vision cast hit, if any
-    RaycastHit? m_VizHit;
+    /// the project position along the curve
+    Vector3 m_ProjPos;
+
+    /// the destination position of the camera post-collision
+    Vector3 m_DestPos;
+
+    /// the destination source (proj/viz/player)
+    int m_DestSource = 0;
+    #endif
 
     // -- lifecycle --
     void OnValidate() {
@@ -292,7 +305,7 @@ public class CameraFollowTarget: MonoBehaviour {
         // update distance based on target speed
         var multiplier = Mathf.Lerp(
             1.0f,
-            Distance_SpeedMultiplier,
+            m_TargetSpeed_MaxDistance / m_BaseDistance,
             m_Distance_SpeedCurve.Evaluate(Mathf.InverseLerp(
                 m_TargetMinSpeed,
                 m_TargetMaxSpeed,
@@ -300,131 +313,27 @@ public class CameraFollowTarget: MonoBehaviour {
             ))
         );
 
-        // update distance based on pitch (for non spherical camera)
-        //     multiplier *= Mathf.Lerp(
-        //         Distance_PitchMultiplier,
-        //         1.0f,
-        //         m_Distance_PitchCurve.Evaluate(Mathf.InverseLerp(
-        //             -90.0f,
-        //             +90.0f,
-        //             m_Pitch
-        //         ))
-        //    );
-
         m_Distance = m_BaseDistance * multiplier;
 
         // calculate new forward from yaw rotation
         var forward = yawRot * m_ZeroYawDir;
 
-        // the center of the camera armature
-        var curveOrigin = transform.position;
+        // the camera's ideal location on the pitch curve
+        var curvePos = transform.position + pitchRot * forward * m_Distance;
 
-        // we did a bunch of math and rotations,
-        // and we finally figured out where we want the camera to be on the curve
-        // but! there's a world around us, and the curve doesn't acknowledge that!
-        m_CurvePos = curveOrigin + pitchRot * forward * m_Distance;
+        // find the camera's final pos
+        var destPos = FindDestPos(curvePos);
 
-        // before we do anything we want to know if any surface is affecting our visibility
-        var vizCast = m_CurvePos - curveOrigin;
-        var vizDir = vizCast.normalized;
-        var vizLen = vizCast.magnitude;
-
-        var didHit = Physics.Raycast(
-            curveOrigin,
-            vizDir,
-            out m_Hit,
-            vizLen,
-            m_CollisionMask,
-            QueryTriggerInteraction.Ignore
-        );
-
+        // store gizmo state
         #if UNITY_EDITOR
-        m_VizHit = didHit ? m_Hit : null;
+        m_DestPos = destPos;
+        m_CurvePos = curvePos;
         #endif
-
-        // if the target is visible, we have our desired position
-        if (!didHit) {
-            m_DestPos = m_CurvePos;
-        }
-        // otherwise, something is blocking the camera and we need to cast to
-        // find a surface for it
-        else {
-            var vizHit = m_Hit;
-            var vizPos = vizHit.point;
-            var vizNormal =vizHit.normal;
-
-            // we're going to precast vertically in the direction of normal
-            var precastDir = Mathf.Sign(vizNormal.y) * Vector3.up;
-            var precastLen = 2.0f * m_Distance; // the "diamater" of the curve
-
-            // precast from a position in the plane of the surface between player and camera
-            // along the axis containing the curve pos
-            var vizPlane = new Plane(vizNormal, vizPos);
-            var vizRay = new Ray(m_CurvePos, precastDir);
-
-            // TODO: if we can't intersect, this is a wall. we haven't implemented walls yet
-            if (!vizPlane.Raycast(vizRay, out var distance) && distance < precastLen) {
-                Debug.LogWarning($"[camera] vision cast into wall @ dist {distance}");
-                distance = 0.0f;
-            }
-
-            m_PrecastPos = m_CurvePos + precastDir * distance;
-
-            // now we want to cast from somewhere above ground towards our position in the curve
-            // to find if the position in the curve is underground
-            // but first, we need to find the point from where to cast
-            // so we will cast away from curve position first, to make sure we cast from a safe position
-            didHit = Physics.Raycast(
-                m_PrecastPos,
-                precastDir,
-                out m_Hit,
-                precastLen,
-                m_CollisionMask,
-                QueryTriggerInteraction.Ignore
-            );
-
-            // now, knowing a safe point to cast from, we do our actual surface finding cast
-            // if we hit something, we want to cast back from that point to find the camera's
-            // final location. if not, we cast from the farthest point on the precast
-            m_CastOrigin = didHit ? m_Hit.point : m_PrecastPos + precastDir * precastLen;
-
-            var castDir = -precastDir;
-            var castLen = Vector3.Distance(m_PrecastPos, m_CastOrigin);
-
-            didHit = Physics.Raycast(
-                m_CastOrigin,
-                castDir,
-                out m_Hit,
-                castLen,
-                m_CollisionMask,
-                QueryTriggerInteraction.Ignore
-            );
-
-            // if we hit a surface, that's our camera position!
-            // otherwise, all this calculation is just thrown away,
-            // we are floating in space with no world to collide with
-            var pos = didHit ? m_Hit.point : m_PrecastPos;
-
-            // do one final cast from the position on the player's original visible
-            // surface to the projected position in the surface plane, making sure it's
-            // still visible
-            var vizCast2 = pos - vizPos;
-            didHit = Physics.Raycast(
-                vizPos,
-                vizCast2.normalized,
-                out m_Hit,
-                vizCast2.magnitude,
-                m_CollisionMask,
-                QueryTriggerInteraction.Ignore
-            );
-
-            m_DestPos = didHit ? m_Hit.point : pos;
-        }
 
         // update target position and forward
         m_Target.position = Vector3.MoveTowards(
             m_Target.position,
-            m_DestPos,
+            destPos,
             m_LocalSpeed * Time.deltaTime
         );
 
@@ -432,6 +341,154 @@ public class CameraFollowTarget: MonoBehaviour {
     }
 
     // -- queries --
+    /// find the camera's best position given a candidate position
+    public Vector3 FindDestPos(Vector3 candidate) {
+        // the character's position
+        var origin = transform.position;
+
+        // step 1: cast from the character to the ideal position to see if any
+        // surface is blocking visibility
+        var vizCast = candidate - origin;
+        var vizDir = vizCast.normalized;
+        var vizLen = vizCast.magnitude;
+
+        var didHit = Physics.Linecast(
+            origin,
+            candidate,
+            out m_Hit,
+            m_CollisionMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        // store gizmo state
+        #if UNITY_EDITOR
+        m_VizHit = didHit ? m_Hit : null;
+        #endif
+
+        // if the target is visible, we have our desired position
+        if (!didHit) {
+            return candidate;
+        }
+
+        var vizHit = m_Hit;
+        var vizPos = vizHit.point;
+        var vizNormal = vizHit.normal;
+
+        // aside 1.a: accumulate the normal of all contact surfaces to push the
+        // camera away a bit at the end (e.g. skin / contact offset)
+        var contactNormal = vizNormal;
+
+        // step 2: if a surface is blocking the camera, cast up and down along
+        // the vertical axis containing the ideal position in the direction of
+        // the surface.
+        var precastDir = Mathf.Sign(vizNormal.y) * Vector3.up;
+        var precastLen = 2.0f * m_Distance; // the "diamater" of the curve
+
+        // we're going to use a position on the axis that intersects the surface
+        // plane. this has a nice side-effect of allowing the camera to see into
+        // enclosed spaces from outside
+        var vizPlane = new Plane(vizNormal, vizPos);
+        var vizRay = new Ray(m_CurvePos, precastDir);
+
+        // TODO: if we can't intersect, this is a wall. we haven't implemented
+        // walls yet
+        if (!vizPlane.Raycast(vizRay, out var distance) && distance < precastLen) {
+            Debug.LogWarning($"[camera] vision cast into wall @ dist {distance}");
+            distance = 0.0f;
+        }
+
+        var precastPos = m_CurvePos + precastDir * distance;
+
+        // store gizmo state
+        #if UNITY_EDITOR
+        m_PrecastPos = precastPos;
+        #endif
+
+        // cast up / down along the vertical axis to see if there's a floor or
+        // ceiling in our way.
+        didHit = Physiics.BounceCast(
+            precastPos,
+            precastDir,
+            out m_Hit,
+            precastLen,
+            m_CollisionMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        // step 3: the projected pos could still be underground or out of view,
+        // so we want run a few more casts to the project point find the nearest
+        // visible point.
+        var projPos = precastPos;
+        if (didHit) {
+            projPos = m_Hit.point;
+        }
+
+        // store gizmo state
+        #if UNITY_EDITOR
+        m_ProjPos = projPos;
+        m_DestSource = 0;
+        #endif
+
+        // keep track of the current best dest position and normal, and the
+        // distance of the closest option
+        var destPos = projPos;
+        var destDir = Vector3.zero; // TODO: should m_Hit.normal be used here for contact aggregation?
+        var destMinDist = float.MaxValue;
+
+        // do another bounce cast from the position on the player's original
+        // visible surface
+        didHit = Physiics.RaycastLast(
+            vizPos,
+            projPos,
+            out m_Hit,
+            m_CollisionMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        // if we hit anything, it's our new best position
+        if (didHit) {
+            destPos = m_Hit.point;
+            destDir = m_Hit.normal;
+            destMinDist = Vector3.SqrMagnitude(destPos - projPos);
+
+            #if UNITY_EDITOR
+            m_DestSource = 1;
+            #endif
+        }
+
+        // also do a cast from the player
+        didHit = Physics.Linecast(
+            origin,
+            projPos,
+            out m_Hit,
+            m_CollisionMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        // if the player cast hit
+        if (didHit) {
+            var nextPos = m_Hit.point;
+            var nextDir = m_Hit.normal;
+            var nextDist = Vector3.SqrMagnitude(nextPos - projPos);
+
+            // and was closer, it's our new best position
+            if (nextDist < destMinDist) {
+                destPos = nextPos;
+                destDir = nextDir;
+                destMinDist = nextDist;
+
+                #if UNITY_EDITOR
+                m_DestSource = 2;
+                #endif
+            }
+        }
+
+        // aside 1.b: accumulate this surface normal on the contact normal
+        contactNormal = Vector3.Normalize(contactNormal + destDir);
+
+        return destPos + contactNormal * m_ContactOffset;
+    }
+
     public void SetInvertY(bool value) {
         m_InvertY = value;
     }
@@ -441,7 +498,7 @@ public class CameraFollowTarget: MonoBehaviour {
     }
 
     /// the target's position
-    public Vector3 Position {
+    public Vector3 TargetPosition {
         get => m_Target.position;
     }
 
@@ -455,14 +512,14 @@ public class CameraFollowTarget: MonoBehaviour {
         get => m_BaseDistance * Mathf.Cos(Mathf.Deg2Rad * m_FreeLook_MinPitch);
     }
 
-    // -- debug --
-    void OnDrawGizmos() {
-        var pt = m_Model.position - Vector3.ProjectOnPlane(m_Model.forward, Vector3.up).normalized * m_BaseDistance;
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(m_Model.position, 0.1f);
-        Gizmos.DrawSphere(pt, 0.1f);
-        Gizmos.DrawLine(pt, m_Target.position);
+    /// if free look is enabled
+    public bool IsFreeLookEnabled {
+        get => m_FreeLook_Enabled;
+    }
 
+    // -- debug --
+    #if UNITY_EDITOR
+    void OnDrawGizmos() {
         Vector3 r() => Random.insideUnitSphere * 0.05f;
 
         Gizmos.color = Color.cyan;
@@ -470,7 +527,6 @@ public class CameraFollowTarget: MonoBehaviour {
 
         Gizmos.color = Color.Lerp(Color.yellow, Color.red, 0.5f);
         Gizmos.DrawLine(m_CurvePos, transform.position);
-
         if (m_VizHit == null) {
             return;
         }
@@ -489,20 +545,21 @@ public class CameraFollowTarget: MonoBehaviour {
         );
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(m_CastOrigin + r(), 0.1f);
-        Gizmos.DrawLine(m_CastOrigin, m_DestPos);
+        Gizmos.DrawWireSphere(m_ProjPos + r(), 0.1f);
 
         Gizmos.color = Color.red;
         Gizmos.DrawLine(m_CurvePos, m_DestPos);
-    }
 
-    public float Distance_PitchMultiplier {
-        get => m_MinUndershootDistance / m_BaseDistance;
-    }
+        Gizmos.color = (m_DestSource) switch {
+            0 => Color.white,
+            1 => Color.Lerp(Color.white, Color.magenta, 0.5f),
+            _ => Color.Lerp(Color.white, Color.green, 0.5f),
+        };
 
-    public float Distance_SpeedMultiplier {
-        get => m_TargetSpeed_MaxDistance / m_BaseDistance;
+        Gizmos.DrawLine(m_ProjPos, m_DestPos);
+        Gizmos.DrawWireSphere(m_DestPos + r(), 0.1f);
     }
+    #endif
 }
 
 }
