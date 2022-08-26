@@ -392,6 +392,7 @@ MonoBehaviour:
   m_MaxPitchSpeed: 50
   m_PitchAcceleration: 100
   m_LocalSpeed: 13
+  m_ContactOffset: 0.12
   m_Distance_SpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -548,11 +549,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_MaxDistance: 20
-  m_TargetSpringDown: 4
   m_TargetSpeed: 0
+  m_TargetSpringDown: 4
   m_TargetDampDown: 12
+  m_SpringDamp_Down:
+    Spring: 4
+    Damp: 12
   m_TargetSpringUp: 10
   m_TargetDampUp: 10
+  m_SpringDamp_Up:
+    Spring: 10
+    Damp: 10
+  m_TargetSpringFreeLook: 10
+  m_TargetDampFreeLook: 10
+  m_SpringDamp_FreeLook:
+    Spring: 10
+    Damp: 10
   m_MinFallingSpeed: -2
   m_MaxFallingSpeed: 1
   m_GroundLayers:
@@ -585,7 +597,6 @@ MonoBehaviour:
   m_VerticalOffset_MaxHeight: 5
   m_Target: {fileID: 5081405195371850226}
   m_Follow: {fileID: 7736594804511770898}
-  m_Model: {fileID: 1061133086809451152}
 --- !u!1 &6542079319371145381
 GameObject:
   m_ObjectHideFlags: 0
