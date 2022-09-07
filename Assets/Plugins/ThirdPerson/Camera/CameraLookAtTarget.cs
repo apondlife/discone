@@ -7,36 +7,34 @@ public class CameraLookAtTarget: MonoBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("the max distance from the character to cast for the ground")]
-    [SerializeField] private float m_MaxDistance;
+    [SerializeField] float m_MaxDistance;
 
     [Header("Ground Target")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_TargetDamp")]
-    [SerializeField] private float m_TargetSpeed;
+    [SerializeField] float m_TargetSpeed;
 
-    // [SerializeField] private float m_TargetSpringDown;
-    // [UnityEngine.Serialization.FormerlySerializedAs("m_TargetDamp")]
-    // [SerializeField] private float m_TargetDampDown;
-    [SerializeField] private SpringDamp m_SpringDamp_Down;
+    [Tooltip("the spring daming when moving down")]
+    [SerializeField] SpringDamp m_SpringDamp_Down;
 
-    // [SerializeField] private float m_TargetSpringUp;
-    // [SerializeField] private float m_TargetDampUp;
-    [SerializeField] private SpringDamp m_SpringDamp_Up;
+    [Tooltip("the spring damping when moving up")]
+    [SerializeField] SpringDamp m_SpringDamp_Up;
 
-    // [SerializeField] private float m_TargetSpringFreeLook;
-    // [SerializeField] private float m_TargetDampFreeLook;
-    [SerializeField] private SpringDamp m_SpringDamp_FreeLook;
+    [Tooltip("the spring damping when free look is on")]
+    [SerializeField] SpringDamp m_SpringDamp_FreeLook;
 
-    [Tooltip("the max distance from the character to cast for the ground")]
-    [SerializeField] private float m_MinFallingSpeed;
-    [SerializeField] private float m_MaxFallingSpeed;
+    [Tooltip("the minimum target fall speed")]
+    [SerializeField] float m_MinFallingSpeed;
+
+    [Tooltip("the minimum target fall speed")]
+    [SerializeField] float m_MaxFallingSpeed;
 
     [Tooltip("the layer mask for the ground")]
-    [SerializeField] private LayerMask m_GroundLayers;
+    [SerializeField] LayerMask m_GroundLayers;
 
     // -- vertical offset --
-    [Header("Vertical Offset")]
+    [Header("vertical offset")]
     [Tooltip("the offset scale between 0 and min distance")]
-    [SerializeField] private AnimationCurve m_VerticalOffset_DistanceCurve;
+    [SerializeField] AnimationCurve m_VerticalOffset_DistanceCurve;
 
     [Tooltip("the maximum height to move the target up")]
     [SerializeField] float m_VerticalOffset_MaxHeight;
@@ -50,30 +48,14 @@ public class CameraLookAtTarget: MonoBehaviour {
     [SerializeField] CameraFollowTarget m_Follow;
 
     // -- props --
-    /// a reference to the character state
+    /// a reference to the character
     Character m_Character;
 
-    float m_GroundTargetSpeed;
-
-    // the stored position of where we want to look at towards the ground
+    /// the stored position of where we want to look at towards the ground
     Vector3 m_GroundTarget;
 
-    // void OnValidate() {
-    //     m_SpringDamp_FreeLook = new SpringDamp() {
-    //         Spring = m_TargetSpringFreeLook,
-    //         Damp = m_TargetDampFreeLook
-    //     };
-
-    //     m_SpringDamp_Up = new SpringDamp() {
-    //         Spring = m_TargetSpringUp,
-    //         Damp = m_TargetDampUp
-    //     };
-
-    //     m_SpringDamp_Down = new SpringDamp() {
-    //         Spring = m_TargetSpringDown,
-    //         Damp = m_TargetDampDown
-    //     };
-    // }
+    /// the current target speed
+    float m_GroundTargetSpeed;
 
     // -- lifecycle --
     void Start() {
