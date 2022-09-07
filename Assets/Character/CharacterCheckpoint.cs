@@ -225,19 +225,8 @@ public class CharacterCheckpoint: NetworkBehaviour {
         }
 
         // instantiate flower at hit point
-        var place = hits > 0 ? m_Hits[0].point : newCheckpoint.Position;
-        m_Flower = Instantiate(
-            m_FlowerPrefab,
-            place,
-            Quaternion.identity
-        );
-        m_Flower.name = $"Flower_{m_Container.name}";
-
-        // TODO: billboard shader should't care about model rotation (it currently does)
-        // m_Flower.transform.forward = newCheckpoint.Forward;
-
-        // spawn the game object for everyone
-        NetworkServer.Spawn(m_Flower.gameObject);
+        var pos = hits > 0 ? m_Hits[0].point : newCheckpoint.Position;
+        CharacterFlower.Spawn(m_Container.Key, pos);
     }
 
     /// -- c/load

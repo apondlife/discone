@@ -91,7 +91,6 @@ public class Online: NetworkManager {
         base.OnClientConnect();
 
         if (m_State != State.Host) {
-
             m_State = State.Client;
             Debug.Log($"[online] client connected!");
         }

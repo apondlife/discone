@@ -6,7 +6,7 @@ using UnityAtoms.BaseAtoms;
 /// the discone (local) player; there is only one of these!
 [RequireComponent(typeof(ThirdPerson.Player))]
 public sealed class DisconePlayer: MonoBehaviour {
-    // -- atoms --
+    // -- state --
     [Header("state")]
     [Tooltip("the current player")]
     [SerializeField] DisconePlayerVariable m_Current;
@@ -17,19 +17,16 @@ public sealed class DisconePlayer: MonoBehaviour {
     [Tooltip("if this player is ready with a character")]
     [SerializeField] BoolVariable m_IsReady;
 
-    [Tooltip("the progress of the checkpoint save")]
-    [SerializeField] FloatVariable m_SaveProgress;
-
-    [Tooltip("the progress of the checkpoint load")]
-    [SerializeField] FloatVariable m_LoadProgress;
-
-    // -- events --
-    [Header("events")]
+    // -- subscribed --
+    [Header("subscribed")]
     [Tooltip("if the dialogue is active")]
     [SerializeField] BoolEvent m_IsDialogueActiveChanged;
 
     // -- refs --
     [Header("refs")]
+    [Tooltip("the persistence store")]
+    [SerializeField] Store m_Store;
+
     [Tooltip("the input source")]
     [SerializeField] PlayerInputSource m_InputSource;
 
@@ -54,7 +51,8 @@ public sealed class DisconePlayer: MonoBehaviour {
         // bind events
         m_Subscriptions
             .Add(m_Character.ChangedWithHistory, OnDriveCharacter)
-            .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
+            .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged)
+            .Add(m_Store.LoadFinished, OnStoreLoadFinished);
     }
 
     void OnDestroy() {
@@ -74,7 +72,11 @@ public sealed class DisconePlayer: MonoBehaviour {
     }
 
     // -- events --
-    // when the player starts driving a character
+    /// when the store loads
+    void OnStoreLoadFinished() {
+    }
+
+    /// when the player starts driving a character
     void OnDriveCharacter(DisconeCharacterPair characters) {
         var prev = characters.Item2;
         prev?.OnRelease();
