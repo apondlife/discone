@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
-class CharacterFlower: NetworkBehaviour {
+public class CharacterFlower: NetworkBehaviour {
     // -- statics --
     /// the cache of per-texture materials
     static Dictionary<string, Material> s_MaterialCache = new Dictionary<string, Material>();
@@ -27,6 +27,10 @@ class CharacterFlower: NetworkBehaviour {
     [Header("refs")]
     [Tooltip("the renderer for the flower")]
     [SerializeField] Renderer m_Renderer;
+
+    // -- props --
+    /// the assosciated character's key
+    CharacterKey m_Key;
 
     // -- lifecycle
     void Awake() {
@@ -57,6 +61,14 @@ class CharacterFlower: NetworkBehaviour {
     }
 
     // -- queries --
+    public CharacterKey Key {
+        get => m_Key;
+    }
+
+    public bool IsFree {
+        get => m_IsFree;
+    }
+
     /// find cached material for texture and saturation
     Material FindMaterial(float saturation = 1.0f) {
         var key = $"{m_Texture.name}/{saturation}";
@@ -71,5 +83,37 @@ class CharacterFlower: NetworkBehaviour {
         }
 
         return material;
+    }
+
+    // -- factories --
+    /// spawn a flower from a record
+    [Server]
+    public static void Spawn(FlowerRec rec) {
+        Spawn(rec.Key, rec.Pos);
+    }
+
+    /// spawn a flower from key and pos
+    [Server]
+    public static void Spawn(CharacterKey key, Vector3 pos) {
+        var prefab = CharacterDefs.Instance.Find(key)?.Flower;
+        if (prefab == null) {
+            Debug.LogError($"[World] no flower prefab found for {key.Name()}");
+            return;
+        }
+
+        var instance = Instantiate(
+            prefab,
+            pos,
+            Quaternion.identity
+        );
+
+        instance.m_Key = key;
+
+        #if UNITY_EDITOR
+        instance.name = $"Flower_{key.Name()}";
+        #endif
+
+        // spawn the game object for everyone
+        NetworkServer.Spawn(instance.gameObject);
     }
 }

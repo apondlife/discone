@@ -17,6 +17,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         Local // state is being simulated locally and sent to the server
     }
 
+    // -- id --
+    [Header("id")]
+    [Tooltip("the character's key")]
+    [SerializeField] CharacterKey m_Key;
+
     // -- state --
     [Header("state")]
     [Tooltip("where the simulation for this character takes place")]
@@ -39,11 +44,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     [UnityEngine.Serialization.FormerlySerializedAs("m_ReceivedState")]
     [SerializeField] CharacterState.Frame m_RemoteState;
 
-    // -- config --
-    [Header("config")]
-    [Tooltip("the character's perception")]
-    [SerializeField] CharacterPerception m_Perception;
-
+    // -- cfg --
+    [Header("cfg")]
     [Tooltip("how long does the character take to interpolate to the current received state")]
     [SerializeField] float m_InterpolationTime = 0.2f;
 
@@ -277,6 +279,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     // -- queries --
+    /// the character's key
+    public CharacterKey Key {
+        get => m_Key;
+    }
+
     /// if this character is available
     public bool IsAvailable {
         get => m_IsAvailable;
@@ -315,11 +322,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the checkpoint spawner
     public CharacterCheckpoint Checkpoint {
         get => m_Checkpoint;
-    }
-
-    /// the character's perception
-    public CharacterPerception Perception {
-        get => m_Perception;
     }
 
     /// the world coord
