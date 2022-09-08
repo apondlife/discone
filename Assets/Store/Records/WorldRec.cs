@@ -1,5 +1,8 @@
+using System;
+
+// TODO: make all these classes or records
 /// the serialized world state
-[System.Serializable]
+[Serializable]
 public struct WorldRec {
     // -- props --
     /// all the flowers in the world
