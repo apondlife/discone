@@ -13,4 +13,14 @@ public struct CharacterRec {
 
     /// the last flower
     public FlowerRec Flower;
+
+    // -- factories --
+    /// instantiate a rec from a character
+    public static CharacterRec From(DisconeCharacter character) {
+        return new CharacterRec() {
+            Key = character.Key,
+            Pos = character.transform.position,
+            Flower = FlowerRec.From(character.Checkpoint.Flower),
+        };
+    }
 }

@@ -311,6 +311,10 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     // -- queries --
     /// if the character is currently saving
+    public CharacterFlower Flower {
+        get => m_Flower;
+    }
+
     public bool IsSaving {
         get => m_SaveElapsed > 0.0f;
     }

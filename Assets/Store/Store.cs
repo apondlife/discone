@@ -41,10 +41,21 @@ public sealed class Store: ScriptableObject {
     /// save the current state
     [ContextMenu("Save Store")]
     public async void Save() {
+        // grab player character and flower
+        var pc = GameObject
+            .FindObjectOfType<DisconePlayer>()
+            .Character;
+
+        var pf = pc.Checkpoint.Flower;
+
+        // update player rec
+        m_Player.Character = CharacterRec.From(pc);
+
         // update flowers recs
         m_World.Flowers = GameObject
             .FindObjectsOfType<CharacterFlower>()
-            // .Where(flower => flower.IsFree)
+            // don't save the player flower, it gets loaded by player code
+            .Where(flower => flower != pf)
             .Select(FlowerRec.From)
             .ToArray();
 
@@ -103,7 +114,11 @@ public sealed class Store: ScriptableObject {
     /// write the record to disk at path
     async Task SaveRecord<T>(string path, T record) {
         // encode the json
+        #if UNITY_EDITOR
+        var json = JsonUtility.ToJson(record, true);
+        #else
         var json = JsonUtility.ToJson(record);
+        #endif
 
         // write the data to disk, truncating whatever is there
         byte[] data;
