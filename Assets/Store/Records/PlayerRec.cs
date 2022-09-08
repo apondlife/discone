@@ -1,5 +1,7 @@
+using System;
+
 /// the serialized player state
-[System.Serializable]
+[Serializable]
 public struct PlayerRec {
     // -- props --
     /// the player's current character

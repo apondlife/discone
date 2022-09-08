@@ -7,6 +7,9 @@ sealed class App: MonoBehaviour {
     [Tooltip("the store")]
     [SerializeField] Store m_Store;
 
+    [Tooltip("the character definitions")]
+    [SerializeField] CharacterDefs m_Defs;
+
     // -- lifecycle --
     void Start() {
         // load the world state

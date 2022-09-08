@@ -61,6 +61,11 @@ public sealed class DisconePlayer: MonoBehaviour {
     }
 
     // -- queries --
+    /// the character
+    public DisconeCharacter Character {
+        get => m_Character.Value;
+    }
+
     /// the checkpoint
     public PlayerCheckpoint Checkpoint {
         get => m_Checkpoint;
@@ -74,6 +79,14 @@ public sealed class DisconePlayer: MonoBehaviour {
     // -- events --
     /// when the store loads
     void OnStoreLoadFinished() {
+        var player = m_Store.Player;
+
+        // TODO: implement this
+        // if the store has a player & character, spawn that character remotely
+        // --> drive that character
+        // otherwise, find the first available character (OnlinePlayer.DriveInitialCharacter)
+        // --> drive that character
+
     }
 
     /// when the player starts driving a character

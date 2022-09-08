@@ -3,7 +3,6 @@ using Mirror;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using ThirdPerson;
-using System.Linq;
 
 /// an online player
 /// TODO: swap (drive) characters by setting m_LocalCharacter
@@ -27,12 +26,15 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     // -- published --
     [Header("published")]
     [Tooltip("when a player joins")]
+    // TODO: remote player
     [SerializeField] OnlinePlayerEvent m_Connected;
 
     [Tooltip("when a player leaves")]
+    // TODO: remote player
     [SerializeField] OnlinePlayerEvent m_Disconnected;
 
     [Tooltip("when a player switches character")]
+    // TODO: remote player
     [SerializeField] DisconeCharacterPairEvent m_SwitchedCharacter;
 
     // -- refs --
@@ -47,6 +49,9 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     [Tooltip("the entities repos")]
     [SerializeField] EntitiesVariable m_Entities;
+
+    [Tooltip("the persistence store")]
+    [SerializeField] Store m_Store;
 
     // -- props --
     /// a set of event subscriptions
@@ -66,6 +71,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     void Start() {
+        // TODO: move this into RemotePlayer, other than mixing Local and Remote
         m_PlayerCount.Value += 1;
         m_Connected.Raise(this);
     }
@@ -91,7 +97,9 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // listen to switch events
-        m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
+        m_Subscriptions
+            .Add(m_SwitchCharacter, OnSwitchCharacter)
+            .Add(m_Store.LoadFinished, OnLoadFinished);
     }
 
     void OnDestroy() {
@@ -227,6 +235,10 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     void OnSwitchCharacter(GameObject obj) {
         var character = obj.GetComponent<DisconeCharacter>();
         DriveCharacter(character);
+    }
+
+    void OnLoadFinished() {
+        var character = m_Store.Player.Character;
     }
 
     /// when the player disconnects on the server

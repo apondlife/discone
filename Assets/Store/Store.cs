@@ -22,6 +22,9 @@ public sealed class Store: ScriptableObject {
     // -- commands --
     /// load data from disk
     public async void Load() {
+        // ensure we have a directory to read from
+        Directory.CreateDirectory(RootPath);
+
         // load the records
         var w = LoadRecord<WorldRec>(WorldPath);
         var p = LoadRecord<PlayerRec>(PlayerPath);
@@ -36,20 +39,41 @@ public sealed class Store: ScriptableObject {
     }
 
     /// save the current state
-    [ContextMenu("Save Game")]
+    [ContextMenu("Save Store")]
     public async void Save() {
+        // grab player character and flower
+        var pc = GameObject
+            .FindObjectOfType<DisconePlayer>()
+            .Character;
+
+        var pf = pc.Checkpoint.Flower;
+
+        // update player rec
+        m_Player.Character = CharacterRec.From(pc);
+
         // update flowers recs
         m_World.Flowers = GameObject
             .FindObjectsOfType<CharacterFlower>()
-            .Where(flower => flower.IsFree)
+            // don't save the player flower, it gets loaded by player code
+            .Where(flower => flower != pf)
             .Select(FlowerRec.From)
             .ToArray();
+
+        // ensure we have a directory to write to
+        Directory.CreateDirectory(RootPath);
 
         // write the records to disk
         await Task.WhenAll(
             SaveRecord<PlayerRec>(PlayerPath, m_Player),
             SaveRecord<WorldRec>(WorldPath, m_World)
         );
+    }
+
+    /// reset all state
+    [ContextMenu("Reset Store")]
+    void Reset() {
+        File.Delete(WorldPath);
+        File.Delete(PlayerPath);
     }
 
     // -- queries --
@@ -70,7 +94,11 @@ public sealed class Store: ScriptableObject {
 
     /// the root store path
     string RootPath {
+        #if UNITY_EDITOR
+        get => Path.Combine(Application.dataPath, "..", "Artifacts", "data");
+        #else
         get => Application.persistentDataPath;
+        #endif
     }
 
     /// the path to the world file
@@ -86,21 +114,27 @@ public sealed class Store: ScriptableObject {
     /// write the record to disk at path
     async Task SaveRecord<T>(string path, T record) {
         // encode the json
+        #if UNITY_EDITOR
+        var json = JsonUtility.ToJson(record, true);
+        #else
         var json = JsonUtility.ToJson(record);
+        #endif
 
-        // write the data to disk
+        // write the data to disk, truncating whatever is there
         byte[] data;
-        using (var stream = new FileStream(path, FileMode.OpenOrCreate)) {
+        using (var stream = new FileStream(path, FileMode.Create)) {
             data = Encoding.UTF8.GetBytes(json);
             await stream.WriteAsync(data, 0, data.Length);
         }
+
+        Debug.Log($"[store] saved file @ {path} => {json}");
     }
 
     /// load the record from disk at path
     async Task<T> LoadRecord<T>(string path) {
         // check for file
         if (!File.Exists(path)) {
-            Debug.Log("[store] no save file found @ ${path}");
+            Debug.Log($"[store] no save file found @ {path}");
             return default;
         }
 
@@ -117,8 +151,9 @@ public sealed class Store: ScriptableObject {
         }
 
         // decode record from json
-        var json = System.Text.Encoding.UTF8.GetString(data);
+        var json = Encoding.UTF8.GetString(data);
         var record = JsonUtility.FromJson<T>(json);
+
         Debug.Log($"[store] loaded file @ {path} => {json}");
 
         return record;
