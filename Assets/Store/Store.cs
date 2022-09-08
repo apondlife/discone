@@ -131,11 +131,11 @@ public sealed class Store: ScriptableObject {
     }
 
     /// load the record from disk at path
-    async Task<T> LoadRecord<T>(string path) {
+    async Task<T> LoadRecord<T>(string path) where T : new(){
         // check for file
         if (!File.Exists(path)) {
             Debug.Log($"[store] no save file found @ {path}");
-            return default;
+            return new T();
         }
 
         // read data from file
