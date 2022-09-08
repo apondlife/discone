@@ -3,7 +3,7 @@ using System;
 
 /// the serialized character state
 [Serializable]
-public struct CharacterRec {
+public record CharacterRec {
     // -- props --
     /// the character
     public CharacterKey Key;
@@ -17,6 +17,10 @@ public struct CharacterRec {
     // -- factories --
     /// instantiate a rec from a character
     public static CharacterRec From(DisconeCharacter character) {
+        if (character == null) {
+            return null;
+        }
+
         return new CharacterRec() {
             Key = character.Key,
             Pos = character.transform.position,
