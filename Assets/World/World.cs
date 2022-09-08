@@ -42,8 +42,14 @@ public sealed class World: MonoBehaviour {
     /// spawn all flowers from the store
     [Server]
     void SpawnFlowers() {
+        // find flowers, if any
+        var flowers = m_Store.World.Flowers;
+        if (flowers == null) {
+            return;
+        }
+
         // spawn all flowers
-        foreach (var rec in m_Store.World.Flowers) {
+        foreach (var rec in flowers) {
             CharacterFlower.Spawn(rec);
         }
     }
