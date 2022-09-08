@@ -3,7 +3,6 @@ using Mirror;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using ThirdPerson;
-using System.Linq;
 
 /// an online player
 /// TODO: swap (drive) characters by setting m_LocalCharacter
@@ -81,6 +80,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
         Debug.Log("[online] starting local player");
 
+        // TODO: move this into DisconePlayer, other than listening to the event
         // drive any character
         DriveInitialCharacter();
 
