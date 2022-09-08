@@ -48,12 +48,20 @@ public class CharacterFlower: NetworkBehaviour {
     }
 
     // -- commands --
-    // called when the flower is no longer owned by a character
+    /// release the server from player ownership
+    [Server]
     public void Server_Release() {
         m_IsFree = true;
     }
 
+    [Server]
+    public void Server_Grab() {
+        m_IsFree = false;
+    }
+
     // -- events --
+    /// when the free state changes
+    [Client]
     void Client_OnIsFreeReceieved(bool oldFree, bool newFree) {
         if (newFree) {
             m_Renderer.material = FindMaterial(m_Saturation);
@@ -61,10 +69,12 @@ public class CharacterFlower: NetworkBehaviour {
     }
 
     // -- queries --
+    /// the associated character's key
     public CharacterKey Key {
         get => m_Key;
     }
 
+    /// if this flower is free
     public bool IsFree {
         get => m_IsFree;
     }
