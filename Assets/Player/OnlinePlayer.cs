@@ -47,6 +47,9 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     [UnityEngine.Serialization.FormerlySerializedAs("m_CurrentCharacter")]
     [SerializeField] DisconeCharacterVariable m_LocalCharacter;
 
+    [Tooltip("is this the hosts player")]
+    [SerializeField] BoolReference m_IsHost;
+
     [Tooltip("the entities repos")]
     [SerializeField] EntitiesVariable m_Entities;
 
@@ -84,7 +87,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
-
         Debug.Log("[online] starting local player");
 
         // destroy your own star
@@ -95,8 +97,21 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
         // listen to switch events
         m_Subscriptions
-            .Add(m_SwitchCharacter, OnSwitchCharacter)
-            .Add(m_Store.LoadFinished, OnLoadFinished);
+            .Add(m_SwitchCharacter, OnSwitchCharacter);
+
+        // TODO: loading screen?
+        if (m_IsHost) {
+            // replay buffer should make sure this gets called again every time
+            m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
+        } else {
+            var character = m_Store.PlayerCharacter;
+            if (character == null) {
+                Debug.LogError($"[player] local player has no character record");
+                return;
+            }
+
+            Server_CreateAndDriveCharacter(character);
+        }
     }
 
     void OnDestroy() {
@@ -152,7 +167,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
         // give this client authority over the character
         dstCharacter.Server_AssignClientAuthority(connectionToClient);
-
         if (srcCharacter != null) {
             srcCharacter.Server_RemoveClientAuthority();
         }
@@ -234,26 +248,24 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         DriveCharacter(character);
     }
 
+    // this only happens to the host player (single player)
     void OnLoadFinished() {
-        var character = m_Store.Player?.Character;
-        if(character != null) {
-            // Instantiate Character...
+        var character = m_Store.PlayerCharacter;
+        if (character != null) {
             Debug.Log($"[local player] character found in store: ${character.Key.Name()} at ${character.Pos}");
+            // Instantiate Character...
             Server_CreateAndDriveCharacter(character);
-            return;
         }
-
         // if there's no character record, drive an initial character
-        DriveInitialCharacter();
+        else {
+            DriveInitialCharacter();
+        }
     }
 
     /// c/server
     /// when the requests to instantiate its previous character
     [Command]
     public void Server_CreateAndDriveCharacter(CharacterRec character) {
-        // this could just spawn the new character and notify the player of it
-        // then the player would go through the normal loop of requesting drive
-        // but this is making it in a single server call
         var prefab = CharacterDefs.Instance.Find(character.Key).Character;
 
         // TODO: character spawns exactly in the ground, and because of chunk delay it ends up falling through the ground
@@ -261,19 +273,13 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         var dstCharacter = Instantiate(
             prefab,
             character.Pos + Vector3.up * offset,
-            Quaternion.identity);
+            character.Rot
+        );
 
         var dst = dstCharacter.gameObject;
         NetworkServer.Spawn(dst);
 
-        dstCharacter.Server_AssignClientAuthority(connectionToClient);
-
-        // notify target of switch
-        Target_SwitchCharacter(connectionToClient, dst);
-
-        // notify all clients of ownership change
-        m_Character = dstCharacter;
-        Client_ChangeOwnership(dstCharacter.gameObject);
+        Server_SwitchCharacter(null, dst);
     }
 
     /// when the player disconnects on the server

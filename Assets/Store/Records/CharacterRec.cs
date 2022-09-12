@@ -11,20 +11,9 @@ public record CharacterRec {
     /// the world position
     public Vector3 Pos;
 
+    /// the world rotation
+    public Quaternion Rot;
+
     /// the last flower
     public FlowerRec Flower;
-
-    // -- factories --
-    /// instantiate a rec from a character
-    public static CharacterRec From(DisconeCharacter character) {
-        if (character == null) {
-            return null;
-        }
-
-        return new CharacterRec() {
-            Key = character.Key,
-            Pos = character.transform.position,
-            Flower = FlowerRec.From(character.Checkpoint.Flower),
-        };
-    }
 }

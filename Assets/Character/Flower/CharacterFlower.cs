@@ -126,4 +126,12 @@ public class CharacterFlower: NetworkBehaviour {
         // spawn the game object for everyone
         NetworkServer.Spawn(instance.gameObject);
     }
+
+    /// construct a record from this flower
+    public FlowerRec IntoRecord() {
+        return new FlowerRec() {
+            Key = Key,
+            Pos = transform.position,
+        };
+    }
 }

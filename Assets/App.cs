@@ -2,6 +2,7 @@ using UnityEngine;
 
 /// the app
 sealed class App: MonoBehaviour {
+    private static App Instance;
     // -- refs --
     [Header("refs")]
     [Tooltip("the store")]
@@ -11,13 +12,25 @@ sealed class App: MonoBehaviour {
     [SerializeField] CharacterDefs m_Defs;
 
     // -- lifecycle --
+    void Awake() {
+        if(Instance == null) {
+            Instance = this;
+            transform.SetParent(null);
+        } else {
+            Destroy(gameObject);
+        }
+
+        DontDestroyOnLoad(gameObject);
+    }
+
     void Start() {
         // load the world state
         m_Store.Load();
     }
 
-    void OnApplicationQuit() {
+    async void OnApplicationQuit() {
         // save the world state
-        m_Store.Save();
+        // TODO: this should probably only save the world if we are the host
+        await m_Store.Save();
     }
 }
