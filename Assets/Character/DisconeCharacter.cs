@@ -106,7 +106,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     void OnDestroy() {
-        Debug.Log($"[chrctr] destroying {name}");
         OnSimulationChanged = null;
     }
 
@@ -324,6 +323,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         get => m_Checkpoint;
     }
 
+    /// the character's flower
+    public CharacterFlower Flower {
+        get => m_Checkpoint.Flower;
+    }
+
     /// the world coord
     public WorldCoord Coord {
         get => m_Coord;
@@ -336,4 +340,15 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         get => m_IsDebug;
     }
     #endif
+
+    // -- factories --
+    /// instantiate a rec from a character
+    public CharacterRec IntoRecord() {
+        return new CharacterRec() {
+            Key = Key,
+            Pos = m_RemoteState.Position,
+            Rot = m_RemoteState.LookRotation,
+            Flower = Checkpoint.Flower?.IntoRecord(),
+        };
+    }
 }

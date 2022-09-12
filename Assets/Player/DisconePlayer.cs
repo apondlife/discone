@@ -86,7 +86,6 @@ public sealed class DisconePlayer: MonoBehaviour {
         // --> drive that character
         // otherwise, find the first available character (OnlinePlayer.DriveInitialCharacter)
         // --> drive that character
-
     }
 
     /// when the player starts driving a character

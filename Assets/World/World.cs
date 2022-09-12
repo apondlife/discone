@@ -43,7 +43,7 @@ public sealed class World: MonoBehaviour {
     [Server]
     void SpawnFlowers() {
         // find flowers, if any
-        var flowers = m_Store.World.Flowers;
+        var flowers = m_Store.World?.Flowers;
         if (flowers == null) {
             return;
         }

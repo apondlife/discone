@@ -160,11 +160,11 @@ public class CameraFollowTarget: MonoBehaviour {
     /// storage for raycasts
     RaycastHit m_Hit;
 
-    // -- p/debug
-    #if UNITY_EDITOR
     /// the position of the camera pre-collision on the curve
     Vector3 m_CurvePos;
 
+    // -- p/debug
+    #if UNITY_EDITOR
     /// the vision cast hit, if any
     RaycastHit? m_VizHit;
 

@@ -31,33 +31,44 @@ public sealed class Store: ScriptableObject {
         await Task.WhenAll(w, p);
 
         // store the records
-        m_World = w.Result;
-        m_Player = p.Result;
+        m_World = w.Result ?? new WorldRec();
+        m_Player = p.Result ?? new PlayerRec();
 
         // dispatch completion
         m_LoadFinished.Raise();
     }
 
-    /// save the current state
-    [ContextMenu("Save Store")]
-    public async void Save() {
-        // grab player character and flower
-        var pc = GameObject
-            .FindObjectOfType<DisconePlayer>()
-            .Character;
+    // -- c/syncing
+    /// sync the in-memory records for all objects
+    void SyncAll() {
+        SyncWorld();
+        SyncPlayer();
+    }
 
-        var pf = pc.Checkpoint.Flower;
-
-        // update player rec
-        m_Player.Character = CharacterRec.From(pc);
+    /// sync the in-memory world record
+    public void SyncWorld() {
+        // grab player flower
+        var pf = FindPlayerCharacter()?.Flower;
 
         // update flowers recs
         m_World.Flowers = GameObject
             .FindObjectsOfType<CharacterFlower>()
-            // don't save the player flower, it gets loaded by player code
-            .Where(flower => flower != pf)
-            .Select(FlowerRec.From)
+            .Where(flower => flower != pf) // don't save player flower as part of world
+            .Select((f) => f.IntoRecord())
             .ToArray();
+    }
+
+    /// sync the in-memory player record
+    public void SyncPlayer() {
+        // update player rec
+        m_Player.Character = FindPlayerCharacter()?.IntoRecord();
+    }
+
+    /// save the current state to file
+    [ContextMenu("Save Store")]
+    public async Task Save() {
+        // sync all in-memory records
+        SyncAll();
 
         // ensure we have a directory to write to
         Directory.CreateDirectory(RootPath);
@@ -87,11 +98,25 @@ public sealed class Store: ScriptableObject {
         get => m_Player;
     }
 
+    /// the player's character record
+    public CharacterRec PlayerCharacter {
+        get => m_Player?.Character;
+    }
+
     /// when the load finishes
     public VoidEvent LoadFinished {
         get => m_LoadFinished;
     }
 
+    /// find a reference to the current player
+    /// TOOD: caching???
+    DisconeCharacter FindPlayerCharacter() {
+        return GameObject
+            .FindObjectOfType<DisconePlayer>()
+            .Character;
+    }
+
+    // -- io --
     /// the root store path
     string RootPath {
         #if UNITY_EDITOR
@@ -131,11 +156,11 @@ public sealed class Store: ScriptableObject {
     }
 
     /// load the record from disk at path
-    async Task<T> LoadRecord<T>(string path) where T : new(){
+    async Task<T> LoadRecord<T>(string path) {
         // check for file
         if (!File.Exists(path)) {
             Debug.Log($"[store] no save file found @ {path}");
-            return new T();
+            return default;
         }
 
         // read data from file

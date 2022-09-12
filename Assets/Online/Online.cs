@@ -45,6 +45,9 @@ public class Online: NetworkManager {
     [Tooltip("if this is a standalone server (no host client)")]
     [SerializeField] BoolReference m_IsStandalone;
 
+    [Tooltip("the persistence store")]
+    [SerializeField] Store m_Store;
+
     // -- props --
     /// the set of event subscriptions
     Subscriptions subscriptions = new Subscriptions();
@@ -97,7 +100,6 @@ public class Online: NetworkManager {
 
         var message = new CreatePlayerMessage();
         NetworkClient.Send(message);
-
     }
 
     public override void OnClientNotReady() {
@@ -106,28 +108,33 @@ public class Online: NetworkManager {
         Debug.Log($"[online] client not ready...");
     }
 
+    /// this is called on the **client** when it disconnects
     public override void OnClientDisconnect() {
         base.OnClientDisconnect();
 
         Debug.Log($"[online] client disconnected...");
-        if (m_State == State.Host) {
-            return;
-        }
 
-        // raise a timeout error if we fail to connect
-        if (m_State == State.Connecting) {
+        // if we are a host, we don't do anything
+        if (m_State == State.Host) {
+            Debug.LogError($"[online] host client disconnected, how?");
+        }
+        // if we're still attempting to connect, we timed out
+        else if (m_State == State.Connecting) {
             m_ErrorEvent?.Raise($"[online] failed to connect to server {networkAddress}");
         }
+        // if we disconnect from a server, sync our player record
+        else if (m_State == State.Client) {
+            m_Store.SyncPlayer();
+        }
 
-        // and then restart the host
+        // and then restart as a host
         if (m_RestartHostOnDisconnect) {
             this.DoNextFrame(() => SwitchToHost());
         }
     }
 
     // -- l/server
-    public override void OnStartServer()
-    {
+    public override void OnStartServer() {
         base.OnStartServer();
 
         NetworkServer.RegisterHandler<CreatePlayerMessage>(Server_OnCreatePlayer);
@@ -233,12 +240,22 @@ public class Online: NetworkManager {
         NetworkServer.AddPlayerForConnection(conn, player);
     }
 
-    /// when the host starts
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CS4014:Rethrow to preserve stack details", Justification = "Not production code.")]
+    /// when the player presses "connect"
     void OnTryStartClient() {
         // ignore repeat presses
         // TODO: what if the player changed the ip
         if (m_State == State.Connecting) {
             return;
+        }
+
+        // if host, sync & save world to disk
+        if (IsHost) {
+            var _ = m_Store.Save();
+        }
+        // if client, just sync player
+        else {
+            m_Store.SyncPlayer();
         }
 
         // stop the host, if active
@@ -256,18 +273,18 @@ public class Online: NetworkManager {
 
     /// when the host/client disconnect
     void OnTryDisconnect() {
+        // can't stop hosting...
+        if (IsHost) {
+            return;
+        }
+
         // flag the network as disconnected
         m_State = State.Disconnected;
 
-        // stop host or client, which should start up a new host
-        if (IsHost) {
-            StopHost();
-        } else {
-            StopClient();
-        }
+        // stop client, which should start up a new host
+        StopClient();
     }
 }
 
-public struct CreatePlayerMessage : NetworkMessage {
-
+public struct CreatePlayerMessage: NetworkMessage {
 }
