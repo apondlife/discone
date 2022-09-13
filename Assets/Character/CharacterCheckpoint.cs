@@ -333,7 +333,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
         get => m_Container.Character;
     }
 
-
     // -- types --
     /// a checkpoint state
     [Serializable]

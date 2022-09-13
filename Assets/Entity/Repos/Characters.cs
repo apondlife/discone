@@ -4,9 +4,6 @@ using System.Linq;
 using UnityAtoms;
 using UnityEngine;
 
-// TODO: root collection should probably be a dictionary keyed by
-// by object id?
-
 /// a repository of characters
 public sealed class Characters: MonoBehaviour {
     // -- config --
@@ -16,12 +13,18 @@ public sealed class Characters: MonoBehaviour {
 
     // -- subscribed --
     [Header("subscribed")]
+    [Tooltip("when a character spawns")]
+    [SerializeField] DisconeCharacterEvent m_SpawnedCharacter;
+
+    [Tooltip("when a character is destroyed")]
+    [SerializeField] DisconeCharacterEvent m_DestroyedCharacter;
+
     [Tooltip("when a player switches character")]
     [SerializeField] DisconeCharacterPairEvent m_SwitchedCharacter;
 
     // -- props --
     /// the list of characters
-    Lazy<DisconeCharacter[]> m_All;
+    HashSet<DisconeCharacter> m_All = new HashSet<DisconeCharacter>();
 
     /// the set of driven characters (hash codes)
     HashSet<int> m_Driven = new HashSet<int>();
@@ -30,18 +33,10 @@ public sealed class Characters: MonoBehaviour {
     Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
-    void Awake() {
-        m_All = new Lazy<DisconeCharacter[]>(() =>
-            GameObject
-                .FindGameObjectsWithTag(m_Tag)
-                .Select((o) => o.GetComponent<DisconeCharacter>())
-                .ToArray()
-        );
-    }
-
     void Start() {
         // bind events
         m_Subscriptions
+            .Add(m_SpawnedCharacter, OnSpawnedCharacter)
             .Add(m_SwitchedCharacter, OnSwitchedCharacter);
     }
 
@@ -53,17 +48,17 @@ public sealed class Characters: MonoBehaviour {
     // -- queries -
     /// the list of all characters
     public IEnumerable<DisconeCharacter> All {
-        get => m_All.Value;
+        get => m_All;
     }
 
     /// the list of simulating characters
     public IEnumerable<DisconeCharacter> Simulating {
-        get => m_All.Value.Where((c) => c.IsSimulating);
+        get => m_All.Where((c) => c.IsSimulating);
     }
 
     /// find an available character to play
     public DisconeCharacter FindInitialCharacter() {
-        var all = m_All.Value;
+        var all = m_All;
 
         // use debug characters if available, otherwise the first initial character
         var sets = new[] {
@@ -90,6 +85,16 @@ public sealed class Characters: MonoBehaviour {
     }
 
     // -- events --
+    /// when a character spawns
+    void OnSpawnedCharacter(DisconeCharacter character) {
+        m_All.Add(character);
+    }
+
+    /// when a character is destroyed
+    void OnDestroyedCharacter(DisconeCharacter character) {
+        m_All.Remove(character);
+    }
+
     /// when a player switches character
     void OnSwitchedCharacter(DisconeCharacterPair characters) {
         var curr = characters.Item1;
