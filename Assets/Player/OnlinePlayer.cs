@@ -148,13 +148,18 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // switch to the new character
         var src = srcChar?.gameObject;
         var dst = dstChar.gameObject;
-        Server_SwitchCharacter(src, dst);
+        Command_SwitchCharacter(src, dst);
     }
 
     // -- c/network
     /// request to switch the character
     [Command]
-    public void Server_SwitchCharacter(GameObject src, GameObject dst) {
+    void Command_SwitchCharacter(GameObject src, GameObject dst) {
+        Server_SwitchCharacter(src, dst);
+    }
+
+    [Server]
+    void Server_SwitchCharacter(GameObject src, GameObject dst) {
         var srcCharacter = src?.GetComponent<DisconeCharacter>();
         var dstCharacter = dst.GetComponent<DisconeCharacter>();
 

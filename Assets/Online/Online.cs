@@ -116,10 +116,12 @@ public class Online: NetworkManager {
 
         // if we are a host, we don't do anything
         if (m_State == State.Host) {
-            Debug.LogError($"[online] host client disconnected, how?");
+            Debug.Log($"[online] host client disconnected");
+            return;
         }
+
         // if we're still attempting to connect, we timed out
-        else if (m_State == State.Connecting) {
+        if (m_State == State.Connecting) {
             m_ErrorEvent?.Raise($"[online] failed to connect to server {networkAddress}");
         }
         // if we disconnect from a server, sync our player record
