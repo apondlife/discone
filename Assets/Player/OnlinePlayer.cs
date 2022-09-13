@@ -166,7 +166,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // if the server doesn't have authority over this character, another player
         // already does
         if (!dstCharacter.IsAvailable) {
-            Target_RetrySwitchCharacter(isInitial: src == null);
+            Target_RetrySwitchCharacter(connectionToClient, isInitial: src == null);
             return;
         }
 
@@ -186,7 +186,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     /// switch to the character
     [TargetRpc]
-    void Target_SwitchCharacter(NetworkConnection target, GameObject dst) {
+    void Target_SwitchCharacter(NetworkConnection _, GameObject dst) {
         // if the player exists
         var player = m_LocalPlayer.GetComponent<Player>();
         if (player == null || !player.enabled) {
@@ -208,7 +208,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     /// try to switch to a new character
     [TargetRpc]
-    void Target_RetrySwitchCharacter(bool isInitial) {
+    void Target_RetrySwitchCharacter(NetworkConnection _, bool isInitial) {
         // if you can't switch to your initial character, just keep trying
         if (isInitial) {
             DriveInitialCharacter();
@@ -282,6 +282,11 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         );
 
         var dst = dstCharacter.gameObject;
+
+        #if UNITY_EDITOR
+        dstCharacter.name = $"{character.Key.Name()}_remote_{connectionToClient.connectionId}";
+        #endif
+
         NetworkServer.Spawn(dst);
 
         Server_SwitchCharacter(null, dst);
