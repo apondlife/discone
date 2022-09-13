@@ -1,6 +1,7 @@
 using Mirror;
 using System.Linq;
 using ThirdPerson;
+using UnityAtoms;
 using UnityEngine;
 
 /// an online character
@@ -48,6 +49,14 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     [Header("cfg")]
     [Tooltip("how long does the character take to interpolate to the current received state")]
     [SerializeField] float m_InterpolationTime = 0.2f;
+
+
+    [Header("published")]
+    [Tooltip("the character spawning event")]
+    [SerializeField] DisconeCharacterEvent m_Spawned;
+
+    [Tooltip("the character being destroyed event")]
+    [SerializeField] DisconeCharacterEvent m_Destroyed;
 
     // -- props --
     /// if the character is simulating
@@ -105,8 +114,16 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         #endif
     }
 
+    void Start() {
+        // send spawned event
+        m_Spawned.Raise(this);
+    }
+
     void OnDestroy() {
         OnSimulationChanged = null;
+
+        // send destroyed event
+        m_Destroyed.Raise(this);
     }
 
     void FixedUpdate() {

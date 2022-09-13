@@ -75,6 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc02680958dbb4e709fedb6162e6f498, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_All: []
   m_PlayerConnected: {fileID: 11400000, guid: 241e9fa7bdb084b3f80950fd6fa40bfa, type: 2}
   m_PlayerDisconnected: {fileID: 11400000, guid: fa04c622b172747cf8a63e0e443e93ff, type: 2}
   m_IsHost:
@@ -96,6 +97,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Tag: Character
+  m_SpawnedCharacter: {fileID: 11400000, guid: a5ded69631d7ef641857f73f4368df26, type: 2}
+  m_DestroyedCharacter: {fileID: 11400000, guid: 043c83e16281ccd47b689ae408c6337e, type: 2}
   m_SwitchedCharacter: {fileID: 11400000, guid: d172e39dd96e14250b5df5e1f06a5402, type: 2}
 --- !u!114 &3957745682249704239
 MonoBehaviour:
