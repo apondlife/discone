@@ -51,6 +51,7 @@ public sealed class Store: ScriptableObject {
         var pf = FindPlayerCharacter()?.Flower;
 
         // update flowers recs
+        // TODO: flower repo
         m_World.Flowers = GameObject
             .FindObjectsOfType<CharacterFlower>()
             .Where(flower => flower != pf) // don't save player flower as part of world
@@ -68,6 +69,7 @@ public sealed class Store: ScriptableObject {
 
         // update player rec
         m_Player.Character = character.IntoRecord();
+        Debug.Log($"[store] updated player record {m_Player}");
     }
 
     /// save the current state to file
