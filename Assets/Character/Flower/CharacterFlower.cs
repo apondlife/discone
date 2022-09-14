@@ -98,13 +98,13 @@ public class CharacterFlower: NetworkBehaviour {
     // -- factories --
     /// spawn a flower from a record
     [Server]
-    public static void Spawn(FlowerRec rec) {
-        Spawn(rec.Key, rec.Pos);
+    public static void Server_Spawn(FlowerRec rec) {
+        Server_Spawn(rec.Key, rec.Pos);
     }
 
     /// spawn a flower from key and pos
     [Server]
-    public static void Spawn(CharacterKey key, Vector3 pos) {
+    public static void Server_Spawn(CharacterKey key, Vector3 pos) {
         var prefab = CharacterDefs.Instance.Find(key)?.Flower;
         if (prefab == null) {
             Debug.LogError($"[World] no flower prefab found for {key.Name()}");

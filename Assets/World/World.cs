@@ -14,6 +14,11 @@ public sealed class World: MonoBehaviour {
     [Tooltip("the persistence store")]
     [SerializeField] Store m_Store;
 
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("if this is a server instance")]
+    [SerializeField] BoolReference m_IsHost;
+
     // -- props --
     /// the chunks
     WorldChunks m_Chunks;
@@ -30,8 +35,10 @@ public sealed class World: MonoBehaviour {
         m_Single.Value = this;
 
         // bind events
-        m_Subscriptions
-            .Add(m_Store.LoadFinished, OnStoreLoadFinished);
+        if (m_IsHost) {
+            m_Subscriptions
+                .Add(m_Store.LoadFinished, Server_OnStoreLoadFinished);
+        }
     }
 
     void OnDestroy() {
@@ -41,7 +48,7 @@ public sealed class World: MonoBehaviour {
     // -- commands --
     /// spawn all flowers from the store
     [Server]
-    void SpawnFlowers() {
+    void Server_SpawnFlowers() {
         // find flowers, if any
         var flowers = m_Store.World?.Flowers;
         if (flowers == null) {
@@ -50,14 +57,15 @@ public sealed class World: MonoBehaviour {
 
         // spawn all flowers
         foreach (var rec in flowers) {
-            CharacterFlower.Spawn(rec);
+            CharacterFlower.Server_Spawn(rec);
         }
     }
 
     // -- events --
     /// when the store finishes loading
-    private void OnStoreLoadFinished() {
-        SpawnFlowers();
+    [Server]
+    void Server_OnStoreLoadFinished() {
+        Server_SpawnFlowers();
     }
 
     // -- queries --
