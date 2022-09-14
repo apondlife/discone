@@ -37,6 +37,7 @@ public sealed class Characters: MonoBehaviour {
         // bind events
         m_Subscriptions
             .Add(m_SpawnedCharacter, OnSpawnedCharacter)
+            .Add(m_DestroyedCharacter, OnDestroyedCharacter)
             .Add(m_SwitchedCharacter, OnSwitchedCharacter);
     }
 

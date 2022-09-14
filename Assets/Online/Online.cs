@@ -115,7 +115,7 @@ public class Online: NetworkManager {
         Debug.Log($"[online] client disconnected...");
 
         // if we are a host, we don't do anything
-        if (m_State == State.Host) {
+        if (IsHost) {
             Debug.Log($"[online] host client disconnected");
             return;
         }
@@ -124,8 +124,8 @@ public class Online: NetworkManager {
         if (m_State == State.Connecting) {
             m_ErrorEvent?.Raise($"[online] failed to connect to server {networkAddress}");
         }
-        // if we disconnect from a server, sync our player record
-        else if (m_State == State.Client) {
+        // if we are non host client disconnect from a server, sync our player record
+        else {
             m_Store.SyncPlayer();
         }
 
@@ -242,7 +242,6 @@ public class Online: NetworkManager {
         NetworkServer.AddPlayerForConnection(conn, player);
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CS4014:Rethrow to preserve stack details", Justification = "Not production code.")]
     /// when the player presses "connect"
     void OnTryStartClient() {
         // ignore repeat presses
