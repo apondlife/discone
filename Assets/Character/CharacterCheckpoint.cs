@@ -226,7 +226,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
         // instantiate flower at hit point
         var pos = hits > 0 ? m_Hits[0].point : newCheckpoint.Position;
-        CharacterFlower.Spawn(m_Container.Key, pos);
+        CharacterFlower.Server_Spawn(m_Container.Key, pos);
     }
 
     /// -- c/load
