@@ -83,6 +83,7 @@ public class Online: NetworkManager {
     }
 
     // -- l/client
+    [Client]
     public override void OnClientError(Exception exception) {
         base.OnClientError(exception);
 
@@ -90,25 +91,34 @@ public class Online: NetworkManager {
         m_ErrorEvent?.Raise($"[online] client error: {exception.Message}");
     }
 
+    [Client]
     public override void OnClientConnect() {
         base.OnClientConnect();
 
-        if (m_State != State.Host) {
+        Debug.Log($"on client connect {m_State}");
+
+        // finish connection flow
+        if (m_State == State.Connecting) {
             m_State = State.Client;
-            Debug.Log($"[online] client connected!");
+            Debug.Log($"[online] connected as client");
+        }
+        else if (m_State == State.Host) {
+            Debug.Log($"[online] connected as host client");
         }
 
+        // create player
         var message = new CreatePlayerMessage();
         NetworkClient.Send(message);
     }
 
+    [Client]
     public override void OnClientNotReady() {
         base.OnClientNotReady();
 
         Debug.Log($"[online] client not ready...");
     }
 
-    /// this is called on the **client** when it disconnects
+    [Client]
     public override void OnClientDisconnect() {
         base.OnClientDisconnect();
 
@@ -136,18 +146,21 @@ public class Online: NetworkManager {
     }
 
     // -- l/server
+    [Server]
     public override void OnStartServer() {
         base.OnStartServer();
 
         NetworkServer.RegisterHandler<CreatePlayerMessage>(Server_OnCreatePlayer);
     }
 
+    [Server]
     public override void OnServerConnect(NetworkConnection conn) {
         base.OnServerConnect(conn);
 
         Debug.Log($"[online] new client connected! client[{conn.connectionId}]:{conn.address}");
     }
 
+    [Server]
     public override void OnServerDisconnect(NetworkConnection conn) {
         // give player a chance to clean up before being destroyed
         var player = conn.identity.gameObject.GetComponent<OnlinePlayer>();
@@ -226,19 +239,19 @@ public class Online: NetworkManager {
             return true;
             #elif !UNITY_EDITOR
             return false;
-            #endif
-
+            #else
             return m_IsStandalone;
+            #endif
         }
     }
 
     // -- events --
     [Server]
-    void Server_OnCreatePlayer(NetworkConnection conn, CreatePlayerMessage message) {
+    void Server_OnCreatePlayer(
+        NetworkConnection conn,
+        CreatePlayerMessage _
+    ) {
         var player = Instantiate(playerPrefab);
-
-        // use message info to populate instance
-
         NetworkServer.AddPlayerForConnection(conn, player);
     }
 

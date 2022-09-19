@@ -2,7 +2,10 @@ using UnityEngine;
 
 /// the app
 sealed class App: MonoBehaviour {
-    private static App Instance;
+    // -- module --
+    /// the singleton instance
+    static App Instance;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the store")]
@@ -13,13 +16,15 @@ sealed class App: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
-        if(Instance == null) {
-            Instance = this;
-            transform.SetParent(null);
-        } else {
+        // destroy this if we already have an app
+        if (Instance != null) {
             Destroy(gameObject);
+            return;
         }
 
+        // store the singleton
+        Instance = this;
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
     }
 

@@ -35,6 +35,9 @@ public static class BuildAll {
         // the relavant dirs
         var dirBuilds = Path.Combine("Artifacts", "Builds", buildName);
 
+        // get initial target to restore it later
+        var initial = EditorUserBuildSettings.activeBuildTarget;
+
         // build mac
         var mo = BuildOptions();
         mo.target = BuildTarget.StandaloneOSX;
@@ -59,6 +62,12 @@ public static class BuildAll {
         so.locationPathName = Path.Combine(dirBuilds, k_Channel_WindowsServer, k_Name);
 
         BuildPipeline.BuildPlayer(so);
+
+        // restore the user's initial target
+        EditorUserBuildSettings.SwitchActiveBuildTarget(
+            BuildPipeline.GetBuildTargetGroup(initial),
+            initial
+        );
     }
 
     // build player options w/ shared values

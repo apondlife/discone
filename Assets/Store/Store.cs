@@ -164,7 +164,7 @@ public sealed class Store: ScriptableObject {
     }
 
     /// load the record from disk at path
-    async Task<T> LoadRecord<T>(string path) {
+    async Task<F> LoadRecord<F>(string path) where F: StoreFile {
         // check for file
         if (!File.Exists(path)) {
             Debug.Log($"[store] no save file found @ {path}");
@@ -185,9 +185,15 @@ public sealed class Store: ScriptableObject {
 
         // decode record from json
         var json = Encoding.UTF8.GetString(data);
-        var record = JsonUtility.FromJson<T>(json);
-
+        var record = JsonUtility.FromJson<F>(json);
         Debug.Log($"[store] loaded file @ {path} => {json}");
+
+        // check the file version
+        var version = record.CurrentVersion();
+        if (record.Version != version) {
+            Debug.LogWarning($"[store] read file w/ obsolete version: {record.Version} < {version}");
+            return default;
+        }
 
         return record;
     }

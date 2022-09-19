@@ -35,6 +35,9 @@ public sealed class World: MonoBehaviour {
         m_Single.Value = this;
 
         // bind events
+    }
+
+    void Start() {
         if (m_IsHost) {
             m_Subscriptions
                 .Add(m_Store.LoadFinished, Server_OnStoreLoadFinished);
@@ -56,6 +59,7 @@ public sealed class World: MonoBehaviour {
         }
 
         // spawn all flowers
+        Debug.Log($"[world] loaded {flowers.Length} flowers, spawning...");
         foreach (var rec in flowers) {
             CharacterFlower.Server_Spawn(rec);
         }
