@@ -35,7 +35,7 @@ Deploy() {
 # -- main --
 Main() {
   # load env
-  source .env
+  source ./.env
 
   # validate env
   if [ ! -f "$BUTLER_PATH" ]; then
