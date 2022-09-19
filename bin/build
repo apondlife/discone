@@ -49,7 +49,7 @@ Main() {
   CheckEnv
 
   # load env
-  source .env
+  source ./.env
 
   # validate env
   # TODO: check if unity is running and send nice error message
