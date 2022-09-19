@@ -1,5 +1,4 @@
 using Mirror;
-using System.Linq;
 using System;
 using ThirdPerson;
 using UnityEngine;
@@ -29,9 +28,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
     [Tooltip("how faster cancelling a load is than the load itself")]
     [SerializeField] float m_LoadCancelMultiplier = 1;
 
-    [Tooltip("how offset the flower is forward, so it doesn't spawn under the character")]
-    [SerializeField] float m_FlowerForwardOffset = 0.2f;
-
     // -- config --
     [Header("config")]
     [Tooltip("the layer mask for the ground")]
@@ -46,15 +42,12 @@ public class CharacterCheckpoint: NetworkBehaviour {
     // the character
     DisconeCharacter m_Container;
 
-    /// the saved state, if any
+    /// the flower at the current checkpoint, if any
     [SyncVar]
-    Checkpoint m_Checkpoint;
-
-    /// a new Checkpoint that is attempted to be created
-    Checkpoint m_TentativeCheckpoint;
-
-    /// the visual representation of the current checkpoint
     CharacterFlower m_Flower;
+
+    /// a checkpoint in the process of being created
+    PendingCheckpoint m_PendingCheckpoint;
 
     /// if the character is trying to save
     bool m_IsSaveDown;
@@ -73,9 +66,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// the state when the load starts
     CharacterState.Frame m_LoadStartState;
-
-    /// pre-allocated buffer for ground raycasts
-    RaycastHit[] m_Hits = new RaycastHit[1];
 
     // -- lifecycle --
     void Awake() {
@@ -130,8 +120,8 @@ public class CharacterCheckpoint: NetworkBehaviour {
             else {
                 // interpolate position during load
                 var t = transform;
-                var c = m_Checkpoint;
-                var pct = LoadPercent;
+                var c = m_Flower;
+                var pct = Mathf.Clamp01(m_LoadElapsed / m_LoadCastTime);
                 var k = pct * pct;
                 var pos = Vector3.Lerp(m_LoadStartState.Position, c.Position, k);
 
@@ -171,13 +161,13 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// start a new save
     void InitSave() {
         m_SaveElapsed = 0.0f;
-        m_TentativeCheckpoint = Checkpoint.FromState(Character.CurrentState);
+        m_PendingCheckpoint = PendingCheckpoint.FromState(Character.CurrentState);
     }
 
     /// finish the new save
     void FinishSave() {
         // spawn flower
-        Server_RequestCheckpoint(m_TentativeCheckpoint);
+        Command_CreateCheckpoint(m_PendingCheckpoint.Position, m_PendingCheckpoint.Forward);
 
         // reset state
         ResetSave();
@@ -191,49 +181,45 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// reset save to initial state
     void ResetSave() {
         m_SaveElapsed = k_CastInactive;
-        m_TentativeCheckpoint = null;
+        m_PendingCheckpoint = null;
     }
 
     // -- c/s/server
     /// spawn a flower on the ground underneath the character
     [Command]
-    void Server_RequestCheckpoint(Checkpoint newCheckpoint) {
-        Server_CreateCheckpoint(newCheckpoint);
+    void Command_CreateCheckpoint(Vector3 pos, Vector3 fwd) {
+        Server_CreateCheckpoint(pos, fwd);
     }
 
     [Server]
-    void Server_CreateCheckpoint(Checkpoint newCheckpoint) {
-        // store position
-        m_Checkpoint = newCheckpoint;
+    /// spawn a flower from an existing flower position
+    public void Server_CreateCheckpoint(FlowerRec rec) {
+        Server_CreateCheckpoint(rec.Pos, rec.Fwd);
+    }
 
-        // ???
+    [Server]
+    /// spawn a flower at the checkpoint
+    void Server_CreateCheckpoint(Vector3 pos, Vector3 fwd) {
+        // if we had a flower, let it go
         m_Flower?.Server_Release();
 
-        // TODO: maybe move this to Flower.Spawn?
-        // find ground position
-        var hits = Physics.RaycastNonAlloc(
-            newCheckpoint.Position + newCheckpoint.Forward * m_FlowerForwardOffset,
-            Vector3.down,
-            m_Hits,
-            10.0f,
-            m_GroundMask,
-            QueryTriggerInteraction.Ignore
+        m_Flower = CharacterFlower.Server_Spawn(
+            m_Container.Key,
+            pos,
+            Quaternion.LookRotation(fwd, Vector3.up)
         );
 
-        if (hits <= 0) {
-            Debug.LogError($"[chkpnt] failed to find flower for {m_Container.name} ground point");
-        }
+        // grab it
+        // i don't know why this doesn't work in the same frame...
+        this.DoNextFrame(() => m_Flower?.Server_Grab());
 
-        // instantiate flower at hit point
-        var pos = hits > 0 ? m_Hits[0].point : newCheckpoint.Position;
-        CharacterFlower.Server_Spawn(m_Container.Key, pos);
     }
 
     /// -- c/load
     /// restore to the current checkpoint, if any
     public void StartLoad() {
         // must have a checkpoint
-        if (m_Checkpoint == null) {
+        if (m_Flower == null) {
             return;
         }
 
@@ -248,7 +234,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         // get distance to current checkpoint
         var distance = Vector3.Distance(
             Character.CurrentState.Position,
-            m_Checkpoint.Position
+            m_Flower.Position
         );
 
         // calculate cast time
@@ -272,7 +258,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// restore to the state
     void FinishLoad() {
-        Character.ForceState(m_Checkpoint.IntoState());
+        Character.ForceState(m_Flower.IntoState());
         ResetLoad();
     }
 
@@ -296,17 +282,26 @@ public class CharacterCheckpoint: NetworkBehaviour {
     // -- events --
     [Server]
     void Server_OnSimulationChanged(DisconeCharacter.Simulation sim) {
-        if (sim != DisconeCharacter.Simulation.None && m_Checkpoint == null) {
-            // create initial character flower
-            // TODO: maybe this should be on build not on "start"?
-            // TODO: "floating flowers" maybe this should happen when character is first looked at
-
-            // maybe there's an AI
-            m_Container.Character.Events.Once(CharacterEvent.Idle, () => {
-                var initialCheckpoint = Checkpoint.FromState(Character.CurrentState);
-                Server_CreateCheckpoint(initialCheckpoint);
-            });
+        if (sim == DisconeCharacter.Simulation.None || m_Flower != null) {
+            return;
         }
+
+        // create initial character flower
+        // TODO: maybe this should be on build not on "start"?
+        // TODO: "floating flowers" maybe this should happen when character is first looked at
+
+        // maybe there's an AI
+        m_Container.Character.Events.Once(CharacterEvent.Idle, () => {
+            if (m_Flower != null) {
+                return;
+            }
+
+            // if this character has no checkpoints yet, spawn a new one
+            // TODO: try sniffing first,
+            // TODO: maybesniff move to "bot" character behaviour instead of here
+            var checkpoint = PendingCheckpoint.FromState(Character.CurrentState);
+            Server_CreateCheckpoint(checkpoint.Position, checkpoint.Forward);
+        });
     }
 
     // -- queries --
@@ -319,11 +314,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
         get => m_SaveElapsed > 0.0f;
     }
 
-    /// the active load's percent complete
-    float LoadPercent {
-        get => m_LoadCastTime > 0.0f ? Mathf.Clamp01(m_LoadElapsed / m_LoadCastTime) : 0.0f;
-    }
-
     // if the character can currently save
     bool CanSave {
         get => Character.State.IsGrounded && Character.State.IsIdle;
@@ -334,55 +324,29 @@ public class CharacterCheckpoint: NetworkBehaviour {
     }
 
     // -- types --
-    /// a checkpoint state
-    [Serializable]
-    public sealed class Checkpoint {
+    /// a checkpoint in the process of being created
+    public sealed class PendingCheckpoint {
         // -- props --
         /// the position
-        public Vector3 Position;
+        public readonly Vector3 Position;
 
         /// the character facing
-        public Vector3 Forward;
-
-        /// the character rotation
-        Quaternion m_Rotation;
+        public readonly Vector3 Forward;
 
         // -- lifetime --
-        public Checkpoint() {
-        }
-
-        /// create a new checkpoint
-        public Checkpoint(Vector3 position, Vector3 forward) {
+        /// create a pending checkpoint
+        public PendingCheckpoint(Vector3 position, Vector3 forward) {
             Position = position;
             Forward = forward;
         }
 
-        // -- conversions --
+        // -- factories --
         /// create checkpoint from the current state frame
-        public static Checkpoint FromState(CharacterState.Frame frame) {
-            return new Checkpoint(
+        public static PendingCheckpoint FromState(CharacterState.Frame frame) {
+            return new PendingCheckpoint(
                 frame.Position,
                 frame.Forward
             );
-        }
-
-        /// create state frame from checkpoint
-        public CharacterState.Frame IntoState() {
-            return new CharacterState.Frame(
-                Position,
-                Forward
-            );
-        }
-
-        /// -- queries --
-        /// the character rotation
-        public Quaternion Rotation {
-            get {
-                if (m_Rotation == null) {
-                    m_Rotation = Quaternion.LookRotation(Forward, Vector3.up);
-                }
-                return m_Rotation;
-            }
         }
     }
 }

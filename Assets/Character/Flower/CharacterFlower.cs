@@ -1,10 +1,30 @@
 using UnityEngine;
 using Mirror;
 using System.Collections.Generic;
+using ThirdPerson;
 
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
 public class CharacterFlower: NetworkBehaviour {
+    // -- constants --
+    /// how offset the flower is forward, so it doesn't spawn under the character
+    const float k_ForwardOffset = 0.12f;
+
+    /// how offset the flower is up, so it can find a ground
+    const float k_UpOffset = 0.05f;
+
+    /// how much to raycast down to find the ground
+    const float k_RaycastLen = 5f;
+
+    /// pre-allocated buffer for ground raycasts
+    static RaycastHit[] k_Hits = new RaycastHit[1];
+
+    /// pre-allocated buffer for ground raycasts
+    static LayerMask k_GroundMask =>
+        LayerMask.NameToLayer("Default")
+        | LayerMask.NameToLayer("Ground")
+        | LayerMask.NameToLayer("Indoor");
+
     // -- statics --
     /// the cache of per-texture materials
     static Dictionary<string, Material> s_MaterialCache = new Dictionary<string, Material>();
@@ -21,7 +41,7 @@ public class CharacterFlower: NetworkBehaviour {
     [SerializeField] float m_SpawnTime = 0.5f;
 
     [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
-    bool m_IsFree = false;
+    bool m_IsFree = true;
 
     // -- refs --
     [Header("refs")]
@@ -31,6 +51,12 @@ public class CharacterFlower: NetworkBehaviour {
     // -- props --
     /// the assosciated character's key
     CharacterKey m_Key;
+
+    /// the checkpoint position
+    Vector3 m_Position;
+
+    /// the checkpoint rotation
+    Quaternion m_Rotation;
 
     // -- lifecycle
     void Awake() {
@@ -63,9 +89,7 @@ public class CharacterFlower: NetworkBehaviour {
     /// when the free state changes
     [Client]
     void Client_OnIsFreeReceieved(bool oldFree, bool newFree) {
-        if (newFree) {
-            m_Renderer.material = FindMaterial(m_Saturation);
-        }
+        m_Renderer.material = FindMaterial();
     }
 
     // -- queries --
@@ -74,13 +98,27 @@ public class CharacterFlower: NetworkBehaviour {
         get => m_Key;
     }
 
+    /// the flower's position
+    public Vector3 Position {
+        get => m_Position;
+    }
+
+    /// the flower's rotation
+    public Quaternion Rotation  {
+        get => m_Rotation;
+    }
+
     /// if this flower is free
     public bool IsFree {
         get => m_IsFree;
     }
 
     /// find cached material for texture and saturation
-    Material FindMaterial(float saturation = 1.0f) {
+    Material FindMaterial() {
+        return FindMaterial(m_IsFree ? m_Saturation : 1.0f);
+    }
+
+    Material FindMaterial(float saturation) {
         var key = $"{m_Texture.name}/{saturation}";
 
         // create instanced material for the texture if not cached
@@ -88,6 +126,7 @@ public class CharacterFlower: NetworkBehaviour {
             material = Instantiate(m_Renderer.sharedMaterial);
             material.mainTexture = m_Texture;
             material.SetFloat("_Saturation", saturation);
+            material.name = key;
 
             s_MaterialCache.Add(key, material);
         }
@@ -98,40 +137,76 @@ public class CharacterFlower: NetworkBehaviour {
     // -- factories --
     /// spawn a flower from a record
     [Server]
-    public static void Server_Spawn(FlowerRec rec) {
-        Server_Spawn(rec.Key, rec.Pos);
+    public static CharacterFlower Server_Spawn(FlowerRec rec) {
+        return Server_Spawn(rec.Key, rec.Pos, rec.Rot);
     }
 
-    /// spawn a flower from key and pos
+    /// spawn a flower from key and transform
     [Server]
-    public static void Server_Spawn(CharacterKey key, Vector3 pos) {
+    public static CharacterFlower Server_Spawn(
+        CharacterKey key,
+        Vector3 pos,
+        Quaternion rot
+    ) {
         var prefab = CharacterDefs.Instance.Find(key)?.Flower;
         if (prefab == null) {
-            Debug.LogError($"[World] no flower prefab found for {key.Name()}");
-            return;
+            Debug.LogError($"[flower] no prefab found for {key.Name()}");
+            return null;
         }
 
-        var instance = Instantiate(
+        // find ground position
+        var fwd = rot * Vector3.forward;
+        var hits = Physics.RaycastNonAlloc(
+            pos + fwd * k_ForwardOffset + Vector3.up * k_UpOffset,
+            Vector3.down,
+            k_Hits,
+            k_RaycastLen,
+            k_GroundMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        if (hits <= 0) {
+            Debug.LogError($"[flower] failed to find ground point");
+        }
+
+        // instantiate flower at hit point
+        var hit = hits > 0 ? k_Hits[0].point : pos;
+        var flower = Instantiate(
             prefab,
-            pos,
+            hit,
             Quaternion.identity
         );
 
-        instance.m_Key = key;
+        flower.m_Key = key;
+        flower.m_Position = pos;
+        flower.m_Rotation = rot;
+        flower.m_IsFree = true;
 
         #if UNITY_EDITOR
-        instance.name = $"Flower_{key.Name()}";
+        flower.name = $"Flower_{key.Name()}";
         #endif
 
         // spawn the game object for everyone
-        NetworkServer.Spawn(instance.gameObject);
+        NetworkServer.Spawn(flower.gameObject);
+
+        return flower;
+    }
+
+    // -- factories --
+    /// create state frame from this flower
+    public CharacterState.Frame IntoState() {
+        return new CharacterState.Frame(
+            m_Position,
+            m_Rotation * Vector3.forward
+        );
     }
 
     /// construct a record from this flower
     public FlowerRec IntoRecord() {
-        return new FlowerRec() {
-            Key = Key,
-            Pos = transform.position,
-        };
+        return new FlowerRec(
+            Key,
+            m_Position,
+            m_Rotation
+        );
     }
 }

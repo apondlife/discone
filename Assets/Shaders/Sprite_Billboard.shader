@@ -52,7 +52,8 @@ Shader "Sprite/Billboard" {
             // how saturated the sprite is [0,1]
             float _Saturation;
 
-            FragIn vert(VertIn i) {
+            FragIn vert(VertIn i)
+            {
                 FragIn o;
                 o.uv = TRANSFORM_TEX(i.uv, _MainTex);
 
@@ -65,6 +66,8 @@ Shader "Sprite/Billboard" {
                 float3 right = normalize(v._m00_m01_m02);
                 float3 up = float3(0, 1, 0);
                 float3 forward = normalize(v._m20_m21_m22);
+
+                // TODO: this doesn't work for rotated objects
                 //get the rotation parts of the matrix
                 float4x4 rotationMatrix = float4x4(
                     right, 0,
@@ -89,15 +92,8 @@ Shader "Sprite/Billboard" {
 
             fixed4 frag(FragIn IN) : SV_Target {
                 fixed4 c = tex2D(_MainTex, IN.uv);
-
-                // scale satuartion
-                fixed3 hsv = IntoHsv(c.rgb);
-                hsv.y *= _Saturation;
-                c = fixed4(IntoRgb(hsv), c.a);
-
-                // clip alpha below threshold
+                c = fixed4(c.rgb * _Saturation, c.a);
                 clip(c.a - 0.5f);
-
                 return c;
             }
 

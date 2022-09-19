@@ -281,6 +281,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             character.Rot
         );
 
+        dstCharacter.Checkpoint.Server_CreateCheckpoint(character.Flower);
+
         var dst = dstCharacter.gameObject;
 
         #if UNITY_EDITOR

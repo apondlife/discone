@@ -361,11 +361,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     // -- factories --
     /// instantiate a rec from a character
     public CharacterRec IntoRecord() {
-        return new CharacterRec() {
-            Key = Key,
-            Pos = m_RemoteState.Position,
-            Rot = m_RemoteState.LookRotation,
-            Flower = Checkpoint.Flower?.IntoRecord(),
-        };
+        return new CharacterRec(
+            Key,
+            m_RemoteState.Position,
+            m_RemoteState.LookRotation,
+            m_Checkpoint.Flower?.IntoRecord()
+        );
     }
 }
