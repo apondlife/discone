@@ -119,6 +119,11 @@ public sealed partial class CharacterState {
         /// create an initial frame
         public Frame(Vector3 position, Vector3 forward) {
             Position = position;
+
+            if(forward.magnitude == 0) {
+                Debug.LogWarning("[character frame] can't set a zero forward vector, ignoring");
+                return;
+            }
             Forward = forward;
         }
 

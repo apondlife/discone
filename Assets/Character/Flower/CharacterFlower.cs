@@ -166,7 +166,7 @@ public class CharacterFlower: NetworkBehaviour {
         );
 
         if (hits <= 0) {
-            Debug.LogError($"[flower] failed to find ground point");
+            Debug.LogWarning($"[flower] failed to find ground point");
         }
 
         // instantiate flower at hit point

@@ -1,7 +1,8 @@
 using UnityEngine;
+using Mirror;
 
 /// the app
-sealed class App: MonoBehaviour {
+sealed class App: NetworkBehaviour {
     // -- module --
     /// the singleton instance
     static App Instance;
@@ -28,7 +29,9 @@ sealed class App: MonoBehaviour {
         DontDestroyOnLoad(gameObject);
     }
 
-    void Start() {
+    public override void OnStartServer() {
+        base.OnStartServer();
+
         // load the world state
         m_Store.Load();
     }

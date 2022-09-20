@@ -10,6 +10,11 @@ using ThirdPerson;
 /// TODO: rename to something like player sync?
 [RequireComponent(typeof(WorldCoord))]
 public sealed class OnlinePlayer: NetworkBehaviour {
+    // -- constants --
+    /// the character's vertical spawn offset
+    /// TODO: don't do this???
+    const float k_SpawnOffset = 1.0f;
+
     // -- state --
     [Header("state")]
     [Tooltip("this player's current character")]
@@ -71,10 +76,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         #if UNITY_EDITOR
         Dbg.AddToParent("Players", this);
         #endif
-    }
 
-    void Start() {
-        // TODO: move this into RemotePlayer, other than mixing Local and Remote
         m_PlayerCount.Value += 1;
         m_Connected.Raise(this);
     }
@@ -107,10 +109,11 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             var character = m_Store.PlayerCharacter;
             if (character == null) {
                 Debug.LogError($"[player] local player has no character record");
+                Command_DriveInitialCharacter();
                 return;
             }
 
-            Server_CreateAndDriveCharacter(character);
+            Command_CreateAndDriveCharacter(character);
         }
     }
 
@@ -123,16 +126,23 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     // -- commands --
     /// drive the first available character in the world
-    void DriveInitialCharacter() {
+    [Command]
+    void Command_DriveInitialCharacter() {
         // find any available character
         var character = m_Entities.Value.Characters.FindInitialCharacter();
 
         // drive the initial character
-        DriveCharacter(character);
+        Server_DriveCharacter(character);
     }
 
     /// drive a new character
-    void DriveCharacter(DisconeCharacter dstChar) {
+    [Command]
+    void Command_DriveCharacter(DisconeCharacter dstChar) {
+        Server_DriveCharacter(dstChar);
+    }
+
+    [Server]
+    void Server_DriveCharacter(DisconeCharacter dstChar) {
         // ensure we have a destination character
         if (dstChar == null) {
             Debug.LogError($"[player] cannot drive a null character");
@@ -148,18 +158,14 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // switch to the new character
         var src = srcChar?.gameObject;
         var dst = dstChar.gameObject;
-        Command_SwitchCharacter(src, dst);
+        Server_SwitchCharacter(src, dst);
     }
 
     // -- c/network
     /// request to switch the character
-    [Command]
-    void Command_SwitchCharacter(GameObject src, GameObject dst) {
-        Server_SwitchCharacter(src, dst);
-    }
-
     [Server]
     void Server_SwitchCharacter(GameObject src, GameObject dst) {
+        Debug.Log($"[online player] switching character for {connectionToClient.connectionId} from {src?.name ?? "none"} to {dst.name}");
         var srcCharacter = src?.GetComponent<DisconeCharacter>();
         var dstCharacter = dst.GetComponent<DisconeCharacter>();
 
@@ -211,7 +217,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     void Target_RetrySwitchCharacter(NetworkConnection _, bool isInitial) {
         // if you can't switch to your initial character, just keep trying
         if (isInitial) {
-            DriveInitialCharacter();
+            Command_DriveInitialCharacter();
         }
     }
 
@@ -250,30 +256,31 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     /// when the character should switch
     void OnSwitchCharacter(GameObject obj) {
         var character = obj.GetComponent<DisconeCharacter>();
-        DriveCharacter(character);
+        Command_DriveCharacter(character);
     }
 
     // this only happens to the host player (single player)
     void OnLoadFinished() {
         var character = m_Store.PlayerCharacter;
         if (character != null) {
-            Debug.Log($"[local player] character found in store: ${character.Key.Name()} at ${character.Pos}");
+            Debug.Log($"[local player] character found in store: {character.Key.Name()} at {character.Pos}");
             // Instantiate Character...
-            Server_CreateAndDriveCharacter(character);
+            Command_CreateAndDriveCharacter(character);
         }
         // if there's no character record, drive an initial character
         else {
-            DriveInitialCharacter();
+            Command_DriveInitialCharacter();
         }
     }
 
     /// c/server
     /// when the requests to instantiate its previous character
     [Command]
-    public void Server_CreateAndDriveCharacter(CharacterRec character) {
+    public void Command_CreateAndDriveCharacter(CharacterRec character) {
         var prefab = CharacterDefs.Instance.Find(character.Key).Character;
 
-        // TODO: character spawns exactly in the ground, and because of chunk delay it ends up falling through the ground
+        // TODO: character spawns exactly in the ground, and because of chunk
+        // delay it ends up falling through the ground
         var offset = 1.0f;
         var dstCharacter = Instantiate(
             prefab,
@@ -281,17 +288,24 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             character.Rot
         );
 
-        dstCharacter.Checkpoint.Server_CreateCheckpoint(character.Flower);
-
-        var dst = dstCharacter.gameObject;
+        // we need to set the character here before calling Spawn because Spawn
+        // calls the interest management and that uses the player position
+        // (which is dependent on the characters)
+        m_Character = dstCharacter;
 
         #if UNITY_EDITOR
         dstCharacter.name = $"{character.Key.Name()}_remote_{connectionToClient.connectionId}";
         #endif
 
+        // spawn the character
+        var dst = dstCharacter.gameObject;
         NetworkServer.Spawn(dst);
 
+        // notify all clients of the switch
         Server_SwitchCharacter(null, dst);
+
+        // place the characters flower
+        dstCharacter.Checkpoint.Server_CreateCheckpoint(character.Flower);
     }
 
     /// when the player disconnects on the server

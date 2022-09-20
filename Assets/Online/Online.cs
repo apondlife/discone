@@ -147,8 +147,16 @@ public class Online: NetworkManager {
 
     // -- l/server
     [Server]
+    public override void OnStartClient() {
+        base.OnStartClient();
+        Debug.Log("[online] started client");
+    }
+
+    [Server]
     public override void OnStartServer() {
         base.OnStartServer();
+
+        Debug.Log("[online] started server");
 
         NetworkServer.RegisterHandler<CreatePlayerMessage>(Server_OnCreatePlayer);
     }
@@ -204,14 +212,14 @@ public class Online: NetworkManager {
 
     /// start game as host
     void SwitchToHost() {
-        Debug.Log("[online] switching to host");
-
         m_State = State.Host;
         m_IsHost.Value = true;
 
         if (IsStandalone) {
+            Debug.Log("[online] starting standalone server");
             StartServer();
         } else {
+            Debug.Log("[online] starting host");
             StartHost();
         }
     }

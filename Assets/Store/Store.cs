@@ -178,7 +178,7 @@ public sealed class Store: ScriptableObject {
             var read = await stream.ReadAsync(data, 0, (int)stream.Length);
 
             if (read != stream.Length) {
-                Debug.LogError($"[store] only read ${read} of ${stream.Length} bytes from file @ {path}");
+                Debug.LogError($"[store] only read {read} of {stream.Length} bytes from file @ {path}");
                 throw new System.Exception("couldn't read the entire file!");
             }
         }
