@@ -81,7 +81,7 @@ sealed class EntityCulling: MonoBehaviour {
             }
 
             // finally, update simulating state
-            character.SetSimulating(isSimulating);
+            // character.SetSimulating(isSimulating);
         }
     }
 }

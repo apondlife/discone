@@ -2,7 +2,7 @@ using Mirror;
 using UnityEngine;
 
 /// extensions to mirro's network identity
-static class NetworkIdentityExtensions {
+static class NetworkIdentityExt {
     /// if this instance (client or server) is the owner of this identity
     public static bool IsOwner(this NetworkIdentity identity) {
         return (

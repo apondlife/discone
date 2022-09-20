@@ -77,8 +77,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the world coordinate
     WorldCoord m_Coord;
 
-    /// if the character is currently simulating
-    bool m_IsSimulating = false;
+    // /// if the character is currently simulating
+    // bool m_IsSimulating = false;
 
     /// the list of simulated children
     GameObject[] m_Simulated;
@@ -117,6 +117,19 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     void Start() {
         // send spawned event
         m_Spawned.Raise(this);
+    }
+
+    public override void OnStartClient() {
+        SyncSimulation(true);
+    }
+
+    void OnEnable() {
+        Debug.Log($"[discone character] {name} enabled!");
+        SyncSimulation(true);
+    }
+
+    void OnDisable() {
+        SyncSimulation(false);
     }
 
     void OnDestroy() {
@@ -160,6 +173,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
         // initially, nobody has authority over any character (except the host client)
         Server_RemoveClientAuthority();
+
     }
 
     public override void OnStartAuthority() {
@@ -201,19 +215,23 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     // set the character's simulation location
     // TODO: lifecycle events? OnSimulatingLocal/OnSimulatingRemote/OnStopSimulating
-    public void SetSimulating(bool isSimulating) {
-        m_IsSimulating = isSimulating;
-        SyncSimulation();
-    }
+    // public void SetSimulating(bool isSimulating) {
+    //     m_IsSimulating = isSimulating;
+    //     SyncSimulation();
+    // }
 
     // update the character's simulation location
-    void SyncSimulation() {
+    // hostVisible parameter is to make it also work on the host (from interest management)
+    public void SyncSimulation(bool simulate = true) {
+        // if the identity has not initialized yet, we should't sync
         // simulate locally if owner, remotely otherwise
-        var simulation = (m_IsSimulating, netIdentity.IsOwner()) switch {
+        var active = simulate && netIdentity.netId != 0;
+        var simulation = (active, netIdentity.IsOwner()) switch {
             (false, _) => Simulation.None,
             (_, true) => Simulation.Local,
             (_, false) => Simulation.Remote,
         };
+
 
         // only set if changed
         if (m_Simulation != simulation) {
@@ -249,6 +267,10 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // broadcast sync vars
         m_RemoteState = state;
         m_LastSync = time;
+
+        if(!connectionToClient.observing.Contains(netIdentity)) {
+            Debug.Log($"Player cannot observe {name}");
+        }
 
         // place the character in the correct position on the server, since they
         // don't need to interpolate
@@ -317,7 +339,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     /// if the character is simulating
     public bool IsSimulating {
-        get => m_IsSimulating;
+        get => m_Simulation != Simulation.None;
     }
 
     /// the third person character

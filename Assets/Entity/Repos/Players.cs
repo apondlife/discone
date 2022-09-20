@@ -1,15 +1,12 @@
+using Mirror;
 using System.Collections.Generic;
+using System.Linq;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
 /// a repository of players
 public sealed class Players: MonoBehaviour {
-    // -- state --
-    [Header("state")]
-    [Tooltip("the list of players (TODO: readonly)")]
-    [SerializeField] List<OnlinePlayer> m_All = new List<OnlinePlayer>();
-
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("when a player connects")]
@@ -24,6 +21,9 @@ public sealed class Players: MonoBehaviour {
     [SerializeField] BoolReference m_IsHost;
 
     // -- props --
+    /// the map of players keyed by net id
+    List<OnlinePlayer> m_All = new List<OnlinePlayer>();
+
     /// the current (local) player
     OnlinePlayer[] m_Current = new OnlinePlayer[0];
 
@@ -31,11 +31,6 @@ public sealed class Players: MonoBehaviour {
     Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
-    void Awake() {
-        // set state
-        m_All = new List<OnlinePlayer>();
-    }
-
     void Start() {
         // bind events
         m_Subscriptions
@@ -56,7 +51,9 @@ public sealed class Players: MonoBehaviour {
 
     /// the current (local) player
     public OnlinePlayer Current {
-        get => m_Current.Length == 0 ? null : m_Current[0];
+        get {
+            return GetCurrent()?[0];
+        }
     }
 
     /// the list of all players
@@ -66,17 +63,13 @@ public sealed class Players: MonoBehaviour {
 
     /// the list of players used to cull other entities
     public IEnumerable<OnlinePlayer> FindCullers() {
-        return m_IsHost ? m_All : m_Current;
+        return m_IsHost ? m_All : GetCurrent();
     }
 
     // -- events --
     /// when a player connects
     void OnPlayerConnected(OnlinePlayer player) {
         m_All.Add(player);
-
-        if (player.isLocalPlayer) {
-            m_Current = new[] { player };
-        }
     }
 
     /// when a player disconnects
@@ -86,5 +79,29 @@ public sealed class Players: MonoBehaviour {
         if (player.isLocalPlayer) {
             m_Current = new OnlinePlayer[0];
         }
+    }
+
+    // -- helpers --
+    OnlinePlayer[] GetCurrent() {
+        if(m_Current.Length == 0) {
+            var current = m_All.FirstOrDefault(p => p.isLocalPlayer);
+                if(current != null) {
+                    m_Current = new[] { current };
+                } else {
+                    return null;
+                }
+        }
+
+        return m_Current;
+    }
+
+    /// get an id for a net id
+    uint Id(NetworkIdentity identity) {
+        return identity.netId;
+    }
+
+    /// get an id for a player
+    uint Id(OnlinePlayer player) {
+        return player.netIdentity.netId;
     }
 }

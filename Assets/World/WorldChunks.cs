@@ -185,7 +185,6 @@ public sealed class WorldChunks: MonoBehaviour {
     /// if the chunk is active
     public bool IsChunkActive(Vector2Int coord) {
         var count = 0;
-
         if (!m_Chunks.TryGetValue(coord, out count)) {
             return false;
         }
