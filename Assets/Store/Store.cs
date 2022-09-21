@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
@@ -50,13 +51,21 @@ public sealed class Store: ScriptableObject {
         // grab player flower
         var pf = FindPlayerCharacter()?.Flower;
 
-        // update flowers recs
+        // don't add duplicate flowers
+        var memo = new HashSet<Vector3>();
+        memo.Add(pf.Position);
+
+        // generate records for each unique flower
         // TODO: flower repo
-        m_World.Flowers = GameObject
+        var records = GameObject
             .FindObjectsOfType<CharacterFlower>()
-            .Where(flower => flower != pf) // don't save player flower as part of world
+            .Where(flower => flower != pf) // don't save player flower
             .Select((f) => f.IntoRecord())
+            .Where((r) => memo.Add(r.P)) // don't add duplicate flowers
             .ToArray();
+
+        // update world record
+        m_World.Flowers = records;
     }
 
     /// sync the in-memory player record
