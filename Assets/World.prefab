@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 6311038941346133000}
   - component: {fileID: 2803300835655193505}
   - component: {fileID: 3927419822190241647}
+  - component: {fileID: 6544395123085265236}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -149,6 +150,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41b1d9b67a494419194492d44079b5af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   m_Single: {fileID: 11400000, guid: a828a94e1e62f44a3a732304eba42ffd, type: 2}
   m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
   m_IsHost:
@@ -180,6 +183,23 @@ MonoBehaviour:
     _constant: {fileID: 0}
     _variable: {fileID: 11400000, guid: f7610f4785cf8493ca76dfc06c4cba63, type: 2}
     _variableInstancer: {fileID: 0}
+--- !u!114 &6544395123085265236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5000541250416934005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  visible: 0
+  m_AssetId: 028479e9d066144b09e4c9ebdd70e6eb
+  hasSpawned: 0
 --- !u!1 &6071659673618703643
 GameObject:
   m_ObjectHideFlags: 0
