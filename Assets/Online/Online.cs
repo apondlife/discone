@@ -95,8 +95,6 @@ public class Online: NetworkManager {
     public override void OnClientConnect() {
         base.OnClientConnect();
 
-        Debug.Log($"on client connect {m_State}");
-
         // finish connection flow
         if (m_State == State.Connecting) {
             m_State = State.Client;
@@ -165,11 +163,13 @@ public class Online: NetworkManager {
     public override void OnServerConnect(NetworkConnection conn) {
         base.OnServerConnect(conn);
 
-        Debug.Log($"[online] new client connected! client[{conn.connectionId}]:{conn.address}");
+        Debug.Log($"[online] connect [id={conn.connectionId} addr={conn.address}]");
     }
 
     [Server]
     public override void OnServerDisconnect(NetworkConnection conn) {
+        Debug.Log($"[online] disconnect [id={conn.connectionId} addr={conn.address}]");
+
         // give player a chance to clean up before being destroyed
         var player = conn.identity.gameObject.GetComponent<OnlinePlayer>();
         if (player == null) {
@@ -177,8 +177,6 @@ public class Online: NetworkManager {
         } else {
             player.Server_OnDisconnect();
         }
-
-        Debug.Log($"[online] client disconnected client[{conn.connectionId}]:{conn.address}");
 
         // destroy the player
         base.OnServerDisconnect(conn);

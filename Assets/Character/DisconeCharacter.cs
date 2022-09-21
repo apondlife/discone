@@ -77,12 +77,10 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the world coordinate
     WorldCoord m_Coord;
 
-    // /// if the character is currently simulating
-    // bool m_IsSimulating = false;
-
     /// the list of simulated children
     GameObject[] m_Simulated;
 
+    /// the time of the last state sync
     [SyncVar]
     double m_LastSync;
 
@@ -119,26 +117,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Spawned.Raise(this);
     }
 
-    public override void OnStartClient() {
-        SyncSimulation(true);
-    }
-
-    void OnEnable() {
-        Debug.Log($"[discone character] {name} enabled!");
-        SyncSimulation(true);
-    }
-
-    void OnDisable() {
-        SyncSimulation(false);
-    }
-
-    void OnDestroy() {
-        OnSimulationChanged = null;
-
-        // send destroyed event
-        m_Destroyed.Raise(this);
-    }
-
     void FixedUpdate() {
         // if we simulate this character, send its state to all clients
         if (m_Simulation == Simulation.Local) {
@@ -167,15 +145,38 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         }
     }
 
+    void OnEnable() {
+        SyncSimulation(true);
+    }
+
+    void OnDisable() {
+        SyncSimulation(false);
+    }
+
+    void OnDestroy() {
+        OnSimulationChanged = null;
+
+        // send destroyed event
+        m_Destroyed.Raise(this);
+    }
+
     // -- l/mirror
+    [Server]
     public override void OnStartServer() {
         base.OnStartServer();
 
         // initially, nobody has authority over any character (except the host client)
         Server_RemoveClientAuthority();
-
     }
 
+    [Client]
+    public override void OnStartClient() {
+        base.OnStartClient();
+
+        SyncSimulation(true);
+    }
+
+    [Client]
     public override void OnStartAuthority() {
         base.OnStartAuthority();
 
@@ -183,6 +184,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         SyncSimulation();
     }
 
+    [Client]
     public override void OnStopAuthority() {
         base.OnStopAuthority();
 
@@ -213,15 +215,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         }
     }
 
-    // set the character's simulation location
-    // TODO: lifecycle events? OnSimulatingLocal/OnSimulatingRemote/OnStopSimulating
-    // public void SetSimulating(bool isSimulating) {
-    //     m_IsSimulating = isSimulating;
-    //     SyncSimulation();
-    // }
-
-    // update the character's simulation location
-    // hostVisible parameter is to make it also work on the host (from interest management)
+    /// update simulation given active state and ownership
     public void SyncSimulation(bool simulate = true) {
         // if the identity has not initialized yet, we should't sync
         // simulate locally if owner, remotely otherwise
@@ -231,7 +225,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
             (_, true) => Simulation.Local,
             (_, false) => Simulation.Remote,
         };
-
 
         // only set if changed
         if (m_Simulation != simulation) {
@@ -248,9 +241,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         var isSimulated = simulation != Simulation.None;
 
         // pause when not simulated at all
-        m_Character.IsPaused = !isSimulated;
         // TODO: if extrapolating might not need to simulate locally at all
-        // m_Character.IsPaused = simulation != Simulation.Local;
+        m_Character.IsPaused = !isSimulated;
 
         // toggle activity on all the children to turn off rendering, effects, &c
         foreach (var c in m_Simulated) {
@@ -268,7 +260,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_RemoteState = state;
         m_LastSync = time;
 
-        if(!connectionToClient.observing.Contains(netIdentity)) {
+        if (!connectionToClient.observing.Contains(netIdentity)) {
             Debug.Log($"Player cannot observe {name}");
         }
 
