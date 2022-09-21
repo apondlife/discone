@@ -15,6 +15,9 @@ public sealed class Players: MonoBehaviour {
     [Tooltip("when a player disconnets")]
     [SerializeField] OnlinePlayerEvent m_PlayerDisconnected;
 
+    [Tooltip("when the local player starts")]
+    [SerializeField] OnlinePlayerEvent m_CurrentPlayerStarted;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("if the player is the host")]
@@ -35,7 +38,8 @@ public sealed class Players: MonoBehaviour {
         // bind events
         m_Subscriptions
             .Add(m_PlayerConnected, OnPlayerConnected)
-            .Add(m_PlayerDisconnected, OnPlayerDisconnected);
+            .Add(m_PlayerDisconnected, OnPlayerDisconnected)
+            .Add(m_CurrentPlayerStarted, OnCurrentPlayerStarted);
     }
 
     void OnDestroy() {
@@ -51,9 +55,7 @@ public sealed class Players: MonoBehaviour {
 
     /// the current (local) player
     public OnlinePlayer Current {
-        get {
-            return GetCurrent()?[0];
-        }
+        get => m_Current.Length != 0 ? m_Current[0] : null;
     }
 
     /// the list of all players
@@ -63,7 +65,7 @@ public sealed class Players: MonoBehaviour {
 
     /// the list of players used to cull other entities
     public IEnumerable<OnlinePlayer> FindCullers() {
-        return m_IsHost ? m_All : GetCurrent();
+        return m_IsHost ? m_All : m_Current;
     }
 
     // -- events --
@@ -75,26 +77,14 @@ public sealed class Players: MonoBehaviour {
     /// when a player disconnects
     void OnPlayerDisconnected(OnlinePlayer player) {
         m_All.Remove(player);
+    }
 
-        if (player.isLocalPlayer) {
-            m_Current = new OnlinePlayer[0];
-        }
+    /// when the currrent player starts
+    void OnCurrentPlayerStarted(OnlinePlayer player) {
+        m_Current = new OnlinePlayer[1] { player };
     }
 
     // -- helpers --
-    OnlinePlayer[] GetCurrent() {
-        if(m_Current.Length == 0) {
-            var current = m_All.FirstOrDefault(p => p.isLocalPlayer);
-                if(current != null) {
-                    m_Current = new[] { current };
-                } else {
-                    return null;
-                }
-        }
-
-        return m_Current;
-    }
-
     /// get an id for a net id
     uint Id(NetworkIdentity identity) {
         return identity.netId;

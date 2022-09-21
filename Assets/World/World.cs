@@ -5,7 +5,7 @@ using UnityEngine;
 
 /// the world of discone
 [RequireComponent(typeof(WorldChunks))]
-public sealed class World: MonoBehaviour {
+public sealed class World: NetworkBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("the world singleton")]
@@ -33,15 +33,11 @@ public sealed class World: MonoBehaviour {
 
         // set singleton
         m_Single.Value = this;
-
-        // bind events
     }
 
-    void Start() {
-        if (m_IsHost) {
-            m_Subscriptions
-                .Add(m_Store.LoadFinished, Server_OnStoreLoadFinished);
-        }
+    public override void OnStartServer() {
+        m_Subscriptions
+            .Add(m_Store.LoadFinished, Server_OnStoreLoadFinished);
     }
 
     void OnDestroy() {

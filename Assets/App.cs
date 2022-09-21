@@ -5,7 +5,7 @@ using Mirror;
 sealed class App: NetworkBehaviour {
     // -- module --
     /// the singleton instance
-    static App Instance;
+    static App s_Instance;
 
     // -- refs --
     [Header("refs")]
@@ -18,20 +18,18 @@ sealed class App: NetworkBehaviour {
     // -- lifecycle --
     void Awake() {
         // destroy this if we already have an app
-        if (Instance != null) {
+        if (s_Instance != null) {
             Destroy(gameObject);
             return;
         }
 
         // store the singleton
-        Instance = this;
+        s_Instance = this;
         transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
     }
 
-    public override void OnStartServer() {
-        base.OnStartServer();
-
+    void Start() {
         // load the world state
         m_Store.Load();
     }
