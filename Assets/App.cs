@@ -1,8 +1,7 @@
 using UnityEngine;
-using Mirror;
 
 /// the app
-sealed class App: NetworkBehaviour {
+sealed class App: MonoBehaviour {
     // -- module --
     /// the singleton instance
     static App s_Instance;
