@@ -130,14 +130,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_VisRange: 200
   m_ChunkDist: 1
-  rebuildInterval: 1
-  m_Entities: {fileID: 11400000, guid: 8ad8e32d8125540e8b5040f0b6c0d78c, type: 2}
   m_ChunkSize:
-    _usage: 2
-    _value: 0
+    _usage: 0
+    _value: 100
     _constant: {fileID: 0}
     _variable: {fileID: 11400000, guid: f7610f4785cf8493ca76dfc06c4cba63, type: 2}
     _variableInstancer: {fileID: 0}
+  m_RebuildInterval: 1
+  m_Entities: {fileID: 11400000, guid: 8ad8e32d8125540e8b5040f0b6c0d78c, type: 2}
 --- !u!1 &5984576550194437987
 GameObject:
   m_ObjectHideFlags: 0
