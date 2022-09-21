@@ -7,6 +7,11 @@ using UnityEngine;
 
 /// a repository of players
 public sealed class Players: MonoBehaviour {
+    // -- state --
+    [Header("state")]
+    [Tooltip("the map of players keyed by net id")]
+    [SerializeField] List<OnlinePlayer> m_All = new List<OnlinePlayer>();
+
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("when a player connects")]
@@ -24,9 +29,6 @@ public sealed class Players: MonoBehaviour {
     [SerializeField] BoolReference m_IsHost;
 
     // -- props --
-    /// the map of players keyed by net id
-    List<OnlinePlayer> m_All = new List<OnlinePlayer>();
-
     /// the current (local) player
     OnlinePlayer[] m_Current = new OnlinePlayer[0];
 
