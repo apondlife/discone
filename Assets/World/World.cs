@@ -35,13 +35,14 @@ public sealed class World: NetworkBehaviour {
         m_Single.Value = this;
     }
 
+    void OnDestroy() {
+        m_Subscriptions.Dispose();
+    }
+
+    // -- l/mirror
     public override void OnStartServer() {
         m_Subscriptions
             .Add(m_Store.LoadFinished, Server_OnStoreLoadFinished);
-    }
-
-    void OnDestroy() {
-        m_Subscriptions.Dispose();
     }
 
     // -- commands --
