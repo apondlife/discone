@@ -269,6 +269,10 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Character.ForceState(state);
     }
 
+    public void Host_SetVisibility(bool visible) {
+        SyncSimulation(visible);
+    }
+
     /// mark this character as unavaialble; only call on the server
     [Server]
     public void Server_AssignClientAuthority(NetworkConnection connection) {
