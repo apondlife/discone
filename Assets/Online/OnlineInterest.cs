@@ -36,8 +36,26 @@ public class OnlineInterest: InterestManagement {
     // -- lifecycle --
     [ServerCallback]
     void Update() {
-        // rebuild all spawned NetworkIdentity's observers every interval
-        if (NetworkTime.time >= m_LastRebuildTime + m_RebuildInterval) {
+        // wait for the interval to elapse
+        if (NetworkTime.time < m_LastRebuildTime + m_RebuildInterval) {
+            return;
+        }
+
+        // see if we have any players
+        var hasPlayer = false;
+
+        // sync all the player coords
+        foreach (var conn in NetworkServer.connections.Values) {
+            if (conn == null || !conn.isAuthenticated || conn.identity == null) {
+                continue;
+            }
+
+            hasPlayer = true;
+            SyncCoord(FindOrCreateInterestById(conn.identity));
+        }
+
+        // if we have at least one player, rebuild interest set
+        if (hasPlayer) {
             RebuildAll();
             m_LastRebuildTime = NetworkTime.time;
         }
@@ -49,7 +67,7 @@ public class OnlineInterest: InterestManagement {
         NetworkIdentity identity,
         NetworkConnection newObserver
     ) {
-        var player = newObserver.identity.GetComponent<OnlinePlayer>();
+        var player = FindOrCreateInterestById(newObserver.identity) as PlayerInterest;
         if (player == null) {
             return false;
         }
@@ -65,9 +83,18 @@ public class OnlineInterest: InterestManagement {
     ) {
         // check which players can see the identity
         var players = m_Entities.Value.Players.All;
-        foreach (var player in players) {
+        foreach (var conn in NetworkServer.connections.Values) {
+            if (conn == null || !conn.isAuthenticated || conn.identity == null) {
+                continue;
+            }
+
+            var player = FindOrCreateInterestById(conn.identity) as PlayerInterest;
+            if (player == null) {
+                continue;
+            }
+
             if (IsInteresting(identity, player)) {
-                newObservers.Add(player.connectionToClient);
+                newObservers.Add(conn);
             }
         }
     }
@@ -78,16 +105,20 @@ public class OnlineInterest: InterestManagement {
         #if UNITY_EDITOR
         var name = identity.gameObject.name;
         if (!visible) {
-            identity.gameObject.name = $"~{name}";
-        } else if (name[0] == '~') {
+            identity.gameObject.name = $"*{name}";
+        } else if (name[0] == '*') {
             identity.gameObject.name = name.Substring(1);
         }
         #endif
 
-        // if the object is a character, we can set its sync stuff
-        var character = identity.GetComponent<DisconeCharacter>();
-        if (character != null) {
-            character.SyncSimulation(visible);
+        var interest = FindOrCreateInterestById(identity);
+        switch (interest) {
+        // if the object is a character, we can set its sync status
+        case CharacterInterest c:
+            c.Object.Host_SetVisibility(visible); break;
+        // if the object is a flower we want to try planting it again
+        case FlowerInterest f:
+            f.Object.Host_SetVisibility(visible); break;
         }
     }
 
@@ -96,7 +127,7 @@ public class OnlineInterest: InterestManagement {
     [Server]
     bool IsInteresting(
         NetworkIdentity identity,
-        OnlinePlayer player
+        PlayerInterest player
     ) {
         // find or create cached interest
         var interest = FindOrCreateInterestById(identity);
@@ -122,7 +153,7 @@ public class OnlineInterest: InterestManagement {
     [Server]
     bool IsInteresting(
         CharacterInterest interest,
-        OnlinePlayer player
+        PlayerInterest player
     ) {
         var character = interest.Object;
 
@@ -133,7 +164,7 @@ public class OnlineInterest: InterestManagement {
         }
 
         // if the player has no character, it might be looking for an initial one
-        if (player.Character == null) {
+        if (player.Object.Character == null) {
             return character.IsInitial;
         }
 
@@ -144,7 +175,7 @@ public class OnlineInterest: InterestManagement {
     [Server]
     bool IsInteresting(
         PlayerInterest interest,
-        OnlinePlayer player
+        PlayerInterest player
     ) {
         // all players are interesting
         // the stars follow them
@@ -155,7 +186,7 @@ public class OnlineInterest: InterestManagement {
     [Server]
     bool IsInteresting(
         FlowerInterest interest,
-        OnlinePlayer player
+        PlayerInterest player
     ) {
         return IsVisible(interest, player);
     }
@@ -163,14 +194,14 @@ public class OnlineInterest: InterestManagement {
     /// if the interest is visible to the player
     bool IsVisible(
         Interest interest,
-        OnlinePlayer player
+        PlayerInterest player
     ) {
         // if the object is not a visible chunk, we're not interested
         var icoord = interest.Coord;
-        var pcoord = player.Coord.Value;
-        var isVisible = !(
-            Mathf.Abs(icoord.x - pcoord.x) > m_ChunkDist ||
-            Mathf.Abs(icoord.y - pcoord.y) > m_ChunkDist
+        var pcoord = player.Coord;
+        var isVisible = (
+            Mathf.Abs(icoord.x - pcoord.x) <= m_ChunkDist &&
+            Mathf.Abs(icoord.y - pcoord.y) <= m_ChunkDist
         );
 
         if (!isVisible) {
@@ -202,12 +233,13 @@ public class OnlineInterest: InterestManagement {
         // get the id
         var id = identity.netId;
         if (id == 0) {
-            Debug.LogError("[interest] identity has not been initialized yet.");
+            Debug.LogWarning("[interest] identity has not been initialized yet.");
             return null;
         }
 
         // get the cached interest by id
         if (!m_Interests.TryGetValue(id, out var interest)) {
+            // create the interest
             if (identity.GetComponent<OnlinePlayer>() is OnlinePlayer p) {
                 interest = new PlayerInterest(p);
             } else if (identity.GetComponent<DisconeCharacter>() is DisconeCharacter c) {
@@ -219,6 +251,9 @@ public class OnlineInterest: InterestManagement {
                 FoundUninterestingType(identity.GetComponent<NetworkBehaviour>());
                 #endif
             }
+
+            // cache it!
+            m_Interests.Add(id, interest);
 
             // and set the coord of any static interests immediately (this should be a done in
             // the constructor, but passing the chunk size down is a pain)

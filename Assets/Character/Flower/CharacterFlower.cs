@@ -5,7 +5,15 @@ using ThirdPerson;
 
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
-public class CharacterFlower: NetworkBehaviour {
+public class CharacterFlower : NetworkBehaviour {
+    // -- types --
+    /// a flower's planting state
+    enum Planting {
+        NotReady,
+        Ready,
+        Planted
+    }
+
     // -- constants --
     /// how offset the flower is forward, so it doesn't spawn under the character
     const float k_ForwardOffset = 0.12f;
@@ -58,6 +66,9 @@ public class CharacterFlower: NetworkBehaviour {
     /// the checkpoint rotation
     Quaternion m_Rotation;
 
+    /// if the flower has been planted
+    Planting m_Planting = Planting.NotReady;
+
     // -- lifecycle
     void Awake() {
         m_Renderer.material = FindMaterial();
@@ -65,24 +76,32 @@ public class CharacterFlower: NetworkBehaviour {
         #if UNITY_EDITOR
         Dbg.AddToParent("Flowers", this);
         #endif
+    }
 
-        var targetScale = transform.localScale;
-        transform.localScale = Vector3.Scale(transform.localScale, new Vector3(1, 0, 1));
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(m_SpawnTime, (k) => {
-            transform.localScale = Vector3.Scale(targetScale, new Vector3(1, k*k, 1));
-        }));
+    void OnEnable() {
+        // try to replant any time we are enabled
+        TryPlant();
     }
 
     // -- commands --
-    /// release the server from player ownership
+    /// add an owner for this flower
+    [Server]
+    public void Server_Grab() {
+        m_IsFree = false;
+    }
+
+    /// remove an owner for this flower
     [Server]
     public void Server_Release() {
         m_IsFree = true;
     }
 
+    /// when the host toggles visbility
     [Server]
-    public void Server_Grab() {
-        m_IsFree = false;
+    public void Host_SetVisibility(bool isVisible) {
+        if (isVisible) {
+            TryPlant();
+        }
     }
 
     // -- events --
@@ -104,7 +123,7 @@ public class CharacterFlower: NetworkBehaviour {
     }
 
     /// the flower's rotation
-    public Quaternion Rotation  {
+    public Quaternion Rotation {
         get => m_Rotation;
     }
 
@@ -154,10 +173,44 @@ public class CharacterFlower: NetworkBehaviour {
             return null;
         }
 
-        // find ground position
-        var fwd = rot * Vector3.forward;
+        var flower = Instantiate(
+            prefab,
+            pos,
+            Quaternion.identity
+        );
+
+        #if UNITY_EDITOR
+        flower.name = $"Flower_{key.Name()}";
+        #endif
+
+        // store record info
+        flower.m_Key = key;
+        flower.m_Position = pos;
+        flower.m_Rotation = rot;
+
+        // set initial state
+        flower.m_IsFree = true;
+
+        // plant the flower
+        flower.m_Planting = Planting.Ready;
+        flower.TryPlant();
+
+        // spawn the game object for everyone
+        NetworkServer.Spawn(flower.gameObject);
+
+        return flower;
+    }
+
+    /// move the flower to a position on the ground
+    void TryPlant() {
+        // wait until we're ready to plant
+        if (m_Planting != Planting.Ready) {
+            return;
+        }
+
+        var fwd = m_Rotation * Vector3.forward;
         var hits = Physics.RaycastNonAlloc(
-            pos + fwd * k_ForwardOffset + Vector3.up * k_UpOffset,
+            m_Position + fwd * k_ForwardOffset + Vector3.up * k_UpOffset,
             Vector3.down,
             k_Hits,
             k_RaycastLen,
@@ -166,30 +219,21 @@ public class CharacterFlower: NetworkBehaviour {
         );
 
         if (hits <= 0) {
-            Debug.LogWarning($"[flower] failed to find ground point");
+            return;
         }
 
-        // instantiate flower at hit point
-        var hit = hits > 0 ? k_Hits[0].point : pos;
-        var flower = Instantiate(
-            prefab,
-            hit,
-            Quaternion.identity
-        );
+        // move flower to the hit point
+        transform.position = k_Hits[0].point;
 
-        flower.m_Key = key;
-        flower.m_Position = pos;
-        flower.m_Rotation = rot;
-        flower.m_IsFree = true;
+        // make the flower grow
+        var targetScale = transform.localScale;
+        transform.localScale = Vector3.Scale(transform.localScale, new Vector3(1, 0, 1));
+        StartCoroutine(CoroutineHelpers.InterpolateByTime(m_SpawnTime, (k) => {
+            transform.localScale = Vector3.Scale(targetScale, new Vector3(1, k * k, 1));
+        }));
 
-        #if UNITY_EDITOR
-        flower.name = $"Flower_{key.Name()}";
-        #endif
-
-        // spawn the game object for everyone
-        NetworkServer.Spawn(flower.gameObject);
-
-        return flower;
+        // and mark it as planted
+        m_Planting = Planting.Planted;
     }
 
     // -- factories --
