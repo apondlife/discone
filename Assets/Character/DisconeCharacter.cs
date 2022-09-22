@@ -127,19 +127,15 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         else if (m_InterpolationTime > 0.0f && m_Simulation == Simulation.Remote && isClient) {
             var start = m_Character.State.Curr.Copy();
             var target = m_RemoteState.Copy();
-            var interpolate = target;
             var delta = (float)(NetworkTime.time - m_LastSync);
+
+
+            var k = Mathf.Clamp01(delta/m_InterpolationTime);
+            var interpolate = CharacterState.Frame.Interpolate(start, target, k);
 
             // TODO: attempt to also extrapolate...
             // target.Velocity += m_CurrentState.Acceleration * delta;
             // target.Position += target.Velocity * delta;
-
-            var k = Mathf.Clamp01(delta/m_InterpolationTime);
-            interpolate.Position = Vector3.Lerp(interpolate.Position, target.Position, k);
-            interpolate.Velocity = Vector3.Lerp(interpolate.Velocity, target.Velocity, k);
-            interpolate.Acceleration = Vector3.Lerp(interpolate.Acceleration, target.Acceleration, k);
-            interpolate.Forward = Vector3.Slerp(interpolate.Forward, target.Forward, k);
-            interpolate.Tilt = Quaternion.Slerp(interpolate.Tilt, target.Tilt, k);
 
             m_Character.ForceState(interpolate);
         }

@@ -186,6 +186,24 @@ public sealed partial class CharacterState {
             copy.Events.Clear();
             return copy;
         }
+
+        // -- utilities --
+        public static Frame Interpolate(Frame start, Frame end, float k) {
+            k = Mathf.Clamp01(k);
+
+            // by default, the values are just taken from the end
+            // TODO: should bools be doing something different? past 50%?
+            var interpolate = end;
+
+            interpolate.Position = Vector3.Lerp(start.Position, end.Position, k);
+            interpolate.Velocity = Vector3.Lerp(start.Velocity, end.Velocity, k);
+            interpolate.Acceleration = Vector3.Lerp(start.Acceleration, end.Acceleration, k);
+            interpolate.Forward = Vector3.Slerp(start.Forward, end.Forward, k);
+            interpolate.Tilt = Quaternion.Slerp(start.Tilt, end.Tilt, k);
+
+            return interpolate;
+        }
+
     }
 }
 }
