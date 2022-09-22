@@ -17,12 +17,10 @@ public sealed class PlayerInputSource: MonoBehaviour, CharacterInputSource {
     [SerializeField] private InputActionReference m_Jump;
 
     // -- CharacterInputSource --
-    /// if the input is enabled
     public bool IsEnabled {
         get => enabled;
     }
 
-    /// read the next frame of input
     public CharacterInput.Frame Read() {
         var forward = Vector3.Normalize(Vector3.ProjectOnPlane(
             m_Look.transform.forward,
@@ -34,9 +32,9 @@ public sealed class PlayerInputSource: MonoBehaviour, CharacterInputSource {
         var move = forward * pInput.y + right * pInput.x;
 
         // produce a new frame
-        return new CharacterInput.Frame(
-            m_Jump.action.IsPressed(),
-            move
+        return new CharacterInput.DefaultFrame(
+            move,
+            m_Jump.action.IsPressed()
         );
     }
 }
