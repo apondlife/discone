@@ -14,12 +14,12 @@ sealed class WallSystem: CharacterSystem {
     Vector3 m_WallUp;
 
     // -- lifetime --
-    protected override CharacterPhase InitInitialPhase() {
+    protected override Phase InitInitialPhase() {
         return NotOnWall;
     }
 
     // -- Grounded --
-    CharacterPhase NotOnWall => new CharacterPhase(
+    Phase NotOnWall => new Phase(
         "NotOnWall",
         enter: NotOnWall_Enter,
         update: NotOnWall_Update
@@ -29,7 +29,7 @@ sealed class WallSystem: CharacterSystem {
         m_State.IsOnWall = false;
     }
 
-    void NotOnWall_Update() {
+    void NotOnWall_Update(float _) {
         // if we're on a wall, enter slide
         var wall = m_State.Prev.Wall;
         if (!wall.IsNone) {
@@ -38,7 +38,7 @@ sealed class WallSystem: CharacterSystem {
     }
 
     // -- WallSlide --
-    CharacterPhase WallSlide => new CharacterPhase(
+    Phase WallSlide => new Phase(
         name: "WallSlide",
         enter: WallSlide_Enter,
         update: WallSlide_Update
@@ -57,7 +57,7 @@ sealed class WallSystem: CharacterSystem {
         m_State.IsOnWall = true;
     }
 
-    void WallSlide_Update() {
+    void WallSlide_Update(float delta) {
         // if we left the wall, exit
         var wall = m_State.Prev.Wall;
         if (wall.IsNone) {
@@ -75,7 +75,7 @@ sealed class WallSystem: CharacterSystem {
 
         // accelerate while holding button
         if (m_Input.IsHoldingWall) {
-            vd += m_Tunables.WallAcceleration * Time.deltaTime * m_WallUp;
+            vd += m_Tunables.WallAcceleration * delta * m_WallUp;
         }
 
         // update state

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -165,7 +166,7 @@ public class CameraLookAtTarget: MonoBehaviour {
         Gizmos.DrawSphere(m_Target.position, 0.3f);
     }
 
-    [System.Serializable]
+    [Serializable]
     struct SpringDamp {
         public float Spring;
         public float Damp;
