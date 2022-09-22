@@ -14,6 +14,9 @@ public sealed class CharacterInput {
     /// drive the input with a source
     public void Drive(CharacterInputSource source) {
         m_Source = source;
+
+        // // TODO: maybe fill the entire queue with frames?
+        // Read();
     }
 
     /// read the next frame of input
@@ -28,22 +31,22 @@ public sealed class CharacterInput {
     // -- queries --
     /// the move axis this frame
     public Vector3 Move {
-        get => m_Frames[0].Move;
+        get => m_Frames[0]?.Move ?? Vector3.zero;
     }
 
     /// if jump is down this frame
     public bool IsJumpPressed {
-        get => m_Frames[0].IsJumpDown;
+        get => m_Frames[0]?.IsJumpDown ?? false;
     }
 
     public bool IsHoldingWall {
-        get => m_Frames[0].IsJumpDown;
+        get => m_Frames[0]?.IsJumpDown ?? false;
     }
 
     /// if jump was pressed in the past n frames
     public bool IsJumpDown(uint past = 1) {
         for (var i = 0u; i < past; i++) {
-            if (m_Frames[i].IsJumpDown && !m_Frames[i + 1].IsJumpDown) {
+            if (m_Frames[i]?.IsJumpDown == true && !m_Frames[i + 1]?.IsJumpDown == true) {
                 return true;
             }
         }

@@ -39,6 +39,12 @@ public abstract class System {
     // -- commands --
     /// update the system's current phase
     public virtual void Update(float delta) {
+        #if UNITY_EDITOR
+        if (m_Phase.Update == null) {
+            Debug.LogError($"[system] must call init! {this}!");
+        }
+        #endif
+
         m_Phase.Update(delta);
     }
 

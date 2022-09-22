@@ -5,7 +5,7 @@ using ThirdPerson;
 
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
-public class CharacterFlower : NetworkBehaviour {
+public class CharacterFlower: NetworkBehaviour {
     // -- types --
     /// a flower's planting state
     enum Planting {
@@ -183,7 +183,8 @@ public class CharacterFlower : NetworkBehaviour {
         flower.name = $"Flower_{key.Name()}";
         #endif
 
-        // store record info
+        // store checkpoint info
+        // TODO: just store Checkpoint
         flower.m_Key = key;
         flower.m_Position = pos;
         flower.m_Rotation = rot;
