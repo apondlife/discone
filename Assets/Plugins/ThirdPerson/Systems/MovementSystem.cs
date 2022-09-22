@@ -62,7 +62,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // get current forward & input direction
         var dirForward = m_State.Curr.Forward;
-        var dirInput = m_Input.MoveAxis;
+        var dirInput = m_Input.Move;
 
         // pivot if direction change was significant
         if (Vector3.Dot(dirForward, dirInput) < m_Tunables.PivotStartThreshold) {
@@ -107,7 +107,7 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void Pivot_Enter() {
-        m_State.Curr.PivotDirection = m_Input.MoveAxis;
+        m_State.Curr.PivotDirection = m_Input.Move;
         m_State.Curr.PivotFrame = 0;
     }
 
@@ -160,14 +160,14 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         var v0 = m_State.Prev.PlanarVelocity;
-        var vd = m_Input.MoveAxis * m_Tunables.AerialDriftAcceleration * Time.deltaTime;
+        var vd = m_Input.Move * m_Tunables.AerialDriftAcceleration * Time.deltaTime;
         m_State.Curr.Velocity += vd;
     }
 
     // -- queries --
     /// if there is any user input
     bool HasInput {
-        get => m_Input.MoveAxis.sqrMagnitude > 0.0f;
+        get => m_Input.Move.sqrMagnitude > 0.0f;
     }
 
     /// if the ground speed is below the movement threshold

@@ -135,7 +135,7 @@ public partial class Character: MonoBehaviour {
 
     // -- commands --
     /// drive the character with a new input source
-    public void Drive(PlayerInputSource source) {
+    public void Drive(CharacterInputSource source) {
         m_Input.Drive(source);
     }
 

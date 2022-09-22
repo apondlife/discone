@@ -27,23 +27,23 @@ public sealed class CharacterInput {
 
     // -- queries --
     /// the move axis this frame
-    public Vector3 MoveAxis {
-        get => m_Frames[0].MoveAxis;
+    public Vector3 Move {
+        get => m_Frames[0].Move;
     }
 
-    /// if jump is pressed this frame
+    /// if jump is down this frame
     public bool IsJumpPressed {
-        get => m_Frames[0].IsJumpPressed;
+        get => m_Frames[0].IsJumpDown;
     }
 
     public bool IsHoldingWall {
-        get => m_Frames[0].IsJumpPressed;
+        get => m_Frames[0].IsJumpDown;
     }
 
     /// if jump was pressed in the past n frames
     public bool IsJumpDown(uint past = 1) {
         for (var i = 0u; i < past; i++) {
-            if (m_Frames[i].IsJumpPressed && !m_Frames[i + 1].IsJumpPressed) {
+            if (m_Frames[i].IsJumpDown && !m_Frames[i + 1].IsJumpDown) {
                 return true;
             }
         }
@@ -52,18 +52,41 @@ public sealed class CharacterInput {
     }
 
     // -- types --
-    /// a single frame of input
-    public readonly struct Frame {
-        /// if jump is pressed
-        public readonly bool IsJumpPressed;
-
+    /// the minimial frame of input for third person to work
+    public interface Frame {
         /// the projected position of the move analog stick
-        public readonly Vector3 MoveAxis;
+        Vector3 Move { get; }
 
+        /// if jump is down
+        bool IsJumpDown { get; }
+    }
+
+    /// a default frame structure
+    public readonly struct DefaultFrame: Frame {
+        // -- props --
+        /// the projected position of the move analog stick
+        public readonly Vector3 m_Move;
+
+        /// if jump is pressed
+        public readonly bool m_IsJumpDown;
+
+        // -- lifetime --
         /// create a new frame
-        public Frame(bool isJumpPressed, Vector3 move) {
-            IsJumpPressed = isJumpPressed;
-            MoveAxis = move;
+        public DefaultFrame(
+            Vector3 moveAxis,
+            bool isJumpDown
+        ) {
+            m_Move = moveAxis;
+            m_IsJumpDown = isJumpDown;
+        }
+
+        /// -- Frame --
+        public Vector3 Move {
+            get => m_Move;
+        }
+
+        public bool IsJumpDown {
+            get => m_IsJumpDown;
         }
     }
 }
