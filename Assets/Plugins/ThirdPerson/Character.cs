@@ -121,8 +121,9 @@ public partial class Character: MonoBehaviour {
         m_Input.Read();
 
         // run the character systems
+        var delta = Time.deltaTime;
         foreach (var system in m_Systems) {
-            system.Update();
+            system.Update(delta);
         }
     }
 

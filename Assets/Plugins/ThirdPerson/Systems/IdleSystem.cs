@@ -10,12 +10,12 @@ sealed class IdleSystem: CharacterSystem {
 
 
     // -- lifetime --
-    protected override CharacterPhase InitInitialPhase() {
+    protected override Phase InitInitialPhase() {
         return Idle;
     }
 
     // -- NotIdle --
-    CharacterPhase NotIdle => new CharacterPhase(
+    Phase NotIdle => new Phase(
         name: "NotIdle",
         enter: NotIdle_Enter,
         update: NotIdle_Update
@@ -25,14 +25,14 @@ sealed class IdleSystem: CharacterSystem {
         m_State.Curr.IdleTime = 0.0f;
     }
 
-    void NotIdle_Update() {
+    void NotIdle_Update(float _) {
         if (m_State.Prev.Velocity.sqrMagnitude <= k_IdleSpeedThreshold) {
            ChangeTo(Idle);
         }
     }
 
     // -- Idle --
-    CharacterPhase Idle => new CharacterPhase(
+    Phase Idle => new Phase(
         name: "Idle",
         enter: Idle_Enter,
         update: Idle_Update
@@ -43,8 +43,8 @@ sealed class IdleSystem: CharacterSystem {
         m_Events.Schedule(CharacterEvent.Idle);
     }
 
-    void Idle_Update() {
-        m_State.Curr.IdleTime += Time.deltaTime;
+    void Idle_Update(float delta) {
+        m_State.Curr.IdleTime += delta;
 
         if (m_State.Prev.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
            ChangeTo(NotIdle);

@@ -4,7 +4,7 @@ namespace ThirdPerson {
 
 /// a character phase, a composition of an enter, update, and exit action
 [Serializable]
-public struct CharacterPhase: IEquatable<CharacterPhase> {
+public struct Phase: IEquatable<Phase> {
     // -- props --
     /// a unique name for this phase
     public string Name;
@@ -13,16 +13,16 @@ public struct CharacterPhase: IEquatable<CharacterPhase> {
     readonly public Action Enter;
 
     /// the action to call every frame the phase is active
-    readonly public Action Update;
+    readonly public Action<float> Update;
 
     /// the action to call the frame the phase ends
     readonly public Action Exit;
 
     // -- lifetime --
-    public CharacterPhase(
+    public Phase(
         string name,
         Action enter = null,
-        Action update = null,
+        Action<float> update = null,
         Action exit = null
     ) {
         Name = name;
@@ -36,13 +36,17 @@ public struct CharacterPhase: IEquatable<CharacterPhase> {
     private static void NoOp() {
     }
 
+    /// does nothing
+    private static void NoOp(float _) {
+    }
+
     // -- IEquatable --
-    public bool Equals(CharacterPhase phase) {
+    public bool Equals(Phase phase) {
         return Name == phase.Name;
     }
 
     override public bool Equals(Object obj) {
-        if (obj is CharacterPhase phase) {
+        if (obj is Phase phase) {
             return Equals(phase);
         } else {
             return false;

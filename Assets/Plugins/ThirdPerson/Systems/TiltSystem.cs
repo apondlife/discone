@@ -7,17 +7,17 @@ namespace ThirdPerson {
 [Serializable]
 sealed class TiltSystem : CharacterSystem {
     // -- lifetime --
-    protected override CharacterPhase InitInitialPhase() {
+    protected override Phase InitInitialPhase() {
         return NotTilting;
     }
 
     // -- NotTilting --
-    CharacterPhase NotTilting => new CharacterPhase(
+    Phase NotTilting => new Phase(
         "NotTilting",
         update: NotTilting_Update
     );
 
-    void NotTilting_Update() {
+    void NotTilting_Update(float _) {
         // TODO: acceleration should probably be set per frame and not calculated
         var acceleration = Vector3.ProjectOnPlane(m_State.Acceleration, Vector3.up);
         if (acceleration.sqrMagnitude != 0.0f) {
@@ -29,12 +29,12 @@ sealed class TiltSystem : CharacterSystem {
     }
 
     // -- Tilting --
-    CharacterPhase Tilting => new CharacterPhase(
+    Phase Tilting => new Phase(
         "Tilting",
         update: Tilting_Update
     );
 
-    void Tilting_Update() {
+    void Tilting_Update(float _) {
         var acceleration = Vector3.ProjectOnPlane(m_State.Acceleration, Vector3.up);
         if (acceleration.sqrMagnitude == 0.0f) {
             ChangeTo(NotTilting);

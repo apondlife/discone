@@ -20,20 +20,20 @@ sealed class JumpSystem: CharacterSystem {
     uint m_JumpTunablesIndex;
 
     // -- lifetime --
-    protected override CharacterPhase InitInitialPhase() {
+    protected override Phase InitInitialPhase() {
         return NotJumping;
     }
 
     // -- lifecycle --
-    public override void Update() {
-        base.Update();
+    public override void Update(float delta) {
+        base.Update(delta);
 
         // always add gravity
-        m_State.Curr.Velocity += m_Tunables.Gravity * Time.deltaTime * Vector3.up;
+        m_State.Curr.Velocity += m_Tunables.Gravity * delta * Vector3.up;
     }
 
     // -- NotJumping --
-    CharacterPhase NotJumping => new CharacterPhase(
+    Phase NotJumping => new Phase(
         name: "NotJumping",
         enter: NotJumping_Enter,
         update: NotJumping_Update
@@ -43,7 +43,7 @@ sealed class JumpSystem: CharacterSystem {
         ResetJumps();
     }
 
-    void NotJumping_Update() {
+    void NotJumping_Update(float _) {
         // count coyote frames; reset to max whenever grounded
         if (m_State.Prev.IsGrounded) {
             m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
@@ -67,7 +67,7 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     // -- JumpSquat --
-    CharacterPhase JumpSquat => new CharacterPhase(
+    Phase JumpSquat => new Phase(
         name: "JumpSquat",
         enter: JumpSquat_Enter,
         update: JumpSquat_Update,
@@ -79,10 +79,10 @@ sealed class JumpSystem: CharacterSystem {
         m_State.Curr.JumpSquatFrame = 0;
     }
 
-    void JumpSquat_Update() {
+    void JumpSquat_Update(float delta) {
         // apply fall acceleration if not grounded
         if (!m_State.Prev.IsGrounded && !m_State.Curr.IsOnWall) {
-            m_State.Curr.Velocity += m_Tunables.FallAcceleration * Time.deltaTime * Vector3.up;
+            m_State.Curr.Velocity += m_Tunables.FallAcceleration * delta * Vector3.up;
         }
 
         // jump if jump was released or jump squat ended
@@ -127,7 +127,7 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     // -- Falling --
-    CharacterPhase Falling => new CharacterPhase(
+    Phase Falling => new Phase(
         name: "Falling",
         enter: Falling_Enter,
         update: Falling_Update
@@ -137,7 +137,7 @@ sealed class JumpSystem: CharacterSystem {
         IncrementJumps();
     }
 
-    void Falling_Update() {
+    void Falling_Update(float delta) {
         // apply fall acceleration while holding jump
         // TODO: is this bad?
         // apply jump acceleration while holding jump
@@ -146,7 +146,7 @@ sealed class JumpSystem: CharacterSystem {
                 ? m_Tunables.JumpAcceleration
                 : m_Tunables.FallAcceleration;
 
-            m_State.Curr.Velocity += acceleration * Time.deltaTime * Vector3.up;
+            m_State.Curr.Velocity += acceleration * delta * Vector3.up;
         }
 
         // count coyote frames

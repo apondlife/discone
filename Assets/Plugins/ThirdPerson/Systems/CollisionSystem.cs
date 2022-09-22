@@ -7,24 +7,24 @@ namespace ThirdPerson {
 [Serializable]
 sealed class CollisionSystem: CharacterSystem {
     // -- lifetime --
-    protected override CharacterPhase InitInitialPhase() {
+    protected override Phase InitInitialPhase() {
         return Active;
     }
 
     // -- NotIdle --
-    CharacterPhase Active => new CharacterPhase(
+    Phase Active => new Phase(
         name: "Active",
         update: Active_Update
     );
 
-    void Active_Update() {
+    void Active_Update(float delta) {
         var v = m_State.Curr.Velocity;
 
         // move character using controller if not idle
         if (v.sqrMagnitude > 0.0f) {
             m_Controller.Move(
                 m_State.Curr.Position,
-                v * Time.deltaTime,
+                v * delta,
                 m_State.Curr.Up
             );
         }
@@ -35,7 +35,7 @@ sealed class CollisionSystem: CharacterSystem {
 
         // sync controller state back to character state
         m_State.Curr.Velocity = m_Controller.Velocity;
-        m_State.Curr.Acceleration = (m_State.Curr.Velocity - m_State.Prev.Velocity) / Time.deltaTime;
+        m_State.Curr.Acceleration = (m_State.Curr.Velocity - m_State.Prev.Velocity) / delta;
         m_State.Curr.Position = m_Controller.Position;
     }
 }

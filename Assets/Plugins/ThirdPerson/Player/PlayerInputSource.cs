@@ -5,8 +5,8 @@ namespace ThirdPerson {
 
 /// a player's input source for controlling characters
 public sealed class PlayerInputSource: MonoBehaviour, CharacterInputSource {
-    // -- fields --
-    [Header("references")]
+    // -- refs --
+    [Header("refs")]
     [Tooltip("the transform for the player's look viewpoint")]
     [SerializeField] private Transform m_Look;
 

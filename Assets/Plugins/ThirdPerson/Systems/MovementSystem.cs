@@ -7,12 +7,12 @@ namespace ThirdPerson {
 [Serializable]
 sealed class MovementSystem: CharacterSystem {
     // -- lifetime --
-    protected override CharacterPhase InitInitialPhase() {
+    protected override Phase InitInitialPhase() {
         return NotMoving;
     }
 
     // -- NotMoving --
-    CharacterPhase NotMoving => new CharacterPhase(
+    Phase NotMoving => new Phase(
         name: "NotMoving",
         enter: NotMoving_Enter,
         update: NotMoving_Update
@@ -23,7 +23,7 @@ sealed class MovementSystem: CharacterSystem {
         m_State.Curr.Velocity -= m_State.Curr.GroundVelocity;
     }
 
-    void NotMoving_Update() {
+    void NotMoving_Update(float delta) {
         // start floating if no longer grounded
         if (!m_State.Prev.IsGrounded) {
             ChangeTo(Floating);
@@ -35,7 +35,8 @@ sealed class MovementSystem: CharacterSystem {
             m_State.Curr.GroundVelocity,
             Vector3.zero,
             m_Tunables.Horizontal_StaticFriction,
-            0.0f
+            0.0f,
+            delta
         );
 
         m_State.Curr.Velocity += vd;
@@ -48,12 +49,12 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- Moving --
-    CharacterPhase Moving => new CharacterPhase(
+    Phase Moving => new Phase(
         name: "Moving",
         update: Moving_Update
     );
 
-    void Moving_Update() {
+    void Moving_Update(float delta) {
         // start floating if no longer grounded
         if (!m_State.Prev.IsGrounded) {
             ChangeTo(Floating);
@@ -75,7 +76,7 @@ sealed class MovementSystem: CharacterSystem {
             dirForward = Vector3.RotateTowards(
                 dirForward,
                 dirInput,
-                m_Tunables.TurnSpeed * Mathf.Deg2Rad * Time.deltaTime,
+                m_Tunables.TurnSpeed * Mathf.Deg2Rad * delta,
                 Mathf.Infinity
             );
 
@@ -86,7 +87,8 @@ sealed class MovementSystem: CharacterSystem {
             m_State.Prev.GroundVelocity,
             m_Tunables.Horizontal_Acceleration * dirInput.magnitude * m_State.Curr.Forward,
             m_Tunables.Horizontal_KineticFriction,
-            m_Tunables.Horizontal_Drag
+            m_Tunables.Horizontal_Drag,
+            delta
         );
 
         // update velocity
@@ -99,7 +101,7 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- Pivot --
-    CharacterPhase Pivot => new CharacterPhase(
+    Phase Pivot => new Phase(
         "Pivot",
         enter: Pivot_Enter,
         update: Pivot_Update,
@@ -111,7 +113,7 @@ sealed class MovementSystem: CharacterSystem {
         m_State.Curr.PivotFrame = 0;
     }
 
-    void Pivot_Update() {
+    void Pivot_Update(float delta) {
         if (!m_State.Prev.IsGrounded) {
             ChangeTo(Floating);
             return;
@@ -124,7 +126,7 @@ sealed class MovementSystem: CharacterSystem {
         dirFacing = Vector3.RotateTowards(
             dirFacing,
             m_State.Prev.PivotDirection,
-            m_Tunables.PivotSpeed * Mathf.Deg2Rad * Time.deltaTime,
+            m_Tunables.PivotSpeed * Mathf.Deg2Rad * delta,
             Mathf.Infinity
         );
 
@@ -132,7 +134,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // calculate next velocity, decelerating towards zero to finish pivot
         var v0 = m_State.Prev.GroundVelocity;
-        var vd = Mathf.Min(v0.magnitude, m_Tunables.PivotDeceleration * Time.deltaTime) * v0.normalized;
+        var vd = Mathf.Min(v0.magnitude, m_Tunables.PivotDeceleration * delta) * v0.normalized;
 
         // update velocity
         m_State.Curr.Velocity -= vd;
@@ -148,19 +150,19 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- Floating --
-    CharacterPhase Floating => new CharacterPhase(
+    Phase Floating => new Phase(
         name: "Floating",
         update: Floating_Update
     );
 
-    void Floating_Update() {
+    void Floating_Update(float delta) {
         if (m_State.Prev.IsGrounded) {
             ChangeTo(Moving);
             return;
         }
 
         var v0 = m_State.Prev.PlanarVelocity;
-        var vd = m_Input.Move * m_Tunables.AerialDriftAcceleration * Time.deltaTime;
+        var vd = m_Input.Move * m_Tunables.AerialDriftAcceleration * delta;
         m_State.Curr.Velocity += vd;
     }
 
@@ -180,7 +182,8 @@ sealed class MovementSystem: CharacterSystem {
         Vector3 v0,
         Vector3 thrust,
         float friction,
-        float drag
+        float drag,
+        float delta
     ) {
         // calculate next velocity, integrating input & drag
         // vt = v0 + (acceleration - drag - friction) * t
@@ -192,7 +195,7 @@ sealed class MovementSystem: CharacterSystem {
         var deceleration = v0_dir * (friction + drag * v0_mag2);
 
         // calculate velocity change this frame (velocity delta)
-        var vd = (thrust - deceleration) * Time.deltaTime;
+        var vd = (thrust - deceleration) * delta;
 
         // split the velocity delta into tangent (colinear) and normal (turning)
         var vd_tan = Vector3.Project(vd, v0_dir);

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -114,7 +115,7 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private JumpTunables[] m_Jumps;
     public override JumpTunablesBase[] Jumps => m_Jumps;
 
-    [System.Serializable]
+    [Serializable]
     public class JumpTunables : JumpTunablesBase {
         [Tooltip("the number of times this jump can be executed; 0 = infinite")]
         [SerializeField] private uint m_Count = 1;
@@ -231,13 +232,13 @@ public sealed class CharacterTunables: CharacterTunablesBase {
         if (m_Jumps == null || m_Jumps.Length == 0) {
             m_MaxCoyoteFrames = 0;
         } else {
-            m_MaxCoyoteFrames = System.Math.Max(m_MaxCoyoteFrames, m_Jumps[0].MinJumpSquatFrames);
+            m_MaxCoyoteFrames = Math.Max(m_MaxCoyoteFrames, m_Jumps[0].MinJumpSquatFrames);
         }
     }
 
     // -- queries --
     public float TimeToPercentMaxSpeed(float pct) {
-        return -Mathf.Log(1.0f - pct, (float)System.Math.E) / Horizontal_Drag;
+        return -Mathf.Log(1.0f - pct, (float)Math.E) / Horizontal_Drag;
     }
 }
 
