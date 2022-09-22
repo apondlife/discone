@@ -6,11 +6,6 @@ using UnityEngine;
 
 /// a repository of characters
 public sealed class Characters: MonoBehaviour {
-    // -- config --
-    [Header("config")]
-    [Tooltip("the tag for characters")]
-    [SerializeField] string m_Tag;
-
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("when a character spawns")]

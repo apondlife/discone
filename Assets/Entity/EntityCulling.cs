@@ -1,7 +1,9 @@
+using System;
 using UnityAtoms;
 using UnityEngine;
 
 /// culls out-of-range entities, simulating only those near players
+[Obsolete("this is accomplished via OnlineInterest now")]
 sealed class EntityCulling: MonoBehaviour {
     // -- config --
     [Header("config")]

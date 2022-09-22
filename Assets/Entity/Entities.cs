@@ -4,6 +4,7 @@ using UnityEngine;
 /// the entities in the world
 [RequireComponent(typeof(Players))]
 [RequireComponent(typeof(Characters))]
+[RequireComponent(typeof(Flowers))]
 [RequireComponent(typeof(EntityCulling))]
 [RequireComponent(typeof(EntityPerception))]
 public sealed class Entities: MonoBehaviour {
@@ -26,6 +27,9 @@ public sealed class Entities: MonoBehaviour {
     /// the characters repo
     Characters m_Characters;
 
+    /// the flowers repo
+    Flowers m_Flowers;
+
     // -- lifecycle --
     void Awake() {
         // set props
@@ -33,6 +37,7 @@ public sealed class Entities: MonoBehaviour {
         m_Perception = GetComponent<EntityPerception>();
         m_Players = GetComponent<Players>();
         m_Characters = GetComponent<Characters>();
+        m_Flowers = GetComponent<Flowers>();
 
         // set instance
         m_Single.Value = this;
@@ -53,5 +58,10 @@ public sealed class Entities: MonoBehaviour {
     /// the characters repo
     public Characters Characters {
         get => m_Characters;
+    }
+
+    /// the flowers repo
+    public Flowers Flowers {
+        get => m_Flowers;
     }
 }

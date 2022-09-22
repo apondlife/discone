@@ -1,8 +1,9 @@
-using UnityEngine;
+using System;
 using ThirdPerson;
+using UnityEngine;
 
-// Dumb AI that runs in a circle
-[System.Serializable]
+// dumb ai that runs in a circle
+[Serializable]
 public class AiInputSource: CharacterInputSource {
     // -- fields --
     [Tooltip("the move direction")]
