@@ -9,3 +9,5 @@ what is projected
 > extending characterinputsource by making the frame type a generic
 
 > input frame has default values, is that bad?
+
+> look at online player line 305, there's a hot second when a character is not initial, is not driven, but belongs to an Online player

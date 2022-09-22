@@ -18,7 +18,7 @@ public sealed class Flowers: MonoBehaviour {
 
     // -- props --
     /// the list of all flowers
-    List<CharacterFlower> m_All;
+    List<CharacterFlower> m_All = new List<CharacterFlower>();
 
     /// a bag of subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
