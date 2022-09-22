@@ -2,10 +2,15 @@ using UnityEngine;
 using Mirror;
 using System.Collections.Generic;
 using ThirdPerson;
+using UnityAtoms;
 
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
 public class CharacterFlower: NetworkBehaviour {
+    [Header("published")]
+    [Tooltip("the event called when a flower gets planted")]
+    public CharacterFlowerEvent m_FlowerPlanted;
+
     // -- types --
     /// a flower's planting state
     enum Planting {
@@ -235,6 +240,9 @@ public class CharacterFlower: NetworkBehaviour {
 
         // and mark it as planted
         m_Planting = Planting.Planted;
+
+        // and let everyone know
+        m_FlowerPlanted.Raise(this);
     }
 
     // -- factories --

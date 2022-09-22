@@ -157,8 +157,11 @@ public class CharacterCheckpoint: NetworkBehaviour {
     [Tooltip("how long it takes to save")]
     [SerializeField] float m_SaveCastTime;
 
-    [Tooltip("how long it takes to grab a nearby save, if any")]
+    [Tooltip("how long it takes to grab a nearby checkpoint, if any")]
     [SerializeField] float m_GrabCastTime;
+
+    [Tooltip("how far from a checkpoint can you grab it")]
+    [SerializeField] float m_GrabRadius;
 
     [Tooltip("the time it takes to get to the half distance")]
     [SerializeField] float m_LoadCastMaxTime;
@@ -179,9 +182,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the prefab for the in-world checkpoint")]
-    [SerializeField] CharacterFlower m_FlowerPrefab;
-
     [Tooltip("the entities repos")]
     [SerializeField] EntitiesVariable m_Entities;
 
@@ -338,10 +338,10 @@ public class CharacterCheckpoint: NetworkBehaviour {
         // find the nearest flower, if any
         var flower = m_Entities.Value
             .Flowers
-            .FindClosest(m_PendingCheckpoint.Position);
+            .FindClosest(pos);
 
         // if we found one, grab it
-        if (flower != null) {
+        if (flower != null && Vector3.Distance(flower.transform.position, pos) < m_GrabRadius) {
             Debug.Log($"[checkpoint] found a flower to grab! {flower}");
             Server_GrabCheckpoint(flower);
         }

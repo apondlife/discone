@@ -163,6 +163,12 @@ public class OnlineInterest: InterestManagement {
             return true;
         }
 
+        // unless the player just spawned a character on the server
+        // in which case it's already set in the player, but not driven
+        if(player.Object.Character == character) {
+            return true;
+        }
+
         // if the player has no character, it might be looking for an initial one
         if (player.Object.Character == null) {
             return character.IsInitial;

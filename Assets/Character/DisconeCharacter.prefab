@@ -388,7 +388,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  m_SaveCastTime: 3
+  m_SaveCastTime: 4
+  m_GrabCastTime: 0.5
+  m_GrabRadius: 3
   m_LoadCastMaxTime: 30
   m_LoadCastPointTime: 1
   m_LoadCastPointDistance: 35
@@ -396,7 +398,7 @@ MonoBehaviour:
   m_GroundMask:
     serializedVersion: 2
     m_Bits: 385
-  m_FlowerPrefab: {fileID: 0}
+  m_Entities: {fileID: 11400000, guid: 8ad8e32d8125540e8b5040f0b6c0d78c, type: 2}
 --- !u!114 &315037361225936347
 MonoBehaviour:
   m_ObjectHideFlags: 0
