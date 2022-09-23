@@ -251,7 +251,13 @@ public sealed class WorldChunks: MonoBehaviour {
     }
 
     /// clear all editor chunks
+    [ContextMenu("Clear Chunks")]
     public void ClearEditorChunks() {
+        // unload all the chunks
+        foreach (var (coord, _) in m_Chunks) {
+            m_UnloadedChunk.Raise(coord);
+        }
+
         // reset state
         m_Chunks.Clear();
         m_Unloading.Clear();

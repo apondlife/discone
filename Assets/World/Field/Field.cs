@@ -178,7 +178,7 @@ public sealed class Field: MonoBehaviour {
     }
 
     /// clear all editor chunks
-    public void ClearEditorChunks() {
+    void ClearEditorChunks() {
         m_Chunks.Clear();
         m_ChunkPool.Clear();
 
