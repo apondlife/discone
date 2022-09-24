@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4883204704647461035}
   - component: {fileID: 2447665050777146628}
+  - component: {fileID: 9169416300587137802}
   m_Layer: 0
   m_Name: Debug
   m_TagString: EditorOnly
@@ -46,3 +47,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CharacterKey: 0
   m_Entites: {fileID: 11400000, guid: 8ad8e32d8125540e8b5040f0b6c0d78c, type: 2}
+--- !u!114 &9169416300587137802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1664509182698535071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77b3ad85de3ebcd4cac66b4281aa11fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Key: 49
+  Type: 0
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2447665050777146628}
+        m_TargetAssemblyTypeName: DebugOptions, Assembly-CSharp
+        m_MethodName: SpawnCharacter
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

@@ -35,7 +35,7 @@ public class DebugOptions: MonoBehaviour {
 
     // -- commands --
     [ContextMenu("Spawn Character")]
-    void SpawnCharacter() {
+    public void SpawnCharacter() {
         // find the current player
         var player = m_Entites.Value
             .Players
