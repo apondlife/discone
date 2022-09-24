@@ -70,13 +70,14 @@ public sealed class Store: ScriptableObject {
 
     /// sync the in-memory player record
     public void SyncPlayer() {
+        // find the player's current character
         var character = FindPlayerCharacter();
         if (character == null) {
             Debug.LogError("[store] found no player character to sync!");
             return;
         }
 
-        // update player rec
+        // and update the record
         m_Player.Character = character.IntoRecord();
         Debug.Log($"[store] updated player record {m_Player}");
     }

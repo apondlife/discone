@@ -40,17 +40,14 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     [SerializeField] OnlinePlayerEvent m_CurrentStarted;
 
     [Tooltip("when a player switches character")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_SwitchedCharacter")]
     [SerializeField] DisconeCharacterPairEvent m_CharacterSwitched;
 
     // -- refs --
     [Header("refs")]
     [Tooltip("the current player")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_CurrentPlayer")]
     [SerializeField] DisconePlayerVariable m_LocalPlayer;
 
     [Tooltip("the local player's character")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_CurrentCharacter")]
     [SerializeField] DisconeCharacterVariable m_LocalCharacter;
 
     [Tooltip("is this the hosts player")]
@@ -117,13 +114,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             m_Subscriptions
                 .Add(m_Store.LoadFinished, OnLoadFinished);
         } else {
-            var character = m_Store.PlayerCharacter;
-            if (character != null) {
-                Command_DriveSpawnedCharacter(character);
-            } else {
-                Debug.LogError($"[player] local player has no character record");
-                Command_DriveInitialCharacter();
-            }
+            OnLoadFinished();
         }
 
         // dispatch events
@@ -131,6 +122,46 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     // -- commands --
+    /// when the requests to instantiate its previous character
+    [Command]
+    public void Command_DriveSpawnedCharacter(CharacterRec character) {
+        var prefab = CharacterDefs.Instance.Find(character.Key).Character;
+
+        // TODO: character spawns exactly in the ground, and because of chunk
+        // delay it ends up falling through the ground
+        var offset = 1.0f;
+        var dstCharacter = Instantiate(
+            prefab,
+            character.Pos + Vector3.up * offset,
+            character.Rot
+        );
+
+        // we need to set the character here before calling Spawn because Spawn
+        // calls the interest management and that uses the player position
+        // (which is dependent on the characters).
+        // NOTE/TODO: if this weren't true, then we could use
+        // Server_DriveCharacter instead of Server_SwitchCharacter and have
+        // fewer code paths
+        var src = m_Character?.gameObject;
+        m_Character = dstCharacter;
+
+        #if UNITY_EDITOR
+        dstCharacter.name = $"{character.Key.Name()} <spawned@{connectionToClient.connectionId}>";
+        #endif
+
+        // spawn the character
+        var dst = dstCharacter.gameObject;
+        NetworkServer.Spawn(dst);
+
+        // notify all clients of the switch
+        Server_SwitchCharacter(src, dst);
+
+        // place the character's flower, if any
+        if (character.Flower != null) {
+            dstCharacter.Checkpoint.Server_CreateCheckpoint(character.Flower);
+        }
+    }
+
     /// drive the first available character in the world
     [Command]
     void Command_DriveInitialCharacter() {
@@ -159,7 +190,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // don't carry over destroyed characters from scene change
-        var srcChar = m_LocalCharacter.Value;
+        var srcChar = m_Character;
         if (srcChar == null) {
             srcChar = null;
         }
@@ -274,53 +305,22 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     // this only happens to the host player (single player)
     void OnLoadFinished() {
+        // get the stored charater
         var character = m_Store.PlayerCharacter;
+
+        // spawn the character, if any
         if (character != null) {
-            Debug.Log($"[local player] character found in store: {character.Key.Name()} at {character.Pos}");
-            // Instantiate Character...
+            Debug.Log($"[player] spawn character {character.Key.Name()} @ {character.Pos}");
             Command_DriveSpawnedCharacter(character);
         }
-        // if there's no character record, drive an initial character
+        // if there's no record, drive an initial character
         else {
+            Debug.Log($"[player] drive random character");
             Command_DriveInitialCharacter();
         }
     }
 
-    /// c/server
-    /// when the requests to instantiate its previous character
-    [Command]
-    public void Command_DriveSpawnedCharacter(CharacterRec character) {
-        var prefab = CharacterDefs.Instance.Find(character.Key).Character;
-
-        // TODO: character spawns exactly in the ground, and because of chunk
-        // delay it ends up falling through the ground
-        var offset = 1.0f;
-        var dstCharacter = Instantiate(
-            prefab,
-            character.Pos + Vector3.up * offset,
-            character.Rot
-        );
-
-        // we need to set the character here before calling Spawn because Spawn
-        // calls the interest management and that uses the player position
-        // (which is dependent on the characters)
-        m_Character = dstCharacter;
-
-        #if UNITY_EDITOR
-        dstCharacter.name = $"{character.Key.Name()}_remote_{connectionToClient.connectionId}";
-        #endif
-
-        // spawn the character
-        var dst = dstCharacter.gameObject;
-        NetworkServer.Spawn(dst);
-
-        // notify all clients of the switch
-        Server_SwitchCharacter(null, dst);
-
-        // place the characters flower
-        dstCharacter.Checkpoint.Server_CreateCheckpoint(character.Flower);
-    }
-
+    // -- e/server
     /// when the player disconnects on the server
     [Server]
     public void Server_OnDisconnect() {
