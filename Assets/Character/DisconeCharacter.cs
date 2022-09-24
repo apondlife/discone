@@ -50,7 +50,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     [Tooltip("how long does the character take to interpolate to the current received state")]
     [SerializeField] float m_InterpolationTime = 0.2f;
 
-
     [Header("published")]
     [Tooltip("the character spawning event")]
     [SerializeField] DisconeCharacterEvent m_Spawned;
@@ -128,16 +127,14 @@ public sealed class DisconeCharacter: NetworkBehaviour {
             var start = m_Character.State.Curr.Copy();
             var target = m_RemoteState.Copy();
             var delta = (float)(NetworkTime.time - m_LastSync);
-
-
-            var k = Mathf.Clamp01(delta/m_InterpolationTime);
-            var interpolate = CharacterState.Frame.Interpolate(start, target, k);
+            var k = Mathf.Clamp01(delta / m_InterpolationTime);
 
             // TODO: attempt to also extrapolate...
             // target.Velocity += m_CurrentState.Acceleration * delta;
             // target.Position += target.Velocity * delta;
 
-            m_Character.ForceState(interpolate);
+            var state = CharacterState.Frame.Interpolate(start, target, k);
+            m_Character.ForceState(state);
         }
     }
 

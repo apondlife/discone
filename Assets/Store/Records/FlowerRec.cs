@@ -23,11 +23,9 @@ public record FlowerRec {
     public FlowerRec(
         CharacterKey key,
         Vector3 pos,
-        Quaternion rot
+        Vector3 fwd
     ) {
         // get the forward vector in the xz-plane
-        var fwd = rot * Vector3.forward;
-
         #if UNITY_EDITOR
         if (fwd != Vector3.ProjectOnPlane(fwd, Vector3.up)) {
             Debug.LogWarning($"[flower] constructed a flower w/ a rotation not in the xz-plane!");

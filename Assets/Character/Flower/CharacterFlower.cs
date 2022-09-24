@@ -59,6 +59,9 @@ public class CharacterFlower: NetworkBehaviour {
     /// the assosciated character's key
     CharacterKey m_Key;
 
+    /// the checkpoint this flower represents
+    Checkpoint m_Checkpoint;
+
     /// the checkpoint position
     Vector3 m_Position;
 
@@ -126,14 +129,9 @@ public class CharacterFlower: NetworkBehaviour {
         get => m_Key;
     }
 
-    /// the flower's position
-    public Vector3 Position {
-        get => m_Position;
-    }
-
-    /// the flower's rotation
-    public Quaternion Rotation {
-        get => m_Rotation;
+    /// the flower's checkpoint
+    public Checkpoint Checkpoint {
+        get => m_Checkpoint;
     }
 
     /// if this flower is free
@@ -166,7 +164,7 @@ public class CharacterFlower: NetworkBehaviour {
     /// spawn a flower from a record
     [Server]
     public static CharacterFlower Server_Spawn(FlowerRec rec) {
-        return Server_Spawn(rec.Key, rec.Pos, rec.Rot);
+        return Server_Spawn(rec.Key, rec.Pos, rec.Fwd);
     }
 
     /// spawn a flower from key and transform
@@ -174,7 +172,7 @@ public class CharacterFlower: NetworkBehaviour {
     public static CharacterFlower Server_Spawn(
         CharacterKey key,
         Vector3 pos,
-        Quaternion rot
+        Vector3 fwd
     ) {
         var prefab = CharacterDefs.Instance.Find(key)?.Flower;
         if (prefab == null) {
@@ -195,8 +193,7 @@ public class CharacterFlower: NetworkBehaviour {
         // store checkpoint info
         // TODO: just store Checkpoint
         flower.m_Key = key;
-        flower.m_Position = pos;
-        flower.m_Rotation = rot;
+        flower.m_Checkpoint = new Checkpoint(pos, fwd);
 
         // set initial state
         flower.m_IsFree = true;
@@ -218,9 +215,8 @@ public class CharacterFlower: NetworkBehaviour {
             return;
         }
 
-        var fwd = m_Rotation * Vector3.forward;
         var hits = Physics.RaycastNonAlloc(
-            m_Position + fwd * k_ForwardOffset + Vector3.up * k_UpOffset,
+            m_Position + m_Checkpoint.Forward * k_ForwardOffset + Vector3.up * k_UpOffset,
             Vector3.down,
             k_Hits,
             k_RaycastLen,
@@ -253,8 +249,8 @@ public class CharacterFlower: NetworkBehaviour {
     /// create state frame from this flower
     public CharacterState.Frame IntoState() {
         return new CharacterState.Frame(
-            m_Position,
-            m_Rotation * Vector3.forward
+            m_Checkpoint.Position,
+            m_Checkpoint.Forward
         );
     }
 
@@ -262,8 +258,8 @@ public class CharacterFlower: NetworkBehaviour {
     public FlowerRec IntoRecord() {
         return new FlowerRec(
             Key,
-            m_Position,
-            m_Rotation
+            m_Checkpoint.Position,
+            m_Checkpoint.Forward
         );
     }
 }
