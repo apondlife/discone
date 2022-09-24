@@ -3,8 +3,9 @@ using UnityEngine;
 namespace ThirdPerson {
 
 public static class LayerMaskExt {
-    public static bool Contains(this LayerMask layerMask, int layer)
-        => layerMask == (layerMask | (1 << layer));
+    public static bool Contains(this LayerMask mask, int layer) {
+        return (mask & (1 << layer)) != 0;
+    }
 }
 
 }

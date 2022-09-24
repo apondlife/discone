@@ -7,10 +7,6 @@ using UnityAtoms;
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
 public class CharacterFlower: NetworkBehaviour {
-    [Header("published")]
-    [Tooltip("the event called when a flower gets planted")]
-    public CharacterFlowerEvent m_FlowerPlanted;
-
     // -- types --
     /// a flower's planting state
     enum Planting {
@@ -30,17 +26,13 @@ public class CharacterFlower: NetworkBehaviour {
     const float k_RaycastLen = 5f;
 
     /// pre-allocated buffer for ground raycasts
-    static RaycastHit[] k_Hits = new RaycastHit[1];
+    static readonly RaycastHit[] k_Hits = new RaycastHit[1];
+
+    /// the cache of per-texture materials
+    static readonly Dictionary<string, Material> k_MaterialCache = new Dictionary<string, Material>();
 
     /// pre-allocated buffer for ground raycasts
-    static LayerMask k_GroundMask =>
-        LayerMask.NameToLayer("Default")
-        | LayerMask.NameToLayer("Ground")
-        | LayerMask.NameToLayer("Indoor");
-
-    // -- statics --
-    /// the cache of per-texture materials
-    static Dictionary<string, Material> s_MaterialCache = new Dictionary<string, Material>();
+    static LayerMask s_GroundMask;
 
     // -- config --
     [Header("config")]
@@ -53,8 +45,10 @@ public class CharacterFlower: NetworkBehaviour {
     [Tooltip("the saturation of the released flower")]
     [SerializeField] float m_SpawnTime = 0.5f;
 
-    [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
-    bool m_IsFree = true;
+    // -- published --
+    [Header("published")]
+    [Tooltip("the event called when a flower gets planted")]
+    [SerializeField] CharacterFlowerEvent m_FlowerPlanted;
 
     // -- refs --
     [Header("refs")]
@@ -74,10 +68,20 @@ public class CharacterFlower: NetworkBehaviour {
     /// if the flower has been planted
     Planting m_Planting = Planting.NotReady;
 
+    /// if no player is using this flower
+    [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
+    bool m_IsFree = true;
+
     // -- lifecycle
     void Awake() {
         m_Renderer.material = FindMaterial();
 
+        // store statics
+        if (s_GroundMask == 0) {
+            s_GroundMask = LayerExt.MaskFromNames("Default", "Ground", "Indoor");
+        }
+
+        // debug helpers
         #if UNITY_EDITOR
         Dbg.AddToParent("Flowers", this);
         #endif
@@ -146,13 +150,13 @@ public class CharacterFlower: NetworkBehaviour {
         var key = $"{m_Texture.name}/{saturation}";
 
         // create instanced material for the texture if not cached
-        if (!s_MaterialCache.TryGetValue(key, out var material)) {
+        if (!k_MaterialCache.TryGetValue(key, out var material)) {
             material = Instantiate(m_Renderer.sharedMaterial);
             material.mainTexture = m_Texture;
             material.SetFloat("_Saturation", saturation);
             material.name = key;
 
-            s_MaterialCache.Add(key, material);
+            k_MaterialCache.Add(key, material);
         }
 
         return material;
@@ -220,7 +224,7 @@ public class CharacterFlower: NetworkBehaviour {
             Vector3.down,
             k_Hits,
             k_RaycastLen,
-            k_GroundMask,
+            s_GroundMask,
             QueryTriggerInteraction.Ignore
         );
 
