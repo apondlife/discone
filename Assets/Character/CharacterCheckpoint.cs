@@ -7,153 +7,18 @@ using ThirdPerson;
 /// the world, like planting a flag.
 [RequireComponent(typeof(DisconeCharacter))]
 public class CharacterCheckpoint: NetworkBehaviour {
-    /// the character's state in the save process
-    /// not => smelling => (grab) planting => (plant) done
-    sealed class SaveSystem: ThirdPerson.System {
-        public class Tunables {
-            public float SmellDuration;
-            public float PlantDuration;
-        }
-
-        public class SaveInput {
-            public bool IsSaving;
-        }
-
-        // -- deps --
-        /// the tunables
-        Tunables m_Tunables;
-
-        /// the checkpoint
-        CharacterCheckpoint m_Checkpoint;
-
-        // -- props --
-        /// the input state
-        SaveInput m_Input = new SaveInput();
-
-        /// the character's state
-        CharacterState m_State;
-
-        /// the save elapsed time
-        float m_SaveElapsed;
-
-        // -- lifetime --
-        public SaveSystem(
-            Tunables tunables,
-            CharacterState state,
-            CharacterCheckpoint checkpoint
-        ): base() {
-            m_Tunables = tunables;
-            m_State = state;
-            m_Checkpoint = checkpoint;
-        }
-
-        // -- queries --
-        /// the input state
-        public SaveInput Input {
-            get => m_Input;
-        }
-
-        // -- phases --
-        protected override Phase InitInitialPhase() {
-            return NotSaving;
-        }
-
-        // -- NotSaving --
-        Phase NotSaving => new Phase(
-            name: "NotSaving",
-            enter: NotSaving_Enter,
-            update: NotSaving_Update,
-            exit: NotSaving_Exit
-        );
-
-        void NotSaving_Enter() {
-            m_Checkpoint.ResetSave();
-            m_SaveElapsed = 0.0f;
-        }
-
-        void NotSaving_Update(float delta) {
-            if (m_Input.IsSaving) {
-                ChangeTo(Smelling);
-            }
-        }
-
-        void NotSaving_Exit() {
-            m_Checkpoint.InitSave();
-        }
-
-        // -- Smelling --
-        Phase Smelling => new Phase(
-            name: "Smelling",
-            update: Smelling_Update
-        );
-
-        void Smelling_Update(float delta) {
-            Active_Update(delta);
-
-            // start planting once you finish smelling around for a flower
-            if (m_SaveElapsed > m_Tunables.SmellDuration) {
-                ChangeTo(Planting);
-            }
-        }
-
-        // -- Planting --
-        Phase Planting => new Phase(
-            name: "Planting",
-            enter: Planting_Enter,
-            update: Planting_Update
-        );
-
-        void Planting_Enter() {
-            m_Checkpoint.FinishGrab();
-        }
-
-        void Planting_Update(float delta) {
-            Active_Update(delta);
-
-            // switch to simply existing after planting
-            if (m_SaveElapsed > m_Tunables.PlantDuration) {
-                ChangeTo(Being);
-            }
-        }
-
-        // -- Being --
-        Phase Being => new Phase(
-            name: "Being",
-            enter: Being_Enter,
-            update: Being_Update
-        );
-
-        void Being_Enter() {
-            m_Checkpoint.FinishSave();
-        }
-
-        void Being_Update(float delta) {
-            Active_Update(delta);
-        }
-
-        // -- shared --
-        // the base update when attempting to save
-        void Active_Update(float delta) {
-            m_SaveElapsed += delta;
-
-            if (!m_Input.IsSaving || !m_State.IsGrounded || !m_State.IsIdle) {
-                ChangeTo(NotSaving);
-            }
-        }
-
-        // -- queries --
-        /// TODO: this should be written to some external state structure
-        public bool IsSaving {
-            get => m_SaveElapsed > 0.0f;
-        }
-    }
-
     // -- constants --
     /// a sentinel for inactive casts
     private const float k_CastInactive = -1.0f;
 
     // -- fields --
     [Header("tuning")]
+    [Tooltip("the tunables for creating a checkpoint")]
+    [SerializeField] SaveCheckpointSystem.Tunables m_SaveCheckpointTunables;
+
+    [Tooltip("the tunabled for loading from a checkpoint")]
+    [SerializeField] LoadCheckpointSystem.Tunables m_LoadCheckpointTunables;
+
     [Tooltip("how long it takes to save")]
     [SerializeField] float m_SaveCastTime;
 
@@ -166,7 +31,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
     [Tooltip("the time it takes to get to the half distance")]
     [SerializeField] float m_LoadCastMaxTime;
 
-    [Tooltip("the time it takes to the load to travel the point distance")]
+    [Tooltip("the time it takes for the load to travel the point distance")]
     [SerializeField] float m_LoadCastPointTime;
 
     [Tooltip("the distance the load travels by the point time")]
@@ -174,11 +39,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     [Tooltip("how faster cancelling a load is than the load itself")]
     [SerializeField] float m_LoadCancelMultiplier = 1;
-
-    // -- config --
-    [Header("config")]
-    [Tooltip("the layer mask for the ground")]
-    [SerializeField] LayerMask m_GroundMask;
 
     // -- refs --
     [Header("refs")]
@@ -194,10 +54,13 @@ public class CharacterCheckpoint: NetworkBehaviour {
     CharacterFlower m_Flower;
 
     /// a checkpoint in the process of being created
-    PendingCheckpoint m_PendingCheckpoint;
+    Checkpoint m_PendingCheckpoint;
 
     /// if the character is trying to load
     bool m_IsLoadDown;
+
+    /// if the checkpoint is saving
+    bool m_IsSaving;
 
     /// the current save cast time
     float m_LoadElapsed = k_CastInactive;
@@ -208,8 +71,18 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// the state when the load starts
     CharacterState.Frame m_LoadStartState;
 
-    /// the system that controls the checkpoint
-    SaveSystem m_SaveSystem;
+    /// checkpoint-specific character systems
+    ThirdPerson.System[] m_Systems;
+
+    private void OnValidate() {
+        m_SaveCheckpointTunables.SmellDuration = m_GrabCastTime;
+        m_SaveCheckpointTunables.PlantDuration = m_SaveCastTime;
+
+        m_LoadCheckpointTunables.LoadCastMaxTime = m_LoadCastMaxTime;
+        m_LoadCheckpointTunables.LoadCastPointTime = m_LoadCastPointTime;
+        m_LoadCheckpointTunables.LoadCastPointDistance = m_LoadCastPointDistance;
+        m_LoadCheckpointTunables.LoadCancelMultiplier = m_LoadCancelMultiplier;
+    }
 
     // -- lifecycle --
     void Awake() {
@@ -218,19 +91,23 @@ public class CharacterCheckpoint: NetworkBehaviour {
     }
 
     void Start() {
-        // construct save system
-        var tunables = new SaveSystem.Tunables() {
-            SmellDuration = m_GrabCastTime,
-            PlantDuration = m_SaveCastTime,
+        // init systems
+        m_Systems = new ThirdPerson.System[] {
+            new SaveCheckpointSystem(
+                m_SaveCheckpointTunables,
+                m_Container.Character.State,
+                m_Container.Checkpoint
+            ),
+            new LoadCheckpointSystem(
+                m_LoadCheckpointTunables,
+                m_Container.Character.State,
+                m_Container.Checkpoint
+            ),
         };
 
-        m_SaveSystem = new SaveSystem(
-            tunables,
-            Character.State,
-            this
-        );
-
-        m_SaveSystem.Init();
+        foreach (var system in m_Systems) {
+            system.Init();
+        }
     }
 
     void Update() {
@@ -239,41 +116,9 @@ public class CharacterCheckpoint: NetworkBehaviour {
             return;
         }
 
-        // update the save system
-        m_SaveSystem.Update(Time.deltaTime);
-
-        // if loading, aggregate time
-        if (m_IsLoadDown) {
-            m_LoadElapsed += Time.deltaTime;
-        } else if (m_LoadElapsed >= 0.0f) {
-            m_LoadElapsed -= Mathf.Max(0, Time.deltaTime * m_LoadCancelMultiplier);
-        }
-
-        // if we are currently loading
-        if (m_LoadCastTime != k_CastInactive) {
-            // if we returned to the start point, stop
-            if (m_LoadElapsed < 0.0f) {
-                CancelLoad();
-            }
-            // otherwise, interpoloate
-            else {
-                // interpolate position during load
-                var t = transform;
-                var c = m_Flower;
-                var pct = Mathf.Clamp01(m_LoadElapsed / m_LoadCastTime);
-                var k = pct * pct;
-                var pos = Vector3.Lerp(m_LoadStartState.Position, c.Position, k);
-
-                var rot = Quaternion.Slerp(m_LoadStartState.LookRotation, c.Rotation, k);
-                var fwd = rot * Vector3.forward;
-                var state = new ThirdPerson.CharacterState.Frame(pos, fwd);
-                Character.ForceState(state);
-
-                // finish the load once elapsed
-                if (m_LoadElapsed > m_LoadCastTime) {
-                    FinishLoad();
-                }
-            }
+        // update the systems
+        foreach (var system in m_Systems) {
+            system.Update(Time.deltaTime);
         }
     }
 
@@ -288,41 +133,37 @@ public class CharacterCheckpoint: NetworkBehaviour {
     // -- commands --
     // -- c/save
     /// start saving a checkpoint
+    [System.Obsolete]
     public void StartSave() {
-        m_SaveSystem.Input.IsSaving = true;
+        (m_Systems[0] as SaveCheckpointSystem)!.Input.IsSaving = true;
    }
 
     /// stop a save if active
+    [System.Obsolete]
     public void StopSave() {
-        m_SaveSystem.Input.IsSaving = false;
+        (m_Systems[0] as SaveCheckpointSystem)!.Input.IsSaving = false;
     }
 
-    /// start a new save
-    void InitSave() {
-        m_PendingCheckpoint = PendingCheckpoint.FromState(Character.CurrentState);
+    // -- c/save
+    /// if the character is saving
+    public bool IsSaving {
+        get => m_IsSaving;
+        set => m_IsSaving = value;
     }
 
-    /// finish the grab
-    void FinishGrab() {
+    /// grab the nearby checkpoint
+    public void GrabCheckpoint() {
         // grab an existing flower
         Command_GrabCheckpoint(Character.State.Position);
     }
 
-    /// finish the new save
-    void FinishSave() {
+    /// create the checkpoint
+    public void CreateCheckpoint(Checkpoint checkpoint) {
         // spawn a new flower
         Command_CreateCheckpoint(
             m_PendingCheckpoint.Position,
             m_PendingCheckpoint.Forward
         );
-
-        // reset state
-        ResetSave();
-    }
-
-    /// reset save to initial state, if necessary
-    void ResetSave() {
-        m_PendingCheckpoint = null;
     }
 
     // -- c/s/server
@@ -382,66 +223,19 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// -- c/load
     /// restore to the current checkpoint, if any
+    [System.Obsolete]
     public void StartLoad() {
-        // must have a checkpoint
-        if (m_Flower == null) {
+        if (m_Flower != null) {
             return;
         }
 
-        // track input
-        m_IsLoadDown = true;
-
-        // if we're already loading, don't initializ
-        if (m_LoadCastMaxTime < 0.0f) {
-            return;
-        }
-
-        // get distance to current checkpoint
-        var distance = Vector3.Distance(
-            Character.CurrentState.Position,
-            m_Flower.Position
-        );
-
-        // calculate cast time
-        var f = m_LoadCastPointTime / m_LoadCastMaxTime;
-        var d = m_LoadCastPointDistance;
-        var k = f / (d * (1 - f));
-        m_LoadCastTime = m_LoadCastMaxTime * (1 - 1 / (k * distance + 1));
-
-        // pause the character
-        Character.Pause();
-
-        // and start load
-        m_LoadElapsed = 0.0f;
-        m_LoadStartState = Character.CurrentState;
+        (m_Systems[1] as SaveCheckpointSystem)!.Input.IsSaving = true;
     }
 
     /// cancel a load if active
+    [System.Obsolete]
     public void StopLoad() {
-        m_IsLoadDown = false;
-    }
-
-    /// restore to the state
-    void FinishLoad() {
-        Character.ForceState(m_Flower.IntoState());
-        ResetLoad();
-    }
-
-    // stop loading wherever the character is
-    void CancelLoad() {
-        Character.ForceState(m_LoadStartState);
-        ResetLoad();
-    }
-
-    // reset loading state
-    void ResetLoad() {
-        // reset state
-        m_IsLoadDown = false;
-        m_LoadElapsed = k_CastInactive;
-        m_LoadCastTime = k_CastInactive;
-
-        // resume simulation
-        Character.Unpause();
+        (m_Systems[1] as SaveCheckpointSystem)!.Input.IsSaving = false;
     }
 
     // -- events --
@@ -464,49 +258,22 @@ public class CharacterCheckpoint: NetworkBehaviour {
             // if this character has no checkpoints yet, spawn a new one
             // TODO: try sniffing first,
             // TODO: maybesniff move to "bot" character behaviour instead of here
-            var checkpoint = PendingCheckpoint.FromState(Character.CurrentState);
+            var checkpoint = Checkpoint.FromState(Character.CurrentState);
             Server_CreateCheckpoint(checkpoint.Position, checkpoint.Forward);
         });
     }
 
     // -- queries --
-    /// if the character is currently saving
     public CharacterFlower Flower {
         get => m_Flower;
     }
 
-    public bool IsSaving {
-        get => m_SaveSystem.IsSaving;
+    public Checkpoint Checkpoint {
+        get => m_Flower.Checkpoint;
     }
 
-    ThirdPerson.Character Character {
+    /// a reference to the character
+    public ThirdPerson.Character Character {
         get => m_Container.Character;
-    }
-
-    // -- types --
-    /// a checkpoint in the process of being created
-    public record PendingCheckpoint {
-        // -- props --
-        /// the position
-        public readonly Vector3 Position;
-
-        /// the character facing
-        public readonly Vector3 Forward;
-
-        // -- lifetime --
-        /// create a pending checkpoint
-        public PendingCheckpoint(Vector3 position, Vector3 forward) {
-            Position = position;
-            Forward = forward;
-        }
-
-        // -- factories --
-        /// create checkpoint from the current state frame
-        public static PendingCheckpoint FromState(CharacterState.Frame frame) {
-            return new PendingCheckpoint(
-                frame.Position,
-                frame.Forward
-            );
-        }
     }
 }

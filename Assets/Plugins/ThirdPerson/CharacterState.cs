@@ -188,6 +188,10 @@ public sealed partial class CharacterState {
         }
 
         // -- utilities --
+        public Frame InterpolateTo(Frame end, float k) {
+            return Frame.Interpolate(this, end, k);
+        }
+
         public static Frame Interpolate(Frame start, Frame end, float k) {
             k = Mathf.Clamp01(k);
 

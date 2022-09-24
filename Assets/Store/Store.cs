@@ -51,9 +51,11 @@ public sealed class Store: ScriptableObject {
         // grab player flower
         var pf = FindPlayerCharacter()?.Flower;
 
-        // don't add duplicate flowers
+        // don't add flowers in the same position
         var memo = new HashSet<Vector3>();
-        memo.Add(pf.Position);
+
+        // starting with the player's flower
+        memo.Add(pf.IntoRecord().P);
 
         // generate records for each unique flower
         // TODO: flower repo
