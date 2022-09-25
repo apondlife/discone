@@ -30,8 +30,12 @@ public class CharacterCheckpoint: NetworkBehaviour {
     DisconeCharacter m_Container;
 
     /// the flower at the current checkpoint, if any
-    [SyncVar]
+    [SyncVar(hook = nameof(Client_OnFlowerChanged))]
     CharacterFlower m_Flower;
+
+    void Client_OnFlowerChanged(CharacterFlower prev, CharacterFlower next) {
+        Debug.Log($"flower changed from {prev} to {next}");
+    }
 
     /// if the checkpoint is saving
     bool m_IsSaving;
