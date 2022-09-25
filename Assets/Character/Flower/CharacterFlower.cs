@@ -164,7 +164,11 @@ public class CharacterFlower: NetworkBehaviour {
     /// spawn a flower from a record
     [Server]
     public static CharacterFlower Server_Spawn(FlowerRec rec) {
-        return Server_Spawn(rec.Key, rec.Pos, rec.Fwd);
+        return Server_Spawn(
+            rec.Key,
+            rec.Pos,
+            rec.Fwd
+        );
     }
 
     /// spawn a flower from key and transform
@@ -248,10 +252,7 @@ public class CharacterFlower: NetworkBehaviour {
     // -- factories --
     /// create state frame from this flower
     public CharacterState.Frame IntoState() {
-        return new CharacterState.Frame(
-            m_Checkpoint.Position,
-            m_Checkpoint.Forward
-        );
+        return m_Checkpoint.IntoState();
     }
 
     /// construct a record from this flower

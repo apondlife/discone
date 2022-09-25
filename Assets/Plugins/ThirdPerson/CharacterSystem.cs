@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace ThirdPerson {
 
@@ -37,11 +36,10 @@ abstract class CharacterSystem: System {
 
     /// initialize this system with character data
     public void Init(CharacterData d) {
+        base.Init();
+
         // set props
         m_Data = d;
-
-        // run base init
-        Init();
     }
 }
 

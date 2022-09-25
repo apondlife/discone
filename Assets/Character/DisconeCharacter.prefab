@@ -395,9 +395,22 @@ MonoBehaviour:
   m_LoadCastPointTime: 1
   m_LoadCastPointDistance: 35
   m_LoadCancelMultiplier: 1
-  m_GroundMask:
-    serializedVersion: 2
-    m_Bits: 385
+  m_Save:
+    m_Phase:
+      Name: 
+    m_IsLogging: 0
+    m_Tunables:
+      SmellDuration: 0.5
+      PlantDuration: 4
+  m_Load:
+    m_Phase:
+      Name: 
+    m_IsLogging: 0
+    m_Tunables:
+      LoadCastMaxTime: 30
+      LoadCastPointTime: 1
+      LoadCastPointDistance: 35
+      LoadCancelMultiplier: 1
   m_Entities: {fileID: 11400000, guid: 8ad8e32d8125540e8b5040f0b6c0d78c, type: 2}
 --- !u!114 &315037361225936347
 MonoBehaviour:

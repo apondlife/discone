@@ -12,3 +12,5 @@ what is projected
 > extending characterinputsource by making the frame type a generic
 > input frame has default values, is that bad?
 > LoadSystem in character Checkpoint. BURN THE CHECKPOINT!!!!
+
+> do we have 2 different inputs for crouch and save?

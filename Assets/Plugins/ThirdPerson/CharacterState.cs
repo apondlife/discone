@@ -187,25 +187,35 @@ public sealed partial class CharacterState {
             return copy;
         }
 
-        // -- utilities --
-        public Frame InterpolateTo(Frame end, float k) {
-            return Frame.Interpolate(this, end, k);
+        // -- factories --
+        /// interpolate a src and dst frame by some interpolant k
+        public static Frame Interpolate(
+            Frame start,
+            Frame end,
+            float k
+        ) {
+            var res = end.Copy();
+            Interpolate(start, end, ref res, k);
+            return res;
         }
 
-        public static Frame Interpolate(Frame start, Frame end, float k) {
+        /// interpolate a src and dst frame into a result frame by some interpolant k
+        [Obsolete("not osbolete, but don't call this before making sure you copied the Frame data the interpolation ends on")]
+        public static void Interpolate(
+            Frame start,
+            Frame end,
+            ref Frame res,
+            float k
+        ) {
             k = Mathf.Clamp01(k);
 
             // by default, the values are just taken from the end
             // TODO: should bools be doing something different? past 50%?
-            var interpolate = end;
-
-            interpolate.Position = Vector3.Lerp(start.Position, end.Position, k);
-            interpolate.Velocity = Vector3.Lerp(start.Velocity, end.Velocity, k);
-            interpolate.Acceleration = Vector3.Lerp(start.Acceleration, end.Acceleration, k);
-            interpolate.Forward = Vector3.Slerp(start.Forward, end.Forward, k);
-            interpolate.Tilt = Quaternion.Slerp(start.Tilt, end.Tilt, k);
-
-            return interpolate;
+            res.Position = Vector3.Lerp(start.Position, end.Position, k);
+            res.Velocity = Vector3.Lerp(start.Velocity, end.Velocity, k);
+            res.Acceleration = Vector3.Lerp(start.Acceleration, end.Acceleration, k);
+            res.Forward = Vector3.Slerp(start.Forward, end.Forward, k);
+            res.Tilt = Quaternion.Slerp(start.Tilt, end.Tilt, k);
         }
 
     }

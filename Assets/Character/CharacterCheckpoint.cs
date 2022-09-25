@@ -7,38 +7,13 @@ using ThirdPerson;
 /// the world, like planting a flag.
 [RequireComponent(typeof(DisconeCharacter))]
 public class CharacterCheckpoint: NetworkBehaviour {
-    // -- constants --
-    /// a sentinel for inactive casts
-    private const float k_CastInactive = -1.0f;
+    // -- systems --
+    [Header("systems")]
+    [Tooltip("the save system")]
+    [SerializeField] SaveCheckpointSystem m_Save;
 
-    // -- fields --
-    [Header("tuning")]
-    [Tooltip("the tunables for creating a checkpoint")]
-    [SerializeField] SaveCheckpointSystem.Tunables m_SaveCheckpointTunables;
-
-    [Tooltip("the tunabled for loading from a checkpoint")]
-    [SerializeField] LoadCheckpointSystem.Tunables m_LoadCheckpointTunables;
-
-    [Tooltip("how long it takes to save")]
-    [SerializeField] float m_SaveCastTime;
-
-    [Tooltip("how long it takes to grab a nearby checkpoint, if any")]
-    [SerializeField] float m_GrabCastTime;
-
-    [Tooltip("how far from a checkpoint can you grab it")]
-    [SerializeField] float m_GrabRadius;
-
-    [Tooltip("the time it takes to get to the half distance")]
-    [SerializeField] float m_LoadCastMaxTime;
-
-    [Tooltip("the time it takes for the load to travel the point distance")]
-    [SerializeField] float m_LoadCastPointTime;
-
-    [Tooltip("the distance the load travels by the point time")]
-    [SerializeField] float m_LoadCastPointDistance;
-
-    [Tooltip("how faster cancelling a load is than the load itself")]
-    [SerializeField] float m_LoadCancelMultiplier = 1;
+    [Tooltip("the load system")]
+    [SerializeField] LoadCheckpointSystem m_Load;
 
     // -- refs --
     [Header("refs")]
@@ -72,17 +47,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
     CharacterState.Frame m_LoadStartState;
 
     /// checkpoint-specific character systems
-    ThirdPerson.System[] m_Systems;
-
-    private void OnValidate() {
-        m_SaveCheckpointTunables.SmellDuration = m_GrabCastTime;
-        m_SaveCheckpointTunables.PlantDuration = m_SaveCastTime;
-
-        m_LoadCheckpointTunables.LoadCastMaxTime = m_LoadCastMaxTime;
-        m_LoadCheckpointTunables.LoadCastPointTime = m_LoadCastPointTime;
-        m_LoadCheckpointTunables.LoadCastPointDistance = m_LoadCastPointDistance;
-        m_LoadCheckpointTunables.LoadCancelMultiplier = m_LoadCancelMultiplier;
-    }
+    CheckpointSystem[] m_Systems;
 
     // -- lifecycle --
     void Awake() {
@@ -92,21 +57,16 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     void Start() {
         // init systems
-        m_Systems = new ThirdPerson.System[] {
-            new SaveCheckpointSystem(
-                m_SaveCheckpointTunables,
-                m_Container.Character.State,
-                m_Container.Checkpoint
-            ),
-            new LoadCheckpointSystem(
-                m_LoadCheckpointTunables,
-                m_Container.Character.State,
-                m_Container.Checkpoint
-            ),
+        m_Systems = new CheckpointSystem[] {
+            m_Save,
+            m_Load,
         };
 
         foreach (var system in m_Systems) {
-            system.Init();
+            system.Init(
+                m_Container.Character.State,
+                m_Container.Checkpoint
+            );
         }
     }
 
@@ -135,13 +95,13 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// start saving a checkpoint
     [System.Obsolete]
     public void StartSave() {
-        (m_Systems[0] as SaveCheckpointSystem)!.Input.IsSaving = true;
+        m_Save.Input.IsSaving = true;
    }
 
     /// stop a save if active
     [System.Obsolete]
     public void StopSave() {
-        (m_Systems[0] as SaveCheckpointSystem)!.Input.IsSaving = false;
+        m_Save.Input.IsSaving = false;
     }
 
     // -- c/save
@@ -161,8 +121,8 @@ public class CharacterCheckpoint: NetworkBehaviour {
     public void CreateCheckpoint(Checkpoint checkpoint) {
         // spawn a new flower
         Command_CreateCheckpoint(
-            m_PendingCheckpoint.Position,
-            m_PendingCheckpoint.Forward
+            checkpoint.Position,
+            checkpoint.Forward
         );
     }
 
@@ -201,7 +161,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         var flower = CharacterFlower.Server_Spawn(
             m_Container.Key,
             pos,
-            Quaternion.LookRotation(fwd, Vector3.up)
+            fwd
         );
 
         // and grab it
@@ -225,17 +185,13 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// restore to the current checkpoint, if any
     [System.Obsolete]
     public void StartLoad() {
-        if (m_Flower != null) {
-            return;
-        }
-
-        (m_Systems[1] as SaveCheckpointSystem)!.Input.IsSaving = true;
+        m_Load.Input.IsLoading = true;
     }
 
     /// cancel a load if active
     [System.Obsolete]
     public void StopLoad() {
-        (m_Systems[1] as SaveCheckpointSystem)!.Input.IsSaving = false;
+        m_Load.Input.IsLoading = false;
     }
 
     // -- events --
@@ -264,12 +220,14 @@ public class CharacterCheckpoint: NetworkBehaviour {
     }
 
     // -- queries --
+    /// the character's current flower
     public CharacterFlower Flower {
         get => m_Flower;
     }
 
+    /// the current flower's checkpoint
     public Checkpoint Checkpoint {
-        get => m_Flower.Checkpoint;
+        get => m_Flower?.Checkpoint;
     }
 
     /// a reference to the character

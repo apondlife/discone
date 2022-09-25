@@ -29,7 +29,8 @@ public abstract class System {
     }
 
     public void Init() {
-        // set more props
+        // set the initial phase
+        // TODO: should this call m_Phase.Enter()?
         m_Phase = InitInitialPhase();
     }
 
