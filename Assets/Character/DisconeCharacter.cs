@@ -127,8 +127,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // otherwise, if the simulation is remote and we're a client, interpolate
         // state to smooth out gaps
         else if (m_InterpolationTime > 0.0f && m_Simulation == Simulation.Remote && isClient) {
-            var start = m_Character.State.Curr;
-            var target = m_RemoteState;
+            var src = m_Character.State.Curr;
+            var dst = m_RemoteState;
 
             var delta = (float)(NetworkTime.time - m_LastSync);
             var k = Mathf.Clamp01(delta / m_InterpolationTime);
@@ -137,7 +137,13 @@ public sealed class DisconeCharacter: NetworkBehaviour {
             // target.Velocity += m_CurrentState.Acceleration * delta;
             // target.Position += target.Velocity * delta;
 
-            CharacterState.Frame.Interpolate(start, target, ref m_InterpolatedState, k);
+            CharacterState.Frame.Interpolate(
+                src,
+                dst,
+                ref m_InterpolatedState,
+                k
+            );
+
             m_Character.ForceState(m_InterpolatedState);
         }
     }
@@ -294,12 +300,12 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// when the client receives new state from the server
     [Client]
     void Client_OnStateReceived(CharacterState.Frame prev, CharacterState.Frame next) {
+        // save the a copy of the target state for interpolating
+        m_InterpolatedState = next.Copy();
+
         // if not interpolating, force state
         if (m_InterpolationTime <= 0.0f && m_Simulation == Simulation.Remote) {
             m_Character.ForceState(next);
-
-            // save the a copy of the target state for interpolating
-            m_InterpolatedState = next.Copy();
         }
     }
 
