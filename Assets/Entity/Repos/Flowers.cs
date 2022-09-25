@@ -6,6 +6,11 @@ using UnityEngine;
 
 /// a repository of flowers
 public sealed class Flowers: MonoBehaviour {
+    // -- state --
+    [Header("state")]
+    [Tooltip("the list of all flowers")]
+    [SerializeField] List<CharacterFlower> m_All = new List<CharacterFlower>();
+
     // -- config --
     [Header("config")]
     [Tooltip("the chunk size for flower position hashing")]
@@ -17,9 +22,6 @@ public sealed class Flowers: MonoBehaviour {
     [SerializeField] CharacterFlowerEvent m_FlowerPlanted;
 
     // -- props --
-    /// the list of all flowers
-    List<CharacterFlower> m_All = new List<CharacterFlower>();
-
     /// a bag of subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
