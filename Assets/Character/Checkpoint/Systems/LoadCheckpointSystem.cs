@@ -2,13 +2,23 @@ using System;
 using ThirdPerson;
 using UnityEngine;
 
-/// a character's ability to load to their saved checkpointj
-sealed class LoadCheckpointSystem: ThirdPerson.System {
+/// a character's ability to load to their saved checkpoint
+[Serializable]
+sealed class LoadCheckpointSystem: CheckpointSystem {
+    // -- types --
+    /// tunables for the load checkpoint system
     [Serializable]
     public sealed class Tunables {
+        /// the max load duration
         public float LoadCastMaxTime;
+
+        /// the load duration at the point distance
         public float LoadCastPointTime;
+
+        /// the distance at the point duration
         public float LoadCastPointDistance;
+
+        /// the time multiplier when unloading
         public float LoadCancelMultiplier;
     }
 
@@ -18,14 +28,8 @@ sealed class LoadCheckpointSystem: ThirdPerson.System {
     }
 
     // -- deps --
-    /// the tunables
-    Tunables m_Tunables;
-
-    /// the character
-    CharacterState m_State;
-
-    /// the checkpoint
-    CharacterCheckpoint m_Checkpoint;
+    [Tooltip("the tunables")]
+    [SerializeField] public Tunables m_Tunables;
 
     // -- props --
     /// the input state
@@ -40,19 +44,11 @@ sealed class LoadCheckpointSystem: ThirdPerson.System {
     /// the state when the load starts
     CharacterState.Frame m_SrcState;
 
-    /// the final state when if the load finishes completes
+    /// the final state when the load completes
     CharacterState.Frame m_DstState;
 
-    // -- lifetime --
-    public LoadCheckpointSystem(
-        Tunables tunables,
-        CharacterState character,
-        CharacterCheckpoint checkpoint
-    ): base() {
-        m_Tunables = tunables;
-        m_State = character;
-        m_Checkpoint = checkpoint;
-    }
+    /// the current state while loading
+    CharacterState.Frame m_CurState;
 
     // -- queries --
     /// the input state
@@ -69,22 +65,17 @@ sealed class LoadCheckpointSystem: ThirdPerson.System {
     Phase NotLoading => new Phase(
         name: "NotLoading",
         enter: NotLoading_Enter,
-        update: NotLoading_Update,
-        exit: NotLoading_Exit
+        update: NotLoading_Update
     );
 
     void NotLoading_Enter() {
         m_Elapsed = 0.0f;
-        m_Checkpoint.Character.Pause();
     }
 
     void NotLoading_Update(float delta) {
-        if (m_Input.IsLoading) {
+        if (CanLoad) {
             ChangeTo(Loading);
         }
-    }
-
-    void NotLoading_Exit() {
     }
 
     // -- Loading --
@@ -114,7 +105,8 @@ sealed class LoadCheckpointSystem: ThirdPerson.System {
         // and start load
         m_Elapsed = 0.0f;
         m_SrcState = m_State.Curr;
-        m_DstState = m_Checkpoint.Flower.IntoState();
+        m_DstState = m_Checkpoint.Checkpoint.IntoState();
+        m_CurState = m_DstState.Copy();
     }
 
     void Loading_Update(float delta) {
@@ -128,12 +120,12 @@ sealed class LoadCheckpointSystem: ThirdPerson.System {
         // if we reach 0, cancel the load
         if (m_Elapsed <= 0) {
             m_Checkpoint.Character.ForceState(m_SrcState);
-            ChangeTo(NotLoading);
+            ChangeTo(Loaded);
         }
         // finish the load once elapsed
         else if (m_Elapsed > m_Duration) {
             m_Checkpoint.Character.ForceState(m_DstState);
-            ChangeTo(NotLoading);
+            ChangeTo(Loaded);
         }
         // otherwise, interpolate the load
         else {
@@ -142,17 +134,36 @@ sealed class LoadCheckpointSystem: ThirdPerson.System {
             var k = pct * pct;
 
             // update to the interpolated state
-            var state = CharacterState.Frame.Interpolate(
+            CharacterState.Frame.Interpolate(
                 m_SrcState,
                 m_DstState,
+                ref m_CurState,
                 k
             );
 
-            m_Checkpoint.Character.ForceState(state);
+            m_Checkpoint.Character.ForceState(m_CurState);
         }
     }
 
     void Loading_Exit() {
+       m_Checkpoint.Character.Unpause();
+    }
 
+    // -- Loaded --
+    Phase Loaded => new Phase(
+        name: "Loaded",
+        update: Loaded_Update
+    );
+
+    void Loaded_Update(float _) {
+        if (!m_Input.IsLoading) {
+            ChangeTo(NotLoading);
+        }
+    }
+
+    // -- queries --
+    /// if the player can load to their flower
+    bool CanLoad {
+        get => m_Input.IsLoading && m_Checkpoint.Checkpoint != null;
     }
 }

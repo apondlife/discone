@@ -1,3 +1,4 @@
+using ThirdPerson;
 using UnityEngine;
 
 /// a checkpoint position
@@ -22,6 +23,14 @@ public record Checkpoint {
         return new Checkpoint(
             frame.Position,
             frame.Forward
+        );
+    }
+
+    /// create a state frame from this checkpoint
+    public CharacterState.Frame IntoState() {
+        return new CharacterState.Frame(
+            Position,
+            Forward
         );
     }
 }

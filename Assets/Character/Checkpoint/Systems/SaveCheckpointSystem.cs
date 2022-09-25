@@ -1,9 +1,11 @@
 using System;
 using ThirdPerson;
+using UnityEngine;
 
 /// a character's ability to save new checkpoints
 /// not => smelling => (grab) planting => (plant) done
-sealed class SaveCheckpointSystem: ThirdPerson.System {
+[Serializable]
+sealed class SaveCheckpointSystem: CheckpointSystem {
     // -- types --
     /// the tunables for the checkpoint system
     [Serializable]
@@ -21,14 +23,8 @@ sealed class SaveCheckpointSystem: ThirdPerson.System {
     }
 
     // -- deps --
-    /// the tunables
-    Tunables m_Tunables;
-
-    /// the character's state
-    CharacterState m_State;
-
-    /// the checkpoint
-    CharacterCheckpoint m_Checkpoint;
+    [Tooltip("the tunables")]
+    [SerializeField] public Tunables m_Tunables;
 
     // -- props --
     /// the input state
@@ -38,18 +34,7 @@ sealed class SaveCheckpointSystem: ThirdPerson.System {
     float m_SaveElapsed;
 
     /// the save elapsed time
-    CharacterCheckpoint.Checkpoint m_PendingCheckpoint;
-
-    // -- lifetime --
-    public SaveCheckpointSystem(
-        Tunables tunables,
-        CharacterState state,
-        CharacterCheckpoint checkpoint
-    ): base() {
-        m_Tunables = tunables;
-        m_State = state;
-        m_Checkpoint = checkpoint;
-    }
+    Checkpoint m_PendingCheckpoint;
 
     // -- queries --
     /// the input state
@@ -77,13 +62,13 @@ sealed class SaveCheckpointSystem: ThirdPerson.System {
     }
 
     void NotSaving_Update(float delta) {
-        if (m_Input.IsSaving) {
+        if (CanSave) {
             ChangeTo(Smelling);
         }
     }
 
     void NotSaving_Exit() {
-        m_PendingCheckpoint = CharacterCheckpoint.Checkpoint.FromState(m_State.Curr);
+        m_PendingCheckpoint = Checkpoint.FromState(m_State.Curr);
         m_Checkpoint.IsSaving = true;
     }
 
@@ -143,7 +128,7 @@ sealed class SaveCheckpointSystem: ThirdPerson.System {
     void Active_Update(float delta) {
         m_SaveElapsed += delta;
 
-        if (!m_Input.IsSaving || !m_State.IsGrounded || !m_State.IsIdle) {
+        if (!CanSave) {
             ChangeTo(NotSaving);
         }
     }
@@ -152,5 +137,10 @@ sealed class SaveCheckpointSystem: ThirdPerson.System {
     /// TODO: this should be written to some external state structure
     public bool IsSaving {
         get => m_SaveElapsed > 0.0f;
+    }
+
+    /// if the character can currently save
+    private bool CanSave {
+        get => m_Input.IsSaving && m_State.IsGrounded && m_State.IsIdle;
     }
 }
