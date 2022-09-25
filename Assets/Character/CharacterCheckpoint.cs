@@ -7,6 +7,11 @@ using ThirdPerson;
 /// the world, like planting a flag.
 [RequireComponent(typeof(DisconeCharacter))]
 public class CharacterCheckpoint: NetworkBehaviour {
+    // -- fields --
+    [Header("tuning")]
+    [Tooltip("how far from a checkpoint can you grab it")]
+    [SerializeField] float m_GrabRadius;
+
     // -- systems --
     [Header("systems")]
     [Tooltip("the save system")]
@@ -28,23 +33,8 @@ public class CharacterCheckpoint: NetworkBehaviour {
     [SyncVar]
     CharacterFlower m_Flower;
 
-    /// a checkpoint in the process of being created
-    Checkpoint m_PendingCheckpoint;
-
-    /// if the character is trying to load
-    bool m_IsLoadDown;
-
     /// if the checkpoint is saving
     bool m_IsSaving;
-
-    /// the current save cast time
-    float m_LoadElapsed = k_CastInactive;
-
-    /// how long it takes to load
-    float m_LoadCastTime = k_CastInactive;
-
-    /// the state when the load starts
-    CharacterState.Frame m_LoadStartState;
 
     /// checkpoint-specific character systems
     CheckpointSystem[] m_Systems;
@@ -142,8 +132,8 @@ public class CharacterCheckpoint: NetworkBehaviour {
             .FindClosest(pos);
 
         // if we found one, grab it
-        if (flower != null && Vector3.Distance(flower.transform.position, pos) < m_GrabRadius) {
-            Debug.Log($"[checkpoint] found a flower to grab! {flower}");
+        if (flower != null && Vector3.Distance(flower.Checkpoint.Position, pos) < m_GrabRadius) {
+            Debug.Log($"[chkpnt] found flower to grab {flower}");
             Server_GrabCheckpoint(flower);
         }
     }

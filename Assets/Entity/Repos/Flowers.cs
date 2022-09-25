@@ -36,6 +36,7 @@ public sealed class Flowers: MonoBehaviour {
     }
 
     // -- queries --
+    /// find the closest flower
     public CharacterFlower FindClosest(Vector3 position) {
         var distCache = new Dictionary<CharacterFlower, float>();
 
