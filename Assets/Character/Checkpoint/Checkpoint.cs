@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// a checkpoint position
 [Serializable]
-public struct Checkpoint {
+public record Checkpoint {
     // -- props --
     /// the position
     public Vector3 Position;
@@ -13,6 +13,10 @@ public struct Checkpoint {
     public Vector3 Forward;
 
     // -- lifetime --
+    [Obsolete]
+    public Checkpoint() {
+    }
+
     /// create a pending checkpoint
     public Checkpoint(Vector3 position, Vector3 forward) {
         Position = position;
