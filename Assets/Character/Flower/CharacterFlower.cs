@@ -7,14 +7,6 @@ using UnityAtoms;
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
 public class CharacterFlower: NetworkBehaviour {
-    // -- types --
-    /// a flower's planting state
-    enum Planting {
-        NotReady,
-        Ready,
-        Planted
-    }
-
     // -- constants --
     /// how offset the flower is forward, so it doesn't spawn under the character
     const float k_ForwardOffset = 0.12f;
@@ -42,12 +34,6 @@ public class CharacterFlower: NetworkBehaviour {
     [Tooltip("the saturation of the released flower")]
     [SerializeField] float m_SpawnTime = 0.5f;
 
-    // -- fields --
-    [Header("fields")]
-    [Tooltip("the checkpoint this flower represents")]
-    [SyncVar(hook = nameof(Client_OnCheckpointReceived))]
-    [ReadOnly] [SerializeField] Checkpoint m_Checkpoint;
-
     // -- published --
     [Header("published")]
     [Tooltip("the event called when a flower gets planted")]
@@ -63,12 +49,16 @@ public class CharacterFlower: NetworkBehaviour {
     [SyncVar]
     CharacterKey m_Key;
 
-    /// if the flower has been planted
-    Planting m_Planting = Planting.NotReady;
+    // the checkpoint this flower represents
+    [SyncVar(hook = nameof(Client_OnCheckpointReceived))]
+    Checkpoint m_Checkpoint;
 
     /// if no player is using this flower
     [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
     bool m_IsFree = true;
+
+    /// if the flower has been planted
+    bool m_IsPlanted = false;
 
     // -- lifecycle
     void Awake() {
@@ -106,7 +96,7 @@ public class CharacterFlower: NetworkBehaviour {
     /// move the flower to a position on the ground
     void TryPlant() {
         // wait until we're ready to plant
-        if (m_Planting != Planting.Ready) {
+        if (m_IsPlanted || m_Checkpoint == null) {
             return;
         }
 
@@ -128,13 +118,20 @@ public class CharacterFlower: NetworkBehaviour {
 
         // make the flower grow
         var targetScale = transform.localScale;
-        transform.localScale = Vector3.Scale(transform.localScale, new Vector3(1, 0, 1));
+        transform.localScale = Vector3.Scale(
+            transform.localScale,
+            new Vector3(1.0f, 0.0f, 1.0f)
+        );
+
         StartCoroutine(CoroutineHelpers.InterpolateByTime(m_SpawnTime, (k) => {
-            transform.localScale = Vector3.Scale(targetScale, new Vector3(1, k * k, 1));
+            transform.localScale = Vector3.Scale(
+                targetScale,
+                new Vector3(1.0f, k * k, 1.0f)
+            );
         }));
 
         // and mark it as planted
-        m_Planting = Planting.Planted;
+        m_IsPlanted = true;
 
         // and let everyone know
         m_FlowerPlanted.Raise(this);
@@ -195,7 +192,7 @@ public class CharacterFlower: NetworkBehaviour {
     // -- events --
     /// when the client receives the checkpoint
     void Client_OnCheckpointReceived(Checkpoint _p, Checkpoint _n) {
-        m_Planting = Planting.Ready;
+        // try and plant the flower
         TryPlant();
     }
 
@@ -241,7 +238,6 @@ public class CharacterFlower: NetworkBehaviour {
         flower.m_IsFree = true;
 
         // plant the flower
-        flower.m_Planting = Planting.Ready;
         flower.TryPlant();
 
         // spawn the game object for everyone
