@@ -83,6 +83,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     [SyncVar]
     double m_LastSync;
 
+    /// the interpolated character state frame;
+    CharacterState.Frame m_InterpolatedState;
+
     // -- lifecycle --
     void Awake() {
         // set props
@@ -124,8 +127,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // otherwise, if the simulation is remote and we're a client, interpolate
         // state to smooth out gaps
         else if (m_InterpolationTime > 0.0f && m_Simulation == Simulation.Remote && isClient) {
-            var start = m_Character.State.Curr.Copy();
-            var target = m_RemoteState.Copy();
+            var start = m_Character.State.Curr;
+            var target = m_RemoteState;
+
             var delta = (float)(NetworkTime.time - m_LastSync);
             var k = Mathf.Clamp01(delta / m_InterpolationTime);
 
@@ -133,8 +137,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
             // target.Velocity += m_CurrentState.Acceleration * delta;
             // target.Position += target.Velocity * delta;
 
-            var state = CharacterState.Frame.Interpolate(start, target, k);
-            m_Character.ForceState(state);
+            CharacterState.Frame.Interpolate(start, target, ref m_InterpolatedState, k);
+            m_Character.ForceState(m_InterpolatedState);
         }
     }
 
@@ -293,6 +297,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // if not interpolating, force state
         if (m_InterpolationTime <= 0.0f && m_Simulation == Simulation.Remote) {
             m_Character.ForceState(next);
+
+            // save the a copy of the target state for interpolating
+            m_InterpolatedState = next.Copy();
         }
     }
 
