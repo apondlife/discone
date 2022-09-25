@@ -126,7 +126,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         }
         // otherwise, if the simulation is remote and we're a client, interpolate
         // state to smooth out gaps
-        else if (m_InterpolationTime > 0.0f && m_Simulation == Simulation.Remote && isClient) {
+        else if (isClient && m_InterpolatedState != null) {
             var src = m_Character.State.Curr;
             var dst = m_RemoteState;
 
@@ -136,7 +136,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
             // TODO: attempt to also extrapolate...
             // target.Velocity += m_CurrentState.Acceleration * delta;
             // target.Position += target.Velocity * delta;
-
             CharacterState.Frame.Interpolate(
                 src,
                 dst,
@@ -252,6 +251,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
             c.SetActive(isSimulated);
         }
 
+        // if not remote any more, clear interpolated state
+        if (simulation != Simulation.Remote) {
+            m_InterpolatedState = null;
+        }
+
         OnSimulationChanged?.Invoke(m_Simulation);
     }
 
@@ -270,10 +274,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // place the character in the correct position on the server, since they
         // don't need to interpolate
         m_Character.ForceState(state);
-    }
-
-    public void Host_SetVisibility(bool visible) {
-        SyncSimulation(visible);
     }
 
     /// mark this character as unavaialble; only call on the server
@@ -300,11 +300,16 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// when the client receives new state from the server
     [Client]
     void Client_OnStateReceived(CharacterState.Frame prev, CharacterState.Frame next) {
-        // save the a copy of the target state for interpolating
-        m_InterpolatedState = next.Copy();
+        if (m_Simulation != Simulation.Remote) {
+            return;
+        }
 
-        // if not interpolating, force state
-        if (m_InterpolationTime <= 0.0f && m_Simulation == Simulation.Remote) {
+        // if interpolating, save the a copy of the target state
+        if (m_InterpolationTime > 0.0f) {
+            m_InterpolatedState = next.Copy();
+        }
+        // otherwise, just update to whatever the server sends
+        else {
             m_Character.ForceState(next);
         }
     }
