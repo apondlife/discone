@@ -45,8 +45,8 @@ public class CharacterFlower: NetworkBehaviour {
     // -- fields --
     [Header("fields")]
     [Tooltip("the checkpoint this flower represents")]
-    [ReadOnly]
-    [SerializeField] Checkpoint m_Checkpoint;
+    [SyncVar(hook = nameof(Client_OnCheckpointReceived))]
+    [ReadOnly] [SerializeField] Checkpoint m_Checkpoint;
 
     // -- published --
     [Header("published")]
@@ -60,6 +60,7 @@ public class CharacterFlower: NetworkBehaviour {
 
     // -- props --
     /// the assosciated character's key
+    [SyncVar]
     CharacterKey m_Key;
 
     /// if the flower has been planted
@@ -100,6 +101,43 @@ public class CharacterFlower: NetworkBehaviour {
     [Server]
     public void Server_Release() {
         m_IsFree = true;
+    }
+
+    /// move the flower to a position on the ground
+    void TryPlant() {
+        // wait until we're ready to plant
+        if (m_Planting != Planting.Ready) {
+            return;
+        }
+
+        var didHit = Physics.Raycast(
+            m_Checkpoint.Position + m_Checkpoint.Forward * k_ForwardOffset + Vector3.up * k_UpOffset,
+            Vector3.down,
+            out var hit,
+            k_RaycastLen,
+            s_GroundMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        if (!didHit) {
+            return;
+        }
+
+        // move flower to the hit point
+        transform.position = hit.point;
+
+        // make the flower grow
+        var targetScale = transform.localScale;
+        transform.localScale = Vector3.Scale(transform.localScale, new Vector3(1, 0, 1));
+        StartCoroutine(CoroutineHelpers.InterpolateByTime(m_SpawnTime, (k) => {
+            transform.localScale = Vector3.Scale(targetScale, new Vector3(1, k * k, 1));
+        }));
+
+        // and mark it as planted
+        m_Planting = Planting.Planted;
+
+        // and let everyone know
+        m_FlowerPlanted.Raise(this);
     }
 
     /// when the host toggles visbility
@@ -154,6 +192,13 @@ public class CharacterFlower: NetworkBehaviour {
         return material;
     }
 
+    // -- events --
+    /// when the client receives the checkpoint
+    void Client_OnCheckpointReceived(Checkpoint _p, Checkpoint _n) {
+        m_Planting = Planting.Ready;
+        TryPlant();
+    }
+
     // -- factories --
     /// spawn a flower from a record
     [Server]
@@ -205,44 +250,6 @@ public class CharacterFlower: NetworkBehaviour {
         return flower;
     }
 
-    /// move the flower to a position on the ground
-    void TryPlant() {
-        // wait until we're ready to plant
-        if (m_Planting != Planting.Ready) {
-            return;
-        }
-
-        var didHit = Physics.Raycast(
-            m_Checkpoint.Position + m_Checkpoint.Forward * k_ForwardOffset + Vector3.up * k_UpOffset,
-            Vector3.down,
-            out var hit,
-            k_RaycastLen,
-            s_GroundMask,
-            QueryTriggerInteraction.Ignore
-        );
-
-        if (!didHit) {
-            return;
-        }
-
-        // move flower to the hit point
-        transform.position = hit.point;
-
-        // make the flower grow
-        var targetScale = transform.localScale;
-        transform.localScale = Vector3.Scale(transform.localScale, new Vector3(1, 0, 1));
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(m_SpawnTime, (k) => {
-            transform.localScale = Vector3.Scale(targetScale, new Vector3(1, k * k, 1));
-        }));
-
-        // and mark it as planted
-        m_Planting = Planting.Planted;
-
-        // and let everyone know
-        m_FlowerPlanted.Raise(this);
-    }
-
-    // -- factories --
     /// create state frame from this flower
     public CharacterState.Frame IntoState() {
         return m_Checkpoint.IntoState();
