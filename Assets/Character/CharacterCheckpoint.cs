@@ -33,6 +33,14 @@ public class CharacterCheckpoint: NetworkBehaviour {
     [SyncVar]
     CharacterFlower m_Flower;
 
+    /// the current flower checkpoint
+    [SyncVar]
+    Checkpoint m_Checkpoint;
+
+    /// the character key for the current checkpoint
+    [SyncVar]
+    CharacterKey m_CheckpointKey;
+
     /// if the checkpoint is saving
     bool m_IsSaving;
 
@@ -164,8 +172,13 @@ public class CharacterCheckpoint: NetworkBehaviour {
         // if we had a flower, let it go
         m_Flower?.Server_Release();
 
-        // grab the new flower
+        // store the new flower
         m_Flower = flower;
+
+        // and sync its data back to the client
+        // TODO: at some point, we should be reading this data differently
+        m_Checkpoint = flower.Checkpoint;
+        m_CheckpointKey = flower.Key;
 
         // i don't know why this doesn't work in the same frame...
         this.DoNextFrame(() => m_Flower?.Server_Grab());
@@ -217,11 +230,25 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// the current flower's checkpoint
     public Checkpoint Checkpoint {
-        get => m_Flower!.Checkpoint;
+        get => m_Checkpoint;
     }
 
     /// a reference to the character
     public ThirdPerson.Character Character {
         get => m_Container.Character;
+    }
+
+    // -- factories --
+    /// create a flower record for the current checkpoint
+    public FlowerRec IntoRecord() {
+        if (m_Flower == null) {
+            return null;
+        }
+
+        return new FlowerRec(
+            m_CheckpointKey,
+            m_Checkpoint.Position,
+            m_Checkpoint.Forward
+        );
     }
 }

@@ -394,7 +394,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
             Key,
             m_RemoteState.Position,
             m_RemoteState.LookRotation,
-            m_Checkpoint.Flower?.IntoRecord()
+            m_Checkpoint.IntoRecord()
         );
     }
 }

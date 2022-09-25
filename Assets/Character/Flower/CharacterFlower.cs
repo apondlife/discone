@@ -62,15 +62,8 @@ public class CharacterFlower: NetworkBehaviour {
     [SerializeField] Renderer m_Renderer;
 
     // -- props --
-
     /// the assosciated character's key
     CharacterKey m_Key;
-
-    /// the checkpoint position
-    Vector3 m_Position;
-
-    /// the checkpoint rotation
-    Quaternion m_Rotation;
 
     /// if the flower has been planted
     Planting m_Planting = Planting.NotReady;
@@ -224,7 +217,7 @@ public class CharacterFlower: NetworkBehaviour {
         }
 
         var hits = Physics.RaycastNonAlloc(
-            m_Position + m_Checkpoint.Forward * k_ForwardOffset + Vector3.up * k_UpOffset,
+            m_Checkpoint.Position + m_Checkpoint.Forward * k_ForwardOffset + Vector3.up * k_UpOffset,
             Vector3.down,
             k_Hits,
             k_RaycastLen,
