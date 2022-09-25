@@ -30,34 +30,53 @@ public class OnlineInterest: InterestManagement {
     /// a cache of interesting objects by id
     Dictionary<uint, Interest> m_Interests = new Dictionary<uint, Interest>();
 
+    /// if the set of simulated characters changed
+    bool m_SimulatedChanged;
+
+    /// the set net ids for characters the host simulates
+    HashSet<uint> m_SimulatedCharacters = new HashSet<uint>();
+
     /// the time of the last rebuild
     double m_LastRebuildTime = -1.0;
 
     // -- lifecycle --
     [ServerCallback]
     void Update() {
-        // wait for the interval to elapse
-        if (NetworkTime.time < m_LastRebuildTime + m_RebuildInterval) {
-            return;
-        }
+        // rebuild interest on an interval
+        if (NetworkTime.time >= m_LastRebuildTime + m_RebuildInterval) {
+            // see if we have any players
+            var hasPlayer = false;
 
-        // see if we have any players
-        var hasPlayer = false;
+            // sync all the player coords
+            foreach (var conn in NetworkServer.connections.Values) {
+                if (conn == null || !conn.isAuthenticated || conn.identity == null) {
+                    continue;
+                }
 
-        // sync all the player coords
-        foreach (var conn in NetworkServer.connections.Values) {
-            if (conn == null || !conn.isAuthenticated || conn.identity == null) {
-                continue;
+                hasPlayer = true;
+                SyncCoord(FindOrCreateInterestById(conn.identity));
             }
 
-            hasPlayer = true;
-            SyncCoord(FindOrCreateInterestById(conn.identity));
+            // rebuild the set of simulated charaters
+            m_SimulatedChanged = true;
+            m_SimulatedCharacters.Clear();
+
+            // if we have at least one player, rebuild interest set
+            if (hasPlayer) {
+                RebuildAll();
+                m_LastRebuildTime = NetworkTime.time;
+            }
         }
 
-        // if we have at least one player, rebuild interest set
-        if (hasPlayer) {
-            RebuildAll();
-            m_LastRebuildTime = NetworkTime.time;
+        // if the set of simulated characters may have changed, update the
+        // server's simulation of every character. we only need to simulate
+        // characters that some player is interested in.
+        if (m_SimulatedChanged) {
+            foreach (var character in m_Entities.Value.Characters.All) {
+                character.SyncSimulation(m_SimulatedCharacters.Contains(character.netId));
+            }
+
+            m_SimulatedChanged = false;
         }
     }
 
@@ -113,9 +132,6 @@ public class OnlineInterest: InterestManagement {
 
         var interest = FindOrCreateInterestById(identity);
         switch (interest) {
-        // if the object is a character, we can set its sync status
-        case CharacterInterest c:
-            c.Object.Host_SetVisibility(visible); break;
         // if the object is a flower we want to try planting it again
         case FlowerInterest f:
             f.Object.Host_SetVisibility(visible); break;
@@ -157,24 +173,38 @@ public class OnlineInterest: InterestManagement {
     ) {
         var character = interest.Object;
 
+        // track is interesting so we can run add the character to a set as a
+        // side effect
+        var isInteresting = false;
+
         // if a player is driving the character, we're interested in it.
         // this includes the current player's character
         if (m_Entities.Value.Characters.IsDriven(character)) {
-            return true;
+            isInteresting = true;
         }
-
         // unless the player just spawned a character on the server
         // in which case it's already set in the player, but not driven
-        if(player.Object.Character == character) {
-            return true;
+        else if (player.Object.Character == character) {
+            isInteresting = true;
         }
-
         // if the player has no character, it might be looking for an initial one
-        if (player.Object.Character == null) {
-            return character.IsInitial;
+        else if (player.Object.Character == null) {
+            isInteresting = character.IsInitial;
+        }
+        // if the character is visible
+        else {
+            isInteresting = IsVisible(interest, player);
         }
 
-        return IsVisible(interest, player);
+        // cache all the interesting characters
+        // so their simulation state can be updated accordingly
+        var id = interest.Object.netId;
+        if (isInteresting && id != 0) {
+            m_SimulatedChanged = true;
+            m_SimulatedCharacters.Add(id);
+        }
+
+        return isInteresting;
     }
 
     /// if the other player is interesting to the player
