@@ -164,6 +164,6 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     // -- queries --
     /// if the player can load to their flower
     bool CanLoad {
-        get => m_Input.IsLoading && m_Checkpoint.Checkpoint != null;
+        get => m_Input.IsLoading && m_Checkpoint.Flower != null;
     }
 }

@@ -33,7 +33,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     /// the save elapsed time
     float m_SaveElapsed;
 
-    /// the save elapsed time
+    /// the checkpoint being saved
     Checkpoint m_PendingCheckpoint;
 
     // -- queries --
@@ -56,7 +56,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     );
 
     void NotSaving_Enter() {
-        m_PendingCheckpoint = null;
         m_SaveElapsed = 0.0f;
         m_Checkpoint.IsSaving = false;
     }
@@ -116,7 +115,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
 
     void Being_Enter() {
         m_Checkpoint.CreateCheckpoint(m_PendingCheckpoint);
-        m_PendingCheckpoint = null;
     }
 
     void Being_Update(float delta) {

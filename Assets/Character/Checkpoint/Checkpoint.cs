@@ -1,14 +1,16 @@
+using System;
 using ThirdPerson;
 using UnityEngine;
 
 /// a checkpoint position
-public record Checkpoint {
+[Serializable]
+public struct Checkpoint {
     // -- props --
     /// the position
-    public readonly Vector3 Position;
+    public Vector3 Position;
 
     /// the character's facing direction
-    public readonly Vector3 Forward;
+    public Vector3 Forward;
 
     // -- lifetime --
     /// create a pending checkpoint
