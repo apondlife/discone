@@ -34,8 +34,8 @@ public class CharacterFlower: NetworkBehaviour {
     /// pre-allocated buffer for ground raycasts
     static LayerMask s_GroundMask;
 
-    // -- config --
-    [Header("config")]
+    // -- cfg --
+    [Header("cfg")]
     [Tooltip("the texture to use for the flower")]
     [SerializeField] Texture m_Texture;
 
@@ -44,6 +44,12 @@ public class CharacterFlower: NetworkBehaviour {
 
     [Tooltip("the saturation of the released flower")]
     [SerializeField] float m_SpawnTime = 0.5f;
+
+    // -- fields --
+    [Header("fields")]
+    [Tooltip("the checkpoint this flower represents")]
+    [ReadOnly]
+    [SerializeField] Checkpoint m_Checkpoint;
 
     // -- published --
     [Header("published")]
@@ -56,11 +62,9 @@ public class CharacterFlower: NetworkBehaviour {
     [SerializeField] Renderer m_Renderer;
 
     // -- props --
+
     /// the assosciated character's key
     CharacterKey m_Key;
-
-    /// the checkpoint this flower represents
-    Checkpoint m_Checkpoint;
 
     /// the checkpoint position
     Vector3 m_Position;
