@@ -23,15 +23,12 @@ public class CharacterFlower: NetworkBehaviour {
     const float k_UpOffset = 0.05f;
 
     /// how much to raycast down to find the ground
-    const float k_RaycastLen = 5f;
-
-    /// pre-allocated buffer for ground raycasts
-    static readonly RaycastHit[] k_Hits = new RaycastHit[1];
+    const float k_RaycastLen = 5.0f;
 
     /// the cache of per-texture materials
     static readonly Dictionary<string, Material> k_MaterialCache = new Dictionary<string, Material>();
 
-    /// pre-allocated buffer for ground raycasts
+    /// the ground layer mask
     static LayerMask s_GroundMask;
 
     // -- cfg --
@@ -76,9 +73,9 @@ public class CharacterFlower: NetworkBehaviour {
     void Awake() {
         m_Renderer.material = FindMaterial();
 
-        // store statics
+        // every byte counts
         if (s_GroundMask == 0) {
-            s_GroundMask = LayerExt.MaskFromNames("Default", "Ground", "Indoor");
+            s_GroundMask = LayerMask.GetMask("Default", "Field", "Indoor");
         }
 
         // debug helpers
@@ -192,7 +189,6 @@ public class CharacterFlower: NetworkBehaviour {
         #endif
 
         // store checkpoint info
-        // TODO: just store Checkpoint
         flower.m_Key = key;
         flower.m_Checkpoint = new Checkpoint(pos, fwd);
 
@@ -216,21 +212,21 @@ public class CharacterFlower: NetworkBehaviour {
             return;
         }
 
-        var hits = Physics.RaycastNonAlloc(
+        var didHit = Physics.Raycast(
             m_Checkpoint.Position + m_Checkpoint.Forward * k_ForwardOffset + Vector3.up * k_UpOffset,
             Vector3.down,
-            k_Hits,
+            out var hit,
             k_RaycastLen,
             s_GroundMask,
             QueryTriggerInteraction.Ignore
         );
 
-        if (hits <= 0) {
+        if (!didHit) {
             return;
         }
 
         // move flower to the hit point
-        transform.position = k_Hits[0].point;
+        transform.position = hit.point;
 
         // make the flower grow
         var targetScale = transform.localScale;
