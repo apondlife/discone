@@ -172,14 +172,14 @@ public sealed class Store: ScriptableObject {
             await stream.WriteAsync(data, 0, data.Length);
         }
 
-        Debug.Log($"[store] saved file @ {path} => {json}");
+        Debug.Log($"[store] saved file @ {RenderPath(path)} => {json}");
     }
 
     /// load the record from disk at path
     async Task<F> LoadRecord<F>(string path) where F: StoreFile {
         // check for file
         if (!File.Exists(path)) {
-            Debug.Log($"[store] no save file found @ {path}");
+            Debug.Log($"[store] no file found @ {RenderPath(path)}");
             return default;
         }
 
@@ -190,7 +190,7 @@ public sealed class Store: ScriptableObject {
             var read = await stream.ReadAsync(data, 0, (int)stream.Length);
 
             if (read != stream.Length) {
-                Debug.LogError($"[store] only read {read} of {stream.Length} bytes from file @ {path}");
+                Debug.LogError($"[store] only read {read} of {stream.Length} bytes from file @ {RenderPath(path)}");
                 throw new System.Exception("couldn't read the entire file!");
             }
         }
@@ -198,7 +198,7 @@ public sealed class Store: ScriptableObject {
         // decode record from json
         var json = Encoding.UTF8.GetString(data);
         var record = JsonUtility.FromJson<F>(json);
-        Debug.Log($"[store] loaded file @ {path} => {json}");
+        Debug.Log($"[store] loaded file @ {RenderPath(path)} => {json}");
 
         // check the file version
         var version = record.CurrentVersion();
@@ -208,5 +208,19 @@ public sealed class Store: ScriptableObject {
         }
 
         return record;
+    }
+
+    // -- helpers --
+    /// debug; remove the project dir from the path (for dipsplay)
+    string RenderPath(string path) {
+        path = Path.GetFullPath(path);
+
+        // strip project dir from path if necessary
+        var dir = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+        if (path.StartsWith(dir)) {
+            path = path.Substring(dir.Length);
+        }
+
+        return path;
     }
 }
