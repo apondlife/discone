@@ -29,13 +29,13 @@ public class TargetSizeFitter: UIBehaviour {
 
         // set props
         m_Rect = GetComponent<RectTransform>();
-
-        // set initial size
-        Resize();
     }
 
     override protected void Start() {
         base.Start();
+
+        // set initial size
+        Resize();
 
         // subscribe to updates
         m_TargetRect = m_Target.GetComponent<TargetRect>();
@@ -72,4 +72,27 @@ public class TargetSizeFitter: UIBehaviour {
             }
         }
     }
+
+    // -- debug --
+    #if UNITY_EDITOR
+    /// the debug target size
+    Vector2 m_TargetSize;
+
+    void Update() {
+        // if running game, don't do anything
+        if (Application.IsPlaying(gameObject)) {
+            return;
+        }
+
+        // if size is the same, don't do anything
+        var size = m_Target.rect.size;
+        if (size == m_TargetSize) {
+            return;
+        }
+
+        // otherwise, resize
+        Resize();
+        m_TargetSize = size;
+    }
+    #endif
 }
