@@ -7,6 +7,8 @@ sealed class Subscriptions: IDisposable {
     // -- props --
     private Action subscriptions;
 
+    // TODO: make this work for non atoms
+
     // -- commands --
     /// add a subscription for an event/action pair
     public Subscriptions Add(VoidEvent e, Action a) {
