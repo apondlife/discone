@@ -126,7 +126,7 @@ public class CameraLookAtTarget: MonoBehaviour {
 
         // if airborne, move ground destination underneath character, snap to
         // the lowest possible position
-        var delta = Vector3.down * m_MaxDistance;
+        var delta = m_MaxDistance;
 
         // if there's a closer ground layer, move to that point
         var didHit = Physics.Raycast(
@@ -138,7 +138,7 @@ public class CameraLookAtTarget: MonoBehaviour {
         );
 
         if (didHit) {
-            delta = hit.point - transform.position;
+            delta = hit.point.y - transform.position.y;
         }
 
         // scale based on fall speed
@@ -148,7 +148,7 @@ public class CameraLookAtTarget: MonoBehaviour {
             -m_Character.State.Velocity.y
         );
 
-        return footPos + delta;
+        return footPos + delta * Vector3.down;
     }
 
     // -- queries --
