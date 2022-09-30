@@ -2,7 +2,26 @@ using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// the in-game menu
+[ExecuteAlways]
 public class Menu: MonoBehaviour {
+    // -- constants --
+    // the sentinel for no transition
+    const float k_TransitionNone = -1.0f;
+
+    // -- state --
+    [Header("state")]
+    [Tooltip("the current scroll offset")]
+    [SerializeField] float m_Offset;
+
+    // -- cfg --
+    [Header("cfg")]
+    [Tooltip("the page transition duration")]
+    [SerializeField] float m_TransitionDuration;
+
+    [Tooltip("the page transition curve")]
+    [SerializeField] AnimationCurve m_TransitionCurve;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the scroll rect")]
@@ -20,13 +39,24 @@ public class Menu: MonoBehaviour {
     /// the current page index
     int m_Page;
 
-    /// the current scroll offset
-    float m_ScrollOffset;
+    /// the time the page transition began
+    float m_TransitionStartTime = k_TransitionNone;
+
+    /// the page transition's start offset
+    float m_TransitionOffset;
+
+    /// the page transitions's offset delta
+    float m_TransitionDelta;
 
     /// the subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
+    void Awake() {
+        // init state
+        m_Offset = 0.0f;
+    }
+
     void Start() {
         // bind events
         m_Subscriptions
@@ -34,9 +64,35 @@ public class Menu: MonoBehaviour {
             .Add(m_OffsetPagePressed, OnOffsetPagePressed);
     }
 
+    void Update() {
+        // run page transition
+        if (m_TransitionStartTime != k_TransitionNone) {
+            // calculate interpolant based on duration
+            var k = (Time.time - m_TransitionStartTime) / m_TransitionDuration;
+
+            // if finished, end transition
+            if (k >= 1.0f) {
+                k = 1.0f;
+                m_TransitionStartTime = k_TransitionNone;
+            }
+
+            // apply the curved transition
+            m_Offset = m_TransitionOffset + m_TransitionDelta * m_TransitionCurve.Evaluate(k);
+        }
+
+        // update scroll position; unity's scroll offset domain is [1, 0]
+        var dest = 1.0f - m_Offset;
+        m_Scroll.verticalNormalizedPosition = dest;
+    }
+
     void OnDestroy() {
         // release events
         m_Subscriptions.Dispose();
+    }
+
+    void OnValidate() {
+        // validate state
+        m_Offset = Mathf.Clamp01(m_Offset);
     }
 
     // -- commands --
@@ -52,10 +108,12 @@ public class Menu: MonoBehaviour {
         // unity's scroll rect goes from the top of the first object to the
         // bottom of the last so for this number it seems like there's one fewer
         // page
-        m_ScrollOffset = (float)page / (max - 1);
+        var dst = (float)page / (max - 1);
 
-        // unity's scroll rect goes from 1 to 0, so we invert it here
-        m_Scroll.verticalNormalizedPosition = 1.0f - m_ScrollOffset;
+        // init the transition
+        m_TransitionOffset = m_Offset;
+        m_TransitionDelta = dst - m_Offset;
+        m_TransitionStartTime = Time.time;
     }
 
     // -- events --
