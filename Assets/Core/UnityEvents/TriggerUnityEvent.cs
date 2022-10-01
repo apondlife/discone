@@ -13,10 +13,10 @@ namespace MutCommon
         [SerializeField] public float StayDuration;
 
         public bool filterByTag;
-        public string tag;
+        public string filterTag;
 
         public bool filterByLayer;
-        public LayerMask layerMask;
+        public LayerMask filterLayerMask;
 
         private void OnTriggerEnter(Collider other)
         {
@@ -34,7 +34,7 @@ namespace MutCommon
         bool wentOverDuration = false;
         private void OnTriggerStay(Collider other)
         {
-            if ((filterByTag && other.tag == tag) || (filterByLayer && (layerMask == (layerMask | (1 << other.gameObject.layer)))))
+            if ((filterByTag && other.tag == filterTag) || (filterByLayer && (filterLayerMask == (filterLayerMask | (1 << other.gameObject.layer)))))
             {
                 currentStayDuration += Time.deltaTime;
                 if (currentStayDuration > StayDuration)
@@ -47,8 +47,8 @@ namespace MutCommon
 
         private void DoTrigger(Collider other, bool ofType)
         {
-            if (filterByTag && other.tag != tag) return;
-            if (filterByLayer && !(layerMask == (layerMask | (1 << other.gameObject.layer)))) return;
+            if (filterByTag && other.tag != filterTag) return;
+            if (filterByLayer && !(filterLayerMask == (filterLayerMask | (1 << other.gameObject.layer)))) return;
             if (ofType) OnEvent.Invoke();
         }
     }
