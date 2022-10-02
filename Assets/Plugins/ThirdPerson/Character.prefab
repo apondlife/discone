@@ -63,7 +63,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.1854304, y: 1}
+    m_SensorSize: {x: 18.551723, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -550,23 +550,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MaxDistance: 20
   m_TargetSpeed: 0
-  m_TargetSpringDown: 4
-  m_TargetDampDown: 12
   m_SpringDamp_Down:
     Spring: 4
     Damp: 12
-  m_TargetSpringUp: 10
-  m_TargetDampUp: 10
   m_SpringDamp_Up:
     Spring: 10
     Damp: 10
-  m_TargetSpringFreeLook: 10
-  m_TargetDampFreeLook: 10
   m_SpringDamp_FreeLook:
     Spring: 10
     Damp: 10
-  m_MinFallingSpeed: -2
-  m_MaxFallingSpeed: 1
+  m_MinFallingSpeed: 0
+  m_MaxFallingSpeed: 0
   m_GroundLayers:
     serializedVersion: 2
     m_Bits: 385
@@ -814,21 +808,27 @@ MonoBehaviour:
   m_Idle:
     m_Phase:
       Name: Idle
+    m_IsLogging: 0
   m_Wall:
     m_Phase:
       Name: NotOnWall
+    m_IsLogging: 0
   m_Jump:
     m_Phase:
       Name: NotJumping
+    m_IsLogging: 0
   m_Movement:
     m_Phase:
       Name: NotMoving
+    m_IsLogging: 0
   m_Tilt:
     m_Phase:
       Name: NotTilting
+    m_IsLogging: 0
   m_Collision:
     m_Phase:
       Name: Active
+    m_IsLogging: 0
   m_Controller:
     m_CollisionMask:
       serializedVersion: 2
