@@ -50,7 +50,7 @@ sealed class WallSystem: CharacterSystem {
 
         // transfer initial velocity
         var vd = Vector3.zero;
-        vd += TransferVelocity();
+        vd += TransferredVelocity();
         m_State.Velocity += vd;
 
         // update state
@@ -70,7 +70,7 @@ sealed class WallSystem: CharacterSystem {
 
         // transfer velocity
         var vd = Vector3.zero;
-        vd += TransferVelocity();
+        vd += TransferredVelocity();
         vd -= m_WallNormal * m_Tunables.WallMagnet;
 
         // accelerate while holding button
@@ -89,16 +89,17 @@ sealed class WallSystem: CharacterSystem {
     }
 
     // -- queries --
-    /// find the speed to transfer to the wall
-    Vector3 TransferVelocity() {
-        // get wall normal
-        var velocity = m_State.Prev.PlanarVelocity;
-        var velocityInRelationToWall = Vector3.ProjectOnPlane(velocity, m_WallNormal);
+    /// find the velocity transferred into the wall plane
+    Vector3 TransferredVelocity() {
+        // get the component of our velocity into the wall
+        var velocity = m_State.Prev.Velocity;
+        var velocityAlongWall = Vector3.ProjectOnPlane(velocity, m_WallNormal);
+        var velocityIntoWall = velocity - velocityAlongWall;
 
-        // the speed in the wall's direction
-        var transferSpeed = (velocity - velocityInRelationToWall).magnitude;
+        // and transfer it up the wall
+        var transferred = m_WallUp * velocityIntoWall.magnitude;
 
-        return m_WallUp * transferSpeed;
+        return transferred;
     }
 }
 
