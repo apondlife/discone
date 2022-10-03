@@ -239,6 +239,7 @@ GameObject:
   - component: {fileID: 3596656182891130830}
   - component: {fileID: 3596656182891130824}
   - component: {fileID: 3596656182891130831}
+  - component: {fileID: 9096942268182415435}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -308,6 +309,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &9096942268182415435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3596656182891130829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aab929d2c3b83409b88b8f916a57583d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ValueLabel: {fileID: 3596656184199495034}
 --- !u!1 &3596656184199495039
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,14 +633,14 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.256
+  m_Value: 0.43
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-        m_MethodName: 
-        m_Mode: 1
+      - m_Target: {fileID: 9096942268182415435}
+        m_TargetAssemblyTypeName: Discone.Slider, Assembly-CSharp
+        m_MethodName: OnValueChanged
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
