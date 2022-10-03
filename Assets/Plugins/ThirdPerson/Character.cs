@@ -89,7 +89,7 @@ public partial class Character: MonoBehaviour {
             m_Wall,
             m_Jump,
             // movement system depends on gravity to calculate friciton,
-            // so it runs nafter jump
+            // so it runs after jump
             m_Movement,
             m_Tilt,
             // resolves state against the world, runs afte ra
