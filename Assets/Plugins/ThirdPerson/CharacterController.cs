@@ -126,6 +126,7 @@ public sealed class CharacterController {
 
             // if we cast an unlikely number of times, stop
             if (i > 4) {
+                moveEnd = moveStart;
                 Debug.LogError("[cntrlr] cast more than 5 times in a single frame!");
                 break;
             }
@@ -162,6 +163,7 @@ public sealed class CharacterController {
             // if we missed, move to the target position
             var moveTarget = moveEnd + moveDelta;
             if (!didHit) {
+                Debug.Log($"move after {i} casts");
                 moveEnd = moveTarget;
                 // TODO: if this is the first cast, we need to clear the normal, we're in the air
                 break;
