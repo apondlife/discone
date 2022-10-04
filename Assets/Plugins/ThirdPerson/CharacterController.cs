@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -30,14 +31,12 @@ public sealed class CharacterController {
     [UnityEngine.Serialization.FormerlySerializedAs("m_MaxGroundAngle")]
     [SerializeField] private float m_WallAngle;
 
-    [Tooltip("the amount to offset collision casts to avoid precision issues")]
+    [Tooltip("the amount to offset collision casts against the movement to avoid precision issues")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_CastDirOffset")]
     [SerializeField] float m_CastOffset;
 
     [Tooltip("the amount to offset TODO:...?????")]
     [SerializeField] float m_ContactOffset;
-
-    [Tooltip("the amount of fake gravity that is applied in the first move to maintain the character grounded")]
-    [SerializeField] float m_GroundedGravity;
 
     [Header("refs")]
     [Tooltip("the character's capsule")]
@@ -51,10 +50,7 @@ public sealed class CharacterController {
     Vector3 m_Velocity;
 
     /// pending move delta, if there is any
-    Vector3 m_PendingMoveDelta;
-
-    /// the number of collisions this frame
-    int m_Collisions;
+    Vector3 m_PendingDelta;
 
     /// the last wall collision this frame
     CharacterCollision m_Wall;
@@ -64,37 +60,40 @@ public sealed class CharacterController {
 
     // -- debug --
     #if UNITY_EDITOR
+    /// the start position
+    Vector3 m_DebugMoveOrigin;
+
+    /// the delta
+    Vector3 m_DebugMoveDelta;
+
     /// the last collision hit
     List<RaycastHit> m_DebugHits = new List<RaycastHit>();
-    #endif
 
-    #if UNITY_EDITOR
     /// the list of casts this frame
     List<Capsule.Cast> m_DebugCasts = new List<Capsule.Cast>();
+
+    /// a bad hit, an error
+    RaycastHit? m_DebugErrorHit = null;
     #endif
 
     // -- commands --
     /// move the character by a position delta
     public void Move(Vector3 position, Vector3 delta, Vector3 up) {
-        // if the move was big enough to fire
-        var mag = delta.magnitude;
-        if (delta.magnitude <= m_MinMove) {
-            // accumulate it
-            m_PendingMoveDelta += delta;
+        // the move's original position
+        var moveOrigin = position;
 
-            // and once we've accumulated enough, make that move
-            if (m_PendingMoveDelta.magnitude > m_MinMove) {
-                delta = m_PendingMoveDelta;
-                m_PendingMoveDelta = Vector3.zero;
-            }
-            // until then, stop here
-            else {
-                Debug.Log($"[cntrlr] move delta {mag} < {m_MinMove}; accumulating");
-                return;
-            }
-        }
+        // the current submove
+        var moveSrc = moveOrigin;
+        var moveDst = moveSrc;
+        var moveDelta = delta + m_PendingDelta;
 
-        // calculate capsule
+        // store debug move
+        #if UNITY_EDITOR
+        m_DebugMoveDelta = moveDelta;
+        m_DebugMoveOrigin = moveOrigin;
+        #endif
+
+        // pre-calculate cast capsule
         var c = m_Capsule;
         var capsule = new Capsule(
             c.center,
@@ -103,16 +102,9 @@ public sealed class CharacterController {
             up
         );
 
-        // track start and end position to calculate velocity
-        var moveStart = position;
-        var moveEnd = moveStart;
-        var moveDelta = delta;
-        var moveContactOffset = Vector3.zero;
-
         // clear the collisions
-        m_Collisions = 0;
-        m_Wall = default;
-        m_Ground = default;
+        var nextWall = new CharacterCollision();
+        var nextGround = new CharacterCollision();
 
         // DEBUG: reset state
         #if UNITY_EDITOR
@@ -120,32 +112,64 @@ public sealed class CharacterController {
         m_DebugHits.Clear();
         #endif
 
-        // while there is any more to move
+        // while there is any more to move, process what's left of the move
+        // delta as a submove
+        //
+        // ---------------
+        // -- 0. guards --
+        // ---------------
+        // *check to see if we can execute this submove*
+        //
+        // 0a. if the submove is too small, accumulate it for next frame 0b. if
+        // we've cast too many times, we're probably stuck in a corner. drop the
+        // move entirely and reset to input position
+        //
+        // -------------
+        // -- 1. cast --
+        // -------------
+        // *search for collisions*
+        //
+        // 1a. cast from the end of the previous move w/ an offset to avoid
+        //     starting inside collision surfaces and missing 1b. if a miss,
+        //     that means there's nothing to collide with and we can move to the
+        //     end of our cast, we're done! 1c. if hit, then find the center of
+        //     the capsule at the hit point, we'll start the next submove from
+        //     (around) there.
+        //
+        // ----------------
+        // -- 2. prepare --
+        // ----------------
+        // *adjust the next submove*
+        //
+        // 2a. add contact offset to move delta; this is a skin that causes us
+        //     to always hover away from surfaces. we cast at least this amount
+        //     into the surface, and then remove it once we find the hit. 2b. if
+        //     this submove was too small, then accumulate it, for the next
+        //     iteration and make the next submove from the same position as
+        //     this one, instead of the hit point 2c. determine the remaining
+        //     move by projecting the move into the collision surface 2d. track
+        //     collisions
+        //
         var i = 0;
-        while (true) {
-            // is this necessary? yes, it happens a lot.
-            var moveMag = moveDelta.magnitude;
-            if (moveMag <= m_MinMove) {
-                break;
-            }
-
-            // if we cast an unlikely number of times, stop
+        while (moveDelta.magnitude <= m_MinMove) {
+            // if we cast an unlikely number of times, cancel this move
             if (i > k_MaxCasts) {
-                moveEnd = moveStart;
-                Debug.LogError($"[cntrlr] cast more than {k_MaxCasts + 1} times in a single frame!");
+                moveDst = moveOrigin;
+                Debug.Log($"[cntrlr] cast more than {k_MaxCasts + 1} times in a single frame!");
                 break;
             }
 
-            // capsule cast the remaining move
-            var castDir = moveDelta.normalized;
-            var castLen = moveMag + m_CastOffset + m_ContactOffset;
-            var movePos = moveEnd;
-            var castPos = movePos - castDir * m_CastOffset;
+            // this move starts from the previous move's endpoint
+            moveSrc = moveDst;
 
+            // get the next capsule cast, offsetting based on move dir
+            var castSrc = moveSrc - moveDelta.normalized * m_CastOffset;
+            var castDst = moveSrc + moveDelta;
+            var castDelta = castDst - castSrc;
             var cast = capsule.IntoCast(
-                castPos,
-                castDir,
-                castLen
+                castSrc,
+                castDelta.normalized,
+                castDelta.magnitude
             );
 
             // DEBUG: track cast
@@ -166,13 +190,8 @@ public sealed class CharacterController {
             );
 
             // if we missed, move to the target position
-            var moveTarget = moveEnd + moveDelta;
             if (!didHit) {
-                moveEnd = moveTarget;
-                if(i == 0 && Vector3.Dot(moveEnd - moveStart, m_Capsule.gameObject.GetComponent<Character>().State.Curr.Forward) > 0) {
-                    Debug.Log($"it happened!!!!Jkj>>");
-                }
-                // TODO: if this is the first cast, we need to clear the normal, we're in the air
+                moveDst = castDst;
                 break;
             }
 
@@ -181,12 +200,13 @@ public sealed class CharacterController {
             m_DebugHits.Add(hit);
             #endif
 
-            // find the center of the capsule relative to the hit. it should be the intersection
-            // of the capsule's axis and the cast direction
+            // find the center of the capsule relative to the hit. it should be
+            // the intersection of the capsule's axis and the cast direction
             var hitCapsuleCenter = (Vector3)default;
 
-            // first find the capsule's axis: the normal from any collision point always points
-            // towards the capsule's axis at a distance of the radius.
+            // first find the capsule's axis: the normal from any collision
+            // point always points towards the capsule's axis at a distance of
+            // the radius.
             //     ___
             //  .'  ‖  '.
             // ❘    C  <-❘
@@ -200,63 +220,85 @@ public sealed class CharacterController {
 
             // if they're colinear, we can't intersect them
             if (Mathf.Abs(castDotUp) > 0.99f) {
-                // but we know that the hit can only have been the center of one of the
-                // capsule's caps, so instead subtract (h / 2 - r)
+                // but we know that the hit can only have been the center of one
+                // of the capsule's caps, so instead subtract (h / 2 - r)
                 hitCapsuleCenter = axisPoint - Mathf.Sign(castDotUp) * (capsule.Height * 0.5f - capsule.Radius) * capsule.Up;
             }
-            // otherwise the center is the intersection of the cast ray and the capsule's
-            // vertical axis (any center + up)
+            // otherwise the center is the intersection of the cast ray and the
+            // capsule's vertical axis (any center + up)
             else {
-                // find the intersection between the cast ray and the capsule's axis. to deal
-                // with float precision errors, we intersect the cast with a plane containing the axis
-                // and that is orthogonal to the plane containing the axis and cast
+                // find the intersection between the cast ray and the capsule's
+                // axis. to deal with float precision errors, we intersect the
+                // cast with a plane containing the axis and that is orthogonal
+                // to the plane containing the axis and cast
                 var axis = new Ray(axisPoint, capsule.Up);
-                // var localCast = new Ray(movePos, cast.Direction);
 
                 // try to intersect the ray and the plane
                 if (cast.IntoRay().TryIntersectIncidencePlane(axis, out var intersection)) {
                     hitCapsuleCenter = intersection;
                 }
-                // this should not happen; but if it does abort the collision from the last
-                // successful cast
+                // this should not happen; but if it does abort the collision
+                // from the last successful cast
                 else {
-                    Debug.LogError($"[cntrlr] HUGE MISTAKE, THIS SHOULD NEVER HAPPEN EVER EVER..., {Mathf.Abs(castDotUp)}");
+                    Debug.LogError($"[cntrlr] huge mistake! cast and capsule axis were colinear: {Mathf.Abs(castDotUp)}");
                     break;
                 }
             }
 
-            // update move state; next move starts from capsule center and remaining distance
-            moveEnd = hitCapsuleCenter;
+            // update move state; next move starts from capsule center and
+            // remaining distance
+            moveDst = hitCapsuleCenter;
 
-            // calculate the remaining movement
-            // TODO: should have something to do with the angle, considering wall hits
-            var overshoot = moveTarget - moveEnd;
-            moveDelta = Vector3.ProjectOnPlane(overshoot.normalized, hit.normal) * overshoot.magnitude;
-            var groundAngle = Vector3.Angle(overshoot, moveDelta);
+            // calculate next move delta
+            moveDelta = Vector3.zero;
 
-            // limit the move delta when hitting walls or over some custom slope function
-            moveDelta *= groundAngle < m_WallAngle ? 1.0f : 0.0f;
+            // apply the contact offset, for next cast
+            moveDelta += hit.normal * m_ContactOffset;
 
-            // apply the contact offset
-            moveEnd += hit.normal * m_ContactOffset;
+            // displacement if less than min move, accumulate and move from the prev position
+            var displacement = moveDst - moveSrc;
+            if (displacement.magnitude < m_MinMove) {
+                moveDst = moveSrc;
+                moveDelta += displacement;
+            }
 
-            // if we touch any ground surface, we're grounded
-            m_Collisions += 1;
+            // calculate the remaining movement in the plane
+            // TODO: ProjectOnPlane could be a slope function e.g. mR.dir * fn(mR.dir • N) * mR.mag
+            var moveRemaining = castDst - moveDst;
+            var moveProjected = Vector3.ProjectOnPlane(moveRemaining, hit.normal);
 
-            var collision = new CharacterCollision(hit.normal, hit.point);
-            if (Vector3.Angle(hit.normal, Vector3.up) <= m_WallAngle) {
-                m_Ground = collision;
+            // if the angle between our raw remaining move and the move in the plane
+            // are pependicular-ish, don't move along the surface
+            var moveAngle = Vector3.Angle(moveRemaining, moveProjected);
+            if (moveAngle >= m_WallAngle) {
+                moveProjected = Vector3.zero;
+            }
+
+            moveDelta += moveProjected;
+
+            // track collisions
+            var collision = new CharacterCollision(
+                hit.normal,
+                hit.point
+            );
+
+            // track wall & ground collision separately, both for external
+            // querying and for determining our cast offset
+            if (Vector3.Angle(hit.normal, Vector3.up) > m_WallAngle) {
+                nextWall = collision;
             } else {
-                m_Wall = collision;
+                nextGround = collision;
             }
 
             // update state
             i++;
         }
 
-        // store movement; subtract total contact offset when calculating velocity
-        m_Position = moveEnd;
-        m_Velocity = (moveEnd - moveStart) / Time.deltaTime;
+        m_Position = moveDst;
+        m_Velocity = (moveDst - moveOrigin) / Time.deltaTime;
+        m_Wall = nextWall;
+        m_Ground = nextGround;
+        m_PendingDelta = moveDelta;
     }
 
     // -- queries --
@@ -287,40 +329,91 @@ public sealed class CharacterController {
 
     // -- gizmos --
     #if UNITY_EDITOR
-    /// draw gizmos for the cntrlr
+    /// the radius
+    const float k_DebugGizmoRadius = 0.15f;
+
+    // -- gizmos --
+    [Header("gizmos")]
+    [Tooltip("if the initial position and direction gizmo is visible")]
+    [SerializeField] bool m_DrawInput = true;
+
+    [Tooltip("if the raycasts gizmos are visible")]
+    [SerializeField] bool m_DrawCasts = true;
+
+    [Tooltip("if the raycasts gizmos are visible")]
+    [SerializeField] bool m_DrawCastSpheres = true;
+
+    [Tooltip("if the cast hit gizmos are visible")]
+    [SerializeField] bool m_DrawHits = true;
+
+    /// draw gizmos for the controller`
     public void OnDrawGizmos() {
+        // draw the desired ray (pos & delta)
+        if (m_DrawInput) {
+            Gizmos.color = Color.black;
+            Gizmos.DrawSphere(m_DebugMoveOrigin, k_DebugGizmoRadius);
+            Gizmos.DrawRay(m_DebugMoveOrigin, m_DebugMoveDelta);
+        }
+
         // draw the cast lollipops
-        foreach (var cast in m_DebugCasts) {
-            var o1 = cast.Radius * Vector3.up;
-            var o2 = cast.Direction * cast.Length;
+        if (m_DrawCasts) {
+            Color.RGBToHSV(Color.blue, out var iH, out var iS, out var iV);
+            Color.RGBToHSV(Color.red, out var oH, out var oS, out var oV);
 
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(cast.Point2, cast.Radius);
-            Gizmos.DrawLine(cast.Point1 - o1, cast.Point2 + o1);
+            for (var i = m_DebugCasts.Count - 1; i >= 0; i--) {
+                var cast = m_DebugCasts[i];
 
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(cast.Point2 + o2, cast.Radius);
-            Gizmos.DrawLine(cast.Point1 - o1 + o2, cast.Point2 + o1 + o2);
+                var h = cast.Radius * Vector3.up;
+                var delta = cast.Direction * cast.Length;
+
+                Gizmos.color = Color.HSVToRGB(iH, iS, iV);
+                if (m_DrawCastSpheres) {
+                    Gizmos.DrawWireSphere(cast.Point2, cast.Radius);
+                }
+                Gizmos.DrawLine(cast.Point1 - h, cast.Point2 + h);
+
+                Gizmos.color = Color.HSVToRGB(oH, oS, oV);
+                if (m_DrawCastSpheres) {
+                    Gizmos.DrawWireSphere(cast.Point2 + delta, cast.Radius);
+                }
+                Gizmos.DrawLine(cast.Point1 - h + delta, cast.Point2 + h + delta);
+
+                // draw the final line
+                Gizmos.DrawLine(cast.Point2, cast.Point2 + delta);
+                iS *= 0.6f;
+                oS *= 0.6f;
+            }
         }
 
         // draw spheres where the casts hit
-        foreach (var hit in m_DebugHits) {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(hit.point, 0.05f);
+        if (m_DrawHits) {
+            Color.RGBToHSV(Color.yellow, out var h, out var s, out var v);
 
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawRay(hit.point, hit.normal * 0.5f);
+            foreach (var hit in m_DebugHits) {
+                Gizmos.color = Color.HSVToRGB(h, s, v);;
+                Gizmos.DrawSphere(hit.point, k_DebugGizmoRadius);
+                Gizmos.DrawRay(hit.point, hit.normal * 0.5f);
+
+                s *= 0.6f;
+            }
+
+            if (m_DebugErrorHit != null) {
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(m_DebugErrorHit.Value.point, 0.5f);
+            }
         }
 
+        // draw the final position
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(m_Position, k_DebugGizmoRadius);
+
+        // draw labels
         UnityEditor.Handles.color = Color.yellow;
-        var right = Quaternion.AngleAxis(90, Vector3.up) * m_Velocity.normalized;
+        var right = Quaternion.AngleAxis(90.0f, Vector3.up) * m_Velocity.normalized;
         UnityEditor.Handles.Label(
-            m_Position - right * 1.5f,
+            m_Position - right * 0.3f,
             $"casts: {m_DebugCasts.Count} hits: {m_DebugHits.Count}"
         );
-
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawSphere(m_Position, 0.1f);
     }
     #endif
 }
