@@ -17,31 +17,28 @@ sealed partial class Character {
 
     // -- lifecycle --
     void OnDrawGizmos() {
-        if(m_ShowGizmos) {
-            DrawGizmos();
+        if (!m_ShowGizmos) {
+            return;
         }
-    }
 
-    // -- commands --
-    /// draw all the gizmos
-    void DrawGizmos() {
+        // draw gizmos
         m_LabelOffset = Vector3.zero;
 
         // draw controller gizmos
-        m_Controller.DrawGizmos();
+        m_Controller.OnDrawGizmos();
 
-        if(m_State == null) {
+        if (m_State == null) {
             return;
         }
 
         // draw state labels
         DrawLabel($"vy{m_State.Velocity.y}");
 
-        if(m_State.IsInJumpSquat) {
+        if (m_State.IsInJumpSquat) {
             DrawLabel("JumpSquat");
         }
 
-        if(m_State.IsGrounded) {
+        if (m_State.IsGrounded) {
             DrawLabel("Grounded");
         }
     }

@@ -104,7 +104,16 @@ public partial class Character: MonoBehaviour {
     void FixedUpdate() {
         // run simulation
         if (!m_IsPaused) {
-            Simulate();
+            // store the previous frame
+            m_State.Snapshot();
+
+            // read input
+            m_Input.Read();
+
+            // step systems
+            Step();
+
+            // dispatch events
             m_Events.DispatchAll();
         }
 
@@ -112,15 +121,8 @@ public partial class Character: MonoBehaviour {
         transform.position = m_State.Position;
     }
 
-    // run character simulation
-    void Simulate() {
-        // store the previous frame
-        m_State.Snapshot();
-
-        // read input
-        m_Input.Read();
-
-        // run the character systems
+    /// run the character systems
+    void Step() {
         var delta = Time.deltaTime;
         foreach (var system in m_Systems) {
             system.Update(delta);

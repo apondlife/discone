@@ -4,13 +4,13 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the collision info
-public readonly struct CharacterCollision: IEquatable<CharacterCollision> {
+public struct CharacterCollision: IEquatable<CharacterCollision> {
     // -- props --
     /// the normal at the on the collision surface
-    public readonly Vector3 Normal;
+    public Vector3 Normal;
 
     /// the collision point
-    public readonly Vector3 Point;
+    public Vector3 Point;
 
     // -- lifetime --
     /// create a new collision
