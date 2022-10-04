@@ -1,9 +1,8 @@
+#if UNITY_EDITOR
 using UnityEngine;
-using System.Linq;
 
 namespace ThirdPerson {
 
-#if UNITY_EDITOR
 /// debug extensions for the character
 public partial class Character: MonoBehaviour {
     // -- constants --
@@ -11,13 +10,16 @@ public partial class Character: MonoBehaviour {
     const int k_Debug_FrameNone = -1;
 
     /// the debug pause key
-    const KeyCode k_Pause = KeyCode.Alpha5;
+    const KeyCode k_Debug_Pause = KeyCode.Alpha5;
 
     /// the debug frame rewind key
-    const KeyCode k_Rewind = KeyCode.Alpha6;
+    const KeyCode k_Debug_Rewind = KeyCode.Alpha6;
 
     /// the debug frame advance key
-    const KeyCode k_Advance = KeyCode.Alpha7;
+    const KeyCode k_Debug_Advance = KeyCode.Alpha7;
+
+    /// the number of seconds before key repeat
+    const float k_Debug_RepeatTimeout = 0.5f;
 
     // -- props --
     /// if we're debugging
@@ -29,14 +31,32 @@ public partial class Character: MonoBehaviour {
     /// the debug state frame
     CharacterState.Frame m_Debug_StateFrame = null;
 
+    /// the current pressed key
+    KeyCode m_CurrentKey = KeyCode.None;
+
+    /// the time of the current key press
+    float m_CurrentKeyTime = -1.0f;
+
     // -- lifecycle --
     void Update() {
-        if (Input.GetKeyDown(k_Pause)) {
-            Debug_OnPause();
-        } else if (Input.GetKeyDown(k_Rewind)) {
-            Debug_OnFrameRewind();
-        } else if (Input.GetKeyDown(k_Advance)) {
-            Debug_OnFrameAdvance();
+        // capture key press
+        if (Input.GetKeyDown(k_Debug_Pause)) {
+            Debug_OnKeyDown(k_Debug_Pause);
+        } else if (Input.GetKeyDown(k_Debug_Rewind)) {
+            Debug_OnKeyDown(k_Debug_Rewind);
+        } else if (Input.GetKeyDown(k_Debug_Advance)) {
+            Debug_OnKeyDown(k_Debug_Advance);
+        }
+
+        // run key repeat for rewind and advance
+        var isRepeat = (
+            Input.GetKey(m_CurrentKey) &&
+            (m_CurrentKey == k_Debug_Rewind || m_CurrentKey == k_Debug_Advance) &&
+            Time.time - m_CurrentKeyTime > k_Debug_RepeatTimeout
+        );
+
+        if (isRepeat) {
+            Debug_OnKey();
         }
     }
 
@@ -68,12 +88,42 @@ public partial class Character: MonoBehaviour {
         // run the systems for the debug state/input
         Step();
 
+        // log frame info
+        var p = m_State.Prev;
+        var s = m_State.Curr;
+        var r = m_Debug_StateFrame;
+
+        Debug.Log($@"[chrctr] <debug> frame: {m_Debug_FrameOffset}
+prev <p: {p.Position} v: {p.Velocity} w: {!p.Wall.IsNone}>
+step <p: {s.Position} v: {s.Velocity} w: {!s.Wall.IsNone}>
+real <p: {r.Position} v: {r.Velocity} w: {!r.Wall.IsNone}>
+        ");
+
         // ignore any mutations from the step
         m_State.Force(m_Debug_StateFrame);
         m_Debug_StateFrame = null;
     }
 
     // -- events --
+    /// when a key is pressed
+    void Debug_OnKeyDown(KeyCode key) {
+        m_CurrentKey = key;
+        m_CurrentKeyTime = Time.time;
+        Debug_OnKey();
+    }
+
+    /// when a key's action fires
+    void Debug_OnKey() {
+        switch (m_CurrentKey) {
+        case k_Debug_Pause:
+            Debug_OnPause(); break;
+        case k_Debug_Rewind:
+            Debug_OnFrameRewind(); break;
+        case k_Debug_Advance:
+            Debug_OnFrameAdvance(); break;
+        }
+    }
+
     /// when debug pause is pressed
     void Debug_OnPause() {
         // toggle debug state
@@ -102,6 +152,6 @@ public partial class Character: MonoBehaviour {
         Debug_StepFrames(-1);
     }
 }
-#endif
 
 }
+#endif
