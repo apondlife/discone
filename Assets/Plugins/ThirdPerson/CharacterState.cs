@@ -5,15 +5,23 @@ namespace ThirdPerson {
 
 /// the character's authoritative state
 public sealed partial class CharacterState {
+    // -- constants --
+    #if UNITY_EDITOR
+    const uint k_BufferSize = 60 * 5;
+    #else
+    const uint k_BufferSize = 5;
+    #endif
+
     // -- props --
     /// the queue of frames
-    Queue<Frame> m_Frames;
+    Queue<Frame> m_Frames = new Queue<Frame>(k_BufferSize);
 
     // -- lifetime --
-    public CharacterState(Vector3 position, Vector3 forward) {
-        m_Frames = new Queue<Frame>(5);
-        var frame = new Frame(position, forward);
-        Fill(frame);
+    public CharacterState(
+        Vector3 position,
+        Vector3 forward
+    ) {
+        Fill(new Frame(position, forward));
     }
 
     // -- commands --
@@ -56,6 +64,11 @@ public sealed partial class CharacterState {
     /// if currently idle
     public bool IsIdle {
         get => Curr.IsIdle;
+    }
+
+    /// the buffer size
+    public uint BufferSize {
+        get => k_BufferSize;
     }
 
     // -- types --
@@ -217,7 +230,15 @@ public sealed partial class CharacterState {
             res.Forward = Vector3.Slerp(start.Forward, end.Forward, k);
             res.Tilt = Quaternion.Slerp(start.Tilt, end.Tilt, k);
         }
-
     }
+
+    // -- debug --
+    #if UNITY_EDITOR
+    /// set the current frame offset
+    public void Debug_MoveHead(int offset) {
+        m_Frames.Move(offset);
+    }
+    #endif
 }
+
 }

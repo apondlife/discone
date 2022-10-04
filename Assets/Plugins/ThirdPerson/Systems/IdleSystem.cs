@@ -6,8 +6,8 @@ namespace ThirdPerson {
 /// how the character is affected by gravity
 [Serializable]
 sealed class IdleSystem: CharacterSystem {
-    private const float k_IdleSpeedThreshold = 0.1f;
-
+    // -- constants --
+    const float k_IdleSpeedThreshold = 0.1f;
 
     // -- lifetime --
     protected override Phase InitInitialPhase() {

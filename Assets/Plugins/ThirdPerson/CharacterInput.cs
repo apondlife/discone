@@ -2,13 +2,21 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+/// the character's input facade
 public sealed class CharacterInput {
+    // -- constants --
+    #if UNITY_EDITOR
+    const uint k_BufferSize = 60 * 5;
+    #else
+    const uint k_BufferSize = 30;
+    #endif
+
     // -- props --
     /// the source of input frames
     CharacterInputSource m_Source = null;
 
     /// the most recent input frames
-    Queue<Frame> m_Frames = new Queue<Frame>(30);
+    Queue<Frame> m_Frames = new Queue<Frame>(k_BufferSize);
 
     // -- commands --
     /// drive the input with a source
@@ -54,6 +62,11 @@ public sealed class CharacterInput {
         return false;
     }
 
+    /// the buffer size
+    public uint BufferSize {
+        get => k_BufferSize;
+    }
+
     // -- types --
     /// the minimial frame of input for third person to work
     public interface Frame {
@@ -92,6 +105,14 @@ public sealed class CharacterInput {
             get => m_IsJumpDown;
         }
     }
+
+    // -- debug --
+    #if UNITY_EDITOR
+    /// set the current frame offset
+    public void Debug_MoveHead(int offset) {
+        m_Frames.Move(offset);
+    }
+    #endif
 }
 
 }

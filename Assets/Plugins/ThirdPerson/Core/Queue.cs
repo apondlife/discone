@@ -34,6 +34,11 @@ public sealed class Queue<T> {
         }
     }
 
+    /// move the head of the queue by the offset
+    public void Move(int offset) {
+        m_Head = GetIndex(offset);
+    }
+
     // -- queries --
     /// if the queue is empty
     public bool IsEmpty {

@@ -8,10 +8,15 @@ namespace ThirdPerson {
 /// collision handling
 [Serializable]
 public sealed class CharacterController {
-    // why are we not using rigidbodies? they seem to be more annoying to work around. since
-    // we have a bunch of custom unrealistic collision physics, might as well implement it
-    // with full control. the best thing we would get from rigidbodies is the possibility of
-    // other objects colliding with the character, we can implement that as an add-on/child
+    // why are we not using rigidbodies? they are annoying to work around. since
+    // we have a bunch of custom, unrealistic collision physics, we might as
+    // well implement it with full control. the best thing we would get from
+    // rigidbodies is the possibility of other objects colliding with the
+    // character, we can implement that as an add-on/child
+
+    // -- constants --
+    /// the max amount of casts we do in a single frame
+    const int k_MaxCasts = 4;
 
     // -- fields --
     [Header("config")]
@@ -125,9 +130,9 @@ public sealed class CharacterController {
             }
 
             // if we cast an unlikely number of times, stop
-            if (i > 4) {
+            if (i > k_MaxCasts) {
                 moveEnd = moveStart;
-                Debug.LogError("[cntrlr] cast more than 5 times in a single frame!");
+                Debug.LogError($"[cntrlr] cast more than {k_MaxCasts + 1} times in a single frame!");
                 break;
             }
 
@@ -163,8 +168,10 @@ public sealed class CharacterController {
             // if we missed, move to the target position
             var moveTarget = moveEnd + moveDelta;
             if (!didHit) {
-                Debug.Log($"move after {i} casts");
                 moveEnd = moveTarget;
+                if(i == 0 && Vector3.Dot(moveEnd - moveStart, m_Capsule.gameObject.GetComponent<Character>().State.Curr.Forward) > 0) {
+                    Debug.Log($"it happened!!!!Jkj>>");
+                }
                 // TODO: if this is the first cast, we need to clear the normal, we're in the air
                 break;
             }
@@ -281,7 +288,7 @@ public sealed class CharacterController {
     // -- gizmos --
     #if UNITY_EDITOR
     /// draw gizmos for the cntrlr
-    public void DrawGizmos() {
+    public void OnDrawGizmos() {
         // draw the cast lollipops
         foreach (var cast in m_DebugCasts) {
             var o1 = cast.Radius * Vector3.up;
