@@ -87,6 +87,12 @@ public sealed class CharacterController {
         var moveDst = moveSrc;
         var moveDelta = delta + m_PendingDelta;
 
+        // if this is too small, just aggregate
+        if (moveDelta.magnitude <= m_MinMove) {
+            m_PendingDelta = moveDelta;
+            return;
+        }
+
         // store debug move
         #if UNITY_EDITOR
         m_DebugMoveDelta = moveDelta;
@@ -151,11 +157,12 @@ public sealed class CharacterController {
         //     collisions
         //
         var i = 0;
-        while (moveDelta.magnitude <= m_MinMove) {
+        while (moveDelta.magnitude > m_MinMove) {
             // if we cast an unlikely number of times, cancel this move
+            // TODO: should moveDelta be zero here?
             if (i > k_MaxCasts) {
                 moveDst = moveOrigin;
-                Debug.Log($"[cntrlr] cast more than {k_MaxCasts + 1} times in a single frame!");
+                Debug.LogWarning($"[cntrlr] cast more than {k_MaxCasts + 1} times in a single frame!");
                 break;
             }
 
@@ -169,7 +176,7 @@ public sealed class CharacterController {
             var cast = capsule.IntoCast(
                 castSrc,
                 castDelta.normalized,
-                castDelta.magnitude
+                castDelta.magnitude + m_ContactOffset
             );
 
             // DEBUG: track cast
@@ -188,6 +195,9 @@ public sealed class CharacterController {
                 m_CollisionMask,
                 QueryTriggerInteraction.Ignore
             );
+
+            // zero out move delta, unless we hit
+            moveDelta = Vector3.zero;
 
             // if we missed, move to the target position
             if (!didHit) {
@@ -250,17 +260,9 @@ public sealed class CharacterController {
             moveDst = hitCapsuleCenter;
 
             // calculate next move delta
-            moveDelta = Vector3.zero;
-
             // apply the contact offset, for next cast
             moveDelta += hit.normal * m_ContactOffset;
 
-            // displacement if less than min move, accumulate and move from the prev position
-            var displacement = moveDst - moveSrc;
-            if (displacement.magnitude < m_MinMove) {
-                moveDst = moveSrc;
-                moveDelta += displacement;
-            }
 
             // calculate the remaining movement in the plane
             // TODO: ProjectOnPlane could be a slope function e.g. mR.dir * fn(mR.dir • N) * mR.mag
@@ -273,6 +275,14 @@ public sealed class CharacterController {
             if (moveAngle >= m_WallAngle) {
                 moveProjected = Vector3.zero;
             }
+
+            // displacement if less than min move, accumulate and move from the prev position
+            var displacement = moveDst - moveSrc;
+            if (displacement.magnitude < m_MinMove) {
+                moveDst = moveSrc;
+                moveDelta += displacement;
+            }
+
 
             moveDelta += moveProjected;
 
@@ -341,7 +351,7 @@ public sealed class CharacterController {
     [SerializeField] bool m_DrawCasts = true;
 
     [Tooltip("if the raycasts gizmos are visible")]
-    [SerializeField] bool m_DrawCastSpheres = true;
+    [SerializeField] bool m_DrawCastCapsule = true;
 
     [Tooltip("if the cast hit gizmos are visible")]
     [SerializeField] bool m_DrawHits = true;
@@ -367,19 +377,20 @@ public sealed class CharacterController {
                 var delta = cast.Direction * cast.Length;
 
                 Gizmos.color = Color.HSVToRGB(iH, iS, iV);
-                if (m_DrawCastSpheres) {
+                if (m_DrawCastCapsule) {
                     Gizmos.DrawWireSphere(cast.Point2, cast.Radius);
+                    Gizmos.DrawLine(cast.Point1 - h, cast.Point2 + h);
                 }
-                Gizmos.DrawLine(cast.Point1 - h, cast.Point2 + h);
 
                 Gizmos.color = Color.HSVToRGB(oH, oS, oV);
-                if (m_DrawCastSpheres) {
+                if (m_DrawCastCapsule) {
                     Gizmos.DrawWireSphere(cast.Point2 + delta, cast.Radius);
+                    Gizmos.DrawLine(cast.Point1 - h + delta, cast.Point2 + h + delta);
                 }
-                Gizmos.DrawLine(cast.Point1 - h + delta, cast.Point2 + h + delta);
 
                 // draw the final line
-                Gizmos.DrawLine(cast.Point2, cast.Point2 + delta);
+                Gizmos.DrawSphere(cast.Capsule.Center, k_DebugGizmoRadius*oS);
+                Gizmos.DrawLine(cast.Capsule.Center, cast.Capsule.Center + delta);
                 iS *= 0.6f;
                 oS *= 0.6f;
             }
@@ -390,10 +401,9 @@ public sealed class CharacterController {
             Color.RGBToHSV(Color.yellow, out var h, out var s, out var v);
 
             foreach (var hit in m_DebugHits) {
-                Gizmos.color = Color.HSVToRGB(h, s, v);;
+                Gizmos.color = Color.HSVToRGB(h, s, v);
                 Gizmos.DrawSphere(hit.point, k_DebugGizmoRadius);
                 Gizmos.DrawRay(hit.point, hit.normal * 0.5f);
-
                 s *= 0.6f;
             }
 
@@ -409,10 +419,9 @@ public sealed class CharacterController {
 
         // draw labels
         UnityEditor.Handles.color = Color.yellow;
-        var right = Quaternion.AngleAxis(90.0f, Vector3.up) * m_Velocity.normalized;
         UnityEditor.Handles.Label(
-            m_Position - right * 0.3f,
-            $"casts: {m_DebugCasts.Count} hits: {m_DebugHits.Count}"
+            m_Position - Quaternion.AngleAxis(90.0f, Vector3.up) * m_Velocity.normalized * 0.3f,
+            $"casts: {m_DebugCasts.Count} hits: {m_DebugHits.Count} pending: {m_PendingDelta}"
         );
     }
     #endif

@@ -69,38 +69,46 @@ public partial class Character: MonoBehaviour {
 
         // don't move outside the tape
         var next = m_Debug_FrameOffset + frames;
-        if (next < 0 || next >= Mathf.Min(m_State.BufferSize, m_Input.BufferSize)) {
+        if (next >= Mathf.Min(m_State.BufferSize, m_Input.BufferSize)) {
             return;
         }
 
-        m_Debug_FrameOffset = next;
+        if(next < 0) {
+            m_State.Snapshot();
+            m_Input.Read();
+            m_Debug_FrameOffset = 0;
+        } else  {
+            m_Debug_FrameOffset = next;
 
-        // move the head of the state and input tapes
-        m_State.Debug_MoveHead(frames);
-        m_Input.Debug_MoveHead(frames);
+            // move the head of the state and input tapes
+            m_State.Debug_MoveHead(frames);
+            m_Input.Debug_MoveHead(frames);
 
-        // copy the current state
-        m_Debug_StateFrame = m_State.Curr.Copy();
+            // copy the current state
+            m_Debug_StateFrame = m_State.Curr.Copy();
 
-        // step from a clean copy of the previous state
-        m_State.Force(m_State.Prev);
+            // step from a clean copy of the previous state
+            m_State.Force(m_State.Prev);
+        }
 
         // run the systems for the debug state/input
         Step();
 
         // log frame info
-        var p = m_State.Prev;
-        var s = m_State.Curr;
-        var r = m_Debug_StateFrame;
+//         var p = m_State.Prev;
+//         var s = m_State.Curr;
+//         var r = m_Debug_StateFrame;
 
-        Debug.Log($@"[chrctr] <debug> frame: {m_Debug_FrameOffset}
-prev <p: {p.Position} v: {p.Velocity} w: {!p.Wall.IsNone}>
-step <p: {s.Position} v: {s.Velocity} w: {!s.Wall.IsNone}>
-real <p: {r.Position} v: {r.Velocity} w: {!r.Wall.IsNone}>
-        ");
+//         Debug.Log($@"[chrctr] <debug> frame: {m_Debug_FrameOffset ?? 0}
+// prev <p: {p.Position} v: {p.Velocity} w: {!p.Wall.IsNone}>
+// step <p: {s.Position} v: {s.Velocity} w: {!s.Wall.IsNone}>
+// real <p: {r.Position} v: {r.Velocity} w: {!r.Wall.IsNone}>
+//         ");
 
         // ignore any mutations from the step
-        m_State.Force(m_Debug_StateFrame);
+        if(m_Debug_StateFrame != null) {
+            m_State.Force(m_Debug_StateFrame);
+        }
         m_Debug_StateFrame = null;
     }
 
