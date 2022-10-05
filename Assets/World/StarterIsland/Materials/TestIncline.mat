@@ -67,13 +67,13 @@ Material:
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NotSteep: 0.945
+    - _NotSteep: 10
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Steep: 0.163
+    - _Steep: 80
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
@@ -81,6 +81,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FlatColor: {r: 0.66666675, g: 1, b: 0.5, a: 1}
     - _FlatWallColor: {r: 1, g: 0.5, b: 0.9444444, a: 1}
+    - _NegativeRampColor: {r: 0.32741582, g: 0.598475, b: 0.90599996, a: 0.9843137}
     - _NegativeSteepColor: {r: 0.59414077, g: 0.5, b: 1, a: 1}
     - _NonSteepFloor: {r: 0.76485384, g: 0.9254902, b: 0.4627451, a: 1}
     - _RampColor: {r: 0.2862745, g: 0.7379536, b: 0.7921569, a: 1}

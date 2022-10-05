@@ -6,13 +6,14 @@ Shader "Custom/InclineShader"
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
         _Delta("Delta", Range(0, 0.1)) = 0.001
-        _Steep("Steep", Range(0, 1)) = 1
-        _NotSteep("NotSteep", Range(0, 1)) = 0
+        _Steep("Steep Angle (deg)", Range(0, 90)) = 90
+        _NotSteep("Not Steep Angle (deg)", Range(0, 90)) = 0
         _FlatColor("FlatColor", Color) = (1, 1, 1, 1)
         _FlatWallColor("FlatWallColor", Color) = (1, 1, 1, 1)
         _SteepColor("SteepColor", Color) = (1, 1, 1, 1)
         _NegativeSteepColor("NegativeSteepColor", Color) = (1, 1, 1, 1)
-        _RampColor("RampColor", Color) = (1, 1, 1, 1)
+        _RampColor("Ramp Color", Color) = (1, 1, 1, 1)
+        _NegativeRampColor("Negative Ramp Color", Color) = (1, 1, 1, 1)
         _NonSteepFloor("NonSteepFloor", Color) = (1, 1, 1, 1)
     }
     SubShader
@@ -43,11 +44,15 @@ Shader "Custom/InclineShader"
         fixed4 _SteepColor;
         fixed4 _NegativeSteepColor;
         fixed4 _RampColor;
+        fixed4 _NegativeRampColor;
         fixed4 _NonSteepFloor;
 
         float _Delta;
         float _Steep;
         float _NotSteep;
+
+        const static float PI = 3.14159265;
+        const static float DEGTORAD = PI / 180.0f;
 
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -65,18 +70,24 @@ Shader "Custom/InclineShader"
             fixed a = dot(IN.worldNormal, float3(0, 1, 0));
             fixed d = abs(a);
 
+            fixed steep = cos(_Steep * DEGTORAD);
+            fixed notsteep = cos(_NotSteep * DEGTORAD);
             if(d >= 1-_Delta) {
                 c = _FlatColor;
             } else if(d < _Delta) {
                 c = _FlatWallColor;
-            } else if(d < _Steep) {
+            } else if(d < steep) {
                 if(a < 0) {
                     c = _NegativeSteepColor;
                 } else {
                     c = _SteepColor;
                 }
-            } else if(d < _NotSteep) {
-                c = _RampColor;
+            } else if(d < notsteep) {
+                if(a < 0) {
+                    c = _NegativeRampColor;
+                } else {
+                    c = _RampColor;
+                }
             } else {
                 c = _NonSteepFloor;
             }
