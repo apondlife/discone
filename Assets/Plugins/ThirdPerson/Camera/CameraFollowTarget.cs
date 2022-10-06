@@ -169,9 +169,6 @@ public class CameraFollowTarget: MonoBehaviour {
     RaycastHit? m_VizHit;
 
     /// the position of the camera pre-collision on the player's plane
-    Vector3 m_PrecastPos;
-
-    /// the project position along the curve
     Vector3 m_ProjPos;
 
     /// the destination position of the camera post-collision
@@ -203,6 +200,7 @@ public class CameraFollowTarget: MonoBehaviour {
         // set deps
         var character = GetComponentInParent<Character>();
         m_State = character.State;
+        m_Colliders = new Collider[5];
     }
 
     void FixedUpdate() {
@@ -342,20 +340,27 @@ public class CameraFollowTarget: MonoBehaviour {
 
     // -- queries --
     /// find the camera's best position given a candidate position
+    /// see: https://miro.com/app/board/uXjVOWfpI6I=/?moveToWidget=3458764535240497690&cot=14
     public Vector3 FindDestPos(Vector3 candidate) {
+        // the final position
+        var destPos = candidate;
+
         // the character's position
         var origin = transform.position;
 
         // step 1: cast from the character to the ideal position to see if any
-        // surface is blocking visibility
-        var vizCast = candidate - origin;
-        var vizDir = vizCast.normalized;
-        var vizLen = vizCast.magnitude;
+        // surface is blocking visibility; use a sphere cast so we don't get
+        // closer than the contact offset
+        var vizCastStart = candidate - origin;
+        var vizLen = vizCastStart.magnitude;
+        var vizDir = vizCastStart.normalized;
 
-        var didHit = Physics.Linecast(
+        var didHit = Physics.SphereCast(
             origin,
-            candidate,
+            m_ContactOffset,
+            vizDir,
             out m_Hit,
+            vizLen,
             m_CollisionMask,
             QueryTriggerInteraction.Ignore
         );
@@ -367,126 +372,90 @@ public class CameraFollowTarget: MonoBehaviour {
 
         // if the target is visible, we have our desired position
         if (!didHit) {
-            return candidate;
+            return destPos;
         }
 
-        var vizHit = m_Hit;
-        var vizPos = vizHit.point;
-        var vizNormal = vizHit.normal;
+        // otherwise, we found the point on this surface (note: offset by c.o.
+        // so that step 3b works)
+        var vizNormal = m_Hit.normal;
+        var vizPos = OffsetHit(m_Hit);
 
-        // aside 1.a: accumulate the normal of all contact surfaces to push the
-        // camera away a bit at the end (e.g. skin / contact offset)
-        var contactNormal = vizNormal;
+        // step 2: project the candidate along the plane of the hit surface
+        // using the remaining distance to candidate
+        var projLen = Vector3.Distance(candidate, vizPos);
+        var projDir = Vector3.Cross(vizNormal, Vector3.Cross(vizDir, vizNormal)).normalized;
+        var projPos = vizPos + projDir * projLen;
 
-        // step 2: if a surface is blocking the camera, cast up and down along
-        // the vertical axis containing the ideal position in the direction of
-        // the surface.
-        var precastDir = Mathf.Sign(vizNormal.y) * Vector3.up;
-        var precastLen = 2.0f * m_Distance; // the "diamater" of the curve
-
-        // we're going to use a position on the axis that intersects the surface
-        // plane. this has a nice side-effect of allowing the camera to see into
-        // enclosed spaces from outside
-        var vizPlane = new Plane(vizNormal, vizPos);
-        var vizRay = new Ray(m_CurvePos, precastDir);
-
-        // TODO: if we can't intersect, this is a wall. we haven't implemented
-        // walls yet
-        if (!vizPlane.Raycast(vizRay, out var distance) && distance < precastLen) {
-            Debug.LogWarning($"[camera] vision cast into wall @ dist {distance}");
-            distance = 0.0f;
-        }
-
-        var precastPos = m_CurvePos + precastDir * distance;
-
-        // store gizmo state
-        #if UNITY_EDITOR
-        m_PrecastPos = precastPos;
-        #endif
-
-        // cast up / down along the vertical axis to see if there's a floor or
-        // ceiling in our way.
-        didHit = Physiics.BounceCast(
-            precastPos,
-            precastDir,
-            out m_Hit,
-            precastLen,
-            m_CollisionMask,
-            QueryTriggerInteraction.Ignore
-        );
-
-        // step 3: the projected pos could still be underground or out of view,
-        // so we want run a few more casts to the project point find the nearest
-        // visible point.
-        var projPos = precastPos;
-        if (didHit) {
-            projPos = m_Hit.point;
-        }
+        // if nothing is blocking the projected pos, it's our destination
+        // position, but...
+        destPos = projPos;
 
         // store gizmo state
         #if UNITY_EDITOR
         m_ProjPos = projPos;
-        m_DestSource = 0;
         #endif
 
-        // keep track of the current best dest position and normal, and the
-        // distance of the closest option
-        var destPos = projPos;
-        var destDir = Vector3.zero; // TODO: should m_Hit.normal be used here for contact aggregation?
-        var destMinDist = float.MaxValue;
+        // step 3: we may have projected ourselves into objects or into a place
+        // that is occluded (e.g. by a doorframe), so try and escape these
+        // problems
 
-        // do another bounce cast from the position on the player's original
-        // visible surface
-        didHit = Physiics.RaycastLast(
-            vizPos,
-            projPos,
+        // step 3.a: first, try to exit vertically. if a surface is blocking the
+        // camera, cast up and down along the vertical axis containing the ideal
+        // position in the direction of the surface.
+        var exitVertDir = Mathf.Sign(vizNormal.y) * Vector3.up;
+        var exitVertLen = 2.0f * m_Distance; // the "diamater" of the curve TODO: is this right?
+
+        didHit = Physiics.BounceCast(
+            destPos,
+            exitVertDir,
             out m_Hit,
+            exitVertLen,
             m_CollisionMask,
             QueryTriggerInteraction.Ignore
         );
 
-        // if we hit anything, it's our new best position
         if (didHit) {
-            destPos = m_Hit.point;
-            destDir = m_Hit.normal;
-            destMinDist = Vector3.SqrMagnitude(destPos - projPos);
-
-            #if UNITY_EDITOR
-            m_DestSource = 1;
-            #endif
+            destPos = OffsetHit(m_Hit);
         }
 
-        // also do a cast from the player
-        didHit = Physics.Linecast(
-            origin,
-            projPos,
-            out m_Hit,
-            m_CollisionMask,
-            QueryTriggerInteraction.Ignore
-        );
+        // step 3.b: if we didn't exit vertically, we're still in the viz plane.
+        // try to exit along it to deal with occluders like doorways by casting
+        // from the viz pos to dest pos.
+        if (!didHit) {
+            var exitPlaneSrc = vizPos;
+            var exitPlaneDst = destPos;
 
-        // if the player cast hit
-        if (didHit) {
-            var nextPos = m_Hit.point;
-            var nextDir = m_Hit.normal;
-            var nextDist = Vector3.SqrMagnitude(nextPos - projPos);
+            didHit = Physics.Linecast(
+                exitPlaneSrc,
+                exitPlaneDst,
+                out m_Hit,
+                m_CollisionMask,
+                QueryTriggerInteraction.Ignore
+            );
 
-            // and was closer, it's our new best position
-            if (nextDist < destMinDist) {
-                destPos = nextPos;
-                destDir = nextDir;
-                destMinDist = nextDist;
-
-                #if UNITY_EDITOR
-                m_DestSource = 2;
-                #endif
+            if (didHit) {
+                destPos = OffsetHit(m_Hit);
             }
         }
 
-        // aside 1.b: accumulate this surface normal on the contact normal
-        contactNormal = Vector3.Normalize(contactNormal + destDir);
+        // // step 4: do a final vision cast from the player to make sure the destination
+        // // point is visible.
+        // var vizCastEndSrc = origin;
+        // var vizCastEndDst = destPos;
 
-        return destPos + contactNormal * m_ContactOffset;
+        // didHit = Physics.Linecast(
+        //     vizCastEndSrc,
+        //     vizCastEndDst,
+        //     out m_Hit,
+        //     m_CollisionMask,
+        //     QueryTriggerInteraction.Ignore
+        // );
+
+        // if (didHit) {
+                // destPos = OffsetHit(m_Hit);
+        // }
+
+        return destPos;
     }
 
     public void SetInvertY(bool value) {
@@ -517,6 +486,11 @@ public class CameraFollowTarget: MonoBehaviour {
         get => m_FreeLook_Enabled;
     }
 
+    /// the hit point adjusted by the contact offset
+    Vector3 OffsetHit(RaycastHit hit) {
+        return hit.point + m_ContactOffset * hit.normal;
+    }
+
     // -- debug --
     #if UNITY_EDITOR
     void OnDrawGizmos() {
@@ -536,12 +510,12 @@ public class CameraFollowTarget: MonoBehaviour {
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawRay(vizHit.point, vizHit.normal);
-        Gizmos.DrawSphere(m_PrecastPos + r(), 0.1f);
+        Gizmos.DrawSphere(m_ProjPos + r(), 0.1f);
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(
-            m_PrecastPos,
-            m_PrecastPos + Mathf.Sign(vizHit.normal.y) * 2.0f * m_Distance * Vector3.up
+            m_ProjPos,
+            m_ProjPos + Mathf.Sign(vizHit.normal.y) * 2.0f * m_Distance * Vector3.up
         );
 
         Gizmos.color = Color.blue;
