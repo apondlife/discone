@@ -200,7 +200,6 @@ public class CameraFollowTarget: MonoBehaviour {
         // set deps
         var character = GetComponentInParent<Character>();
         m_State = character.State;
-        m_Colliders = new Collider[5];
     }
 
     void FixedUpdate() {
