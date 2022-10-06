@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -96,8 +97,8 @@ public sealed class Store: ScriptableObject {
 
         // write the records to disk
         await Task.WhenAll(
-            SaveRecord<PlayerRec>(PlayerPath, m_Player),
-            SaveRecord<WorldRec>(WorldPath, m_World)
+            SaveRecord<WorldRec>(WorldPath, m_World),
+            SaveRecord<PlayerRec>(PlayerPath, m_Player)
         );
     }
 
