@@ -8,13 +8,13 @@ Shader "Custom/InclineShader"
         _Delta("Delta", Range(0, 0.1)) = 0.001
         _Steep("Steep Angle (deg)", Range(0, 90)) = 90
         _NotSteep("Not Steep Angle (deg)", Range(0, 90)) = 0
-        _FlatColor("FlatColor", Color) = (1, 1, 1, 1)
-        _FlatWallColor("FlatWallColor", Color) = (1, 1, 1, 1)
-        _SteepColor("SteepColor", Color) = (1, 1, 1, 1)
-        _NegativeSteepColor("NegativeSteepColor", Color) = (1, 1, 1, 1)
-        _RampColor("Ramp Color", Color) = (1, 1, 1, 1)
-        _NegativeRampColor("Negative Ramp Color", Color) = (1, 1, 1, 1)
-        _NonSteepFloor("NonSteepFloor", Color) = (1, 1, 1, 1)
+        [HDR] _FlatColor("FlatColor", Color) = (1, 1, 1, 1)
+        [HDR] _FlatWallColor("FlatWallColor", Color) = (1, 1, 1, 1)
+        [HDR] _SteepColor("SteepColor", Color) = (1, 1, 1, 1)
+        [HDR] _NegativeSteepColor("NegativeSteepColor", Color) = (1, 1, 1, 1)
+        [HDR] _RampColor("Ramp Color", Color) = (1, 1, 1, 1)
+        [HDR] _NegativeRampColor("Negative Ramp Color", Color) = (1, 1, 1, 1)
+        [HDR] _NonSteepFloor("NonSteepFloor", Color) = (1, 1, 1, 1)
     }
     SubShader
     {
