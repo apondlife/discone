@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// the persistence container
 public sealed class Store: ScriptableObject {
@@ -137,13 +138,21 @@ public sealed class Store: ScriptableObject {
     }
 
     // -- io --
-    /// the root store path
-    string RootPath {
+    /// the data directory path
+    string DataPath {
         #if UNITY_EDITOR
         get => Path.Combine(Application.dataPath, "..", "Artifacts", "data");
         #else
         get => Application.persistentDataPath;
         #endif
+    }
+
+    /// the root store path
+    string RootPath {
+        get => Path.Combine(
+            DataPath,
+            SceneManager.GetActiveScene().name
+        );
     }
 
     /// the path to the world file
