@@ -6,32 +6,35 @@ namespace ThirdPerson {
 
 /// a follow target that rotates around the player
 public class CameraFollowTarget: MonoBehaviour {
+    // -- state --
+    [Header("state")]
+    [Tooltip("the current yaw (rotation around the y-axis); relative to the zero dir")]
+    [SerializeField] float m_Yaw = 0.0f;
+
+    [Tooltip("the current pitch (rotation around the x-axis)")]
+    [SerializeField] float m_Pitch = 0.0f;
+
     // -- tunables --
     [Header("tunables")]
     [Tooltip("the collision mask for the camera with the world")]
     [SerializeField] private LayerMask m_CollisionMask;
 
     [Tooltip("the fixed distance from the target")]
-    [FormerlySerializedAs("m_Distance")]
     [SerializeField] float m_BaseDistance;
 
     [Tooltip("how much the camera yaws around the character as a fn of angle")]
     [SerializeField] AnimationCurve m_YawCurve;
 
     [Tooltip("the max speed the camera yaws around the character")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_MaxYawSpeed")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_YawSpeed")]
     [SerializeField] float m_MaxYawSpeed;
 
     [Tooltip("the acceleration of the camera yaw")]
     [SerializeField] float m_YawAcceleration;
 
     [Tooltip("the minimum angle the camera rotates around the character vertically")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_MinAngle")]
     [SerializeField] float m_MinPitch;
 
     [Tooltip("the maximum angle the camera rotates around the character vertically")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_MaxAngle")]
     [SerializeField] float m_MaxPitch;
 
     [Tooltip("the maximum pitch speed")]
@@ -124,14 +127,8 @@ public class CameraFollowTarget: MonoBehaviour {
     [SerializeField] InputActionReference m_FreeLook;
 
     // -- props --
-    /// the current yaw relative to the zero dir
-    [SerializeField] float m_Yaw = 0.0f;
-
     /// the current yaw speed
     float m_YawSpeed = 0.0f;
-
-    /// the current pitch
-    [SerializeField] float m_Pitch = 0.0f;
 
     /// the current pitch speed
     float m_PitchSpeed = 0.0f;
@@ -159,24 +156,6 @@ public class CameraFollowTarget: MonoBehaviour {
 
     /// storage for raycasts
     RaycastHit m_Hit;
-
-    /// the position of the camera pre-collision on the curve
-    Vector3 m_CurvePos;
-
-    // -- p/debug
-    #if UNITY_EDITOR
-    /// the vision cast hit, if any
-    RaycastHit? m_VizHit;
-
-    /// the position of the camera pre-collision on the player's plane
-    Vector3 m_ProjPos;
-
-    /// the destination position of the camera post-collision
-    Vector3 m_DestPos;
-
-    /// the destination source (proj/viz/player)
-    int m_DestSource = 0;
-    #endif
 
     // -- lifecycle --
     void OnValidate() {
@@ -321,12 +300,6 @@ public class CameraFollowTarget: MonoBehaviour {
         // find the camera's final pos
         var destPos = FindDestPos(curvePos);
 
-        // store gizmo state
-        #if UNITY_EDITOR
-        m_DestPos = destPos;
-        m_CurvePos = curvePos;
-        #endif
-
         // update target position and forward
         m_Target.position = Vector3.MoveTowards(
             m_Target.position,
@@ -364,11 +337,6 @@ public class CameraFollowTarget: MonoBehaviour {
             QueryTriggerInteraction.Ignore
         );
 
-        // store gizmo state
-        #if UNITY_EDITOR
-        m_VizHit = didHit ? m_Hit : null;
-        #endif
-
         // if the target is visible, we have our desired position
         if (!didHit) {
             return destPos;
@@ -388,11 +356,6 @@ public class CameraFollowTarget: MonoBehaviour {
         // if nothing is blocking the projected pos, it's our destination
         // position, but...
         destPos = projPos;
-
-        // store gizmo state
-        #if UNITY_EDITOR
-        m_ProjPos = projPos;
-        #endif
 
         // step 3: we may have projected ourselves into objects or into a place
         // that is occluded (e.g. by a doorframe), so try and escape these
@@ -489,50 +452,6 @@ public class CameraFollowTarget: MonoBehaviour {
     Vector3 OffsetHit(RaycastHit hit) {
         return hit.point + m_ContactOffset * hit.normal;
     }
-
-    // -- debug --
-    #if UNITY_EDITOR
-    void OnDrawGizmos() {
-        Vector3 r() => Random.insideUnitSphere * 0.05f;
-
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawSphere(m_CurvePos + r(), 0.1f);
-
-        Gizmos.color = Color.Lerp(Color.yellow, Color.red, 0.5f);
-        Gizmos.DrawLine(m_CurvePos, transform.position);
-        if (m_VizHit == null) {
-            return;
-        }
-
-        var vizHit = m_VizHit.Value;
-        Gizmos.DrawSphere(vizHit.point + r(), 0.1f);
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(vizHit.point, vizHit.normal);
-        Gizmos.DrawSphere(m_ProjPos + r(), 0.1f);
-
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(
-            m_ProjPos,
-            m_ProjPos + Mathf.Sign(vizHit.normal.y) * 2.0f * m_Distance * Vector3.up
-        );
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(m_ProjPos + r(), 0.1f);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(m_CurvePos, m_DestPos);
-
-        Gizmos.color = (m_DestSource) switch {
-            0 => Color.white,
-            1 => Color.Lerp(Color.white, Color.magenta, 0.5f),
-            _ => Color.Lerp(Color.white, Color.green, 0.5f),
-        };
-
-        Gizmos.DrawLine(m_ProjPos, m_DestPos);
-        Gizmos.DrawWireSphere(m_DestPos + r(), 0.1f);
-    }
-    #endif
 }
 
 }
