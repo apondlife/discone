@@ -312,6 +312,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc3d0067bd335fb419b025c67fd4c1df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Yaw: 0
+  m_Pitch: 0
   m_CollisionMask:
     serializedVersion: 2
     m_Bits: 385
@@ -392,7 +394,7 @@ MonoBehaviour:
   m_MaxPitchSpeed: 50
   m_PitchAcceleration: 100
   m_LocalSpeed: 13
-  m_ContactOffset: 0.12
+  m_ContactOffset: 0.38
   m_Distance_SpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -501,8 +503,6 @@ MonoBehaviour:
   m_LookAtTarget: {fileID: 3032161264613087381}
   m_Target: {fileID: 3673039484627793572}
   m_FreeLook: {fileID: 4626327253638621584, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
-  m_Yaw: 0
-  m_Pitch: 0
 --- !u!1 &3760618876817645504
 GameObject:
   m_ObjectHideFlags: 0
@@ -840,7 +840,7 @@ MonoBehaviour:
     m_Capsule: {fileID: 1972163625}
     m_DrawInput: 1
     m_DrawCasts: 1
-    m_DrawCastSpheres: 1
+    m_DrawCastCapsule: 1
     m_DrawHits: 1
   m_ShowGizmos: 1
 --- !u!136 &1972163625
