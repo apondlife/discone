@@ -46,6 +46,8 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the rate of change of local distance of the camera to the target")]
     [SerializeField] float m_LocalSpeed;
 
+    // TODO: this is the camera's radius
+    // TODO: make all the camera's casts sphere casts
     [Tooltip("the amount of offset the camera during collision")]
     [SerializeField] float m_ContactOffset;
 
@@ -74,6 +76,7 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the speed the free look camera pitches")]
     [SerializeField] float m_FreeLook_PitchSpeed;
 
+    // TODO: very weird for this to be smaller than min pitch
     [Tooltip("the minimum pitch when in free look mode")]
     [SerializeField] float m_FreeLook_MinPitch;
 
@@ -347,14 +350,22 @@ public class CameraFollowTarget: MonoBehaviour {
         var vizNormal = m_Hit.normal;
         var vizPos = OffsetHit(m_Hit);
 
+        destPos = vizPos;
+
         // step 2: project the candidate along the plane of the hit surface
         // using the remaining distance to candidate
+
+        // scale the projection down if the pitch is < 0 so that we can pan
+        // into the character
+        var projK = 1.0f;
+        if (m_Pitch < 0.0f) {
+            projK = 1.0f - m_Pitch / m_FreeLook_MinPitch;
+        }
+
         var projLen = Vector3.Distance(candidate, vizPos);
         var projDir = Vector3.Cross(vizNormal, Vector3.Cross(vizDir, vizNormal)).normalized;
-        var projPos = vizPos + projDir * projLen;
+        var projPos = vizPos + projK * projLen * projDir;
 
-        // if nothing is blocking the projected pos, it's our destination
-        // position, but...
         destPos = projPos;
 
         // step 3: we may have projected ourselves into objects or into a place
@@ -400,22 +411,22 @@ public class CameraFollowTarget: MonoBehaviour {
             }
         }
 
-        // // step 4: do a final vision cast from the player to make sure the destination
-        // // point is visible.
-        // var vizCastEndSrc = origin;
-        // var vizCastEndDst = destPos;
+        // step 4: do a final vision cast from the player to make sure the destination
+        // point is visible.
+        var vizCastEndSrc = origin;
+        var vizCastEndDst = destPos;
 
-        // didHit = Physics.Linecast(
-        //     vizCastEndSrc,
-        //     vizCastEndDst,
-        //     out m_Hit,
-        //     m_CollisionMask,
-        //     QueryTriggerInteraction.Ignore
-        // );
+        didHit = Physics.Linecast(
+            vizCastEndSrc,
+            vizCastEndDst,
+            out m_Hit,
+            m_CollisionMask,
+            QueryTriggerInteraction.Ignore
+        );
 
-        // if (didHit) {
-                // destPos = OffsetHit(m_Hit);
-        // }
+        if (didHit) {
+                destPos = OffsetHit(m_Hit);
+        }
 
         return destPos;
     }
