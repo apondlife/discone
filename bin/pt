@@ -1,3 +1,37 @@
 #!/bin/sh
 
-open ./Artifacts/Builds/playtests/*.app
+# -- constants --
+# the path to the build binary
+BINARY_PATH="./Artifacts/Builds/playtests/current"
+
+# -- parsing --
+Usage() {
+  echo "usage: ./bin/pt [-h]"
+  exit -1
+}
+
+while getopts ":h" option; do
+  case "${option}" in
+    h*) Usage ;;
+  esac
+done
+
+# -- commands --
+# run the playtest build
+Run() {
+  open "$BINARY_PATH"
+}
+
+# -- main --
+Main() {
+  # validate args
+  if [ ! -f "$BINARY_PATH" ]; then
+    echo "✘ no build @ '$BINARY_PATH'"
+    exit 1
+  fi
+
+  # run build
+  Run
+}
+
+Main "$*"

@@ -8,6 +8,9 @@ new
 ---
 > camera whips around to saved orientation when game launches
 
-> build script should let you specify a playtest flag: picks the right scene and puts you in the playtest dir
+> build script should accepts a playtest flag
+    - picks the right scene
+    - builds to the playtest dir
+    - creates a symlink "current" to the latest build (so /bin/pt always works)
 > better playtest tools
 > move dev store json files into build
