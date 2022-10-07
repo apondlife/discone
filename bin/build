@@ -3,15 +3,24 @@
 # run this script from the project root; a portable way of getting
 # a script's path is hard to come by, so we assume .env is in the cwd
 
+# -- props --
+# the variant (e.g. playtest, release) if any; defaults to release
+VARIANT=""
+
+# the target (e.g. mac, win, win-server) if any; defaults to all
+TARGET=""
+
 # -- parsing --
 Usage() {
-  echo "usage: ./bin/build [-h]"
+  echo "usage: ./bin/build [-h] [-v <variant>] [-t <target>]"
   exit -1
 }
 
-while getopts ":h" option; do
+while getopts ":hv:t:" option; do
   case "${option}" in
     h*) Usage ;;
+    v*) VARIANT="$OPTARG" ;;
+    t*) TARGET="$OPTARG" ;;
   esac
 done
 
@@ -23,7 +32,10 @@ Build() {
     -quit -batchmode \
     -projectPath . \
     -logfile - \
-    -executeMethod Builds.BuildAll.Call
+    -executeMethod Builds.BuildAll.Main \
+    -- \
+    --variant "$VARIANT" \
+    --target "$TARGET"
 }
 
 # load the environment

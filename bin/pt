@@ -25,7 +25,7 @@ Run() {
 # -- main --
 Main() {
   # validate args
-  if [ ! -f "$BINARY_PATH" ]; then
+  if [ ! -e "$BINARY_PATH" ]; then
     echo "✘ no build @ '$BINARY_PATH'"
     exit 1
   fi
