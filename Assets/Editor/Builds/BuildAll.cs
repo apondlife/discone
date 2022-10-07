@@ -5,63 +5,88 @@ using UnityEditor;
 namespace Builds {
 
 /// builds all targets
-public static class BuildAll {
+public class BuildAll {
     // -- constants --
     /// the name of the game binary
-    static readonly string k_Name = "discone";
+    const string k_Name = "discone";
 
-    /// the path to the scene
-    static readonly string k_Scene = "Main.unity";
+    /// the name of the main scene
+    const string k_Scene = "Main";
 
-    /// the mac channel
-    static readonly string k_Channel_Mac = "mac";
+    /// the name of the playtest scene
+    const string k_Scene_Playtest = "Main_Test";
 
-    /// the windows channel
-    static readonly string k_Channel_Windows = "win";
+    /// the release build dir
+    const string k_Paths_Release = "release";
 
-    /// the windows-server channel
-    static readonly string k_Channel_WindowsServer = "win-server";
+    /// the playtest build dir
+    const string k_Paths_Playtest = "playtest";
 
-    // -- command --
+    // -- main --
     /// run the builds
-    public static void Call() {
-        // get project dir
-        var dir = Directory.GetCurrentDirectory();
+    public static void Main() {
+        var optns = Options.Decode(Environment.GetCommandLineArgs());
+        var build = new BuildAll(optns);
+        build.Call();
+    }
 
-        // get build name
-        // TODO: build number, read/write from disk
-        var buildName = $"discone-{DateTime.Now.ToString("yyyy.MM.dd")}";
+    // -- props --
+    /// the options
+    Options m_Options;
 
-        // the relavant dirs
-        var dirBuilds = Path.Combine("Artifacts", "Builds", buildName);
+    // -- lifetime --
+    /// create a new command
+    BuildAll(Options options) {
+        m_Options = options;
+    }
+
+    // -- commands --
+    /// build all the targets
+    void Call() {
+        Console.WriteLine($"[build] init - variant: {m_Options.Variant}, target: {m_Options.Target}");
+
+        // get build dir
+        var buildDir = FindBuildDir();
 
         // get initial target to restore it later
         var initial = EditorUserBuildSettings.activeBuildTarget;
 
         // build mac
-        var mo = BuildOptions();
-        mo.target = BuildTarget.StandaloneOSX;
-        mo.targetGroup = BuildTargetGroup.Standalone;
-        mo.locationPathName = Path.Combine(dirBuilds, k_Channel_Mac, k_Name);
+        if (m_Options.IncludeTarget(Target.Mac)) {
+            Console.WriteLine($"[build] start - target: {Target.Mac}");
 
-        BuildPipeline.BuildPlayer(mo);
+            var mo = DefaultPlayerOptions();
+            mo.target = BuildTarget.StandaloneOSX;
+            mo.targetGroup = BuildTargetGroup.Standalone;
+            mo.locationPathName = Path.Combine(buildDir, Target.Mac, k_Name);
+
+            BuildPipeline.BuildPlayer(mo);
+        }
 
         // build win
-        var wo = BuildOptions();
-        wo.target = BuildTarget.StandaloneWindows64;
-        wo.targetGroup = BuildTargetGroup.Standalone;
-        wo.locationPathName = Path.Combine(dirBuilds, k_Channel_Windows, k_Name);
+        if (m_Options.IncludeTarget(Target.Windows)) {
+            Console.WriteLine($"[build] start - target: {Target.Windows}");
 
-        BuildPipeline.BuildPlayer(wo);
+            var wo = DefaultPlayerOptions();
+            wo.target = BuildTarget.StandaloneWindows64;
+            wo.targetGroup = BuildTargetGroup.Standalone;
+            wo.locationPathName = Path.Combine(buildDir, Target.Windows, k_Name);
+
+            BuildPipeline.BuildPlayer(wo);
+        }
 
         // build win-server
-        var so = BuildOptions();
-        so.target = BuildTarget.StandaloneWindows64;
-        so.subtarget = (int)StandaloneBuildSubtarget.Server;
-        so.targetGroup = BuildTargetGroup.Standalone;
-        so.locationPathName = Path.Combine(dirBuilds, k_Channel_WindowsServer, k_Name);
+        if (m_Options.IncludeTarget(Target.WindowsServer)) {
+            Console.WriteLine($"[build] start - target: {Target.WindowsServer}");
 
-        BuildPipeline.BuildPlayer(so);
+            var so = DefaultPlayerOptions();
+            so.target = BuildTarget.StandaloneWindows64;
+            so.subtarget = (int)StandaloneBuildSubtarget.Server;
+            so.targetGroup = BuildTargetGroup.Standalone;
+            so.locationPathName = Path.Combine(buildDir, Target.WindowsServer, k_Name);
+
+            BuildPipeline.BuildPlayer(so);
+        }
 
         // restore the user's initial target
         EditorUserBuildSettings.SwitchActiveBuildTarget(
@@ -70,14 +95,37 @@ public static class BuildAll {
         );
     }
 
+    // -- queries --
+    /// the dir for all the builds
+    string FindBuildDir() {
+        // get the variant subdirectory
+        var variant = m_Options.Variant switch {
+            Variant.Playtest => k_Paths_Playtest,
+            _                => k_Paths_Release,
+        };
+
+        // get the build subdirectory
+        // TODO: build number, read/write from disk
+        var build = $"discone-{DateTime.Now.ToString("yyyy.MM.dd")}";
+
+        // combine the full path
+        return Path.Combine("Artifacts", "Builds", variant, build);
+    }
+
     // build player options w/ shared values
-    public static BuildPlayerOptions BuildOptions() {
+    BuildPlayerOptions DefaultPlayerOptions() {
         // build options
         var o = new BuildPlayerOptions();
 
+        // pick the right scene
+        var scene = k_Scene;
+        if (m_Options.Variant == Variant.Playtest) {
+            scene = k_Scene_Playtest;
+        }
+
         // add src options
         o.scenes = new string[]{
-            Path.Combine("Assets", k_Scene)
+            Path.Combine("Assets", $"{scene}.unity")
         };
 
         return o;
