@@ -79,8 +79,6 @@ public sealed class DisconePlayer: MonoBehaviour {
     // -- events --
     /// when the store loads
     void OnStoreLoadFinished() {
-        var player = m_Store.Player;
-
         // TODO: implement this
         // if the store has a player & character, spawn that character remotely
         // --> drive that character
