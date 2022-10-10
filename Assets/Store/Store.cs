@@ -57,7 +57,9 @@ public sealed class Store: ScriptableObject {
         var memo = new HashSet<Vector3>();
 
         // starting with the player's flower
-        memo.Add(pf.IntoRecord().P);
+        if (pf != null) {
+            memo.Add(pf.IntoRecord().P);
+        }
 
         // generate records for each unique flower
         // TODO: flower repo
