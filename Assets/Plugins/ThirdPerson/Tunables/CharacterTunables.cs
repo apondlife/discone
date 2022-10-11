@@ -78,6 +78,26 @@ public sealed class CharacterTunables: CharacterTunablesBase {
 
     #endregion
 
+    // -- crouch system --
+    [Header("crouch system")]
+    [Tooltip("the static friction value when crouching")]
+    [SerializeField] private float m_Crouch_StaticFriction;
+    public override float Crouch_StaticFriction => m_Crouch_StaticFriction;
+
+    [Tooltip("the max lateral speed when crouching")]
+    [SerializeField] private float m_Crouch_LateralMaxSpeed;
+    public override float Crouch_LateralMaxSpeed => m_Crouch_LateralMaxSpeed;
+
+    [Tooltip("the curve for crouch changing kinectic friction when breaking")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Crouch_Brake_KineticFrictionCurve")]
+    [SerializeField] private RangeCurve m_Crouch_Brake_KineticFriction;
+    public override RangeCurve Crouch_Brake_KineticFriction => m_Crouch_Brake_KineticFriction;
+
+    [Tooltip("the curve for crouch changing kinectic friction when sliding")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Crouch_Slide_KineticFrictionCurve")]
+    [SerializeField] private RangeCurve m_Crouch_Slide_KineticFriction;
+    public override RangeCurve Crouch_Slide_KineticFriction => m_Crouch_Slide_KineticFriction;
+
     #region jump system
     [Header("jump system")]
     [Tooltip("the acceleration due to gravity")]

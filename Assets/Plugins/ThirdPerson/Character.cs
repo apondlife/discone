@@ -28,6 +28,9 @@ public partial class Character: MonoBehaviour {
     [Tooltip("the movement system")]
     [SerializeField] MovementSystem m_Movement;
 
+    [Tooltip("the crouch system")]
+    [SerializeField] CrouchSystem m_Crouch;
+
     [Tooltip("the tilt system")]
     [SerializeField] TiltSystem m_Tilt;
 
@@ -49,7 +52,7 @@ public partial class Character: MonoBehaviour {
     /// the character's state
     CharacterEvents m_Events;
 
-    ///the input wrapper
+    /// the input wrapper
     CharacterInput m_Input = new CharacterInput();
 
     // -- lifecycle --
@@ -78,6 +81,7 @@ public partial class Character: MonoBehaviour {
             m_Tunables,
             m_Controller,
             m_Events
+
         );
 
         // init systems
@@ -87,6 +91,7 @@ public partial class Character: MonoBehaviour {
             // these run first, they don't have dependencies
             m_Wall,
             m_Jump,
+            m_Crouch,
             // movement system depends on gravity to calculate friciton,
             // so it runs after jump
             m_Movement,
@@ -170,6 +175,11 @@ public partial class Character: MonoBehaviour {
     /// the character's tunables
     public CharacterTunablesBase Tunables {
         get => m_Tunables;
+    }
+
+    /// the character's input
+    public CharacterInput Input {
+        get => m_Input;
     }
 
     /// the character's state
