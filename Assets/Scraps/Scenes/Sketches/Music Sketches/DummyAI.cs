@@ -20,7 +20,8 @@ public class AiInputSource: CharacterInputSource {
     public CharacterInput.Frame Read() {
         return new CharacterInput.DefaultFrame(
             m_Move,
-            UnityEngine.Random.value < m_JumpProbability
+            UnityEngine.Random.value < m_JumpProbability,
+            false
         );
     }
 }

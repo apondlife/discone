@@ -97,6 +97,9 @@ public sealed partial class CharacterState {
         /// if the characer is on the wall
         public bool IsOnWall = false;
 
+        /// if the characer is crouching
+        public bool IsCrouching = false;
+
         /// how much tilted the character is
         public Quaternion Tilt = Quaternion.identity;
 
@@ -111,6 +114,12 @@ public sealed partial class CharacterState {
 
         /// the current time the character hasn't moved
         public float IdleTime = 0.0f;
+
+        /// the current kinectic friction for grounded movement
+        public float Horizontal_KineticFriction = 0.0f;
+
+        /// the current static friction for grounded movement
+        public float Horizontal_StaticFriction = 0.0f;
 
         ///  the current frame in pivot animation
         public int PivotFrame = -1;

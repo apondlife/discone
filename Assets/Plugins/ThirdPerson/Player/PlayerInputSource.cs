@@ -8,13 +8,16 @@ public sealed class PlayerInputSource: MonoBehaviour, CharacterInputSource {
     // -- refs --
     [Header("refs")]
     [Tooltip("the transform for the player's look viewpoint")]
-    [SerializeField] private Transform m_Look;
+    [SerializeField] Transform m_Look;
 
     [Tooltip("the move input")]
-    [SerializeField] private InputActionReference m_Move;
+    [SerializeField] InputActionReference m_Move;
 
     [Tooltip("the jump input")]
-    [SerializeField] private InputActionReference m_Jump;
+    [SerializeField] InputActionReference m_Jump;
+
+    [Tooltip("the crouch input")]
+    [SerializeField] InputActionReference m_Crouch;
 
     // -- CharacterInputSource --
     public bool IsEnabled {
@@ -34,7 +37,8 @@ public sealed class PlayerInputSource: MonoBehaviour, CharacterInputSource {
         // produce a new frame
         return new CharacterInput.DefaultFrame(
             move,
-            m_Jump.action.IsPressed()
+            m_Jump.action.IsPressed(),
+            m_Crouch.action.IsPressed()
         );
     }
 }

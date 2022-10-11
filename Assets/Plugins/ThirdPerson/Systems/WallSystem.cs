@@ -74,7 +74,7 @@ sealed class WallSystem: CharacterSystem {
         vd -= m_WallNormal * m_Tunables.WallMagnet;
 
         // accelerate while holding button
-        if (m_Input.IsHoldingWall) {
+        if (m_Input.IsWallHoldPressed) {
             vd += m_Tunables.WallAcceleration * delta * m_WallUp;
         }
 

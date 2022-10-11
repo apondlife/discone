@@ -47,8 +47,14 @@ public sealed class CharacterInput {
         get => m_Frames[0]?.IsJumpDown ?? false;
     }
 
-    public bool IsHoldingWall {
+    /// if wall hold is down this frame
+    public bool IsWallHoldPressed {
         get => m_Frames[0]?.IsJumpDown ?? false;
+    }
+
+    /// if crouch is down this frame
+    public bool IsCrouchPressed {
+        get => m_Frames[0]?.IsCrouchDown ?? false;
     }
 
     /// if jump was pressed in the past n frames
@@ -75,6 +81,9 @@ public sealed class CharacterInput {
 
         /// if jump is down
         bool IsJumpDown { get; }
+
+        /// if crouch is down
+        bool IsCrouchDown { get; }
     }
 
     /// a default frame structure
@@ -86,14 +95,19 @@ public sealed class CharacterInput {
         /// if jump is pressed
         public readonly bool m_IsJumpDown;
 
+        /// if crouch is pressed
+        public readonly bool m_IsCrouchDown;
+
         // -- lifetime --
         /// create a new frame
         public DefaultFrame(
             Vector3 moveAxis,
-            bool isJumpDown
+            bool isJumpDown,
+            bool isCrouchDown
         ) {
             m_Move = moveAxis;
             m_IsJumpDown = isJumpDown;
+            m_IsCrouchDown = isCrouchDown;
         }
 
         /// -- Frame --
@@ -103,6 +117,10 @@ public sealed class CharacterInput {
 
         public bool IsJumpDown {
             get => m_IsJumpDown;
+        }
+
+        public bool IsCrouchDown {
+            get => m_IsCrouchDown;
         }
     }
 

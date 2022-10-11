@@ -40,17 +40,17 @@ public partial class Character: MonoBehaviour {
     // -- lifecycle --
     void Update() {
         // capture key press
-        if (Input.GetKeyDown(k_Debug_Pause)) {
+        if (UnityEngine.Input.GetKeyDown(k_Debug_Pause)) {
             Debug_OnKeyDown(k_Debug_Pause);
-        } else if (Input.GetKeyDown(k_Debug_Rewind)) {
+        } else if (UnityEngine.Input.GetKeyDown(k_Debug_Rewind)) {
             Debug_OnKeyDown(k_Debug_Rewind);
-        } else if (Input.GetKeyDown(k_Debug_Advance)) {
+        } else if (UnityEngine.Input.GetKeyDown(k_Debug_Advance)) {
             Debug_OnKeyDown(k_Debug_Advance);
         }
 
         // run key repeat for rewind and advance
         var isRepeat = (
-            Input.GetKey(m_CurrentKey) &&
+            UnityEngine.Input.GetKey(m_CurrentKey) &&
             (m_CurrentKey == k_Debug_Rewind || m_CurrentKey == k_Debug_Advance) &&
             Time.time - m_CurrentKeyTime > k_Debug_RepeatTimeout
         );
@@ -94,21 +94,11 @@ public partial class Character: MonoBehaviour {
         // run the systems for the debug state/input
         Step();
 
-        // log frame info
-//         var p = m_State.Prev;
-//         var s = m_State.Curr;
-//         var r = m_Debug_StateFrame;
-
-//         Debug.Log($@"[chrctr] <debug> frame: {m_Debug_FrameOffset ?? 0}
-// prev <p: {p.Position} v: {p.Velocity} w: {!p.Wall.IsNone}>
-// step <p: {s.Position} v: {s.Velocity} w: {!s.Wall.IsNone}>
-// real <p: {r.Position} v: {r.Velocity} w: {!r.Wall.IsNone}>
-//         ");
-
         // ignore any mutations from the step
-        if(m_Debug_StateFrame != null) {
+        if (m_Debug_StateFrame != null) {
             m_State.Force(m_Debug_StateFrame);
         }
+
         m_Debug_StateFrame = null;
     }
 
