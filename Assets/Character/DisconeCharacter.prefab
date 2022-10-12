@@ -388,20 +388,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  m_SaveCastTime: 4
-  m_GrabCastTime: 0.5
   m_GrabRadius: 3
-  m_LoadCastMaxTime: 30
-  m_LoadCastPointTime: 1
-  m_LoadCastPointDistance: 35
-  m_LoadCancelMultiplier: 1
   m_Save:
     m_Phase:
       Name: 
     m_IsLogging: 0
     m_Tunables:
-      SmellDuration: 0.5
-      PlantDuration: 4
+      m_Delay: 0.3
+      m_SmellDuration: 0.8
+      m_PlantDuration: 4.3
   m_Load:
     m_Phase:
       Name: 
@@ -474,11 +469,15 @@ MonoBehaviour:
     IsInJumpSquat: 0
     IsInJumpStart: 0
     IsOnWall: 0
+    IsCrouching: 0
     Tilt: {x: 0, y: 0, z: 0, w: 1}
     JumpSquatFrame: -1
     IdleTime: 0
+    Horizontal_KineticFriction: 0
+    Horizontal_StaticFriction: 0
     PivotFrame: -1
     PivotDirection: {x: 0, y: 0, z: 0}
+    CrouchDirection: {x: 0, y: 0, z: 0}
     Jumps: 0
     Events:
       m_Events: 0

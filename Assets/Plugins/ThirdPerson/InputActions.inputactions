@@ -60,27 +60,9 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Cycle",
-                    "type": "Button",
-                    "id": "80c66058-c79f-4d40-b472-f18d706f0d04",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "ToggleMenu",
                     "type": "Button",
                     "id": "f278d584-2daf-4e29-8a22-84608a1e1e96",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "SaveCheckpoint",
-                    "type": "Button",
-                    "id": "dc83049e-8a38-4c1a-a8e5-0742734904c1",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -451,6 +433,17 @@
                 },
                 {
                     "name": "",
+                    "id": "2871c8a9-f868-40fa-87e8-523da937b80a",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "e19bc3d3-8ebd-4206-a8f6-dd2c17912751",
                     "path": "<Keyboard>/r",
                     "interactions": "",
@@ -506,28 +499,6 @@
                 },
                 {
                     "name": "",
-                    "id": "c3098a85-08df-4ff8-958b-8534ef3ea188",
-                    "path": "<Keyboard>/tab",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Cycle",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "703ea74c-b975-4823-8fe7-26d62b1b136f",
-                    "path": "<Gamepad>/select",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Cycle",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "867f5981-7cc4-43c2-80b0-d0d9ec717b30",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
@@ -545,61 +516,6 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "ToggleMenu",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "75e6c4b2-e013-49ab-a001-4a99d0c6a5f2",
-                    "path": "<Keyboard>/u",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "SaveCheckpoint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "bb3ef244-b20f-49cd-aff9-85115f48bdc4",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "SaveCheckpoint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "dec212cc-2710-4e60-b6cf-d05626f9a78e",
-                    "path": "<Gamepad>/buttonWest",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SaveCheckpoint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0a32861e-5d95-48ff-a561-fb353431aaaa",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SaveCheckpoint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "5590d476-acba-41b2-ad01-3482ace1fbf9",
-                    "path": "<HID::Nintendo GameCube Controller Adapter>/button3",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SaveCheckpoint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -676,6 +592,28 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e1c99ecf-7f60-4a7a-b9ec-5722c9d66a92",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "08d3e640-c2ee-43f9-aff2-5045df305d38",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false

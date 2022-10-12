@@ -12,22 +12,22 @@ public class PlayerEyelid: MonoBehaviour {
 
     [Tooltip("the curve for the animation")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_EyelidCloseCurve")]
-    [SerializeField] private AnimationCurve m_Curve;
+    [SerializeField] AnimationCurve m_Curve;
 
     // -- refs --
     [Header("refs")]
     [Tooltip("the image for the top eyelid")]
-    [SerializeField] private Image m_TopEyelid;
+    [SerializeField] Image m_TopEyelid;
 
     [Tooltip("the image for the bottom eyelid")]
-    [SerializeField] private Image m_BottomEyelid;
+    [SerializeField] Image m_BottomEyelid;
 
     [Tooltip("the current character")]
     [SerializeField] DisconePlayerVariable m_Player;
 
     // -- props --
     /// the elapsed time in the close animation
-    private float m_ClosingElapsed;
+    float m_ClosingElapsed;
 
     // -- lifecycle --
     void Update() {

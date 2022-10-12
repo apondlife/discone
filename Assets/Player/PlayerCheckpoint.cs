@@ -12,15 +12,8 @@ public sealed class PlayerCheckpoint: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the save checkpoint input")]
-    [SerializeField] InputActionReference m_SaveCheckpointAction;
-
     [Tooltip("the load checkpoint input")]
     [SerializeField] InputActionReference m_LoadCheckpointAction;
-
-    // -- props --
-    /// if currently saving a checkpoint
-    bool m_IsSaving = false;
 
     // -- lifecycle --
     void Update() {
@@ -28,21 +21,6 @@ public sealed class PlayerCheckpoint: MonoBehaviour {
         var checkpoint = m_Character?.Value?.Checkpoint;
         if (checkpoint == null) {
             return;
-        }
-
-        // save/cancel checkpoint on press/release
-        var save = m_SaveCheckpointAction.action;
-        if (save.WasPressedThisFrame()) {
-            checkpoint.StartSave();
-        } else if (save.WasReleasedThisFrame()) {
-            checkpoint.StopSave();
-        }
-
-        // start saving once character begins save
-        if (save.IsPressed() && checkpoint.IsSaving) {
-            m_IsSaving = true;
-        } else if (save.WasReleasedThisFrame()) {
-            m_IsSaving = false;
         }
 
         // load/cancel checkpoint on press/release
@@ -57,6 +35,6 @@ public sealed class PlayerCheckpoint: MonoBehaviour {
     // -- queries --
     /// if currently saving a checkpoint
     public bool IsSaving {
-        get => m_IsSaving;
+        get => m_Character?.Value?.Checkpoint.IsSaving ?? false;
     }
 }
