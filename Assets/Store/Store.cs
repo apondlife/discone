@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,6 +14,11 @@ public sealed class Store: ScriptableObject {
     [Header("events")]
     [Tooltip("when the load finishes")]
     [SerializeField] VoidEvent m_LoadFinished;
+
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("the entity repos")]
+    [SerializeField] EntitiesVariable m_Entities;
 
     // -- props --
     /// the current world on disk
@@ -62,10 +67,9 @@ public sealed class Store: ScriptableObject {
         }
 
         // generate records for each unique flower
-        // TODO: flower repo
-        var records = GameObject
-            .FindObjectsOfType<CharacterFlower>()
-            .Where(flower => flower != pf) // don't save player flower
+        var records = m_Entities.Value.Flowers
+            .All
+            .Where((f) => f != pf)
             .Select((f) => f.IntoRecord())
             .Where((r) => memo.Add(r.P)) // don't add duplicate flowers
             .ToArray();

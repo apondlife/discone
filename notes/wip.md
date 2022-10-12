@@ -2,9 +2,11 @@ what is projected
 ---
 
 crouch
-> disable horizontal move
-> special animation (or lack of) on crouch land (bhop?)
-> change drag on slide, instead of friction
+> crouch plants flowers
+> how does it work with going faster or slower on slopes
+> jumpsquat and crouch are the same thing
+> special animation (or lack of) on crouch/jumpsquat land (bhop?)
+> crouch skidlines
 
 > input frame has default values, is that bad?
 > extending characterinputsource by making the frame type a generic
