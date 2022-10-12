@@ -10,16 +10,30 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     /// the tunables for the checkpoint system
     [Serializable]
     public sealed class Tunables {
-        /// the time (s) to smell a flower
-        public float SmellDuration;
+        [Tooltip("the time (s) start smelling after crouch")]
+        [SerializeField] float m_Delay;
 
-        /// the time (s) to plant a flower
-        public float PlantDuration;
-    }
+        [Tooltip("the time (s) to smell a flower")]
+        [SerializeField] float m_SmellDuration;
 
-    [Obsolete]
-    public sealed class SaveInput {
-        public bool IsSaving;
+        [Tooltip("the time (s) to plant a flower")]
+        [SerializeField] float m_PlantDuration;
+
+        // -- queries --
+        /// the time (s) start smelling after crouch
+        public float Delay {
+            get => m_Delay;
+        }
+
+        /// the time (s) to smell a flower after delay
+        public float SmellDuration {
+            get => m_SmellDuration - Delay;
+        }
+
+        /// the time (s) to plant a flower after smell
+        public float PlantDuration {
+            get => m_PlantDuration - SmellDuration;
+        }
     }
 
     // -- deps --
@@ -27,20 +41,14 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     [SerializeField] public Tunables m_Tunables;
 
     // -- props --
-    /// the input state
-    SaveInput m_Input = new SaveInput();
+    /// whether the system is saving
+    bool m_IsSaving;
 
-    /// the save elapsed time
-    float m_SaveElapsed;
+    /// the phase's elapsed time
+    float m_PhaseElapsed;
 
     /// the checkpoint being saved
     Checkpoint m_PendingCheckpoint;
-
-    // -- queries --
-    /// the input state
-    public SaveInput Input {
-        get => m_Input;
-    }
 
     // -- ThirdPerson.System --
     protected override Phase InitInitialPhase() {
@@ -56,32 +64,68 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     );
 
     void NotSaving_Enter() {
-        m_SaveElapsed = 0.0f;
-        m_Checkpoint.IsSaving = false;
+        m_IsSaving = false;
+        m_PhaseElapsed = 0.0f;
     }
 
     void NotSaving_Update(float delta) {
         if (CanSave) {
-            ChangeTo(Smelling);
+            ChangeTo(Delaying);
         }
     }
 
     void NotSaving_Exit() {
         m_PendingCheckpoint = Checkpoint.FromState(m_State.Curr);
-        m_Checkpoint.IsSaving = true;
+    }
+
+    // -- Delaying --
+    Phase Delaying => new Phase(
+        name: "Delaying",
+        enter: Delaying_Enter,
+        update: Delaying_Update
+    );
+
+    void Delaying_Enter() {
+        m_PhaseElapsed = 0.0f;
+    }
+
+    void Delaying_Update(float delta) {
+        // continue delaying
+        m_PhaseElapsed += delta;
+
+        if (!CanSave) {
+            ChangeTo(NotSaving);
+            return;
+        }
+
+        // start smelling once delay elapses
+        if (m_PhaseElapsed > m_Tunables.Delay) {
+            ChangeTo(Smelling);
+        }
     }
 
     // -- Smelling --
     Phase Smelling => new Phase(
         name: "Smelling",
+        enter: Smelling_Enter,
         update: Smelling_Update
     );
 
+    void Smelling_Enter() {
+        m_IsSaving = true;
+        m_PhaseElapsed = 0.0f;
+    }
+
     void Smelling_Update(float delta) {
-        Active_Update(delta);
+        // continue smelling
+        m_PhaseElapsed += delta;
+        if (!CanSave) {
+            ChangeTo(NotSaving);
+            return;
+        }
 
         // start planting once you finish smelling around for a flower
-        if (m_SaveElapsed > m_Tunables.SmellDuration) {
+        if (m_PhaseElapsed > m_Tunables.SmellDuration) {
             ChangeTo(Planting);
         }
     }
@@ -94,14 +138,21 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     );
 
     void Planting_Enter() {
+        m_PhaseElapsed = 0.0f;
         m_Checkpoint.GrabCheckpoint();
     }
 
     void Planting_Update(float delta) {
-        Active_Update(delta);
+        // continue planting
+        m_PhaseElapsed += delta;
+
+        if (!CanSave) {
+            ChangeTo(NotSaving);
+            return;
+        }
 
         // switch to simply existing after planting
-        if (m_SaveElapsed > m_Tunables.PlantDuration) {
+        if (m_PhaseElapsed > m_Tunables.PlantDuration) {
             ChangeTo(Being);
         }
     }
@@ -114,31 +165,28 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     );
 
     void Being_Enter() {
+        m_PhaseElapsed = 0.0f;
         m_Checkpoint.CreateCheckpoint(m_PendingCheckpoint);
     }
 
     void Being_Update(float delta) {
-        Active_Update(delta);
-    }
-
-    // -- shared --
-    // the base update when attempting to save
-    void Active_Update(float delta) {
-        m_SaveElapsed += delta;
+        // continue being
+        m_PhaseElapsed += delta;
 
         if (!CanSave) {
             ChangeTo(NotSaving);
+            return;
         }
     }
 
     // -- queries --
     /// TODO: this should be written to some external state structure
     public bool IsSaving {
-        get => m_SaveElapsed > 0.0f;
+        get => m_IsSaving;
     }
 
     /// if the character can currently save
-    private bool CanSave {
-        get => m_Input.IsSaving && m_State.IsGrounded && m_State.IsIdle;
+    bool CanSave {
+        get => m_State.IsCrouching && m_State.IsIdle;
     }
 }

@@ -82,23 +82,9 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     // -- commands --
     // -- c/save
-    /// start saving a checkpoint
-    [System.Obsolete]
-    public void StartSave() {
-        m_Save.Input.IsSaving = true;
-   }
-
-    /// stop a save if active
-    [System.Obsolete]
-    public void StopSave() {
-        m_Save.Input.IsSaving = false;
-    }
-
-    // -- c/save
     /// if the character is saving
     public bool IsSaving {
-        get => m_IsSaving;
-        set => m_IsSaving = value;
+        get => m_Save.IsSaving;
     }
 
     /// grab the nearby checkpoint
