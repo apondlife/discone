@@ -30,19 +30,26 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // simulate friction
-        var vd = SimulateMove(
+        var vd = IntegrateVelocity(
             m_State.Curr.GroundVelocity,
-            Vector3.zero,
-            m_Tunables.Horizontal_StaticFriction,
-            0.0f,
-            delta
+            delta,
+            new Move(
+                thrust: Vector3.zero,
+                drag: 0.0f,
+                friction: m_State.Horizontal_StaticFriction
+            )
         );
 
         m_State.Curr.Velocity += vd;
 
+        // change to sliding if moving & crouching
+        if (!IsStopped && m_State.IsCrouching) {
+            ChangeTo(Sliding);
+            return;
+        }
+
         // change to moving once moving
-        if (HasInput || !IsStopped) {
+        if (!IsStopped || HasMoveInput) {
             ChangeTo(Moving);
             return;
         }
@@ -64,15 +71,16 @@ sealed class MovementSystem: CharacterSystem {
         // get current forward & input direction
         var dirForward = m_State.Curr.Forward;
         var dirInput = m_Input.Move;
+        var dotForward = Vector3.Dot(dirForward, dirInput);
 
         // pivot if direction change was significant
-        if (Vector3.Dot(dirForward, dirInput) < m_Tunables.PivotStartThreshold) {
-            ChangeTo(Pivot);
+        if (dotForward < m_Tunables.PivotStartThreshold) {
+            ChangeToImmediate(Pivot, delta);
             return;
         }
 
         // rotate towards input direction
-        if (HasInput) {
+        if (HasMoveInput) {
             dirForward = Vector3.RotateTowards(
                 dirForward,
                 dirInput,
@@ -83,20 +91,91 @@ sealed class MovementSystem: CharacterSystem {
             m_State.Curr.SetProjectedForward(dirForward);
         }
 
-        var vd = SimulateMove(
+        // intergrate move
+        var vd = IntegrateVelocity(
             m_State.Prev.GroundVelocity,
-            m_Tunables.Horizontal_Acceleration * dirInput.magnitude * m_State.Curr.Forward,
-            m_Tunables.Horizontal_KineticFriction,
-            m_Tunables.Horizontal_Drag,
-            delta
+            delta,
+            new Move(
+                thrust: m_Tunables.Horizontal_Acceleration * dirInput.magnitude * m_State.Curr.Forward,
+                drag: m_Tunables.Horizontal_Drag,
+                friction: m_State.Horizontal_KineticFriction
+            )
         );
 
         // update velocity
         m_State.Curr.Velocity += vd;
 
         // once speed is zero, stop moving
-        if (!HasInput && IsStopped) {
+        if (!HasMoveInput && IsStopped) {
             ChangeTo(NotMoving);
+            return;
+        }
+
+        // if crouching, changet to sliding
+        if (m_State.Curr.IsCrouching) {
+            ChangeTo(Sliding);
+            return;
+        }
+    }
+
+    // -- Sliding --
+    /// the slide's initial direction
+    Vector3 m_DirSlide;
+
+    Phase Sliding => new Phase(
+        name: "Sliding",
+        update: Sliding_Update
+    );
+
+    void Sliding_Update(float delta) {
+        // start floating if no longer grounded
+        if (!m_State.Prev.IsGrounded) {
+            ChangeToImmediate(Floating, delta);
+            return;
+        }
+
+        // get current forward & input direction
+        var slideDir = m_State.Curr.CrouchDirection;
+        var inputDir = m_Input.Move;
+
+        // split the input axis
+        var inputDotSlide = Vector3.Dot(inputDir, slideDir);
+        var inputSlide = slideDir * inputDotSlide;
+        var inputSlideLateral = inputDir - inputSlide;
+
+        // make lateral thrust proportional to speed in slide direction
+        var groundVel = m_State.Prev.GroundVelocity;
+        var groundDir = groundVel.normalized;
+        var groundMag = groundVel.magnitude;
+        var scaleLateral = groundMag * (1.0f - Mathf.Abs(Vector3.Angle(groundDir, slideDir) / 90.0f));
+
+        // calculate lateral thrust
+        var thrustLateral = scaleLateral * m_Tunables.Crouch_LateralMaxSpeed * inputSlideLateral;
+
+        // run move
+        var vd = IntegrateVelocity(
+            m_State.Prev.GroundVelocity,
+            delta,
+            new Move(
+                thrust: m_Tunables.Horizontal_Acceleration * thrustLateral,
+                drag: m_Tunables.Horizontal_Drag,
+                friction: m_State.Horizontal_KineticFriction
+            )
+        );
+
+        // update velocity
+        m_State.Curr.Velocity += vd;
+
+        // once speed is zero, stop moving
+        if (!HasMoveInput && IsStopped) {
+            ChangeTo(NotMoving);
+            return;
+        }
+
+        // once not crouching change to move/not move state
+        if (!m_State.IsCrouching) {
+            ChangeTo(!IsStopped ? Moving : NotMoving);
+            return;
         }
     }
 
@@ -115,7 +194,7 @@ sealed class MovementSystem: CharacterSystem {
 
     void Pivot_Update(float delta) {
         if (!m_State.Prev.IsGrounded) {
-            ChangeTo(Floating);
+            ChangeToImmediate(Floating, delta);
             return;
         }
 
@@ -141,7 +220,8 @@ sealed class MovementSystem: CharacterSystem {
 
         // once speed is zero, transition to next state
         if (IsStopped) {
-            ChangeTo(HasInput ? Moving : NotMoving);
+            ChangeTo(HasMoveInput ? Moving : NotMoving);
+            return;
         }
     }
 
@@ -156,11 +236,18 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void Floating_Update(float delta) {
+        // return to the ground if grounded
         if (m_State.Prev.IsGrounded) {
-            ChangeTo(Moving);
+            var next = m_State.IsCrouching switch {
+                true => Sliding,
+                false => Moving,
+            };
+
+            ChangeToImmediate(next, delta);
             return;
         }
 
+        // add aerial drift
         var v0 = m_State.Prev.PlanarVelocity;
         var vd = m_Input.Move * m_Tunables.AerialDriftAcceleration * delta;
         m_State.Curr.Velocity += vd;
@@ -168,7 +255,7 @@ sealed class MovementSystem: CharacterSystem {
 
     // -- queries --
     /// if there is any user input
-    bool HasInput {
+    bool HasMoveInput {
         get => m_Input.Move.sqrMagnitude > 0.0f;
     }
 
@@ -177,36 +264,64 @@ sealed class MovementSystem: CharacterSystem {
         get => m_State.Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
     }
 
-    /// calculate the velocity delta as a result of all movement forces
-    Vector3 SimulateMove(
+    // -- simulate --
+    /// the move params
+    readonly struct Move {
+        /// the thrust acceleration to apply
+        public readonly Vector3 Thrust;
+
+        /// the quadratic drag
+        public readonly float Drag;
+
+        /// the constant friction
+        public readonly float Friction;
+
+        /// create a new move (theoretically on the stack)
+        /// TODO: use profiler to figure out if this is causing allocations
+        public Move(Vector3 thrust, float drag, float friction) {
+            Thrust = thrust;
+            Drag = drag;
+            Friction = friction;
+        }
+    }
+
+    /// integrate velocity delta from all movement forces
+    Vector3 IntegrateVelocity(
         Vector3 v0,
-        Vector3 thrust,
-        float friction,
-        float drag,
-        float delta
+        float delta,
+        in Move move
     ) {
         // calculate next velocity, integrating input & drag
         // vt = v0 + (acceleration - drag - friction) * t
         var v0_dir = v0.normalized;
-        var v0_mag = v0.magnitude;
         var v0_mag2 = v0.sqrMagnitude;
 
-        // deceleration opposes to movement, drag + friction
-        var deceleration = v0_dir * (friction + drag * v0_mag2);
-
-        // calculate velocity change this frame (velocity delta)
-        var vd = (thrust - deceleration) * delta;
+        var v1 = Mathx.Integrate_Heun(Acceleration, v0, delta, move);
+        var vd = v1 - v0;
 
         // split the velocity delta into tangent (colinear) and normal (turning)
         var vd_tan = Vector3.Project(vd, v0_dir);
         var vd_nrm = vd - vd_tan;
 
-        // if the aligned velocity delta produces a aligned-direction change, just stop
+        // if the velocity delta produces an aligned-direction change, just stop
         if (vd_tan.sqrMagnitude > v0_mag2 && Vector3.Dot(vd_tan, v0) < 0.0f) {
             vd_tan = -v0;
         }
 
         return vd_tan + vd_nrm;
     }
+
+    /// calculate the acceleration for a move
+    Vector3 Acceleration(Vector3 vel, Move m) {
+        var v_dir = vel.normalized;
+        var v_mag2 = vel.sqrMagnitude;
+
+        // deceleration opposes movement, friction + drag * v0 ^ 2
+        var deceleration = v_dir * (m.Friction + m.Drag * v_mag2);
+        var acceleration = (m.Thrust - deceleration);
+
+        return acceleration;
+    }
 }
+
 }

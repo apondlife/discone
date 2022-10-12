@@ -4,8 +4,7 @@ what is projected
 crouch
 > disable horizontal move
 > special animation (or lack of) on crouch land (bhop?)
-> how does it work with going faster or slower on slopes
-> pivot to crouch
+> change drag on slide, instead of friction
 
 > input frame has default values, is that bad?
 > extending characterinputsource by making the frame type a generic

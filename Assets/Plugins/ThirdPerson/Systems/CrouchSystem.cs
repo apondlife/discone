@@ -12,9 +12,6 @@ sealed class CrouchSystem: CharacterSystem {
     }
 
     // -- props --
-    /// the crouch's initial direction
-    Vector3 m_DirCrouch;
-
     // -- NotCrouching --
     Phase NotCrouching => new Phase(
         name: "NotCrouching",
@@ -31,6 +28,13 @@ sealed class CrouchSystem: CharacterSystem {
     }
 
     void NotCrouching_Update(float delta) {
+        // reset friction every frame in debug
+        #if UNITY_EDITOR
+        m_State.Horizontal_KineticFriction = m_Tunables.Horizontal_KineticFriction;
+        m_State.Horizontal_StaticFriction = m_Tunables.Horizontal_StaticFriction;
+        #endif
+
+        // switch to crouching on input
         if (m_State.IsGrounded && m_Input.IsCrouchPressed) {
             ChangeTo(Crouching);
             return;
@@ -53,11 +57,9 @@ sealed class CrouchSystem: CharacterSystem {
         // and store the crouch direction, the character won't reface for the
         // duration of the crouch (this is implemented in (coupled to) the
         // movement system)
-        if (IsStopped) {
-            m_DirCrouch = m_State.Forward;
-        } else {
-            m_DirCrouch = m_State.Curr.GroundVelocity.normalized;
-        }
+        m_State.Curr.CrouchDirection = IsStopped
+            ? m_State.Forward
+            : m_State.Prev.GroundVelocity.normalized;
     }
 
     void Crouching_Update(float delta) {
@@ -67,12 +69,17 @@ sealed class CrouchSystem: CharacterSystem {
             return;
         }
 
-        // get input and crouch direction
-        var dirInput = m_Input.Move;
-        var dirCrouch = m_DirCrouch;
+        // update crouch direction if it changes significantly (> 90°)
+        var moveDir = m_State.Prev.GroundVelocity.normalized;
+        var moveDotCrouch = Vector3.Dot(moveDir, m_State.Prev.CrouchDirection);
+        if (moveDotCrouch < 0.0f) {
+            m_State.Curr.CrouchDirection = moveDir;
+        }
 
-        // check alignment between them
-        var inputDotCrouch = Vector3.Dot(dirInput, dirCrouch);
+        // check alignment between input and crouch
+        var crouchDir = m_State.Curr.CrouchDirection;
+        var inputDir = m_Input.Move;
+        var inputDotCrouch = Vector3.Dot(inputDir, crouchDir);
 
         // if the input is not in the direction of the crouch, we're braking;
         // otherwise, slide.
