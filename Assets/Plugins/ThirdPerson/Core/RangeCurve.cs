@@ -10,18 +10,16 @@ public struct RangeCurve {
     [Tooltip("the curve")]
     [SerializeField] AnimationCurve m_Curve;
 
-    [Tooltip("the src (t=0) value")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Min")]
-    [SerializeField] float m_Src;
+    [Tooltip("the min value")]
+    [SerializeField] float m_Min;
 
-    [Tooltip("the dst (t=1) value")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Max")]
-    [SerializeField] float m_Dst;
+    [Tooltip("the max value")]
+    [SerializeField] float m_Max;
 
     // -- queries --
     /// evaluate the curve in the range
     public float Evaluate(float k) {
-        return Mathf.Lerp(m_Curve.Evaluate(k), m_Src, m_Dst);
+        return Mathf.Lerp(m_Min, m_Max, m_Curve.Evaluate(k));
     }
 }
 

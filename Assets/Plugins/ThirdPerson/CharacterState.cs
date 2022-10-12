@@ -127,6 +127,9 @@ public sealed partial class CharacterState {
         ///  the direction of the current pivot
         public Vector3 PivotDirection = Vector3.zero;
 
+        /// the direction fo the current crouch
+        public Vector3 CrouchDirection = Vector3.zero;
+
         /// the number of jumps executed since last grounded
         public uint Jumps = 0;
 

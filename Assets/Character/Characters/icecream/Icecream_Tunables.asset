@@ -16,15 +16,15 @@ MonoBehaviour:
   m_Horizontal_MinSpeed: 0.85
   m_Horizontal_Acceleration: 30
   m_Horizontal_Drag: 0.1
-  m_Horizontal_StaticFriction: 25
+  m_Horizontal_StaticFriction: 50
   m_Horizontal_KineticFriction: 5
   m_TurnSpeed: 360
   m_PivotSpeed: 1080
   m_TimeToPivot: 0.6
   m_PivotStartThreshold: -0.5
   m_AerialDriftAcceleration: 10
-  m_Crouch_StaticFriction: 75
-  m_Crouch_LateralMaxSpeed: 2
+  m_Crouch_StaticFriction: 69
+  m_Crouch_LateralMaxSpeed: 0.15
   m_Crouch_Brake_KineticFriction:
     m_Curve:
       serializedVersion: 2
@@ -50,8 +50,8 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Src: 10
-    m_Dst: 30
+    m_Min: 16
+    m_Max: 50
   m_Crouch_Slide_KineticFriction:
     m_Curve:
       serializedVersion: 2
@@ -77,11 +77,11 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Src: 5
-    m_Dst: 1
+    m_Min: 5
+    m_Max: 0
   m_Gravity: -70
   m_JumpBuffer: 10
-  m_MaxCoyoteFrames: 8
+  m_MaxCoyoteFrames: 12
   m_JumpGravity: -30
   m_FallGravity: -40
   m_Jumps:
@@ -97,20 +97,20 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 0.029391985
-        outSlope: 0.029391985
+        inSlope: 0.09988901
+        outSlope: 0.09988901
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.13501143
+        outWeight: 0.2125
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 2.9582162
-        outSlope: 2.9582162
+        inSlope: 0.5817613
+        outSlope: 0.5817613
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.11670482
+        inWeight: 0.14999998
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
