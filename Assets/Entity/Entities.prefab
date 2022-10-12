@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2897392744725145097}
   - component: {fileID: 3957745682249704239}
   - component: {fileID: 6310377860740112136}
+  - component: {fileID: 8311241429826752157}
   m_Layer: 0
   m_Name: Entities
   m_TagString: Untagged
@@ -127,6 +128,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c6b9c368b94944f9bd178b1fc41d119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  m_All: []
   m_ChunkSize:
     _usage: 0
     _value: 69
@@ -134,3 +138,21 @@ MonoBehaviour:
     _variable: {fileID: 0}
     _variableInstancer: {fileID: 0}
   m_FlowerPlanted: {fileID: 11400000, guid: ffe352fbfc8cb4ed9b8cf44b5fc99134, type: 2}
+  m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
+--- !u!114 &8311241429826752157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6447162626734944142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  visible: 0
+  m_AssetId: f6eacd8f0a8a144e8aae3b92583f466a
+  hasSpawned: 0
