@@ -21,13 +21,11 @@ sealed class CollisionSystem: CharacterSystem {
         var v = m_State.Curr.Velocity;
 
         // move character using controller if not idle
-        if (v.sqrMagnitude > 0.0f) {
-            m_Controller.Move(
-                m_State.Curr.Position,
-                v * delta,
-                m_State.Curr.Up
-            );
-        }
+        m_Controller.Move(
+            m_State.Curr.Position,
+            v * delta,
+            m_State.Curr.Up
+        );
 
         // find the ground collision if it exists
         m_State.Curr.Ground = m_Controller.Ground;

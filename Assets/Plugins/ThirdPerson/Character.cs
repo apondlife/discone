@@ -73,6 +73,9 @@ public partial class Character: MonoBehaviour {
             return;
         }
 
+        // init controller
+        m_Controller.Init();
+
         // init data
         var data = new CharacterData(
             name,
@@ -81,7 +84,6 @@ public partial class Character: MonoBehaviour {
             m_Tunables,
             m_Controller,
             m_Events
-
         );
 
         // init systems
