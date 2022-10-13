@@ -3,13 +3,33 @@
 # run this script from the project root; a portable way of getting
 # a script's path is hard to come by, so we assume .env is in the cwd
 
+# -- includes --
+source ./bin/core/builds.sh
+
 # -- constants --
 # the path of the game on itch (sans target)
 ITCH_PATH="frogfrogforg/discone"
 
+# -- props --
+# the variant (e.g. playtest, release) if any; defaults to release
+VARIANT=""
+
 # -- parsing --
 Usage() {
-  echo "usage: ./bin/deploy [-h] <path>"
+  echo "usage: ./bin/build [-h] [-v <variant>]"
+  exit -1
+}
+
+while getopts ":hv:" option; do
+  case "${option}" in
+    h*) Usage ;;
+    v*) VARIANT="$OPTARG" ;;
+  esac
+done
+
+# -- parsing --
+Usage() {
+  echo "usage: ./bin/deploy [-h] [-v <variant>]"
   exit -1
 }
 
@@ -20,15 +40,21 @@ while getopts ":h" option; do
 done
 
 # -- commands --
-# deploy each build in the dir at path; assumes the child name is the
-# butler target name
+# deploy each build in the dir at path; assumes the child name is the butler
+# target name
 Deploy() {
-  cd "$path"
+  cd "$build"
 
-  for build in *; do
+  # tag channel with variant, unless release
+  local tag=""
+  if [ "$VARIANT" != "$VARIANT_RELEASE" ]; then
+    tag=".$VARIANT"
+  fi
+
+  for target in *; do
     "$BUTLER_PATH" push \
-      "$build" \
-      "$ITCH_PATH:$build"
+      "$target" \
+      "$ITCH_PATH:$target$tag"
   done
 }
 
@@ -43,18 +69,13 @@ Main() {
     exit 1
   fi
 
-  # parse args
-  path="$1"; shift
-
   # validate args
-  if [ -z "$path" ]; then
-    Usage
+  if [ -z "$VARIANT" ]; then
+    VARIANT="$VARIANT_RELEASE"
   fi
 
-  if [ ! -d "$path" ]; then
-    echo "✘ path must be a directory containing the builds"
-    exit 2
-  fi
+  # find build
+  FindBuild "$VARIANT"
 
   # run deploy
   Deploy

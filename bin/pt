@@ -1,8 +1,14 @@
 #!/bin/sh
 
+# -- includes --
+source ./bin/core/builds.sh
+
 # -- constants --
-# the path to the build binary
-BINARY_PATH="./Artifacts/Builds/playtests/current"
+# subpath to the mac binary
+TARGET_PATH_MAC="mac/discone.app"
+
+# subpath to the windows binary
+TARGET_PATH_WIN="win/discone"
 
 # -- parsing --
 Usage() {
@@ -18,20 +24,45 @@ done
 
 # -- commands --
 # run the playtest build
-Run() {
-  open "$BINARY_PATH"
+RunBuild() {
+  echo "- running build '$build'"
+
+  # get target path
+  case "$OSTYPE" in
+    mac) target="$TARGET_PATH_MAC" ;;
+    win) target="$TARGET_PATH_WIN" ;;
+  esac
+
+  # make binary path
+  binary="$build/$target"
+  if [ -z "$target" ] || [ -z "$binary" ]; then
+    echo "✘ missing $os binary: $target"
+    exit 3
+  fi
+
+  # run the build
+  open "$binary"
+}
+
+# -- queries --
+# find the current os
+FindOs() {
+  case "$OSTYPE" in
+    darwin*) os="mac" ;;
+    *)       os="win" ;;
+  esac
 }
 
 # -- main --
 Main() {
-  # validate args
-  if [ ! -e "$BINARY_PATH" ]; then
-    echo "✘ no build @ '$BINARY_PATH'"
-    exit 1
-  fi
+  # TODO: don't hardcode this
+  FindOs
 
-  # run build
-  Run
+  # find the most recent build
+  FindBuild "$VARIANT_PLAYTEST"
+
+  # and then run it
+  RunBuild
 }
 
 Main "$*"
