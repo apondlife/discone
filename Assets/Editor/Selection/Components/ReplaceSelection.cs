@@ -4,18 +4,23 @@ using UnityEditor;
 namespace Discone.Editor {
 
 /// randomly rotate the selected objects by a bounded amount
-public sealed class ReplaceSelection: EditSelection {
+public sealed class ReplaceSelection: EditSelection.Component {
     // -- props --
     /// the prefab to replace with
     GameObject m_Prefab;
 
-    /// -- lifecycle --
-    [MenuItem("GameObject/Selection/replace")]
-    public static void Init() {
-        ShowWindow<ReplaceSelection>();
+    // -- EditorSelection.Component --
+    public override string Title {
+        get => "replace";
     }
 
-    void OnGUI() {
+    public override void OnGUI() {
+        // show description
+        EditorGUILayout.LabelField(
+            "best effort replace all objects with the prefab",
+            EditorStyles.wordWrappedLabel
+        );
+
         // show prefab field
         m_Prefab = (GameObject)EditorGUILayout.ObjectField(
             "prefab",
@@ -25,7 +30,7 @@ public sealed class ReplaceSelection: EditSelection {
         );
 
         // show button
-        if (GUILayout.Button("replace")) {
+        if (GUILayout.Button("apply")) {
             Call();
         }
     }
@@ -55,7 +60,7 @@ public sealed class ReplaceSelection: EditSelection {
 
             // create the substitute
             if (type == PrefabAssetType.NotAPrefab) {
-                sub = Instantiate(m_Prefab);
+                sub = GameObject.Instantiate(m_Prefab);
             } else {
                 sub = (GameObject)PrefabUtility.InstantiatePrefab(m_Prefab);
             }
