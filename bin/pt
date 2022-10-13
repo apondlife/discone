@@ -28,7 +28,7 @@ RunBuild() {
   echo "- running build '$build'"
 
   # get target path
-  case "$os" in
+  case "$OSTYPE" in
     mac) target="$TARGET_PATH_MAC" ;;
     win) target="$TARGET_PATH_WIN" ;;
   esac
@@ -44,10 +44,19 @@ RunBuild() {
   open "$binary"
 }
 
+# -- queries --
+# find the current os
+FindOs() {
+  case "$OSTYPE" in
+    darwin*) os="mac" ;;
+    *)       os="win" ;;
+  esac
+}
+
 # -- main --
 Main() {
   # TODO: don't hardcode this
-  os="mac"
+  FindOs
 
   # find the most recent build
   FindBuild "$VARIANT_PLAYTEST"
