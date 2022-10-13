@@ -4,84 +4,106 @@ using UnityEditor;
 namespace Discone.Editor {
 
 /// a base class for selection editors
-public abstract class EditSelection: EditorWindow {
+public sealed class EditSelection: EditorWindow {
     // -- props --
-    /// the editor name
-    string m_Name;
+    /// the editor title
+    const string k_Title = "edit selection";
 
-    /// -- lifecycle --
+    /// the editor namte
+    const string k_Name = "edit";
+
+    // -- props --
+    Component[] m_Components;
+
+    // -- lifecycle --
     /// show the window
-    protected static void ShowWindow<E>() where E: EditSelection {
-        var window = GetWindow<E>(
-            title: NameOf(typeof(E)),
+    [MenuItem("GameObject/discone/edit selection")]
+    static void Init() {
+        var window = GetWindow<EditSelection>(
+            title: k_Title,
             focus: true
         );
 
         window.Show();
     }
 
-    // -- commands --
-    /// create an undo record for the objects
-    protected void CreateUndoRecord(GameObject[] objs) {
-        StartUndoRecord();
-        StoreUndoState(objs);
-        FinishUndoRecord();
+    void Awake() {
+        m_Components = new Component[] {
+            new RenameSelection(),
+            new JitterSelection(),
+            new ReplaceSelection(),
+            new RescaleSelection(),
+        };
     }
 
-    /// start an undo record
-    protected void StartUndoRecord() {
-        Undo.IncrementCurrentGroup();
-        Undo.SetCurrentGroupName(Name);
-    }
+    void OnGUI() {
+        EditorGUILayout.BeginVertical();
 
-    /// record the state of the objects in the current record
-    protected void StoreUndoState(GameObject[] objs) {
-        foreach (var obj in objs) {
-            Undo.RegisterCompleteObjectUndo(obj, Name);
-        }
-    }
+        var n = m_Components.Length;
+        for (var i = 0; i < n; i++) {
+            var component = m_Components[i];
 
-    /// record the creation of the object in the current record
-    protected void StoreUndoCreate(GameObject obj) {
-        Undo.RegisterCreatedObjectUndo(obj, Name);
-    }
+            // show title
+            EditorGUILayout.LabelField(component.Title, EditorStyles.boldLabel);
 
-    /// finish the current undo record
-    protected void FinishUndoRecord() {
-        Undo.IncrementCurrentGroup();
-    }
+            // render component
+            component.OnGUI();
 
-    // -- queries --
-    /// all selected objects
-    protected GameObject[] FindAll() {
-        return Selection.gameObjects;
-    }
-
-    /// the inferred name of this editor
-    protected string Name {
-        get {
-            if (m_Name == null) {
-                m_Name = NameOf(GetType());
+            // add divider
+            if (i < n - 1) {
+                EditorGUILayout.Space(15.0f);
             }
-
-            return m_Name;
         }
+
+        EditorGUILayout.EndVertical();
     }
 
-    /// the inferred name of an editor by type
-    protected static string NameOf(System.Type type) {
-        var name = type.Name;
+    // -- children --
+    /// an edit selection component
+    public abstract class Component {
+        // -- lifecycle --
+        /// the component title
+        public abstract string Title { get; }
 
-        // remove selection
-        var i = name.IndexOf("Selection");
-        if (i >= 0) {
-            name = name.Remove(i, name.Length - i);
+        /// render the component gui
+        public abstract void OnGUI();
+
+        // -- commands --
+        /// create an undo record for the objects
+        protected void CreateUndoRecord(GameObject[] objs) {
+            StartUndoRecord();
+            StoreUndoState(objs);
+            FinishUndoRecord();
         }
 
-        // lowercase the name
-        name = name.ToLower();
+        /// start an undo record
+        protected void StartUndoRecord() {
+            Undo.IncrementCurrentGroup();
+            Undo.SetCurrentGroupName(k_Name);
+        }
 
-        return name;
+        /// record the state of the objects in the current record
+        protected void StoreUndoState(GameObject[] objs) {
+            foreach (var obj in objs) {
+                Undo.RegisterCompleteObjectUndo(obj, k_Name);
+            }
+        }
+
+        /// record the creation of the object in the current record
+        protected void StoreUndoCreate(GameObject obj) {
+            Undo.RegisterCreatedObjectUndo(obj, k_Name);
+        }
+
+        /// finish the current undo record
+        protected void FinishUndoRecord() {
+            Undo.IncrementCurrentGroup();
+        }
+
+        // -- queries --
+        /// all selected objects
+        protected GameObject[] FindAll() {
+            return Selection.gameObjects;
+        }
     }
 }
 

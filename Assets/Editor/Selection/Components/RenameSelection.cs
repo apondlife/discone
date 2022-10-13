@@ -5,7 +5,7 @@ using System.Linq;
 namespace Discone.Editor {
 
 /// rename children of a game object; found on the internet
-public sealed class RenameSelection: EditSelection {
+public sealed class RenameSelection: EditSelection.Component {
     // -- props --
     /// the name of the objects
     string m_Name;
@@ -13,13 +13,12 @@ public sealed class RenameSelection: EditSelection {
     /// the start index
     int m_Start;
 
-    /// -- lifecycle --
-    [MenuItem("GameObject/Selection/rename")]
-    public static void Init() {
-        ShowWindow<RenameSelection>();
+    // -- lifecycle --
+    public override string Title {
+        get => "rename";
     }
 
-    void OnGUI() {
+    public override void OnGUI() {
         // show fields
         m_Name = EditorGUILayout.TextField("name", m_Name);
         m_Start = EditorGUILayout.IntField("start index", m_Start);

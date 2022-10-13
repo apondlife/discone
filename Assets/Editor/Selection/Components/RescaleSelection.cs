@@ -4,16 +4,28 @@ using UnityEditor;
 namespace Discone.Editor {
 
 /// normalize scale of a single object, rescaling children
-public sealed class RescaleSelection: EditSelection {
+public sealed class RescaleSelection: EditSelection.Component {
     // -- lifecycle --
-    [MenuItem("GameObject/Selection/rescale")]
-    public static void Init() {
-        new RescaleSelection().Call();
+    public override string Title {
+        get => "rescale";
+    }
+
+    public override void OnGUI() {
+        // show description
+        EditorGUILayout.LabelField(
+            "sets scale of to <1,1,1> and adjusts the scale of all children",
+            EditorStyles.wordWrappedLabel
+        );
+
+        // show button
+        if (GUILayout.Button("apply")) {
+            Call();
+        }
     }
 
     // -- commands --
     /// rescale the selected objects
-    void Call() {
+    public void Call() {
         var all = FindAll();
 
         // create undo record
