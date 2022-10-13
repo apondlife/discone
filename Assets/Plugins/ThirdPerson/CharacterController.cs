@@ -22,14 +22,14 @@ public sealed class CharacterController {
     // -- fields --
     [Header("config")]
     [Tooltip("the collision mask for the character")]
-    [SerializeField] private LayerMask m_CollisionMask;
+    [SerializeField] LayerMask m_CollisionMask;
 
     [Tooltip("the minimum move vector to have any effect")]
-    [SerializeField] private float m_MinMove;
+    [SerializeField] float m_MinMove;
 
     [Tooltip("the highest angle in which colliding with is considered ground. ie slope angle")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_MaxGroundAngle")]
-    [SerializeField] private float m_WallAngle;
+    [SerializeField] float m_WallAngle;
 
     [Tooltip("the amount to offset collision casts against the movement to avoid precision issues")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_CastDirOffset")]
@@ -58,6 +58,9 @@ public sealed class CharacterController {
     /// the last ground collision this frame
     CharacterCollision m_Ground;
 
+    /// the square min move magnitude
+    float m_SqrMinMove;
+
     // -- debug --
     #if UNITY_EDITOR
     /// the start position
@@ -77,6 +80,12 @@ public sealed class CharacterController {
     #endif
 
     // -- commands --
+    /// initialize the controller
+    public void Init() {
+        // set props
+        m_SqrMinMove = m_MinMove * m_MinMove;
+    }
+
     /// move the character by a position delta
     public void Move(Vector3 position, Vector3 delta, Vector3 up) {
         // the move's original position
@@ -88,7 +97,7 @@ public sealed class CharacterController {
         var moveDelta = delta + m_PendingDelta;
 
         // if this is too small, just aggregate
-        if (moveDelta.magnitude <= m_MinMove) {
+        if (moveDelta.sqrMagnitude <= m_SqrMinMove) {
             m_PendingDelta = moveDelta;
             return;
         }
@@ -157,7 +166,7 @@ public sealed class CharacterController {
         //     collisions
         //
         var i = 0;
-        while (moveDelta.magnitude > m_MinMove) {
+        while (moveDelta.sqrMagnitude > m_SqrMinMove) {
             // if we cast an unlikely number of times, cancel this move
             // TODO: should moveDelta be zero here?
             if (i > k_MaxCasts) {
@@ -263,7 +272,6 @@ public sealed class CharacterController {
             // apply the contact offset, for next cast
             moveDelta += hit.normal * m_ContactOffset;
 
-
             // calculate the remaining movement in the plane
             // TODO: ProjectOnPlane could be a slope function e.g. mR.dir * fn(mR.dir • N) * mR.mag
             var moveRemaining = castDst - moveDst;
@@ -276,13 +284,12 @@ public sealed class CharacterController {
                 moveProjected = Vector3.zero;
             }
 
-            // displacement if less than min move, accumulate and move from the prev position
-            var displacement = moveDst - moveSrc;
-            if (displacement.magnitude < m_MinMove) {
+            // if displacement is less than min move, accumulate and move from the prev position
+            var moveDsp = moveDst - moveSrc;
+            if (moveDsp.sqrMagnitude < m_SqrMinMove) {
                 moveDst = moveSrc;
-                moveDelta += displacement;
+                moveDelta += moveDsp;
             }
-
 
             moveDelta += moveProjected;
 
@@ -304,8 +311,15 @@ public sealed class CharacterController {
             i++;
         }
 
-        m_Position = moveDst;
-        m_Velocity = (moveDst - moveOrigin) / Time.deltaTime;
+        // if final displacement is smaller than min move, keep accumulating
+        var dsp = moveDst - moveOrigin;
+        if (dsp.sqrMagnitude < m_SqrMinMove) {
+            dsp = Vector3.zero;
+            moveDelta += dsp;
+        }
+
+        m_Position = moveOrigin + dsp;
+        m_Velocity =  dsp / Time.deltaTime;
         m_Wall = nextWall;
         m_Ground = nextGround;
         m_PendingDelta = moveDelta;

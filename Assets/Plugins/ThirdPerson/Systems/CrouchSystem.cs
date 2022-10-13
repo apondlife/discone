@@ -57,8 +57,8 @@ sealed class CrouchSystem: CharacterSystem {
         // and store the crouch direction, the character won't reface for the
         // duration of the crouch (this is implemented in (coupled to) the
         // movement system)
-        m_State.Curr.CrouchDirection = IsStopped
-            ? m_State.Forward
+        m_State.Curr.CrouchDirection = WasStopped
+            ? Vector3.Project(m_State.Ground.Normal, m_State.Forward).normalized
             : m_State.Prev.GroundVelocity.normalized;
     }
 
@@ -91,9 +91,9 @@ sealed class CrouchSystem: CharacterSystem {
     }
 
     // -- queries --
-    /// if the ground speed is below the movement threshold
-    bool IsStopped {
-        get => m_State.Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+    /// if the ground speed last frame was below the movement threshold
+    bool WasStopped {
+        get => m_State.Prev.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
     }
 }
 
