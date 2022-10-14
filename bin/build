@@ -64,10 +64,14 @@ Main() {
   source ./.env
 
   # validate env
-  # TODO: check if unity is running and send nice error message
   if [ ! -f "$UNITY_PATH" ]; then
     echo "✘ unity (.env->UNITY_PATH) does not exist at '$UNITY_PATH'"
     exit 3
+  fi
+
+  if ps -x | grep -qG "$UNITY_PATH -projectpath .*[d]iscone"; then
+    echo "✘ unity is running! the build script can't run when unity is open"
+    exit 4
   fi
 
   # run build
