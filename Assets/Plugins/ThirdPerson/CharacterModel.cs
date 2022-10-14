@@ -51,7 +51,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("The shared third person animator controller")]
+    [Tooltip("the shared third person animator controller")]
     [SerializeField] RuntimeAnimatorController m_AnimatorController;
 
     // -- props --
@@ -98,8 +98,10 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // set props
         m_InitialScale = transform.localScale;
-        m_LayerLegs = m_Animator.GetLayerIndex(k_LayerLegs);
-        m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
+        if (m_Animator != null) {
+            m_LayerLegs = m_Animator.GetLayerIndex(k_LayerLegs);
+            m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
+        }
 
         // make sure complex model trees have the correct layer
         gameObject.SetLayerRecursively(gameObject.layer);
