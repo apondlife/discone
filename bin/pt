@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # -- includes --
-source ./bin/core/builds.sh
+. ./bin/core/builds.sh
 
 # -- constants --
 # subpath to the mac binary
@@ -28,7 +28,7 @@ RunBuild() {
   echo "- running build '$build'"
 
   # get target path
-  case "$OSTYPE" in
+  case "$os" in
     mac) target="$TARGET_PATH_MAC" ;;
     win) target="$TARGET_PATH_WIN" ;;
   esac

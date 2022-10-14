@@ -70,7 +70,7 @@ public class BuildAll {
             var wo = DefaultPlayerOptions();
             wo.target = BuildTarget.StandaloneWindows64;
             wo.targetGroup = BuildTargetGroup.Standalone;
-            wo.locationPathName = Path.Combine(buildDir, Target.Windows, k_Name);
+            wo.locationPathName = Path.Combine(buildDir, Target.Windows, k_Name + ".exe");
 
             BuildPipeline.BuildPlayer(wo);
         }
@@ -83,7 +83,7 @@ public class BuildAll {
             so.target = BuildTarget.StandaloneWindows64;
             so.subtarget = (int)StandaloneBuildSubtarget.Server;
             so.targetGroup = BuildTargetGroup.Standalone;
-            so.locationPathName = Path.Combine(buildDir, Target.WindowsServer, k_Name);
+            so.locationPathName = Path.Combine(buildDir, Target.WindowsServer, k_Name + ".exe");
 
             BuildPipeline.BuildPlayer(so);
         }
