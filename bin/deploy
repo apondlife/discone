@@ -4,7 +4,7 @@
 # a script's path is hard to come by, so we assume .env is in the cwd
 
 # -- includes --
-source ./bin/core/builds.sh
+. ./bin/core/builds.sh
 
 # -- constants --
 # the path of the game on itch (sans target)
