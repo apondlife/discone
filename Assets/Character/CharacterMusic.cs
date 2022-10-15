@@ -173,10 +173,10 @@ public sealed class CharacterMusic: MonoBehaviour {
 
         // find line to play
         if (m_StepIdx % 2 == 0) {
-            m_Source.PlayLine(m_FootstepsBass.Value, 0.0f, m_Key);
+            m_Source.PlayLine(m_FootstepsBass.Value, 0.0f, m_Key, fmodParams: GetFmodParams());
         } else {
             var melody = m_FootstepsMelodies[m_MelodyIdx];
-            m_Source.PlayNote(melody.Value[m_StepIdx / 2], 0.0f, m_Key);
+            m_Source.PlayNote(melody.Value[m_StepIdx / 2],0.0f, m_Key, fmodParams: GetFmodParams());
         }
 
         // advance step
@@ -189,7 +189,8 @@ public sealed class CharacterMusic: MonoBehaviour {
         m_Source.PlayProgression(
             m_Jump.Value,
             m_JumpInterval,
-            m_Key
+            m_Key,
+            fmodParams: GetFmodParams()
         );
     }
 
@@ -203,7 +204,7 @@ public sealed class CharacterMusic: MonoBehaviour {
             return;
         }
 
-        m_Source.PlayLine(m_Flutter.Value, 0.0f, m_Key);
+        m_Source.PlayLine(m_Flutter.Value, 0.0f, m_Key, fmodParams: GetFmodParams());
         m_FlutterTime += m_FlutterInterval;
     }
 
@@ -222,10 +223,20 @@ public sealed class CharacterMusic: MonoBehaviour {
         enabled = sim != DisconeCharacter.Simulation.None;
     }
 
+    private FmodMusicSource.FmodParams GetFmodParams() {
+        return new FmodMusicSource.FmodParams {
+            isGrounded = IsGrounded
+        };
+    }
+
     // -- queries --
     /// the character's step (planar) velocity
     Vector3 StepVelocity {
         get => State.Curr.GroundVelocity;
+    }
+    /// whether or not the character is grounded
+    bool IsGrounded {
+        get => State.Curr.IsGrounded;
     }
 
     ThirdPerson.CharacterState State {

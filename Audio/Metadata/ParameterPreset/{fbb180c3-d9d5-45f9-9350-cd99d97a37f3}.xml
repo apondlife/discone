@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{fbb180c3-d9d5-45f9-9350-cd99d97a37f3}">
+		<property name="name">
+			<value>IsGrounded</value>
+		</property>
+		<relationship name="folder">
+			<destination>{c46d47d8-ae5c-4831-bc91-5682c635144b}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{02108159-2b9b-44ea-99da-cd0197600bc3}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{02108159-2b9b-44ea-99da-cd0197600bc3}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
