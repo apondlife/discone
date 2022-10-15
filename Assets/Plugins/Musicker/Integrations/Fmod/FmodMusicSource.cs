@@ -13,6 +13,22 @@ public sealed class FmodMusicSource: MonoBehaviour {
     /// the name of the delay param
     const string k_ParamDelay = "Delay";
 
+    /// the name of the speed param
+    const string k_ParamSpeed = "Speed";
+    /// the name of the grounded param
+    const string k_ParamGrounded = "IsGrounded";
+    /// the name of the crouching param
+    const string k_ParamCrouching = "IsCrouching";
+    /// the name of the idle param
+    const string k_ParamIdle = "IsIdle";
+
+    public struct FmodParams {
+        public float speed;
+        public bool isGrounded;
+        public bool isCrouching;
+        public bool isIdle;
+    }
+
     // -- references --
     [Header("references")]
     [Tooltip("the fmod event emitter for this source")]
@@ -28,26 +44,26 @@ public sealed class FmodMusicSource: MonoBehaviour {
 
     // -- commands --
     /// play the current tone in the line and advance it
-    public void PlayLine(Line line, float delay = 0.0f, Key? key = null) {
-        PlayNote(line.Curr(), delay, key);
+    public void PlayLine(Line line, float delay = 0.0f, Key? key = null, FmodParams? fmodParams = null) {
+        PlayNote(line.Curr(), delay, key, fmodParams);
         line.Advance();
     }
 
     /// play the current chord in a progression and advance it
-    public void PlayProgression(Progression prog, float interval = 0.0f, Key? key = null) {
-        PlayChord(prog.Curr(), interval, key);
+    public void PlayProgression(Progression prog, float interval = 0.0f, Key? key = null, FmodParams? fmodParams = null) {
+        PlayChord(prog.Curr(), interval, key, fmodParams);
         prog.Advance();
     }
 
     /// play the clips in the chord; pass an interval to arpeggiate
-    public void PlayChord(Chord chord, float interval = 0.0f, Key? key = null) {
+    public void PlayChord(Chord chord, float interval = 0.0f, Key? key = null, FmodParams? fmodParams = null) {
         for (var i = 0; i < chord.Length; i++) {
-            PlayNote(chord[i], interval * i, key);
+            PlayNote(chord[i], interval * i, key, fmodParams);
         }
     }
 
     /// play the note
-    public void PlayNote(Tone tone, float delay = 0.0f, Key? key = null) {
+    public void PlayNote(Tone tone, float delay = 0.0f, Key? key = null, FmodParams? fmodParams = null) {
         // transpose if necessary
         var keyed = tone;
         if (key != null) {
@@ -58,6 +74,10 @@ public sealed class FmodMusicSource: MonoBehaviour {
         m_Emitter.Play();
         m_Emitter.SetParameter(k_ParamTone, keyed.Steps);
         m_Emitter.SetParameter(k_ParamDelay, delay);
+        
+        if (fmodParams.HasValue) {
+            m_Emitter.SetParameter(k_ParamGrounded, fmodParams.Value.isGrounded ? 1f : 0f);
+        }
     }
 }
 
