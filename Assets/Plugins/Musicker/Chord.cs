@@ -16,18 +16,7 @@ public readonly struct Chord {
 
     /// create a chord from a root note and a chord quality, building its tones
     public Chord(Tone root, Quality quality) {
-        // create the right number of tones
-        var n = quality.Length;
-        var tones = new Tone[n];
-
-        // transpose each tone from the root
-        for (var i = 0; i < n; i++) {
-            var tone = quality[i];
-            tones[i] = tone.Transpose(root);
-        }
-
-        // build a chord
-        m_Tones = tones;
+        m_Tones = quality.TonesFromRoot(root);
     }
 
     // -- queries --

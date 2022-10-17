@@ -16,6 +16,9 @@ public sealed class Line {
         m_Tones = tones;
     }
 
+    public Line(Tone root, Quality quality) : this(quality.TonesFromRoot(root)) {
+    }
+
     // -- commands --
     /// move to the next tone
     public void Advance() {
