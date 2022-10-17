@@ -3,9 +3,11 @@ using Mirror;
 using System.Collections.Generic;
 using ThirdPerson;
 using UnityAtoms;
+using FMODUnity;
 
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
+[RequireComponent(typeof(StudioEventEmitter))]
 public class CharacterFlower: NetworkBehaviour {
     // -- constants --
     /// how offset the flower is forward, so it doesn't spawn under the character
@@ -22,6 +24,10 @@ public class CharacterFlower: NetworkBehaviour {
 
     /// the ground layer mask
     static LayerMask s_GroundMask;
+    /// the character layer mask
+    static LayerMask s_CharacterMask;
+
+    static Musicker.Line s_Line = new Musicker.Line(Musicker.Tone.I, Musicker.Quality.Maj7);
 
     // -- cfg --
     [Header("cfg")]
@@ -34,6 +40,16 @@ public class CharacterFlower: NetworkBehaviour {
     [Tooltip("the saturation of the released flower")]
     [SerializeField] float m_SpawnTime = 0.5f;
 
+    [Header("cfg-wobble")]
+    [Tooltip("the wobble time when collided with")]
+    [SerializeField] float m_WobbleTime = 0.5f;
+    [Tooltip("the wobble frequency when collided with")]
+    [SerializeField] float m_WobbleFrequency = 0.5f;
+    [Tooltip("the wobble decay intensity when collided with")]
+    [SerializeField] float m_WobbleDecay = 0.5f;
+    [Tooltip("the wobble max amplitude when collided with")]
+    [SerializeField] float m_WobbleAmplitude = 0.1f;
+
     // -- published --
     [Header("published")]
     [Tooltip("the event called when a flower gets planted")]
@@ -43,6 +59,12 @@ public class CharacterFlower: NetworkBehaviour {
     [Header("refs")]
     [Tooltip("the renderer for the flower")]
     [SerializeField] Renderer m_Renderer;
+
+    [Tooltip("the FMOD emitter for the flower")]
+    [SerializeField] StudioEventEmitter m_FmodEmitter;
+
+    [Tooltip("the target game object for rescaling the flower")]
+    [SerializeField] Transform m_ScaleTarget;
 
     // -- props --
     /// the assosciated character's key
@@ -60,13 +82,21 @@ public class CharacterFlower: NetworkBehaviour {
     /// if the flower has been planted
     bool m_IsPlanted = false;
 
+    Vector3 m_BaseScale = Vector3.one;
+    Coroutine m_Wobble;
+
     // -- lifecycle
     void Awake() {
         m_Renderer.material = FindMaterial();
+        m_BaseScale = m_ScaleTarget.localScale;
 
         // every byte counts
         if (s_GroundMask == 0) {
             s_GroundMask = LayerMask.GetMask("Default", "Field", "Indoor");
+        }
+
+        if (s_CharacterMask == 0) {
+            s_CharacterMask = LayerMask.GetMask("Character");
         }
 
         // debug helpers
@@ -78,6 +108,58 @@ public class CharacterFlower: NetworkBehaviour {
     void OnEnable() {
         // try to replant any time we are enabled
         TryPlant();
+    }
+
+    Musicker.Chord k_Chord = new Musicker.Chord(Musicker.Tone.I, Musicker.Quality.Maj7);
+
+    private void OnTriggerEnter(Collider other) {
+        // if its not a character, do nothing
+        if(!s_CharacterMask.Contains(other.gameObject.layer)) {
+            return;
+        }
+
+        // on character trigger enter
+        // don't do anything if just planted
+        if(m_IsPlanted == false) {
+            return;
+        }
+
+        if(m_Wobble != null) {
+            StopCoroutine(m_Wobble);
+        }
+
+        m_Wobble = StartCoroutine(CoroutineHelpers.InterpolateByTime(m_WobbleTime, (k) => {
+            var scale = 1 + m_WobbleAmplitude * Mathf.Sin(m_WobbleFrequency * 2 * Mathf.PI * k) * (1 - Mathf.Pow(k, m_WobbleDecay));
+            m_ScaleTarget.localScale =
+                Vector3.Scale(
+                    m_BaseScale,
+                    Vector3.one * scale
+                );
+        }));
+
+
+        m_FmodEmitter.Play();
+        m_FmodEmitter.SetParameter("Tone", s_Line.Curr().Steps);
+
+        if(Random.value < 0.5f) {
+            s_Line.Advance();
+        }
+
+        s_Line.Advance();
+    }
+    private void OnTriggerExit(Collider other) {
+        // if its not a character, do nothing
+        if(!s_CharacterMask.Contains(other.gameObject.layer)) {
+            return;
+        }
+
+        // on character trigger enter
+        // don't do anything if just planted
+        if(m_IsPlanted == false) {
+            return;
+        }
+
+        m_FmodEmitter.Stop();
     }
 
     // -- commands --
@@ -117,14 +199,14 @@ public class CharacterFlower: NetworkBehaviour {
         transform.position = hit.point;
 
         // make the flower grow
-        var targetScale = transform.localScale;
-        transform.localScale = Vector3.Scale(
-            transform.localScale,
+        var targetScale = m_BaseScale;
+        m_ScaleTarget.localScale = Vector3.Scale(
+            m_ScaleTarget.localScale,
             new Vector3(1.0f, 0.0f, 1.0f)
         );
 
         StartCoroutine(CoroutineHelpers.InterpolateByTime(m_SpawnTime, (k) => {
-            transform.localScale = Vector3.Scale(
+            m_ScaleTarget.localScale = Vector3.Scale(
                 targetScale,
                 new Vector3(1.0f, k * k, 1.0f)
             );

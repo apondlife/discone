@@ -55,6 +55,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharacterModel
       objectReference: {fileID: 0}
+    - target: {fileID: 2548280980423045532, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: MaxJumpSquatSquash
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 3345656352466467714, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Tunables
       value: 
@@ -144,12 +148,32 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: Params.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: EventReference.Path
-      value: event:/Character/Mousing-clone
+      value: event:/Character/Mousing-clone2
       objectReference: {fileID: 0}
     - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: OverrideMaxDistance
       value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: EventReference.Guid.Data1
+      value: -471674125
+      objectReference: {fileID: 0}
+    - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: EventReference.Guid.Data2
+      value: 1279799495
+      objectReference: {fileID: 0}
+    - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: EventReference.Guid.Data3
+      value: -2008397378
+      objectReference: {fileID: 0}
+    - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: EventReference.Guid.Data4
+      value: -1303438276
       objectReference: {fileID: 0}
     - target: {fileID: 7929238279335007932, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_IsActive

@@ -24,6 +24,21 @@ public readonly struct Quality {
     }
 
     // -- factories --
+    /// create a tone array from a root tone
+    public Tone[] TonesFromRoot(Tone root) {
+        var n = Length;
+        var tones = new Tone[n];
+
+        // transpose each tone from the root
+        for (var i = 0; i < n; i++) {
+            var tone = this[i];
+            tones[i] = tone.Transpose(root);
+        }
+
+        // build a chord
+        return tones;
+    }
+
     /// a minor fifth
     public static Quality Min5 = new Quality(
         Tone.I,
