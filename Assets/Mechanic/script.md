@@ -70,38 +70,52 @@ they’re all over, everywhere. they smell and look nice.
 
 nice enough to steal my focus occasionally hehe.
 
+you noticed that, too?
+
 the little petals, tiny veins of color snaking through them
 
-bending in the wind, letting the breeze take their scent, but never snapping.
-remind me of myself haha.
+bending in the wind, the breeze carrying the scent, but never snapping
 
-a distraction bit of a distraction actually, haha.
+reminds me of someone…
+myself, haha ha.
+and i guess you, too ;)
 
-they remind me that there are other preoccupations.
+they’re a bit of a distraction actually, ha ha.
 
-or maybe that something exists something outside preoccupation.
+reminds me that there are other preoccupations.
 
-<preoccupation>
+or maybe that something exists outside preoccupation.
+
+<pre occupation>
 
 and i like to think about how they came to be.
-how and why they were planted.
+the hows whys whats whens.
 
 about the somebody, or the nobody, that did the planting.
 
 <no body>
 
 they are.
-
 yeah, i only realized this recently.
 
 there, all the flowers were purposed, intentioned.
 
-but Here, i’ve found that i don’t need that thought.
+but here, i’ve found that i don’t need that thought.
 and i don’t worry as much.
 
 # feats
 
-sometimes 
+back when i was in business full-time…
+i’m more of an itinerant business person these days
+
+i’d get an occasional pang of fear.
+and i mean occasional, don’t worry about me okay, hah hah.
+
+like, can i do this. is this even possible?
+
+sometimes it wasn’t & i couldn’t.
+but usually it was & i could.
+i said don’t worry about me alright hahahaaa.
 
 # outro
 
