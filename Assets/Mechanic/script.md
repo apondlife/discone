@@ -86,14 +86,14 @@ reminds me that there are other preoccupations.
 
 or maybe that something exists outside preoccupation.
 
-<pre occupation>
+> pre occupation
 
 and i like to think about how they came to be.
 the hows whys whats whens.
 
 about the somebody, or the nobody, that did the planting.
 
-<no body>
+> no body
 
 they are.
 yeah, i only realized this recently.
