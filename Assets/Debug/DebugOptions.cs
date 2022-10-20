@@ -49,6 +49,7 @@ public class DebugOptions: MonoBehaviour {
         player.Command_DriveSpawnedCharacter(character);
     }
 
+    #if UNITY_EDITOR
     [ContextMenu("Spawn Character at Scene Camera")]
     public CharacterRec SpawnCharacterAtSceneView() {
         // get the editor camera
@@ -65,6 +66,7 @@ public class DebugOptions: MonoBehaviour {
         // get the look position and direction
         return CreateCharacter(camera.transform);
     }
+    #endif
 
     // -- factories --
     /// create debug character, if enabled
