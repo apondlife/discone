@@ -7,6 +7,8 @@ namespace Discone.Tools {
 
 public class Snapshot : MonoBehaviour {
 
+    [SerializeField] bool m_SnapshotOnStart = false;
+
     [Header("config path")]
     [Tooltip("$GAME= productName, $TITLE=specifiedbelow, $DATE = current time formatted as specified below")]
     [SerializeField] string m_NameTemplate = "$GAME_$TITLE_$DATE";
@@ -34,6 +36,12 @@ public class Snapshot : MonoBehaviour {
 
         if(string.IsNullOrEmpty(m_Title) && m_Camera != null) {
             m_Title = m_Camera.gameObject.name;
+        }
+    }
+
+    public void Start() {
+        if (m_SnapshotOnStart) {
+            this.DoAfterTime(1.0f, TakeSnapshot);
         }
     }
 
