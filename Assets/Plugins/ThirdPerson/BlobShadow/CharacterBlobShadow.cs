@@ -32,9 +32,6 @@ public class CharacterBlobShadow : MonoBehaviour {
 
         m_Projector.orthographicSize = Mathf.Lerp(m_MinSize, m_BaseSize, m_ResizeCurve.Evaluate(m_GroundTarget.PercentExtended));
         m_Projector.enabled = !m_State.IsGrounded;
-
     }
-
-
 }
 }

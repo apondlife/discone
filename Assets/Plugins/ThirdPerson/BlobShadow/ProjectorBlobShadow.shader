@@ -12,6 +12,7 @@ Shader "Projector/BlobShadow" {
 	Properties {
 		_ShadowTex ("Cookie", 2D) = "gray" {}
 		_FalloffTex ("FallOff", 2D) = "white" {}
+		_WallTolerance ("Wall Tolerance", Range(0, 1)) = 0.01
 	}
 	Subshader {
 		Tags {"Queue"="Transparent"}
@@ -26,7 +27,7 @@ Shader "Projector/BlobShadow" {
 			#pragma fragment frag
 			#pragma multi_compile_fog
 			#include "UnityCG.cginc"
-			
+
 			struct vertex_out {
 				float4 uvShadow : TEXCOORD0;
 				float4 uvFalloff : TEXCOORD1;
@@ -34,24 +35,25 @@ Shader "Projector/BlobShadow" {
 				float4 pos : SV_POSITION;
 				float intensity : TEXCOORD3; // additional intensity, based on normal orientation
 			};
-			
+
 			float4x4 unity_Projector;
 			float4x4 unity_ProjectorClip;
-			
+			float _WallTolerance;
+
 			vertex_out vert (float4 vertex : POSITION, float3 normal : NORMAL)
 			{
 				vertex_out o;
-				o.intensity = sign(dot(float3(0.0, 1.0, 0.0), UnityObjectToWorldNormal(normal))); // 1.0 if pointing UP
+				o.intensity = step(_WallTolerance, dot(float3(0.0, 1.0, 0.0), UnityObjectToWorldNormal(normal))); // 1.0 if pointing UP
 				o.pos = UnityObjectToClipPos (vertex);
 				o.uvShadow = mul (unity_Projector, vertex);
 				o.uvFalloff = mul (unity_ProjectorClip, vertex);
 				UNITY_TRANSFER_FOG(o,o.pos);
 				return o;
 			}
-			
+
 			sampler2D _ShadowTex;
 			sampler2D _FalloffTex;
-			
+
 			fixed4 frag (vertex_out i) : SV_Target
 			{
 				fixed4 texS = tex2Dproj (_ShadowTex, UNITY_PROJ_COORD(i.uvShadow));
