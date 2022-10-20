@@ -284,14 +284,14 @@ public sealed class CharacterController {
                 moveProjected = Vector3.zero;
             }
 
+            moveDelta += moveProjected;
+
             // if displacement is less than min move, accumulate and move from the prev position
             var moveDsp = moveDst - moveSrc;
             if (moveDsp.sqrMagnitude < m_SqrMinMove) {
                 moveDst = moveSrc;
                 moveDelta += moveDsp;
             }
-
-            moveDelta += moveProjected;
 
             // track collisions
             var collision = new CharacterCollision(
@@ -361,6 +361,12 @@ public sealed class CharacterController {
     [Tooltip("if the initial position and direction gizmo is visible")]
     [SerializeField] bool m_DrawInput = true;
 
+    [Tooltip("if we are drawing the top sphere of the capsule")]
+    [SerializeField] bool m_DrawTop = true;
+
+    [Tooltip("if we are drawing the the capsule as wireframe")]
+    [SerializeField] bool m_DrawWire = true;
+
     [Tooltip("if the raycasts gizmos are visible")]
     [SerializeField] bool m_DrawCasts = true;
 
@@ -392,13 +398,17 @@ public sealed class CharacterController {
 
                 Gizmos.color = Color.HSVToRGB(iH, iS, iV);
                 if (m_DrawCastCapsule) {
-                    Gizmos.DrawWireSphere(cast.Point2, cast.Radius);
+                    var point = m_DrawTop ? cast.Point2 : cast.Point1;
+                    Action<Vector3, float> drawSphere = m_DrawWire ? Gizmos.DrawWireSphere : Gizmos.DrawSphere;
+                    drawSphere(point, cast.Radius);
                     Gizmos.DrawLine(cast.Point1 - h, cast.Point2 + h);
                 }
 
                 Gizmos.color = Color.HSVToRGB(oH, oS, oV);
                 if (m_DrawCastCapsule) {
-                    Gizmos.DrawWireSphere(cast.Point2 + delta, cast.Radius);
+                    var point = m_DrawTop ? cast.Point2 : cast.Point1;
+                    Action<Vector3, float> drawSphere = m_DrawWire ? Gizmos.DrawWireSphere : Gizmos.DrawSphere;
+                    drawSphere(point + delta, cast.Radius);
                     Gizmos.DrawLine(cast.Point1 - h + delta, cast.Point2 + h + delta);
                 }
 
