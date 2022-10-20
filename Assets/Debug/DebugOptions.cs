@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityAtoms;
 
-#if UNITY_EDITOR
 /// debug utilties
 public class DebugOptions: MonoBehaviour {
     // -- module --
@@ -34,8 +33,7 @@ public class DebugOptions: MonoBehaviour {
     }
 
     // -- commands --
-    [ContextMenu("Spawn Character")]
-    public void SpawnCharacter() {
+    public void SpawnCharacter(Transform t) {
         // find the current player
         var player = m_Entites.Value
             .Players
@@ -47,13 +45,12 @@ public class DebugOptions: MonoBehaviour {
         }
 
         // spawn a new character
-        var character = CreateCharacter();
+        var character = CreateCharacter(t);
         player.Command_DriveSpawnedCharacter(character);
     }
 
-    // -- factories --
-    /// create debug character, if enabled
-    CharacterRec CreateCharacter() {
+    [ContextMenu("Spawn Character at Scene Camera")]
+    public CharacterRec SpawnCharacterAtSceneView() {
         // get the editor camera
         var scene = UnityEditor.SceneView.lastActiveSceneView;
         if (scene == null) {
@@ -66,9 +63,15 @@ public class DebugOptions: MonoBehaviour {
         }
 
         // get the look position and direction
-        var ct = camera.transform;
-        var pos = ct.position;
-        var fwd = ct.forward;
+        return CreateCharacter(camera.transform);
+    }
+
+    // -- factories --
+    /// create debug character, if enabled
+    CharacterRec CreateCharacter(Transform t) {
+
+        var pos = t.position;
+        var fwd = t.forward;
 
         // create a debug character rec
         var character = new CharacterRec(
@@ -84,4 +87,3 @@ public class DebugOptions: MonoBehaviour {
         return character;
     }
 }
-#endif
