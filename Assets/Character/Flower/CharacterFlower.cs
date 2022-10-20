@@ -88,7 +88,7 @@ public class CharacterFlower: NetworkBehaviour {
     // -- lifecycle
     void Awake() {
         m_Renderer.material = FindMaterial();
-        m_BaseScale = m_ScaleTarget.localScale;
+        // m_BaseScale = m_ScaleTarget.localScale;
 
         // every byte counts
         if (s_GroundMask == 0) {
