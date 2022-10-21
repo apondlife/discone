@@ -39,7 +39,7 @@ jumping around rather than jumping through.
 
 jumping about rather than jumping  because.
 
-jumping with, too. with your body. with another. with whatever. with all of it 
+jumping with, too. with your body. with another. with whatever. the whole thing.
 
 anyways…\
 you get it right?
@@ -66,14 +66,27 @@ or for looking.
 
 it’s one of the things that i like about this place.
 
-they’re all over, everywhere.\
+they’re all over,\
+everywhere.\
 they smell and look nice.
 
-nice enough to steal my focus occasionally hehe.
+yeah, little petals\
+& tiny veins of color snaking through them.
 
-you noticed that, too?
+enough to steal my focus occasionally hehe.
 
-the little petals, tiny veins of color snaking through them
+maybe you noticed that?\
+…it’s weird huh\
+talking this way…
+
+& you can’t see me\
+but you hear me\
+& you can’t speak\
+but with your body.
+
+i can see your movements!
+
+yeah the flowers, i can see them bending!
 
 bending in the wind, the breeze carrying the scent, but never snapping
 
@@ -90,8 +103,7 @@ reminds me that preoccupations exist outside my present preoccupation.\
 
 & i like to think about how they came to be.\
 the hows\
-the whys\
-the whats\
+whys, whats\
 the whens.
 
 & about the somebody, or nobody?\
