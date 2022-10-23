@@ -84,9 +84,8 @@ but you hear me\
 & you can’t speak\
 but with your body.
 
-i can see your movements!
-
-yeah the flowers, i can see them bending!
+i can see your movements!\
+& the flowers, i can see them bending.
 
 bending in the wind, the breeze carrying the scent, but never snapping
 
@@ -97,7 +96,7 @@ and i guess you, too ;)
 they’re a bit of a distraction actually, ha ha.
 
 reminds me that preoccupations exist outside my present preoccupation.\
-& outside preoccupation even.
+& outside preoccupation.
 
 > pre occupation
 
@@ -112,17 +111,37 @@ that did the planting.
 > no body
 
 they are.\
-yeah, i only realized this recently.
+yeah, i only realized that recently.
 
-there, all the flowers were purposed, intentioned.
+one time i stumbled into a little grove
 
-but here, i’ve found that i don’t need that thought.\
+a ring of lilies, tulips, peonies\
+a ranuncula, my favorite\
+been noticing you tending towards a few in particular, too
+
+and it seemed like there wasn’t anything to do at that point but lie down for a bit\
+so i did.
+
+& i must have knocked out\
+cuz when i woke, the ring had maybe doubled in size
+
+new buds i’d never seen before\
+never did figure out where they came from\
+
+didn’t care enough i guess\
+too much take in just layin there haa hah.
+
+yeah where i come from, flowers were purposed, intentioned.\
+will i find one soon?
+
+here, i‘ve never found a need for that thought.\
 and i don’t worry as much.
 
 # feats
 
-back when i was in business full-time…\
-more of an itinerant business person these days.
+i used to be in business full-time…\
+these days i’m more of a dabbler\
+which suits me.
 
 i’d get occasional pangs of fear.\
 & i mean occasional, don’t worry about me okay, hah hah.
@@ -134,6 +153,8 @@ but usually it was.\
 and then most of the time i could.
 
 i said don’t worry about me alright hahahaaa.
+
+# architecture
 
 # outro
 
