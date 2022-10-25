@@ -132,29 +132,48 @@ didn’t care enough i guess\
 too much take in just layin there haa hah.
 
 yeah where i come from, flowers were purposed, intentioned.\
-will i find one soon?
+“where are they” & “i need one” & all that
 
-here, i‘ve never found a need for that thought.\
+but Here, i‘ve never found a need for that thought.\
 and i don’t worry as much.
 
 # feats
 
 i used to be in business full-time…\
-these days i’m more of a dabbler\
+these days i’m more of a dabbler.\
 which suits me.
 
 i’d get occasional pangs of fear.\
-& i mean occasional, don’t worry about me okay, hah hah.
+i mean occasional, don’t worry about me okay, ha ha ha ha...
 
-can i do this? is this possible?
+you know, can i do this? is this possible?
 
 sometimes it wasn’t & i couldn’t.\
-but usually it was.\
-and then most of the time i could.
+but usually it was.
+
+& then most of the time i could.
 
 i said don’t worry about me alright hahahaaa.
 
 # architecture
+
+i never quite understood this place.\
+the whys of it\
+and not for lack of trying!
+
+i don’t know.\
+eventually, that’s where i got.\
+and maybe i didn’t need to.
+
+what’ve you found it to be?\
+anything?\
+
+yeah, maybe you got there.\
+been seeming that way to me, anyways.
+
+hope you’ll get tell me sometime…\
+haha but if you don’t i’ll survive…\
+hahah aha.
 
 # outro
 
