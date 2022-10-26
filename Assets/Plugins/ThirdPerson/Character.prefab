@@ -25,8 +25,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.10354013, y: 0.0000000029147111, z: 3.0342037e-10, w: 0.9946253}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0.10354017, y: -0.000000059604638, z: -0.00000001117587, w: 0.99462533}
+  m_LocalPosition: {x: 0.0000006854534, y: 1, z: -10.000002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -63,7 +63,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.843038, y: 1}
+    m_SensorSize: {x: 1.773585, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -317,7 +317,7 @@ MonoBehaviour:
   m_CollisionMask:
     serializedVersion: 2
     m_Bits: 385
-  m_BaseDistance: 10
+  m_BaseDistance: 13
   m_YawCurve:
     serializedVersion: 2
     m_Curve:
@@ -393,7 +393,7 @@ MonoBehaviour:
   m_MaxPitch: 60
   m_MaxPitchSpeed: 50
   m_PitchAcceleration: 100
-  m_LocalSpeed: 13
+  m_LocalSpeed: 50
   m_ContactOffset: 0.38
   m_Distance_SpeedCurve:
     serializedVersion: 2
@@ -821,6 +821,10 @@ MonoBehaviour:
     m_Phase:
       Name: NotMoving
     m_IsLogging: 0
+  m_Crouch:
+    m_Phase:
+      Name: 
+    m_IsLogging: 0
   m_Tilt:
     m_Phase:
       Name: NotTilting
@@ -839,6 +843,8 @@ MonoBehaviour:
     m_ContactOffset: 0.01
     m_Capsule: {fileID: 1972163625}
     m_DrawInput: 1
+    m_DrawTop: 1
+    m_DrawWire: 1
     m_DrawCasts: 1
     m_DrawCastCapsule: 1
     m_DrawHits: 1
