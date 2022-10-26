@@ -28,7 +28,7 @@ sealed class MovementSystem: CharacterSystem {
         var dv = IntegrateForces(
             m_State.Curr.GroundVelocity,
             Vector3.zero,
-            IsStopped ? 0.0f : m_Tunables.Horizontal_Drag,
+            IsStopped ? 0.0f : m_State.Horizontal_Drag,
             IsStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
             delta
         );
@@ -88,7 +88,7 @@ sealed class MovementSystem: CharacterSystem {
         var dv = IntegrateForces(
             m_State.Curr.GroundVelocity,
             m_Tunables.Horizontal_Acceleration * dirInput.magnitude * m_State.Curr.Forward,
-            IsStopped ? 0.0f : m_Tunables.Horizontal_Drag,
+            IsStopped ? 0.0f : m_State.Horizontal_Drag,
             IsStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
             delta
         );
@@ -144,7 +144,7 @@ sealed class MovementSystem: CharacterSystem {
         var dv = IntegrateForces(
             m_State.Curr.GroundVelocity,
             m_Tunables.Horizontal_Acceleration * thrustLateral,
-            IsStopped ? 0.0f : m_Tunables.Horizontal_Drag,
+            IsStopped ? 0.0f : m_State.Horizontal_Drag,
             IsStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
             delta
         );

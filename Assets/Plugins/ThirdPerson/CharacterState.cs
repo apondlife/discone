@@ -85,7 +85,7 @@ public sealed partial class CharacterState {
         /// how much the velocity changed since last frame
         public Vector3 Acceleration = Vector3.zero;
 
-        /// the current facing direction
+        /// the facing direction
         public Vector3 Forward = Vector3.forward;
 
         /// if the character is in jump squat
@@ -109,19 +109,22 @@ public sealed partial class CharacterState {
         /// the wall collision for the previous frame
         public CharacterCollision Wall;
 
-        /// the current frame in the jump squat
+        /// the frame in the jump squat
         public int JumpSquatFrame = -1;
 
-        /// the current time the character hasn't moved
+        /// the time the character hasn't moved
         public float IdleTime = 0.0f;
 
-        /// the current kinectic friction for grounded movement
+        /// the drag for grounded movement
+        public float Horizontal_Drag = 0.0f;
+
+        /// the kinectic friction for grounded movement
         public float Horizontal_KineticFriction = 0.0f;
 
-        /// the current static friction for grounded movement
+        /// the static friction for grounded movement
         public float Horizontal_StaticFriction = 0.0f;
 
-        ///  the current frame in pivot animation
+        ///  thecurrent frame in pivot animation
         public int PivotFrame = -1;
 
         ///  the direction of the current pivot
