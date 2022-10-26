@@ -29,8 +29,10 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float Crouch_StaticFriction { get; }
     public abstract float Crouch_LateralMaxSpeed { get; }
 
-    public abstract RangeCurve Crouch_Brake_KineticFriction { get; }
-    public abstract RangeCurve Crouch_Slide_KineticFriction { get; }
+    public abstract RangeCurve Crouch_PositiveDrag { get; }
+    public abstract RangeCurve Crouch_NegativeDrag { get; }
+    public abstract RangeCurve Crouch_PositiveKineticFriction { get; }
+    public abstract RangeCurve Crouch_NegativeKineticFriction { get; }
 
     // -- air movement --
     public abstract float AerialDriftAcceleration { get; }

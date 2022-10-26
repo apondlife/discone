@@ -23,6 +23,7 @@ sealed class CrouchSystem: CharacterSystem {
         m_State.IsCrouching = false;
 
         // reset friction
+        m_State.Horizontal_Drag = m_Tunables.Horizontal_Drag;
         m_State.Horizontal_KineticFriction = m_Tunables.Horizontal_KineticFriction;
         m_State.Horizontal_StaticFriction = m_Tunables.Horizontal_StaticFriction;
     }
@@ -30,6 +31,7 @@ sealed class CrouchSystem: CharacterSystem {
     void NotCrouching_Update(float delta) {
         // reset friction every frame in debug
         #if UNITY_EDITOR
+        m_State.Horizontal_Drag = m_Tunables.Horizontal_Drag;
         m_State.Horizontal_KineticFriction = m_Tunables.Horizontal_KineticFriction;
         m_State.Horizontal_StaticFriction = m_Tunables.Horizontal_StaticFriction;
         #endif
@@ -49,6 +51,7 @@ sealed class CrouchSystem: CharacterSystem {
     );
 
     void Crouching_Enter() {
+        // start crouching
         m_State.IsCrouching = true;
 
         // increase static friction on crouch
@@ -81,13 +84,19 @@ sealed class CrouchSystem: CharacterSystem {
         var inputDir = m_Input.Move;
         var inputDotCrouch = Vector3.Dot(inputDir, crouchDir);
 
-        // if the input is not in the direction of the crouch, we're braking;
+        // if the input is not in the direction of the crouch, we're braking,
         // otherwise, slide.
-        var curve = inputDotCrouch <= 0.0f
-            ? m_Tunables.Crouch_Brake_KineticFriction
-            : m_Tunables.Crouch_Slide_KineticFriction;
+        var drag = inputDotCrouch <= 0.0f
+            ? m_Tunables.Crouch_NegativeDrag
+            : m_Tunables.Crouch_PositiveDrag;
 
-        m_State.Horizontal_KineticFriction = curve.Evaluate(Mathf.Abs(inputDotCrouch));
+        m_State.Horizontal_Drag = drag.Evaluate(Mathf.Abs(inputDotCrouch));
+
+        var kineticFriction = inputDotCrouch <= 0.0f
+            ? m_Tunables.Crouch_NegativeKineticFriction
+            : m_Tunables.Crouch_PositiveKineticFriction;
+
+        m_State.Horizontal_KineticFriction = kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch));
     }
 
     // -- queries --

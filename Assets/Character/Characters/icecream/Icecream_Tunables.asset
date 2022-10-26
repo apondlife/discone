@@ -25,34 +25,43 @@ MonoBehaviour:
   m_AerialDriftAcceleration: 10
   m_Crouch_StaticFriction: 69
   m_Crouch_LateralMaxSpeed: 0.15
-  m_Crouch_Brake_KineticFriction:
+  m_Crouch_KineticFriction:
     m_Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
+        time: -1
+        value: 1
+        inSlope: -1
+        outSlope: -1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 1
-        outSlope: 1
-        tangentMode: 34
+        inSlope: -1
+        outSlope: Infinity
+        tangentMode: 101
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 1
-        inSlope: 1
-        outSlope: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
         tangentMode: 34
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.33333334
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Min: 16
     m_Max: 50
-  m_Crouch_Slide_KineticFriction:
+  m_Crouch_Drag:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -77,7 +86,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 5
+    m_Min: 0
     m_Max: 0
   m_Gravity: -70
   m_JumpBuffer: 10
