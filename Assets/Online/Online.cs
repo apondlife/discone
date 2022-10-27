@@ -257,7 +257,8 @@ public class Online: NetworkManager {
         NetworkConnection conn,
         CreatePlayerMessage _
     ) {
-        var player = Instantiate(playerPrefab);
+        var t = GetStartPosition();
+        var player = Instantiate(playerPrefab, t.position, t.rotation);
         NetworkServer.AddPlayerForConnection(conn, player);
     }
 
