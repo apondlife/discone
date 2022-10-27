@@ -30,11 +30,12 @@ sealed class CrouchSystem: CharacterSystem {
 
     void NotCrouching_Update(float delta) {
         // reset friction every frame in debug
-        #if UNITY_EDITOR
+        // TODO: doing this every frame in the build right now bc we don't have a good
+        // way to initialize frames from tunables and/or split up network state from
+        // client state
         m_State.Horizontal_Drag = m_Tunables.Horizontal_Drag;
         m_State.Horizontal_KineticFriction = m_Tunables.Horizontal_KineticFriction;
         m_State.Horizontal_StaticFriction = m_Tunables.Horizontal_StaticFriction;
-        #endif
 
         // switch to crouching on input
         if (m_State.IsGrounded && m_Input.IsCrouchPressed) {

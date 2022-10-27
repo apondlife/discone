@@ -24,6 +24,7 @@ public class CharacterFlower: NetworkBehaviour {
 
     /// the ground layer mask
     static LayerMask s_GroundMask;
+
     /// the character layer mask
     static LayerMask s_CharacterMask;
 
