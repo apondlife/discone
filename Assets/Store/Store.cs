@@ -47,12 +47,6 @@ public sealed class Store: ScriptableObject {
     }
 
     // -- c/syncing
-    /// sync the in-memory records for all objects
-    void SyncAll() {
-        SyncWorld();
-        SyncPlayer();
-    }
-
     /// sync the in-memory world record
     public void SyncWorld() {
         // grab player flower
@@ -78,33 +72,41 @@ public sealed class Store: ScriptableObject {
         m_World.Flowers = records;
     }
 
-    /// sync the in-memory player record
-    public void SyncPlayer() {
+    /// try syncing the in-memory player record, fails if a player has no character
+    public bool TrySyncPlayer() {
         // find the player's current character
         var character = FindPlayerCharacter();
         if (character == null) {
             Debug.LogError("[store] found no player character to sync!");
-            return;
+            return false;
         }
 
         // and update the record
         m_Player.Character = character.IntoRecord();
         Debug.Log($"[store] updated player record {m_Player}");
+        return true;
     }
 
     /// save the current state to file
     [ContextMenu("Save Store")]
     public async Task Save() {
-        // sync all in-memory records
-        SyncAll();
+        // only save player if successfully syncing
+        var savePlayer = Task.CompletedTask;
+        if (TrySyncPlayer()) {
+            savePlayer = SaveRecord<PlayerRec>(PlayerPath, m_Player);
+        }
+
+        // sync world and save
+        SyncWorld();
+        var saveWorld = SaveRecord<WorldRec>(WorldPath, m_World);
 
         // ensure we have a directory to write to
         Directory.CreateDirectory(RootPath);
 
         // write the records to disk
         await Task.WhenAll(
-            SaveRecord<WorldRec>(WorldPath, m_World),
-            SaveRecord<PlayerRec>(PlayerPath, m_Player)
+            saveWorld,
+            savePlayer
         );
     }
 
