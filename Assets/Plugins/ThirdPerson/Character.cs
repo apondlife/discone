@@ -59,8 +59,11 @@ public partial class Character: MonoBehaviour {
     void Awake() {
         // init state
         m_State = new CharacterState(
-            transform.position,
-            transform.forward
+            new CharacterState.Frame(
+                transform.position,
+                transform.forward
+            ),
+            m_Tunables
         );
 
         m_Events = new CharacterEvents(m_State);

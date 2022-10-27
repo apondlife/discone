@@ -12,16 +12,25 @@ public sealed partial class CharacterState {
     const uint k_BufferSize = 5;
     #endif
 
+    // -- deps --
+    /// the tunables
+    CharacterTunablesBase m_Tunables;
+
     // -- props --
     /// the queue of frames
     Queue<Frame> m_Frames = new Queue<Frame>(k_BufferSize);
 
     // -- lifetime --
+    /// create state from intial frame and dependencies
     public CharacterState(
-        Vector3 position,
-        Vector3 forward
+        Frame initial,
+        CharacterTunablesBase tunables
     ) {
-        Fill(new Frame(position, forward));
+        // set deps
+        m_Tunables = tunables;
+
+        // set props
+        Fill(initial);
     }
 
     // -- commands --
@@ -66,6 +75,16 @@ public sealed partial class CharacterState {
         get => Curr.IsIdle;
     }
 
+    /// if the ground speed this frame is below the movement threshold
+    public bool IsStopped {
+        get => Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+    }
+
+    /// if the ground speed last frame was below the movement threshold
+    public bool WasStopped {
+        get => Prev.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+    }
+
     /// the buffer size
     public uint BufferSize {
         get => k_BufferSize;
@@ -97,7 +116,7 @@ public sealed partial class CharacterState {
         /// if the characer is on the wall
         public bool IsOnWall = false;
 
-        /// if the characer is crouching
+        /// if the character is crouching
         public bool IsCrouching = false;
 
         /// how much tilted the character is
@@ -124,10 +143,10 @@ public sealed partial class CharacterState {
         /// the static friction for grounded movement
         public float Horizontal_StaticFriction = 0.0f;
 
-        ///  thecurrent frame in pivot animation
+        /// the frame in pivot animation
         public int PivotFrame = -1;
 
-        ///  the direction of the current pivot
+        /// the direction of the current pivot
         public Vector3 PivotDirection = Vector3.zero;
 
         /// the direction fo the current crouch

@@ -11,7 +11,6 @@ sealed class CrouchSystem: CharacterSystem {
         return NotCrouching;
     }
 
-    // -- props --
     // -- NotCrouching --
     Phase NotCrouching => new Phase(
         name: "NotCrouching",
@@ -20,6 +19,7 @@ sealed class CrouchSystem: CharacterSystem {
     );
 
     void NotCrouching_Enter() {
+        // stop crouching
         m_State.IsCrouching = false;
 
         // reset friction
@@ -30,9 +30,9 @@ sealed class CrouchSystem: CharacterSystem {
 
     void NotCrouching_Update(float delta) {
         // reset friction every frame in debug
-        // TODO: doing this every frame in the build right now bc we don't have a good
-        // way to initialize frames from tunables and/or split up network state from
-        // client state
+        // TODO: doing this every frame in the build right now bc we don't have
+        // a good way to initialize frames from tunables and/or split up network
+        // state from client state
         m_State.Horizontal_Drag = m_Tunables.Horizontal_Drag;
         m_State.Horizontal_KineticFriction = m_Tunables.Horizontal_KineticFriction;
         m_State.Horizontal_StaticFriction = m_Tunables.Horizontal_StaticFriction;
@@ -61,9 +61,9 @@ sealed class CrouchSystem: CharacterSystem {
         // and store the crouch direction, the character won't reface for the
         // duration of the crouch (this is implemented in (coupled to) the
         // movement system)
-        m_State.Curr.CrouchDirection = WasStopped
-            ? Vector3.Project(m_State.Ground.Normal, m_State.Forward).normalized
-            : m_State.Prev.GroundVelocity.normalized;
+        m_State.Curr.CrouchDirection = m_State.WasStopped
+            ? m_State.Prev.Forward
+            : m_State.Prev.PlanarVelocity.normalized;
     }
 
     void Crouching_Update(float delta) {
@@ -85,6 +85,11 @@ sealed class CrouchSystem: CharacterSystem {
         var inputDir = m_Input.Move;
         var inputDotCrouch = Vector3.Dot(inputDir, crouchDir);
 
+        // if we're stopped and change direction, change crouch direction
+        if (m_State.IsStopped && inputDotCrouch < 0.0f) {
+            m_State.Curr.CrouchDirection = inputDir;
+        }
+
         // if the input is not in the direction of the crouch, we're braking,
         // otherwise, slide.
         var drag = inputDotCrouch <= 0.0f
@@ -98,12 +103,6 @@ sealed class CrouchSystem: CharacterSystem {
             : m_Tunables.Crouch_PositiveKineticFriction;
 
         m_State.Horizontal_KineticFriction = kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch));
-    }
-
-    // -- queries --
-    /// if the ground speed last frame was below the movement threshold
-    bool WasStopped {
-        get => m_State.Prev.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
     }
 }
 

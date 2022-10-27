@@ -126,7 +126,7 @@ public sealed class CharacterModel: MonoBehaviour {
         anim.SetFloat(
             k_PropMoveSpeed,
             Mathf.InverseLerp(
-                m_Tunables.Horizontal_MinSpeed,
+                0.0f,
                 m_Tunables.Horizontal_MaxSpeed,
                 m_State.Curr.GroundVelocity.magnitude
             )

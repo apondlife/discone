@@ -68,6 +68,10 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private float m_PivotStartThreshold;
     public override float PivotStartThreshold => m_PivotStartThreshold;
 
+    [Tooltip("the minimum speed to be able to pivot")]
+    [SerializeField] private float m_PivotSpeedThreshold;
+    public override float PivotSpeedThreshold => m_PivotSpeedThreshold;
+
     /// the deceleration of the character while pivoting
     public override float PivotDeceleration => TimeToPivot > 0 ? Horizontal_MaxSpeed / TimeToPivot : float.PositiveInfinity;
 
