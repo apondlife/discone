@@ -33,7 +33,22 @@ public class DebugOptions: MonoBehaviour {
     }
 
     // -- commands --
-    public void SpawnCharacter(Transform t) {
+    #if UNITY_EDITOR
+    [ContextMenu("Spawn Character at Scene Camera")]
+    public void SpawnCharacterAtSceneView() {
+        // get the editor camera
+        var scene = UnityEditor.SceneView.lastActiveSceneView;
+        if (scene == null) {
+            return;
+        }
+
+        var camera = scene.camera;
+        if (camera == null) {
+            return;
+        }
+
+        var t = camera.transform;
+
         // find the current player
         var player = m_Entites.Value
             .Players
@@ -44,48 +59,7 @@ public class DebugOptions: MonoBehaviour {
             return;
         }
 
-        // spawn a new character
-        var character = CreateCharacter(t);
-        player.Command_DriveSpawnedCharacter(character);
-    }
-
-    #if UNITY_EDITOR
-    [ContextMenu("Spawn Character at Scene Camera")]
-    public CharacterRec SpawnCharacterAtSceneView() {
-        // get the editor camera
-        var scene = UnityEditor.SceneView.lastActiveSceneView;
-        if (scene == null) {
-            return null;
-        }
-
-        var camera = scene.camera;
-        if (camera == null) {
-            return null;
-        }
-
-        // get the look position and direction
-        return CreateCharacter(camera.transform);
+        player.SpawnCharacterAtPoint(m_CharacterKey, t);
     }
     #endif
-
-    // -- factories --
-    /// create debug character, if enabled
-    CharacterRec CreateCharacter(Transform t) {
-
-        var pos = t.position;
-        var fwd = t.forward;
-
-        // create a debug character rec
-        var character = new CharacterRec(
-            m_CharacterKey,
-            pos,
-            Quaternion.LookRotation(
-                Vector3.ProjectOnPlane(fwd, Vector3.up),
-                Vector3.up
-            ),
-            null
-        );
-
-        return character;
-    }
 }

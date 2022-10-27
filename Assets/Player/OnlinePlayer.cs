@@ -15,6 +15,10 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     /// TODO: don't do this???
     const float k_SpawnOffset = 1.0f;
 
+    [Header("refs")]
+    [Tooltip("the character to spawn when first joining")]
+    [SerializeField] CharacterKey m_InitialCharacterKey;
+
     // -- state --
     [Header("state")]
     [Tooltip("this player's current character")]
@@ -55,6 +59,9 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     [Tooltip("the entities repos")]
     [SerializeField] EntitiesVariable m_Entities;
+
+    [Tooltip("the spawn points list")]
+    [SerializeField] GameObjectValueList m_SpawnPoints;
 
     [Tooltip("the persistence store")]
     [SerializeField] Store m_Store;
@@ -122,6 +129,28 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     // -- commands --
+
+    /// creates a given charater at the given transform
+    public void SpawnCharacterAtPoint(CharacterKey key, Transform t) {
+        // spawn a new character
+        var pos = t.position;
+        var fwd = t.forward;
+
+        // create a debug character rec
+        var character = new CharacterRec(
+            key,
+            pos,
+            Quaternion.LookRotation(
+                Vector3.ProjectOnPlane(fwd, Vector3.up),
+                Vector3.up
+            ),
+            null
+        );
+
+        // spawn a new character
+        Command_DriveSpawnedCharacter(character);
+    }
+
     /// when the requests to instantiate its previous character
     [Command]
     public void Command_DriveSpawnedCharacter(CharacterRec character) {
@@ -162,7 +191,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         }
     }
 
-    /// drive the first available character in the world
+    /// drive a random character marked with "IsInitial"
     [Command]
     void Command_DriveInitialCharacter() {
         // find any available character
@@ -173,6 +202,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // drive the initial character
         Server_DriveCharacter(character);
     }
+
 
     /// drive a new character
     [Command]
@@ -296,6 +326,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         get => m_Coord;
     }
 
+
     // -- events --
     /// when the character should switch
     void OnSwitchCharacter(GameObject obj) {
@@ -303,7 +334,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         Command_DriveCharacter(character);
     }
 
-    // this only happens to the host player (single player)
     void OnLoadFinished() {
         // get the stored charater
         var character = m_Store.PlayerCharacter;
@@ -316,7 +346,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // if there's no record, drive an initial character
         else {
             Debug.Log($"[player] drive random character");
-            Command_DriveInitialCharacter();
+            // Command_DriveInitialCharacter();
+            SpawnCharacterAtPoint(m_InitialCharacterKey, transform);
         }
     }
 
