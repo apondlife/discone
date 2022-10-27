@@ -346,7 +346,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // if there's no record, drive an initial character
         else {
             Debug.Log($"[player] drive random character");
-            // Command_DriveInitialCharacter();
             SpawnCharacterAtPoint(m_InitialCharacterKey, transform);
         }
     }
