@@ -28,21 +28,21 @@ sealed class MovementSystem: CharacterSystem {
         var dv = IntegrateForces(
             m_State.Curr.GroundVelocity,
             Vector3.zero,
-            IsStopped ? 0.0f : m_State.Horizontal_Drag,
-            IsStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
+            m_State.IsStopped ? 0.0f : m_State.Curr.Horizontal_Drag,
+            m_State.IsStopped ? m_State.Curr.Horizontal_StaticFriction : m_State.Curr.Horizontal_KineticFriction,
             delta
         );
 
         m_State.Curr.Velocity += dv;
 
         // change to sliding if moving & crouching
-        if (!IsStopped && m_State.IsCrouching) {
+        if (!m_State.IsStopped && m_State.IsCrouching) {
             ChangeTo(Sliding);
             return;
         }
 
         // change to moving once moving
-        if (!IsStopped || HasMoveInput) {
+        if (!m_State.IsStopped || HasMoveInput) {
             ChangeTo(Moving);
             return;
         }
@@ -57,51 +57,61 @@ sealed class MovementSystem: CharacterSystem {
     void Moving_Update(float delta) {
         // start floating if no longer grounded
         if (!m_State.Prev.IsGrounded) {
-            ChangeTo(Floating);
+            ChangeToImmediate(Floating, delta);
             return;
         }
 
-        // get current forward & input direction
-        var dirForward = m_State.Curr.Forward;
-        var dirInput = m_Input.Move;
-        var dotForward = Vector3.Dot(dirForward, dirInput);
+        // once speed is zero, stop moving
+        if (!HasMoveInput && m_State.IsStopped) {
+            ChangeToImmediate(NotMoving, delta);
+            return;
+        }
+
+        // the current ground velocity
+        var v = m_State.Curr.GroundVelocity;
+
+        // the current forward & input direction
+        var fwd = m_State.Prev.Forward;
+        var inputDir = m_Input.Move;
+        var inputDotFwd = Vector3.Dot(inputDir, fwd);
 
         // pivot if direction change was significant
-        if (dotForward < m_Tunables.PivotStartThreshold) {
+        var shouldPivot = (
+            inputDotFwd < m_Tunables.PivotStartThreshold &&
+            v.sqrMagnitude > m_Tunables.PivotSqrSpeedThreshold
+        );
+
+        if (shouldPivot) {
             ChangeToImmediate(Pivot, delta);
             return;
         }
 
         // rotate towards input direction
         if (HasMoveInput) {
-            dirForward = Vector3.RotateTowards(
-                dirForward,
-                dirInput,
+            fwd = Vector3.RotateTowards(
+                fwd,
+                inputDir,
                 m_Tunables.TurnSpeed * Mathf.Deg2Rad * delta,
                 Mathf.Infinity
             );
 
-            m_State.Curr.SetProjectedForward(dirForward);
+            m_State.Curr.SetProjectedForward(fwd);
         }
 
         // intergrate forces
+        // 22.10.26: removed static friction when in moving
         var dv = IntegrateForces(
-            m_State.Curr.GroundVelocity,
-            m_Tunables.Horizontal_Acceleration * dirInput.magnitude * m_State.Curr.Forward,
-            IsStopped ? 0.0f : m_State.Horizontal_Drag,
-            IsStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
+            v,
+            m_Tunables.Horizontal_Acceleration * inputDir.magnitude * m_State.Curr.Forward,
+            m_State.IsStopped ? 0.0f : m_State.Horizontal_Drag,
+            m_State.Horizontal_KineticFriction,
             delta
         );
 
         m_State.Curr.Velocity += dv;
 
-        // once speed is zero, stop moving
-        if (!HasMoveInput && IsStopped) {
-            ChangeTo(NotMoving);
-            return;
-        }
-
-        // if crouching, changet to sliding
+        // if crouching, change to sliding
+        // 22.10.28: if this is an immediate change, you can't get out of crouch; a hack basicallly
         if (m_State.Curr.IsCrouching) {
             ChangeTo(Sliding);
             return;
@@ -109,7 +119,6 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- Sliding --
-
     Phase Sliding => new Phase(
         name: "Sliding",
         update: Sliding_Update
@@ -144,22 +153,22 @@ sealed class MovementSystem: CharacterSystem {
         var dv = IntegrateForces(
             m_State.Curr.GroundVelocity,
             m_Tunables.Horizontal_Acceleration * thrustLateral,
-            IsStopped ? 0.0f : m_State.Horizontal_Drag,
-            IsStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
+            m_State.IsStopped ? 0.0f : m_State.Horizontal_Drag,
+            m_State.IsStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
             delta
         );
 
         m_State.Curr.Velocity += dv;
 
         // once speed is zero, stop moving
-        if (!HasMoveInput && IsStopped) {
-            ChangeTo(NotMoving);
+        if (m_State.IsStopped) {
+            ChangeTo(HasMoveInput ? Moving : NotMoving);
             return;
         }
 
         // once not crouching change to move/not move state
         if (!m_State.IsCrouching) {
-            ChangeTo(!IsStopped ? Moving : NotMoving);
+            ChangeTo(!m_State.IsStopped ? Moving : NotMoving);
             return;
         }
     }
@@ -204,7 +213,7 @@ sealed class MovementSystem: CharacterSystem {
         m_State.Curr.Velocity -= dv;
 
         // once speed is zero, transition to next state
-        if (IsStopped) {
+        if (m_State.IsStopped) {
             ChangeTo(HasMoveInput ? Moving : NotMoving);
             return;
         }
@@ -242,16 +251,6 @@ sealed class MovementSystem: CharacterSystem {
     /// if there is any user input
     bool HasMoveInput {
         get => m_Input.Move.sqrMagnitude > 0.0f;
-    }
-
-    /// if the ground speed last frame was below the movement threshold
-    bool WasStopped {
-        get => m_State.Prev.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
-    }
-
-    /// if the ground speed is below the movement threshold
-    bool IsStopped {
-        get => m_State.Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
     }
 
     // -- integrate --

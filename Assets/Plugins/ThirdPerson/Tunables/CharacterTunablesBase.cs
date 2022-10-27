@@ -20,6 +20,8 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float PivotSpeed { get; }
     public abstract float PivotDeceleration { get; }
     public abstract float PivotStartThreshold { get; }
+    public abstract float PivotSpeedThreshold { get; }
+    public float PivotSqrSpeedThreshold => PivotSpeedThreshold * PivotSpeedThreshold;
 
     public abstract float TimeToMaxSpeed { get; }
     public abstract float TimeToStop { get; }
