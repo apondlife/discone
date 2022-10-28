@@ -165,8 +165,10 @@ i don’t know.\
 eventually, that’s where i got.\
 and maybe i didn’t need to.
 
-what’ve you found it to be?\
-anything?\
+there aren’t many whys?\
+yeah.
+
+how bout you, figured any of it out?
 
 yeah, maybe you got there.\
 been seeming that way to me, anyways.
@@ -174,6 +176,61 @@ been seeming that way to me, anyways.
 hope you’ll get tell me sometime…\
 haha but if you don’t i’ll survive…\
 hahah aha.
+
+# quitting
+
+mmmm yeah.\
+you know there are times when i just wanna give up…\
+so i do haha hahaha.
+
+i think it’s a beautiful thing.\
+giving up.\
+quitting.
+
+yeah, i love to quit.\
+only person i need permission from is me…\
+though sometimes i do have trouble finding it hahaha.
+
+yeah earlier, i quit.\
+just got a little exhausted by their dialoging thing.
+
+is that how you see this, too?\
+a dialogue?\
+i do…\
+=)
+
+i was trying to get at that earlier.\
+sometimes i not the most direct communicator…\
+sorry.
+
+yeah i’m learning a lot from you…\
+believe me haha ha.
+
+but yeah i’m back now.\
+from quitting!
+
+it’s one of those things right?\
+when i don’t feel like i can quit\
+it feels bad.
+
+so i do it,\
+when i have even a mild inclination.
+
+i think it’s saved me a lot\
+from a lot of emotional distress hahaha ha.
+
+but also from like, biting it hahaha.\
+it’s real easy for me to take it too far.
+
+but yeah you can’t bite it Here, a little weird.
+good for you!\
+big problem where i come from…
+
+or maybe you can?\
+and you just get to choose your spots?\
+i don’t know…
+
+ugh.
 
 # outro
 
