@@ -129,7 +129,7 @@ new buds i’d never seen before\
 never did figure out where they came from\
 
 didn’t care enough i guess\
-too much take in just layin there haa hah.
+too much take in just layin’ there haa hah.
 
 yeah where i come from, flowers were purposed, intentioned.\
 “where are they” & “i need one” & all that
@@ -220,17 +220,67 @@ i think it’s saved me a lot\
 from a lot of emotional distress hahaha ha.
 
 but also from like, biting it hahaha.\
-it’s real easy for me to take it too far.
+i don’t have much taking it too far.
 
 but yeah you can’t bite it Here, a little weird.
-good for you!\
+nice for you!\
 big problem where i come from…
 
 or maybe you can?\
 and you just get to choose your spots?\
 i don’t know…
 
-ugh.
+ugh, oof, owwwowow.\
+ah, this is it for me oh no…\
+hahaha just kidding.
+
+might need a nap though.\
+one of those days.
+
+# forms
+
+but yeah don’t listen to me haha\
+i’m just one “the mechanic”.\
+but the only one hahaha ;).
+
+out here in the endless void\
+prattling on about my own business…
+
+& you got your own thing going.\
+it seems pretty nice from where i’m at!
+
+& but you know, there are a lot of other people out there too.\
+i’m sure you knew that…\
+what am i saying…\
+ugh…
+
+& maybe you’ve even seen a few of them hahahahaa.
+
+but they’re all also out Here, yeah some of ‘em out there.\
+but wherever…\
+they’re doin it, too.
+
+you seen ‘em?
+
+i’m watching them all\
+the ones Here anyway, the ones i got a tab for.
+
+yeah i’m not much for the Whole, One, lonesome thing.
+
+too much out there, if you ask me…\
+…not that you did hahahahaha
+
+& all a bit different\
+& similar, too\
+in some ways\
+& but various\
+& threaded, connected.\
+a network of streams.\
+one big nervous system.\
+& we’re riding it,\
+somewhere, at the moment.
+
+woof.
 
 # outro
 
