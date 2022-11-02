@@ -48,13 +48,13 @@ Deploy() {
   # tag channel with variant, unless release
   local tag=""
   if [ "$VARIANT" != "$VARIANT_RELEASE" ]; then
-    tag=".$VARIANT"
+    tag="-$VARIANT"
   fi
 
   for target in *; do
     "$BUTLER_PATH" push \
       "$target" \
-      "$ITCH_PATH:$target$tag"
+      "$ITCH_PATH$tag:$target"
   done
 }
 
