@@ -129,7 +129,7 @@ new buds i’d never seen before\
 never did figure out where they came from\
 
 didn’t care enough i guess\
-too much take in just layin there haa hah.
+too much take in just layin’ there haa hah.
 
 yeah where i come from, flowers were purposed, intentioned.\
 “where are they” & “i need one” & all that
@@ -165,8 +165,10 @@ i don’t know.\
 eventually, that’s where i got.\
 and maybe i didn’t need to.
 
-what’ve you found it to be?\
-anything?\
+there aren’t many whys?\
+yeah.
+
+how bout you, figured any of it out?
 
 yeah, maybe you got there.\
 been seeming that way to me, anyways.
@@ -174,6 +176,168 @@ been seeming that way to me, anyways.
 hope you’ll get tell me sometime…\
 haha but if you don’t i’ll survive…\
 hahah aha.
+
+# goals
+
+mmm, i spent a lot of life not noticing\
+chasing stuff i knew because i knew it.
+
+kinda the way it was for me back there.\
+& it was easy.\
+& it wasn’t all bad or anything!
+
+i didn’t get tired of it.\
+heck, i didn’t even realize it, was just what i did!
+
+but then i did 
+here maybe, maybe there. i can’t remember\
+& then i had to keep going…
+
+there’s a lot out here.\
+sometimes it feels like too much…\
+turns to noise in my head.
+
+yeah, for a while it was just that.\
+noise.\
+& i was waiting for another click.
+
+…
+
+…
+
+hahahahaha
+
+& that’s when i realized it was about looking\
+& not searching!\
+& noticing\
+& then feeling!\
+…\
+hehe maybe i got those last two backwards
+
+i don’t know.\
+& touching!\
+yeah…\
+you know…
+
+i don’t find it too hard, now.\
+it was the searching i found hard.\
+or maybe the *need* to search.
+
+classic the mechanic, making it harder on myself!\
+just quit already hahahah!
+
+yeah.
+
+i still search.\
+when i’m feeling it.
+
+but i get to choose.
+
+# quitting
+
+mmmm yeah.\
+but you know, there are times when i just wanna give up…\
+so i do haha\
+hahaha.
+
+i think it’s a beautiful thing.\
+giving up.\
+quitting.
+
+yeah, i love to quit.\
+only person i need permission from is me…\
+though sometimes i do have trouble finding it hahaha.
+
+yeah earlier, i quit.\
+just got a little exhausted by their dialoging thing.
+
+is that how you see this, too?\
+a dialogue?\
+i do…\
+=)
+
+i was trying to get at that earlier.\
+sometimes i not the most direct communicator…\
+sorry.
+
+yeah i’m learning a lot from you…\
+believe me haha ha.
+
+but yeah i’m back now.\
+from quitting!
+
+it’s one of those things right?\
+when i don’t feel like i can quit\
+it feels bad.
+
+so i do it,\
+when i have even a mild inclination.
+
+i think it’s saved me a lot\
+from a lot of emotional distress hahaha ha.
+
+but also from like, biting it hahaha.\
+i don’t have much trouble taking it too far.
+
+but yeah you can’t bite it Here, a little weird.
+nice for you!\
+big problem where i come from…
+
+or maybe you can?\
+and you just get to choose your spots?\
+i don’t know…
+
+ugh, oof, owwwowow.\
+ah, this is it for me oh no…\
+hahaha just kidding.
+
+might need a nap though.\
+one of those days.
+
+# forms
+
+but yeah don’t listen to me haha\
+i’m just one “the mechanic”.\
+but the only one hahaha ;).
+
+out here in the endless void\
+prattling on about my own business…
+
+& you got your own thing going.\
+it seems pretty nice from where i’m at!
+
+& but you know, there are a lot of other people out there too.\
+i’m sure you knew that…\
+what am i saying…\
+ugh…
+
+& maybe you’ve even seen a few of them hahahahaa.
+
+but they’re all also out Here, yeah some of ‘em out there.\
+but wherever…\
+they’re doin it, too.
+
+you seen ‘em?
+
+i’m watching them all\
+the ones Here anyway, the ones i got a tab for.
+
+yeah i’m not much for the Whole, One, lonesome thing.
+
+too much out there, if you ask me…\
+…not that you did hahahahaha
+
+& all a bit different\
+& similar, too\
+in some ways\
+& but various\
+& threaded, connected.\
+a network of streams.\
+one big nervous system.\
+& we’re riding it,\
+somewhere, at the moment.
+
+woof.
 
 # outro
 
