@@ -32,6 +32,19 @@ public class DebugOptions: MonoBehaviour {
         }
     }
 
+    public void SpawnCharacterAtTransform(Transform t) {
+        // find the current player
+        var player = m_Entites.Value
+            .Players
+            .Current;
+
+        if (player == null) {
+            Debug.LogError($"[debug] no player to spawn debug character");
+            return;
+        }
+
+        player.SpawnCharacterAtPoint(m_CharacterKey, t);
+    }
     // -- commands --
     #if UNITY_EDITOR
     [ContextMenu("Spawn Character at Scene Camera")]
@@ -49,17 +62,9 @@ public class DebugOptions: MonoBehaviour {
 
         var t = camera.transform;
 
-        // find the current player
-        var player = m_Entites.Value
-            .Players
-            .Current;
-
-        if (player == null) {
-            Debug.LogError($"[debug] no player to spawn debug character");
-            return;
-        }
-
-        player.SpawnCharacterAtPoint(m_CharacterKey, t);
+        SpawnCharacterAtTransform(t);
     }
+
+
     #endif
 }
