@@ -266,11 +266,7 @@ public sealed class CharacterController {
 
             // update move state; next move starts from capsule center and
             // remaining distance
-            moveDst = hitCapsuleCenter;
-
-            // calculate next move delta
-            // apply the contact offset, for next cast
-            moveDelta += hit.normal * m_ContactOffset;
+            moveDst = hitCapsuleCenter - m_ContactOffset * cast.Direction;
 
             // calculate the remaining movement in the plane
             // TODO: ProjectOnPlane could be a slope function e.g. mR.dir * fn(mR.dir • N) * mR.mag
