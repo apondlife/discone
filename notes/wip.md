@@ -30,5 +30,4 @@ we should probably recalculate velocity every collision step, and just have an o
     - i tried briefly doing this and still didn't figure it out completely, but the fact that it hasn't really exploded makes me confident in taking this approach
 
 
-
 i don't think when we are moving on the ground we should ever hit any part of the capsule that is not the bottom, and looking quickly into it it seems like we do
