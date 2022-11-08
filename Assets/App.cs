@@ -26,6 +26,11 @@ sealed class App: MonoBehaviour {
         s_Instance = this;
         transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
+
+        // hide cursor in build
+        #if !UNITY_EDITOR
+        Cursor.lockState = CursorLockMode.Locked;
+        #endif
     }
 
     void Start() {
