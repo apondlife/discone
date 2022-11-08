@@ -7,11 +7,6 @@ using UnityEngine;
 
 /// a repository of flowers
 public sealed class Flowers: NetworkBehaviour {
-    // -- state --
-    [Header("state")]
-    [Tooltip("the list of all flowers")]
-    [SerializeField] List<CharacterFlower> m_All = new List<CharacterFlower>();
-
     // -- config --
     [Header("config")]
     [Tooltip("the chunk size for flower position hashing")]
@@ -28,6 +23,9 @@ public sealed class Flowers: NetworkBehaviour {
     [SerializeField] Store m_Store;
 
     // -- props --
+    /// a map of all flowers
+    Dictionary<Vector3, CharacterFlower> m_All = new Dictionary<Vector3, CharacterFlower>();
+
     /// a bag of subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
@@ -72,16 +70,16 @@ public sealed class Flowers: NetworkBehaviour {
     // -- queries --
     /// the list of all flowers
     public IEnumerable<CharacterFlower> All {
-        get => m_All;
+        get => m_All.Values;
     }
 
     /// find the closest flower
-    public CharacterFlower FindClosest(Vector3 position) {
+    public CharacterFlower FindClosest(Vector3 pos) {
         var distCache = new Dictionary<CharacterFlower, float>();
 
         float Distance(CharacterFlower f) {
             if(!distCache.TryGetValue(f, out var dist)) {
-                dist = Vector3.Distance(f.transform.position, position);
+                dist = Vector3.Distance(f.transform.position, pos);
                 distCache.Add(f, dist);
             } else {
                 Debug.Log($"cache miss");
@@ -90,17 +88,26 @@ public sealed class Flowers: NetworkBehaviour {
             return dist;
         }
 
-        var closest = m_All
+        var closest = m_All.Values
             .OrderBy(Distance)
             .FirstOrDefault();
 
         return closest;
     }
 
+    /// find a flower that overlaps this one
+    public CharacterFlower FindOverlap(Vector3 pos) {
+        if (!m_All.TryGetValue(pos, out var flower)) {
+            return null;
+        }
+
+        return flower;
+    }
+
     // -- events --
     /// when a flower is planted
     void OnFlowerPlanted(CharacterFlower flower) {
-        m_All.Add(flower);
+        m_All.Add(flower.Checkpoint.Position, flower);
     }
 
     /// when the store finishes loading
