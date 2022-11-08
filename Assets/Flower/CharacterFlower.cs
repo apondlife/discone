@@ -6,9 +6,18 @@ using UnityAtoms;
 using FMODUnity;
 
 /// a flower that a character leaves behind as its checkpoint
+/// TODO: rename to flower
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(StudioEventEmitter))]
 public class CharacterFlower: NetworkBehaviour {
+    // -- types --
+    /// the flower's planting state
+    enum Planting {
+        Seed,
+        Germ,
+        Bloom
+    }
+
     // -- constants --
     /// how offset the flower is forward, so it doesn't spawn under the character
     const float k_ForwardOffset = 0.12f;
@@ -28,6 +37,7 @@ public class CharacterFlower: NetworkBehaviour {
     /// the character layer mask
     static LayerMask s_CharacterMask;
 
+    /// the wobble audio line
     static Musicker.Line s_Line = new Musicker.Line(Musicker.Tone.I, Musicker.Quality.Maj7);
 
     // -- cfg --
@@ -41,13 +51,17 @@ public class CharacterFlower: NetworkBehaviour {
     [Tooltip("the saturation of the released flower")]
     [SerializeField] float m_SpawnTime = 0.5f;
 
-    [Header("cfg-wobble")]
+    // -- wobble --
+    [Header("cfg/wobble")]
     [Tooltip("the wobble time when collided with")]
     [SerializeField] float m_WobbleTime = 0.5f;
+
     [Tooltip("the wobble frequency when collided with")]
     [SerializeField] float m_WobbleFrequency = 0.5f;
+
     [Tooltip("the wobble decay intensity when collided with")]
     [SerializeField] float m_WobbleDecay = 0.5f;
+
     [Tooltip("the wobble max amplitude when collided with")]
     [SerializeField] float m_WobbleAmplitude = 0.1f;
 
@@ -76,20 +90,25 @@ public class CharacterFlower: NetworkBehaviour {
     [SyncVar(hook = nameof(Client_OnCheckpointReceived))]
     Checkpoint m_Checkpoint;
 
-    /// if no player is using this flower
-    [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
-    bool m_IsFree = true;
+    /// how many player's have grabbed this flower
+    [SyncVar(hook = nameof(Client_OnGrabbingReceived))]
+    int m_Grabbing = 0;
 
     /// if the flower has been planted
-    bool m_IsPlanted = false;
+    Planting m_Planting = Planting.Seed;
 
+    /// the number of characters touching the flower
+    int m_Touching;
+
+    /// the flower's initial scale
     Vector3 m_BaseScale = Vector3.one;
+
+    /// the wobble animation
     Coroutine m_Wobble;
 
     // -- lifecycle
     void Awake() {
         m_Renderer.material = FindMaterial();
-        // m_BaseScale = m_ScaleTarget.localScale;
 
         // every byte counts
         if (s_GroundMask == 0) {
@@ -111,75 +130,81 @@ public class CharacterFlower: NetworkBehaviour {
         TryPlant();
     }
 
-    Musicker.Chord k_Chord = new Musicker.Chord(Musicker.Tone.I, Musicker.Quality.Maj7);
-
-    private void OnTriggerEnter(Collider other) {
+    void OnTriggerEnter(Collider other) {
         // if its not a character, do nothing
-        if(!s_CharacterMask.Contains(other.gameObject.layer)) {
+        if (!s_CharacterMask.Contains(other.gameObject.layer)) {
             return;
         }
 
-        // on character trigger enter
-        // don't do anything if just planted
-        if(m_IsPlanted == false) {
+        // on character trigger enter, don't do anything if just planted
+        if (m_Planting != Planting.Bloom) {
             return;
         }
 
-        if(m_Wobble != null) {
+        // track the number of character touching the flower
+        m_Touching += 1;
+
+        // stop existing wobble
+        if (m_Wobble != null) {
             StopCoroutine(m_Wobble);
         }
 
-        m_Wobble = StartCoroutine(CoroutineHelpers.InterpolateByTime(m_WobbleTime, (k) => {
-            var scale = 1 + m_WobbleAmplitude * Mathf.Sin(m_WobbleFrequency * 2 * Mathf.PI * k) * (1 - Mathf.Pow(k, m_WobbleDecay));
-            m_ScaleTarget.localScale =
-                Vector3.Scale(
+        // start the wobble animation
+        m_Wobble = StartCoroutine(CoroutineHelpers.InterpolateByTime(
+            m_WobbleTime,
+            (k) => {
+                var scale = 1 + m_WobbleAmplitude * Mathf.Sin(m_WobbleFrequency * 2 * Mathf.PI * k) * (1 - Mathf.Pow(k, m_WobbleDecay));
+                m_ScaleTarget.localScale = Vector3.Scale(
                     m_BaseScale,
                     Vector3.one * scale
                 );
-        }));
+            },
+            () => {
+                m_Wobble = null;
+            }
+        ));
 
-
+        // play sound
         m_FmodEmitter.Play();
         m_FmodEmitter.SetParameter("Tone", s_Line.Curr().Steps);
 
-        if(Random.value < 0.5f) {
+        // move through the line
+        s_Line.Advance();
+        if (Random.value < 0.5f) {
             s_Line.Advance();
         }
-
-        s_Line.Advance();
     }
-    private void OnTriggerExit(Collider other) {
-        // if its not a character, do nothing
-        if(!s_CharacterMask.Contains(other.gameObject.layer)) {
+
+    void OnTriggerExit(Collider other) {
+        // if it's not a character, do nothing
+        if (!s_CharacterMask.Contains(other.gameObject.layer)) {
             return;
         }
 
-        // on character trigger enter
-        // don't do anything if just planted
-        if(m_IsPlanted == false) {
-            return;
+        // stop once no characters are touching the flower
+        m_Touching = Mathf.Max(m_Touching - 1, 0);
+        if (m_Touching == 0) {
+            m_FmodEmitter.Stop();
         }
-
-        m_FmodEmitter.Stop();
     }
 
     // -- commands --
     /// add an owner for this flower
     [Server]
     public void Server_Grab() {
-        m_IsFree = false;
+        m_Grabbing += 1;
     }
 
     /// remove an owner for this flower
     [Server]
     public void Server_Release() {
-        m_IsFree = true;
+        m_Grabbing -= 1;
     }
 
     /// move the flower to a position on the ground
     void TryPlant() {
         // wait until we're ready to plant
-        if (m_IsPlanted || m_Checkpoint == null) {
+        if (m_Planting != Planting.Seed || m_Checkpoint == null) {
             return;
         }
 
@@ -206,15 +231,21 @@ public class CharacterFlower: NetworkBehaviour {
             new Vector3(1.0f, 0.0f, 1.0f)
         );
 
-        StartCoroutine(CoroutineHelpers.InterpolateByTime(m_SpawnTime, (k) => {
-            m_ScaleTarget.localScale = Vector3.Scale(
-                targetScale,
-                new Vector3(1.0f, k * k, 1.0f)
-            );
-        }));
+        StartCoroutine(CoroutineHelpers.InterpolateByTime(
+            m_SpawnTime,
+            (k) => {
+                m_ScaleTarget.localScale = Vector3.Scale(
+                    targetScale,
+                    new Vector3(1.0f, k * k, 1.0f)
+                );
+            },
+            () => {
+                m_Planting = Planting.Bloom;
+            }
+        ));
 
-        // and mark it as planted
-        m_IsPlanted = true;
+        // and move it to the next planting phase
+        m_Planting = Planting.Germ;
 
         // and let everyone know
         m_FlowerPlanted.Raise(this);
@@ -231,7 +262,7 @@ public class CharacterFlower: NetworkBehaviour {
     // -- events --
     /// when the free state changes
     [Client]
-    void Client_OnIsFreeReceieved(bool oldFree, bool newFree) {
+    void Client_OnGrabbingReceived(int _prev, int _curr) {
         m_Renderer.material = FindMaterial();
     }
 
@@ -246,16 +277,12 @@ public class CharacterFlower: NetworkBehaviour {
         get => m_Checkpoint;
     }
 
-    /// if this flower is free
-    public bool IsFree {
-        get => m_IsFree;
+    /// find cached material for texture and saturation
+    Material FindMaterial() {
+        return FindMaterial(m_Grabbing == 0 ? m_Saturation : 1.0f);
     }
 
     /// find cached material for texture and saturation
-    Material FindMaterial() {
-        return FindMaterial(m_IsFree ? m_Saturation : 1.0f);
-    }
-
     Material FindMaterial(float saturation) {
         var key = $"{m_Texture.name}/{saturation}";
 
@@ -318,7 +345,7 @@ public class CharacterFlower: NetworkBehaviour {
         flower.m_Checkpoint = new Checkpoint(pos, fwd);
 
         // set initial state
-        flower.m_IsFree = true;
+        flower.m_Grabbing = 0;
 
         // plant the flower
         flower.TryPlant();
