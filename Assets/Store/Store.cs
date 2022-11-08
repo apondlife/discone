@@ -89,8 +89,9 @@ public sealed class Store: ScriptableObject {
     /// save the current state to file
     [ContextMenu("Save Store")]
     public async Task Save() {
-        SyncPlayer();
+        // sync state
         SyncWorld();
+        SyncPlayer();
 
         // ensure we have a directory to write to
         Directory.CreateDirectory(RootPath);
