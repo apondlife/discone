@@ -81,15 +81,19 @@ public class OnlineInterest: InterestManagement {
     }
 
     // -- InterestManagment --
-    [Server]
+    /// [Server]
     public override void Reset() {
+        base.Reset();
+
+        Debug.Log($"[interest] reset state");
+
         m_Interests.Clear();
         m_SimulatedCharacters.Clear();
         m_LastRebuildTime = -1.0;
         m_SimulatedChanged = false;
     }
 
-    [Server]
+    /// [Server]
     public override bool OnCheckObserver(
         NetworkIdentity identity,
         NetworkConnection newObserver
@@ -102,7 +106,7 @@ public class OnlineInterest: InterestManagement {
         return IsInteresting(identity, player);
     }
 
-    [Server]
+    /// [Server]
     public override void OnRebuildObservers(
         NetworkIdentity identity,
         HashSet<NetworkConnection> newObservers,
@@ -126,7 +130,7 @@ public class OnlineInterest: InterestManagement {
         }
     }
 
-    [Server]
+    /// [Server]
     public override void SetHostVisibility(NetworkIdentity identity, bool visible) {
         // we want to ignore the default behaviour here of hiding the object
         #if UNITY_EDITOR
