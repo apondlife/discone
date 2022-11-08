@@ -18,6 +18,12 @@ public record WorldRec: StoreFile {
         V = this.CurrentVersion();
     }
 
-    // -- queries --
+    // -- StoreFile --
+    /// the file version
     public int Version => V;
+
+    /// if this record has any data
+    public bool HasData {
+        get => Flowers != null;
+    }
 }

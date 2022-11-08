@@ -8,6 +8,9 @@ public interface StoreFile {
     /// the file's local version
     int Version { get; }
 
+    /// if this file has data
+    bool HasData { get; }
+
     // -- queries --
     /// the current version for a particular type, if any
     static int CurrentVersion<F>() where F: StoreFile {
