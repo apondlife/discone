@@ -42,7 +42,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     [Tooltip("the character's most recent state frame")]
     [SyncVar(hook = nameof(Client_OnStateReceived))]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_ReceivedState")]
     [SerializeField] CharacterState.Frame m_RemoteState;
 
     // -- cfg --
@@ -390,6 +389,15 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     // -- factories --
     /// instantiate a rec from a character
     public CharacterRec IntoRecord() {
+        // if the position is zero, don't save this record
+        // TODO: bit of a hack. not sure why the remote state can get to zero in
+        // some situations, like when shutting down immediately after
+        // disconnect.
+        var pos = m_RemoteState.Position;
+        if (pos == Vector3.zero) {
+            return null;
+        }
+
         return new CharacterRec(
             Key,
             m_RemoteState.Position,
