@@ -394,6 +394,7 @@ MonoBehaviour:
   m_MaxPitchSpeed: 50
   m_PitchAcceleration: 100
   m_LocalSpeed: 13
+  m_SmoothTime: 0.5
   m_ContactOffset: 0.38
   m_Distance_SpeedCurve:
     serializedVersion: 2
@@ -840,7 +841,7 @@ MonoBehaviour:
     m_MinMove: 0.005
     m_WallAngle: 80
     m_CastOffset: 0.03
-    m_ContactOffset: 0.01
+    m_ContactOffset: 0.02
     m_Capsule: {fileID: 1972163625}
     m_DrawInput: 1
     m_DrawTop: 1

@@ -46,6 +46,10 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the rate of change of local distance of the camera to the target")]
     [SerializeField] float m_LocalSpeed;
 
+    [Tooltip("the smooth time for moving the camera to target")]
+    [SerializeField] float m_SmoothTime = 0.5f;
+
+
     // TODO: this is the camera's radius
     // TODO: make all the camera's casts sphere casts
     [Tooltip("the amount of offset the camera during collision")]
@@ -304,14 +308,18 @@ public class CameraFollowTarget: MonoBehaviour {
         var destPos = FindDestPos(curvePos);
 
         // update target position and forward
-        m_Target.position = Vector3.MoveTowards(
+        m_Target.position = Vector3.SmoothDamp(
             m_Target.position,
             destPos,
-            m_LocalSpeed * Time.deltaTime
-        );
+            ref vel,
+            m_SmoothTime,
+            m_LocalSpeed,
+            Time.deltaTime);
 
         m_Target.forward = forward;
     }
+
+    Vector3 vel;
 
     // -- queries --
     /// find the camera's best position given a candidate position
