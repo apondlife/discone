@@ -82,6 +82,14 @@ public class OnlineInterest: InterestManagement {
 
     // -- InterestManagment --
     [Server]
+    public override void Reset() {
+        m_Interests.Clear();
+        m_SimulatedCharacters.Clear();
+        m_LastRebuildTime = -1.0;
+        m_SimulatedChanged = false;
+    }
+
+    [Server]
     public override bool OnCheckObserver(
         NetworkIdentity identity,
         NetworkConnection newObserver
