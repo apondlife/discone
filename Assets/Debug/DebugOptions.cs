@@ -32,6 +32,8 @@ public class DebugOptions: MonoBehaviour {
         }
     }
 
+    // -- commands --
+    /// spawn a character at the transform position
     public void SpawnCharacterAtTransform(Transform t) {
         // find the current player
         var player = m_Entites.Value
@@ -45,7 +47,7 @@ public class DebugOptions: MonoBehaviour {
 
         player.SpawnCharacterAtPoint(m_CharacterKey, t);
     }
-    // -- commands --
+
     #if UNITY_EDITOR
     [ContextMenu("Spawn Character at Scene Camera")]
     public void SpawnCharacterAtSceneView() {
