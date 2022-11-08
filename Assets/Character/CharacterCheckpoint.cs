@@ -133,14 +133,21 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// spawn a flower at the checkpoint
     [Server]
     void Server_CreateCheckpoint(Vector3 pos, Vector3 fwd) {
-        // spawn the new flower
-        var flower = CharacterFlower.Server_Spawn(
-            m_Container.Key,
-            pos,
-            fwd
-        );
+        // find overlapping flower, if any
+        var flower = m_Entities.Value
+            .Flowers
+            .FindOverlap(pos);
 
-        // and grab it
+        // if none, spawn a new one
+        if (flower == null) {
+            flower = CharacterFlower.Server_Spawn(
+                m_Container.Key,
+                pos,
+                fwd
+            );
+        }
+
+        // and grab the flower
         Server_GrabCheckpoint(flower);
     }
 
