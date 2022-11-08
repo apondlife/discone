@@ -86,17 +86,12 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // rotate towards input direction
-        if (HasMoveInput) {
-            fwd = Vector3.RotateTowards(
-                fwd,
-                inputDir,
-                m_Tunables.TurnSpeed * Mathf.Deg2Rad * delta,
-                Mathf.Infinity
-            );
-
-            m_State.Curr.SetProjectedForward(fwd);
-        }
+        // turn towards input direction
+        TurnTowards(
+            m_Input.Move,
+            m_Tunables.TurnSpeed,
+            delta
+        );
 
         // intergrate forces
         // 22.10.26: removed static friction when in moving
@@ -160,6 +155,13 @@ sealed class MovementSystem: CharacterSystem {
 
         m_State.Curr.Velocity += dv;
 
+        // turn towards input direction
+        TurnTowards(
+            m_Input.Move,
+            m_Tunables.Crouch_TurnSpeed,
+            delta
+        );
+
         // once speed is zero, stop moving
         if (m_State.IsStopped) {
             ChangeTo(HasMoveInput ? Moving : NotMoving);
@@ -195,15 +197,11 @@ sealed class MovementSystem: CharacterSystem {
         m_State.Curr.PivotFrame += 1;
 
         // rotate towards pivot direction
-        var dirFacing = m_State.Curr.Forward;
-        dirFacing = Vector3.RotateTowards(
-            dirFacing,
+        TurnTowards(
             m_State.Prev.PivotDirection,
-            m_Tunables.PivotSpeed * Mathf.Deg2Rad * delta,
-            Mathf.Infinity
+            m_Tunables.PivotSpeed,
+            delta
         );
-
-        m_State.Curr.SetProjectedForward(dirFacing);
 
         // calculate next velocity, decelerating towards zero to finish pivot
         var v0 = m_State.Prev.GroundVelocity;
@@ -241,10 +239,41 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
+        // rotate towards input direction
+        // TODO: this should be a discone feature, not a third person one
+        // the ability to modify tunables at run time
+        if(m_Input.IsCrouchPressed) {
+            TurnTowards(
+                m_Input.Move,
+                m_Tunables.Air_TurnSpeed,
+                delta
+            );
+        }
+
         // add aerial drift
         var v0 = m_State.Prev.PlanarVelocity;
         var vd = m_Input.Move * m_Tunables.AerialDriftAcceleration * delta;
         m_State.Curr.Velocity += vd;
+    }
+
+    // -- commands --
+    /// turn the character towards the direction by turn speed; impure command
+    void TurnTowards(Vector3 direction, float turnSpeed, float delta) {
+        // if no direction, do nothing
+        if (direction.sqrMagnitude <= 0.0f) {
+            return;
+        }
+
+        // rotate towards input
+        var fwd = Vector3.RotateTowards(
+            m_State.Prev.Forward,
+            m_Input.Move,
+            turnSpeed * Mathf.Deg2Rad * delta,
+            Mathf.Infinity
+        );
+
+        // project current direction
+        m_State.Curr.SetProjectedForward(fwd);
     }
 
     // -- queries --

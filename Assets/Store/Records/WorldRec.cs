@@ -1,6 +1,5 @@
 using System;
 
-// TODO: make all these classes or records
 /// the serialized world state
 [Serializable]
 [StoreVersion(2)]
