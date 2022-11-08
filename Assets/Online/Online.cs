@@ -6,7 +6,7 @@ using System;
 /// the online "manager"
 public class Online: NetworkManager {
     // -- types --
-    /// the current
+    /// the connection state
     public enum State {
         Host,
         Connecting,
@@ -24,7 +24,7 @@ public class Online: NetworkManager {
 
     // -- fields --
     [Header("config")]
-    [Tooltip("should the host restart on client disconnect")]
+    [Tooltip("if the client should restart as host disconnect")]
     [SerializeField] bool m_RestartHostOnDisconnect;
 
     // -- subscribed --
@@ -83,7 +83,7 @@ public class Online: NetworkManager {
     }
 
     // -- l/client
-    [Client]
+    /// [Client]
     public override void OnClientError(Exception exception) {
         base.OnClientError(exception);
 
@@ -91,7 +91,7 @@ public class Online: NetworkManager {
         m_ErrorEvent?.Raise($"[online] client error: {exception.Message}");
     }
 
-    [Client]
+    /// [Client]
     public override void OnClientConnect() {
         base.OnClientConnect();
 
@@ -109,14 +109,14 @@ public class Online: NetworkManager {
         NetworkClient.Send(message);
     }
 
-    [Client]
+    /// [Client]
     public override void OnClientNotReady() {
         base.OnClientNotReady();
 
         Debug.Log($"[online] client not ready...");
     }
 
-    [Client]
+    /// [Client]
     public override void OnClientDisconnect() {
         base.OnClientDisconnect();
 
@@ -144,13 +144,13 @@ public class Online: NetworkManager {
     }
 
     // -- l/server
-    [Server]
+    /// [Server]
     public override void OnStartClient() {
         base.OnStartClient();
         Debug.Log("[online] started client");
     }
 
-    [Server]
+    /// [Server]
     public override void OnStartServer() {
         base.OnStartServer();
 
@@ -159,14 +159,14 @@ public class Online: NetworkManager {
         NetworkServer.RegisterHandler<CreatePlayerMessage>(Server_OnCreatePlayer);
     }
 
-    [Server]
+    /// [Server]
     public override void OnServerConnect(NetworkConnection conn) {
         base.OnServerConnect(conn);
 
         Debug.Log($"[online] connect [id={conn.connectionId} addr={conn.address}]");
     }
 
-    [Server]
+    /// [Server]
     public override void OnServerDisconnect(NetworkConnection conn) {
         Debug.Log($"[online] disconnect [id={conn.connectionId} addr={conn.address}]");
 
