@@ -28,6 +28,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float TimeToPivot { get; }
 
     // -- crouch --
+    public abstract float Crouch_TurnSpeed { get; }
     public abstract float Crouch_StaticFriction { get; }
     public abstract float Crouch_LateralMaxSpeed { get; }
 
@@ -37,6 +38,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract RangeCurve Crouch_NegativeKineticFriction { get; }
 
     // -- air movement --
+    public abstract float Air_TurnSpeed { get; }
     public abstract float AerialDriftAcceleration { get; }
 
     // -- jump --

@@ -153,7 +153,7 @@ public partial class Character: MonoBehaviour {
 
     /// force the current frame's state
     public void ForceState(CharacterState.Frame frame) {
-        // TODO: hack, we should sync the full list of frames on connect
+        // HACK: we should sync the full list of frames on connect
         if (m_State.IsEmpty) {
             m_State.Fill(frame);
         } else {

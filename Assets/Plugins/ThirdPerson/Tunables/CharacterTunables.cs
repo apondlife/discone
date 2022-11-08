@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+// TODO: generate tunables from an interface
 [CreateAssetMenu(fileName = "CharacterTunables", menuName = "thirdperson/CharacterTunables", order = 0)]
 public sealed class CharacterTunables: CharacterTunablesBase {
     [Header("metadata")]
@@ -75,9 +76,12 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     /// the deceleration of the character while pivoting
     public override float PivotDeceleration => TimeToPivot > 0 ? Horizontal_MaxSpeed / TimeToPivot : float.PositiveInfinity;
 
+    [Tooltip("the turn speed while airborne")]
+    [SerializeField] float m_Air_TurnSpeed;
+    public override float Air_TurnSpeed => m_Air_TurnSpeed;
+
     [Tooltip("the planar acceleration while floating")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_FloatAcceleration")]
-    [SerializeField] private float m_AerialDriftAcceleration;
+    [SerializeField] float m_AerialDriftAcceleration;
     public override float AerialDriftAcceleration => m_AerialDriftAcceleration;
 
     #endregion
@@ -91,6 +95,10 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [Tooltip("the max lateral speed when crouching")]
     [SerializeField] private float m_Crouch_LateralMaxSpeed;
     public override float Crouch_LateralMaxSpeed => m_Crouch_LateralMaxSpeed;
+
+    [Tooltip("the turn speed while crouching")]
+    [SerializeField] float m_Crouch_TurnSpeed;
+    public override float Crouch_TurnSpeed => m_Crouch_TurnSpeed;
 
     [Tooltip("the kinetic friction when crouching towards movement")]
     [SerializeField] private RangeCurve m_Crouch_PositiveKineticFriction;

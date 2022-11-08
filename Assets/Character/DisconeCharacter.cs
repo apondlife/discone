@@ -390,17 +390,18 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// instantiate a rec from a character
     public CharacterRec IntoRecord() {
         // if the position is zero, don't save this record
-        // TODO: bit of a hack. not sure why the remote state can get to zero in
-        // some situations, like when shutting down immediately after
-        // disconnect.
+        // HACK: bit of a hack. not sure why the remote state get set to zero in
+        // some situations, like when shutting down immediately after disconnect.
+        // mirror zero-ing out sync vars for some reason?
         var pos = m_RemoteState.Position;
         if (pos == Vector3.zero) {
+            Debug.LogWarning("[chrctr] attempted to save character a zero-position");
             return null;
         }
 
         return new CharacterRec(
             Key,
-            m_RemoteState.Position,
+            pos,
             m_RemoteState.LookRotation,
             m_Checkpoint.IntoRecord()
         );
