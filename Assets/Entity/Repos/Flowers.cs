@@ -107,7 +107,10 @@ public sealed class Flowers: NetworkBehaviour {
     // -- events --
     /// when a flower is planted
     void OnFlowerPlanted(CharacterFlower flower) {
-        m_All.Add(flower.Checkpoint.Position, flower);
+        var key = flower.Checkpoint.Position;
+        if (!m_All.TryAdd(key, flower)) {
+            Debug.LogWarning("[flower] tried to add a plant at a duplicate position");
+        }
     }
 
     /// when the store finishes loading

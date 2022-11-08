@@ -73,40 +73,32 @@ public sealed class Store: ScriptableObject {
     }
 
     /// try syncing the in-memory player record, fails if a player has no character
-    public bool TrySyncPlayer() {
+    public void SyncPlayer() {
         // find the player's current character
         var character = FindPlayerCharacter();
         if (character == null) {
             Debug.LogError("[store] found no player character to sync!");
-            return false;
+            return;
         }
 
         // and update the record
         m_Player.Character = character.IntoRecord();
         Debug.Log($"[store] updated player record {m_Player}");
-        return true;
     }
 
     /// save the current state to file
     [ContextMenu("Save Store")]
     public async Task Save() {
-        // only save player if successfully syncing
-        var savePlayer = Task.CompletedTask;
-        if (TrySyncPlayer()) {
-            savePlayer = SaveRecord<PlayerRec>(PlayerPath, m_Player);
-        }
-
-        // sync world and save
+        SyncPlayer();
         SyncWorld();
-        var saveWorld = SaveRecord<WorldRec>(WorldPath, m_World);
 
         // ensure we have a directory to write to
         Directory.CreateDirectory(RootPath);
 
         // write the records to disk
         await Task.WhenAll(
-            saveWorld,
-            savePlayer
+            SaveRecord<WorldRec>(WorldPath, m_World),
+            SaveRecord<PlayerRec>(PlayerPath, m_Player)
         );
     }
 
@@ -175,7 +167,12 @@ public sealed class Store: ScriptableObject {
     }
 
     /// write the record to disk at path
-    async Task SaveRecord<T>(string path, T record) {
+    async Task SaveRecord<F>(string path, F record) where F : StoreFile {
+        // don't save empty files
+        if (!record.HasData) {
+            return;
+        }
+
         // encode the json
         #if UNITY_EDITOR
         var json = JsonUtility.ToJson(record, true);

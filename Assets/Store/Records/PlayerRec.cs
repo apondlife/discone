@@ -18,5 +18,12 @@ public record PlayerRec: StoreFile {
     }
 
     // -- StoreFile --
+    /// the file version
     public int Version => V;
+
+    /// if this file has any data
+    public bool HasData {
+        get => Character != null;
+    }
+
 }

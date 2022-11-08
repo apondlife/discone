@@ -134,7 +134,7 @@ public class Online: NetworkManager {
         }
         // if we are non host client disconnect from a server, sync our player record
         else {
-            m_Store.TrySyncPlayer();
+            m_Store.SyncPlayer();
         }
 
         // and then restart as a host
@@ -276,7 +276,7 @@ public class Online: NetworkManager {
         }
         // if client, just sync player
         else {
-            m_Store.TrySyncPlayer();
+            m_Store.SyncPlayer();
         }
 
         // stop the host, if active
