@@ -89,9 +89,9 @@ public class CharacterFlower: NetworkBehaviour {
     [SyncVar(hook = nameof(Client_OnCheckpointReceived))]
     Checkpoint m_Checkpoint;
 
-    /// if no player is using this flower
-    [SyncVar(hook = nameof(Client_OnIsFreeReceieved))]
-    bool m_IsFree = true;
+    /// how many player's have grabbed this flower
+    [SyncVar(hook = nameof(Client_OnGrabbingReceived))]
+    int m_Grabbing = 0;
 
     /// if the flower has been planted
     Planting m_Planting = Planting.Seed;
@@ -191,13 +191,13 @@ public class CharacterFlower: NetworkBehaviour {
     /// add an owner for this flower
     [Server]
     public void Server_Grab() {
-        m_IsFree = false;
+        m_Grabbing += 1;
     }
 
     /// remove an owner for this flower
     [Server]
     public void Server_Release() {
-        m_IsFree = true;
+        m_Grabbing -= 1;
     }
 
     /// move the flower to a position on the ground
@@ -261,7 +261,7 @@ public class CharacterFlower: NetworkBehaviour {
     // -- events --
     /// when the free state changes
     [Client]
-    void Client_OnIsFreeReceieved(bool oldFree, bool newFree) {
+    void Client_OnGrabbingReceived(int _prev, int _curr) {
         m_Renderer.material = FindMaterial();
     }
 
@@ -276,14 +276,9 @@ public class CharacterFlower: NetworkBehaviour {
         get => m_Checkpoint;
     }
 
-    /// if this flower is free
-    public bool IsFree {
-        get => m_IsFree;
-    }
-
     /// find cached material for texture and saturation
     Material FindMaterial() {
-        return FindMaterial(m_IsFree ? m_Saturation : 1.0f);
+        return FindMaterial(m_Grabbing == 0 ? m_Saturation : 1.0f);
     }
 
     /// find cached material for texture and saturation
@@ -349,7 +344,7 @@ public class CharacterFlower: NetworkBehaviour {
         flower.m_Checkpoint = new Checkpoint(pos, fwd);
 
         // set initial state
-        flower.m_IsFree = true;
+        flower.m_Grabbing = 0;
 
         // plant the flower
         flower.TryPlant();
