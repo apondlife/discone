@@ -64,8 +64,6 @@ sealed class CrouchSystem: CharacterSystem {
         m_State.Curr.CrouchDirection = m_State.WasStopped
             ? m_State.Prev.Forward
             : m_State.Prev.PlanarVelocity.normalized;
-
-        Debug.Log($"[crouch] entering crouching {m_State.Curr.CrouchDirection}");
     }
 
     void Crouching_Update(float delta) {
@@ -79,7 +77,6 @@ sealed class CrouchSystem: CharacterSystem {
         var moveDir = m_State.Prev.GroundVelocity.normalized;
         var moveDotCrouch = Vector3.Dot(moveDir, m_State.Prev.CrouchDirection);
         if (moveDotCrouch < 0.0f) {
-            Debug.Log("[crouch] changing crouch direction");
             m_State.Curr.CrouchDirection = moveDir;
         }
 

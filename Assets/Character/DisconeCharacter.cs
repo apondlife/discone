@@ -8,7 +8,6 @@ using UnityEngine;
 [RequireComponent(typeof(Character))]
 [RequireComponent(typeof(CharacterCheckpoint))]
 [RequireComponent(typeof(CharacterWrap))]
-[RequireComponent(typeof(WorldCoord))]
 public sealed class DisconeCharacter: NetworkBehaviour {
     // -- types --
     /// how the character is simulated on the client
@@ -72,9 +71,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the checkpoint spawner
     CharacterCheckpoint m_Checkpoint;
 
-    /// the world coordinate
-    WorldCoord m_Coord;
-
     /// the list of simulated children
     GameObject[] m_Simulated;
 
@@ -89,7 +85,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     void Awake() {
         // set props
         m_Character = GetComponent<Character>();
-        m_Coord = GetComponent<WorldCoord>();
         m_Musics = GetComponentInChildren<CharacterMusic>();
         m_Dialogue = GetComponentInChildren<CharacterDialogue>();
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
@@ -103,9 +98,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
         // default to not simulating (note, this relies on the above default values being)
         SetSimulation(Simulation.None);
-
-        // set initial coordinate, since we are not simulating
-        m_Coord.Value = m_Coord.FromPosition(transform.position);
 
         // debug
         #if UNITY_EDITOR
@@ -162,7 +154,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     // -- l/mirror
-    [Server]
+    /// [Server]
     public override void OnStartServer() {
         base.OnStartServer();
 
@@ -170,14 +162,14 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         Server_RemoveClientAuthority();
     }
 
-    [Client]
+    /// [Client]
     public override void OnStartClient() {
         base.OnStartClient();
 
         SyncSimulation(true);
     }
 
-    [Client]
+    /// [Client]
     public override void OnStartAuthority() {
         base.OnStartAuthority();
 
@@ -185,7 +177,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         SyncSimulation();
     }
 
-    [Client]
+    /// [Client]
     public override void OnStopAuthority() {
         base.OnStopAuthority();
 
@@ -371,11 +363,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the character's flower
     public CharacterFlower Flower {
         get => m_Checkpoint.Flower;
-    }
-
-    /// the world coord
-    public WorldCoord Coord {
-        get => m_Coord;
     }
 
     // -- q/debug
