@@ -326,7 +326,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         get => m_Coord;
     }
 
-
     // -- events --
     /// when the character should switch
     void OnSwitchCharacter(GameObject obj) {
