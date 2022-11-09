@@ -28,8 +28,8 @@ sealed class MovementSystem: CharacterSystem {
         var dv = IntegrateForces(
             m_State.Curr.GroundVelocity,
             Vector3.zero,
-            m_State.IsStopped ? 0.0f : m_State.Curr.Horizontal_Drag,
-            m_State.IsStopped ? m_State.Curr.Horizontal_StaticFriction : m_State.Curr.Horizontal_KineticFriction,
+            m_State.WasStopped ? 0.0f : m_State.Curr.Horizontal_Drag,
+            m_State.WasStopped ? m_State.Curr.Horizontal_StaticFriction : m_State.Curr.Horizontal_KineticFriction,
             delta
         );
 
@@ -98,7 +98,7 @@ sealed class MovementSystem: CharacterSystem {
         var dv = IntegrateForces(
             v,
             m_Tunables.Horizontal_Acceleration * inputDir.magnitude * m_State.Curr.Forward,
-            m_State.IsStopped ? 0.0f : m_State.Horizontal_Drag,
+            m_State.WasStopped ? 0.0f : m_State.Horizontal_Drag,
             m_State.Horizontal_KineticFriction,
             delta
         );
@@ -148,8 +148,8 @@ sealed class MovementSystem: CharacterSystem {
         var dv = IntegrateForces(
             m_State.Curr.GroundVelocity,
             m_Tunables.Horizontal_Acceleration * thrustLateral,
-            m_State.IsStopped ? 0.0f : m_State.Horizontal_Drag,
-            m_State.IsStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
+            m_State.WasStopped ? 0.0f : m_State.Horizontal_Drag,
+            m_State.WasStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
             delta
         );
 
@@ -242,7 +242,7 @@ sealed class MovementSystem: CharacterSystem {
         // rotate towards input direction
         // TODO: this should be a discone feature, not a third person one
         // the ability to modify tunables at run time
-        if(m_Input.IsCrouchPressed) {
+        if (m_Input.IsCrouchPressed) {
             TurnTowards(
                 m_Input.Move,
                 m_Tunables.Air_TurnSpeed,

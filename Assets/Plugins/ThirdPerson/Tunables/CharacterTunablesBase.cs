@@ -31,6 +31,8 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float Crouch_TurnSpeed { get; }
     public abstract float Crouch_StaticFriction { get; }
     public abstract float Crouch_LateralMaxSpeed { get; }
+    public abstract float Crouch_Gravity { get; }
+    public abstract float Crouch_Acceleration { get; }
 
     public abstract RangeCurve Crouch_PositiveDrag { get; }
     public abstract RangeCurve Crouch_NegativeDrag { get; }

@@ -64,6 +64,8 @@ sealed class CrouchSystem: CharacterSystem {
         m_State.Curr.CrouchDirection = m_State.WasStopped
             ? m_State.Prev.Forward
             : m_State.Prev.PlanarVelocity.normalized;
+
+        Debug.Log($"[crouch] entering crouching {m_State.Curr.CrouchDirection}");
     }
 
     void Crouching_Update(float delta) {
@@ -77,6 +79,7 @@ sealed class CrouchSystem: CharacterSystem {
         var moveDir = m_State.Prev.GroundVelocity.normalized;
         var moveDotCrouch = Vector3.Dot(moveDir, m_State.Prev.CrouchDirection);
         if (moveDotCrouch < 0.0f) {
+            Debug.Log("[crouch] changing crouch direction");
             m_State.Curr.CrouchDirection = moveDir;
         }
 
@@ -96,13 +99,16 @@ sealed class CrouchSystem: CharacterSystem {
             ? m_Tunables.Crouch_NegativeDrag
             : m_Tunables.Crouch_PositiveDrag;
 
-        m_State.Horizontal_Drag = drag.Evaluate(Mathf.Abs(inputDotCrouch));
+        m_State.Curr.Horizontal_Drag = drag.Evaluate(Mathf.Abs(inputDotCrouch));
 
         var kineticFriction = inputDotCrouch <= 0.0f
             ? m_Tunables.Crouch_NegativeKineticFriction
             : m_Tunables.Crouch_PositiveKineticFriction;
 
-        m_State.Horizontal_KineticFriction = kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch));
+        m_State.Curr.Horizontal_KineticFriction = kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch));
+
+        // apply crouch gravity
+        m_State.Curr.Velocity += m_Tunables.Crouch_Acceleration * delta * Vector3.up;
     }
 }
 

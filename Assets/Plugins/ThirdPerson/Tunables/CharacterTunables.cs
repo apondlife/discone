@@ -92,27 +92,29 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private float m_Crouch_StaticFriction;
     public override float Crouch_StaticFriction => m_Crouch_StaticFriction;
 
+    [Tooltip("the turn speed while crouching")]
+    [SerializeField] float m_Crouch_TurnSpeed;
+    public override float Crouch_TurnSpeed => m_Crouch_TurnSpeed;
+
     [Tooltip("the max lateral speed when crouching")]
     [SerializeField] private float m_Crouch_LateralMaxSpeed;
     public override float Crouch_LateralMaxSpeed => m_Crouch_LateralMaxSpeed;
 
     [Tooltip("the turn speed while crouching")]
-    [SerializeField] float m_Crouch_TurnSpeed;
-    public override float Crouch_TurnSpeed => m_Crouch_TurnSpeed;
+    [SerializeField] float m_Crouch_Gravity;
+    public override float Crouch_Gravity => m_Crouch_Gravity;
+
+    public override float Crouch_Acceleration => Crouch_Gravity - Gravity;
 
     [Tooltip("the kinetic friction when crouching towards movement")]
     [SerializeField] private RangeCurve m_Crouch_PositiveKineticFriction;
     public override RangeCurve Crouch_PositiveKineticFriction => m_Crouch_PositiveKineticFriction;
 
     [Tooltip("the kinetic friction when crouching against movement")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Crouch_Brake_KineticFriction")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Crouch_KineticFriction")]
     [SerializeField] private RangeCurve m_Crouch_NegativeKineticFriction;
     public override RangeCurve Crouch_NegativeKineticFriction => m_Crouch_NegativeKineticFriction;
 
     [Tooltip("the drag when crouching towards movement")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Crouch_Slide_KineticFriction")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Crouch_Drag")]
     [SerializeField] private RangeCurve m_Crouch_PositiveDrag;
     public override RangeCurve Crouch_PositiveDrag => m_Crouch_PositiveDrag;
 
@@ -266,7 +268,6 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [Range(0.0f, 20.0f)]
     [SerializeField] private float m_FastDamping;
     public override float FastDamping => m_FastDamping;
-
     #endregion
 
     // -- lifecycle --
