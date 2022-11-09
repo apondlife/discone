@@ -62,6 +62,7 @@ Material:
     - _Delta: 0.01
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _Epsilon: 0.01
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
@@ -77,13 +78,23 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
+    - _Ceiling: {r: 0.62352943, g: 0.81960785, b: 0.37254903, a: 1}
+    - _CeilingColor: {r: 0.62352943, g: 0.81960785, b: 0.37254903, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FlatColor: {r: 0.62370235, g: 0.8215666, b: 0.37422144, a: 1}
     - _FlatWallColor: {r: 1.494411, g: 0.6885245, b: 1.1657971, a: 1}
+    - _FloorColor: {r: 0.62352943, g: 0.81960785, b: 0.37254903, a: 1}
     - _NegativeRampColor: {r: 0.19663256, g: 0.8641484, b: 1.1073518, a: 1}
     - _NegativeSteepColor: {r: 0.9492205, g: 0.38860703, b: 1.216786, a: 1}
+    - _NegativeWallColor: {r: 0.9492205, g: 0.38860703, b: 1.216786, a: 1}
+    - _NonSteepCeiling: {r: 0.86421514, g: 1.139412, b: 0.34761727, a: 1}
     - _NonSteepFloor: {r: 0.86421514, g: 1.139412, b: 0.34761727, a: 1}
+    - _PositiveRampColor: {r: 0.38345706, g: 1.0592737, b: 0.7336971, a: 1}
+    - _PositiveWallColor: {r: 1.3041189, g: 0.32602972, b: 0.4203038, a: 1}
     - _RampColor: {r: 0.38345706, g: 1.0592737, b: 0.7336971, a: 1}
+    - _ShallowCeilingColor: {r: 0.86421514, g: 1.139412, b: 0.34761727, a: 1}
+    - _ShallowFloorColor: {r: 0.86421514, g: 1.139412, b: 0.34761727, a: 1}
     - _SteepColor: {r: 1.3041189, g: 0.32602972, b: 0.4203038, a: 1}
+    - _WallColor: {r: 1.494411, g: 0.6885245, b: 1.1657971, a: 1}
   m_BuildTextureStacks: []
