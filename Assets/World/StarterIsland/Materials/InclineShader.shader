@@ -1,8 +1,15 @@
 Shader "Custom/InclineShader" {
     Properties {
-        _MainTex ("Albedo (RGB)", 2D) = "white" {}
-        _Glossiness ("Smoothness", Range(0,1)) = 0.5
+        [Header(Surface)]
         _Metallic ("Metallic", Range(0,1)) = 0.0
+        _Glossiness ("Smoothness", Range(0,1)) = 0.5
+
+        [Space]
+        [Header(Texture)]
+        _MainTex ("Texture", 2D) = "gray" {}
+
+        [KeywordEnum(None, Multiply, Luminosity)]
+        _Blend ("Blend Mode", Float) = 0
 
         [Space]
         [Header(Angles)]
@@ -33,6 +40,8 @@ Shader "Custom/InclineShader" {
         #pragma surface surf Standard fullforwardshadows
         // use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
+        // blend modes
+        #pragma multi_compile _BLEND_NONE _BLEND_MULTIPLY _BLEND_LUMINOSITY
 
         // -- constants --
         const static float PI = 3.14159265f;
@@ -91,6 +100,10 @@ Shader "Custom/InclineShader" {
         UNITY_INSTANCING_BUFFER_START(Props)
         UNITY_INSTANCING_BUFFER_END(Props)
 
+        // -- declarations --
+        fixed luminosity(fixed3 rgb);
+
+        // -- program --
         void surf(Input i, inout SurfaceOutputStandard o) {
             fixed4 c;
 
@@ -131,15 +144,52 @@ Shader "Custom/InclineShader" {
             c = lerp(c, _WallColor, step(d, _Epsilon));
             c = lerp(c, flatColor, step(1 - _Epsilon, d));
 
-            // apply texture
-            fixed4 t = tex2D (_MainTex, i.uv_MainTex);
-            c *= t;
+            // get texture
+            fixed4 t = tex2D(_MainTex, i.uv_MainTex);
+
+            // blend texture as multiply
+            #ifdef _BLEND_MULTIPLY
+            c.rgb *= t.rgb;
+            #endif
+
+            // blend texture as luminosity
+            #ifdef _BLEND_LUMINOSITY
+            fixed lum = luminosity(t);
+            fixed delta = lum - luminosity(c);
+            fixed3 rgb = fixed3(
+                c.r + delta,
+                c.g + delta,
+                c.b + delta
+            );
+
+            fixed lum1 = luminosity(rgb);
+            fixed3 lum3 = fixed3(lum1, lum1, lum1);
+
+            fixed min1 = min(rgb.r, min(rgb.g, rgb.b));
+            if (min1 < 0.0f) {
+                rgb = lum3 + ((rgb - lum3) * lum3) / (lum3 - fixed3(min1, min1, min1));
+            }
+
+            fixed max1 = max(rgb.r, max(rgb.g, rgb.b));
+            if (max1 > 1.0f) {
+                rgb = lum3 + ((rgb - lum3) * (fixed3(1, 1, 1) - lum3)) / (fixed3(max1, max1, max1) - lum3);
+            }
+
+            c.rgb = rgb;
+            #endif
 
             // set surface properties
             o.Albedo = c.rgb;
             o.Alpha = c.a;
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
+
+            c.rgb = luminosity(c.rgb);
+        }
+
+        // -- helpers --
+        fixed luminosity(fixed3 c) {
+            return 0.3f * c.r + 0.59f * c.g + 0.11f * c.b;
         }
         ENDCG
     }
