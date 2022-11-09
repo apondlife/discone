@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Bowl
   m_Shader: {fileID: 4800000, guid: e4f41a5b43e31b146a653f2fbc945da4, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: _BLEND_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -57,6 +57,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Blend: 0
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _Delta: 0.01
@@ -71,11 +72,13 @@ Material:
     - _NotSteep: 10
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _RampAngle: 10
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Steep: 80
     - _UVSec: 0
+    - _WallAngle: 80
     - _ZWrite: 1
     m_Colors:
     - _Ceiling: {r: 0.5411765, g: 0.84705883, b: 0.6117647, a: 1}
