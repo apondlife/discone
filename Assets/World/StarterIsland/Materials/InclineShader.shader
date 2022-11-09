@@ -1,104 +1,145 @@
-Shader "Custom/InclineShader"
-{
-    Properties
-    {
+Shader "Custom/InclineShader" {
+    Properties {
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
-        _Delta("Delta", Range(0, 0.1)) = 0.001
-        _Steep("Steep Angle (deg)", Range(0, 90)) = 90
-        _NotSteep("Not Steep Angle (deg)", Range(0, 90)) = 0
-        [HDR] _FlatColor("FlatColor", Color) = (1, 1, 1, 1)
-        [HDR] _FlatWallColor("FlatWallColor", Color) = (1, 1, 1, 1)
-        [HDR] _SteepColor("SteepColor", Color) = (1, 1, 1, 1)
-        [HDR] _NegativeSteepColor("NegativeSteepColor", Color) = (1, 1, 1, 1)
-        [HDR] _RampColor("Ramp Color", Color) = (1, 1, 1, 1)
-        [HDR] _NegativeRampColor("Negative Ramp Color", Color) = (1, 1, 1, 1)
-        [HDR] _NonSteepFloor("NonSteepFloor", Color) = (1, 1, 1, 1)
+
+        [Space]
+        [Header(Angles)]
+        _Epsilon ("Epsilon", Range(0, 0.1)) = 0.01
+        _WallAngle ("Wall Angle (deg)", Range(0, 90)) = 80
+        _RampAngle ("Ramp Angle (deg)", Range(0, 90)) = 10
+
+        [Space]
+        [Header(Colors)]
+        [HDR] _FloorColor ("Floor", Color) = (1, 1, 1, 1)
+        [HDR] _ShallowFloorColor ("Floor (Shallow)", Color) = (1, 1, 1, 1)
+        [HDR] _PositiveRampColor ("Ramp (Positive)", Color) = (1, 1, 1, 1)
+        [HDR] _PositiveWallColor ("Wall (Positive)", Color) = (1, 1, 1, 1)
+        [HDR] _WallColor ("Wall (Flat)", Color) = (1, 1, 1, 1)
+        [HDR] _NegativeWallColor ("Wall (Negative)", Color) = (1, 1, 1, 1)
+        [HDR] _NegativeRampColor ("Ramp (Negative)", Color) = (1, 1, 1, 1)
+        [HDR] _ShallowCeilingColor ("Ceiling (Shallow)", Color) = (1, 1, 1, 1)
+        [HDR] _CeilingColor ("Ceiling", Color) = (1, 0, 1, 1)
     }
-    SubShader
-    {
+
+    SubShader {
         Tags { "RenderType"="Opaque" }
         LOD 200
 
         CGPROGRAM
-        // Physically based Standard lighting model, and enable shadows on all light types
+        // -- options --
+        // physically based Standard lighting model, and enable shadows on all light types
         #pragma surface surf Standard fullforwardshadows
-
-        // Use shader model 3.0 target, to get nicer looking lighting
+        // use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
 
-        sampler2D _MainTex;
+        // -- constants --
+        const static float PI = 3.14159265f;
+        const static float DEGTORAD = PI / 180.0f;
 
-        struct Input
-        {
+        // -- types --
+        struct Input {
             float2 uv_MainTex;
             float3 worldNormal;
         };
 
+        // -- props --
+        sampler2D _MainTex;
         half _Glossiness;
         half _Metallic;
 
-        fixed4 _FlatColor;
-        fixed4 _FlatWallColor;
-        fixed4 _SteepColor;
-        fixed4 _NegativeSteepColor;
-        fixed4 _RampColor;
+        // -- p/angles
+        // a near-zero value
+        float _Epsilon;
+
+        // the angle ramps start at
+        float _RampAngle;
+
+        // the angle walls start at
+        float _WallAngle;
+
+        // -- colors --
+        // the color of a flat floor
+        fixed4 _FloorColor;
+
+        // the color of a floor w/ a slightly positive incline
+        fixed4 _ShallowFloorColor;
+
+        // the color of a ramp w/ a positive incline
+        fixed4 _PositiveRampColor;
+
+        // the color of a postive wall
+        fixed4 _PositiveWallColor;
+
+        // the color of a flat wall
+        fixed4 _WallColor;
+
+        // the color of a wall w/ a slightly negative incline
+        fixed4 _NegativeWallColor;
+
+        // the color of a ramp w/ a negative incline
         fixed4 _NegativeRampColor;
-        fixed4 _NonSteepFloor;
 
-        float _Delta;
-        float _Steep;
-        float _NotSteep;
+        // the color of a ceiling w/ a slightly negative incline
+        fixed4 _ShallowCeilingColor;
 
-        const static float PI = 3.14159265;
-        const static float DEGTORAD = PI / 180.0f;
+        // the color of a flat ceiling
+        fixed4 _CeilingColor;
 
-
-        // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-        // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-        // #pragma instancing_options assumeuniformscaling
+        // see: https://docs.unity3d.com/Manual/GPUInstancing.html for more
         UNITY_INSTANCING_BUFFER_START(Props)
-            // put more per-instance properties here
         UNITY_INSTANCING_BUFFER_END(Props)
 
-        void surf (Input IN, inout SurfaceOutputStandard o)
-        {
-            // Albedo comes from a texture tinted by color
-            fixed4 t = tex2D (_MainTex, IN.uv_MainTex);
+        void surf(Input i, inout SurfaceOutputStandard o) {
             fixed4 c;
-            fixed a = dot(IN.worldNormal, float3(0, 1, 0));
+
+            fixed a = dot(i.worldNormal, float3(0, 1, 0));
             fixed d = abs(a);
 
-            fixed steep = cos(_Steep * DEGTORAD);
-            fixed notsteep = cos(_NotSteep * DEGTORAD);
-            if(d >= 1-_Delta) {
-                c = _FlatColor;
-            } else if(d < _Delta) {
-                c = _FlatWallColor;
-            } else if(d < steep) {
-                if(a < 0) {
-                    c = _NegativeSteepColor;
-                } else {
-                    c = _SteepColor;
-                }
-            } else if(d < notsteep) {
-                if(a < 0) {
-                    c = _NegativeRampColor;
-                } else {
-                    c = _RampColor;
-                }
-            } else {
-                c = _NonSteepFloor;
-            }
+            fixed wall = cos(_WallAngle * DEGTORAD);
+            fixed ramp = cos(_RampAngle * DEGTORAD);
 
+            fixed4 flatColor = lerp(
+                _CeilingColor,
+                _FloorColor,
+                step(0, a)
+            );
+
+            fixed4 shallowColor = lerp(
+                _ShallowCeilingColor,
+                _ShallowFloorColor,
+                step(0, a)
+            );
+
+            fixed4 rampColor = lerp(
+                _NegativeRampColor,
+                _PositiveRampColor,
+                step(0, a)
+            );
+
+            fixed4 wallColor = lerp(
+                _NegativeWallColor,
+                _PositiveWallColor,
+                step(0, a)
+            );
+
+            // pick color based on angle
+            c = shallowColor;
+            c = lerp(c, rampColor, step(d, ramp));
+            c = lerp(c, wallColor, step(d, wall));
+            c = lerp(c, _WallColor, step(d, _Epsilon));
+            c = lerp(c, flatColor, step(1 - _Epsilon, d));
+
+            // apply texture
+            fixed4 t = tex2D (_MainTex, i.uv_MainTex);
             c *= t;
 
+            // set surface properties
             o.Albedo = c.rgb;
-            // Metallic and smoothness come from slider variables
+            o.Alpha = c.a;
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
-            o.Alpha = c.a;
         }
         ENDCG
     }
