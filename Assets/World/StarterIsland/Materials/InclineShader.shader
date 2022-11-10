@@ -1,24 +1,37 @@
 Shader "Custom/InclineShader" {
     Properties {
         [Header(Surface)]
+        [Space(5)]
         _Metallic ("Metallic", Range(0,1)) = 0.0
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
 
         [Space]
         [Header(Texture)]
-        _MainTex ("Texture", 2D) = "gray" {}
-
+        [Space(5)]
         [KeywordEnum(None, Multiply, Luminosity)]
         _Blend ("Blend Mode", Float) = 0
+        _MainTex ("Texture", 2D) = "gray" {}
+        _Hue ("Hue", Range(-1.0, 1.0)) = 0.0
+        _Saturation ("Saturation", Range(-1.0, 1.0)) = 0.0
+        _Brightness ("Brightness", Range(-1.0, 1.0)) = 0.0
+
+        [Space]
+        [Header(Bump Map)]
+        [Space(5)]
+        [Toggle] _Bump_Map ("Enable", Float) = 0
+        _BumpMap ("Bump Map", 2D) = "bump" {}
+        _BumpScale ("Bump Scale", Float) = 0
 
         [Space]
         [Header(Angles)]
+        [Space(5)]
         _Epsilon ("Epsilon", Range(0, 0.1)) = 0.01
         _WallAngle ("Wall Angle (deg)", Range(0, 90)) = 80
         _RampAngle ("Ramp Angle (deg)", Range(0, 90)) = 10
 
         [Space]
         [Header(Colors)]
+        [Space(5)]
         [HDR] _FloorColor ("Floor", Color) = (1, 1, 1, 1)
         [HDR] _ShallowFloorColor ("Floor (Shallow)", Color) = (1, 1, 1, 1)
         [HDR] _PositiveRampColor ("Ramp (Positive)", Color) = (1, 1, 1, 1)
@@ -28,35 +41,76 @@ Shader "Custom/InclineShader" {
         [HDR] _NegativeRampColor ("Ramp (Negative)", Color) = (1, 1, 1, 1)
         [HDR] _ShallowCeilingColor ("Ceiling (Shallow)", Color) = (1, 1, 1, 1)
         [HDR] _CeilingColor ("Ceiling", Color) = (1, 0, 1, 1)
+
+        [Space]
+        [Header(Colors)]
+        _MapScale("Triplanar Scale", Float) = 1
     }
 
     SubShader {
-        Tags { "RenderType"="Opaque" }
+        // -- options --
+        Tags {
+            "RenderType" = "Opaque"
+        }
+
         LOD 200
 
         CGPROGRAM
-        // -- options --
+        // -- flags --
         // physically based Standard lighting model, and enable shadows on all light types
         #pragma surface surf Standard fullforwardshadows
+
         // use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
+
         // blend modes
         #pragma multi_compile _BLEND_NONE _BLEND_MULTIPLY _BLEND_LUMINOSITY
 
-        // -- constants --
-        const static float PI = 3.14159265f;
-        const static float DEGTORAD = PI / 180.0f;
+        // bump map
+        #pragma multi_compile __ _BUMP_MAP_ON
+
+        // -- includes --
+        #include "UnityStandardUtils.cginc"
+        #include "/Assets/Shaders/Core/Math.cginc"
+        #include "/Assets/Shaders/Core/Color.cginc"
 
         // -- types --
         struct Input {
-            float2 uv_MainTex;
+            float3 worldPos;
             float3 worldNormal;
+            INTERNAL_DATA
         };
 
         // -- props --
-        sampler2D _MainTex;
+        // -- p/surface
+        /// who knows
         half _Glossiness;
+
+        /// who knows
         half _Metallic;
+
+        // -- p/texture
+        // the texture
+        sampler2D _MainTex;
+
+        // the scale of the triplanar mapping
+        half _MapScale;
+
+        // the hue shift as a pct
+        float _Hue;
+
+        // the saturation shift as a pct
+        float _Saturation;
+
+        // the brightness shift as a pct
+        float _Brightness;
+
+        // -- p/bump map
+        // the bump map
+        sampler2D _BumpMap;
+
+        // the bump map scale
+        float _BumpScale;
 
         // -- p/angles
         // a near-zero value
@@ -102,16 +156,21 @@ Shader "Custom/InclineShader" {
 
         // -- declarations --
         fixed luminosity(fixed3 rgb);
+        float3 worldToTangentNormalVector(Input IN, float3 normal);
+        half3 blend_rnm(half3 n1, half3 n2);
 
         // -- program --
-        void surf(Input i, inout SurfaceOutputStandard o) {
+        void surf(Input IN, inout SurfaceOutputStandard o) {
+            // work around bug where IN.worldNormal is always (0,0,0)!
+            #ifdef _BUMP_MAP_ON
+            IN.worldNormal = WorldNormalVector(IN, float3(0,0,1));
+            #endif
+
             fixed4 c;
 
-            fixed a = dot(i.worldNormal, float3(0, 1, 0));
-            fixed d = abs(a);
-
-            fixed wall = cos(_WallAngle * DEGTORAD);
-            fixed ramp = cos(_RampAngle * DEGTORAD);
+            // -- pick color based on normal
+            fixed1 a = dot(IN.worldNormal, float3(0, 1, 0));
+            fixed1 d = abs(a);
 
             fixed4 flatColor = lerp(
                 _CeilingColor,
@@ -139,13 +198,35 @@ Shader "Custom/InclineShader" {
 
             // pick color based on angle
             c = shallowColor;
-            c = lerp(c, rampColor, step(d, ramp));
-            c = lerp(c, wallColor, step(d, wall));
+            c = lerp(c, rampColor, step(d, cos(radians(_RampAngle))));
+            c = lerp(c, wallColor, step(d, cos(radians(_WallAngle))));
             c = lerp(c, _WallColor, step(d, _Epsilon));
             c = lerp(c, flatColor, step(1 - _Epsilon, d));
 
+            // -- sample triplanar texture
+            // see: https://github.com/bgolus/Normal-Mapping-for-a-Triplanar-Shader/blob/master/TriplanarSurfaceShader.shader
+
+            // blending factor of triplanar mapping
+            half3 bf = saturate(pow(IN.worldNormal, 4));
+            bf /= max(dot(bf, half3(1,1,1)), 0.0001);
+
             // get texture
-            fixed4 t = tex2D(_MainTex, i.uv_MainTex);
+            float2 uvX = IN.worldPos.zy * _MapScale;
+            float2 uvY = IN.worldPos.xz * _MapScale;
+            float2 uvZ = IN.worldPos.xy * _MapScale;
+
+            // Base color
+            half4 cx = tex2D(_MainTex, uvX) * bf.x;
+            half4 cy = tex2D(_MainTex, uvY) * bf.y;
+            half4 cz = tex2D(_MainTex, uvZ) * bf.z;
+            fixed4 t = (cx + cy + cz);
+
+            // shift texture hsv
+            fixed3 hsv = IntoHsv(t.rgb);
+            hsv.x += _Hue;
+            hsv.y += _Saturation;
+            hsv.z += _Brightness;
+            t.rgb = IntoRgb(hsv);
 
             // blend texture as multiply
             #ifdef _BLEND_MULTIPLY
@@ -154,28 +235,65 @@ Shader "Custom/InclineShader" {
 
             // blend texture as luminosity
             #ifdef _BLEND_LUMINOSITY
-            fixed lum = luminosity(t);
-            fixed delta = lum - luminosity(c);
-            fixed3 rgb = fixed3(
-                c.r + delta,
-                c.g + delta,
-                c.b + delta
-            );
+            // add luminosity delta
+            fixed1 lum = luminosity(t);
+            fixed1 del = lum - luminosity(c);
+            fixed3 rgb = c.rgb + fixed3r(del);
 
-            fixed lum1 = luminosity(rgb);
-            fixed3 lum3 = fixed3(lum1, lum1, lum1);
+            // clamp luminsoity in some weird way
+            fixed1 lum1 = luminosity(rgb);
+            fixed3 lum3 = fixed3r(lum1);
 
-            fixed min1 = min(rgb.r, min(rgb.g, rgb.b));
+            fixed1 min1 = min(rgb.r, min(rgb.g, rgb.b));
             if (min1 < 0.0f) {
-                rgb = lum3 + ((rgb - lum3) * lum3) / (lum3 - fixed3(min1, min1, min1));
+                rgb = lum3 + ((rgb - lum3) * lum3) / (lum3 - fixed3r(min1));
             }
 
             fixed max1 = max(rgb.r, max(rgb.g, rgb.b));
             if (max1 > 1.0f) {
-                rgb = lum3 + ((rgb - lum3) * (fixed3(1, 1, 1) - lum3)) / (fixed3(max1, max1, max1) - lum3);
+                rgb = lum3 + ((rgb - lum3) * (fixed3r(1.0f) - lum3)) / (fixed3r(max1) - lum3);
             }
 
             c.rgb = rgb;
+            #endif
+
+
+            // -- add bump map
+            #ifdef _BUMP_MAP_ON
+            // tangent space normal maps
+            half3 tnormalX = UnpackNormal(tex2D(_BumpMap, uvX));
+            half3 tnormalY = UnpackNormal(tex2D(_BumpMap, uvY));
+            half3 tnormalZ = UnpackNormal(tex2D(_BumpMap, uvZ));
+
+            // flip normal maps' x axis to account for flipped UVs
+            // #if defined(TRIPLANAR_CORRECT_PROJECTED_U)
+            //     tnormalX.x *= axisSign.x;
+            //     tnormalY.x *= axisSign.y;
+            //     tnormalZ.x *= -axisSign.z;
+            // #endif
+
+            half3 absVertNormal = abs(IN.worldNormal);
+
+            // swizzle world normals to match tangent space and apply reoriented normal mapping blend
+            tnormalX = blend_rnm(half3(IN.worldNormal.zy, absVertNormal.x), tnormalX);
+            tnormalY = blend_rnm(half3(IN.worldNormal.xz, absVertNormal.y), tnormalY);
+            tnormalZ = blend_rnm(half3(IN.worldNormal.xy, absVertNormal.z), tnormalZ);
+
+            // apply world space sign to tangent space Z
+            half3 axisSign = IN.worldNormal < 0 ? -1 : 1;
+            tnormalX.z *= axisSign.x;
+            tnormalY.z *= axisSign.y;
+            tnormalZ.z *= axisSign.z;
+
+            // sizzle tangent normals to match world normal and blend together
+            half3 worldNormal = normalize(
+                tnormalX.zyx * bf.x +
+                tnormalY.xzy * bf.y +
+                tnormalZ.xyz * bf.z
+                );
+
+            // convert world space normals into tangent normals
+            o.Normal = worldToTangentNormalVector(IN, worldNormal);
             #endif
 
             // set surface properties
@@ -183,13 +301,30 @@ Shader "Custom/InclineShader" {
             o.Alpha = c.a;
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
-
-            c.rgb = luminosity(c.rgb);
         }
 
         // -- helpers --
+        float3 worldToTangentNormalVector(Input IN, float3 normal) {
+            float3 t2w0 = WorldNormalVector(IN, float3(1,0,0));
+            float3 t2w1 = WorldNormalVector(IN, float3(0,1,0));
+            float3 t2w2 = WorldNormalVector(IN, float3(0,0,1));
+            float3x3 t2w = float3x3(t2w0, t2w1, t2w2);
+            return normalize(mul(t2w, normal));
+        }
+
         fixed luminosity(fixed3 c) {
             return 0.3f * c.r + 0.59f * c.g + 0.11f * c.b;
+        }
+
+        // Reoriented Normal Mapping
+        // http://blog.selfshadow.com/publications/blending-in-detail/
+        // Altered to take normals (-1 to 1 ranges) rather than unsigned normal maps (0 to 1 ranges)
+        half3 blend_rnm(half3 n1, half3 n2)
+        {
+            n1.z += 1;
+            n2.xy = -n2.xy;
+
+            return n1 * dot(n1, n2) / n1.z - n2;
         }
         ENDCG
     }

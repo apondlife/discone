@@ -66,7 +66,5 @@ public class DebugOptions: MonoBehaviour {
 
         SpawnCharacterAtTransform(t);
     }
-
-
     #endif
 }

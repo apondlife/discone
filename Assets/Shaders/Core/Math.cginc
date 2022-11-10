@@ -2,19 +2,27 @@
 #define CORE_MATH_CGINC
 
 // -- defines --
-#ifndef float1
 #define float1 float
-#endif
-
-#ifndef fixed1
 #define fixed1 fixed
-#endif
-
-#ifndef half1
 #define half1 half
-#endif
 
-// -- functions --
+// -- vectors --
+/// create a half3 from a repeated value
+inline half3 half3r(half val) {
+    return half3(val, val, val);
+}
+
+/// create a fixed3 from a repeated value
+inline fixed3 fixed3r(fixed val) {
+    return fixed3(val, val, val);
+}
+
+/// create a float3 from a repeated value
+inline float3 float3r(float val) {
+    return float3(val, val, val);
+}
+
+// -- fns --
 /// lerp a span vector (min and length)
 float1 LerpSpan(float2 span, float t) {
     return fmod(span.x, 1.0f) + fmod(span.y, 1.0f) * t;
