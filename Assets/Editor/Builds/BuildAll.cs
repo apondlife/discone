@@ -16,11 +16,17 @@ public class BuildAll {
     /// the name of the playtest scene
     const string k_Scene_Playtest = "Main_Test";
 
+    /// the name of the art room scene
+    const string k_Scene_Art = "Main_Art";
+
     /// the release build dir
     const string k_Paths_Release = "release";
 
     /// the playtest build dir
     const string k_Paths_Playtest = "playtest";
+
+    /// the art room build dir
+    const string k_Paths_Art = "art";
 
     // -- main --
     /// run the builds
@@ -101,6 +107,7 @@ public class BuildAll {
         // get the variant subdirectory
         var variant = m_Options.Variant switch {
             Variant.Playtest => k_Paths_Playtest,
+            Variant.Art      => k_Paths_Art,
             _                => k_Paths_Release,
         };
 
@@ -118,10 +125,11 @@ public class BuildAll {
         var o = new BuildPlayerOptions();
 
         // pick the right scene
-        var scene = k_Scene;
-        if (m_Options.Variant == Variant.Playtest) {
-            scene = k_Scene_Playtest;
-        }
+        var scene = m_Options.Variant switch {
+            Variant.Playtest => k_Scene_Playtest,
+            Variant.Art      => k_Scene_Art,
+            _ => k_Scene,
+        };
 
         // add src options
         o.scenes = new string[]{
