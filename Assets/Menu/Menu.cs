@@ -9,11 +9,6 @@ public class Menu: MonoBehaviour {
     // the sentinel for no transition
     const float k_TransitionNone = -1.0f;
 
-    // -- state --
-    [Header("state")]
-    [Tooltip("the current scroll offset")]
-    [SerializeField] float m_Offset;
-
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the page transition duration")]
@@ -24,8 +19,8 @@ public class Menu: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the scroll rect")]
-    [SerializeField] ScrollRect m_Scroll;
+    [Tooltip("the list of pages (set at runtime)")]
+    [SerializeField] MenuPage[] m_Pages;
 
     // -- subscribed --
     [Header("subscribed")]
@@ -37,24 +32,26 @@ public class Menu: MonoBehaviour {
 
     // -- props --
     /// the current page index
-    int m_Page;
+    int m_CurrPage = 0;
+
+    /// the previous page index
+    int m_PrevPage = 0;
 
     /// the time the page transition began
     float m_TransitionStartTime = k_TransitionNone;
-
-    /// the page transition's start offset
-    float m_TransitionOffset;
-
-    /// the page transitions's offset delta
-    float m_TransitionDelta;
 
     /// the subscriptions
     Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
     void Awake() {
-        // init state
-        m_Offset = 0.0f;
+        // find pages
+        m_Pages = GetComponentsInChildren<MenuPage>();
+
+        // hide all but current page
+        for (var i = 0; i < m_Pages.Length; i++) {
+            m_Pages[i].Show(i == m_CurrPage ? 1.0f : 0.0f);
+        }
     }
 
     void Start() {
@@ -76,13 +73,10 @@ public class Menu: MonoBehaviour {
                 m_TransitionStartTime = k_TransitionNone;
             }
 
-            // apply the curved transition
-            m_Offset = m_TransitionOffset + m_TransitionDelta * m_TransitionCurve.Evaluate(k);
+            // update pages
+            m_Pages[m_PrevPage].Show(m_TransitionCurve.Evaluate(1.0f - k));
+            m_Pages[m_CurrPage].Show(m_TransitionCurve.Evaluate(k));
         }
-
-        // update scroll position; unity's scroll offset domain is [1, 0]
-        var dest = 1.0f - m_Offset;
-        m_Scroll.verticalNormalizedPosition = dest;
     }
 
     void OnDestroy() {
@@ -90,36 +84,31 @@ public class Menu: MonoBehaviour {
         m_Subscriptions.Dispose();
     }
 
-    void OnValidate() {
-        // validate state
-        m_Offset = Mathf.Clamp01(m_Offset);
-    }
-
     // -- commands --
     /// transition to the page at the index
     void ChangeTo(int page) {
         // clamp page to range
-        var max = m_Scroll.content.childCount;
+        var max = m_Pages.Length;
         page = Mathf.Clamp(page, 0, max);
 
         // update the page
-        m_Page = page;
-
-        // unity's scroll rect goes from the top of the first object to the
-        // bottom of the last so for this number it seems like there's one fewer
-        // page
-        var dst = (float)page / (max - 1);
+        m_PrevPage = m_CurrPage;
+        m_CurrPage = page;
 
         // init the transition
-        m_TransitionOffset = m_Offset;
-        m_TransitionDelta = dst - m_Offset;
         m_TransitionStartTime = Time.time;
+    }
+
+
+    [ContextMenu("Reset")]
+    void Reset() {
+        Awake();
     }
 
     // -- events --
     /// when an offset page button is pressed
     void OnOffsetPagePressed(int offset) {
-        ChangeTo(m_Page + offset);
+        ChangeTo(m_CurrPage + offset);
     }
 
     /// when the debug page event fires
