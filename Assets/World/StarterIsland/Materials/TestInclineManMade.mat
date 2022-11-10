@@ -58,7 +58,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _Blend: 1
-    - _BumpScale: 1
+    - _Brightness: 0.22
+    - _BumpScale: 0
+    - _Bump_Map: 0
     - _Cutoff: 0.5
     - _Delta: 0.01
     - _DetailNormalMapScale: 1
@@ -67,17 +69,21 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
+    - _Hue: 0
+    - _MapScale: 0.96
     - _Metallic: 0
     - _Mode: 0
     - _NotSteep: 10
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RampAngle: 10
+    - _Saturation: -0.17
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Steep: 80
     - _UVSec: 0
+    - _Vibrance: 0
     - _WallAngle: 80
     - _ZWrite: 1
     m_Colors:
