@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+namespace Discone.Ui {
+
 /// a target that emits rect changes
 [ExecuteAlways]
 [RequireComponent(typeof(RectTransform))]
@@ -22,4 +24,6 @@ public class TargetRect: UIBehaviour {
         // clear events
         Changed = null;
     }
+}
+
 }

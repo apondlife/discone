@@ -1,8 +1,10 @@
 using UnityEngine;
 
+namespace Discone.Ui {
+
 /// a menu element on a page
-[ExecuteAlways]
 [RequireComponent(typeof(CanvasGroup))]
+[RequireComponent(typeof(RectTransform))]
 sealed class MenuElement: MonoBehaviour {
     // -- props --
     /// the canvas group
@@ -19,4 +21,6 @@ sealed class MenuElement: MonoBehaviour {
     public void Show(float pct) {
         m_Group.alpha = pct;
     }
+}
+
 }
