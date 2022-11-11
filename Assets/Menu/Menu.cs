@@ -39,7 +39,7 @@ public class Menu: MonoBehaviour {
     void Start() {
         // hide all but current page
         for (var i = 0; i < m_Pages.Length; i++) {
-            m_Pages[i].Show(i == m_CurrPage ? 1.0f : 0.0f);
+            m_Pages[i].Show(1.0f, enter: i == m_CurrPage);
         }
 
         // bind events
@@ -52,8 +52,9 @@ public class Menu: MonoBehaviour {
         var t = m_Transition;
         if (t.IsActive) {
             t.Tick();
-            m_Pages[m_PrevPage].Show(t.PctFrom(1.0f - t.Raw));
-            m_Pages[m_CurrPage].Show(t.Pct);
+
+            m_Pages[m_PrevPage].Show(t.Pct, enter: false);
+            m_Pages[m_CurrPage].Show(t.Pct, enter: true);
         }
     }
 
