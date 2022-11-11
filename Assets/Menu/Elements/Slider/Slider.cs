@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-namespace Discone {
+namespace Discone.Ui {
 
 class Slider: MonoBehaviour {
     // -- refs --

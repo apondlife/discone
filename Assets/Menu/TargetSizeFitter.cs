@@ -1,6 +1,7 @@
-using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.EventSystems;
+
+namespace Discone.Ui {
 
 /// resize the rect based as a percentage of the target size
 [ExecuteAlways]
@@ -95,4 +96,6 @@ public class TargetSizeFitter: UIBehaviour {
         m_TargetSize = size;
     }
     #endif
+}
+
 }
