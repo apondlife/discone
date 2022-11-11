@@ -16,6 +16,7 @@ sealed class MenuPage: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         // set props
+        m_Group = GetComponent<CanvasGroup>();
         m_Elements = GetComponentsInChildren<MenuElement>();
     }
 
@@ -27,13 +28,13 @@ sealed class MenuPage: MonoBehaviour {
 
     // -- commands --
     /// show or hide the page
-    public void Show(float pct) {
-        // don't block raycats when hidden
-        m_Group.blocksRaycasts = pct != 0.0f;
+    public void Show(float pct, bool enter) {
+        // block raycasts when visible
+        m_Group.blocksRaycasts = enter;
 
         // update every element
         foreach (var element in m_Elements) {
-            element.Show(pct);
+            element.Show(pct, enter);
         }
     }
 }
