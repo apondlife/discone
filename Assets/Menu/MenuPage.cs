@@ -13,11 +13,20 @@ sealed class MenuPage: MonoBehaviour {
     [Tooltip("the elements on this page (set at runtime)")]
     [SerializeField] MenuElement[] m_Elements;
 
+    [Tooltip("the page buttons on this page (set at runtime)")]
+    [SerializeField] PageButton[] m_Buttons;
+
+    // -- props --
+    /// the page index
+    int m_Index;
+
     // -- lifecycle --
     void Awake() {
         // set props
+        m_Index = transform.GetSiblingIndex();
         m_Group = GetComponent<CanvasGroup>();
         m_Elements = GetComponentsInChildren<MenuElement>();
+        m_Buttons = GetComponentsInChildren<PageButton>();
     }
 
     void Start() {
@@ -36,6 +45,22 @@ sealed class MenuPage: MonoBehaviour {
         foreach (var element in m_Elements) {
             element.Show(pct, enter);
         }
+    }
+
+    // -- events --
+    /// when a page is about to enter the screen
+    public void OnBeforeEnter() {
+        foreach (var button in m_Buttons) {
+            button.OnBeforeEnter();
+        }
+    }
+
+    /// when a page is about to exit the screen
+    public void OnBeforeExit() {
+    }
+
+    /// when a page is about to transition
+    public void OnBeforeTransition() {
     }
 }
 

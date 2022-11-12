@@ -39,7 +39,14 @@ public class Menu: MonoBehaviour {
     void Start() {
         // hide all but current page
         for (var i = 0; i < m_Pages.Length; i++) {
-            m_Pages[i].Show(1.0f, enter: i == m_CurrPage);
+            var page = m_Pages[i];
+
+            var enter = i == m_CurrPage;
+            if (enter) {
+                page.OnBeforeEnter();
+            }
+
+            page.Show(1.0f, enter: enter);
         }
 
         // bind events
@@ -53,8 +60,8 @@ public class Menu: MonoBehaviour {
         if (t.IsActive) {
             t.Tick();
 
-            m_Pages[m_PrevPage].Show(t.Pct, enter: false);
-            m_Pages[m_CurrPage].Show(t.Pct, enter: true);
+            PrevPage.Show(t.Pct, enter: false);
+            CurrPage.Show(t.Pct, enter: true);
         }
     }
 
@@ -69,12 +76,28 @@ public class Menu: MonoBehaviour {
         // clamp page to range
         page = Mathf.Clamp(page, 0, m_Pages.Length);
 
-        // update the page
+        // update the page index
         m_PrevPage = m_CurrPage;
         m_CurrPage = page;
 
+        // send events
+        CurrPage.OnBeforeEnter();
+        PrevPage.OnBeforeTransition();
+        CurrPage.OnBeforeTransition();
+
         // init the transition
         m_Transition.Start();
+    }
+
+    // -- queries --
+    /// the current page
+    MenuPage CurrPage {
+        get => m_Pages[m_CurrPage];
+    }
+
+    /// the previous page
+    MenuPage PrevPage {
+        get => m_Pages[m_PrevPage];
     }
 
     // -- events --

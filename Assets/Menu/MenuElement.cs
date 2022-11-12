@@ -25,18 +25,19 @@ sealed class MenuElement: MonoBehaviour {
     void Awake() {
         // set props
         m_Group = GetComponent<CanvasGroup>();
-        m_InitialPos = transform.position;
-
-        if (name == "Audio" || name == "Credits") {
-            Debug.Log($"name {name} pos {transform.position} local {transform.localPosition} anchored {(transform as RectTransform).anchoredPosition}");
-        }
     }
 
     void Start() {
+        InvalidatePosition();
         ChangeTranslation();
     }
 
     // -- commands --
+    /// reset the initial position
+    public void InvalidatePosition() {
+        m_InitialPos = transform.position;
+    }
+
     /// show or hide the element
     public void Show(float pct, bool enter) {
         // update alpha
