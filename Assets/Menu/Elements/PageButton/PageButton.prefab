@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1747580428923947231}
   - component: {fileID: 1747580428923947230}
   m_Layer: 5
-  m_Name: Button-title
+  m_Name: PageButton-label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -159,11 +159,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1747580430060523907}
+  - component: {fileID: 8136410602261874104}
   - component: {fileID: 1747580430060523910}
   - component: {fileID: 1747580430060523905}
   - component: {fileID: 1747580430060523904}
+  - component: {fileID: 1171463486219800042}
+  - component: {fileID: 5315519187538931441}
   m_Layer: 5
-  m_Name: Button_Down
+  m_Name: PageButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -190,6 +193,47 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 30}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &8136410602261874104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1747580430060523906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9599a8f25a69f418e9cb32e76149127b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Orientations: 2
+  m_CrossAxisRange:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Min: -200
+    m_Max: 200
+  m_Root: {fileID: 1747580430060523907}
 --- !u!222 &1747580430060523910
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -284,3 +328,36 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!225 &1171463486219800042
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1747580430060523906}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &5315519187538931441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1747580430060523906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b149d2cc691e746ef86b1bd00ce7d351, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_DistanceRange:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Min: 0
+    m_Max: 0
