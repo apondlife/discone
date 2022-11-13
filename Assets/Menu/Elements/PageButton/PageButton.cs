@@ -48,8 +48,6 @@ sealed class PageButton: MonoBehaviour {
             .Where((c) => (m_Orientations & c) == c)
             .Sample();
 
-        Debug.Log($"[debug] {name} pick orientation {orientation}");
-
         // pick an orientation
         var s = m_Root.sizeDelta;
         var x = m_CrossAxisRange.Evaluate(UnityEngine.Random.value);

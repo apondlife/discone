@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7418635386897488547}
   - component: {fileID: 4001206652715277206}
   m_Layer: 5
-  m_Name: MenuItem
+  m_Name: Row
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,10 +57,10 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 0
+  m_Spacing: 8
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -104,7 +104,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1630876078439950508, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1630876078439950508, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
       propertyPath: m_AnchorMin.x
@@ -112,7 +112,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1630876078439950508, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1630876078439950508, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
       propertyPath: m_SizeDelta.x
@@ -179,12 +179,28 @@ PrefabInstance:
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 6735100981336980642, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6735100981336980642, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6735100981336980642, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6735100981336980642, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
       propertyPath: m_fontSizeBase
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 6735100981336980642, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
       propertyPath: m_enableAutoSizing
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6735100981336980642, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9643c6ba89078b9428777a0c30cafdcc, type: 3}
