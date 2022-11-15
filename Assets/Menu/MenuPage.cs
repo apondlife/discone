@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Discone.Ui {
 
 /// a menu page
 [RequireComponent(typeof(CanvasGroup))]
-sealed class MenuPage: MonoBehaviour {
+sealed class MenuPage: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the canvas group")]
@@ -21,7 +22,9 @@ sealed class MenuPage: MonoBehaviour {
     int m_Index;
 
     // -- lifecycle --
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
+
         // set props
         m_Index = transform.GetSiblingIndex();
         m_Group = GetComponent<CanvasGroup>();
@@ -29,7 +32,9 @@ sealed class MenuPage: MonoBehaviour {
         m_Buttons = GetComponentsInChildren<PageButton>();
     }
 
-    void Start() {
+    protected override void Start() {
+        base.Start();
+
         // the page is always visible, even if its contents are not (undo any
         // editor state)
         m_Group.alpha = 1.0f;

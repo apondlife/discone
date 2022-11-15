@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using TMPro;
 
 namespace Discone.Ui {
 
-class Slider: MonoBehaviour {
+class Slider: UIBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the value label")]
@@ -12,7 +13,7 @@ class Slider: MonoBehaviour {
     // -- events --
     /// when the value changes
     public void OnValueChanged(float value) {
-        m_ValueLabel.text = ((int)value).ToString();
+        m_ValueLabel.text = ((int)value * 100f).ToString();
     }
 }
 
