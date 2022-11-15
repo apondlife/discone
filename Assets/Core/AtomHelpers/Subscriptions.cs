@@ -1,4 +1,5 @@
 using UnityAtoms;
+using UnityEngine.Events;
 using UnityAtoms.BaseAtoms;
 using System;
 
@@ -20,6 +21,13 @@ sealed class Subscriptions: IDisposable {
     public Subscriptions Add<T>(AtomEvent<T> e, Action<T> a) {
         e.Register(a);
         subscriptions += () => e.Unregister(a);
+        return this;
+    }
+
+    /// add a subscription for an event/action pair
+    public Subscriptions Add<T>(UnityEvent<T> e, UnityAction<T> a) {
+        e.AddListener(a);
+        subscriptions += () => e.RemoveListener(a);
         return this;
     }
 
