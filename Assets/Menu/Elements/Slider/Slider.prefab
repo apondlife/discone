@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.58775365, g: 0.9811321, b: 0.6181508, a: 1}
+  m_Color: {r: 1, g: 0.5424528, b: 0.92129624, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.990566, g: 0.4812656, b: 0.4812656, a: 1}
+  m_Color: {r: 0.8537736, g: 1, b: 0.85623765, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -321,7 +321,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aab929d2c3b83409b88b8f916a57583d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ValueLabel: {fileID: 3596656184199495034}
+  m_Range:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Min: 0
+    m_Max: 100
+  m_Control: {fileID: 7850771938643807037}
+  m_Label: {fileID: 3596656184199495034}
 --- !u!1 &3596656184199495039
 GameObject:
   m_ObjectHideFlags: 0
@@ -389,7 +417,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: '%f'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6bedfbd7e45414697b58c7c3d8d7b36b, type: 2}
   m_sharedMaterial: {fileID: -128255830900893661, guid: 6bedfbd7e45414697b58c7c3d8d7b36b, type: 2}
