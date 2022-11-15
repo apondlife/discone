@@ -9,8 +9,16 @@ namespace Discone.Ui {
 sealed class MenuElement: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
+    [Tooltip("the jitter distance range")]
+    [SerializeField] ThirdPerson.RangeCurve m_JitterDist;
+
+    [Tooltip("the jitter rotation range")]
+    [SerializeField] ThirdPerson.RangeCurve m_JitterRotation;
+
+    [UnityEngine.Serialization.FormerlySerializedAs("m_DistanceRange")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_TranslationAmount")]
     [Tooltip("the transition distance range")]
-    [SerializeField] ThirdPerson.RangeCurve m_DistanceRange;
+    [SerializeField] ThirdPerson.RangeCurve m_TransitionDist;
 
     // -- props --
     /// the canvas group
@@ -36,6 +44,19 @@ sealed class MenuElement: UIBehaviour {
 
     protected override void Start() {
         base.Start();
+
+        // jitter rotation
+        var rot = m_Content.localEulerAngles;
+        rot.z = m_JitterRotation.Evaluate(Random.value);
+        m_Content.localEulerAngles = rot;
+
+        // jitter position
+        var pos = m_Content.anchoredPosition;
+        pos += Random.insideUnitCircle * m_JitterDist.Evaluate(Random.value);
+        m_Content.anchoredPosition = pos;
+
+        // set initial pos
+        m_InitialPos = m_Content.anchoredPosition;
 
         // set intial state
         ChangeTranslation();
@@ -63,7 +84,7 @@ sealed class MenuElement: UIBehaviour {
     /// pick a new transition ray
     void ChangeTranslation() {
         var dir = Random.insideUnitCircle;
-        var len = m_DistanceRange.Evaluate(Random.value);
+        var len = m_TransitionDist.Evaluate(Random.value);
         m_Translation = dir * len;
     }
 

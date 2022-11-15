@@ -124,6 +124,11 @@ public class TargetSizeFitter: UIBehaviour {
             m_Target = FindContent();
         }
 
+        // if no target, do nothing
+        if (m_Target == null) {
+            return;
+        }
+
         // if size is the same, don't do anything
         var size = m_Target.rect.size;
         if (size == m_TargetSize) {
