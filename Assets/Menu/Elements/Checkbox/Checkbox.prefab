@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 798954215057004651}
   - component: {fileID: 2047210452491541535}
   m_Layer: 5
-  m_Name: Checkbox
+  m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -129,8 +129,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aa3334bb6ece4bda82cd7ed7fa0ec34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Value: {fileID: 0}
   m_OnText: checked
   m_OffText: not checked
+  m_Control: {fileID: 6503859923097913297}
   m_Label: {fileID: 4652182424975354772}
 --- !u!114 &6503859923097913297
 MonoBehaviour:
@@ -192,7 +194,7 @@ GameObject:
   - component: {fileID: 5056894819371636398}
   - component: {fileID: 3736613298496279438}
   m_Layer: 5
-  m_Name: Checkmark
+  m_Name: Check
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

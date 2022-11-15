@@ -8,7 +8,7 @@ namespace Discone.Ui {
 class Slider: UIBehaviour {
     // -- state --
     [Header("state")]
-    [Tooltip("the value atom")]
+    [Tooltip("the current value")]
     [SerializeField] FloatVariable m_Value;
 
     // -- cfg --
