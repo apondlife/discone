@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Discone.Ui {
 
 /// a page button that randomizes its orientation
-[RequireComponent(typeof(MenuElement))]
-sealed class PageButton: MonoBehaviour {
+sealed class PageButton: UIBehaviour {
     // -- types --
     /// an orientation for the button
     [Flags]
@@ -25,31 +25,18 @@ sealed class PageButton: MonoBehaviour {
     [Tooltip("the set of orientations this button picks from")]
     [SerializeField] ThirdPerson.RangeCurve m_CrossAxisRange;
 
-    // -- refs --
-    [Header("refs")]
-    [Tooltip("the button rect")]
-    [SerializeField] RectTransform m_Root;
-
-    // -- props --
-    /// this button's menu element
-    MenuElement m_Element;
-
-    // -- lifecycle --
-    void Awake() {
-        // set props
-        m_Element = GetComponent<MenuElement>();
-    }
-
     // -- commands --
     /// change the button's orientation
     void ChangeOrientation() {
+        var r = transform as RectTransform;
+
+        // pick an orientation
         var orientation = EnumExt
             .Enumerable<Orientation>()
             .Where((c) => (m_Orientations & c) == c)
             .Sample();
 
-        // pick an orientation
-        var s = m_Root.sizeDelta;
+        var s = r.sizeDelta;
         var x = m_CrossAxisRange.Evaluate(UnityEngine.Random.value);
         var o = orientation switch {
             Orientation.Up => new OrientationProps(
@@ -75,15 +62,11 @@ sealed class PageButton: MonoBehaviour {
         };
 
         // reposition element
-        var r = m_Root;
         r.pivot = o.Anchor;
         r.anchorMin = o.Anchor;
         r.anchorMax = o.Anchor;
         r.rotation = Quaternion.Euler(0f, 0f, o.Rot);
         r.anchoredPosition = o.Pos;
-
-        // invalidate initial position
-        m_Element.InvalidatePosition();
     }
 
     // -- events --

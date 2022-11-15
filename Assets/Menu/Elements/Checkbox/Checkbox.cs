@@ -1,11 +1,12 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Discone.Ui {
 
 [ExecuteAlways]
-public class Checkbox: MonoBehaviour {
+public class Checkbox: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the value text when checked")]
@@ -24,14 +25,19 @@ public class Checkbox: MonoBehaviour {
     Toggle m_Toggle;
 
     // -- lifecycle --
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
+
         // set props
         m_Toggle = GetComponent<Toggle>();
 
+        // set initial state
         RenderText();
     }
 
-    void Start() {
+    protected override void Start() {
+        base.Start();
+
         // bind events
         m_Toggle.onValueChanged.AddListener(OnValueChanged);
     }

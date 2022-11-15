@@ -1,10 +1,11 @@
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Discone.Ui {
 
 /// the in-game menu
-public class Menu: MonoBehaviour {
+public class Menu: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the transition timer")]
@@ -31,12 +32,16 @@ public class Menu: MonoBehaviour {
     Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
+
         // find pages
         m_Pages = GetComponentsInChildren<MenuPage>();
     }
 
-    void Start() {
+    protected override void Start() {
+        base.Start();
+
         // hide all but current page
         for (var i = 0; i < m_Pages.Length; i++) {
             var page = m_Pages[i];
@@ -59,13 +64,14 @@ public class Menu: MonoBehaviour {
         var t = m_Transition;
         if (t.IsActive) {
             t.Tick();
-
             PrevPage.Show(t.Pct, enter: false);
             CurrPage.Show(t.Pct, enter: true);
         }
     }
 
-    void OnDestroy() {
+    protected override void OnDestroy() {
+        base.OnDestroy();
+
         // release events
         m_Subscriptions.Dispose();
     }
