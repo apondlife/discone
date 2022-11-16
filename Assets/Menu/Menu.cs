@@ -52,6 +52,10 @@ public class Menu: UIBehaviour {
             }
 
             page.Show(1.0f, enter: enter);
+
+            if (!enter) {
+                page.OnAfterExit();
+            }
         }
 
         // bind events
