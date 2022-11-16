@@ -14,7 +14,7 @@ public class Menu: UIBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the list of pages (set at runtime)")]
-    [SerializeField] MenuPage[] m_Pages;
+    [SerializeField] Page[] m_Pages;
 
     // -- subscribed --
     [Header("subscribed")]
@@ -36,7 +36,7 @@ public class Menu: UIBehaviour {
         base.Awake();
 
         // find pages
-        m_Pages = GetComponentsInChildren<MenuPage>();
+        m_Pages = GetComponentsInChildren<Page>();
     }
 
     protected override void Start() {
@@ -97,12 +97,12 @@ public class Menu: UIBehaviour {
 
     // -- queries --
     /// the current page
-    MenuPage CurrPage {
+    Page CurrPage {
         get => m_Pages[m_CurrPage];
     }
 
     /// the previous page
-    MenuPage PrevPage {
+    Page PrevPage {
         get => m_Pages[m_PrevPage];
     }
 

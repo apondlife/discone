@@ -5,14 +5,14 @@ namespace Discone.Ui {
 
 /// a menu page
 [RequireComponent(typeof(CanvasGroup))]
-sealed class MenuPage: UIBehaviour {
+sealed class Page: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the canvas group")]
     [SerializeField] CanvasGroup m_Group;
 
     [Tooltip("the elements on this page (set at runtime)")]
-    [SerializeField] MenuElement[] m_Elements;
+    [SerializeField] Component[] m_Elements;
 
     [Tooltip("the page buttons on this page (set at runtime)")]
     [SerializeField] PageButton[] m_Buttons;
@@ -28,7 +28,7 @@ sealed class MenuPage: UIBehaviour {
         // set props
         m_Index = transform.GetSiblingIndex();
         m_Group = GetComponent<CanvasGroup>();
-        m_Elements = GetComponentsInChildren<MenuElement>();
+        m_Elements = GetComponentsInChildren<Component>();
         m_Buttons = GetComponentsInChildren<PageButton>();
     }
 
