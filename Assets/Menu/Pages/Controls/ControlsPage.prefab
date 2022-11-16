@@ -80,7 +80,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Group: {fileID: 306542527718454561}
-  m_Elements: []
+  m_Components: []
   m_Buttons: []
 --- !u!1001 &306542529473890677
 PrefabInstance:
@@ -102,8 +102,24 @@ PrefabInstance:
       value: settings
       objectReference: {fileID: 0}
     - target: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Navigation.m_SelectOnDown
+      value: 
+      objectReference: {fileID: 1072081809124341007}
+    - target: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Navigation.m_SelectOnRight
+      value: 
+      objectReference: {fileID: 1072081809124341007}
+    - target: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
       value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747580429772317371, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Name
+      value: Prev--controls
       objectReference: {fileID: 0}
     - target: {fileID: 4837381827897175856, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
       propertyPath: m_Orientations
@@ -199,6 +215,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+--- !u!114 &2018080931546901452 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+  m_PrefabInstance: {fileID: 306542529473890677}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6634870581486796809 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6364366284597135740, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
@@ -218,6 +245,22 @@ PrefabInstance:
     - target: {fileID: 1747580428635716576, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Navigation.m_SelectOnUp
+      value: 
+      objectReference: {fileID: 2018080931546901452}
+    - target: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Navigation.m_SelectOnLeft
+      value: 
+      objectReference: {fileID: 2018080931546901452}
+    - target: {fileID: 1747580429772317371, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Name
+      value: Next--controls
       objectReference: {fileID: 0}
     - target: {fileID: 6364366284597135740, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
       propertyPath: m_Pivot.y
@@ -281,6 +324,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+--- !u!114 &1072081809124341007 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+  m_PrefabInstance: {fileID: 1630421391021135798}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5688801657817784010 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6364366284597135740, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}

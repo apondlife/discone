@@ -53,8 +53,18 @@ sealed class Page: UIBehaviour {
     }
 
     // -- events --
+    /// when a page is about to transition
+    public void OnBeforeTransition() {
+    }
+
+    /// when a page is about to exit the screen
+    public void OnBeforeExit() {
+    }
+
     /// when a page is about to enter the screen
     public void OnBeforeEnter() {
+        gameObject.SetActive(true);
+
         foreach (var component in m_Components) {
             component.OnBeforeEnter();
         }
@@ -64,12 +74,17 @@ sealed class Page: UIBehaviour {
         }
     }
 
-    /// when a page is about to exit the screen
-    public void OnBeforeExit() {
+    /// when a page finishes its transition
+    public void OnAfterTransition() {
     }
 
-    /// when a page is about to transition
-    public void OnBeforeTransition() {
+    /// when a page finishes exiting the screen
+    public void OnAfterExit() {
+        gameObject.SetActive(false);
+    }
+
+    /// when a page finishes entering the screen
+    public void OnAfterEnter() {
     }
 }
 

@@ -64,8 +64,18 @@ public class Menu: UIBehaviour {
         var t = m_Transition;
         if (t.IsActive) {
             t.Tick();
+
             PrevPage.Show(t.Pct, enter: false);
             CurrPage.Show(t.Pct, enter: true);
+
+            // send events, if finished
+            if (!t.IsActive) {
+                PrevPage.OnAfterExit();
+                CurrPage.OnAfterEnter();
+
+                PrevPage.OnAfterTransition();
+                CurrPage.OnAfterTransition();
+            }
         }
     }
 
@@ -87,7 +97,9 @@ public class Menu: UIBehaviour {
         m_CurrPage = page;
 
         // send events
+        PrevPage.OnBeforeExit();
         CurrPage.OnBeforeEnter();
+
         PrevPage.OnBeforeTransition();
         CurrPage.OnBeforeTransition();
 
