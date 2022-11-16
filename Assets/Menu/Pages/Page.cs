@@ -12,7 +12,7 @@ sealed class Page: UIBehaviour {
     [SerializeField] CanvasGroup m_Group;
 
     [Tooltip("the elements on this page (set at runtime)")]
-    [SerializeField] Component[] m_Elements;
+    [SerializeField] Component[] m_Components;
 
     [Tooltip("the page buttons on this page (set at runtime)")]
     [SerializeField] PageButton[] m_Buttons;
@@ -28,7 +28,7 @@ sealed class Page: UIBehaviour {
         // set props
         m_Index = transform.GetSiblingIndex();
         m_Group = GetComponent<CanvasGroup>();
-        m_Elements = GetComponentsInChildren<Component>();
+        m_Components = GetComponentsInChildren<Component>();
         m_Buttons = GetComponentsInChildren<PageButton>();
     }
 
@@ -47,14 +47,18 @@ sealed class Page: UIBehaviour {
         m_Group.blocksRaycasts = enter;
 
         // update every element
-        foreach (var element in m_Elements) {
-            element.Show(pct, enter);
+        foreach (var component in m_Components) {
+            component.Show(pct, enter);
         }
     }
 
     // -- events --
     /// when a page is about to enter the screen
     public void OnBeforeEnter() {
+        foreach (var component in m_Components) {
+            component.OnBeforeEnter();
+        }
+
         foreach (var button in m_Buttons) {
             button.OnBeforeEnter();
         }
