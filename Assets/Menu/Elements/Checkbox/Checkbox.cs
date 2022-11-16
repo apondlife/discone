@@ -39,6 +39,8 @@ sealed class Checkbox: UIBehaviour {
 
         // set initial state
         m_Control.isOn = m_Value.Value;
+
+        // render view
         Render();
 
         // bind events
