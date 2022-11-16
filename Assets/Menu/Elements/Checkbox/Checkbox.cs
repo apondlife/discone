@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace Discone.Ui {
 
 [ExecuteAlways]
-public class Checkbox: UIBehaviour {
+sealed class Checkbox: UIBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("the current value")]

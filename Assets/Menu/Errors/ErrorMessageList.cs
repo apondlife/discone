@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityAtoms.BaseAtoms;
 
 /// the ui for a list of error messages
-public class ErrorMessageList: MonoBehaviour {
+public sealed class ErrorMessageList: MonoBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("the time to fade out a message")]
@@ -28,17 +28,17 @@ public class ErrorMessageList: MonoBehaviour {
     Subscriptions m_Subscriptions = new Subscriptions();
 
     // -- lifecycle --
-    private void Start() {
+    void Start() {
         m_Subscriptions
             .Add(m_ErrorEvent, OnError);
     }
 
-    private void OnDestroy() {
+    void OnDestroy() {
         m_Subscriptions.Dispose();
     }
 
     // -- events --
-    private void OnError(string message) {
+    void OnError(string message) {
         // append the error
         var error = Instantiate(m_ErrorView, transform);
         error.text = string.Format(m_MessageTemplate, message);

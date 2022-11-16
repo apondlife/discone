@@ -7,7 +7,7 @@ namespace Discone.Ui {
 /// a target that emits rect changes
 [ExecuteAlways]
 [RequireComponent(typeof(RectTransform))]
-public class TargetRect: UIBehaviour {
+sealed class TargetRect: UIBehaviour {
     // -- props --
     /// when the rect dimensions change
     public Action Changed;
