@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace Discone.Ui {
 
@@ -16,6 +18,9 @@ sealed class Page: UIBehaviour {
 
     [Tooltip("the page buttons on this page (set at runtime)")]
     [SerializeField] PageButton[] m_Buttons;
+
+    [Tooltip("the first selection on any button press")]
+    [SerializeField] Selectable m_InitialSelection;
 
     // -- props --
     /// the page index
@@ -38,6 +43,17 @@ sealed class Page: UIBehaviour {
         // the page is always visible, even if its contents are not (undo any
         // editor state)
         m_Group.alpha = 1.0f;
+    }
+
+    void Update() {
+        // pick the page's initial item on any directional input
+        // TODO: wire this up properly
+        if (EventSystem.current.currentSelectedGameObject == null) {
+            var val = Gamepad.current.leftStick.ReadValue();
+            if (val != Vector2.zero) {
+                m_InitialSelection.Select();
+            }
+        }
     }
 
     // -- commands --
