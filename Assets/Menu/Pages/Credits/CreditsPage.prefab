@@ -921,7 +921,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Group: {fileID: 5587811047733397416}
-  m_Elements: []
+  m_Components: []
   m_Buttons: []
 --- !u!1 &5587811047775125222
 GameObject:
@@ -1579,6 +1579,10 @@ PrefabInstance:
     - target: {fileID: 1747580429772317369, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
       value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747580429772317371, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Name
+      value: Prev--credits
       objectReference: {fileID: 0}
     - target: {fileID: 4837381827897175856, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
       propertyPath: m_Orientations

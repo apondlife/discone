@@ -395,7 +395,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 562.85
+  m_fontSize: 405.95
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -526,7 +526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Group: {fileID: 4834968989581809836}
-  m_Elements: []
+  m_Components: []
   m_Buttons: []
 --- !u!1001 &4834968988330707816
 PrefabInstance:
@@ -577,7 +577,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6274066126110429547, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 623.32
+      value: 449.56
       objectReference: {fileID: 0}
     - target: {fileID: 6274066126110429547, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
       propertyPath: m_LocalPosition.x
@@ -656,6 +656,10 @@ PrefabInstance:
     - target: {fileID: 1747580428635716582, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
       propertyPath: m_text
       value: settings
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747580429772317371, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
+      propertyPath: m_Name
+      value: Next--title
       objectReference: {fileID: 0}
     - target: {fileID: 4837381827897175856, guid: fcec58ea654f347e6b4bd5e282152d61, type: 3}
       propertyPath: m_Orientations
