@@ -1,5 +1,6 @@
 using UnityAtoms;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityAtoms.BaseAtoms;
 using System;
 
@@ -21,6 +22,13 @@ sealed class Subscriptions: IDisposable {
     public Subscriptions Add<T>(AtomEvent<T> e, Action<T> a) {
         e.Register(a);
         subscriptions += () => e.Unregister(a);
+        return this;
+    }
+
+    /// add a subscription for an input action/action pair
+    public Subscriptions Add(InputAction e, Action<InputAction.CallbackContext> a) {
+        e.performed += a;
+        subscriptions += () => e.performed -= a;
         return this;
     }
 

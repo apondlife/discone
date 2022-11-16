@@ -33,8 +33,8 @@ sealed class Page: UIBehaviour {
         // set props
         m_Index = transform.GetSiblingIndex();
         m_Group = GetComponent<CanvasGroup>();
-        m_Components = GetComponentsInChildren<Component>();
-        m_Buttons = GetComponentsInChildren<PageButton>();
+        m_Components = GetComponentsInChildren<Component>(includeInactive: true);
+        m_Buttons = GetComponentsInChildren<PageButton>(includeInactive: true);
     }
 
     protected override void Start() {

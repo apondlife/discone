@@ -6,7 +6,7 @@ namespace Discone.Ui {
 /// resize the rect based as a percentage of the target size
 [ExecuteAlways]
 [RequireComponent(typeof(RectTransform))]
-public class TargetSizeFitter: UIBehaviour {
+sealed class TargetSizeFitter: UIBehaviour {
     // -- types --
     /// the target picking mode
     enum TargetMode {

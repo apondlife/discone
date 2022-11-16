@@ -5,7 +5,7 @@ using TMPro;
 
 namespace Discone.Ui {
 
-class Slider: UIBehaviour {
+sealed class Slider: UIBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("the current value")]
