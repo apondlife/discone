@@ -6,7 +6,7 @@ namespace Discone.Ui {
 /// a menu element on a page
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(RectTransform))]
-sealed class MenuElement: UIBehaviour {
+sealed class Component: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the jitter distance range")]
@@ -15,8 +15,6 @@ sealed class MenuElement: UIBehaviour {
     [Tooltip("the jitter rotation range")]
     [SerializeField] ThirdPerson.RangeCurve m_JitterRotation;
 
-    [UnityEngine.Serialization.FormerlySerializedAs("m_DistanceRange")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_TranslationAmount")]
     [Tooltip("the transition distance range")]
     [SerializeField] ThirdPerson.RangeCurve m_TransitionDist;
 
