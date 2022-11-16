@@ -45,17 +45,10 @@ public class Menu: UIBehaviour {
         // hide all but current page
         for (var i = 0; i < m_Pages.Length; i++) {
             var page = m_Pages[i];
-
             var enter = i == m_CurrPage;
-            if (enter) {
-                page.OnBeforeEnter();
-            }
-
-            page.Show(1.0f, enter: enter);
-
-            if (!enter) {
-                page.OnAfterExit();
-            }
+            page.OnBeforeTransition(enter);
+            page.Show(1.0f, enter);
+            page.OnAfterTransition(enter);
         }
 
         // bind events
@@ -74,11 +67,8 @@ public class Menu: UIBehaviour {
 
             // send events, if finished
             if (!t.IsActive) {
-                PrevPage.OnAfterExit();
-                CurrPage.OnAfterEnter();
-
-                PrevPage.OnAfterTransition();
-                CurrPage.OnAfterTransition();
+                PrevPage.OnAfterTransition(enter: false);
+                CurrPage.OnAfterTransition(enter: true);
             }
         }
     }
@@ -101,11 +91,8 @@ public class Menu: UIBehaviour {
         m_CurrPage = page;
 
         // send events
-        PrevPage.OnBeforeExit();
-        CurrPage.OnBeforeEnter();
-
-        PrevPage.OnBeforeTransition();
-        CurrPage.OnBeforeTransition();
+        PrevPage.OnBeforeTransition(enter: false);
+        CurrPage.OnBeforeTransition(enter: true);
 
         // init the transition
         m_Transition.Start();
