@@ -25,7 +25,7 @@ sealed class Component: UIBehaviour {
     /// the content element
     RectTransform m_Content;
 
-    /// the element's initial position
+    /// the component's initial position
     Vector3 m_InitialPos;
 
     /// the current transition
@@ -43,25 +43,13 @@ sealed class Component: UIBehaviour {
     protected override void Start() {
         base.Start();
 
-        // jitter rotation
-        var rot = m_Content.localEulerAngles;
-        rot.z = m_JitterRotation.Evaluate(Random.value);
-        m_Content.localEulerAngles = rot;
-
-        // jitter position
-        var pos = m_Content.anchoredPosition;
-        pos += Random.insideUnitCircle * m_JitterDist.Evaluate(Random.value);
-        m_Content.anchoredPosition = pos;
-
-        // set initial pos
-        m_InitialPos = m_Content.anchoredPosition;
-
         // set intial state
+        ChangeJitter();
         ChangeTranslation();
     }
 
     // -- commands --
-    /// show or hide the element
+    /// show or hide the component
     public void Show(float pct, bool enter) {
         // update alpha
         var alpha = enter ? pct : 1.0f - pct;
@@ -77,6 +65,20 @@ sealed class Component: UIBehaviour {
         if (pct == 0.0f || pct == 1.0f) {
             ChangeTranslation();
         }
+    }
+
+    /// change the component jitter
+    void ChangeJitter() {
+        // jitter rotation
+        var rot = m_JitterRotation.Evaluate(Random.value);
+        m_Content.localEulerAngles = new Vector3(0f, 0f, rot);
+
+        // jitter position
+        var pos = Random.insideUnitCircle * m_JitterDist.Evaluate(Random.value);
+        m_Content.anchoredPosition = pos;
+
+        // set initial pos
+        m_InitialPos = m_Content.anchoredPosition;
     }
 
     /// pick a new transition ray
@@ -102,6 +104,12 @@ sealed class Component: UIBehaviour {
         }
 
         return content;
+    }
+
+    // -- events --
+    /// when an element is about to enter the screen
+    public void OnBeforeEnter() {
+        ChangeJitter();
     }
 }
 
