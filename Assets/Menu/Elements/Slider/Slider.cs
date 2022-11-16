@@ -67,13 +67,13 @@ sealed class Slider: UIBehaviour {
 
     // -- events --
     /// when the value changes
-    void OnControlChanged(float value) {
-        m_Value.Value = value;
+    void OnValueChanged(float _) {
+        Render();
     }
 
     /// when the value changes
-    void OnValueChanged(float value) {
-        Render();
+    void OnControlChanged(float value) {
+        m_Value.Value = value;
     }
 }
 
