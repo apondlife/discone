@@ -30,7 +30,7 @@ public class SkySun: MonoBehaviour {
     Renderer[] m_Renderers;
 
     /// a set of event subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     private void Awake() {

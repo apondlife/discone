@@ -50,7 +50,7 @@ public class Online: NetworkManager {
 
     // -- props --
     /// the set of event subscriptions
-    Subscriptions subscriptions = new Subscriptions();
+    DisposeBag subscriptions = new DisposeBag();
 
     /// the current state
     State m_State = State.Host;

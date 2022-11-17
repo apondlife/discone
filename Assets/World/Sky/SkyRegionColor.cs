@@ -27,7 +27,7 @@ public class SkyRegionColor : MonoBehaviour {
     SkyColor m_DstColor;
 
     /// a list of event subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Awake() {

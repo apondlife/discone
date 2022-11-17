@@ -51,7 +51,7 @@ public class RegionSign: MonoBehaviour {
     bool m_IsVisible;
 
     /// a bag of subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Awake() {

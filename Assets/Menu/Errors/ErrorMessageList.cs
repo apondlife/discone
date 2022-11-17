@@ -25,7 +25,7 @@ public sealed class ErrorMessageList: MonoBehaviour {
     [SerializeField] TMPro.TMP_Text m_ErrorView;
 
     // -- props --
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Start() {

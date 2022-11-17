@@ -27,7 +27,7 @@ public sealed class Flowers: NetworkBehaviour {
     Dictionary<Vector3, CharacterFlower> m_All = new Dictionary<Vector3, CharacterFlower>();
 
     /// a bag of subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Start() {

@@ -25,7 +25,7 @@ public sealed class Characters: MonoBehaviour {
     HashSet<int> m_Driven = new HashSet<int>();
 
     /// a bag of subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Start() {

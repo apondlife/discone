@@ -30,7 +30,7 @@ sealed class TargetSizeFitter: UIBehaviour {
     TargetRect m_TargetRect;
 
     /// a dispose bag
-    Subscriptions m_Subscriptions;
+    DisposeBag m_Subscriptions;
 
     // -- lifecycle --
     override protected void Start() {

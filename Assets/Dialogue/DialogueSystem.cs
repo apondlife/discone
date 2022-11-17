@@ -43,7 +43,7 @@ public class DialogueSystem: MonoBehaviour {
 
     // -- props --
     /// a set of event subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Awake() {
