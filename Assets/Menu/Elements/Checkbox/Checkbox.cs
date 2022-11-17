@@ -31,7 +31,7 @@ sealed class Checkbox: UIBehaviour {
 
     // -- props --
     /// a dispose bag
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     protected override void Start() {

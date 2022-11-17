@@ -53,7 +53,7 @@ public sealed class Field: MonoBehaviour {
     Queue<FieldChunk> m_ChunkPool = new Queue<FieldChunk>();
 
     /// the set of event subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Init() {

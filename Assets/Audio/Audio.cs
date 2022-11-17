@@ -54,7 +54,7 @@ public class Audio: MonoBehaviour {
     FMOD.Studio.Bus m_SfxBus;
 
     /// the subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     #if !UNITY_SERVER

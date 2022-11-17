@@ -39,7 +39,7 @@ class SkyTarget: MonoBehaviour {
     SkyBody m_Body;
 
     /// a set of event subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifeycle --
     void Awake() {

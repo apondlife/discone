@@ -47,7 +47,7 @@ sealed class Menu: UIBehaviour {
     MenuInput m_Input;
 
     /// the subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     protected override void Awake() {

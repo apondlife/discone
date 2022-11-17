@@ -32,7 +32,7 @@ public sealed class Players: MonoBehaviour {
     OnlinePlayer[] m_Current = new OnlinePlayer[0];
 
     /// the subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Start() {

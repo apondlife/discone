@@ -68,7 +68,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     // -- props --
     /// a set of event subscriptions
-    Subscriptions m_Subscriptions = new Subscriptions();
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     /// the world coordinate
     WorldCoord m_Coord;
