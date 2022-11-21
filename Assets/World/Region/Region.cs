@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 
+namespace Discone {
+
 [Serializable]
 public record Region {
     // -- config --
@@ -12,15 +14,15 @@ public record Region {
     public string MusicString;
 
     [Tooltip("the sky color for this region")]
-    public Discone.RegionSkyColor SkyColor;
+    public RegionSkyColor SkyColor;
 
     [Tooltip("the fog for this region")]
-    public Discone.RegionFog Fog;
+    public RegionFog Fog;
 
     // -- lifetime --
     public Region() {
-        SkyColor = new Discone.RegionSkyColor(Color.black, 0.0f, Color.black, 0.0f);
-        Fog = new Discone.RegionFog();
+        SkyColor = new RegionSkyColor(Color.black, 0.0f, Color.black, 0.0f);
+        Fog = new RegionFog();
     }
 
     // -- commands --
@@ -31,14 +33,14 @@ public record Region {
         Region dst,
         float t
     ) {
-        Discone.RegionSkyColor.Lerp(
+        RegionSkyColor.Lerp(
             ref cur.SkyColor,
             src.SkyColor,
             dst.SkyColor,
             t
         );
 
-        Discone.RegionFog.Lerp(
+        RegionFog.Lerp(
             ref cur.Fog,
             src.Fog,
             dst.Fog,
@@ -54,4 +56,6 @@ public record Region {
             Fog = Fog.Copy()
         };
     }
+}
+
 }
