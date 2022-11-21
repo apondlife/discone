@@ -17,9 +17,12 @@ MonoBehaviour:
   _value:
     DisplayName: cloud town
     MusicString: swamp
-    FogColor: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
     SkyColor:
       Foreground: {r: 0.6786668, g: 0.9528302, b: 0.9215064, a: 1}
       ForegroundExposure: 1.98
       Background: {r: 0.46070665, g: 0.8207547, b: 0.81464255, a: 1}
       BackgroundExposure: 1.98
+    Fog:
+      Color: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
+      EndDistance: 2000
+      StartDistance: 500

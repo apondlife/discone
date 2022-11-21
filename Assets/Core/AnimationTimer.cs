@@ -18,15 +18,26 @@ record AnimationTimer {
 
     // -- props --
     /// when the timer started
-    float m_StartTime = k_Inactive;
+    float m_StartTime;
 
     /// the uncurved percent through the timer
     float m_RawPct;
 
+    // -- lifetime --
+    public AnimationTimer(): this(0.0f) {}
+    public AnimationTimer(
+        float duration,
+        AnimationCurve curve = null
+    ) {
+        m_StartTime = k_Inactive;
+        m_Duration = duration;
+        m_Curve = curve;
+    }
+
     // -- commands --
-    /// start the timer
-    public void Start() {
-        m_StartTime = Time.time;
+    /// start the timer (optionally, at a particular raw percent)
+    public void Start(float pct = 0.0f) {
+        m_StartTime = Time.time + pct * m_Duration;
     }
 
     /// advance the timer based on current time
@@ -62,6 +73,10 @@ record AnimationTimer {
 
     /// curve an arbitrary progress pct
     public float PctFrom(float value) {
+        if (m_Curve == null || m_Curve.length == 0) {
+             return value;
+        }
+
         return m_Curve.Evaluate(value);
     }
 
