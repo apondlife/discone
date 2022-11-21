@@ -1,5 +1,6 @@
 using System;
 using UnityEngine.Events;
+using Discone;
 
 namespace UnityAtoms.Discone
 {

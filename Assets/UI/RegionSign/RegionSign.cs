@@ -45,7 +45,7 @@ public class RegionSign: MonoBehaviour {
 
     // -- props --
     /// the local player's current region
-    Region m_CurrentRegion;
+    Discone.Region m_CurrentRegion;
 
     /// if the region sign is visible
     bool m_IsVisible;
@@ -117,7 +117,7 @@ public class RegionSign: MonoBehaviour {
         m_IsVisible = false;
     }
 
-    public void OnRegionEntered(Region region) {
+    public void OnRegionEntered(Discone.Region region) {
         m_CurrentRegion = region;
         m_CanvasGroup.alpha = 1;
         m_Text.SetText(region.DisplayName);
