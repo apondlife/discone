@@ -219,14 +219,13 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [SerializeField] private LayerMask m_WallLayer;
     public override LayerMask WallLayer => m_WallLayer;
 
-    [Tooltip("the gravity while holding jump and walling")]
-    [SerializeField] private float m_WallGravity;
-    public override float WallGravity => m_WallGravity;
+    [Tooltip("the gravity while on the wall & holding jump")]
+    [SerializeField] private AdsrCurve m_WallGravity;
+    public override AdsrCurve WallGravity => m_WallGravity;
 
-    /// the vertical acceleration while holding jump and Walling
-    public override float WallAcceleration {
-        get => m_WallGravity - m_Gravity + m_FallGravity;
-    }
+    [Tooltip("the gravity while on the wall & not holding jump")]
+    [SerializeField] private AdsrCurve m_WallHoldGravity;
+    public override AdsrCurve WallHoldGravity => m_WallHoldGravity;
 
     [Tooltip("the force the wall pull the character to make it stick")]
     [SerializeField] public float m_WallMagnet;

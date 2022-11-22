@@ -2,6 +2,7 @@ using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using ThirdPerson;
 
 namespace Discone.Ui {
 
@@ -15,7 +16,10 @@ sealed class Menu: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the transition timer")]
-    [SerializeField] AnimationTimer m_Transition;
+    [SerializeField] EaseTimer m_Transition;
+
+    [Tooltip("if the menu should be open on awake")]
+    [SerializeField] bool m_StartOn;
 
     // -- refs --
     [Header("refs")]
@@ -75,6 +79,10 @@ sealed class Menu: UIBehaviour {
         m_Subscriptions
             .Add(m_Input.Toggle, OnTogglePressed)
             .Add(m_OffsetPagePressed, OnOffsetPagePressed);
+
+        if(m_StartOn) {
+            Toggle();
+        }
     }
 
     void Update() {

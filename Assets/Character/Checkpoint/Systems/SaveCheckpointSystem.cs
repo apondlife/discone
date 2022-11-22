@@ -44,9 +44,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     /// whether the system is saving
     bool m_IsSaving;
 
-    /// the phase's elapsed time
-    float m_PhaseElapsed;
-
     /// the checkpoint being saved
     Checkpoint m_PendingCheckpoint;
 
@@ -65,7 +62,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
 
     void NotSaving_Enter() {
         m_IsSaving = false;
-        m_PhaseElapsed = 0.0f;
     }
 
     void NotSaving_Update(float delta) {
@@ -86,13 +82,10 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     );
 
     void Delaying_Enter() {
-        m_PhaseElapsed = 0.0f;
     }
 
     void Delaying_Update(float delta) {
         // continue delaying
-        m_PhaseElapsed += delta;
-
         if (!CanSave) {
             ChangeTo(NotSaving);
             return;
@@ -118,7 +111,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
 
     void Smelling_Update(float delta) {
         // continue smelling
-        m_PhaseElapsed += delta;
         if (!CanSave) {
             ChangeTo(NotSaving);
             return;
@@ -138,13 +130,11 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     );
 
     void Planting_Enter() {
-        m_PhaseElapsed = 0.0f;
         m_Checkpoint.GrabCheckpoint();
     }
 
     void Planting_Update(float delta) {
         // continue planting
-        m_PhaseElapsed += delta;
 
         if (!CanSave) {
             ChangeTo(NotSaving);
@@ -165,13 +155,11 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     );
 
     void Being_Enter() {
-        m_PhaseElapsed = 0.0f;
         m_Checkpoint.CreateCheckpoint(m_PendingCheckpoint);
     }
 
     void Being_Update(float delta) {
         // continue being
-        m_PhaseElapsed += delta;
 
         if (!CanSave) {
             ChangeTo(NotSaving);

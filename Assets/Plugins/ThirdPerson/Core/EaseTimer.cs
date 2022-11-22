@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 
-namespace Discone {
+namespace ThirdPerson {
 
 [Serializable]
-record AnimationTimer {
+public record EaseTimer {
     // -- constants --
     // the sentinel time for an inacitve timer
     const float k_Inactive = -1.0f;
@@ -24,8 +24,8 @@ record AnimationTimer {
     float m_RawPct;
 
     // -- lifetime --
-    public AnimationTimer(): this(0.0f) {}
-    public AnimationTimer(
+    public EaseTimer(): this(0.0f) {}
+    public EaseTimer(
         float duration,
         AnimationCurve curve = null
     ) {

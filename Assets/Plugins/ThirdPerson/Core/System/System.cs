@@ -15,6 +15,13 @@ public abstract class System {
     [Tooltip("the current phase")]
     [SerializeField] protected Phase m_Phase;
 
+    // TODO: Readonly
+    [Tooltip("the current phase start time")]
+    [SerializeField] protected float m_PhaseStart;
+
+    [Tooltip("the time in the current phase")]
+    [SerializeField] protected float m_PhaseElapsed;
+
     // -- s/debug
     #if UNITY_EDITOR
     [Tooltip("if this system is logging")]
@@ -42,6 +49,7 @@ public abstract class System {
         // set the initial phase
         // TODO: should this call m_Phase.Enter()?
         m_Phase = InitInitialPhase();
+        m_PhaseStart = Time.time;
     }
 
     /// construct the initial phase
@@ -60,6 +68,7 @@ public abstract class System {
         }
         #endif
 
+        m_PhaseElapsed += delta;
         m_Phase.Update(delta);
     }
 
@@ -81,6 +90,7 @@ public abstract class System {
         // otherwise, run phase change lifecycle
         m_Phase.Exit();
         m_Phase = next;
+        m_PhaseStart = Time.time;
         m_Phase.Enter();
 
         // debug

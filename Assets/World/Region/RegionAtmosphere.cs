@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityAtoms.Discone;
+using ThirdPerson;
 
 namespace Discone {
 
@@ -8,7 +9,7 @@ public class RegionAtmosphere: MonoBehaviour {
     // -- tunables --
     [Header("tunables")]
     [Tooltip("the transition timer between region colors")]
-    [SerializeField] AnimationTimer m_Timer;
+    [SerializeField] EaseTimer m_Timer;
 
     // -- events --
     [Header("events")]
