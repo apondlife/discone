@@ -1,8 +1,15 @@
 what is projected
 ---
 
+# wall
+> dont wall on small speends (janky falling animation when walking near walls)
+> no regrab wall gravity
+> boost speed when hitting wall
+> better magnet
+> tiny jump / ollie?
+> IK animation
+
 # crouch
-> make slide affect drag
 > min speed is so big
 > special animation (or lack of) on crouch/jumpsquat land (bhop?)
 > input frame has default values, is that bad?

@@ -19,12 +19,12 @@ public sealed class AnyDisposable: IDisposable {
         m_Dispose();
     }
 
-
     // -- operators --
     public static AnyDisposable operator +(AnyDisposable a, AnyDisposable b) {
       a.m_Dispose += b.m_Dispose;
       return a;
     }
+
     public static AnyDisposable operator -(AnyDisposable a, AnyDisposable b) {
       a.m_Dispose -= b.m_Dispose;
       return a;
