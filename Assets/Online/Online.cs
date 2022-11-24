@@ -24,6 +24,9 @@ public class Online: NetworkManager {
 
     // -- fields --
     [Header("config")]
+    [Tooltip("if the client should try connecting to the server on start")]
+    [SerializeField] bool m_ConnectToServerOnStart;
+
     [Tooltip("if the client should restart as host disconnect")]
     [SerializeField] bool m_RestartHostOnDisconnect;
 
@@ -44,6 +47,8 @@ public class Online: NetworkManager {
     [Header("refs")]
     [Tooltip("if this is a standalone server (no host client)")]
     [SerializeField] BoolReference m_IsStandalone;
+
+
 
     [Tooltip("the persistence store")]
     [SerializeField] Store m_Store;
@@ -70,6 +75,8 @@ public class Online: NetworkManager {
 
         if (IsStandalone) {
             StartAsServer();
+        } else if(m_ConnectToServerOnStart) {
+            OnTryStartClient();
         } else {
             StartAsHost();
         }
