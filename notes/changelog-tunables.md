@@ -1,12 +1,16 @@
 gonna start this to keep track of why tunables were changed
 
+2022.11.24.1
+**Icecream**
+- Horizontal Kinectic Friction 5->10: fixes sliding in slight angled surfaces
+- Horizontal Acceleration 30->35: so that max speed and time to max speed maintain consistency
+
 2022.10.26.1
 
 **Camera Follow(third person)**
 
 - Base Distance 10->13: camera felt too close
 - Increased Local Speed 13->50: local speed is a weird parameter, and maybe should go, but this was so that the camera would turn around faster
-
 
 **Icecream**
 - Max Lateral Speed 0.15->0.03: becuse of drag decrease you could get too much speed
