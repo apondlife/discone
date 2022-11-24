@@ -49,6 +49,22 @@ public sealed class CharacterModel: MonoBehaviour {
     [Tooltip("TODO: leave me a comment")]
     [SerializeField] float MaxSquashScale = 2;
 
+    [Header("ik")]
+    [Tooltip("the right hand for ik")]
+    [SerializeField] CharacterLimb m_RightHand;
+
+    [Tooltip("the left hand for ik")]
+    [SerializeField] CharacterLimb m_LeftHand;
+
+    [Tooltip("the right foot for ik")]
+    [SerializeField] CharacterLimb m_RightFoot;
+
+    [Tooltip("the left foot for ik")]
+    [SerializeField] CharacterLimb m_LeftFoot;
+
+    [Tooltip("if the ik system is active")]
+    [SerializeField] bool m_IsIkActive = true;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the shared third person animator controller")]
@@ -85,6 +101,21 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the arms layer index
     int m_LayerArms;
 
+    /// if the right hand ik is active
+    bool m_IsRightHandIkActive;
+
+    /// if the left hand ik is active
+    bool m_IsLeftHandIkActive;
+
+    /// if the right foot ik is active
+    bool m_IsRightFootIkActive;
+
+    /// if the left foot ik is active
+    bool m_IsLeftFootIkActive;
+
+    /// if the look ik is active
+    bool m_IsLookIkActive;
+
     // -- lifecycle --
     void Start() {
         // set dependencies
@@ -98,13 +129,20 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // set props
         m_InitialScale = transform.localScale;
+
         if (m_Animator != null) {
             m_LayerLegs = m_Animator.GetLayerIndex(k_LayerLegs);
             m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
+            var proxy = m_Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
+            if (proxy == null) {
+                proxy = m_Animator.gameObject.AddComponent<CharacterAnimatorProxy>();
+            }
+            proxy.Bind(OnAnimatorIK);
+
         }
 
         // make sure complex model trees have the correct layer
-        gameObject.SetLayerRecursively(gameObject.layer);
+        SetDefaultLayersRecursively(gameObject, gameObject.layer);
     }
 
     void FixedUpdate() {
@@ -162,12 +200,39 @@ public sealed class CharacterModel: MonoBehaviour {
         );
     }
 
+    /// a callback for calculating IK
+    void OnAnimatorIK(int layer)
+    {
+        // set limbs ik
+        ApplyLimbIk(m_RightHand);
+        ApplyLimbIk(m_LeftHand);
+        ApplyLimbIk(m_RightFoot);
+        ApplyLimbIk(m_LeftFoot);
+    }
+
+    // -- commands --
+
+    /// applies ik for limbs
+    void ApplyLimbIk(CharacterLimb limb) {
+        if(!m_IsIkActive || !limb.IsActive) {
+            m_Animator.SetIKPositionWeight(limb.Goal, 0f);
+            m_Animator.SetIKRotationWeight(limb.Goal, 0f);
+            return;
+        }
+
+        m_Animator.SetIKPositionWeight(limb.Goal, 1f);
+        m_Animator.SetIKRotationWeight(limb.Goal, 1f);
+        m_Animator.SetIKPosition(limb.Goal, limb.Position);
+        m_Animator.SetIKRotation(limb.Goal, limb.Rotation);
+    }
+
     /// tilt the model as a fn of character acceleration
     void Tilt() {
         // is this a fundamental misunderstanding of quaternions? maybe
         transform.rotation = m_State.Curr.LookRotation;
     }
 
+    /// change character scale according to acceleration
     void StretchAndSquash() {
         if(!AnimateScale) {
             return;
@@ -191,6 +256,19 @@ public sealed class CharacterModel: MonoBehaviour {
         newScale.y *= m_CurrentSquashStretch;
         transform.localScale = newScale;
     }
+
+    // -- helpers --
+    public static void SetDefaultLayersRecursively(GameObject parent, int layer) {
+        if (parent.layer == 0) {
+            parent.layer = layer;
+        }
+
+        foreach(Transform child in parent.transform) {
+            SetDefaultLayersRecursively(child.gameObject, layer);
+        }
+    }
+
+
 }
 
 }
