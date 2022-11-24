@@ -49,7 +49,11 @@ public sealed class CharacterModel: MonoBehaviour {
     [Tooltip("TODO: leave me a comment")]
     [SerializeField] float MaxSquashScale = 2;
 
+    // -- ik --
     [Header("ik")]
+    [Tooltip("if the ik system is active")]
+    [SerializeField] bool m_IsIkActive = true;
+
     [Tooltip("the right hand for ik")]
     [SerializeField] CharacterLimb m_RightHand;
 
@@ -61,9 +65,6 @@ public sealed class CharacterModel: MonoBehaviour {
 
     [Tooltip("the left foot for ik")]
     [SerializeField] CharacterLimb m_LeftFoot;
-
-    [Tooltip("if the ik system is active")]
-    [SerializeField] bool m_IsIkActive = true;
 
     // -- refs --
     [Header("refs")]
@@ -100,21 +101,6 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// the arms layer index
     int m_LayerArms;
-
-    /// if the right hand ik is active
-    bool m_IsRightHandIkActive;
-
-    /// if the left hand ik is active
-    bool m_IsLeftHandIkActive;
-
-    /// if the right foot ik is active
-    bool m_IsRightFootIkActive;
-
-    /// if the left foot ik is active
-    bool m_IsLeftFootIkActive;
-
-    /// if the look ik is active
-    bool m_IsLookIkActive;
 
     // -- lifecycle --
     void Start() {
@@ -211,7 +197,6 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     // -- commands --
-
     /// applies ik for limbs
     void ApplyLimbIk(CharacterLimb limb) {
         if(!m_IsIkActive || !limb.IsActive) {
@@ -220,8 +205,8 @@ public sealed class CharacterModel: MonoBehaviour {
             return;
         }
 
-        m_Animator.SetIKPositionWeight(limb.Goal, 1f);
-        m_Animator.SetIKRotationWeight(limb.Goal, 1f);
+        m_Animator.SetIKPositionWeight(limb.Goal, limb.Weight);
+        m_Animator.SetIKRotationWeight(limb.Goal, limb.Weight);
         m_Animator.SetIKPosition(limb.Goal, limb.Position);
         m_Animator.SetIKRotation(limb.Goal, limb.Rotation);
     }
