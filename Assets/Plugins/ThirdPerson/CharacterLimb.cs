@@ -13,6 +13,9 @@ public sealed class CharacterLimb: MonoBehaviour {
     [Tooltip("the type of goal of this limb")]
     [SerializeField] AvatarIKGoal m_Goal;
 
+    [Tooltip("the anchor transform for collision checks")]
+    [SerializeField] Transform m_Anchor;
+
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the move speed of the ik position")]
@@ -22,13 +25,20 @@ public sealed class CharacterLimb: MonoBehaviour {
     [SerializeField] float m_TurnSpeed;
 
     [Tooltip("the duration of the ik blend when dropping target")]
-    [SerializeField] float m_BlendDuration;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_BlendDuration")]
+    [SerializeField] float m_BlendInDuration;
+
+    [Tooltip("the duration of the ik blend when dropping target")]
+    [SerializeField] float m_BlendOutDuration;
 
     [UnityEngine.Serialization.FormerlySerializedAs("m_MaxDistance")]
     [Tooltip("the max distance before searching for a new dest")]
     [SerializeField] float m_StrideLength;
 
     // -- props --
+    /// if the limb is moving towards something
+    bool m_IsActive;
+
     /// if the limb is moving towards something
     bool m_HasTarget;
 
@@ -51,7 +61,7 @@ public sealed class CharacterLimb: MonoBehaviour {
     float m_SqrStrideLength;
 
     // -- lifecycle --
-    void Start() {
+    void Awake() {
         // cache stride length
         m_SqrStrideLength = m_StrideLength * m_StrideLength;
     }
@@ -59,19 +69,22 @@ public sealed class CharacterLimb: MonoBehaviour {
     void Update() {
         var delta = Time.deltaTime;
 
-        // lerp the ik position towards destination
-        m_CurrPosition = Vector3.MoveTowards(
-            m_CurrPosition,
-            transform.InverseTransformPoint(m_DestPosition),
-            m_MoveSpeed * Time.deltaTime
-        );
-
-        // lerp the weight down when there's no target
+        // lerp the weight
+        var isBlendingIn = m_IsActive && m_HasTarget;
         m_Weight = Mathf.MoveTowards(
             m_Weight,
-            m_HasTarget ? 1.0f : 0.0f,
-            delta / m_BlendDuration
+            isBlendingIn ? 1.0f : 0.0f,
+            delta / (isBlendingIn ? m_BlendInDuration : m_BlendOutDuration)
         );
+
+        if (m_IsActive) {
+            // lerp the ik position towards destination
+            m_CurrPosition = Vector3.MoveTowards(
+                m_CurrPosition,
+                transform.InverseTransformPoint(m_DestPosition),
+                m_MoveSpeed * Time.deltaTime
+            );
+        }
     }
 
     // -- commands --
@@ -80,33 +93,24 @@ public sealed class CharacterLimb: MonoBehaviour {
         m_Animator = animator;
     }
 
+    /// update if ik is active for is this lime
+    public void SetIsActive(bool isActive) {
+        m_IsActive = isActive;
+    }
+
     /// applies the limb ik
-    public void ApplyIk(bool isIkActive) {
-        if (!isIkActive || !IsActive) {
-            m_Animator.SetIKPositionWeight(m_Goal, 0f);
-            m_Animator.SetIKRotationWeight(m_Goal, 0f);
-            return;
-        }
-
-        m_Animator.SetIKPosition(
-            m_Goal,
-            transform.TransformPoint(m_CurrPosition)
-        );
-
+    public void ApplyIk() {
         m_Animator.SetIKPositionWeight(
             m_Goal,
             m_Weight
         );
 
-        m_Animator.SetIKRotation(
-            m_Goal,
-            m_CurrRotation
-        );
-
-        m_Animator.SetIKRotationWeight(
-            m_Goal,
-            m_Weight
-        );
+        if (m_Weight != 0.0f) {
+            m_Animator.SetIKPosition(
+                m_Goal,
+                transform.TransformPoint(m_CurrPosition)
+            );
+        }
     }
 
     // -- queries --
@@ -117,11 +121,6 @@ public sealed class CharacterLimb: MonoBehaviour {
             AvatarIKGoal.RightFoot => true,
             _ => false
         };
-    }
-
-    /// if the ik is currently active for this limb
-    bool IsActive {
-        get => gameObject.activeSelf && m_Weight > 0.0f;
     }
 
     /// the bone for this ik goal
@@ -136,13 +135,17 @@ public sealed class CharacterLimb: MonoBehaviour {
 
     /// if we've completed a stride
     bool HasCompletedStride(Vector3 pos) {
-        return Vector3.SqrMagnitude(pos - m_DestPosition) > m_SqrStrideLength;
+        return Vector3.SqrMagnitude(pos - m_DestPosition) >= m_SqrStrideLength;
     }
 
     // -- events --
     void OnTriggerEnter(Collider other) {
-        var pos = other.ClosestPoint(transform.position);
-        if (!IsActive || HasCompletedStride(pos)) {
+        if (!m_IsActive) {
+            return;
+        }
+
+        var pos = other.ClosestPoint(m_Anchor.position);
+        if (!m_HasTarget || HasCompletedStride(pos)) {
             // set current position from the bone's current position in our local space
             m_CurrPosition = transform.InverseTransformPoint(
                 m_Animator.GetBoneTransform(GoalBone).position
@@ -157,21 +160,30 @@ public sealed class CharacterLimb: MonoBehaviour {
     }
 
     void OnTriggerStay(Collider other) {
+        if (!m_IsActive) {
+            return;
+        }
+
         m_HasTarget = true;
 
-        var pos = other.ClosestPoint(transform.position);
+        var pos = other.ClosestPoint(m_Anchor.position);
         if (HasCompletedStride(pos)) {
+            Debug.Log($"[chrctr] changing stride {m_DestPosition} => {pos} [{Vector3.SqrMagnitude(m_DestPosition - pos)} vs {m_SqrStrideLength}]");
             m_DestPosition = pos;
         }
     }
 
     void OnTriggerExit(Collider other) {
+        if (!m_IsActive) {
+            return;
+        }
+
         m_HasTarget = false;
     }
 
     // -- gizmos --
     void OnDrawGizmos() {
-        if (!m_HasTarget) {
+        if (!m_IsActive || !m_HasTarget) {
             return;
         }
 
@@ -186,7 +198,7 @@ public sealed class CharacterLimb: MonoBehaviour {
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(
             m_DestPosition,
-            radius: 0.05f
+            radius: 0.15f
         );
 
         Gizmos.color = Color.green;

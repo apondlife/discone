@@ -136,6 +136,19 @@ public sealed class CharacterModel: MonoBehaviour {
         SyncAnimator();
         Tilt();
         StretchAndSquash();
+
+        // update ik limbs active state
+        foreach (var limb in m_Limbs) {
+            var isLimbActive = (
+                m_IsIkActive &&
+                // hands are always active
+                !limb.IsFoot ||
+                // feets are active when we're airborne
+                !m_State.IsGrounded
+            );
+
+            limb.SetIsActive(isLimbActive);
+        }
     }
 
     // -- commands --
@@ -189,14 +202,7 @@ public sealed class CharacterModel: MonoBehaviour {
     /// a callback for calculating IK
     void OnAnimatorIK(int layer) {
         foreach (var limb in m_Limbs) {
-            var isLimbActive = (
-                // hands are always active
-                !limb.IsFoot ||
-                // feets are active when we're airborne
-                !m_State.IsGrounded
-            );
-
-            limb.ApplyIk(m_IsIkActive && isLimbActive);
+            limb.ApplyIk();
         }
     }
 
