@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThirdPerson {
 
-public class CharacterAnimatorProxy : MonoBehaviour
-{
+public class CharacterAnimatorProxy: MonoBehaviour {
+    // -- props --
+    /// a proxied ik callback
     Action<int> m_OnAnimatorIk;
 
     // -- lifecyle --
@@ -15,8 +14,10 @@ public class CharacterAnimatorProxy : MonoBehaviour
     }
 
     // -- commands --
+    /// bind a proxied ik callback
     public void Bind(Action<int> onAnimatorIk) {
         m_OnAnimatorIk = onAnimatorIk;
     }
 }
+
 }

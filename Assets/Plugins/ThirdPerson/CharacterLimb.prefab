@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3634307922059092450}
   - component: {fileID: 4625331068232416769}
-  - component: {fileID: 4652280887866257308}
+  - component: {fileID: 467891707397163346}
   m_Layer: 13
   m_Name: CharacterLimb
   m_TagString: Untagged
@@ -50,8 +50,8 @@ MonoBehaviour:
   m_MoveSpeed: 0.5
   m_TurnSpeed: 360
   m_BlendDuration: 0.2
---- !u!135 &4652280887866257308
-SphereCollider:
+--- !u!136 &467891707397163346
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -60,6 +60,7 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.8
+  m_Height: 2.5
+  m_Direction: 0
   m_Center: {x: 0, y: 0, z: 0}

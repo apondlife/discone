@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -54,17 +55,8 @@ public sealed class CharacterModel: MonoBehaviour {
     [Tooltip("if the ik system is active")]
     [SerializeField] bool m_IsIkActive = true;
 
-    [Tooltip("the right hand for ik")]
-    [SerializeField] CharacterLimb m_RightHand;
-
-    [Tooltip("the left hand for ik")]
-    [SerializeField] CharacterLimb m_LeftHand;
-
-    [Tooltip("the right foot for ik")]
-    [SerializeField] CharacterLimb m_RightFoot;
-
-    [Tooltip("the left foot for ik")]
-    [SerializeField] CharacterLimb m_LeftFoot;
+    [Tooltip("the list of ik limbs")]
+    [SerializeField] CharacterLimb[] m_Limbs;
 
     // -- refs --
     [Header("refs")]
@@ -107,24 +99,32 @@ public sealed class CharacterModel: MonoBehaviour {
         // set dependencies
         m_Container = GetComponentInParent<Character>();
 
-        // configure animator
-        m_Animator = GetComponentInChildren<Animator>();
-        if (m_Animator != null && m_Animator.runtimeAnimatorController == null) {
-            m_Animator.runtimeAnimatorController = m_AnimatorController;
-        }
-
         // set props
         m_InitialScale = transform.localScale;
 
+        // init animator
+        m_Animator = GetComponentInChildren<Animator>();
         if (m_Animator != null) {
+            if (m_Animator.runtimeAnimatorController == null) {
+                m_Animator.runtimeAnimatorController = m_AnimatorController;
+            }
+
+            // set layers indices
             m_LayerLegs = m_Animator.GetLayerIndex(k_LayerLegs);
             m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
+
+            // init limbs
+            foreach (var limb in m_Limbs) {
+                limb.Init(m_Animator);
+            }
+
+            // proxy animator callbacks
             var proxy = m_Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
             if (proxy == null) {
                 proxy = m_Animator.gameObject.AddComponent<CharacterAnimatorProxy>();
             }
-            proxy.Bind(OnAnimatorIK);
 
+            proxy.Bind(OnAnimatorIK);
         }
 
         // make sure complex model trees have the correct layer
@@ -187,28 +187,17 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     /// a callback for calculating IK
-    void OnAnimatorIK(int layer)
-    {
-        // set limbs ik
-        ApplyLimbIk(m_RightHand);
-        ApplyLimbIk(m_LeftHand);
-        ApplyLimbIk(m_RightFoot);
-        ApplyLimbIk(m_LeftFoot);
-    }
+    void OnAnimatorIK(int layer) {
+        foreach (var limb in m_Limbs) {
+            var isLimbActive = (
+                // hands are always active
+                !limb.IsFoot ||
+                // feets are active when we're airborne
+                !m_State.IsGrounded
+            );
 
-    // -- commands --
-    /// applies ik for limbs
-    void ApplyLimbIk(CharacterLimb limb) {
-        if(!m_IsIkActive || !limb.IsActive) {
-            m_Animator.SetIKPositionWeight(limb.Goal, 0f);
-            m_Animator.SetIKRotationWeight(limb.Goal, 0f);
-            return;
+            limb.ApplyIk(m_IsIkActive && isLimbActive);
         }
-
-        m_Animator.SetIKPositionWeight(limb.Goal, limb.Weight);
-        m_Animator.SetIKRotationWeight(limb.Goal, limb.Weight);
-        m_Animator.SetIKPosition(limb.Goal, limb.Position);
-        m_Animator.SetIKRotation(limb.Goal, limb.Rotation);
     }
 
     /// tilt the model as a fn of character acceleration
@@ -242,8 +231,7 @@ public sealed class CharacterModel: MonoBehaviour {
         transform.localScale = newScale;
     }
 
-    // -- helpers --
-    public static void SetDefaultLayersRecursively(GameObject parent, int layer) {
+    static void SetDefaultLayersRecursively(GameObject parent, int layer) {
         if (parent.layer == 0) {
             parent.layer = layer;
         }
@@ -252,8 +240,6 @@ public sealed class CharacterModel: MonoBehaviour {
             SetDefaultLayersRecursively(child.gameObject, layer);
         }
     }
-
-
 }
 
 }

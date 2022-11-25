@@ -4,6 +4,10 @@ namespace ThirdPerson {
 
 /// an ik limb for the character model
 public sealed class CharacterLimb: MonoBehaviour {
+    // -- deps --
+    /// the animator for this limb
+    Animator m_Animator;
+
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the type of goal of this limb")]
@@ -11,9 +15,6 @@ public sealed class CharacterLimb: MonoBehaviour {
 
     // -- tuning --
     [Header("tuning")]
-    [Tooltip("the max distance before searching for a new dest")]
-    [SerializeField] float m_MaxDistance;
-
     [Tooltip("the move speed of the ik position")]
     [SerializeField] float m_MoveSpeed;
 
@@ -22,6 +23,10 @@ public sealed class CharacterLimb: MonoBehaviour {
 
     [Tooltip("the duration of the ik blend when dropping target")]
     [SerializeField] float m_BlendDuration;
+
+    [UnityEngine.Serialization.FormerlySerializedAs("m_MaxDistance")]
+    [Tooltip("the max distance before searching for a new dest")]
+    [SerializeField] float m_StrideLength;
 
     // -- props --
     /// if the limb is moving towards something
@@ -42,7 +47,15 @@ public sealed class CharacterLimb: MonoBehaviour {
     /// the destination ik rotation of the limb
     Quaternion m_DestRotation;
 
+    /// the square stride length
+    float m_SqrStrideLength;
+
     // -- lifecycle --
+    void Start() {
+        // cache stride length
+        m_SqrStrideLength = m_StrideLength * m_StrideLength;
+    }
+
     void Update() {
         var delta = Time.deltaTime;
 
@@ -61,39 +74,79 @@ public sealed class CharacterLimb: MonoBehaviour {
         );
     }
 
+    // -- commands --
+    /// initialize this limb w/ an animator
+    public void Init(Animator animator) {
+        m_Animator = animator;
+    }
+
+    /// applies the limb ik
+    public void ApplyIk(bool isIkActive) {
+        if (!isIkActive || !IsActive) {
+            m_Animator.SetIKPositionWeight(m_Goal, 0f);
+            m_Animator.SetIKRotationWeight(m_Goal, 0f);
+            return;
+        }
+
+        m_Animator.SetIKPosition(
+            m_Goal,
+            transform.TransformPoint(m_CurrPosition)
+        );
+
+        m_Animator.SetIKPositionWeight(
+            m_Goal,
+            m_Weight
+        );
+
+        m_Animator.SetIKRotation(
+            m_Goal,
+            m_CurrRotation
+        );
+
+        m_Animator.SetIKRotationWeight(
+            m_Goal,
+            m_Weight
+        );
+    }
+
     // -- queries --
-    /// the key for the specific limb
-    public AvatarIKGoal Goal {
-        get => m_Goal;
+    /// if this is a foot
+    public bool IsFoot {
+        get => m_Goal switch {
+            AvatarIKGoal.LeftFoot => true,
+            AvatarIKGoal.RightFoot => true,
+            _ => false
+        };
     }
 
     /// if the ik is currently active for this limb
-    public bool IsActive {
+    bool IsActive {
         get => gameObject.activeSelf && m_Weight > 0.0f;
     }
 
-    /// the current ik blending weight
-    public float Weight {
-        get => m_Weight;
+    /// the bone for this ik goal
+    HumanBodyBones GoalBone {
+        get => m_Goal switch {
+            AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
+            AvatarIKGoal.LeftHand => HumanBodyBones.LeftHand,
+            AvatarIKGoal.RightFoot => HumanBodyBones.RightFoot,
+            _ /*AvatarIKGoal.LeftFoot*/ => HumanBodyBones.LeftFoot,
+        };
     }
 
-    /// the current ik position
-    public Vector3 Position {
-        get => transform.TransformPoint(m_CurrPosition);
-    }
-
-    /// the current ik rotation
-    public Quaternion Rotation {
-        get => m_CurrRotation;
+    /// if we've completed a stride
+    bool HasCompletedStride(Vector3 pos) {
+        return Vector3.SqrMagnitude(pos - m_DestPosition) > m_SqrStrideLength;
     }
 
     // -- events --
     void OnTriggerEnter(Collider other) {
         var pos = other.ClosestPoint(transform.position);
-        var sqrDist = Vector3.SqrMagnitude(pos - m_DestPosition);
-        if (!IsActive || sqrDist > m_MaxDistance * m_MaxDistance) {
-            // set current position to the hand's default position
-            m_CurrPosition = transform.localPosition;
+        if (!IsActive || HasCompletedStride(pos)) {
+            // set current position from the bone's current position in our local space
+            m_CurrPosition = transform.InverseTransformPoint(
+                m_Animator.GetBoneTransform(GoalBone).position
+            );
 
             // move towards the closest point on sruface
             m_DestPosition = pos;
@@ -107,14 +160,40 @@ public sealed class CharacterLimb: MonoBehaviour {
         m_HasTarget = true;
 
         var pos = other.ClosestPoint(transform.position);
-        var sqrDist = Vector3.SqrMagnitude(pos - m_DestPosition);
-        if (sqrDist > m_MaxDistance * m_MaxDistance) {
+        if (HasCompletedStride(pos)) {
             m_DestPosition = pos;
         }
     }
 
     void OnTriggerExit(Collider other) {
         m_HasTarget = false;
+    }
+
+    // -- gizmos --
+    void OnDrawGizmos() {
+        if (!m_HasTarget) {
+            return;
+        }
+
+        var currPos = transform.TransformPoint(m_CurrPosition);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(
+            currPos,
+            radius: 0.05f
+        );
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(
+            m_DestPosition,
+            radius: 0.05f
+        );
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(
+            currPos,
+            m_DestPosition
+        );
     }
 }
 
