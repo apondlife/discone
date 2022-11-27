@@ -44,10 +44,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _BlurSize: 0.4
+    - _WallTolerance: 0.01
     m_Colors:
     - BumpMapScale: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.3301887, g: 0.3301887, b: 0.3301887, a: 0}
+    - _MainColor: {r: 0.3, g: 0.3, b: 0.3, a: 0.2}
     - _ProjectorClip_0: {r: -0.015438232, g: -0.025866693, b: 0.14460614, a: 0.29360974}
     - _ProjectorClip_1: {r: 0.0047582523, g: 0.14523815, b: 0.026487738, a: 0.0030641258}
     - _ProjectorClip_2: {r: -0.015438232, g: -0.025866693, b: 0.14460614, a: 0.29360974}
