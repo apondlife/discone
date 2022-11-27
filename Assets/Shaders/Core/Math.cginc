@@ -23,6 +23,11 @@ inline float3 float3r(float val) {
 }
 
 // -- fns --
+/// the square length of the vec
+float1 SqrLength(fixed2 vec) {
+    return vec.x * vec.x + vec.y * vec.y;
+}
+
 /// lerp a span vector (min and length)
 float1 LerpSpan(float2 span, float t) {
     return fmod(span.x, 1.0f) + fmod(span.y, 1.0f) * t;

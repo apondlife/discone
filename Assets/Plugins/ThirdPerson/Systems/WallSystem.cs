@@ -100,7 +100,8 @@ sealed class WallSystem: CharacterSystem {
         var velocityIntoWall = velocity - velocityAlongWall;
 
         // and transfer it up the wall
-        var transferred = velocityIntoWall.magnitude * m_WallUp;
+        var transferMagnitude = velocityIntoWall.magnitude;
+        var transferred = transferMagnitude * m_WallUp;
 
         return transferred;
     }

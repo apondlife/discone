@@ -325,10 +325,13 @@ public sealed class CharacterController {
 
         m_Position = moveOrigin + dsp;
         m_Velocity =  dsp / Time.deltaTime;
+        maxYVelocity = Mathf.Max(m_Velocity.y, maxYVelocity);
         m_Wall = nextWall;
         m_Ground = nextGround;
         m_PendingDelta = moveDelta;
     }
+
+    public float maxYVelocity = -1;
 
     // -- queries --
     /// the stored final position of the movement
