@@ -48,6 +48,8 @@ public record EaseTimer {
         }
 
         // check progress
+        // TODO: do unscaled time?
+        // TODO: do negative time?
         var k = (Time.time - m_StartTime) / m_Duration;
 
         // if complete, clamp and stop the timer
