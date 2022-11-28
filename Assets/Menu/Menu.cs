@@ -32,6 +32,9 @@ sealed class Menu: UIBehaviour {
     [Tooltip("the list of pages (set at runtime)")]
     [SerializeField] Page[] m_Pages;
 
+    [Tooltip("atom if the menu is open")]
+    [SerializeField] BoolVariable m_IsMenuOpen;
+
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("when an offset page button is pressed")]
@@ -198,7 +201,10 @@ sealed class Menu: UIBehaviour {
     /// if the menu is visible
     bool IsVisible {
         get => m_Main.activeSelf;
-        set => m_Main.SetActive(value);
+        set {
+            m_Main.SetActive(value);
+            m_IsMenuOpen?.SetValue(value);
+        }
     }
 
     // -- events --

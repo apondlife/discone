@@ -1,4 +1,7 @@
+using UnityAtoms.BaseAtoms;
 using UnityEngine;
+
+namespace Discone {
 
 /// the app
 sealed class App: MonoBehaviour {
@@ -13,6 +16,12 @@ sealed class App: MonoBehaviour {
 
     [Tooltip("the character definitions")]
     [SerializeField] CharacterDefs m_Defs;
+
+    [Tooltip("atom if the menu is open")]
+    [SerializeField] BoolEvent m_MenuOpenChanged;
+
+    /// the subscriptions
+    DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Awake() {
@@ -29,6 +38,7 @@ sealed class App: MonoBehaviour {
 
         // hide cursor in build
         #if !UNITY_EDITOR
+        m_Subscriptions.Add(m_MenuOpenChanged, OnMenuChanged);
         Cursor.lockState = CursorLockMode.Locked;
         #endif
     }
@@ -43,4 +53,12 @@ sealed class App: MonoBehaviour {
         // TODO: this should probably only save the world if we are the host
         await m_Store.Save();
     }
+
+    void OnMenuChanged(bool value) {
+        Cursor.lockState = value
+            ? CursorLockMode.None
+            : CursorLockMode.Locked;
+    }
+}
+
 }
