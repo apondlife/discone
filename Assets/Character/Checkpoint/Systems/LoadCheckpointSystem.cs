@@ -5,6 +5,7 @@ using UnityEngine;
 /// a character's ability to load to their saved checkpoint
 [Serializable]
 sealed class LoadCheckpointSystem: CheckpointSystem {
+    const float k_Inactive = -1.0f;
     // -- types --
     /// tunables for the load checkpoint system
     [Serializable]
@@ -36,7 +37,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     LoadInput m_Input = new LoadInput();
 
     /// the elapsed time
-    float m_Elapsed;
+    float m_Elapsed = k_Inactive;
 
     /// the total cast time
     float m_Duration;
@@ -69,7 +70,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     );
 
     void NotLoading_Enter() {
-        m_Elapsed = 0.0f;
+        m_Elapsed = k_Inactive;
     }
 
     void NotLoading_Update(float delta) {
@@ -118,14 +119,16 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
         }
 
         // if we reach 0, cancel the load
-        if (m_Elapsed <= 0) {
+        if (m_Elapsed < 0) {
             m_Checkpoint.Character.ForceState(m_SrcState);
             ChangeTo(Loaded);
+            return;
         }
         // finish the load once elapsed
-        else if (m_Elapsed > m_Duration) {
+        else if (m_Elapsed >= m_Duration) {
             m_Checkpoint.Character.ForceState(m_DstState);
             ChangeTo(Loaded);
+            return;
         }
         // otherwise, interpolate the load
         else {
@@ -143,6 +146,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
 
             m_Checkpoint.Character.ForceState(m_CurState);
         }
+
     }
 
     void Loading_Exit() {
@@ -152,8 +156,13 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     // -- Loaded --
     Phase Loaded => new Phase(
         name: "Loaded",
+        enter: Loaded_Enter,
         update: Loaded_Update
     );
+
+    void Loaded_Enter() {
+        m_Elapsed = k_Inactive;
+    }
 
     void Loaded_Update(float _) {
         if (!m_Input.IsLoading) {
@@ -165,5 +174,9 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     /// if the player can load to their flower
     bool CanLoad {
         get => m_Input.IsLoading && m_Checkpoint.Flower != null;
+    }
+
+    public bool IsLoading {
+        get => m_Elapsed >= 0;
     }
 }

@@ -213,6 +213,11 @@ public class CharacterCheckpoint: NetworkBehaviour {
         get => m_Flower?.Checkpoint;
     }
 
+    /// if the character is currently loading
+    public bool IsLoading {
+        get => m_Load.IsLoading;
+    }
+
     /// a reference to the character
     public ThirdPerson.Character Character {
         get => m_Container.Character;
