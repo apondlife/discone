@@ -207,6 +207,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
   m_Defs: {fileID: 11400000, guid: a555295657e3340ce8a920b23ca5fa93, type: 2}
+  m_MenuOpenChanged: {fileID: 11400000, guid: 41f723428acc0bc4592bc0caa69678d5, type: 2}
 --- !u!1001 &991046580771723974
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -261,6 +262,10 @@ PrefabInstance:
     - target: {fileID: 7872296399179037059, guid: f6eacd8f0a8a144e8aae3b92583f466a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8311241429826752157, guid: f6eacd8f0a8a144e8aae3b92583f466a, type: 3}
+      propertyPath: m_AssetId
+      value: dea54f7fccc0b4e99966e567280c1593
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f6eacd8f0a8a144e8aae3b92583f466a, type: 3}
