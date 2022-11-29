@@ -53,15 +53,6 @@ public class CheckpointLoadBubble: MonoBehaviour {
         m_Material = m_Renderer.material;
         m_BaseScale = transform.localScale;
 
-
-        foreach (var name in m_Material.GetTexturePropertyNames()) {
-            Debug.Log($"[bubble] name {name}");
-        }
-
-        foreach (var id in m_Material.GetTexturePropertyNameIDs()) {
-            Debug.Log($"[bubble] id {id}");
-        }
-
         // re-parent to the bone anchor
         if (m_Anchor != null) {
             transform.SetParent(m_Anchor, true);
