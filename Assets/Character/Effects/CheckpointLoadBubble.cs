@@ -1,78 +1,114 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Discone {
 
+/// the checkpoint loading bubble effect
 [RequireComponent(typeof(Renderer))]
-public class CheckpointLoadBubble : MonoBehaviour
-{
+public class CheckpointLoadBubble: MonoBehaviour {
+    // -- types --
     enum State {
-        disabled,
-        easeIn,
-        hold,
-        easeOut
+        Disabled,
+        EaseIn,
+        Hold,
+        EaseOut
     }
 
+    // -- tuning --
+    [Header("tuning")]
     [Tooltip("bubble growth ease in curve")]
     [SerializeField] ThirdPerson.EaseTimer m_EaseIn;
 
     [Tooltip("bubble growth ease out curve")]
     [SerializeField] ThirdPerson.EaseTimer m_EaseOut;
 
-    /// the bubble renderer
-    Renderer m_Bubble;
+    [Tooltip("the emission texture animation speed")]
+    [SerializeField] Vector2 m_EmissionOffsetSpeed;
 
+    // -- cfg --
+    [Header("cfg")]
+    [Tooltip("the anchor transform")]
+    [SerializeField] Transform m_Anchor;
+
+    // -- props --
     /// the character
     DisconeCharacter m_Character;
+
+    /// the bubble renderer
+    Renderer m_Renderer;
+
+    /// the bubble renderer
+    Material m_Material;
 
     /// the scale the ease timer eases around (transform.localscale)
     Vector3 m_BaseScale;
 
     /// the state of the animation
-    State m_State = State.disabled;
+    State m_State = State.Disabled;
 
     // -- lifecycle --
-    void Awake()
-    {
-        m_Bubble = GetComponent<Renderer>();
+    void Awake() {
+        // set props
         m_Character = GetComponentInParent<DisconeCharacter>();
-        m_Bubble.enabled = false;
+        m_Renderer = GetComponent<Renderer>();
+        m_Material = m_Renderer.material;
         m_BaseScale = transform.localScale;
+
+
+        foreach (var name in m_Material.GetTexturePropertyNames()) {
+            Debug.Log($"[bubble] name {name}");
+        }
+
+        foreach (var id in m_Material.GetTexturePropertyNameIDs()) {
+            Debug.Log($"[bubble] id {id}");
+        }
+
+        // re-parent to the bone anchor
+        if (m_Anchor != null) {
+            transform.SetParent(m_Anchor, true);
+        }
+
+        // set initial state
+        m_Renderer.enabled = false;
     }
 
-    void Update()
-    {
+    void Update() {
         // activate ease if loading
         switch (m_State) {
-            case State.disabled:
+            case State.Disabled:
                 if (m_Character.Checkpoint.IsLoading) {
                     m_EaseIn.Start();
-                    m_Bubble.enabled = true;
-                    m_State = State.easeIn;
+                    m_Renderer.enabled = true;
+                    m_State = State.EaseIn;
                 }
                 break;
-            case State.easeIn:
+            case State.EaseIn:
                 m_EaseIn.Tick();
                 transform.localScale = m_BaseScale * m_EaseIn.Pct;
                 if (!m_EaseIn.IsActive) {
-                    m_State = State.hold;
+                    m_State = State.Hold;
                 }
                 break;
-            case State.hold:
+            case State.Hold:
                 if (!m_Character.Checkpoint.IsLoading) {
                     m_EaseOut.Start();
-                    m_State = State.easeOut;
+                    m_State = State.EaseOut;
                 }
                 break;
-            case State.easeOut:
+            case State.EaseOut:
                 m_EaseOut.Tick();
                 transform.localScale = m_BaseScale * m_EaseOut.Pct;
                 if (!m_EaseOut.IsActive) {
-                    m_Bubble.enabled = false;
-                    m_State = State.disabled;
+                    m_Renderer.enabled = false;
+                    m_State = State.Disabled;
                 }
                 break;
+        }
+
+        if (m_State != State.Disabled) {
+            m_Material.SetTextureOffset(
+                ShaderProps.Main,
+                Time.time * m_EmissionOffsetSpeed
+            );
         }
     }
 }

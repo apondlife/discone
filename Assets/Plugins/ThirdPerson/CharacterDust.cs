@@ -143,7 +143,7 @@ public class CharacterDust: MonoBehaviour {
 
         // rotate speed line emitter opposite planar movement
         if (v != Vector3.zero) {
-            m_SpeedLine.transform.forward = -v.normalized;
+            m_SpeedLine.transform.forward = v.normalized;
         }
     }
 }

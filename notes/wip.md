@@ -3,11 +3,12 @@ what is projected
 
 # wall
 > dont wall on small speends (janky falling animation when walking near walls)
+  > apparently harder than imagined, collision system has this
 > no regrab wall gravity
 > boost speed when hitting wall
+> more boost when hittin wall
 > better magnet
 > tiny jump / ollie?
-> IK animation
 
 # crouch
 > min speed is so big
@@ -21,6 +22,18 @@ what is projected
 # tools
 > test pt script on windows
 > bundle dev world.json into build, create user's world.json from bundled copy if none
+
+# icecream model
+> make arms better (more taper, close it down towards the end of arms)
+> more skew
+> make it one mesh for better deformation
+
+# load bubble
+> mask everything
+
+# world
+> make most colliders convex if possible
+
 
 
 # cast thoughts
