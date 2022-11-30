@@ -171,7 +171,6 @@ public sealed class CharacterLimb: MonoBehaviour {
         // TODO: the zero check is a hack (ish) for when we try to check closest
         // point against a concave mesh
         var pos = other.ClosestPoint(m_Anchor.position);
-        Debug.Log($"closest point {pos}");
         if (pos != Vector3.zero && HasCompletedStride(pos)) {
             m_DestPosition = pos;
         }

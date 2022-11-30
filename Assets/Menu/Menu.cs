@@ -13,6 +13,12 @@ sealed class Menu: UIBehaviour {
     /// the index when there is no page
     const int k_PageNone = -1;
 
+    // -- state --
+    [Header("state")]
+    [Tooltip("atom if the menu is open")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_IsMenuOpen")]
+    [SerializeField] BoolVariable m_IsOpen;
+
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the transition timer")]
@@ -31,9 +37,6 @@ sealed class Menu: UIBehaviour {
 
     [Tooltip("the list of pages (set at runtime)")]
     [SerializeField] Page[] m_Pages;
-
-    [Tooltip("atom if the menu is open")]
-    [SerializeField] BoolVariable m_IsMenuOpen;
 
     // -- subscribed --
     [Header("subscribed")]
@@ -83,8 +86,9 @@ sealed class Menu: UIBehaviour {
             .Add(m_Input.Toggle, OnTogglePressed)
             .Add(m_OffsetPagePressed, OnOffsetPagePressed);
 
-        if(m_StartOn) {
-            Toggle();
+        // set initial state
+        if (m_StartOn) {
+            Toggle(true);
         }
     }
 
@@ -130,13 +134,23 @@ sealed class Menu: UIBehaviour {
     // -- commands --
     /// toggle the menu
     void Toggle() {
+        Toggle(!IsVisible);
+    }
+
+    /// toggle the menu, optionally forcing a state
+    void Toggle(bool isVisible) {
         // don't do this if in a transition
         if (m_Transition.IsActive) {
             return;
         }
 
+        // ignore redundant updates
+        if (IsVisible == isVisible) {
+            return;
+        }
+
         // hide the menu
-        if (IsVisible) {
+        if (!isVisible) {
             m_SavedPage = m_CurrPage;
             ChangeTo(k_PageNone);
         }
@@ -203,7 +217,7 @@ sealed class Menu: UIBehaviour {
         get => m_Main.activeSelf;
         set {
             m_Main.SetActive(value);
-            m_IsMenuOpen?.SetValue(value);
+            m_IsOpen?.SetValue(value);
         }
     }
 
