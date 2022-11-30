@@ -20,6 +20,7 @@ sealed class App: MonoBehaviour {
     [Tooltip("atom if the menu is open")]
     [SerializeField] BoolEvent m_MenuOpenChanged;
 
+    // -- props --
     /// the subscriptions
     DisposeBag m_Subscriptions = new DisposeBag();
 
@@ -38,8 +39,8 @@ sealed class App: MonoBehaviour {
 
         // hide cursor in build
         #if !UNITY_EDITOR
-        m_Subscriptions.Add(m_MenuOpenChanged, OnMenuChanged);
         Cursor.lockState = CursorLockMode.Locked;
+        m_Subscriptions.Add(m_MenuOpenChanged, OnMenuIsOpenChanged);
         #endif
     }
 
@@ -54,8 +55,8 @@ sealed class App: MonoBehaviour {
         await m_Store.Save();
     }
 
-    void OnMenuChanged(bool value) {
-        Cursor.lockState = value
+    void OnMenuIsOpenChanged(bool isOpen) {
+        Cursor.lockState = isOpen
             ? CursorLockMode.None
             : CursorLockMode.Locked;
     }
