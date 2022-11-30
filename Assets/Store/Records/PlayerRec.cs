@@ -25,5 +25,4 @@ public record PlayerRec: StoreFile {
     public bool HasData {
         get => Character != null;
     }
-
 }
