@@ -48,8 +48,6 @@ public class Online: NetworkManager {
     [Tooltip("if this is a standalone server (no host client)")]
     [SerializeField] BoolReference m_IsStandalone;
 
-
-
     [Tooltip("the persistence store")]
     [SerializeField] Store m_Store;
 
