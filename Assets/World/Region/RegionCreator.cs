@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityAtoms.Discone;
 
+namespace Discone
+{
 [ExecuteAlways]
 public class RegionCreator: MonoBehaviour {
     [SerializeField]
@@ -15,9 +17,10 @@ public class RegionCreator: MonoBehaviour {
         if(Region == null) return;
         text.text = Region.Value.DisplayName;
         var mat = RenderSettings.skybox;
-        mat.SetFloat("_ExposureForeground", Region.Value.SkyColor.ForegroundExposure);
-        mat.SetFloat("_ExposureBackground", Region.Value.SkyColor.BackgroundExposure);
-        mat.SetColor("_Background", Region.Value.SkyColor.Background);
-        mat.SetColor("_Foreground", Region.Value.SkyColor.Foreground);
+        mat.SetFloat(ShaderProps.ForegroundExposure, Region.Value.SkyColor.ForegroundExposure);
+        mat.SetFloat(ShaderProps.BackgroundExposure, Region.Value.SkyColor.BackgroundExposure);
+        mat.SetColor(ShaderProps.Background, Region.Value.SkyColor.Background);
+        mat.SetColor(ShaderProps.Foreground, Region.Value.SkyColor.Foreground);
     }
+}
 }
