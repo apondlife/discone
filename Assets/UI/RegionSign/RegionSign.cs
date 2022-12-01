@@ -5,20 +5,18 @@ using UnityAtoms.BaseAtoms;
 using UnityAtoms.Discone;
 using UnityEngine.Serialization;
 
-[ExecuteAlways]
-public class RegionSign: MonoBehaviour {
+namespace Discone {
+
+sealed class RegionSign: MonoBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("the time it takes to dissolve the text in/out")]
-    [FormerlySerializedAs("dissolveTime")]
     [SerializeField] float m_DissolveTime = 1.0f;
 
     [Tooltip("the time the text is visible")]
-    [FormerlySerializedAs("textDuration")]
     [SerializeField] float m_TextDuration = 4.0f;
 
     [Tooltip("the time it takes the letterbox to transition in/out")]
-    [FormerlySerializedAs("letterboxTweenTime")]
     [SerializeField] float m_LetterboxFadeTime = 1.0f;
 
     // -- state --
@@ -56,9 +54,9 @@ public class RegionSign: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         // hide by default
-        m_CanvasGroup.alpha = 0.0f;
-        m_LetterboxAmount.Value = 0.0f;
-        m_DissolveAmount.Value = 0.0f;
+        m_CanvasGroup.alpha = 0f;
+        m_LetterboxAmount.Value = 0f;
+        m_DissolveAmount.Value = 0f;
 
         // bind events
         m_Subscriptions
@@ -72,11 +70,11 @@ public class RegionSign: MonoBehaviour {
 
     // -- commands --
     void DissolveIn(float k) {
-        m_DissolveAmount.Value = 1 - k;
+        m_DissolveAmount.Value = k;
     }
 
     void DissolveOut(float k) {
-        m_DissolveAmount.Value = k;
+        m_DissolveAmount.Value = 1 - k;
     }
 
     void LetterboxIn(float k) {
@@ -119,7 +117,7 @@ public class RegionSign: MonoBehaviour {
 
     public void OnRegionEntered(Discone.Region region) {
         m_CurrentRegion = region;
-        m_CanvasGroup.alpha = 1;
+        m_CanvasGroup.alpha = 1f;
         m_Text.SetText(region.DisplayName);
 
         // only start a new animation if the current one is over
@@ -129,4 +127,6 @@ public class RegionSign: MonoBehaviour {
 
         StartCoroutine(FadeCoroutine());
     }
+}
+
 }

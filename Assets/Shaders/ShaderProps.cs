@@ -22,6 +22,12 @@ static class ShaderProps {
 
     /// the background color exposure
     public static int BackgroundExposure = Shader.PropertyToID("_ExposureBackground");
+
+    /// the region dissolve pct
+    public static int DissolveAmount = Shader.PropertyToID("_DissolveAmount");
+
+    /// the region letterbox pct
+    public static int LetterboxAmount = Shader.PropertyToID("_LetterboxAmount");
 }
 
 }

@@ -30,7 +30,7 @@ class UIShader: MonoBehaviour {
     }
 
     void Update() {
-        m_Material.SetFloat("_DissolveAmount", m_DissolveAmount.Value);
-        m_Material.SetFloat("_LetterboxAmount", m_LetterboxAmount.Value);
+        m_Material.SetFloat(Discone.ShaderProps.DissolveAmount, m_DissolveAmount.Value);
+        m_Material.SetFloat(Discone.ShaderProps.LetterboxAmount, m_LetterboxAmount.Value);
     }
 }

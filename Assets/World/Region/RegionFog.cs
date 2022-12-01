@@ -24,9 +24,23 @@ public record RegionFog {
         RegionFog dst,
         float t
     ) {
-        cur.Color = Color.Lerp(src.Color, dst.Color, t);
-        cur.EndDistance = Mathf.Lerp(src.EndDistance, dst.EndDistance, t);
-        cur.StartDistance = Mathf.Lerp(src.StartDistance, dst.StartDistance, t);
+        cur.Color = Color.Lerp(
+            src.Color,
+            dst.Color,
+            t
+        );
+
+        cur.EndDistance = Mathf.Lerp(
+            src.EndDistance,
+            dst.EndDistance,
+            t
+        );
+
+        cur.StartDistance = Mathf.Lerp(
+            src.StartDistance,
+            dst.StartDistance,
+            t
+        );
     }
 
     // -- queries --

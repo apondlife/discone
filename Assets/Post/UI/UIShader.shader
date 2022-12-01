@@ -6,7 +6,7 @@ Shader "Unlit/UIShader"
         _DissolveTex("Dissolve Tex", 2D) = "white" {}
         _DissolveAmount("Dissolve Amount", Range(0,1)) = 0.5
         _DissolveScale("Dissolve Scale", Float) = 1
-        
+
         _LetterboxAmount("Letterbox Amount", Range(0,1)) = 0.5
         _LetterboxSize("Letterbox Size", Range(0,.5)) = .2
 
@@ -18,7 +18,7 @@ Shader "Unlit/UIShader"
     {
         // tags and stuff taken from
         // https://www.patreon.com/posts/shaders-for-who-29239797
-        Tags { 
+        Tags {
             "Queue" = "Transparent"
             "IgnoreProjector" = "True"
             "RenderType" = "Transparent"
@@ -28,7 +28,7 @@ Shader "Unlit/UIShader"
 
         ZTest Off
         Blend SrcAlpha OneMinusSrcAlpha
-        
+
         LOD 100
 
         Pass
@@ -89,12 +89,12 @@ Shader "Unlit/UIShader"
                 } else {
                     // dissolve
                     half4 avg = (disTexel.r + disTexel.g + disTexel.b) / 3.0f;
-                    clip(avg - _DissolveAmount);
+                    clip(avg - (1.0f - _DissolveAmount));
                 }
 
                 // // blur
                 // for ( float d = 0.0; d < 6; d+= Pi/Di
-            
+
 
                 return col;
             }

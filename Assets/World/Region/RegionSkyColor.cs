@@ -43,25 +43,25 @@ public record RegionSkyColor {
         RegionSkyColor dst,
         float t
     ) {
-        var foreground = Color.Lerp(
+        cur.Foreground = Color.Lerp(
             src.Foreground,
             dst.Foreground,
             t
         );
 
-        var fgExposure = Mathf.Lerp(
+        cur.ForegroundExposure = Mathf.Lerp(
             src.ForegroundExposure,
             dst.ForegroundExposure,
             t
         );
 
-        var background = Color.Lerp(
+        cur.Background = Color.Lerp(
             src.Background,
             dst.Background,
             t
         );
 
-        var bgExposure = Mathf.Lerp(
+        cur.BackgroundExposure = Mathf.Lerp(
             src.ForegroundExposure,
             dst.ForegroundExposure,
             t

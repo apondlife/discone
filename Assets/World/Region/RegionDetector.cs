@@ -3,14 +3,15 @@ using UnityAtoms.Discone;
 
 namespace Discone {
 
-class RegionDetector: MonoBehaviour {
+/// a trigger for characters entering a region
+sealed class RegionDetector: MonoBehaviour {
     // -- refs --
     [Header("refs")]
-    [Tooltip("player entered region")]
-    [SerializeField] RegionEvent m_RegionEntered;
-
-    [Tooltip("the region object that this detector is detecting")]
+    [Tooltip("the region to emit")]
     [SerializeField] RegionConstant m_Region;
+
+    [Tooltip("when the player enters a region")]
+    [SerializeField] RegionEvent m_RegionEntered;
 
     // -- events --
     // Physics settings should be set so that only things on the
@@ -18,7 +19,6 @@ class RegionDetector: MonoBehaviour {
     void OnTriggerEnter(Collider other) {
         var player = other.GetComponentInParent<DisconePlayer>();
         if (player == null || player.Character == null) {
-            Debug.Log($"[region] something else hit me {m_Region.Value.DisplayName} it was {other}");
             return;
         }
 
