@@ -14,6 +14,10 @@ public sealed class Shortcuts: EditorWindow {
     [Tooltip("the entity repos")]
     [SerializeField] EntitiesVariable m_Entities;
 
+    // -- props --
+    /// the search query
+    string m_Query = "";
+
     // -- lifecycle --
     /// show the window
     [MenuItem("GameObject/discone/shortcuts")]
@@ -36,6 +40,12 @@ public sealed class Shortcuts: EditorWindow {
             .Character;
 
         // show ui
+        DrawCharacterView(character);
+    }
+
+    // -- ui --
+    /// draw the character shortcuts
+    void DrawCharacterView(DisconeCharacter character) {
         EditorGUILayout.BeginVertical();
 
         // show inspect shortcuts
@@ -50,24 +60,90 @@ public sealed class Shortcuts: EditorWindow {
         }
         // show the character ui
         else {
+            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.BeginVertical();
+
+            // show query ui
+            GUILayout.Space(5f);
+            DrawChildQuery();
+            GUILayout.Space(7f);
+
             // select the character
-            if (GUILayout.Button("select")) {
+            if (GUILayout.Button("select it", GUILayout.ExpandWidth(false))) {
                 SelectCharacter(character);
             }
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.BeginVertical();
+            var ch = new SerializedObject(character);
+            var state = ch.FindProperty("m_RemoteState");
+            EditorGUILayout.PropertyField(state);
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndHorizontal();
         }
 
         EditorGUILayout.EndVertical();
     }
 
+    /// show input field to query child obj of character
+    void DrawChildQuery() {
+        GUILayout.Label("child query");
+
+        EditorGUILayout.BeginHorizontal();
+
+        m_Query = GUILayout.TextField(
+            m_Query,
+            GUILayout.ExpandWidth(false),
+            GUILayout.MinWidth(200.0f)
+        );
+
+        if (m_Query != "") {
+            GUILayout.Space(5f);
+
+            if (GUILayout.Button("x", GUILayout.ExpandWidth(false))) {
+                ClearQuery();
+            }
+        }
+
+        EditorGUILayout.EndHorizontal();
+    }
+
     // -- commands --
-    /// select the character
+    /// clear query
+    void ClearQuery() {
+        m_Query = "";
+    }
+
+    /// select the character or child
     void SelectCharacter(DisconeCharacter character) {
         if (character == null) {
             return;
         }
 
+        var selection = character.transform;
+        if (m_Query != "") {
+            foreach (var child in selection.GetComponentsInChildren<Transform>()) {
+                if (child.name.Contains(m_Query)) {
+                    selection = child;
+                }
+            }
+        }
+
         // select their character
-        Selection.activeGameObject = character.gameObject;
+        Selection.activeGameObject = selection.gameObject;
+    }
+
+    // -- queries --
+    /// build the path from the transform
+    string PathFrom(Transform t) {
+        if (t.parent == null) {
+            return t.name;
+        }
+
+        return $"{PathFrom(t.parent)}/{t.name}";
     }
 }
 
