@@ -203,7 +203,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         Server_DriveCharacter(character);
     }
 
-
     /// drive a new character
     [Command]
     void Command_DriveCharacter(DisconeCharacter dstChar) {

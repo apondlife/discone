@@ -37,25 +37,17 @@ public class CharacterDust: MonoBehaviour {
     [Tooltip("the pivot particle emitter")]
     [SerializeField] ParticleSystem m_PivotParticles;
 
-    [Tooltip("the particle that shows horizontal speed")]
-    [SerializeField] ParticleSystem m_SpeedLine;
-
     // -- props --
     /// the character's state
     CharacterState m_State;
-
-    bool isDebug;
 
     // -- lifecycle --
     void Start() {
         var character = GetComponentInParent<Character>();
         m_State = character.State;
-
-        isDebug = character.name == "icecream.1";
     }
 
     void FixedUpdate() {
-
         if (m_State.IsOnWall) {
             if (!m_WallParticles.isPlaying) {
                 m_WallParticles.Play();
@@ -72,7 +64,6 @@ public class CharacterDust: MonoBehaviour {
                 m_WallParticles.Stop();
             }
         }
-
 
         if (m_State.IsGrounded) {
             // check for deceleration, used for both skid and pivot dust
@@ -121,7 +112,6 @@ public class CharacterDust: MonoBehaviour {
             }
         }
 
-
         // if just landed
         if (m_State.IsGrounded) {
             m_JumpParticles.transform.up = m_State.Ground.Normal;
@@ -130,21 +120,7 @@ public class CharacterDust: MonoBehaviour {
             var particles = Mathf.FloorToInt(m_GroundAccelerationToDust * groundForce);
             m_JumpParticles.Emit(particles);
         }
-
-        UpdateSpeedLine();
-    }
-
-    void UpdateSpeedLine() {
-        var v = m_State.Curr.GroundVelocity;
-
-        // match speed line length to planar velocity
-        var main = m_SpeedLine.main;
-        main.startSpeed = v.magnitude;
-
-        // rotate speed line emitter opposite planar movement
-        if (v != Vector3.zero) {
-            m_SpeedLine.transform.forward = -v.normalized;
-        }
     }
 }
+
 }

@@ -144,8 +144,10 @@ public sealed class CharacterLimb: MonoBehaviour {
             return;
         }
 
+        // TODO: the zero check is a hack (ish) for when we try to check closest
+        // point against a concave mesh
         var pos = other.ClosestPoint(m_Anchor.position);
-        if (!m_HasTarget || HasCompletedStride(pos)) {
+        if (pos != Vector3.zero && (!m_HasTarget || HasCompletedStride(pos))) {
             // set current position from the bone's current position in our local space
             m_CurrPosition = transform.InverseTransformPoint(
                 m_Animator.GetBoneTransform(GoalBone).position
@@ -166,9 +168,10 @@ public sealed class CharacterLimb: MonoBehaviour {
 
         m_HasTarget = true;
 
+        // TODO: the zero check is a hack (ish) for when we try to check closest
+        // point against a concave mesh
         var pos = other.ClosestPoint(m_Anchor.position);
-        if (HasCompletedStride(pos)) {
-            Debug.Log($"[chrctr] changing stride {m_DestPosition} => {pos} [{Vector3.SqrMagnitude(m_DestPosition - pos)} vs {m_SqrStrideLength}]");
+        if (pos != Vector3.zero && HasCompletedStride(pos)) {
             m_DestPosition = pos;
         }
     }
