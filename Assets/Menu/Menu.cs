@@ -38,6 +38,11 @@ sealed class Menu: UIBehaviour {
     [Tooltip("the list of pages (set at runtime)")]
     [SerializeField] Page[] m_Pages;
 
+    // -- dispatched --
+    [Header("dispatched")]
+    [Tooltip("an event to initiate a server connection")]
+    [SerializeField] VoidEvent m_ConnectToServer;
+
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("when an offset page button is pressed")]
@@ -84,6 +89,7 @@ sealed class Menu: UIBehaviour {
         // bind events
         m_Subscriptions
             .Add(m_Input.Toggle, OnTogglePressed)
+            .Add(m_Input.Connect, OnConnectPressed)
             .Add(m_OffsetPagePressed, OnOffsetPagePressed);
 
         // set initial state
@@ -225,6 +231,13 @@ sealed class Menu: UIBehaviour {
     /// when the toggle button is pressed
     void OnTogglePressed(InputAction.CallbackContext _) {
         Toggle();
+    }
+
+    /// when the connnect button is pressed
+    void OnConnectPressed(InputAction.CallbackContext _) {
+        if (m_IsOpen.Value) {
+            m_ConnectToServer.Raise();
+        }
     }
 
     /// when an offset page button is pressed
