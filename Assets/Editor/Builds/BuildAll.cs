@@ -66,7 +66,7 @@ public class BuildAll {
             mo.targetGroup = BuildTargetGroup.Standalone;
             mo.locationPathName = Path.Combine(buildDir, Target.Mac, k_Name);
 
-            BuildPipeline.BuildPlayer(mo);
+            BuildPlayer(mo);
         }
 
         // build win
@@ -78,7 +78,7 @@ public class BuildAll {
             wo.targetGroup = BuildTargetGroup.Standalone;
             wo.locationPathName = Path.Combine(buildDir, Target.Windows, k_Name + ".exe");
 
-            BuildPipeline.BuildPlayer(wo);
+            BuildPlayer(wo);
         }
 
         // build win-server
@@ -91,7 +91,7 @@ public class BuildAll {
             so.targetGroup = BuildTargetGroup.Standalone;
             so.locationPathName = Path.Combine(buildDir, Target.WindowsServer, k_Name + ".exe");
 
-            BuildPipeline.BuildPlayer(so);
+            BuildPlayer(so);
         }
 
         // restore the user's initial target
@@ -99,6 +99,16 @@ public class BuildAll {
             BuildPipeline.GetBuildTargetGroup(initial),
             initial
         );
+    }
+
+    /// build a specific player
+    void BuildPlayer(BuildPlayerOptions options) {
+        EditorUserBuildSettings.SwitchActiveBuildTarget(
+            options.targetGroup,
+            options.target
+        );
+
+        BuildPipeline.BuildPlayer(options);
     }
 
     // -- queries --
