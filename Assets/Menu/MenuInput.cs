@@ -10,6 +10,9 @@ sealed class MenuInput: MonoBehaviour {
     [Tooltip("the toggle action")]
     [SerializeField] InputActionReference m_Toggle;
 
+    [Tooltip("the connect action")]
+    [SerializeField] InputActionReference m_Connect;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the menu input actions")]
@@ -28,6 +31,11 @@ sealed class MenuInput: MonoBehaviour {
     /// the toggle action
     public InputAction Toggle {
         get => m_Toggle;
+    }
+
+    /// the connect action
+    public InputAction Connect {
+        get => m_Connect;
     }
 }
 
