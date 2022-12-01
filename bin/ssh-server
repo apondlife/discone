@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# -- constants --
+# local ip for the server
+LOCAL_IP="192.168.1.158"
+
+# public ip for the server
+PUBLIC_IP="72.80.180.97"
+
+# -- props --
+# if this should use the local ip
+LOCAL=""
+
+# -- parsing --
+Usage() {
+  echo "usage: ./bin/ssh-server [-hl]"
+  exit -1
+}
+
+while getopts ":hl" option; do
+  case "${option}" in
+    h*) Usage ;;
+    l*) LOCAL="1" ;;
+  esac
+done
+
+# -- main --
+Main() {
+  # use public ip by default
+  local ip="$PUBLIC_IP"
+
+  # unless the local flag is passed
+  if [ -n "$LOCAL" ]; then
+    ip="$LOCAL_IP"
+  fi
+
+  # connect to the server
+  ssh "frog@$ip"
+}
+
+Main "$*"
