@@ -90,6 +90,7 @@ public class BuildAll {
             so.subtarget = (int)StandaloneBuildSubtarget.Server;
             so.targetGroup = BuildTargetGroup.Standalone;
             so.locationPathName = Path.Combine(buildDir, Target.WindowsServer, k_Name + ".exe");
+            so.extraScriptingDefines = new[] { "UNITY_SERVER" };
 
             BuildPlayer(so);
         }
@@ -103,11 +104,20 @@ public class BuildAll {
 
     /// build a specific player
     void BuildPlayer(BuildPlayerOptions options) {
+        // clean the dir
+        if (Directory.Exists(options.locationPathName)) {
+            Directory.Delete(options.locationPathName, true);
+        }
+
+        // switch target; not switching target may cause some build defines to
+        // not be set directly
+        // https://forum.unity.com/threads/issues-with-build-player-options-subtarget-setting-dedicated-server-option-for-buildpipeline.1306821/
         EditorUserBuildSettings.SwitchActiveBuildTarget(
             options.targetGroup,
             options.target
         );
 
+        // build player
         BuildPipeline.BuildPlayer(options);
     }
 
