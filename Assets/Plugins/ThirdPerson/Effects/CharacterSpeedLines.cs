@@ -46,7 +46,9 @@ public class CharacterSpeedLines: MonoBehaviour {
 
     void FixedUpdate() {
         // attach to the anchor
-        transform.position = m_Anchor.position;
+        if (m_Anchor != null) {
+            transform.position = m_Anchor.position;
+        }
 
         var state = m_State.Curr;
         var v = state.GroundVelocity;
