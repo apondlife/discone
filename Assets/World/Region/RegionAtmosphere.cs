@@ -27,7 +27,7 @@ public class RegionAtmosphere: MonoBehaviour {
     Region m_DstRegion;
 
     /// the interpolated region
-    Region m_CurrRegion;
+    public Region m_CurrRegion;
 
     /// a list of event subscriptions
     DisposeBag m_Subscriptions = new DisposeBag();
@@ -61,7 +61,7 @@ public class RegionAtmosphere: MonoBehaviour {
             m_Timer.Pct
         );
 
-        Render(m_CurrRegion);
+        Render();
     }
 
     void OnDestroy() {
@@ -70,7 +70,10 @@ public class RegionAtmosphere: MonoBehaviour {
     }
 
     // -- commands --
-    void Render(Region region) {
+    /// render the current region
+    void Render() {
+        var region = m_CurrRegion;
+
         // update sky material color
         var color = region.SkyColor;
         m_Material.SetColor(ShaderProps.Foreground, color.Foreground);
@@ -92,12 +95,15 @@ public class RegionAtmosphere: MonoBehaviour {
         if (m_SrcRegion == null) {
             m_SrcRegion = region;
             m_DstRegion = region;
-            Render(m_DstRegion);
+
+            Region.Lerp(ref m_CurrRegion, region, region, 1.0f);
+            Render();
         }
         // otherwise, interpolate from current region tonew region
         else {
             m_SrcRegion = m_CurrRegion.Copy();
             m_DstRegion = region;
+
             m_Timer.Start();
         }
     }
