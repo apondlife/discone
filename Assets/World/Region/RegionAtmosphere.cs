@@ -73,10 +73,10 @@ public class RegionAtmosphere: MonoBehaviour {
     void Render(Region region) {
         // update sky material color
         var color = region.SkyColor;
-        m_Material.SetColor("_Foreground", color.Foreground);
-        m_Material.SetFloat("_ExposureForeground", color.ForegroundExposure);
-        m_Material.SetColor("_Background", color.Background);
-        m_Material.SetFloat("_ExposureBackground", color.BackgroundExposure);
+        m_Material.SetColor(ShaderProps.Foreground, color.Foreground);
+        m_Material.SetFloat(ShaderProps.ForegroundExposure, color.ForegroundExposure);
+        m_Material.SetColor(ShaderProps.Background, color.Background);
+        m_Material.SetFloat(ShaderProps.BackgroundExposure, color.BackgroundExposure);
 
         // update fog settings
         var fog = region.Fog;
@@ -88,16 +88,16 @@ public class RegionAtmosphere: MonoBehaviour {
     // -- events --
     /// when the region changes
     void OnRegionEntered(Region region) {
-        // if this is the first region, set the color directly
+        // if this is the first region, set everything directly
         if (m_SrcRegion == null) {
             m_SrcRegion = region;
             m_DstRegion = region;
             Render(m_DstRegion);
         }
-        // otherwise, interpolate from current color to region color
+        // otherwise, interpolate from current region tonew region
         else {
-            m_DstRegion = region;
             m_SrcRegion = m_CurrRegion.Copy();
+            m_DstRegion = region;
             m_Timer.Start();
         }
     }

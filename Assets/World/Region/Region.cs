@@ -21,7 +21,13 @@ public record Region {
 
     // -- lifetime --
     public Region() {
-        SkyColor = new RegionSkyColor(Color.black, 0.0f, Color.black, 0.0f);
+        SkyColor = new RegionSkyColor(
+            Color.black,
+            0.0f,
+            Color.black,
+            0.0f
+        );
+
         Fog = new RegionFog();
     }
 

@@ -10,6 +10,18 @@ static class ShaderProps {
 
     /// the emission texture
     public static int Emission = Shader.PropertyToID("_EmissionMap");
+
+    /// the foreground color
+    public static int Foreground = Shader.PropertyToID("_Foreground");
+
+    /// the foreground color exposure
+    public static int ForegroundExposure = Shader.PropertyToID("_ExposureForeground");
+
+    /// the background color
+    public static int Background = Shader.PropertyToID("_Background");
+
+    /// the background color exposure
+    public static int BackgroundExposure = Shader.PropertyToID("_ExposureBackground");
 }
 
 }
