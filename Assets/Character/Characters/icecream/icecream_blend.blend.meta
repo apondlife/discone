@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: b81cc436a3918b64d84489270ec02252
 ModelImporter:
-  serializedVersion: 20200
+  serializedVersion: 21202
   internalIDToNameTable:
   - first:
       74: -623603649343465320
@@ -16,22 +16,22 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material.002
-    second: {fileID: 2100000, guid: 060790405a624924d981c5c9344828a1, type: 2}
+    second: {fileID: 2100000, guid: a8003210ef49d5b418f78062cbea7b49, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material.003
-    second: {fileID: 2100000, guid: 214de32d31a7f4543baac91825a538e9, type: 2}
+    second: {fileID: 2100000, guid: a8003210ef49d5b418f78062cbea7b49, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material.004
-    second: {fileID: 2100000, guid: 323505a0400fd7441a23f170297fc4ca, type: 2}
+    second: {fileID: 2100000, guid: a8003210ef49d5b418f78062cbea7b49, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material.005
-    second: {fileID: 2100000, guid: f508c2b49844a49448c1f61790fd13c9, type: 2}
+    second: {fileID: 2100000, guid: a8003210ef49d5b418f78062cbea7b49, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -47,6 +47,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -76,6 +77,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
     fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
@@ -87,6 +89,7 @@ ModelImporter:
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
+    optimizeBones: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8

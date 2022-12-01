@@ -1,8 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityAtoms.BaseAtoms;
-using Mirror;
 
 public class CharacterHat : MonoBehaviour {
     public const string k_NoHat = "none";

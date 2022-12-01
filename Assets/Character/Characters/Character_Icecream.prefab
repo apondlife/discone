@@ -35,6 +35,10 @@ PrefabInstance:
       propertyPath: m_IsInitial
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1508036570277912210, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Anchor
+      value: 
+      objectReference: {fileID: 5518287974099150916}
     - target: {fileID: 1653035016056666860, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -143,10 +147,6 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 5171227754028194503, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_Name
-      value: FX
-      objectReference: {fileID: 0}
     - target: {fileID: 5243335814077143966, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -154,7 +154,7 @@ PrefabInstance:
     - target: {fileID: 5285072794697494767, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Head
       value: 
-      objectReference: {fileID: 5730620147798107482}
+      objectReference: {fileID: 0}
     - target: {fileID: 5598734104122165758, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -303,6 +303,10 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9105226523579635813, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Anchor
+      value: 
+      objectReference: {fileID: 5518287974099150916}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
 --- !u!4 &4711384473151566414 stripped
@@ -371,8 +375,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5f193421ea3f2184d9a5a6ab2182387d, type: 3}
---- !u!4 &5730620147798107482 stripped
+--- !u!4 &5518287974099150916 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -6546258106076780390, guid: 5f193421ea3f2184d9a5a6ab2182387d, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2753003302098249092, guid: 5f193421ea3f2184d9a5a6ab2182387d, type: 3}
   m_PrefabInstance: {fileID: 7683216032528747968}
   m_PrefabAsset: {fileID: 0}
