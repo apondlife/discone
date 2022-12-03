@@ -88,16 +88,19 @@ public sealed class Shortcuts: EditorWindow {
                 }
             L.EV();
 
-            E.Space(15f, false);
+            // show the state ui
+            if (m_Character != null) {
+                E.Space(15f, false);
 
-            m_ScrollPos = L.BS(m_ScrollPos);
-                L.BV(G.ExpandWidth(true));
-                    var state = new SerializedObject(m_Character)
-                        .FindProperty("m_RemoteState");
+                m_ScrollPos = L.BS(m_ScrollPos);
+                    L.BV(G.ExpandWidth(true));
+                        var state = new SerializedObject(m_Character)
+                            .FindProperty("m_RemoteState");
 
-                    E.PropertyField(state);
-                L.EV();
-            L.ES();
+                        E.PropertyField(state);
+                    L.EV();
+                L.ES();
+            }
         L.EH();
     }
 
