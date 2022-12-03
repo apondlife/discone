@@ -77,8 +77,8 @@ public sealed class CharacterLimb: MonoBehaviour {
             delta / (isBlendingIn ? m_BlendInDuration : m_BlendOutDuration)
         );
 
+        // lerp the ik position towards destination
         if (m_IsActive) {
-            // lerp the ik position towards destination
             m_CurrPosition = Vector3.MoveTowards(
                 m_CurrPosition,
                 transform.InverseTransformPoint(m_DestPosition),
@@ -144,10 +144,14 @@ public sealed class CharacterLimb: MonoBehaviour {
             return;
         }
 
-        // TODO: the zero check is a hack (ish) for when we try to check closest
-        // point against a concave mesh
+        // TODO: closest point returns its arg if the mesh is convex
         var pos = other.ClosestPoint(m_Anchor.position);
-        if (pos != Vector3.zero && (!m_HasTarget || HasCompletedStride(pos))) {
+        if (pos == m_Anchor.position) {
+            return;
+        }
+
+        Debug.Log($"closest point {pos} vs ${m_Anchor.position}");
+        if (!m_HasTarget || HasCompletedStride(pos)) {
             // set current position from the bone's current position in our local space
             m_CurrPosition = transform.InverseTransformPoint(
                 m_Animator.GetBoneTransform(GoalBone).position
@@ -156,9 +160,6 @@ public sealed class CharacterLimb: MonoBehaviour {
             // move towards the closest point on sruface
             m_DestPosition = pos;
         }
-
-        // activate ik
-        m_HasTarget = true;
     }
 
     void OnTriggerStay(Collider other) {
@@ -166,12 +167,15 @@ public sealed class CharacterLimb: MonoBehaviour {
             return;
         }
 
-        m_HasTarget = true;
-
-        // TODO: the zero check is a hack (ish) for when we try to check closest
-        // point against a concave mesh
+        // TODO: closest point returns its arg if the mesh is convex
         var pos = other.ClosestPoint(m_Anchor.position);
-        if (pos != Vector3.zero && HasCompletedStride(pos)) {
+        if (pos == m_Anchor.position) {
+            return;
+        }
+
+        Debug.Log($"closest point {pos} vs ${m_Anchor.position}");
+        m_HasTarget = true;
+        if (HasCompletedStride(pos)) {
             m_DestPosition = pos;
         }
     }
