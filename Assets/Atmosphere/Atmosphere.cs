@@ -5,7 +5,7 @@ using ThirdPerson;
 namespace Discone {
 
 /// the current skybox region
-public class RegionAtmosphere: MonoBehaviour {
+public class Atmosphere: MonoBehaviour {
     // -- tunables --
     [Header("tunables")]
     [Tooltip("the transition timer between region colors")]
