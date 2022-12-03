@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 
+using E = UnityEditor.EditorGUILayout;
+using G = UnityEngine.GUILayout;
+
 namespace Discone.Editor {
 
 /// normalize scale of a single object, rescaling children
@@ -12,13 +15,13 @@ public sealed class RescaleSelection: EditSelection.Component {
 
     public override void OnGUI() {
         // show description
-        EditorGUILayout.LabelField(
+        E.LabelField(
             "sets scale of to <1,1,1> and adjusts the scale of all children",
             EditorStyles.wordWrappedLabel
         );
 
         // show button
-        if (GUILayout.Button("apply")) {
+        if (G.Button("apply")) {
             Call();
         }
     }

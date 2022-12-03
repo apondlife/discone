@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 
+using E = UnityEditor.EditorGUILayout;
+using G = UnityEngine.GUILayout;
+
 namespace Discone.Editor {
 
 /// randomly rotate the selected objects by a bounded amount
@@ -19,14 +22,14 @@ public sealed class JitterSelection: EditSelection.Component {
 
     public override void OnGUI() {
         // show rotation
-        m_MaxRotation = EditorGUILayout.Vector3Field("max rotation", m_MaxRotation);
-        if (GUILayout.Button("rotate")) {
+        m_MaxRotation = E.Vector3Field("max rotation", m_MaxRotation);
+        if (G.Button("rotate")) {
             Rotate();
         }
 
         // show translation
-        m_MaxTranslation = EditorGUILayout.Vector3Field("max translation", m_MaxTranslation);
-        if (GUILayout.Button("translate")) {
+        m_MaxTranslation = E.Vector3Field("max translation", m_MaxTranslation);
+        if (G.Button("translate")) {
             Translate();
         }
     }

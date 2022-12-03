@@ -2,10 +2,14 @@ using UnityEngine;
 using UnityEditor;
 using UnityAtoms;
 
+using E = UnityEditor.EditorGUILayout;
+using G = UnityEngine.GUILayout;
+
 namespace Discone.Editor {
 
 /// a base class for selection editors
 public sealed class Shortcuts: EditorWindow {
+
     // -- props --
     /// the editor title
     const string k_Title = "shortcuts";
@@ -15,8 +19,14 @@ public sealed class Shortcuts: EditorWindow {
     [SerializeField] EntitiesVariable m_Entities;
 
     // -- props --
+    /// the current scroll position
+    Vector2 m_ScrollPos;
+
     /// the search query
     string m_Query = "";
+
+    /// the manually selected character
+    DisconeCharacter m_Character;
 
     // -- lifecycle --
     /// show the window
@@ -46,69 +56,66 @@ public sealed class Shortcuts: EditorWindow {
     // -- ui --
     /// draw the character shortcuts
     void DrawCharacterView(DisconeCharacter character) {
-        EditorGUILayout.BeginVertical();
+        L.BH(new GUIStyle() {
+            margin = new RectOffset(10, 10, 10, 10)
+        });
+            L.BV(G.MaxWidth(300.0f));
+                // show current or selected character
+                E.LabelField(
+                    "current character",
+                    EditorStyles.boldLabel
+                );
 
-        // show inspect shortcuts
-        EditorGUILayout.LabelField(
-            "current character",
-            EditorStyles.boldLabel
-        );
+                m_Character = (DisconeCharacter)E.ObjectField(
+                    character ?? m_Character,
+                    typeof(DisconeCharacter),
+                    allowSceneObjects: true
+                );
 
-        // if character missing, game is probably not running
-        if (character == null) {
-            EditorGUILayout.LabelField("no current character set");
-        }
-        // show the character ui
-        else {
-            EditorGUILayout.BeginHorizontal();
+                // show the character ui
+                if (m_Character != null) {
+                    L.BV();
+                        // show query ui
+                        G.Space(5f);
+                        DrawChildSearch();
+                        G.Space(7f);
 
-            EditorGUILayout.BeginVertical();
+                        // select the object
+                        if (G.Button("select it", G.ExpandWidth(false))) {
+                            SelectChild();
+                        }
+                    L.EV();
+                }
+            L.EV();
 
-            // show query ui
-            GUILayout.Space(5f);
-            DrawChildQuery();
-            GUILayout.Space(7f);
+            E.Space(15f, false);
 
-            // select the character
-            if (GUILayout.Button("select it", GUILayout.ExpandWidth(false))) {
-                SelectCharacter(character);
-            }
+            m_ScrollPos = L.BS(m_ScrollPos);
+                L.BV(G.ExpandWidth(true));
+                    var state = new SerializedObject(m_Character)
+                        .FindProperty("m_RemoteState");
 
-            EditorGUILayout.EndVertical();
-
-            EditorGUILayout.BeginVertical();
-            var ch = new SerializedObject(character);
-            var state = ch.FindProperty("m_RemoteState");
-            EditorGUILayout.PropertyField(state);
-            EditorGUILayout.EndVertical();
-
-            EditorGUILayout.EndHorizontal();
-        }
-
-        EditorGUILayout.EndVertical();
+                    E.PropertyField(state);
+                L.EV();
+            L.ES();
+        L.EH();
     }
 
     /// show input field to query child obj of character
-    void DrawChildQuery() {
-        GUILayout.Label("child query");
+    void DrawChildSearch() {
+        G.Label("child query");
 
-        EditorGUILayout.BeginHorizontal();
+        L.BH();
+            m_Query = G.TextField(m_Query);
 
-        m_Query = GUILayout.TextField(
-            m_Query,
-            GUILayout.ExpandWidth(false),
-            GUILayout.MinWidth(200.0f)
-        );
+            if (m_Query != "") {
+                G.Space(5f);
 
-        if (m_Query != "") {
-            GUILayout.Space(5f);
-
-            if (GUILayout.Button("x", GUILayout.ExpandWidth(false))) {
-                ClearQuery();
+                if (G.Button("x", G.ExpandWidth(false))) {
+                    ClearQuery();
+                }
             }
-        }
-
-        EditorGUILayout.EndHorizontal();
+        L.EH();
     }
 
     // -- commands --
@@ -118,12 +125,12 @@ public sealed class Shortcuts: EditorWindow {
     }
 
     /// select the character or child
-    void SelectCharacter(DisconeCharacter character) {
-        if (character == null) {
+    void SelectChild() {
+        if (m_Character == null) {
             return;
         }
 
-        var selection = character.transform;
+        var selection = m_Character.transform;
         if (m_Query != "") {
             foreach (var child in selection.GetComponentsInChildren<Transform>()) {
                 if (child.name.Contains(m_Query)) {
