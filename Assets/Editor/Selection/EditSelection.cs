@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 
+using E = UnityEditor.EditorGUILayout;
+using G = UnityEngine.GUILayout;
+
 namespace Discone.Editor {
 
 /// a base class for selection editors
@@ -37,25 +40,23 @@ public sealed class EditSelection: EditorWindow {
     }
 
     void OnGUI() {
-        EditorGUILayout.BeginVertical();
+        L.BV();
+            var n = m_Components.Length;
+            for (var i = 0; i < n; i++) {
+                var component = m_Components[i];
 
-        var n = m_Components.Length;
-        for (var i = 0; i < n; i++) {
-            var component = m_Components[i];
+                // show title
+                E.LabelField(component.Title, EditorStyles.boldLabel);
 
-            // show title
-            EditorGUILayout.LabelField(component.Title, EditorStyles.boldLabel);
+                // render component
+                component.OnGUI();
 
-            // render component
-            component.OnGUI();
-
-            // add divider
-            if (i < n - 1) {
-                EditorGUILayout.Space(15.0f);
+                // add divider
+                if (i < n - 1) {
+                    E.Space(15.0f);
+                }
             }
-        }
-
-        EditorGUILayout.EndVertical();
+        L.EV();
     }
 
     // -- children --

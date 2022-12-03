@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 
+using E = UnityEditor.EditorGUILayout;
+using G = UnityEngine.GUILayout;
+
 namespace Discone.Editor {
 
 /// rename children of a game object; found on the internet
@@ -20,11 +23,11 @@ public sealed class RenameSelection: EditSelection.Component {
 
     public override void OnGUI() {
         // show fields
-        m_Name = EditorGUILayout.TextField("name", m_Name);
-        m_Start = EditorGUILayout.IntField("start index", m_Start);
+        m_Name = E.TextField("name", m_Name);
+        m_Start = E.IntField("start index", m_Start);
 
         // show button
-        if (GUILayout.Button("apply")) {
+        if (G.Button("apply")) {
             Call();
         }
     }

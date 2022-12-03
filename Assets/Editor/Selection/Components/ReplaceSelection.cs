@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 
+using E = UnityEditor.EditorGUILayout;
+using G = UnityEngine.GUILayout;
+
 namespace Discone.Editor {
 
 /// randomly rotate the selected objects by a bounded amount
@@ -16,13 +19,13 @@ public sealed class ReplaceSelection: EditSelection.Component {
 
     public override void OnGUI() {
         // show description
-        EditorGUILayout.LabelField(
+        E.LabelField(
             "best effort replace all objects with the prefab",
             EditorStyles.wordWrappedLabel
         );
 
         // show prefab field
-        m_Prefab = (GameObject)EditorGUILayout.ObjectField(
+        m_Prefab = (GameObject)E.ObjectField(
             "prefab",
             m_Prefab,
             typeof(GameObject),
@@ -30,7 +33,7 @@ public sealed class ReplaceSelection: EditSelection.Component {
         );
 
         // show button
-        if (GUILayout.Button("apply")) {
+        if (G.Button("apply")) {
             Call();
         }
     }
