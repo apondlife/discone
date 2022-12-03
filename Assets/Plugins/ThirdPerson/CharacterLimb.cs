@@ -150,7 +150,6 @@ public sealed class CharacterLimb: MonoBehaviour {
             return;
         }
 
-        Debug.Log($"closest point {pos} vs ${m_Anchor.position}");
         if (!m_HasTarget || HasCompletedStride(pos)) {
             // set current position from the bone's current position in our local space
             m_CurrPosition = transform.InverseTransformPoint(
@@ -173,7 +172,6 @@ public sealed class CharacterLimb: MonoBehaviour {
             return;
         }
 
-        Debug.Log($"closest point {pos} vs ${m_Anchor.position}");
         m_HasTarget = true;
         if (HasCompletedStride(pos)) {
             m_DestPosition = pos;
