@@ -16,7 +16,11 @@ public sealed class EditSelection: EditorWindow {
     const string k_Name = "edit";
 
     // -- props --
+    /// the list of components
     Component[] m_Components;
+
+    /// the scroll position
+    Vector2 m_ScrollPos;
 
     // -- lifecycle --
     /// show the window
@@ -30,33 +34,51 @@ public sealed class EditSelection: EditorWindow {
         window.Show();
     }
 
-    void Awake() {
-        m_Components = new Component[] {
-            new RenameSelection(),
-            new JitterSelection(),
-            new ReplaceSelection(),
-            new RescaleSelection(),
-        };
+    void OnGUI() {
+        m_ScrollPos = L.BS(m_ScrollPos);
+            L.BV(
+                new GUIStyle() {
+                    margin = new RectOffset(10, 10, 10, 10)
+                },
+                G.MaxWidth(300f)
+            );
+                var n = Components.Length;
+                for (var i = 0; i < n; i++) {
+                    var component = Components[i];
+
+                    // show title
+                    E.LabelField(
+                        component.Title,
+                        EditorStyles.boldLabel
+                    );
+
+                    // render component
+                    component.OnGUI();
+
+                    // add divider
+                    if (i < n - 1) {
+                        E.Space(15f);
+                    }
+                }
+            L.EV();
+        L.ES();
     }
 
-    void OnGUI() {
-        L.BV();
-            var n = m_Components.Length;
-            for (var i = 0; i < n; i++) {
-                var component = m_Components[i];
-
-                // show title
-                E.LabelField(component.Title, EditorStyles.boldLabel);
-
-                // render component
-                component.OnGUI();
-
-                // add divider
-                if (i < n - 1) {
-                    E.Space(15.0f);
-                }
+    // -- queries --
+    /// the list of components
+    Component[] Components {
+        get {
+            if (m_Components == null) {
+                m_Components = new Component[] {
+                    new RenameSelection(),
+                    new JitterSelection(),
+                    new ReplaceSelection(),
+                    new NormalizeSelection(),
+                };
             }
-        L.EV();
+
+            return m_Components;
+        }
     }
 
     // -- children --
