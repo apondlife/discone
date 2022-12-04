@@ -23,10 +23,18 @@ public sealed class RenameSelection: EditSelection.Component {
 
     public override void OnGUI() {
         // show fields
-        m_Name = E.TextField("name", m_Name);
-        m_Start = E.IntField("start index", m_Start);
+        m_Name = E.TextField(
+            "name",
+            m_Name
+        );
+
+        m_Start = E.IntField(
+            "start index",
+            m_Start
+        );
 
         // show button
+        G.Space(3f);
         if (G.Button("apply")) {
             Call();
         }

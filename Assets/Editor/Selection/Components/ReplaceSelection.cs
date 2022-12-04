@@ -33,6 +33,7 @@ public sealed class ReplaceSelection: EditSelection.Component {
         );
 
         // show button
+        G.Space(3f);
         if (G.Button("apply")) {
             Call();
         }

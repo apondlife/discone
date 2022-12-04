@@ -22,13 +22,27 @@ public sealed class JitterSelection: EditSelection.Component {
 
     public override void OnGUI() {
         // show rotation
-        m_MaxRotation = E.Vector3Field("max rotation", m_MaxRotation);
+        m_MaxRotation = E.Vector3Field(
+            "max rotation",
+            m_MaxRotation,
+            G.MaxWidth(200f)
+        );
+
+        G.Space(3f);
         if (G.Button("rotate")) {
             Rotate();
         }
 
+        G.Space(10f);
+
         // show translation
-        m_MaxTranslation = E.Vector3Field("max translation", m_MaxTranslation);
+        m_MaxTranslation = E.Vector3Field(
+            "max translation",
+            m_MaxTranslation,
+            G.MaxWidth(200f)
+        );
+
+        G.Space(3f);
         if (G.Button("translate")) {
             Translate();
         }
