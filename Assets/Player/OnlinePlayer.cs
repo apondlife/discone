@@ -255,7 +255,9 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // notify target of switch
         Target_SwitchCharacter(connectionToClient, dst);
 
+        // notify all clients of ownership change
         m_Character = dstCharacter;
+        Client_ChangeOwnership(dstCharacter.gameObject);
     }
 
     /// switch to the character
@@ -292,10 +294,30 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         }
     }
 
+    /// notify all clients that a player switched to a character
+    [ClientRpc]
+    void Client_ChangeOwnership(GameObject character) {
+        // change character
+        var prev = m_Character;
+        var next = character.GetComponent<DisconeCharacter>();
+        m_Character = next;
+
+        // publish event
+        var pair = new DisconeCharacterPair();
+        pair.Item1 = next;
+        pair.Item2 = prev;
+        m_CharacterSwitched.Raise(pair);
+    }
+
     // -- queries --
     /// the player's current character
     public DisconeCharacter Character {
-        get => isClient ? m_LocalCharacter.Value : m_Character;
+        get => m_Character;
+    }
+
+    /// the player's current position
+    public Vector3 Position {
+        get => m_Character.Position;
     }
 
     /// the world coordinate
