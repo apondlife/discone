@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// the world of discone
 [RequireComponent(typeof(WorldChunks))]
-public sealed class World: NetworkBehaviour {
+public sealed class World: MonoBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("the world singleton")]
