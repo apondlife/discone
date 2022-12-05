@@ -91,6 +91,7 @@ public abstract class System {
         m_Phase.Exit();
         m_Phase = next;
         m_PhaseStart = Time.time;
+        m_PhaseElapsed = 0;
         m_Phase.Enter();
 
         // debug
