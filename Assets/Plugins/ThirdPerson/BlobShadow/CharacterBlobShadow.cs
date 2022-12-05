@@ -51,7 +51,8 @@ public class CharacterBlobShadow : MonoBehaviour {
     /// the material of the projector
     Material m_ProjectorMaterial;
 
-    private void OnValidate() {
+    // -- lifetime --
+    private void Awake() {
         if(m_CharacterFeet == null) {
             return;
         }
@@ -68,8 +69,6 @@ public class CharacterBlobShadow : MonoBehaviour {
         transform.position = position;
     }
 
-
-    // -- lifetime --
     private void Start() {
         m_Projector = GetComponent<Projector>();
         m_BaseSize = m_Projector.orthographicSize;
