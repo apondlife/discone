@@ -8,7 +8,7 @@ namespace Discone.Ui {
 
 /// the in-game menu
 [RequireComponent(typeof(MenuInput))]
-sealed class Menu: UIBehaviour {
+public sealed class Menu: UIBehaviour {
     // -- constants --
     /// the index when there is no page
     const int k_PageNone = -1;
@@ -24,8 +24,9 @@ sealed class Menu: UIBehaviour {
     [Tooltip("the transition timer")]
     [SerializeField] EaseTimer m_Transition;
 
-    [Tooltip("if the menu should be open on awake")]
-    [SerializeField] bool m_StartOn;
+    [Tooltip("if the menu should be open on start")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_StartOn")]
+    [SerializeField] bool m_IsOpenOnStart;
 
     // -- refs --
     [Header("refs")]
@@ -81,7 +82,7 @@ sealed class Menu: UIBehaviour {
         // set initial visibility of all pages
         for (var i = 0; i < m_Pages.Length; i++) {
             var page = m_Pages[i];
-            var enter = IsVisible && i == m_CurrPage;
+            var enter = IsOpen && i == m_CurrPage;
             page.Show(1.0f, enter);
             page.OnAfterTransition(enter);
         }
@@ -90,10 +91,11 @@ sealed class Menu: UIBehaviour {
         m_Subscriptions
             .Add(m_Input.Toggle, OnTogglePressed)
             .Add(m_Input.Connect, OnConnectPressed)
+            .Add(m_IsOpen.Changed, OnIsOpenChanged)
             .Add(m_OffsetPagePressed, OnOffsetPagePressed);
 
         // set initial state
-        if (m_StartOn) {
+        if (m_IsOpenOnStart) {
             Toggle(true);
         }
     }
@@ -124,7 +126,7 @@ sealed class Menu: UIBehaviour {
 
                 // if hidden, disable the menu
                 if (IsHiding) {
-                    IsVisible = false;
+                    IsOpen = false;
                 }
             }
         }
@@ -140,7 +142,7 @@ sealed class Menu: UIBehaviour {
     // -- commands --
     /// toggle the menu
     void Toggle() {
-        Toggle(!IsVisible);
+        Toggle(!IsOpen);
     }
 
     /// toggle the menu, optionally forcing a state
@@ -151,7 +153,7 @@ sealed class Menu: UIBehaviour {
         }
 
         // ignore redundant updates
-        if (IsVisible == isVisible) {
+        if (IsOpen == isVisible) {
             return;
         }
 
@@ -162,12 +164,12 @@ sealed class Menu: UIBehaviour {
         }
         // show the menu
         else {
-            IsVisible = true;
+            IsOpen = true;
             ChangeTo(m_SavedPage);
         }
     }
 
-    /// transition to the page at the index
+    /// start a transition to the page at the index
     void ChangeTo(int page) {
         // don't do this if in a transition
         if (m_Transition.IsActive) {
@@ -192,12 +194,12 @@ sealed class Menu: UIBehaviour {
     }
 
     // -- queries --
-    /// the current page, if any
+    /// the current page component, if any
     Page CurrPage {
         get => PageAt(m_CurrPage);
     }
 
-    /// the previous page, if any
+    /// the previous page component, if any
     Page PrevPage {
         get => PageAt(m_PrevPage);
     }
@@ -207,37 +209,39 @@ sealed class Menu: UIBehaviour {
         return index != k_PageNone ? m_Pages[index] : null;
     }
 
-    /// if the menu is showing
+    /// if the menu is transitioning from closed to open
     bool IsShowing {
         get => m_CurrPage != -1 && m_PrevPage == -1;
     }
 
-    /// if the menu is hiding
+    /// if the menu is transitioning from open to closed
     bool IsHiding {
         get => m_CurrPage == -1 && m_PrevPage != -1;
     }
 
     // -- props/hot --
-    /// if the menu is visible
-    bool IsVisible {
-        get => m_Main.activeSelf;
-        set {
-            m_Main.SetActive(value);
-            m_IsOpen?.SetValue(value);
-        }
+    /// .
+    bool IsOpen {
+        get => m_IsOpen.Value;
+        set => m_IsOpen.Value = value;
     }
 
     // -- events --
-    /// when the toggle button is pressed
+    /// when the toggle input is pressed
     void OnTogglePressed(InputAction.CallbackContext _) {
         Toggle();
     }
 
-    /// when the connnect button is pressed
+    /// when the connnect input is pressed
     void OnConnectPressed(InputAction.CallbackContext _) {
-        if (m_IsOpen.Value) {
+        if (IsOpen) {
             m_ConnectToServer.Raise();
         }
+    }
+
+    /// when the is open state changes
+    void OnIsOpenChanged(bool isOpen) {
+        m_Main.SetActive(isOpen);
     }
 
     /// when an offset page button is pressed
