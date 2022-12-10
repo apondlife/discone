@@ -45,11 +45,11 @@ sealed class EntityPerception: MonoBehaviour {
 
         // get player character details
         var pos = player.transform.position;
-        var character = player.Character;
+        var playerCharacter = player.Character;
 
         // set initial prev character once
         if (m_PrevCharacter == null) {
-            m_PrevCharacter = character;
+            m_PrevCharacter = playerCharacter;
         }
 
         // we can only talk to one character at a time, not ourselves, and
@@ -57,11 +57,12 @@ sealed class EntityPerception: MonoBehaviour {
         var talkable = (DisconeCharacter)null;
         var talkableDist = float.MaxValue;
 
-        // if we had a talkable character still in range, default to them
-        if (m_PrevTalkable == character) {
+        // if we just switched, don't try to talk to our old character
+        if (m_PrevTalkable == playerCharacter) {
             m_PrevTalkable = null;
         }
 
+        // if we had a talkable character still in range, default to them
         if (m_PrevTalkable != null) {
             var delta = pos - m_PrevTalkable.transform.position;
             var distXz = delta.XNZ().sqrMagnitude;
@@ -100,14 +101,14 @@ sealed class EntityPerception: MonoBehaviour {
 
             // step 2.a: if prev character exited talking range, change to current character
             if (other == m_PrevCharacter && talkDist > m_MaxTalkingDist) {
-                m_PrevCharacter = character;
+                m_PrevCharacter = playerCharacter;
             }
 
             // step 2.b: find nearest talkable character (only check for changes to the talkable
             // character and ignore your previous character)
             if (other != m_PrevTalkable && other != m_PrevCharacter) {
                 var isNextTalkable = (
-                    other != character &&
+                    other != playerCharacter &&
                     talkDist < m_MaxTalkingDist &&
                     talkDist < talkableDist
                 );

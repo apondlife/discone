@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Yarn.Unity;
 using UnityAtoms.BaseAtoms;
+using UnityEngine.Serialization;
 
 /// the dialogue system
 public class DialogueSystem: MonoBehaviour {
@@ -17,7 +18,8 @@ public class DialogueSystem: MonoBehaviour {
     // -- events --
     [Header("events")]
     [Tooltip("when to start dialogue with a character")]
-    [SerializeField] GameObjectEvent m_Start;
+    [FormerlySerializedAs("m_Start")]
+    [SerializeField] GameObjectEvent m_StartDialogue;
 
     [Tooltip("when the dialogue completes")]
     [SerializeField] VoidEvent m_Complete;
@@ -49,7 +51,7 @@ public class DialogueSystem: MonoBehaviour {
     void Awake() {
         // bind events
         m_Subscriptions
-            .Add(m_Start, OnStartDialogue)
+            .Add(m_StartDialogue, OnStartDialogue)
             .Add(m_Complete, OnDialogueComplete);
     }
 

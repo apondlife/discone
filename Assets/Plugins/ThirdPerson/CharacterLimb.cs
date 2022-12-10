@@ -42,6 +42,9 @@ public sealed class CharacterLimb: MonoBehaviour {
     /// if the limb is moving towards something
     bool m_HasTarget;
 
+    /// the transform of the goal bone, if any
+    Transform m_AnimatedBone;
+
     /// the blending weight for this limb
     float m_Weight;
 
@@ -67,6 +70,10 @@ public sealed class CharacterLimb: MonoBehaviour {
     }
 
     void Update() {
+        if (!IsValid) {
+            return;
+        }
+
         var delta = Time.deltaTime;
 
         // lerp the weight
@@ -90,7 +97,16 @@ public sealed class CharacterLimb: MonoBehaviour {
     // -- commands --
     /// initialize this limb w/ an animator
     public void Init(Animator animator) {
+        // set props
         m_Animator = animator;
+
+        // cache the bone; we can't really do anything if we don't find a bone
+        m_AnimatedBone = m_Animator.GetBoneTransform(m_Goal switch {
+            AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
+            AvatarIKGoal.LeftHand => HumanBodyBones.LeftHand,
+            AvatarIKGoal.RightFoot => HumanBodyBones.RightFoot,
+            _ /*AvatarIKGoal.LeftFoot*/ => HumanBodyBones.LeftFoot,
+        });
     }
 
     /// update if ik is active for is this lime
@@ -100,6 +116,10 @@ public sealed class CharacterLimb: MonoBehaviour {
 
     /// applies the limb ik
     public void ApplyIk() {
+        if (!IsValid) {
+            return;
+        }
+
         m_Animator.SetIKPositionWeight(
             m_Goal,
             m_Weight
@@ -114,7 +134,17 @@ public sealed class CharacterLimb: MonoBehaviour {
     }
 
     // -- queries --
-    /// if this is a foot
+    /// if this limb has the dependencies it needs to apply ik
+    public bool IsValid {
+        get => m_AnimatedBone != null;
+    }
+
+    /// .
+    public AvatarIKGoal Goal {
+        get => m_Goal;
+    }
+
+    /// .
     public bool IsFoot {
         get => m_Goal switch {
             AvatarIKGoal.LeftFoot => true,
@@ -123,24 +153,14 @@ public sealed class CharacterLimb: MonoBehaviour {
         };
     }
 
-    /// the bone for this ik goal
-    HumanBodyBones GoalBone {
-        get => m_Goal switch {
-            AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
-            AvatarIKGoal.LeftHand => HumanBodyBones.LeftHand,
-            AvatarIKGoal.RightFoot => HumanBodyBones.RightFoot,
-            _ /*AvatarIKGoal.LeftFoot*/ => HumanBodyBones.LeftFoot,
-        };
-    }
-
-    /// if we've completed a stride
-    bool HasCompletedStride(Vector3 pos) {
+    /// if moving to this position completes a stride
+    bool HasCompletedStrideAt(Vector3 pos) {
         return Vector3.SqrMagnitude(pos - m_DestPosition) >= m_SqrStrideLength;
     }
 
     // -- events --
     void OnTriggerEnter(Collider other) {
-        if (!m_IsActive) {
+        if (!m_IsActive || !IsValid) {
             return;
         }
 
@@ -150,11 +170,12 @@ public sealed class CharacterLimb: MonoBehaviour {
             return;
         }
 
-        if (!m_HasTarget || HasCompletedStride(pos)) {
+        if (!m_HasTarget || HasCompletedStrideAt(pos)) {
+            // start tracking the target
+            m_HasTarget = true;
+
             // set current position from the bone's current position in our local space
-            m_CurrPosition = transform.InverseTransformPoint(
-                m_Animator.GetBoneTransform(GoalBone).position
-            );
+            m_CurrPosition = transform.InverseTransformPoint(m_AnimatedBone.position);
 
             // move towards the closest point on sruface
             m_DestPosition = pos;
@@ -162,7 +183,7 @@ public sealed class CharacterLimb: MonoBehaviour {
     }
 
     void OnTriggerStay(Collider other) {
-        if (!m_IsActive) {
+        if (!m_IsActive || !IsValid) {
             return;
         }
 
@@ -173,13 +194,13 @@ public sealed class CharacterLimb: MonoBehaviour {
         }
 
         m_HasTarget = true;
-        if (HasCompletedStride(pos)) {
+        if (HasCompletedStrideAt(pos)) {
             m_DestPosition = pos;
         }
     }
 
     void OnTriggerExit(Collider other) {
-        if (!m_IsActive) {
+        if (!m_IsActive || !IsValid) {
             return;
         }
 
