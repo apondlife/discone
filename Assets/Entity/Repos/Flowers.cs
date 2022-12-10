@@ -6,7 +6,7 @@ using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
 /// a repository of flowers
-public sealed class Flowers: NetworkBehaviour {
+public sealed class Flowers: MonoBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("the chunk size for flower position hashing")]
@@ -16,6 +16,9 @@ public sealed class Flowers: NetworkBehaviour {
     [Header("subscribed")]
     [Tooltip("when a flower is planted")]
     [SerializeField] CharacterFlowerEvent m_FlowerPlanted;
+
+    [Tooltip("when the server starts")]
+    [SerializeField] VoidEvent m_ServerStarted;
 
     // -- refs --
     [Header("refs")]
@@ -33,21 +36,13 @@ public sealed class Flowers: NetworkBehaviour {
     void Start() {
         // bind events
         m_Subscriptions
-            .Add(m_FlowerPlanted, OnFlowerPlanted);
+            .Add(m_FlowerPlanted, OnFlowerPlanted)
+            .Add(m_ServerStarted, Server_OnServerStarted);
     }
 
     void OnDestroy() {
         // release events
         m_Subscriptions.Dispose();
-    }
-
-    // -- l/mirror
-    public override void OnStartServer() {
-        base.OnStartServer();
-
-        // bind server events
-        m_Subscriptions
-            .Add(m_Store.LoadFinished, Server_OnStoreLoadFinished);
     }
 
     // -- commands --
@@ -111,6 +106,14 @@ public sealed class Flowers: NetworkBehaviour {
         if (!m_All.TryAdd(key, flower)) {
             Debug.LogWarning("[flower] tried to add a plant at a duplicate position");
         }
+    }
+
+    /// when the game starts as server
+    [Server]
+    void Server_OnServerStarted() {
+        // bind server events
+        m_Subscriptions
+            .Add(m_Store.LoadFinished, Server_OnStoreLoadFinished);
     }
 
     /// when the store finishes loading

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -116,6 +115,10 @@ public sealed class CharacterModel: MonoBehaviour {
             // init limbs
             foreach (var limb in m_Limbs) {
                 limb.Init(m_Animator);
+
+                if (!limb.IsValid) {
+                    Debug.LogError($"[chrctr] {m_Container.name} has a limb w/ no matching bone: {limb.Goal}");
+                }
             }
 
             // proxy animator callbacks

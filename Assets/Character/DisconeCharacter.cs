@@ -3,6 +3,7 @@ using System.Linq;
 using ThirdPerson;
 using UnityAtoms;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// an online character
 [RequireComponent(typeof(Character))]
@@ -50,10 +51,12 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     [Header("published")]
     [Tooltip("the character spawning event")]
-    [SerializeField] DisconeCharacterEvent m_Spawned;
+    [FormerlySerializedAs("m_Spawned")]
+    [SerializeField] DisconeCharacterEvent m_SpawnedCharacter;
 
     [Tooltip("the character being destroyed event")]
-    [SerializeField] DisconeCharacterEvent m_Destroyed;
+    [FormerlySerializedAs("m_Destroyed")]
+    [SerializeField] DisconeCharacterEvent m_DestroyedCharacter;
 
     // -- props --
     /// if the character is simulating
@@ -107,7 +110,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     void Start() {
         // send spawned event
-        m_Spawned.Raise(this);
+        m_SpawnedCharacter.Raise(this);
     }
 
     void FixedUpdate() {
@@ -150,7 +153,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         OnSimulationChanged = null;
 
         // send destroyed event
-        m_Destroyed.Raise(this);
+        m_DestroyedCharacter.Raise(this);
     }
 
     // -- l/mirror

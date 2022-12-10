@@ -8,7 +8,7 @@ public class Online: NetworkManager {
     // -- types --
     /// the connection state
     public enum State {
-        Host,
+        Server,
         Connecting,
         Client,
         Disconnected
@@ -16,11 +16,13 @@ public class Online: NetworkManager {
 
     // -- state --
     [Header("state")]
-    [Tooltip("the host address to connect to")]
-    [SerializeField] StringReference m_HostAddress;
+    [Tooltip("the server address to connect to")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_HostAddress")]
+    [SerializeField] StringReference m_ServerAddres;
 
-    [Tooltip("if the player is the host")]
-    [SerializeField] BoolVariable m_IsHost;
+    [Tooltip("if this is running as server")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_IsHost")]
+    [SerializeField] BoolVariable m_IsServer;
 
     // -- fields --
     [Header("config")]
@@ -32,16 +34,25 @@ public class Online: NetworkManager {
 
     // -- subscribed --
     [Header("subscribed")]
-    [Tooltip("an event when the client starts")]
-    [SerializeField] VoidEvent m_StartClientEvent;
+    [Tooltip("a message to start the client")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_StartClient")]
+    [SerializeField] VoidEvent m_StartClient;
 
-    [Tooltip("an event when the client disconnects")]
-    [SerializeField] VoidEvent m_DisconnectEvent;
+    [Tooltip("a message to disconnect the client")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_DisconnectEvent")]
+    [SerializeField] VoidEvent m_DisconnectClient;
 
     // -- published --
     [Header("published")]
-    [Tooltip("an event for logging errors")]
-    [SerializeField] StringEvent m_ErrorEvent;
+    [Tooltip("a message to show an error")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_ErrorEvent")]
+    [SerializeField] StringEvent m_ShowError;
+
+    [Tooltip("an event after the server starts")]
+    [SerializeField] VoidEvent m_ServerStarted;
+
+    [Tooltip("an event after the client starts")]
+    [SerializeField] VoidEvent m_ClientStarted;
 
     // -- refs --
     [Header("refs")]
@@ -52,11 +63,11 @@ public class Online: NetworkManager {
     [SerializeField] Store m_Store;
 
     // -- props --
-    /// the set of event subscriptions
-    DisposeBag subscriptions = new DisposeBag();
+    /// the current server/client state
+    State m_State = State.Server;
 
-    /// the current state
-    State m_State = State.Host;
+    /// .
+    DisposeBag subscriptions = new DisposeBag();
 
     // -- lifecycle --
     public override void Awake() {
@@ -64,8 +75,8 @@ public class Online: NetworkManager {
 
         // bind atom events
         subscriptions
-            .Add(m_StartClientEvent, OnTryStartClient)
-            .Add(m_DisconnectEvent, OnTryDisconnect);
+            .Add(m_StartClient, OnTryStartClient)
+            .Add(m_DisconnectClient, OnTryDisconnect);
     }
 
     public override void Start() {
@@ -73,10 +84,10 @@ public class Online: NetworkManager {
 
         if (IsStandalone) {
             StartAsServer();
-        } else if(m_ConnectToServerOnStart) {
-            OnTryStartClient();
-        } else {
+        } else if (!m_ConnectToServerOnStart) {
             StartAsHost();
+        } else {
+            OnTryStartClient();
         }
     }
 
@@ -93,7 +104,7 @@ public class Online: NetworkManager {
         base.OnClientError(exception);
 
         Debug.Log($"[online] client error: {exception}");
-        m_ErrorEvent?.Raise($"[online] client error: {exception.Message}");
+        m_ShowError?.Raise($"[online] client error: {exception.Message}");
     }
 
     /// [Client]
@@ -105,7 +116,7 @@ public class Online: NetworkManager {
             m_State = State.Client;
             Debug.Log($"[online] connected as client");
         }
-        else if (m_State == State.Host) {
+        else if (m_State == State.Server) {
             Debug.Log($"[online] connected as host client");
         }
 
@@ -128,14 +139,14 @@ public class Online: NetworkManager {
         Debug.Log($"[online] client disconnected...");
 
         // if we are a host, we don't do anything
-        if (IsHost) {
+        if (IsServerActive) {
             Debug.Log($"[online] host client disconnected");
             return;
         }
 
         // if we're still attempting to connect, we timed out
         if (m_State == State.Connecting) {
-            m_ErrorEvent?.Raise($"[online] failed to connect to server {networkAddress}");
+            m_ShowError?.Raise($"[online] failed to connect to server {networkAddress}");
         }
         // if we are non host client disconnect from a server, sync our player record
         else {
@@ -144,7 +155,7 @@ public class Online: NetworkManager {
 
         // and then restart as a host
         if (m_RestartHostOnDisconnect) {
-            this.DoNextFrame(() => SwitchToHost());
+            this.DoNextFrame(() => SwitchToServer());
         }
     }
 
@@ -152,16 +163,22 @@ public class Online: NetworkManager {
     /// [Server]
     public override void OnStartClient() {
         base.OnStartClient();
-        Debug.Log("[online] started client");
+
+        // broadcast event
+        Debug.Log("[online] started as client");
+        m_ClientStarted.Raise();
     }
 
     /// [Server]
     public override void OnStartServer() {
         base.OnStartServer();
 
-        Debug.Log("[online] started server");
-
+        // bind message handlers
         NetworkServer.RegisterHandler<CreatePlayerMessage>(Server_OnCreatePlayer);
+
+        // broadcast event
+        Debug.Log("[online] started as server");
+        m_ServerStarted.Raise();
     }
 
     /// [Server]
@@ -190,13 +207,13 @@ public class Online: NetworkManager {
     // -- commands --
     /// start the game as a standalone server
     void StartAsServer() {
-        SwitchToHost();
+        SwitchToServer();
     }
 
     /// start the game as a host (server & client)
     void StartAsHost() {
         // set the initial address
-        var addr = m_HostAddress?.Value;
+        var addr = m_ServerAddres?.Value;
         if (addr != null && addr != "") {
             networkAddress = addr;
         }
@@ -204,7 +221,7 @@ public class Online: NetworkManager {
         // start a host for every player, immediately
         // TODO: is this a good idea? for now at least
         try {
-            SwitchToHost();
+            SwitchToServer();
         } catch (System.Net.Sockets.SocketException err) {
             var code = err.ErrorCode;
             if (code == 10048 && (addr == "localhost" || addr == "127.0.0.1")) {
@@ -213,10 +230,10 @@ public class Online: NetworkManager {
         }
     }
 
-    /// start game as host
-    void SwitchToHost() {
-        m_State = State.Host;
-        m_IsHost.Value = true;
+    /// start game as server/host
+    void SwitchToServer() {
+        m_State = State.Server;
+        m_IsServer.Value = true;
 
         if (IsStandalone) {
             Debug.Log("[online] starting standalone server");
@@ -232,14 +249,14 @@ public class Online: NetworkManager {
         Debug.Log("[online] switching to client");
 
         m_State = State.Connecting;
-        m_IsHost.Value = false;
+        m_IsServer.Value = false;
 
         StartClient();
     }
 
     // -- queries --
-    /// if we're acting as the host
-    bool IsHost {
+    /// .
+    bool IsServerActive {
         get => NetworkServer.active;
     }
 
@@ -276,7 +293,7 @@ public class Online: NetworkManager {
         }
 
         // if host, sync & save world to disk
-        if (IsHost) {
+        if (IsServerActive) {
             var _ = m_Store.Save();
         }
         // if client, just sync player
@@ -285,13 +302,13 @@ public class Online: NetworkManager {
         }
 
         // stop the host, if active
-        if (IsHost) {
+        if (IsServerActive) {
             StopHost();
         }
 
         this.DoNextFrame(() => {
             // start the client
-            networkAddress = m_HostAddress.Value;
+            networkAddress = m_ServerAddres.Value;
             SwitchToClient();
             Debug.Log($"[online] connecting client: {networkAddress}");
         });
@@ -300,7 +317,7 @@ public class Online: NetworkManager {
     /// when the host/client disconnect
     void OnTryDisconnect() {
         // can't stop hosting...
-        if (IsHost) {
+        if (IsServerActive) {
             return;
         }
 
