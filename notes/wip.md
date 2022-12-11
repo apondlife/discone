@@ -34,6 +34,9 @@ what is projected
 # world
 > make most colliders convex if possible
 
+# depth shader
+> make the dissolve be world space
+  > i spent a couple hours trying to get this to work, the most promising version was copying the [code from keijiro](https://github.com/keijiro/DepthInverseProjection/blob/master/Assets/InverseProjection/Resources/InverseProjection.shader), however there's also this [URP solution](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/writing-shaders-urp-reconstruct-world-position.html), and this [library implementing the urp code in non urp](https://github.com/wave-harmonic/crest/blob/master/crest/Assets/Crest/Crest/Shaders/Helpers/BIRP/Common.hlsl). there also seems to be [this thread improving on keijiros code](https://forum.unity.com/threads/solved-clip-space-to-world-space-in-a-vertex-shader.531492/). an experiment is in the branch worldspacefuzz
 
 
 # cast thoughts
