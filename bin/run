@@ -10,15 +10,20 @@ TARGET_PATH_MAC="mac/discone.app"
 # subpath to the windows binary
 TARGET_PATH_WIN="win/discone.exe"
 
+# -- props --
+# the variant (e.g. playtest, release) if any; defaults to release
+VARIANT="$VARIANT_RELEASE"
+
 # -- parsing --
 Usage() {
-  echo "usage: ./bin/pt [-h]"
+  echo "usage: ./bin/run [-h] [-v <variant>]"
   exit -1
 }
 
-while getopts ":h" option; do
+while getopts ":hv:" option; do
   case "${option}" in
     h*) Usage ;;
+    v*) VARIANT="$OPTARG" ;;
   esac
 done
 
@@ -59,7 +64,7 @@ Main() {
   FindOs
 
   # find the most recent build
-  FindBuild "$VARIANT_PLAYTEST"
+  FindBuild "$VARIANT"
 
   # and then run it
   RunBuild
