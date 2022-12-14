@@ -9,11 +9,17 @@ namespace Discone.Ui {
 sealed class Component: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
-    [Tooltip("the jitter distance range")]
+    [Tooltip("the distance range to jitter the position")]
     [SerializeField] ThirdPerson.RangeCurve m_JitterDist;
 
-    [Tooltip("the jitter rotation range")]
+    [Tooltip("an axis to jitter the position along; 0 is right, 1 is up; outside (0..1) is no axis (a random direction)")]
+    [SerializeField] float m_JitterDist_Axis;
+
+    [Tooltip("the angle range to jitter the rotation in degrees")]
     [SerializeField] ThirdPerson.RangeCurve m_JitterRotation;
+
+    [Tooltip("if the rotation jitter is in world-space")]
+    [SerializeField] bool m_JitterRotation_IsLocal;
 
     [Tooltip("the transition distance range")]
     [SerializeField] ThirdPerson.RangeCurve m_TransitionDist;
@@ -71,10 +77,24 @@ sealed class Component: UIBehaviour {
     void ChangeJitter() {
         // jitter rotation
         var rot = m_JitterRotation.Evaluate(Random.value);
-        m_Content.localEulerAngles = new Vector3(0f, 0f, rot);
+        if (m_JitterRotation_IsLocal) {
+            m_Content.localEulerAngles = new Vector3(0f, 0f, rot);
+        } else {
+            m_Content.eulerAngles = new Vector3(0f, 0f, rot);
+        }
 
         // jitter position
-        var pos = Random.insideUnitCircle * m_JitterDist.Evaluate(Random.value);
+        var dir = Vector3.up;
+        if (m_JitterDist_Axis < 0f || m_JitterDist_Axis > 1f) {
+            dir = Random.insideUnitCircle;
+        } else {
+            dir = Mathf.Sign(Random.value - 0.5f) * Vector3.Normalize(
+                m_Content.up * m_JitterDist_Axis +
+                m_Content.right * (1f - m_JitterDist_Axis)
+            );
+        }
+
+        var pos = dir * m_JitterDist.Evaluate(Random.value);
         m_Content.anchoredPosition = pos;
 
         // set initial pos
