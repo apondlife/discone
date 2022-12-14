@@ -1,3 +1,4 @@
+using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -49,6 +50,9 @@ public sealed class Menu: UIBehaviour {
     [Tooltip("when an offset page button is pressed")]
     [SerializeField] IntEvent m_OffsetPagePressed;
 
+    [Tooltip("when an menu action is dispatched")]
+    [SerializeField] MenuActionEvent m_Action;
+
     // -- props --
     /// the current page index
     int m_CurrPage = k_PageNone;
@@ -58,6 +62,9 @@ public sealed class Menu: UIBehaviour {
 
     /// the saved page when hidden
     int m_SavedPage = 0;
+
+    /// the dialog page
+    DialogPage m_DialogPage;
 
     /// the menu input
     MenuInput m_Input;
@@ -74,6 +81,14 @@ public sealed class Menu: UIBehaviour {
 
         // find pages
         m_Pages = m_Main.GetComponentsInChildren<Page>(includeInactive: true);
+
+        // find the dialog page
+        var dialogPage = m_Pages[m_Pages.Length - 1].GetComponent<DialogPage>();
+        if (dialogPage == null) {
+            Debug.LogError("[menuuu] the dialog page was not the last page");
+        }
+
+        m_DialogPage = dialogPage;
     }
 
     protected override void Start() {
@@ -92,6 +107,7 @@ public sealed class Menu: UIBehaviour {
             .Add(m_Input.Toggle, OnTogglePressed)
             .Add(m_Input.Connect, OnConnectPressed)
             .Add(m_IsOpen.Changed, OnIsOpenChanged)
+            .Add(m_Action, OnAction)
             .Add(m_OffsetPagePressed, OnOffsetPagePressed);
 
         // set initial state
@@ -193,6 +209,22 @@ public sealed class Menu: UIBehaviour {
         m_Transition.Start();
     }
 
+    /// change to the dialog page w/ the dialog
+    void ShowDialog(MenuDialog dialog) {
+        if (m_DialogPage == null) {
+            return;
+        }
+
+        // show the dialog, restoring current page on complete
+        var curr = m_CurrPage;
+        m_DialogPage.Show(dialog, () => {
+            ChangeTo(curr);
+        });
+
+        /// switch to the dialog page
+        ChangeTo(m_Pages.Length - 1);
+    }
+
     // -- queries --
     /// the current page component, if any
     Page CurrPage {
@@ -236,6 +268,16 @@ public sealed class Menu: UIBehaviour {
     void OnConnectPressed(InputAction.CallbackContext _) {
         if (IsOpen) {
             m_ConnectToServer.Raise();
+        }
+    }
+
+    /// when a menu action is dispatched
+    void OnAction(MenuAction action) {
+        switch (action) {
+        case MenuAction.ShowDialog a:
+            ShowDialog(a.Dialog); break;
+        default:
+            break;
         }
     }
 
