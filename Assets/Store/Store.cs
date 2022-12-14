@@ -103,6 +103,16 @@ public sealed class Store: ScriptableObject {
         );
     }
 
+    /// delete the file at the ath
+    public void Delete(string path) {
+        File.Delete(ResolvePath(path));
+    }
+
+    /// copy the file path to clipboard
+    public void CopyPath(string path) {
+        GUIUtility.systemCopyBuffer = ResolvePath(path);
+    }
+
     /// reset all state
     [ContextMenu("Reset Store")]
     void Reset() {
@@ -129,6 +139,11 @@ public sealed class Store: ScriptableObject {
     /// when the load finishes
     public VoidEvent LoadFinished {
         get => m_LoadFinished;
+    }
+
+    /// resolve a relative path to an absolute one
+    string ResolvePath(string path) {
+       return Path.Combine(RootPath, path);
     }
 
     /// find a reference to the current player
@@ -159,12 +174,12 @@ public sealed class Store: ScriptableObject {
 
     /// the path to the world file
     string WorldPath {
-        get => Path.Combine(RootPath, "world.json");
+        get => ResolvePath("world.json");
     }
 
     /// the path to the player file
     string PlayerPath {
-        get => Path.Combine(RootPath, "player.json");
+        get => ResolvePath("player.json");
     }
 
     /// write the record to disk at path
@@ -227,7 +242,7 @@ public sealed class Store: ScriptableObject {
     }
 
     // -- helpers --
-    /// debug; remove the project dir from the path (for dipsplay)
+    /// debug; remove the project dir from the path (for display)
     string RenderPath(string path) {
         path = Path.GetFullPath(path);
 

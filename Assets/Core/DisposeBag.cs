@@ -31,6 +31,13 @@ public record DisposeBag: IDisposable {
     }
 
     /// add a subscription for an event/action pair
+    public DisposeBag Add(UnityEvent e, UnityAction a) {
+        e.AddListener(a);
+        Add(() => e.RemoveListener(a));
+        return this;
+    }
+
+    /// add a subscription for an event/action pair
     public DisposeBag Add<T>(UnityEvent<T> e, UnityAction<T> a) {
         e.AddListener(a);
         Add(() => e.RemoveListener(a));

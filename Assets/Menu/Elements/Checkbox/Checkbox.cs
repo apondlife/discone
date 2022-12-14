@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Discone.Ui {
 
-[ExecuteAlways]
+/// a checkbox ui element
 sealed class Checkbox: UIBehaviour {
     // -- state --
     [Header("state")]
