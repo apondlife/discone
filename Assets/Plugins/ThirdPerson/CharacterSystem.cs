@@ -1,5 +1,10 @@
 using System;
 
+#if UNITY_EDITOR
+using System.Reflection;
+using UnityEngine;
+#endif
+
 namespace ThirdPerson {
 
 /// a character system; may be a state machine
@@ -36,9 +41,10 @@ abstract class CharacterSystem: System {
     /// create a new system
     public CharacterSystem() {
         // set props
-        m_Name = this.GetType().Name;
+        m_Name = GetType().Name;
     }
 
+    // -- lifecycle --
     /// initialize this system with character data
     public void Init(CharacterData d) {
         base.Init();
@@ -46,6 +52,31 @@ abstract class CharacterSystem: System {
         // set props
         m_Data = d;
     }
+
+    #if UNITY_EDITOR
+    public string Name {
+        get => m_Name;
+    }
+
+    public override void Update(float delta) {
+        base.Update(delta);
+
+        m_State.SystemPhases[m_Name] = m_Phase.Name;
+    }
+
+    public void RestorePhase(string name) {
+        foreach (var prop in GetType().GetTypeInfo().DeclaredProperties) {
+            if (prop.Name == name) {
+                if (prop.PropertyType != typeof(Phase)) {
+                    Debug.LogError("[system] tried to restore a phase that was not a phase: {name}");
+                    return;
+                }
+
+                m_Phase = (Phase)prop.GetValue(this);;
+            }
+        }
+    }
+    #endif
 }
 
 }

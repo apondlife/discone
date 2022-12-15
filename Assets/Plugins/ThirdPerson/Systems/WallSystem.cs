@@ -31,7 +31,7 @@ sealed class WallSystem: CharacterSystem {
 
     void NotOnWall_Update(float _) {
         // if we're on a wall, enter slide
-        var wall = m_State.Prev.Wall;
+        var wall = m_State.Curr.Wall;
         if (!wall.IsNone) {
             ChangeTo(WallSlide);
         }
@@ -46,7 +46,7 @@ sealed class WallSystem: CharacterSystem {
 
     void WallSlide_Enter() {
         // update to new wall collision
-        UpdateWall(m_State.Prev.Wall);
+        UpdateWall(m_State.Curr.Wall);
 
         // transfer initial velocity
         var vd = Vector3.zero;
@@ -59,7 +59,7 @@ sealed class WallSystem: CharacterSystem {
 
     void WallSlide_Update(float delta) {
         // if we left the wall, exit
-        var wall = m_State.Prev.Wall;
+        var wall = m_State.Curr.Wall;
         if (wall.IsNone) {
             ChangeTo(NotOnWall);
             return;

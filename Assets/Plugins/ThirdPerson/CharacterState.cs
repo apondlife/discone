@@ -1,6 +1,10 @@
 using System;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using System.Collections.Generic;
+#endif
+
 namespace ThirdPerson {
 
 /// the character's authoritative state
@@ -50,14 +54,19 @@ public sealed partial class CharacterState {
     }
 
     // -- queries --
+    /// the next frame
+    public Frame Next {
+        get => m_Frames[0];
+    }
+
     /// the current frame
     public Frame Curr {
-        get => m_Frames[0];
+        get => m_Frames[1];
     }
 
     /// the previous frame
     public Frame Prev {
-        get => m_Frames[1];
+        get => m_Frames[2];
     }
 
     /// if the state has no frames
@@ -67,22 +76,22 @@ public sealed partial class CharacterState {
 
     /// if currently grounded
     public bool IsGrounded {
-        get => Curr.IsGrounded;
+        get => Next.IsGrounded;
     }
 
     /// if currently idle
     public bool IsIdle {
-        get => Curr.IsIdle;
+        get => Next.IsIdle;
     }
 
     /// if the ground speed this frame is below the movement threshold
     public bool IsStopped {
-        get => Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+        get => Next.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
     }
 
     /// if the ground speed last frame was below the movement threshold
     public bool WasStopped {
-        get => Prev.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+        get => Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
     }
 
     /// the buffer size
@@ -155,8 +164,25 @@ public sealed partial class CharacterState {
         /// the number of jumps executed since last grounded
         public uint Jumps = 0;
 
+        /// the number of coyote frames the available
+        public int CoyoteFrames = 0;
+
+        /// the number of cooldown frames available
+        public int CooldownFrames = 0;
+
+        /// the current number of jumps in the current tunable
+        public uint JumpTunablesJumpIndex = 0;
+
+        /// the index of the current jump tunable
+        public uint JumpTunablesIndex = 0;
+
         /// the container of events that happened this frame
         public CharacterEventSet Events;
+
+        #if UNITY_EDITOR
+        /// a debug map of system name to phase name
+        public Dictionary<string, string> SystemPhases = new Dictionary<string, string>();
+        #endif
 
         // -- lifetime --
         /// create an empty frame
@@ -167,10 +193,11 @@ public sealed partial class CharacterState {
         public Frame(Vector3 position, Vector3 forward) {
             Position = position;
 
-            if(forward.magnitude == 0) {
+            if (forward.magnitude == 0) {
                 Debug.LogWarning("[character frame] can't set a zero forward vector, ignoring");
                 return;
             }
+
             Forward = forward;
         }
 

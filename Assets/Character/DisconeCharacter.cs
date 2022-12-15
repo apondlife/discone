@@ -121,7 +121,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // otherwise, if the simulation is remote and we're a client, interpolate
         // state to smooth out gaps
         else if (isClient && m_InterpolatedState != null) {
-            var src = m_Character.State.Curr;
+            var src = m_Character.State.Next;
             var dst = m_RemoteState;
 
             var delta = (float)(NetworkTime.time - m_LastSync);

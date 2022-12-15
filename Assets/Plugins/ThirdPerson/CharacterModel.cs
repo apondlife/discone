@@ -168,7 +168,7 @@ public sealed class CharacterModel: MonoBehaviour {
             Mathf.InverseLerp(
                 0.0f,
                 m_Tunables.Horizontal_MaxSpeed,
-                m_State.Curr.GroundVelocity.magnitude
+                m_State.Next.GroundVelocity.magnitude
             )
         );
 
@@ -212,7 +212,7 @@ public sealed class CharacterModel: MonoBehaviour {
     /// tilt the model as a fn of character acceleration
     void Tilt() {
         // is this a fundamental misunderstanding of quaternions? maybe
-        transform.rotation = m_State.Curr.LookRotation;
+        transform.rotation = m_State.Next.LookRotation;
     }
 
     /// change character scale according to acceleration
