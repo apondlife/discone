@@ -50,7 +50,7 @@ public class CharacterSpeedLines: MonoBehaviour {
             transform.position = m_Anchor.position;
         }
 
-        var state = m_State.Curr;
+        var state = m_State.Next;
         var v = state.GroundVelocity;
         var dir = v.normalized;
 

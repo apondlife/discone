@@ -6,19 +6,6 @@ namespace ThirdPerson {
 /// how the character jumps
 [Serializable]
 sealed class JumpSystem: CharacterSystem {
-    // -- props --
-    /// the number of coyote frames the available
-    int m_CoyoteFrames = 0;
-
-    /// the number of cooldown frames available
-    int m_CooldownFrames = 0;
-
-    /// the current number of jumps in the current tunable
-    uint m_JumpTunablesJumpIndex;
-
-    /// the index of the current jump tunable
-    uint m_JumpTunablesIndex;
-
     // -- lifetime --
     protected override Phase InitInitialPhase() {
         return NotJumping;
@@ -29,7 +16,7 @@ sealed class JumpSystem: CharacterSystem {
         base.Update(delta);
 
         // always add gravity
-        m_State.Curr.Velocity += m_Tunables.Gravity * delta * Vector3.up;
+        m_State.Next.Velocity += m_Tunables.Gravity * delta * Vector3.up;
     }
 
     // -- NotJumping --
@@ -45,16 +32,16 @@ sealed class JumpSystem: CharacterSystem {
 
     void NotJumping_Update(float _) {
         // count coyote frames; reset to max whenever grounded
-        if (m_State.Prev.IsGrounded) {
-            m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
+        if (m_State.Curr.IsGrounded) {
+            m_State.CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
         }
         // but if not, subtract a frame
         else {
-            m_CoyoteFrames -= 1;
+            m_State.CoyoteFrames -= 1;
         }
 
         // fall once coyote time expires
-        if (m_CoyoteFrames <= 0) {
+        if (m_State.CoyoteFrames <= 0) {
             ChangeTo(Falling);
             return;
         }
@@ -75,22 +62,22 @@ sealed class JumpSystem: CharacterSystem {
     );
 
     void JumpSquat_Enter() {
-        m_State.Curr.IsInJumpSquat = true;
-        m_State.Curr.JumpSquatFrame = 0;
+        m_State.Next.IsInJumpSquat = true;
+        m_State.Next.JumpSquatFrame = 0;
     }
 
     void JumpSquat_Update(float delta) {
         // apply fall acceleration if not grounded
-        if (!m_State.Prev.IsGrounded && !m_State.Curr.IsOnWall) {
-            m_State.Curr.Velocity += m_Tunables.FallAcceleration * delta * Vector3.up;
+        if (!m_State.Curr.IsGrounded && !m_State.Next.IsOnWall) {
+            m_State.Next.Velocity += m_Tunables.FallAcceleration * delta * Vector3.up;
         }
 
         // jump if jump was released or jump squat ended
         var shouldJump = (
             // if the jump squat finished
-            m_State.Curr.JumpSquatFrame >= JumpTunables.MaxJumpSquatFrames ||
+            m_State.Next.JumpSquatFrame >= JumpTunables.MaxJumpSquatFrames ||
             // or jump was released after the minimum
-            (!m_Input.IsJumpPressed && m_State.Curr.JumpSquatFrame >= JumpTunables.MinJumpSquatFrames)
+            (!m_Input.IsJumpPressed && m_State.Next.JumpSquatFrame >= JumpTunables.MinJumpSquatFrames)
         );
 
         if (shouldJump) {
@@ -100,30 +87,30 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if this is the first jump, you might be in coyote time
-        if (m_JumpTunablesJumpIndex == 0) {
+        if (m_State.JumpTunablesJumpIndex == 0) {
             // count coyote frames; reset to max whenever grounded
-            if (m_State.Prev.IsGrounded) {
-                m_CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
+            if (m_State.Curr.IsGrounded) {
+                m_State.CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
             }
             // but if not, subtract a frame
             else {
-                m_CoyoteFrames -= 1;
+                m_State.CoyoteFrames -= 1;
             }
 
             // fall once coyote time expires
-            if (m_CoyoteFrames <= 0) {
+            if (m_State.CoyoteFrames <= 0) {
                 ChangeTo(Falling);
                 return;
             }
         }
 
         // count jump squat frames
-        m_State.Curr.JumpSquatFrame += 1;
+        m_State.Next.JumpSquatFrame += 1;
     }
 
     void JumpSquat_Exit() {
         // NOTE: do we force the jump here?
-        m_State.Curr.IsInJumpSquat = false;
+        m_State.Next.IsInJumpSquat = false;
     }
 
     // -- Falling --
@@ -141,17 +128,17 @@ sealed class JumpSystem: CharacterSystem {
         // apply fall acceleration while holding jump
         // TODO: is this bad?
         // apply jump acceleration while holding jump
-        if (m_Input.IsJumpPressed && !m_State.Curr.IsOnWall) {
-            var acceleration = m_State.Curr.Velocity.y > 0.0f
+        if (m_Input.IsJumpPressed && !m_State.Next.IsOnWall) {
+            var acceleration = m_State.Next.Velocity.y > 0.0f
                 ? m_Tunables.JumpAcceleration
                 : m_Tunables.FallAcceleration;
 
-            m_State.Curr.Velocity += acceleration * delta * Vector3.up;
+            m_State.Next.Velocity += acceleration * delta * Vector3.up;
         }
 
         // count coyote frames
-        m_CoyoteFrames -= 1;
-        m_CooldownFrames -= 1;
+        m_State.CoyoteFrames -= 1;
+        m_State.CooldownFrames -= 1;
 
         // start jump if jump is pressed before coyote frames expire
         // a few frames in jump squat before falling again
@@ -163,7 +150,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // transition out of jump
-        if (m_State.Prev.IsGrounded) {
+        if (m_State.Curr.IsGrounded) {
             ChangeTo(NotJumping);
             return;
         }
@@ -175,7 +162,7 @@ sealed class JumpSystem: CharacterSystem {
         var pct = Mathf.InverseLerp(
             JumpTunables.MinJumpSquatFrames,
             JumpTunables.MaxJumpSquatFrames,
-            m_State.Curr.JumpSquatFrame
+            m_State.Next.JumpSquatFrame
         );
 
         // interpolate initial jump speed
@@ -191,7 +178,7 @@ sealed class JumpSystem: CharacterSystem {
             JumpTunables.Horizontal_SpeedCurve.Evaluate(pct)
         );
 
-        var v0 = m_State.Prev.Velocity;
+        var v0 = m_State.Curr.Velocity;
         var dv = Vector3.zero;
 
         // cancel vertical momentum if falling.
@@ -202,56 +189,56 @@ sealed class JumpSystem: CharacterSystem {
 
         // cancel vertical momentum if falling
         // cancel horizontal momentum
-        dv -= m_State.Prev.PlanarVelocity * JumpTunables.Horizontal_MomentumLoss;
+        dv -= m_State.Curr.PlanarVelocity * JumpTunables.Horizontal_MomentumLoss;
 
         // add vertical jump
         dv += verticalSpeed * Vector3.up;
 
         // add horizontal jump
-        dv += horizontalSpeed * m_State.Prev.Forward;
+        dv += horizontalSpeed * m_State.Curr.Forward;
 
-        m_State.Curr.Velocity += dv;
-        m_State.Curr.IsInJumpStart = true;
-        m_CooldownFrames = (int)JumpTunables.CooldownFrames;
+        m_State.Next.Velocity += dv;
+        m_State.Next.IsInJumpStart = true;
+        m_State.CooldownFrames = (int)JumpTunables.CooldownFrames;
         m_Events.Schedule(CharacterEvent.Jump);
     }
 
     /// track jump and switch to the correct jump if necessary
     void IncrementJumps() {
-        m_State.Curr.Jumps += 1;
-        m_JumpTunablesJumpIndex += 1;
+        m_State.Next.Jumps += 1;
+        m_State.JumpTunablesJumpIndex += 1;
 
         if (JumpTunables.Count == 0) {
             return;
         }
 
         var shouldAdvanceJump = (
-            m_JumpTunablesJumpIndex >= JumpTunables.Count &&
-            m_JumpTunablesIndex < m_Tunables.Jumps.Length - 1
+            m_State.JumpTunablesJumpIndex >= JumpTunables.Count &&
+            m_State.JumpTunablesIndex < m_Tunables.Jumps.Length - 1
         );
 
         if (shouldAdvanceJump) {
-            m_JumpTunablesJumpIndex = 0;
-            m_JumpTunablesIndex += 1;
+            m_State.JumpTunablesJumpIndex = 0;
+            m_State.JumpTunablesIndex += 1;
         }
     }
 
     /// reset the jump count to its initial state
     void ResetJumps() {
-        m_State.Curr.Jumps = 0;
-        m_JumpTunablesJumpIndex = 0;
-        m_JumpTunablesIndex = 0;
+        m_State.Next.Jumps = 0;
+        m_State.JumpTunablesJumpIndex = 0;
+        m_State.JumpTunablesIndex = 0;
     }
 
     // -- queries --
     /// the current jump tunables
     CharacterTunablesBase.JumpTunablesBase JumpTunables {
-        get => m_Tunables.Jumps[m_JumpTunablesIndex];
+        get => m_Tunables.Jumps[m_State.JumpTunablesIndex];
     }
 
     /// if this is the character's first (grounded) jump
     bool IsFirstJump {
-        get => m_JumpTunablesIndex == 0 && m_JumpTunablesJumpIndex == 0;
+        get => m_State.JumpTunablesIndex == 0 && m_State.JumpTunablesJumpIndex == 0;
     }
 
     /// if the character has a jump available to execute
@@ -267,11 +254,11 @@ sealed class JumpSystem: CharacterSystem {
         // jump finish here, and transitioning directly to jump
 
         // if it's your first jump, account for coyote time
-        if (IsFirstJump && m_CoyoteFrames >= 0) {
+        if (IsFirstJump && m_State.CoyoteFrames >= 0) {
             return true;
         }
 
-        if (m_CooldownFrames > 0) {
+        if (m_State.CooldownFrames > 0) {
             return false;
         }
 
@@ -282,7 +269,7 @@ sealed class JumpSystem: CharacterSystem {
 
         // start an air jump if available
         // if there's still jumps available in the current jump definition
-        if (m_JumpTunablesJumpIndex < JumpTunables.Count) {
+        if (m_State.JumpTunablesJumpIndex < JumpTunables.Count) {
             return true;
         }
 

@@ -62,8 +62,8 @@ sealed class TiltSystem : CharacterSystem {
     // -- commands --
     /// smooth tilt towards target
     void InterpolateTilt(Quaternion target) {
-        m_State.Curr.Tilt = Quaternion.Slerp(
-            m_State.Curr.Tilt,
+        m_State.Next.Tilt = Quaternion.Slerp(
+            m_State.Next.Tilt,
             target,
             m_Tunables.TiltSmoothing
         );

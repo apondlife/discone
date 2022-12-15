@@ -12,6 +12,12 @@ sealed class CrouchSystem: CharacterSystem {
     }
 
     // -- NotCrouching --
+    // Phase NotCrouching => InitPhase(
+    //     0,
+    //     enter: NotCrouching_Enter,
+    //     update: NotCrouching_Update
+    // );
+
     Phase NotCrouching => new Phase(
         name: "NotCrouching",
         enter: NotCrouching_Enter,
@@ -61,9 +67,9 @@ sealed class CrouchSystem: CharacterSystem {
         // and store the crouch direction, the character won't reface for the
         // duration of the crouch (this is implemented in (coupled to) the
         // movement system)
-        m_State.Curr.CrouchDirection = m_State.WasStopped
-            ? m_State.Prev.Forward
-            : m_State.Prev.PlanarVelocity.normalized;
+        m_State.Next.CrouchDirection = m_State.WasStopped
+            ? m_State.Curr.Forward
+            : m_State.Curr.PlanarVelocity.normalized;
     }
 
     void Crouching_Update(float delta) {
@@ -74,20 +80,20 @@ sealed class CrouchSystem: CharacterSystem {
         }
 
         // update crouch direction if it changes significantly (> 90°)
-        var moveDir = m_State.Prev.GroundVelocity.normalized;
-        var moveDotCrouch = Vector3.Dot(moveDir, m_State.Prev.CrouchDirection);
+        var moveDir = m_State.Curr.GroundVelocity.normalized;
+        var moveDotCrouch = Vector3.Dot(moveDir, m_State.Curr.CrouchDirection);
         if (moveDotCrouch < 0.0f) {
-            m_State.Curr.CrouchDirection = moveDir;
+            m_State.Next.CrouchDirection = moveDir;
         }
 
         // check alignment between input and crouch
-        var crouchDir = m_State.Curr.CrouchDirection;
+        var crouchDir = m_State.Next.CrouchDirection;
         var inputDir = m_Input.Move;
         var inputDotCrouch = Vector3.Dot(inputDir, crouchDir);
 
         // if we're stopped and change direction, change crouch direction
         if (m_State.IsStopped && inputDotCrouch < 0.0f) {
-            m_State.Curr.CrouchDirection = inputDir;
+            m_State.Next.CrouchDirection = inputDir;
         }
 
         // if the input is not in the direction of the crouch, we're braking,
@@ -96,16 +102,16 @@ sealed class CrouchSystem: CharacterSystem {
             ? m_Tunables.Crouch_NegativeDrag
             : m_Tunables.Crouch_PositiveDrag;
 
-        m_State.Curr.Horizontal_Drag = drag.Evaluate(Mathf.Abs(inputDotCrouch));
+        m_State.Next.Horizontal_Drag = drag.Evaluate(Mathf.Abs(inputDotCrouch));
 
         var kineticFriction = inputDotCrouch <= 0.0f
             ? m_Tunables.Crouch_NegativeKineticFriction
             : m_Tunables.Crouch_PositiveKineticFriction;
 
-        m_State.Curr.Horizontal_KineticFriction = kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch));
+        m_State.Next.Horizontal_KineticFriction = kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch));
 
         // apply crouch gravity
-        m_State.Curr.Velocity += m_Tunables.Crouch_Acceleration * delta * Vector3.up;
+        m_State.Next.Velocity += m_Tunables.Crouch_Acceleration * delta * Vector3.up;
     }
 }
 

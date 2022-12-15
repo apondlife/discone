@@ -232,11 +232,11 @@ public sealed class CharacterMusic: MonoBehaviour {
     // -- queries --
     /// the character's step (planar) velocity
     Vector3 StepVelocity {
-        get => State.Curr.GroundVelocity;
+        get => State.Next.GroundVelocity;
     }
     /// whether or not the character is grounded
     bool IsGrounded {
-        get => State.Curr.IsGrounded;
+        get => State.Next.IsGrounded;
     }
 
     ThirdPerson.CharacterState State {

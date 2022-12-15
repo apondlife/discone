@@ -292,7 +292,7 @@ public class CameraFollowTarget: MonoBehaviour {
             m_Distance_SpeedCurve.Evaluate(Mathf.InverseLerp(
                 m_TargetMinSpeed,
                 m_TargetMaxSpeed,
-                m_State.Curr.PlanarVelocity.magnitude
+                m_State.Next.PlanarVelocity.magnitude
             ))
         );
 

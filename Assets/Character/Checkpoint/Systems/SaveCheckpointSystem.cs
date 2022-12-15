@@ -71,7 +71,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     void NotSaving_Exit() {
-        m_PendingCheckpoint = Checkpoint.FromState(m_State.Curr);
+        m_PendingCheckpoint = Checkpoint.FromState(m_State.Next);
     }
 
     // -- Delaying --

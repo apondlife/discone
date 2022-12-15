@@ -22,11 +22,11 @@ sealed class IdleSystem: CharacterSystem {
     );
 
     void NotIdle_Enter() {
-        m_State.Curr.IdleTime = 0.0f;
+        m_State.Next.IdleTime = 0.0f;
     }
 
     void NotIdle_Update(float _) {
-        if (m_State.Prev.Velocity.sqrMagnitude <= k_IdleSpeedThreshold) {
+        if (m_State.Curr.Velocity.sqrMagnitude <= k_IdleSpeedThreshold) {
            ChangeTo(Idle);
         }
     }
@@ -39,14 +39,14 @@ sealed class IdleSystem: CharacterSystem {
     );
 
     void Idle_Enter() {
-        m_State.Curr.IdleTime = Time.deltaTime;
+        m_State.Next.IdleTime = Time.deltaTime;
         m_Events.Schedule(CharacterEvent.Idle);
     }
 
     void Idle_Update(float delta) {
-        m_State.Curr.IdleTime += delta;
+        m_State.Next.IdleTime += delta;
 
-        if (m_State.Prev.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
+        if (m_State.Curr.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
            ChangeTo(NotIdle);
         }
     }

@@ -81,7 +81,7 @@ public class CharacterDust: MonoBehaviour {
             }
 
             var emission = m_FloorDust.emission;
-            var emissionRate = m_FloorParticlesBaseEmission * m_State.Curr.PlanarVelocity.sqrMagnitude;
+            var emissionRate = m_FloorParticlesBaseEmission * m_State.Next.PlanarVelocity.sqrMagnitude;
             emission.rateOverTimeMultiplier = emissionRate;
 
             // check for character deceleration
