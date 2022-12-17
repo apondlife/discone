@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// system state extensions
-partial class CharacterState {
-    partial class Frame {
-        /// .
-        public SystemState IdleState;
-    }
-}
+// /// system state extensions
+// partial class CharacterState {
+//     partial class Frame {
+//         /// .
+//         public SystemState IdleState;
+//     }
+// }
 
 /// how the character is affected by gravity
 [Serializable]

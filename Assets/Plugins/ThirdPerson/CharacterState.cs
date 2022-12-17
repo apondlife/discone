@@ -1,10 +1,6 @@
 using System;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using System.Collections.Generic;
-#endif
-
 namespace ThirdPerson {
 
 /// the character's authoritative state
@@ -178,11 +174,6 @@ public sealed partial class CharacterState {
 
         /// the container of events that happened this frame
         public CharacterEventSet Events;
-
-        #if UNITY_EDITOR
-        /// a debug map of system name to phase name
-        public Dictionary<string, string> SystemPhases = new Dictionary<string, string>();
-        #endif
 
         // -- lifetime --
         /// create an empty frame

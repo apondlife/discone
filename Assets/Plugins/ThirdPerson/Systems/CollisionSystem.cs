@@ -2,13 +2,13 @@ using System;
 
 namespace ThirdPerson {
 
-/// system state extensions
-partial class CharacterState {
-    partial class Frame {
-        /// .
-        public SystemState CollisionState;
-    }
-}
+// /// system state extensions
+// partial class CharacterState {
+//     partial class Frame {
+//         /// .
+//         public SystemState CollisionState;
+//     }
+// }
 
 /// how the character is affected by gravity
 [Serializable]

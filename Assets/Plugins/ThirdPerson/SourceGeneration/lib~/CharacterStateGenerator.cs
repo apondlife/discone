@@ -44,11 +44,12 @@ namespace ThirdPerson.SourceGeneration {
                 (f) => f.name
             );
 
-            // readonly accessors for properties on the current frame
+            // accessors for properties on the current frame
             var stateFieldsImpl = IntoLines(
                 frameFields,
                 @"public {1} {0} {{
                     get => m_Frames[0].{0};
+                    set => m_Frames[0].{0} = value;
                 }}",
                 (f) => f.name,
                 (f) => f.type
