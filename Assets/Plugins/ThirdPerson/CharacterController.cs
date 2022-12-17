@@ -226,58 +226,8 @@ public sealed class CharacterController {
             m_DebugHits.Add(hit);
             #endif
 
-            // find the center of the capsule relative to the hit. it should be
-            // the intersection of the capsule's axis and the cast direction
-            var hitCapsuleCenter = (Vector3)default;
-
-            // first find the capsule's axis: the normal from any collision
-            // point always points towards the capsule's axis at a distance of
-            // the radius.
-            //     ___
-            //  .'  ‖  '.
-            // ❘    C  <-❘
-            // |'.  ‖  .'|
-            // |   ‾‖‾   |
-            // |->  C    |
-            var axisPoint = hit.point + hit.normal * cast.Radius;
-
-            // check the cast's colinearity with the capsule's axis
-            var castDotUp = Vector3.Dot(cast.Direction, capsule.Up);
-
-            // if they're colinear, we can't intersect them
-            if (Mathf.Abs(castDotUp) > 0.99f) {
-                // but we know that the hit can only have been the center of one
-                // of the capsule's caps, so instead subtract (h / 2 - r)
-                hitCapsuleCenter = axisPoint - Mathf.Sign(castDotUp) * (capsule.Height * 0.5f - capsule.Radius) * capsule.Up;
-            }
-            // otherwise the center is the intersection of the cast ray and the
-            // capsule's vertical axis (any center + up)
-            else {
-                // find the intersection between the cast ray and the capsule's
-                // axis. to deal with float precision errors, we intersect the
-                // cast with a plane containing the axis and that is orthogonal
-                // to the plane containing the axis and cast
-                var axis = new Ray(axisPoint, capsule.Up);
-
-                // try to intersect the ray and the plane
-                if (cast.IntoRay().TryIntersectIncidencePlane(axis, out var intersection)) {
-                    hitCapsuleCenter = intersection;
-                }
-                // this should not happen; but if it does abort the collision
-                // from the last successful cast
-                else {
-                    Debug.LogError($"[cntrlr] huge mistake! cast and capsule axis were colinear: {Mathf.Abs(castDotUp)}");
-                    break;
-                }
-            }
-
-            // update move state; next move starts from capsule center and
-            // remaining distance
-            // moveDst = hitCapsuleCenter - m_ContactOffset * cast.Direction;
-
-            // update move state; next move starts from capsule center and
-            // remaining distance
-            // moveDst = hitCapsuleCenter - (m_ContactOffset / Mathf.Max(Mathf.Abs(Vector3.Dot(cast.Direction, hit.normal)), 0.0001f)) * cast.Direction;
+            // hit.distance is the length of the ray, so it's at the capsulte center
+            var hitCapsuleCenter = castSrc + hit.distance * cast.Direction;
 
             // add offset away from hit plane
             var moveActual = hitCapsuleCenter - moveSrc;
