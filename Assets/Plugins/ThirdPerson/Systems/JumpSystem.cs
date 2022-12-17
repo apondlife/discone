@@ -3,12 +3,24 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+/// system state extensions
+partial class CharacterState {
+    partial class Frame {
+        /// .
+        public SystemState JumpState;
+    }
+}
+
 /// how the character jumps
 [Serializable]
 sealed class JumpSystem: CharacterSystem {
-    // -- lifetime --
+    // -- System --
     protected override Phase InitInitialPhase() {
         return NotJumping;
+    }
+
+    protected override SystemState State {
+        get => m_State.Next.JumpState;
     }
 
     // -- lifecycle --

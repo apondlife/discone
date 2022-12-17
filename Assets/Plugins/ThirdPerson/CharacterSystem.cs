@@ -54,16 +54,6 @@ abstract class CharacterSystem: System {
     }
 
     #if UNITY_EDITOR
-    public string Name {
-        get => m_Name;
-    }
-
-    public override void Update(float delta) {
-        base.Update(delta);
-
-        m_State.SystemPhases[m_Name] = m_Phase.Name;
-    }
-
     public void RestorePhase(string name) {
         foreach (var prop in GetType().GetTypeInfo().DeclaredProperties) {
             if (prop.Name == name) {
@@ -72,7 +62,7 @@ abstract class CharacterSystem: System {
                     return;
                 }
 
-                m_Phase = (Phase)prop.GetValue(this);;
+                SetPhase((Phase)prop.GetValue(this));
             }
         }
     }

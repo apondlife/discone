@@ -13,14 +13,7 @@ public abstract class System {
     // -- state --
     [Header("state")]
     [Tooltip("the current phase")]
-    [SerializeField] protected Phase m_Phase;
-
-    // TODO: Readonly
-    [Tooltip("the current phase start time")]
-    [SerializeField] protected float m_PhaseStart;
-
-    [Tooltip("the time in the current phase")]
-    [SerializeField] protected float m_PhaseElapsed;
+    [SerializeField] Phase m_Phase;
 
     // -- s/debug
     #if UNITY_EDITOR
@@ -47,9 +40,8 @@ public abstract class System {
 
     public void Init() {
         // set the initial phase
-        // TODO: should this call m_Phase.Enter()?
-        m_Phase = InitInitialPhase();
-        m_PhaseStart = Time.time;
+        // TODO: should this call m_Phase.Enter() (e.g. use ChangeTo here)?
+        SetPhase(InitInitialPhase());
     }
 
     /// construct the initial phase
@@ -68,7 +60,7 @@ public abstract class System {
         }
         #endif
 
-        m_PhaseElapsed += delta;
+        State.PhaseElapsed += delta;
         m_Phase.Update(delta);
     }
 
@@ -89,9 +81,7 @@ public abstract class System {
 
         // otherwise, run phase change lifecycle
         m_Phase.Exit();
-        m_Phase = next;
-        m_PhaseStart = Time.time;
-        m_PhaseElapsed = 0;
+        SetPhase(next);
         m_Phase.Enter();
 
         // debug
@@ -118,6 +108,29 @@ public abstract class System {
 
         // and run the update immediately
         m_Phase.Update(delta);
+    }
+
+    /// set the current phase & initialize its state w/o calling events
+    protected void SetPhase(Phase phase) {
+        m_Phase = phase;
+
+        State.PhaseName = m_Phase.Name;
+        State.PhaseStart = Time.time;
+        State.PhaseElapsed = 0f;
+    }
+
+    // -- queries --
+    /// the system's current state
+    protected abstract SystemState State { get; }
+
+    /// .
+    protected float PhaseStart {
+        get => State.PhaseStart;
+    }
+
+    /// .
+    protected float PhaseElapsed {
+        get => State.PhaseElapsed;
     }
 
     // -- debug --

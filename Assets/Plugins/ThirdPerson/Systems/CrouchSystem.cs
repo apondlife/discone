@@ -3,21 +3,27 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+/// system state extensions
+partial class CharacterState {
+    partial class Frame {
+        /// .
+        public SystemState CrouchState;
+    }
+}
+
 /// how crouch affects friction
 [Serializable]
 sealed class CrouchSystem: CharacterSystem {
-    // -- lifetime --
+    // -- System --
     protected override Phase InitInitialPhase() {
         return NotCrouching;
     }
 
-    // -- NotCrouching --
-    // Phase NotCrouching => InitPhase(
-    //     0,
-    //     enter: NotCrouching_Enter,
-    //     update: NotCrouching_Update
-    // );
+    protected override SystemState State {
+        get => m_State.Next.CrouchState;
+    }
 
+    // -- NotCrouching --
     Phase NotCrouching => new Phase(
         name: "NotCrouching",
         enter: NotCrouching_Enter,
