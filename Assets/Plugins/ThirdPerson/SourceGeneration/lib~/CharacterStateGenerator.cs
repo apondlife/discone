@@ -16,6 +16,10 @@ namespace ThirdPerson.SourceGeneration {
         public void Execute(GeneratorExecutionContext context) {
             var receiver = (FrameClassReceiver)context.SyntaxReceiver;
 
+            if (!receiver.FrameClasses.Any()) {
+                throw new Exception("[state generator] no state class in this assembly");
+            }
+
             // find all generatable fields
             var frameFields = receiver.FrameClasses
                 .SelectMany((c) => c.Members)
@@ -36,7 +40,7 @@ namespace ThirdPerson.SourceGeneration {
             );
 
             // frame equality
-            var frameEqualsImpl = IntoLines(
+            var frameEqualsImpl = frameFields.Count() == 0 ? "true" : IntoLines(
                 frameFields,
                 "{0} == o.{0}", " && ",
                 (f) => f.name
@@ -83,21 +87,6 @@ namespace ThirdPerson.SourceGeneration {
                 }}
             ";
 
-            // produce a debug class
-            // context.AddSource("SourceGenerator.Generated.cs",
-            //     SourceText.From($@"
-            //         namespace ThirdPerson.SourceGeneration {{
-
-            //         public static class Debug {{
-            //             public static string Log() {{
-            //                 return @""Source Generator Log: {stateFieldsImpl}"";
-            //             }}
-            //         }}
-
-            //         }}
-            //     ", Encoding.UTF8)
-            // );
-
             // produce the state/frame extensions
             context.AddSource("CharacterState.Generated.cs",
                 SourceText.From(stateImpl, Encoding.UTF8)
@@ -124,20 +113,16 @@ namespace ThirdPerson.SourceGeneration {
     sealed class FrameClassReceiver: ISyntaxReceiver {
         // -- props --
         /// the list of classes; there could be multiple partial frame classes
-        public ClassDeclarationSyntax[] FrameClasses { get; private set; }
+        public List<ClassDeclarationSyntax> FrameClasses = new List<ClassDeclarationSyntax>();
 
         // -- ISyntaxReceiver --
         public void OnVisitSyntaxNode(SyntaxNode node) {
             // find all the partial frame classes
-            var classes = new List<ClassDeclarationSyntax>();
-
             if (node is ClassDeclarationSyntax c) {
                 if (FindFullyQualifiedName(node) == "ThirdPerson.CharacterState.Frame") {
-                    classes.Add(c);
+                    FrameClasses.Add(c);
                 }
             }
-
-            FrameClasses = classes.ToArray();
         }
 
         // -- helpers --

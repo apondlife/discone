@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-// /// system state extensions
-// partial class CharacterState {
-//     partial class Frame {
-//         /// .
-//         public SystemState IdleState;
-//     }
-// }
+/// system state extensions
+partial class CharacterState {
+    partial class Frame {
+        /// .
+        public SystemState IdleState;
+    }
+}
 
 /// how the character is affected by gravity
 [Serializable]
@@ -23,7 +23,13 @@ sealed class IdleSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_State.Next.IdleState;
+        get {
+            if (m_State.Next == null) {
+                Debug.LogError("[IDLE] STATE IS NULL...");
+            }
+            return m_State.Next.IdleState;
+        }
+        set => m_State.Next.IdleState = value;
     }
 
     // -- NotIdle --

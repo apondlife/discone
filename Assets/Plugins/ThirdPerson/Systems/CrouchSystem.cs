@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-// /// system state extensions
-// partial class CharacterState {
-//     partial class Frame {
-//         /// .
-//         public SystemState CrouchState;
-//     }
-// }
+/// system state extensions
+partial class CharacterState {
+    partial class Frame {
+        /// .
+        public SystemState CrouchState;
+    }
+}
 
 /// how crouch affects friction
 [Serializable]
@@ -21,6 +21,7 @@ sealed class CrouchSystem: CharacterSystem {
 
     protected override SystemState State {
         get => m_State.Next.CrouchState;
+        set => m_State.Next.CrouchState = value;
     }
 
     // -- NotCrouching --

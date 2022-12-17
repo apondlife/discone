@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using UnityEngine;
+using System.Reflection;
 
 namespace ThirdPerson {
 
@@ -86,7 +87,7 @@ public partial class Character: MonoBehaviour {
 
             // restore the system to the correct phase
             foreach (var system in m_Systems) {
-                system.RestorePhase(m_State.SystemPhases[system.Name]);
+                system.RestorePhase();
             }
 
             // copy the current state
