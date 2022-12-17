@@ -16,11 +16,9 @@ namespace ThirdPerson.SourceGeneration {
         public void Execute(GeneratorExecutionContext context) {
             var receiver = (FrameClassReceiver)context.SyntaxReceiver;
 
-            // get the received frame class
-            var frameClass = receiver.FrameClass;
-
             // find all generatable fields
-            var frameFields = frameClass.Members
+            var frameFields = receiver.FrameClasses
+                .SelectMany((c) => c.Members)
                 .Select((m) => m as FieldDeclarationSyntax)
                 .Where((m) => !(m is null))
                 .SelectMany((m) =>
@@ -125,15 +123,21 @@ namespace ThirdPerson.SourceGeneration {
     /// the syntax receiver to search for the frame class
     sealed class FrameClassReceiver: ISyntaxReceiver {
         // -- props --
-        public ClassDeclarationSyntax FrameClass { get; private set; }
+        /// the list of classes; there could be multiple partial frame classes
+        public ClassDeclarationSyntax[] FrameClasses { get; private set; }
 
         // -- ISyntaxReceiver --
         public void OnVisitSyntaxNode(SyntaxNode node) {
+            // find all the partial frame classes
+            var classes = new List<ClassDeclarationSyntax>();
+
             if (node is ClassDeclarationSyntax c) {
                 if (FindFullyQualifiedName(node) == "ThirdPerson.CharacterState.Frame") {
-                    FrameClass = c;
+                    classes.Add(c);
                 }
             }
+
+            FrameClasses = classes.ToArray();
         }
 
         // -- helpers --
