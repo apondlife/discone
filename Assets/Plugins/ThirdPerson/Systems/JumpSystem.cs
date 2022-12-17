@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// system state extensions
-partial class CharacterState {
-    partial class Frame {
-        /// .
-        public SystemState JumpState;
-    }
-}
+// /// system state extensions
+// partial class CharacterState {
+//     partial class Frame {
+//         /// .
+//         public SystemState JumpState;
+//     }
+// }
 
 /// how the character jumps
 [Serializable]

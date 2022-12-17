@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// system state extensions
-partial class CharacterState {
-    partial class Frame {
-        /// .
-        public SystemState WallState;
-    }
-}
+// /// system state extensions
+// partial class CharacterState {
+//     partial class Frame {
+//         /// .
+//         public SystemState WallState;
+//     }
+// }
 
 /// how the character interacts with walls
 [Serializable]

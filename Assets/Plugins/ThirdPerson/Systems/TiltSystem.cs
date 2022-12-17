@@ -3,13 +3,13 @@ using System;
 
 namespace ThirdPerson {
 
-/// system state extensions
-partial class CharacterState {
-    partial class Frame {
-        /// .
-        public SystemState TiltState;
-    }
-}
+// /// system state extensions
+// partial class CharacterState {
+//     partial class Frame {
+//         /// .
+//         public SystemState TiltState;
+//     }
+// }
 
 /// how the character tilts on the ground
 [Serializable]

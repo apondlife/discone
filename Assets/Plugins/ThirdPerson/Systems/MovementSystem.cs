@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// system state extensions
-partial class CharacterState {
-    partial class Frame {
-        /// .
-        public SystemState MovementState;
-    }
-}
+// /// system state extensions
+// partial class CharacterState {
+//     partial class Frame {
+//         /// .
+//         public SystemState MovementState;
+//     }
+// }
 
 /// how the character moves on the ground & air
 [Serializable]
