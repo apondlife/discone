@@ -3,13 +3,13 @@ using System;
 
 namespace ThirdPerson {
 
-// /// system state extensions
-// partial class CharacterState {
-//     partial class Frame {
-//         /// .
-//         public SystemState TiltState;
-//     }
-// }
+/// system state extensions
+partial class CharacterState {
+    partial class Frame {
+        /// .
+        public SystemState TiltState;
+    }
+}
 
 /// how the character tilts on the ground
 [Serializable]
@@ -21,6 +21,7 @@ sealed class TiltSystem : CharacterSystem {
 
     protected override SystemState State {
         get => m_State.Next.TiltState;
+        set => m_State.Next.TiltState = value;
     }
 
     // -- NotTilting --

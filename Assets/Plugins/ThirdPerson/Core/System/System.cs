@@ -60,7 +60,10 @@ public abstract class System {
         }
         #endif
 
-        State.PhaseElapsed += delta;
+        var state = State;
+        state.PhaseElapsed += delta;
+        State = state;
+
         m_Phase.Update(delta);
     }
 
@@ -114,14 +117,16 @@ public abstract class System {
     protected void SetPhase(Phase phase) {
         m_Phase = phase;
 
-        State.PhaseName = m_Phase.Name;
-        State.PhaseStart = Time.time;
-        State.PhaseElapsed = 0f;
+        var state = State;
+        state.PhaseName = m_Phase.Name;
+        state.PhaseStart = Time.time;
+        state.PhaseElapsed = 0f;
+        State = state;
     }
 
     // -- queries --
     /// the system's current state
-    protected abstract SystemState State { get; }
+    protected abstract SystemState State { get; set; }
 
     /// .
     protected float PhaseStart {
