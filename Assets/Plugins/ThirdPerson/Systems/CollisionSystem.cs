@@ -2,12 +2,24 @@ using System;
 
 namespace ThirdPerson {
 
+/// system state extensions
+partial class CharacterState {
+    partial class Frame {
+        /// .
+        public SystemState CollisionState;
+    }
+}
+
 /// how the character is affected by gravity
 [Serializable]
 sealed class CollisionSystem: CharacterSystem {
-    // -- lifetime --
+    // -- System --
     protected override Phase InitInitialPhase() {
         return Active;
+    }
+
+    protected override SystemState State {
+        get => m_State.Next.CrouchState;
     }
 
     // -- NotIdle --

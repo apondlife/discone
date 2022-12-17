@@ -58,10 +58,6 @@ namespace ThirdPerson.SourceGeneration {
             var stateImpl = $@"
                 using UnityEngine;
 
-                #if UNITY_EDITOR
-                using System.Collections.Generic;
-                #endif
-
                 namespace ThirdPerson {{
 
                 public partial class CharacterState {{
@@ -88,7 +84,22 @@ namespace ThirdPerson.SourceGeneration {
                 }}
             ";
 
-            // produce the frame extensions
+            // produce a debug class
+            // context.AddSource("SourceGenerator.Generated.cs",
+            //     SourceText.From($@"
+            //         namespace ThirdPerson.SourceGeneration {{
+
+            //         public static class Debug {{
+            //             public static string Log() {{
+            //                 return @""Source Generator Log: {stateFieldsImpl}"";
+            //             }}
+            //         }}
+
+            //         }}
+            //     ", Encoding.UTF8)
+            // );
+
+            // produce the state/frame extensions
             context.AddSource("CharacterState.Generated.cs",
                 SourceText.From(stateImpl, Encoding.UTF8)
             );

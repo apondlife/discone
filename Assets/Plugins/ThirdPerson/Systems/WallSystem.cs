@@ -3,6 +3,14 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+/// system state extensions
+partial class CharacterState {
+    partial class Frame {
+        /// .
+        public SystemState WallState;
+    }
+}
+
 /// how the character interacts with walls
 [Serializable]
 sealed class WallSystem: CharacterSystem {
@@ -13,9 +21,13 @@ sealed class WallSystem: CharacterSystem {
     /// the up vector projected onto the current wall
     Vector3 m_WallUp;
 
-    // -- lifetime --
+    // -- System --
     protected override Phase InitInitialPhase() {
         return NotOnWall;
+    }
+
+    protected override SystemState State {
+        get => m_State.Next.WallState;
     }
 
     // -- Grounded --
@@ -75,8 +87,8 @@ sealed class WallSystem: CharacterSystem {
 
         // accelerate while holding button
         var wallGravity = m_Input.IsWallHoldPressed
-            ? m_Tunables.WallHoldGravity.Evaluate(m_PhaseStart)
-            : m_Tunables.WallGravity.Evaluate(m_PhaseStart);
+            ? m_Tunables.WallHoldGravity.Evaluate(PhaseStart)
+            : m_Tunables.WallGravity.Evaluate(PhaseStart);
 
         var wallAcceleration = m_Tunables.WallAcceleration(wallGravity);
         vd += wallAcceleration * delta * m_WallUp;
