@@ -199,7 +199,7 @@ public partial class Character: MonoBehaviour {
 
     /// the character's current state
     public CharacterState.Frame CurrentState {
-        get => m_State.Curr;
+        get => m_State.Next;
     }
 
     // -- events --

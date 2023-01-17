@@ -3,15 +3,33 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+/// system state extensions
+partial class CharacterState {
+    partial class Frame {
+        /// .
+        public SystemState IdleState;
+    }
+}
+
 /// how the character is affected by gravity
 [Serializable]
 sealed class IdleSystem: CharacterSystem {
     // -- constants --
     const float k_IdleSpeedThreshold = 0.1f;
 
-    // -- lifetime --
+    // -- System --
     protected override Phase InitInitialPhase() {
         return Idle;
+    }
+
+    protected override SystemState State {
+        get {
+            if (m_State.Next == null) {
+                Debug.LogError("[IDLE] STATE IS NULL...");
+            }
+            return m_State.Next.IdleState;
+        }
+        set => m_State.Next.IdleState = value;
     }
 
     // -- NotIdle --
@@ -22,11 +40,11 @@ sealed class IdleSystem: CharacterSystem {
     );
 
     void NotIdle_Enter() {
-        m_State.Curr.IdleTime = 0.0f;
+        m_State.Next.IdleTime = 0.0f;
     }
 
     void NotIdle_Update(float _) {
-        if (m_State.Prev.Velocity.sqrMagnitude <= k_IdleSpeedThreshold) {
+        if (m_State.Curr.Velocity.sqrMagnitude <= k_IdleSpeedThreshold) {
            ChangeTo(Idle);
         }
     }
@@ -39,14 +57,14 @@ sealed class IdleSystem: CharacterSystem {
     );
 
     void Idle_Enter() {
-        m_State.Curr.IdleTime = Time.deltaTime;
+        m_State.Next.IdleTime = Time.deltaTime;
         m_Events.Schedule(CharacterEvent.Idle);
     }
 
     void Idle_Update(float delta) {
-        m_State.Curr.IdleTime += delta;
+        m_State.Next.IdleTime += delta;
 
-        if (m_State.Prev.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
+        if (m_State.Curr.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
            ChangeTo(NotIdle);
         }
     }

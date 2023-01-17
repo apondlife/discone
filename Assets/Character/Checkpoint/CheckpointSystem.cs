@@ -9,6 +9,9 @@ abstract class CheckpointSystem: ThirdPerson.System {
     /// the checkpoint
     protected CharacterCheckpoint m_Checkpoint;
 
+    // -- ThirdPerson.System --
+    protected override SystemState State { get; set; } = new SystemState();
+
     // -- lifetime --
     /// initialize the system
     public void Init(

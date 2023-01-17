@@ -105,7 +105,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
 
         // and start load
         m_Elapsed = 0.0f;
-        m_SrcState = m_State.Curr;
+        m_SrcState = m_State.Next;
         m_DstState = m_Checkpoint.Checkpoint.IntoState();
         m_CurState = m_DstState.Copy();
     }

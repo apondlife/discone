@@ -71,7 +71,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     void NotSaving_Exit() {
-        m_PendingCheckpoint = Checkpoint.FromState(m_State.Curr);
+        m_PendingCheckpoint = Checkpoint.FromState(m_State.Next);
     }
 
     // -- Delaying --
@@ -92,7 +92,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         }
 
         // start smelling once delay elapses
-        if (m_PhaseElapsed > m_Tunables.Delay) {
+        if (PhaseElapsed > m_Tunables.Delay) {
             ChangeTo(Smelling);
         }
     }
@@ -106,7 +106,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
 
     void Smelling_Enter() {
         m_IsSaving = true;
-        m_PhaseElapsed = 0.0f;
     }
 
     void Smelling_Update(float delta) {
@@ -117,7 +116,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         }
 
         // start planting once you finish smelling around for a flower
-        if (m_PhaseElapsed > m_Tunables.SmellDuration) {
+        if (PhaseElapsed > m_Tunables.SmellDuration) {
             ChangeTo(Planting);
         }
     }
@@ -142,7 +141,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         }
 
         // switch to simply existing after planting
-        if (m_PhaseElapsed > m_Tunables.PlantDuration) {
+        if (PhaseElapsed > m_Tunables.PlantDuration) {
             ChangeTo(Being);
         }
     }

@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using UnityEngine;
+using System.Reflection;
 
 namespace ThirdPerson {
 
@@ -73,7 +74,7 @@ public partial class Character: MonoBehaviour {
             return;
         }
 
-        if(next < 0) {
+        if (next < 0) {
             m_State.Snapshot();
             m_Input.Read();
             m_Debug_FrameOffset = 0;
@@ -84,11 +85,16 @@ public partial class Character: MonoBehaviour {
             m_State.Debug_MoveHead(frames);
             m_Input.Debug_MoveHead(frames);
 
+            // restore the system to the correct phase
+            foreach (var system in m_Systems) {
+                system.RestorePhase();
+            }
+
             // copy the current state
-            m_Debug_StateFrame = m_State.Curr.Copy();
+            m_Debug_StateFrame = m_State.Next.Copy();
 
             // step from a clean copy of the previous state
-            m_State.Force(m_State.Prev);
+            m_State.Force(m_State.Curr);
         }
 
         // run the systems for the debug state/input

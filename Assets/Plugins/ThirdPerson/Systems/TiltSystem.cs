@@ -3,12 +3,25 @@ using System;
 
 namespace ThirdPerson {
 
+/// system state extensions
+partial class CharacterState {
+    partial class Frame {
+        /// .
+        public SystemState TiltState;
+    }
+}
+
 /// how the character tilts on the ground
 [Serializable]
 sealed class TiltSystem : CharacterSystem {
-    // -- lifetime --
+    // -- System --
     protected override Phase InitInitialPhase() {
         return NotTilting;
+    }
+
+    protected override SystemState State {
+        get => m_State.Next.TiltState;
+        set => m_State.Next.TiltState = value;
     }
 
     // -- NotTilting --
@@ -62,8 +75,8 @@ sealed class TiltSystem : CharacterSystem {
     // -- commands --
     /// smooth tilt towards target
     void InterpolateTilt(Quaternion target) {
-        m_State.Curr.Tilt = Quaternion.Slerp(
-            m_State.Curr.Tilt,
+        m_State.Next.Tilt = Quaternion.Slerp(
+            m_State.Next.Tilt,
             target,
             m_Tunables.TiltSmoothing
         );

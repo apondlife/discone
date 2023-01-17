@@ -47,11 +47,11 @@ public sealed class CharacterEvents {
     }
 
     internal void Schedule(CharacterEvent evt) {
-        m_State.Curr.Events.Add(evt);
+        m_State.Next.Events.Add(evt);
     }
 
     internal void DispatchAll() {
-        var evts = m_State.Curr.Events;
+        var evts = m_State.Next.Events;
 
         for (CharacterEvent evt = k_First; evt <= k_Last; evt = (CharacterEvent)((int)evt << 1)) {
             if (evts.Contains(evt) && m_Subscribers.TryGetValue(evt, out var actions)) {
