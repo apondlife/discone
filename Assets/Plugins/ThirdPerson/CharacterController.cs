@@ -34,11 +34,9 @@ public sealed class CharacterController {
     [SerializeField] float m_MinMove;
 
     [Tooltip("the highest angle in which colliding with is considered ground. ie slope angle")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_MaxGroundAngle")]
     [SerializeField] float m_WallAngle;
 
     [Tooltip("the amount to offset collision casts against the movement to avoid precision issues")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_CastDirOffset")]
     [SerializeField] float m_CastOffset;
 
     [Tooltip("the amount to offset TODO:...?????")]
@@ -188,14 +186,18 @@ public sealed class CharacterController {
             // this move starts from the previous move's endpoint
             moveSrc = moveDst;
 
+            // decompose the move
+            var moveDir = moveDelta.normalized;
+            var moveLen = moveDelta.magnitude;
+
             // get the next capsule cast, offsetting based on move dir
-            var castSrc = moveSrc - moveDelta.normalized * m_CastOffset;
+            var castSrc = moveSrc - moveDir * m_CastOffset;
             var castDst = moveSrc + moveDelta;
-            var castDelta = castDst - castSrc;
+            var castLen = moveLen + m_CastOffset + m_ContactOffset;
             var cast = capsule.IntoCast(
                 castSrc,
-                castDelta.normalized,
-                castDelta.magnitude + m_ContactOffset
+                moveDir,
+                castLen
             );
 
             // DEBUG: track cast
@@ -226,12 +228,10 @@ public sealed class CharacterController {
             m_DebugHits.Add(hit);
             #endif
 
-            // hit.distance is the length of the ray, so it's at the capsulte center
-            var hitCapsuleCenter = castSrc + hit.distance * cast.Direction;
-
-            // add offset away from hit plane
-            var moveActual = hitCapsuleCenter - moveSrc;
-            moveDst = hitCapsuleCenter - nextVelocity.normalized * Mathf.Min(m_ContactOffset, moveActual.magnitude);
+            // move backwards along the move dir to the last point where we were
+            // at least contact offset away from the hit surface
+            var moveOffset = m_ContactOffset / Vector3.Dot(-moveDir, hit.normal);
+            moveDst = castSrc + (hit.distance - moveOffset) * moveDir;
 
             // if displacement is less than min move, try again from the prev
             // position w/ next velocity
