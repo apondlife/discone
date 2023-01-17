@@ -16,11 +16,13 @@ namespace ThirdPerson.SourceGeneration {
         public void Execute(GeneratorExecutionContext context) {
             var receiver = (FrameClassReceiver)context.SyntaxReceiver;
 
-            // get the received frame class
-            var frameClass = receiver.FrameClass;
+            if (!receiver.FrameClasses.Any()) {
+                throw new Exception("[state generator] no state class in this assembly");
+            }
 
             // find all generatable fields
-            var frameFields = frameClass.Members
+            var frameFields = receiver.FrameClasses
+                .SelectMany((c) => c.Members)
                 .Select((m) => m as FieldDeclarationSyntax)
                 .Where((m) => !(m is null))
                 .SelectMany((m) =>
@@ -38,17 +40,18 @@ namespace ThirdPerson.SourceGeneration {
             );
 
             // frame equality
-            var frameEqualsImpl = IntoLines(
+            var frameEqualsImpl = frameFields.Count() == 0 ? "true" : IntoLines(
                 frameFields,
                 "{0} == o.{0}", " && ",
                 (f) => f.name
             );
 
-            // readonly accessors for properties on the current frame
+            // accessors for properties on the current frame
             var stateFieldsImpl = IntoLines(
                 frameFields,
                 @"public {1} {0} {{
                     get => m_Frames[0].{0};
+                    set => m_Frames[0].{0} = value;
                 }}",
                 (f) => f.name,
                 (f) => f.type
@@ -78,34 +81,13 @@ namespace ThirdPerson.SourceGeneration {
                                 {frameEqualsImpl}
                             );
                         }}
-
-                        private string Test() {{
-                            return ""test succeeded from frame"";
-                        }}
                     }}
                 }}
 
                 }}
             ";
 
-            // // produce a debug class
-            // var log = stateFieldsImpl;
-
-            context.AddSource("SourceGenerator.Generated.cs",
-                SourceText.From($@"
-                    namespace ThirdPerson.SourceGeneration {{
-
-                    public static class Debug {{
-                        public static string Log() {{
-                            return @""Source Generator Log: {stateFieldsImpl}"";
-                        }}
-                    }}
-
-                    }}
-                ", Encoding.UTF8)
-            );
-
-            // produce the frame extensions
+            // produce the state/frame extensions
             context.AddSource("CharacterState.Generated.cs",
                 SourceText.From(stateImpl, Encoding.UTF8)
             );
@@ -130,13 +112,15 @@ namespace ThirdPerson.SourceGeneration {
     /// the syntax receiver to search for the frame class
     sealed class FrameClassReceiver: ISyntaxReceiver {
         // -- props --
-        public ClassDeclarationSyntax FrameClass { get; private set; }
+        /// the list of classes; there could be multiple partial frame classes
+        public List<ClassDeclarationSyntax> FrameClasses = new List<ClassDeclarationSyntax>();
 
         // -- ISyntaxReceiver --
         public void OnVisitSyntaxNode(SyntaxNode node) {
+            // find all the partial frame classes
             if (node is ClassDeclarationSyntax c) {
                 if (FindFullyQualifiedName(node) == "ThirdPerson.CharacterState.Frame") {
-                    FrameClass = c;
+                    FrameClasses.Add(c);
                 }
             }
         }

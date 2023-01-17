@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -9,6 +8,13 @@ namespace ThirdPerson {
 /// collision handling
 [Serializable]
 public sealed class CharacterController {
+    public struct Frame {
+        public Vector3 Position;
+        public Vector3 Velocity;
+        public CharacterCollision Wall;
+        public CharacterCollision Ground;
+    }
+
     // why are we not using rigidbodies? they are annoying to work around. since
     // we have a bunch of custom, unrealistic collision physics, we might as
     // well implement it with full control. the best thing we would get from
@@ -28,11 +34,9 @@ public sealed class CharacterController {
     [SerializeField] float m_MinMove;
 
     [Tooltip("the highest angle in which colliding with is considered ground. ie slope angle")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_MaxGroundAngle")]
     [SerializeField] float m_WallAngle;
 
     [Tooltip("the amount to offset collision casts against the movement to avoid precision issues")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_CastDirOffset")]
     [SerializeField] float m_CastOffset;
 
     [Tooltip("the amount to offset TODO:...?????")]
@@ -43,21 +47,6 @@ public sealed class CharacterController {
     [SerializeField] CapsuleCollider m_Capsule;
 
     // -- props --
-    /// the character's current velocity
-    Vector3 m_Position;
-
-    /// the character's current velocity
-    Vector3 m_Velocity;
-
-    /// pending move delta, if there is any
-    Vector3 m_PendingDelta;
-
-    /// the last wall collision this frame
-    CharacterCollision m_Wall;
-
-    /// the last ground collision this frame
-    CharacterCollision m_Ground;
-
     /// the square min move magnitude
     float m_SqrMinMove;
 
@@ -87,24 +76,28 @@ public sealed class CharacterController {
     }
 
     /// move the character by a position delta
-    public void Move(Vector3 position, Vector3 delta, Vector3 up) {
+    public Frame Move(
+        Vector3 pos,
+        Vector3 velocity,
+        Vector3 up,
+        float deltaTime
+    ) {
+        // the slice of our delta time remaining to resolve
+        var timeLeft = deltaTime;
+
+        // the final velocity at the end of the move
+        var nextVelocity = velocity;
+
         // the move's original position
-        var moveOrigin = position;
+        var moveOrigin = pos;
 
         // the current submove
         var moveSrc = moveOrigin;
         var moveDst = moveSrc;
-        var moveDelta = delta + m_PendingDelta;
-
-        // if this is too small, just aggregate
-        if (moveDelta.sqrMagnitude <= m_SqrMinMove) {
-            m_PendingDelta = moveDelta;
-            return;
-        }
 
         // store debug move
         #if UNITY_EDITOR
-        m_DebugMoveDelta = moveDelta;
+        m_DebugMoveDelta = velocity * deltaTime;
         m_DebugMoveOrigin = moveOrigin;
         #endif
 
@@ -136,8 +129,8 @@ public sealed class CharacterController {
         // *check to see if we can execute this submove*
         //
         // 0a. if the submove is too small, accumulate it for next frame 0b. if
-        // we've cast too many times, we're probably stuck in a corner. drop the
-        // move entirely and reset to input position
+        //     we've cast too many times, we're probably stuck in a corner. drop the
+        //     move entirely and reset to input position
         //
         // -------------
         // -- 1. cast --
@@ -166,10 +159,25 @@ public sealed class CharacterController {
         //     collisions
         //
         var i = 0;
-        while (moveDelta.sqrMagnitude > m_SqrMinMove) {
+        while (timeLeft > 0f) {
+            // asdfasdf
+            if (nextVelocity == Vector3.zero) {
+                break;
+            }
+
+            // move delta is however far we can move in the time slice
+            var moveDelta = nextVelocity * timeLeft;
+
+            // if move remaining is less than min move, stop & add it to pending delta
+            if (moveDelta.sqrMagnitude <= m_SqrMinMove) {
+                // TODO: what to do about any remaining time/velocity/8c
+                break;
+            }
+
             // if we cast an unlikely number of times, cancel this move
             // TODO: should moveDelta be zero here?
             if (i > k_MaxCasts) {
+                // TODO: what to do about any remaining time
                 moveDst = moveOrigin;
                 Debug.LogWarning($"[cntrlr] cast more than {k_MaxCasts + 1} times in a single frame!");
                 break;
@@ -178,14 +186,18 @@ public sealed class CharacterController {
             // this move starts from the previous move's endpoint
             moveSrc = moveDst;
 
+            // decompose the move
+            var moveDir = moveDelta.normalized;
+            var moveLen = moveDelta.magnitude;
+
             // get the next capsule cast, offsetting based on move dir
-            var castSrc = moveSrc - moveDelta.normalized * m_CastOffset;
+            var castSrc = moveSrc - moveDir * m_CastOffset;
             var castDst = moveSrc + moveDelta;
-            var castDelta = castDst - castSrc;
+            var castLen = moveLen + m_CastOffset + m_ContactOffset;
             var cast = capsule.IntoCast(
                 castSrc,
-                castDelta.normalized,
-                castDelta.magnitude + m_ContactOffset
+                moveDir,
+                castLen
             );
 
             // DEBUG: track cast
@@ -205,9 +217,6 @@ public sealed class CharacterController {
                 QueryTriggerInteraction.Ignore
             );
 
-            // zero out move delta, unless we hit
-            moveDelta = Vector3.zero;
-
             // if we missed, move to the target position
             if (!didHit) {
                 moveDst = castDst;
@@ -219,84 +228,35 @@ public sealed class CharacterController {
             m_DebugHits.Add(hit);
             #endif
 
-            // find the center of the capsule relative to the hit. it should be
-            // the intersection of the capsule's axis and the cast direction
-            var hitCapsuleCenter = (Vector3)default;
+            // move backwards along the move dir to the last point where we were
+            // at least contact offset away from the hit surface
+            var moveOffset = m_ContactOffset / Vector3.Dot(-moveDir, hit.normal);
+            moveDst = castSrc + (hit.distance - moveOffset) * moveDir;
 
-            // first find the capsule's axis: the normal from any collision
-            // point always points towards the capsule's axis at a distance of
-            // the radius.
-            //     ___
-            //  .'  ‖  '.
-            // ❘    C  <-❘
-            // |'.  ‖  .'|
-            // |   ‾‖‾   |
-            // |->  C    |
-            var axisPoint = hit.point + hit.normal * cast.Radius;
-
-            // check the cast's colinearity with the capsule's axis
-            var castDotUp = Vector3.Dot(cast.Direction, capsule.Up);
-
-            // if they're colinear, we can't intersect them
-            if (Mathf.Abs(castDotUp) > 0.99f) {
-                // but we know that the hit can only have been the center of one
-                // of the capsule's caps, so instead subtract (h / 2 - r)
-                hitCapsuleCenter = axisPoint - Mathf.Sign(castDotUp) * (capsule.Height * 0.5f - capsule.Radius) * capsule.Up;
+            // if displacement is less than min move, try again from the prev
+            // position w/ next velocity
+            var moveDsp = moveDst - moveSrc;
+            if (moveDsp.sqrMagnitude < m_SqrMinMove) {
+                moveDst = moveSrc;
             }
-            // otherwise the center is the intersection of the cast ray and the
-            // capsule's vertical axis (any center + up)
-            else {
-                // find the intersection between the cast ray and the capsule's
-                // axis. to deal with float precision errors, we intersect the
-                // cast with a plane containing the axis and that is orthogonal
-                // to the plane containing the axis and cast
-                var axis = new Ray(axisPoint, capsule.Up);
-
-                // try to intersect the ray and the plane
-                if (cast.IntoRay().TryIntersectIncidencePlane(axis, out var intersection)) {
-                    hitCapsuleCenter = intersection;
-                }
-                // this should not happen; but if it does abort the collision
-                // from the last successful cast
-                else {
-                    Debug.LogError($"[cntrlr] huge mistake! cast and capsule axis were colinear: {Mathf.Abs(castDotUp)}");
-                    break;
-                }
-            }
-
-            // update move state; next move starts from capsule center and
-            // remaining distance
-            // moveDst = hitCapsuleCenter - m_ContactOffset * cast.Direction;
-
-            // update move state; next move starts from capsule center and
-            // remaining distance
-            // moveDst = hitCapsuleCenter - (m_ContactOffset / Mathf.Max(Mathf.Abs(Vector3.Dot(cast.Direction, hit.normal)), 0.0001f)) * cast.Direction;
-
-            // add offset away from hit plane
-            var contactOffset = -m_ContactOffset * cast.Direction;
-            moveDst = hitCapsuleCenter + contactOffset;
-            moveDelta += hit.normal * m_ContactOffset - Vector3.Project(contactOffset, hit.normal);
 
             // calculate the remaining movement in the plane
             // TODO: ProjectOnPlane could be a slope function e.g. mR.dir * fn(mR.dir • N) * mR.mag
             var moveRemaining = castDst - moveDst;
-            var moveProjected = Vector3.ProjectOnPlane(moveRemaining, hit.normal);
+
+            // assuming velocity is constant during this period of time:
+            timeLeft = moveRemaining.magnitude / nextVelocity.magnitude;
+
+            var projectedVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);
 
             // if the angle between our raw remaining move and the move in the plane
             // are pependicular-ish, don't move along the surface
-            var moveAngle = Vector3.Angle(moveRemaining, moveProjected);
+            var moveAngle = Vector3.Angle(nextVelocity, projectedVelocity);
             if (moveAngle >= m_WallAngle) {
-                moveProjected = Vector3.zero;
+                projectedVelocity = Vector3.zero;
             }
 
-            moveDelta += moveProjected;
-
-            // if displacement is less than min move, accumulate and move from the prev position
-            var moveDsp = moveDst - moveSrc;
-            if (moveDsp.sqrMagnitude < m_SqrMinMove) {
-                moveDst = moveSrc;
-                moveDelta += moveDsp;
-            }
+            nextVelocity = projectedVelocity;
 
             // track collisions
             var collision = new CharacterCollision(
@@ -316,44 +276,15 @@ public sealed class CharacterController {
             i++;
         }
 
-        // if final displacement is smaller than min move, keep accumulating
-        var dsp = moveDst - moveOrigin;
-        if (dsp.sqrMagnitude < m_SqrMinMove) {
-            dsp = Vector3.zero;
-            moveDelta += dsp;
-        }
-
-        m_Position = moveOrigin + dsp;
-        m_Velocity =  dsp / Time.deltaTime;
-        maxYVelocity = Mathf.Max(m_Velocity.y, maxYVelocity);
-        m_Wall = nextWall;
-        m_Ground = nextGround;
-        m_PendingDelta = moveDelta;
+        return new Frame() {
+            Position = moveDst,
+            Velocity =  nextVelocity,
+            Wall = nextWall,
+            Ground = nextGround,
+        };
     }
-
-    public float maxYVelocity = -1;
 
     // -- queries --
-    /// the stored final position of the movement
-    public Vector3 Position {
-        get => m_Position;
-    }
-
-    /// the stored final velocity of the movement
-    public Vector3 Velocity {
-        get => m_Velocity;
-    }
-
-    /// the wall collision
-    public CharacterCollision Wall {
-        get => m_Wall;
-    }
-
-    /// the ground collision
-    public CharacterCollision Ground {
-        get => m_Ground;
-    }
-
     /// the angle considered a wall
     public float WallAngle {
         get => m_WallAngle;
@@ -445,16 +376,16 @@ public sealed class CharacterController {
             }
         }
 
-        // draw the final position
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawSphere(m_Position, k_DebugGizmoRadius);
+        // // draw the final position
+        // Gizmos.color = Color.cyan;
+        // Gizmos.DrawSphere(m_Position, k_DebugGizmoRadius);
 
-        // draw labels
-        UnityEditor.Handles.color = Color.yellow;
-        UnityEditor.Handles.Label(
-            m_Position - Quaternion.AngleAxis(90.0f, Vector3.up) * m_Velocity.normalized * 0.3f,
-            $"casts: {m_DebugCasts.Count} hits: {m_DebugHits.Count} pending: {m_PendingDelta}"
-        );
+        // // draw labels
+        // UnityEditor.Handles.color = Color.yellow;
+        // UnityEditor.Handles.Label(
+        //     m_Position - Quaternion.AngleAxis(90.0f, Vector3.up) * m_Velocity.normalized * 0.3f,
+        //     $"casts: {m_DebugCasts.Count} hits: {m_DebugHits.Count}"
+        // );
     }
     #endif
 }
