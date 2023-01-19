@@ -38,7 +38,7 @@ sealed partial class Character {
             DrawLabel("JumpSquat");
         }
 
-        if (m_State.IsGrounded) {
+        if (m_State.Next.IsOnGround) {
             DrawLabel("Grounded");
         }
     }

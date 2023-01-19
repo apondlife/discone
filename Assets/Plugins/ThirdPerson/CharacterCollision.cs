@@ -20,6 +20,11 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
     }
 
     // -- queries --
+    /// if this is "some collision"
+    public bool IsSome {
+        get => !IsNone;
+    }
+
     /// if this is "no collision"
     public bool IsNone {
         get => Normal == Vector3.zero;

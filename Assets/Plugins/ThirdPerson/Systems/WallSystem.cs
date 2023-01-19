@@ -89,6 +89,7 @@ sealed class WallSystem: CharacterSystem {
         // update state
         m_State.Velocity += vd;
     }
+
     // -- commands --
     /// update w/ the current wall collision
     void UpdateWall(CharacterCollision wall) {

@@ -108,7 +108,7 @@ public sealed class CharacterMusic: MonoBehaviour {
     // -- commands --
     // update current step progress
     void Step() {
-        if (!State.IsGrounded) {
+        if (!State.Next.IsOnGround) {
             return;
         }
 
@@ -148,7 +148,7 @@ public sealed class CharacterMusic: MonoBehaviour {
 
     /// flutter when airborne
     void Flutter() {
-        if (State.IsGrounded) {
+        if (State.Next.IsOnGround) {
             m_FlutterTime = -1.0f;
             return;
         }
@@ -236,7 +236,7 @@ public sealed class CharacterMusic: MonoBehaviour {
     }
     /// whether or not the character is grounded
     bool IsGrounded {
-        get => State.Next.IsGrounded;
+        get => State.Next.IsOnGround;
     }
 
     ThirdPerson.CharacterState State {

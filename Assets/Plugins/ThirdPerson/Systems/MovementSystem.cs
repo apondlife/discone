@@ -32,7 +32,7 @@ sealed class MovementSystem: CharacterSystem {
 
     void NotMoving_Update(float delta) {
         // start floating if no longer grounded
-        if (!m_State.Curr.IsGrounded) {
+        if (!m_State.Next.IsOnGround) {
             ChangeTo(Floating);
             return;
         }
@@ -69,7 +69,7 @@ sealed class MovementSystem: CharacterSystem {
 
     void Moving_Update(float delta) {
         // start floating if no longer grounded
-        if (!m_State.Curr.IsGrounded) {
+        if (!m_State.Next.IsOnGround) {
             ChangeToImmediate(Floating, delta);
             return;
         }
@@ -134,7 +134,7 @@ sealed class MovementSystem: CharacterSystem {
 
     void Sliding_Update(float delta) {
         // start floating if no longer grounded
-        if (!m_State.Curr.IsGrounded) {
+        if (!m_State.Next.IsOnGround) {
             ChangeToImmediate(Floating, delta);
             return;
         }
@@ -202,7 +202,7 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     void Pivot_Update(float delta) {
-        if (!m_State.Curr.IsGrounded) {
+        if (!m_State.Next.IsOnGround) {
             ChangeToImmediate(Floating, delta);
             return;
         }
@@ -242,7 +242,7 @@ sealed class MovementSystem: CharacterSystem {
 
     void Floating_Update(float delta) {
         // return to the ground if grounded
-        if (m_State.Curr.IsGrounded) {
+        if (m_State.Next.IsOnGround) {
             var next = m_State.IsCrouching switch {
                 true => Sliding,
                 false => Moving,

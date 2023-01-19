@@ -65,7 +65,7 @@ public class CharacterDust: MonoBehaviour {
             }
         }
 
-        if (m_State.IsGrounded) {
+        if (m_State.Next.IsOnGround) {
             // check for deceleration, used for both skid and pivot dust
             var groundAcceleration = Vector3.ProjectOnPlane(m_State.Acceleration, m_State.Ground.Normal);
             var isDecelerating = Vector3.Dot(m_State.Velocity.normalized, groundAcceleration) < m_SkidDeceleration;
@@ -113,7 +113,7 @@ public class CharacterDust: MonoBehaviour {
         }
 
         // if just landed
-        if (m_State.IsGrounded) {
+        if (m_State.Next.IsOnGround) {
             m_JumpParticles.transform.up = m_State.Ground.Normal;
             m_JumpParticles.transform.position = m_State.Ground.Point;
             var groundForce = Vector3.Project(m_State.Acceleration, m_State.Ground.Normal).magnitude;

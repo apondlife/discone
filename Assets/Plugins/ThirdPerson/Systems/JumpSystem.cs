@@ -44,8 +44,9 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void NotJumping_Update(float _) {
-        // count coyote frames; reset to max whenever grounded
-        if (m_State.Curr.IsGrounded) {
+        // count coyote frames; reset to max whenever (this determine's if the
+        // character is grounded)
+        if (m_State.Curr.Ground.IsSome) {
             m_State.CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
         }
         // but if not, subtract a frame
@@ -81,7 +82,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void JumpSquat_Update(float delta) {
         // apply fall acceleration if not grounded
-        if (!m_State.Curr.IsGrounded && !m_State.Next.IsOnWall) {
+        if (!m_State.Curr.Ground.IsSome && !m_State.Next.IsOnWall) {
             m_State.Next.Velocity += m_Tunables.FallAcceleration * delta * Vector3.up;
         }
 
@@ -102,7 +103,7 @@ sealed class JumpSystem: CharacterSystem {
         // if this is the first jump, you might be in coyote time
         if (m_State.JumpTunablesJumpIndex == 0) {
             // count coyote frames; reset to max whenever grounded
-            if (m_State.Curr.IsGrounded) {
+            if (m_State.Curr.Ground.IsSome) {
                 m_State.CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
             }
             // but if not, subtract a frame
@@ -163,7 +164,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // transition out of jump
-        if (m_State.Curr.IsGrounded) {
+        if (m_State.Curr.Ground.IsSome) {
             ChangeTo(NotJumping);
             return;
         }

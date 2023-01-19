@@ -101,7 +101,7 @@ public partial class Character: MonoBehaviour {
             // so it runs after jump
             m_Movement,
             m_Tilt,
-            // resolves state against the world, runs afte ra
+            // resolves state against the world, runs after all other systems
             m_Collision,
         };
 

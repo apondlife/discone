@@ -70,11 +70,6 @@ public sealed partial class CharacterState {
         get => m_Frames.IsEmpty;
     }
 
-    /// if currently grounded
-    public bool IsGrounded {
-        get => Next.IsGrounded;
-    }
-
     /// if currently idle
     public bool IsIdle {
         get => Next.IsIdle;
@@ -213,9 +208,9 @@ public sealed partial class CharacterState {
             get => Ground.Normal;
         }
 
-        /// if the character is grounded
-        public bool IsGrounded {
-            get => !Ground.IsNone;
+        /// if the character is touching the ground (or thinks they are)
+        public bool IsOnGround {
+            get => Ground.IsSome || CoyoteFrames > 0;
         }
 
         /// if currently idle
