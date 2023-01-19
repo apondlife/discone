@@ -110,7 +110,7 @@ sealed class MovementSystem: CharacterSystem {
         // 22.10.26: removed static friction when in moving
         var dv = IntegrateForces(
             v,
-            m_Tunables.Horizontal_Acceleration * inputDir.magnitude * m_State.Next.Forward,
+            m_Tunables.Horizontal_Acceleration * Vector3.Project(inputDir, m_State.Next.Forward),
             m_State.WasStopped ? 0.0f : m_State.Horizontal_Drag,
             m_State.Horizontal_KineticFriction,
             delta
