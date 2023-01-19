@@ -95,7 +95,7 @@ public class CharacterBlobShadow : MonoBehaviour {
         m_ProjectorColor.a = Mathf.Lerp(0, m_MaxAlpha, m_FadeCurve.Evaluate(dist / m_MaxFadeDistance));
         m_Projector.material.color = m_ProjectorColor;
 
-        m_Projector.enabled = !m_State.IsGrounded;
+        m_Projector.enabled = !m_State.Next.IsOnGround;
     }
 }
 }

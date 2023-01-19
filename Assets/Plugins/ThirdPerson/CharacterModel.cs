@@ -147,7 +147,7 @@ public sealed class CharacterModel: MonoBehaviour {
                 // hands are always active
                 !limb.IsFoot ||
                 // feets are active when we're airborne
-                !m_State.IsGrounded
+                !m_State.Next.IsOnGround
             );
 
             limb.SetIsActive(isLimbActive);
@@ -180,7 +180,7 @@ public sealed class CharacterModel: MonoBehaviour {
         // set jump animation params
         anim.SetBool(
             k_PropIsAirborne,
-            !m_State.IsGrounded
+            !m_State.Next.IsOnGround
         );
 
         anim.SetFloat(
@@ -190,7 +190,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // blend yoshiing
         // TODO: lerp
-        var yoshiing = !m_State.IsGrounded && m_Input.IsJumpPressed ? 1.0f : 0.0f;
+        var yoshiing = !m_State.Next.IsOnGround && m_Input.IsJumpPressed ? 1.0f : 0.0f;
         anim.SetLayerWeight(
             m_LayerLegs,
             yoshiing

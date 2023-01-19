@@ -120,7 +120,7 @@ public class CameraLookAtTarget: MonoBehaviour {
         var footPos = transform.localPosition;
 
         // if grounded, just use that
-        if (m_Character.IsPaused || m_Character.State.IsGrounded) {
+        if (m_Character.IsPaused || m_Character.State.Next.IsOnGround) {
             return footPos;
         }
 

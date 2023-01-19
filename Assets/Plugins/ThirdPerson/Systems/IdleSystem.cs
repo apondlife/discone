@@ -23,12 +23,7 @@ sealed class IdleSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get {
-            if (m_State.Next == null) {
-                Debug.LogError("[IDLE] STATE IS NULL...");
-            }
-            return m_State.Next.IdleState;
-        }
+        get => m_State.Next.IdleState;
         set => m_State.Next.IdleState = value;
     }
 

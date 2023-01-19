@@ -111,6 +111,10 @@ public sealed class CharacterLimb: MonoBehaviour {
 
     /// update if ik is active for is this lime
     public void SetIsActive(bool isActive) {
+        if (!isActive) {
+            m_HasTarget = false;
+        }
+
         m_IsActive = isActive;
     }
 

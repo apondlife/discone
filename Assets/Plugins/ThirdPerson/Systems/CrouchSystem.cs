@@ -51,7 +51,7 @@ sealed class CrouchSystem: CharacterSystem {
         m_State.Horizontal_StaticFriction = m_Tunables.Horizontal_StaticFriction;
 
         // switch to crouching on input
-        if (m_State.IsGrounded && m_Input.IsCrouchPressed) {
+        if (m_State.Next.IsOnGround && m_Input.IsCrouchPressed) {
             ChangeTo(Crouching);
             return;
         }
@@ -81,7 +81,7 @@ sealed class CrouchSystem: CharacterSystem {
 
     void Crouching_Update(float delta) {
         // if airborne or if crouch is released, end crouch
-        if (!m_State.IsGrounded || !m_Input.IsCrouchPressed) {
+        if (!m_State.Next.IsOnGround || !m_Input.IsCrouchPressed) {
             ChangeTo(NotCrouching);
             return;
         }
