@@ -213,7 +213,9 @@ sealed class JumpSystem: CharacterSystem {
 
         m_State.Next.Velocity += dv;
         m_State.Next.IsInJumpStart = true;
-        m_State.CooldownFrames = (int)JumpTunables.CooldownFrames;
+        m_State.Next.CoyoteFrames = 0;
+        m_State.Next.CooldownFrames = (int)JumpTunables.CooldownFrames;
+
         m_Events.Schedule(CharacterEvent.Jump);
     }
 
