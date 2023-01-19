@@ -42,11 +42,11 @@ sealed class WallSystem: CharacterSystem {
         m_State.IsOnWall = false;
     }
 
-    void NotOnWall_Update(float _) {
+    void NotOnWall_Update(float delta) {
         // if we're on a wall, enter slide
         var wall = m_State.Curr.Wall;
         if (!wall.IsNone) {
-            ChangeTo(WallSlide);
+            ChangeToImmediate(WallSlide, delta);
         }
     }
 
@@ -58,14 +58,6 @@ sealed class WallSystem: CharacterSystem {
     );
 
     void WallSlide_Enter() {
-        // update to new wall collision
-        UpdateWall(m_State.Curr.Wall);
-
-        // transfer initial velocity
-        var vd = Vector3.zero;
-        vd += TransferredVelocity();
-        m_State.Velocity += vd;
-
         // update state
         m_State.IsOnWall = true;
     }
