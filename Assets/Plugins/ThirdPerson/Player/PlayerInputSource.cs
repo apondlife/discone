@@ -26,17 +26,20 @@ public sealed class PlayerInputSource: MonoBehaviour, CharacterInputSource {
 
     public CharacterInput.Frame Read() {
         var forward = Vector3.Normalize(Vector3.ProjectOnPlane(
-            m_Look.transform.forward,
+            m_Look.forward,
             Vector3.up
         ));
 
-        var right = m_Look.transform.right;
-        var pInput = m_Move.action.ReadValue<Vector2>();
-        var move = forward * pInput.y + right * pInput.x;
+        var right = Vector3.Normalize(Vector3.ProjectOnPlane(
+            m_Look.right,
+            Vector3.up
+        ));
+
+        var input = m_Move.action.ReadValue<Vector2>();
 
         // produce a new frame
         return new CharacterInput.DefaultFrame(
-            move,
+            forward * input.y + right * input.x,
             m_Jump.action.IsPressed(),
             m_Crouch.action.IsPressed()
         );
