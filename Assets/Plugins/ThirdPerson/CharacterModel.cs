@@ -28,6 +28,8 @@ public sealed class CharacterModel: MonoBehaviour {
     [Tooltip("TODO: leave me a comment")]
     [SerializeField] bool AnimateScale;
 
+    // -- stretch & squash --
+    [Header("stretch & squash")]
     [Tooltip("TODO: leave me a comment")]
     [SerializeField] float MaxJumpSquatSquash;
 
@@ -49,10 +51,18 @@ public sealed class CharacterModel: MonoBehaviour {
     [Tooltip("TODO: leave me a comment")]
     [SerializeField] float MaxSquashScale = 2;
 
+    // -- rotation --
+    [Header("rotation")]
+    [Tooltip("the body's rotation speed in degrees")]
+    [SerializeField] float m_RotationSpeed = 0.0f;
+
     // -- ik --
     [Header("ik")]
     [Tooltip("if the ik system is active")]
     [SerializeField] bool m_IsIkActive = true;
+
+    [Tooltip("the head (look at) ik")]
+    [SerializeField] CharacterHead m_Head;
 
     [Tooltip("the list of ik limbs")]
     [SerializeField] CharacterLimb[] m_Limbs;
@@ -112,7 +122,9 @@ public sealed class CharacterModel: MonoBehaviour {
             m_LayerLegs = m_Animator.GetLayerIndex(k_LayerLegs);
             m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
 
-            // init limbs
+            // init ik parts
+            m_Head.Init(m_Animator);
+
             foreach (var limb in m_Limbs) {
                 limb.Init(m_Animator);
 
@@ -172,15 +184,15 @@ public sealed class CharacterModel: MonoBehaviour {
             )
         );
 
-        anim.SetBool(
-            k_PropIsCrouching,
-            m_State.IsInJumpSquat || m_State.IsCrouching
-        );
-
         // set jump animation params
         anim.SetBool(
             k_PropIsAirborne,
             !m_State.Next.IsOnGround
+        );
+
+        anim.SetBool(
+            k_PropIsCrouching,
+            m_State.IsInJumpSquat || m_State.IsCrouching
         );
 
         anim.SetFloat(
@@ -207,12 +219,18 @@ public sealed class CharacterModel: MonoBehaviour {
         foreach (var limb in m_Limbs) {
             limb.ApplyIk();
         }
+
+        m_Head.ApplyIk();
     }
 
     /// tilt the model as a fn of character acceleration
     void Tilt() {
         // is this a fundamental misunderstanding of quaternions? maybe
-        transform.rotation = m_State.Next.LookRotation;
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            m_State.Next.LookRotation,
+            m_RotationSpeed * Time.deltaTime
+        );
     }
 
     /// change character scale according to acceleration
