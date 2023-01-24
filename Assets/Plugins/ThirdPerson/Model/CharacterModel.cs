@@ -58,9 +58,6 @@ public sealed class CharacterModel: MonoBehaviour {
 
     // -- ik --
     [Header("ik")]
-    [Tooltip("if the ik system is active")]
-    [SerializeField] bool m_IsIkActive = true;
-
     [Tooltip("the head (look at) ik")]
     [SerializeField] CharacterHead m_Head;
 
@@ -123,14 +120,10 @@ public sealed class CharacterModel: MonoBehaviour {
             m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
 
             // init ik parts
+            // TODO: extract an CharacterLimb interface for arms & legs & head &c
             m_Head.Init(m_Animator);
-
             foreach (var limb in m_Limbs) {
                 limb.Init(m_Animator);
-
-                if (!limb.IsValid) {
-                    Debug.LogError($"[chrctr] {m_Container.name} has a limb w/ no matching bone: {limb.Goal}");
-                }
             }
 
             // proxy animator callbacks
@@ -151,19 +144,6 @@ public sealed class CharacterModel: MonoBehaviour {
         SyncAnimator();
         Tilt();
         StretchAndSquash();
-
-        // update ik limbs active state
-        foreach (var limb in m_Limbs) {
-            var isLimbActive = (
-                m_IsIkActive &&
-                // hands are always active
-                !limb.IsFoot ||
-                // feets are active when we're airborne
-                !m_State.Next.IsOnGround
-            );
-
-            limb.SetIsActive(isLimbActive);
-        }
     }
 
     // -- commands --
