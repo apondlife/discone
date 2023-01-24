@@ -5,6 +5,9 @@ namespace ThirdPerson {
 /// an ik limb for the character model
 public sealed class CharacterLimb: MonoBehaviour {
     // -- deps --
+    /// the containing character
+    Character m_Container;
+
     /// the animator for this limb
     Animator m_Animator;
 
@@ -65,8 +68,20 @@ public sealed class CharacterLimb: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
+        // set deps
+        m_Container = GetComponentInParent<Character>();
+
         // cache stride length
         m_SqrStrideLength = m_StrideLength * m_StrideLength;
+    }
+
+    void FixedUpdate() {
+        SetIsActive(
+            // hands are always active
+            !IsFoot ||
+            // feets are active when we're airborne
+            !m_Container.State.Next.IsOnGround
+        );
     }
 
     void Update() {
@@ -107,6 +122,11 @@ public sealed class CharacterLimb: MonoBehaviour {
             AvatarIKGoal.RightFoot => HumanBodyBones.RightFoot,
             _ /*AvatarIKGoal.LeftFoot*/ => HumanBodyBones.LeftFoot,
         });
+
+        // error on misconfiguration
+        if (!IsValid) {
+            Debug.LogError($"[chrctr] {m_Container.name} has a limb w/ no matching bone: {Goal}");
+        }
     }
 
     /// update if ik is active for is this lime
