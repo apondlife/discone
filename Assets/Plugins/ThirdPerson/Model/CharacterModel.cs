@@ -56,14 +56,6 @@ public sealed class CharacterModel: MonoBehaviour {
     [Tooltip("the body's rotation speed in degrees")]
     [SerializeField] float m_RotationSpeed = 0.0f;
 
-    // -- ik --
-    [Header("ik")]
-    [Tooltip("the head (look at) ik")]
-    [SerializeField] CharacterHead m_Head;
-
-    [Tooltip("the list of ik limbs")]
-    [SerializeField] CharacterLimb[] m_Limbs;
-
     // -- refs --
     [Header("refs")]
     [Tooltip("the shared third person animator controller")]
@@ -88,6 +80,9 @@ public sealed class CharacterModel: MonoBehaviour {
     /// TODO: CharacterContainer, CharacterContainerConvertible
     CharacterInput m_Input => m_Container.Input;
 
+    /// the list of ik limbs
+    CharacterLimb[] m_Limbs;
+
     /// the current strech/squash multiplier
     float m_CurrentSquashStretch = 1.0f;
 
@@ -106,6 +101,7 @@ public sealed class CharacterModel: MonoBehaviour {
         m_Container = GetComponentInParent<Character>();
 
         // set props
+        m_Limbs = GetComponentsInChildren<CharacterLimb>();
         m_InitialScale = transform.localScale;
 
         // init animator
@@ -119,9 +115,7 @@ public sealed class CharacterModel: MonoBehaviour {
             m_LayerLegs = m_Animator.GetLayerIndex(k_LayerLegs);
             m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
 
-            // init ik parts
-            // TODO: extract an CharacterLimb interface for arms & legs & head &c
-            m_Head.Init(m_Animator);
+            // init ik limbs
             foreach (var limb in m_Limbs) {
                 limb.Init(m_Animator);
             }
@@ -199,8 +193,6 @@ public sealed class CharacterModel: MonoBehaviour {
         foreach (var limb in m_Limbs) {
             limb.ApplyIk();
         }
-
-        m_Head.ApplyIk();
     }
 
     /// tilt the model as a fn of character acceleration

@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3634307922059092450}
-  - component: {fileID: 4625331068232416769}
+  - component: {fileID: 4999789032725581960}
   - component: {fileID: 467891707397163346}
   m_Layer: 13
-  m_Name: CharacterLimb
+  m_Name: CharacterArm
   m_TagString: Untagged
   m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -34,7 +34,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4625331068232416769
+--- !u!114 &4999789032725581960
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,7 +43,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1311217693618543391}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebeb511a9c5d5574f987c010fb1a33fd, type: 3}
+  m_Script: {fileID: 11500000, guid: 87e12309b979f46e5a29d0fdd3f671d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Goal: 0
