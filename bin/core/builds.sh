@@ -22,7 +22,7 @@ FindBuild() {
   # find most recent build for the variant
   local build_dir=$(\
     ls -A $variant_dir \
-      | sort -r -n -t \. -k 2 \
+      | sort -r \
       | head -1
   )
 
