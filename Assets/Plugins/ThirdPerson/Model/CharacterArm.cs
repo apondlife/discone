@@ -76,12 +76,8 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
     }
 
     void FixedUpdate() {
-        SetIsActive(
-            // hands are always active
-            !IsFoot ||
-            // feets are active when we're airborne
-            !m_Container.State.Next.IsOnGround
-        );
+        // hands are always active
+        SetIsActive(true);
     }
 
     void Update() {
@@ -118,9 +114,7 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
         // cache the bone; we can't really do anything if we don't find a bone
         m_AnimatedBone = m_Animator.GetBoneTransform(m_Goal switch {
             AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
-            AvatarIKGoal.LeftHand => HumanBodyBones.LeftHand,
-            AvatarIKGoal.RightFoot => HumanBodyBones.RightFoot,
-            _ /*AvatarIKGoal.LeftFoot*/ => HumanBodyBones.LeftFoot,
+            _ /*AvatarIKGoal.LeftHand*/ => HumanBodyBones.LeftHand,
         });
 
         // error on misconfiguration
@@ -166,15 +160,6 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
     /// .
     public AvatarIKGoal Goal {
         get => m_Goal;
-    }
-
-    /// .
-    public bool IsFoot {
-        get => m_Goal switch {
-            AvatarIKGoal.LeftFoot => true,
-            AvatarIKGoal.RightFoot => true,
-            _ => false
-        };
     }
 
     /// if moving to this position completes a stride
