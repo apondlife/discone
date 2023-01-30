@@ -18,7 +18,6 @@ public sealed class Camera: MonoBehaviour {
     /// the character's tunables / constants
     CharacterTunablesBase m_Tunables;
 
-
     // -- lifecycle --
     void Start() {
         // set deps
