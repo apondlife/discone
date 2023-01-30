@@ -325,6 +325,8 @@ public class CameraFollowTarget: MonoBehaviour {
     /// find the camera's best position given a candidate position
     /// see: https://miro.com/app/board/uXjVOWfpI6I=/?moveToWidget=3458764535240497690&cot=14
     public Vector3 FindDestPos(Vector3 candidate) {
+        return candidate;
+
         // the final position
         var destPos = candidate;
 

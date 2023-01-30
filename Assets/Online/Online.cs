@@ -77,6 +77,11 @@ public class Online: NetworkManager {
         subscriptions
             .Add(m_StartClient, OnTryStartClient)
             .Add(m_DisconnectClient, OnTryDisconnect);
+
+        // feedback when you do things you don't want to
+        #if UNITY_EDITOR && UNITY_SERVER
+        Debug.LogError("[online] you probably don't want to run server mode in the editor!");
+        #endif
     }
 
     public override void Start() {

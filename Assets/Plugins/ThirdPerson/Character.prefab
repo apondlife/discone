@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1289189457}
   - component: {fileID: 1289189456}
-  - component: {fileID: 7614967428711631637}
   m_Layer: 6
   m_Name: Camera-virtual
   m_TagString: Untagged
@@ -25,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.10354013, y: -0.0000000042784754, z: -4.453877e-10, w: 0.9946253}
+  m_LocalRotation: {x: -0.103540145, y: -0.00000001764825, z: -0.0000000018371767, w: 0.9946253}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -63,7 +62,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7773513, y: 1}
+    m_SensorSize: {x: 1.7772021, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -72,36 +71,6 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 1785480724}
---- !u!114 &7614967428711631637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1289189455}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e501d18bb52cf8c40b1853ca4904654f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_CollideAgainst:
-    serializedVersion: 2
-    m_Bits: 256
-  m_IgnoreTag: 
-  m_TransparentLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  m_MinimumDistanceFromTarget: 0.1
-  m_AvoidObstacles: 1
-  m_DistanceLimit: 0
-  m_MinimumOcclusionTime: 0.15
-  m_CameraRadius: 0.03
-  m_Strategy: 0
-  m_MaximumEffort: 4
-  m_SmoothingTime: 0.367
-  m_Damping: 0.77
-  m_DampingWhenOccluded: 0.29
-  m_OptimalTargetDistance: 0
 --- !u!1 &1785480723
 GameObject:
   m_ObjectHideFlags: 0
@@ -709,12 +678,6 @@ MonoBehaviour:
   MinSquashScale: 0.4
   MaxSquashScale: 1.5
   m_RotationSpeed: 0
-  m_Head: {fileID: 5548610953491594583}
-  m_Limbs:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   m_AnimatorController: {fileID: 9100000, guid: 597f755a64b35974b963a44170d24fb5, type: 2}
 --- !u!1 &7614967429340073447
 GameObject:
@@ -1015,17 +978,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13ae7d49f8d7c47b79ed29124f06d0f6, type: 3}
---- !u!114 &5548610953491594583 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5979630286135884467, guid: 13ae7d49f8d7c47b79ed29124f06d0f6, type: 3}
-  m_PrefabInstance: {fileID: 2304517358883882980}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e1447bb829004160a6c9ff9677f5146, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &7507087150555394593 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8635034010986100165, guid: 13ae7d49f8d7c47b79ed29124f06d0f6, type: 3}
