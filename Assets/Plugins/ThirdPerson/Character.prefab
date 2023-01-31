@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.103540145, y: -0.00000001764825, z: -0.0000000018371767, w: 0.9946253}
+  m_LocalRotation: {x: -0.10354013, y: 0.0000000042784754, z: 4.453877e-10, w: 0.9946253}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -62,7 +62,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7772021, y: 1}
+    m_SensorSize: {x: 1.7775832, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -283,6 +283,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Yaw: 0
   m_Pitch: 0
+  m_Distance: 0
   m_CollisionMask:
     serializedVersion: 2
     m_Bits: 385
@@ -362,8 +363,8 @@ MonoBehaviour:
   m_MaxPitch: 60
   m_MaxPitchSpeed: 50
   m_PitchAcceleration: 100
-  m_LocalSpeed: 13
-  m_SmoothTime: 0.5
+  m_CorrectionSpeed: 5
+  m_CorrectionSmoothTime: 0.3
   m_ContactOffset: 0.38
   m_Distance_SpeedCurve:
     serializedVersion: 2
@@ -392,8 +393,11 @@ MonoBehaviour:
   m_TargetMinSpeed: 30
   m_TargetMaxSpeed: 200
   m_TargetSpeed_MaxDistance: 80
-  m_FreeLook_YawSpeed: 90
-  m_FreeLook_PitchSpeed: 45
+  m_FreeLook_YawSpeed: 100
+  m_FreeLook_YawAcceleration: 350
+  m_FreeLook_PitchSpeed: 100
+  m_FreeLook_PitchAcceleration: 300
+  m_FreeLook_DistanceSpeed: 1
   m_FreeLook_MinPitch: -60
   m_FreeLook_MaxPitch: 80
   m_Distance_PitchCurve:
@@ -402,30 +406,30 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.029391985
-      outSlope: 0.029391985
+      inSlope: 5.337135
+      outSlope: 5.337135
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.13501143
+      outWeight: 0.05106164
     - serializedVersion: 3
-      time: 0.8052687
-      value: 0.33213374
-      inSlope: 1.2956566
-      outSlope: 1.2956566
+      time: 0.48858643
+      value: 0.99728394
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.42305857
+      inWeight: 0.21705483
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 1.0027084
-      inSlope: 9.310777
-      outSlope: 9.310777
+      value: 0
+      inSlope: -5.32876
+      outSlope: -5.32876
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.09012986
-      outWeight: 0.33333334
+      inWeight: 0.05284766
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -468,7 +472,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   m_InvertX: 0
-  m_InvertY: 0
+  m_InvertY: 1
   m_Model: {fileID: 1061133086809451152}
   m_LookAtTarget: {fileID: 3032161264613087381}
   m_Target: {fileID: 3673039484627793572}
