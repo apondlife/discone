@@ -17,7 +17,8 @@ public class CharacterDust: MonoBehaviour {
     [SerializeField] float m_AccelerationToDust = 0.01f;
 
     [Tooltip("how many particles on ground hit per unit of deceleration")]
-    [SerializeField] float m_GroundAccelerationToDust = 0.01f;
+    [FormerlySerializedAs("m_GroundAccelerationToDust")]
+    [SerializeField] float m_LandingAccelerationToDust = 0.01f;
 
     // -- refs --
     [Header("refs")]
@@ -31,8 +32,11 @@ public class CharacterDust: MonoBehaviour {
     [Tooltip("the floor skid lines particle (negative acceleration)")]
     [SerializeField] ParticleSystem m_FloorSkid;
 
-    [Tooltip("the jump particle emitter")]
-    [SerializeField] ParticleSystem m_JumpParticles;
+    [Tooltip("the particle puff when landing")]
+    [SerializeField] ParticleSystem m_LandingPuff;
+
+    [Tooltip("the particle stamp (on the ground) when landing")]
+    [SerializeField] ParticleSystem m_LandingStamp;
 
     [Tooltip("the pivot particle emitter")]
     [SerializeField] ParticleSystem m_PivotParticles;
@@ -114,11 +118,12 @@ public class CharacterDust: MonoBehaviour {
 
         // if just landed
         if (m_State.Next.IsOnGround) {
-            m_JumpParticles.transform.up = m_State.Ground.Normal;
-            m_JumpParticles.transform.position = m_State.Ground.Point;
+            m_LandingPuff.transform.up = m_State.Ground.Normal;
+            m_LandingPuff.transform.position = m_State.Ground.Point;
             var groundForce = Vector3.Project(m_State.Acceleration, m_State.Ground.Normal).magnitude;
-            var particles = Mathf.FloorToInt(m_GroundAccelerationToDust * groundForce);
-            m_JumpParticles.Emit(particles);
+            var particles = Mathf.FloorToInt(m_LandingAccelerationToDust * groundForce);
+            m_LandingPuff.Emit(particles);
+            m_LandingStamp.Emit(particles);
         }
     }
 }
