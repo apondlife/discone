@@ -1,6 +1,11 @@
 what is projected
 ---
 
+# scrap notes from businessman
+> is the blob shadow from discone or third person? if TP make sure its portable
+> character drive event to fix how the camera currently works, its horrible
+>
+
 # wall
 > don't wall on small speeds (janky falling animation when walking near walls)
 > no regrab wall gravity
@@ -14,6 +19,9 @@ what is projected
 # flowers
 > convert from test to real world
 > delete when not finding ground
+
+# camera
+> start follow from corrected position
 
 # tools
 > test pt script on windows
