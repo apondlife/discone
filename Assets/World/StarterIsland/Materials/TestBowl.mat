@@ -19,6 +19,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BackfaceTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -57,6 +61,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BackfaceAlpha: 0
     - _Blend: 0
     - _Brightness: 0
     - _BumpScale: 0
@@ -95,11 +100,11 @@ Material:
     - _FloorColor: {r: 0.5411765, g: 0.84705883, b: 0.6117647, a: 1}
     - _NegativeRampColor: {r: 0.66518724, g: 0.7535983, b: 0.922, a: 1}
     - _NegativeSteepColor: {r: 0.91895866, g: 0.8649023, b: 1.1486983, a: 1}
-    - _NegativeWallColor: {r: 0.91895866, g: 0.8649023, b: 1.1486983, a: 1}
+    - _NegativeWallColor: {r: 0.6, g: 0.5647059, b: 0.7490196, a: 1}
     - _NonSteepCeiling: {r: 0.7647059, g: 0.9254902, b: 0.4627451, a: 1}
     - _NonSteepFloor: {r: 0.76485384, g: 0.9254902, b: 0.4627451, a: 1}
     - _PositiveRampColor: {r: 0.6156863, g: 0.8352941, b: 0.85882354, a: 1}
-    - _PositiveWallColor: {r: 1.1486983, g: 0.6847143, b: 0.7252566, a: 1}
+    - _PositiveWallColor: {r: 0.7490196, g: 0.44705883, b: 0.4745098, a: 1}
     - _RampColor: {r: 0.61714387, g: 0.8333694, b: 0.8603976, a: 1}
     - _ShallowCeilingColor: {r: 0.7647059, g: 0.9254902, b: 0.4627451, a: 1}
     - _ShallowFloorColor: {r: 0.7647059, g: 0.9254902, b: 0.4627451, a: 1}
