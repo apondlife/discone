@@ -13,12 +13,6 @@ Shader "Custom/InclineShader" {
         _Brightness ("Brightness", Range(-1.0, 1.0)) = 0.0
 
         [Space]
-        [Header(Back Face)]
-        [Space(5)]
-        _BackfaceTex ("Backface Texture", 2D) = "gray" {}
-        _BackfaceAlpha ("Backface Alpha", Range(0.0, 1.0)) = 0.0
-
-        [Space]
         [Header(Bump Map)]
         [Space(5)]
         [Toggle] _Bump_Map ("Enable", Float) = 0
@@ -48,6 +42,18 @@ Shader "Custom/InclineShader" {
         [Space]
         [Header(Colors)]
         _MapScale("Triplanar Scale", Float) = 1
+
+        [Space]
+        [Header(Back Face)]
+        [Space(5)]
+        _BackfaceTex ("Texture", 2D) = "gray" {}
+        _BackfaceTexDisplacement ("Texture Displacement", Range(0.0, 1.0)) = 0.9
+        _BackfaceTexThreshold ("Texture Threshold", Range(0.0, 1.0)) = 0.5
+        _BackfaceTexTransparency ("Texture Transparency", Range(0.0, 2.0)) = 0.95
+        _BackfaceNoiseZoom ("Noise Zoom", Float) = 1.0
+        _BackfaceNoiseScale ("Noise Scale", Range(0.0, 1.0)) = 0.5
+        _BackfaceNoiseOffset ("Noise Offset", Range(0.0, 1.0)) = 0.5
+        _BackfaceNoiseVelocity ("Noise Velocity", Vector) = (0, 0, 1, 0)
     }
 
     SubShader {
@@ -399,8 +405,8 @@ Shader "Custom/InclineShader" {
                 return o;
             }
 
-            float4 DrawFrag(FragIn i) : SV_Target {
-                SHADOW_CASTER_FRAGMENT(i);
+            float4 DrawFrag(FragIn IN) : SV_Target {
+                SHADOW_CASTER_FRAGMENT(IN);
             }
             ENDCG
         }
@@ -424,23 +430,20 @@ Shader "Custom/InclineShader" {
             // -- includes --
             #include "UnityCG.cginc"
             #include "Assets/Shaders/Core/Math.cginc"
-
-            // the texture
-            sampler2D _BackTex;
-
-            // the texture scale/translation
-            float4 _BackTex_ST;
+            #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 
             // -- types --
             struct VertIn {
                 float4 vertex : POSITION;
+                float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
             };
 
             struct FragIn {
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
+                float3 worldPos : TEXCOORD1;
+                float3 worldNormal : TEXCOORD2;
             };
 
             // -- props --
@@ -448,26 +451,63 @@ Shader "Custom/InclineShader" {
 
             /// the texture coordinate
             float4 _BackfaceTex_ST;
-            float _BackfaceAlpha;
-            float _Cutoff;
+
+            // the backface texture displacement
+            float _BackfaceTexDisplacement;
+
+            // the backface texture threshold
+            float _BackfaceTexThreshold;
+
+            // the backface texture transparency
+            float _BackfaceTexTransparency;
+
+            // the backface noise zoom
+            float _BackfaceNoiseZoom;
+
+            // the backface noise scale
+            float _BackfaceNoiseScale;
+
+            // the backface noise offset
+            float _BackfaceNoiseOffset;
+
+            // the backface noise velocity
+            float3 _BackfaceNoiseVelocity;
 
             // -- program --
-            FragIn DrawVert (VertIn v) {
+            FragIn DrawVert(VertIn IN) {
                 FragIn o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _BackfaceTex);
-                UNITY_TRANSFER_FOG(o, o.vertex);
+                o.vertex = UnityObjectToClipPos(IN.vertex);
+                o.uv = TRANSFORM_TEX(IN.uv, _BackfaceTex);
+                o.worldPos = mul(unity_ObjectToWorld, IN.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(IN.normal);
                 return o;
             }
 
-            fixed4 DrawFrag (FragIn i, float facing : VFACE) : SV_Target {
-                fixed4 col = tex2D(_BackfaceTex, i.uv);
-                col = fixed4(Rand(i.uv * 2), Rand(i.uv * 3), Rand(i.uv * 4), 1);
+            fixed4 DrawFrag(FragIn IN) : SV_Target {
+                // see: https://github.com/bgolus/Normal-Mapping-for-a-Triplanar-Shader/blob/master/TriplanarSurfaceShader.shader
+                // blending factor of triplanar mapping
+                half3 bf = saturate(pow(IN.worldNormal, 4));
+                bf /= max(dot(bf, half3(1, 1, 1)), 0.0001f);
 
-                UNITY_APPLY_FOG(i.fogCoord, col);
+                // get texture
+                float2 uvX = IN.worldPos.zy * _BackfaceTex_ST.xy + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
+                float2 uvY = IN.worldPos.xz * _BackfaceTex_ST.xy + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
+                float2 uvZ = IN.worldPos.xy * _BackfaceTex_ST.xy + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
 
-                clip(_BackfaceAlpha - Rand(i.uv));
-                return fixed4(col.r, col.g, col.b, col.a);
+                // base color
+                half4 cx = tex2D(_BackfaceTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
+                half4 cy = tex2D(_BackfaceTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
+                half4 cz = tex2D(_BackfaceTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
+
+                fixed4 col = (cx + cy + cz);
+                clip(col.r - _BackfaceTexThreshold - Rand(IN.uv) * _BackfaceTexTransparency);
+
+                fixed noise = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom + _BackfaceNoiseVelocity * _Time.x);
+                noise *= _BackfaceNoiseScale;
+                noise += _BackfaceNoiseOffset;
+                clip(noise - Rand(IN.worldPos.xy));
+
+                return col;
             }
             ENDCG
         }
