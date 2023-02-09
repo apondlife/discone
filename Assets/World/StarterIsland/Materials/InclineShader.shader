@@ -51,21 +51,26 @@ Shader "Custom/InclineShader" {
     }
 
     SubShader {
-        // -- options --
-        Tags {
-            "RenderType" = "Opaque"
-        }
-
-        LOD 200
-
         Pass {
+            // -- options --
+            Tags {
+                "RenderType" = "Opaque"
+                "LightMode" = "ForwardBase"
+            }
+
+            Lighting On
+            LOD 200
+
+            // -- program --
             CGPROGRAM
+
             // -- flags --
             #pragma vertex DrawVert
             #pragma fragment DrawFrag
 
             // use shader model 3.0 target, to get nicer looking lighting
             #pragma target 3.0
+            #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
 
             // blend modes
@@ -76,6 +81,8 @@ Shader "Custom/InclineShader" {
 
             // -- includes --
             #include "UnityStandardUtils.cginc"
+            #include "AutoLight.cginc"
+            #include "UnityLightingCommon.cginc"
             #include "Assets/Shaders/Core/Math.cginc"
             #include "Assets/Shaders/Core/Color.cginc"
 
@@ -87,11 +94,14 @@ Shader "Custom/InclineShader" {
             };
 
             struct FragIn {
-                float4 vertex : SV_POSITION;
+                float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float3 worldPos : TEXCOORD1;
                 float3 worldNormal : TEXCOORD2;
-                UNITY_FOG_COORDS(3)
+                fixed3 diffuse : COLOR0;
+                fixed3 ambient : COLOR1;
+                SHADOW_COORDS(3)
+                UNITY_FOG_COORDS(4)
             };
 
             // -- props --
@@ -101,7 +111,6 @@ Shader "Custom/InclineShader" {
 
             // the texture scale/translation
             float4 _MainTex_ST;
-
 
             // the scale of the triplanar mapping
             half _MapScale;
@@ -166,17 +175,30 @@ Shader "Custom/InclineShader" {
 
             // -- declarations --
             fixed luminosity(fixed3 rgb);
+
             // float3 worldToTangentNormalVector(Input IN, float3 normal);
             half3 blend_rnm(half3 n1, half3 n2);
 
             // -- program --
-            FragIn DrawVert (VertIn IN) {
+            FragIn DrawVert(VertIn IN) {
                 FragIn o;
-                o.vertex = UnityObjectToClipPos(IN.vertex);
+                o.pos = UnityObjectToClipPos(IN.vertex);
                 o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
                 o.worldPos = mul(unity_ObjectToWorld, IN.vertex);
                 o.worldNormal = UnityObjectToWorldNormal(IN.normal);
-                UNITY_TRANSFER_FOG(o, o.vertex);
+
+                // lambert shading
+                half normalDotLight = max(0, dot(o.worldNormal, _WorldSpaceLightPos0.xyz));
+                o.diffuse = normalDotLight * _LightColor0.rgb;
+
+                // ambient light (and light probes)
+                o.ambient = ShadeSH9(half4(o.worldNormal, 1));
+
+                // shadows
+                TRANSFER_SHADOW(o);
+
+                // fog
+                UNITY_TRANSFER_FOG(o, o.pos);
                 return o;
             }
 
@@ -309,12 +331,16 @@ Shader "Custom/InclineShader" {
                     tnormalX.zyx * bf.x +
                     tnormalY.xzy * bf.y +
                     tnormalZ.xyz * bf.z
-                    );
+                );
 
                 // https://catlikecoding.com/unity/tutorials/rendering/part-6/
                 // convert world space normals into tangent normals
                 // o.Normal = worldToTangentNormalVector(IN, worldNormal);
                 #endif
+
+                // lighting (shading + shadows)
+                fixed3 lighting = IN.diffuse * SHADOW_ATTENUATION(IN) + IN.ambient;
+                c.rgb *= lighting;
 
                 // output color
                 return c;
@@ -340,14 +366,46 @@ Shader "Custom/InclineShader" {
             {
                 n1.z += 1;
                 n2.xy = -n2.xy;
-
                 return n1 * dot(n1, n2) / n1.z - n2;
             }
             ENDCG
         }
 
+        // shadow casting
+        Pass {
+            // -- options --
+            Tags {
+                "LightMode" = "ShadowCaster"
+            }
 
-        // draw semi transparent backfaces
+            // -- program --
+            CGPROGRAM
+
+            #pragma vertex DrawVert
+            #pragma fragment DrawFrag
+            #pragma multi_compile_shadowcaster
+
+            // -- includes --
+            #include "UnityCG.cginc"
+
+            // -- types --
+            struct FragIn {
+                V2F_SHADOW_CASTER;
+            };
+
+            FragIn DrawVert(appdata_base v) {
+                FragIn o;
+                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
+                return o;
+            }
+
+            float4 DrawFrag(FragIn i) : SV_Target {
+                SHADOW_CASTER_FRAGMENT(i);
+            }
+            ENDCG
+        }
+
+        // translucent backfaces
         Pass {
             Tags {
                 "RenderType" = "TransparentCutout"
@@ -380,13 +438,12 @@ Shader "Custom/InclineShader" {
             };
 
             struct FragIn {
+                float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
-                float4 vertex : SV_POSITION;
             };
 
             // -- props --
-
             sampler2D _BackfaceTex;
 
             /// the texture coordinate
@@ -399,7 +456,7 @@ Shader "Custom/InclineShader" {
                 FragIn o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _BackfaceTex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
+                UNITY_TRANSFER_FOG(o, o.vertex);
                 return o;
             }
 
