@@ -19,6 +19,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BackfaceTex:
+        m_Texture: {fileID: 2800000, guid: 9f69629cf61c2437790a6d48caea3840, type: 3}
+        m_Scale: {x: 0.84, y: 0.85}
+        m_Offset: {x: 0.49, y: 4}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -41,7 +45,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 10, y: 10}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
@@ -57,6 +61,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BackfaceAlpha: 0.24
+    - _BackfaceNoiseOffset: 0.5
+    - _BackfaceNoiseScale: 0.5
+    - _BackfaceNoiseZoom: 0.1
+    - _BackfaceTexDisplacement: 0.95
+    - _BackfaceTexThreshold: 0.52
+    - _BackfaceTexTransparency: 0
     - _Blend: 0
     - _Brightness: 0.58
     - _BumpScale: 0
@@ -87,23 +98,24 @@ Material:
     - _WallAngle: 80
     - _ZWrite: 1
     m_Colors:
+    - _BackfaceNoiseVelocity: {r: -0.01, g: -0.02, b: 0.5, a: 0}
     - _Ceiling: {r: 0.5764706, g: 0.85882354, b: 0.43137255, a: 1}
     - _CeilingColor: {r: 0.5764706, g: 0.85882354, b: 0.43137255, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FlatColor: {r: 0.57660156, g: 0.8603976, b: 0.43245116, a: 1}
     - _FlatWallColor: {r: 1.6055588, g: 0.88305736, b: 1.5582926, a: 1}
-    - _FloorColor: {r: 0.5764706, g: 0.85882354, b: 0.43137255, a: 1}
-    - _NegativeRampColor: {r: 0.7286236, g: 1.0608615, b: 2.2090018, a: 0.9843137}
+    - _FloorColor: {r: 0.2882353, g: 0.42941177, b: 0.21568628, a: 1}
+    - _NegativeRampColor: {r: 0.24705882, g: 0.36078432, b: 0.7490196, a: 0.9843137}
     - _NegativeSteepColor: {r: 0.95829165, g: 0.80698246, b: 1.6055588, a: 1}
-    - _NegativeWallColor: {r: 1.2545449, g: 0.71204835, b: 1.7391043, a: 1}
+    - _NegativeWallColor: {r: 0.5411765, g: 0.30980393, b: 0.7490196, a: 1}
     - _NonSteepCeiling: {r: 0.9414634, g: 1.139412, b: 0.569706, a: 1}
     - _NonSteepFloor: {r: 0.9414634, g: 1.139412, b: 0.569706, a: 1}
     - _PositiveRampColor: {r: 0.43529412, g: 0.92156863, b: 0.83137256, a: 1}
-    - _PositiveWallColor: {r: 1.6055588, g: 0.57161254, b: 0.93493724, a: 1}
+    - _PositiveWallColor: {r: 0.7490196, g: 0.26666668, b: 0.4392157, a: 1}
     - _RampColor: {r: 0.43529412, g: 0.92156863, b: 0.83137256, a: 1}
-    - _ShallowCeilingColor: {r: 0.9414634, g: 1.139412, b: 0.569706, a: 1}
-    - _ShallowFloorColor: {r: 0.9414634, g: 1.139412, b: 0.569706, a: 1}
+    - _ShallowCeilingColor: {r: 0.61960787, g: 0.7490196, b: 0.3764706, a: 1}
+    - _ShallowFloorColor: {r: 0.61960787, g: 0.7490196, b: 0.3764706, a: 1}
     - _SteepColor: {r: 1.6055588, g: 0.57161254, b: 0.93493724, a: 1}
-    - _WallColor: {r: 1.6055588, g: 0.88305736, b: 1.5582926, a: 1}
+    - _WallColor: {r: 0.7490196, g: 0.41568628, b: 0.7294118, a: 1}
   m_BuildTextureStacks: []
