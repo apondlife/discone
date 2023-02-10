@@ -19,6 +19,9 @@ public class CameraFollowTarget: MonoBehaviour {
 
     // -- tunables --
     [Header("tunables")]
+    [Tooltip("the tuning parameters for the camera")]
+    [SerializeField] private CameraTuning m_Tuning;
+
     [Tooltip("the collision mask for the camera with the world")]
     [SerializeField] private LayerMask m_CollisionMask;
 
@@ -122,14 +125,6 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the curve the camera recenters looking at the character")]
     [SerializeField] AnimationCurve m_Recenter_YawCurve;
 
-    // -- settings --
-    [Header("settings")]
-    [Tooltip("if the camera moves around the X axis inverted")]
-    [SerializeField] private bool m_InvertX;
-
-    [Tooltip("if the camera moves around the Y axis inverted")]
-    [SerializeField] private bool m_InvertY;
-
     // -- refs --
     [Header("refs")]
     [Tooltip("the character model position we are trying to follow")]
@@ -138,11 +133,12 @@ public class CameraFollowTarget: MonoBehaviour {
     [Tooltip("the target we are trying to look at")]
     [SerializeField] CameraLookAtTarget m_LookAtTarget;
 
-    [Tooltip("the output follow target for cinemachine")]
-    [SerializeField] Transform m_Target;
+    [Tooltip("the output follow destination for cinemachine")]
+    [SerializeField] Transform m_Destination;
 
     [Tooltip("the free look camera input")]
-    [SerializeField] InputActionReference m_FreeLook;
+    [FormerlySerializedAs("m_FreeLook")]
+    [SerializeField] InputActionReference m_Input;
 
     // -- props --
     /// the current yaw speed
@@ -172,20 +168,19 @@ public class CameraFollowTarget: MonoBehaviour {
     /// storage for raycasts
     RaycastHit m_Hit;
 
-    /// target's forward (pre-correction)
-    Vector3 m_Forward;
 
     /// target damping velocity
     Vector3 m_CorrectionVel;
 
+    /// the camera following sytem (state machine)
+    CameraFollowSystem m_FollowSystem;
+
     // -- lifecycle --
-    void OnValidate() {
-        m_MaxPitch = Mathf.Max(m_MinPitch, m_MaxPitch);
-        m_FreeLook_MinPitch = Mathf.Min(m_FreeLook_MinPitch, m_MinPitch);
-        m_FreeLook_MaxPitch = Mathf.Max(m_FreeLook_MinPitch, m_FreeLook_MaxPitch);
-    }
 
     void Awake() {
+        // var zeroYawDir = Vector3.ProjectOnPlane(-m_Model.forward, Vector3.up).normalized;
+
+
         // set props
         m_Yaw = 0;
         m_ZeroYawDir = Vector3.ProjectOnPlane(-m_Model.forward, Vector3.up).normalized;
@@ -193,158 +188,43 @@ public class CameraFollowTarget: MonoBehaviour {
         m_FreeLook_Time = -m_FreeLook_Timeout;
 
         // set initial position
-        m_Target.position = transform.position + Quaternion.AngleAxis(m_MinPitch, m_Model.right) * m_ZeroYawDir * m_BaseDistance;
+        m_Destination.position = transform.position + Quaternion.AngleAxis(m_MinPitch, m_Model.right) * m_ZeroYawDir * m_BaseDistance;
 
-        m_Forward = m_Target.forward;
     }
 
     void Start() {
         // set deps
         var character = GetComponentInParent<Character>();
         m_State = character.State;
+
+        m_FollowSystem = new CameraFollowSystem(
+            m_Input.action,
+            m_Tuning,
+            m_State,
+            transform.localPosition
+        );
+
+        m_FollowSystem.Init();
     }
 
     void FixedUpdate() {
-        var time = Time.time;
+        var delta = Time.deltaTime;
+        m_FollowSystem.m_CurrPosition = m_Destination.position;
+        m_FollowSystem.Update(delta);
+        m_Destination.position = m_FollowSystem.DestPosition();
 
-        // init free look state on first press
-        var freeLook = m_FreeLook.action;
-        if (freeLook.WasPressedThisFrame()) {
-            m_FreeLook_IntendsMovement = false;
-            m_FreeLook_StartedIntention = false;
-        }
-
-        // reset the free look timeout while input is active
-        if (freeLook.IsPressed()) {
-            m_FreeLook_Time = time;
-        }
-
-        // if player moves at any point during timeout, they set up the camera with
-        // the intention of performing a movement
-        var isMoving = m_State.IdleTime == 0.0f;
-        var isFreeLookExpired = time - m_FreeLook_Time > m_FreeLook_Timeout;
-        if (!isFreeLookExpired && isMoving) {
-            m_FreeLook_IntendsMovement = true;
-        }
-
-        // once the timer expires, the player resolves their intention once they enter,
-        // or are already in, their desired state
-        if (isFreeLookExpired && !m_FreeLook_StartedIntention) {
-            m_FreeLook_StartedIntention = m_FreeLook_IntendsMovement == isMoving;
-        }
-
-        // free look as long as the timeout is unexpired, the player hasn't started their
-        // intended state, or as long as they're resolving their intended state
-        m_FreeLook_Enabled = (
-            !isFreeLookExpired ||
-            (m_FreeLook_Enabled && !m_FreeLook_StartedIntention) ||
-            (m_FreeLook_Enabled && m_FreeLook_IntendsMovement == isMoving)
-        );
-
-        // run free look camera if active
-        if (m_FreeLook_Enabled) {
-            var dir = freeLook.ReadValue<Vector2>();
-            dir.x = m_InvertX ? -dir.x : dir.x;
-            dir.y = m_InvertY ? -dir.y : dir.y;
-
-            // overwrite current rotation
-            var curDir = (m_Target.position - transform.position);
-            var curForward = Vector3.ProjectOnPlane(curDir, Vector3.up);
-
-            var yaw = Vector3.SignedAngle(m_ZeroYawDir, curForward, Vector3.up);
-
-            var targetYawSpeed = m_FreeLook_YawSpeed * -dir.x;
-            m_YawSpeed = Mathf.MoveTowards(m_YawSpeed, targetYawSpeed, m_FreeLook_YawAcceleration * Time.deltaTime);
-            yaw += m_YawSpeed * Time.deltaTime;
-
-            var pitch = Mathf.Rad2Deg * Mathf.Atan2(curDir.y, curForward.magnitude);
-            print(pitch);
-            m_PitchSpeed = Mathf.MoveTowards(m_PitchSpeed, m_FreeLook_PitchSpeed * dir.y, m_FreeLook_PitchAcceleration * Time.deltaTime);
-
-            pitch = Mathf.MoveTowardsAngle(
-                pitch,
-                pitch + m_PitchSpeed * Time.deltaTime,
-                Mathf.Abs(m_PitchSpeed * Time.deltaTime));
-            pitch = Mathf.Clamp(pitch, m_FreeLook_MinPitch, m_FreeLook_MaxPitch);
-            print("move " + pitch);
-
-            m_Yaw = yaw;
-            m_Pitch = pitch;
-            m_Distance = curDir.magnitude;
-        }
-        // otherwise, run the active/idle/auto camera,
-        // this tries to be behind the character
-        else {
-            // get desired position behind model
-            var desiredGroundDir = -Vector3.ProjectOnPlane(m_Model.forward, Vector3.up).normalized;
-
-            var currentGroundDir = Vector3.ProjectOnPlane(m_Forward, Vector3.up).normalized;
-
-            // get yaw angle between current direction and target forward
-            var yawAngle = Vector3.SignedAngle(currentGroundDir, desiredGroundDir, Vector3.up);
-            var yawDir = Mathf.Sign(yawAngle);
-            var yawMag = Mathf.Abs(yawAngle);
-
-            // sample yaw speed along recenter / active curve & accelerate towards it
-            var shouldRecenter = m_State.IdleTime > m_Recenter_IdleTime;
-            var targetYawSpeed = shouldRecenter
-                ? Mathf.Lerp(0, m_Recenter_YawSpeed, m_Recenter_YawCurve.Evaluate(yawMag / 180.0f))
-                : Mathf.Lerp(0, m_MaxYawSpeed, m_YawCurve.Evaluate(yawMag / 180.0f));
-
-            m_YawSpeed = Mathf.MoveTowards(m_YawSpeed, targetYawSpeed, m_YawAcceleration * Time.deltaTime);
-
-            // get yaw rotation
-            var yawDelta = yawDir * m_YawSpeed * Time.deltaTime;
-            var yaw = Mathf.MoveTowardsAngle(m_Yaw, m_Yaw + yawDelta, yawMag);
-
-            // rotate pitch on the plane containing the target's position and up
-            var targetPitch = Mathf.LerpAngle(m_MinPitch, m_MaxPitch, m_LookAtTarget.PercentExtended);
-            m_PitchSpeed = Mathf.MoveTowards(m_PitchSpeed, m_MaxPitchSpeed, m_PitchAcceleration * Time.deltaTime);
-
-            var pitch = Mathf.MoveTowardsAngle(m_Pitch, targetPitch, m_PitchSpeed * Time.deltaTime);
-
-            // update state
-            m_Yaw = yaw;
-            m_Pitch = pitch;
-        }
-
-        var multiplier = Mathf.Lerp(
-            1.0f,
-            m_TargetSpeed_MaxDistance / m_BaseDistance,
-            m_Distance_SpeedCurve.Evaluate(Mathf.InverseLerp(
-                m_TargetMinSpeed,
-                m_TargetMaxSpeed,
-                m_State.Next.PlanarVelocity.magnitude
-            ))
-        );
-
-        var distance = m_BaseDistance * multiplier;
-        // because the distance is reset on freelook
-        m_Distance = Mathf.MoveTowards(m_Distance, distance, m_FreeLook_DistanceSpeed * Time.deltaTime);
-
-        // find the position in sphere around the model
-        var yawRot = Quaternion.AngleAxis(m_Yaw, Vector3.up);
-        m_Forward = yawRot * m_ZeroYawDir;
-
-        // rotate pitch on the plane containing the target's forward and up
-        var pitchAxis = Vector3.Cross(m_Forward, Vector3.up).normalized;
-        var pitchRot = Quaternion.AngleAxis(m_Pitch, pitchAxis);
-
-        // the camera's ideal location on the pitch curve
-        var curvePos = transform.position + pitchRot * m_Forward * m_Distance;
-
-        // find the camera's final pos
-        var shouldCorrectPosition = !m_FreeLook_Enabled;
-        if (shouldCorrectPosition) {
-            m_Target.position = Vector3.SmoothDamp(
-                m_Target.position,
-                GetCorrectedPos(curvePos),
-                ref m_CorrectionVel,
-                m_CorrectionSmoothTime,
-                m_CorrectionSpeed);
-        } else {
-            m_Target.position = curvePos;
-        }
+        // // find the camera's final pos
+        // var shouldCorrectPosition = !m_FreeLook_Enabled;
+        // if (shouldCorrectPosition) {
+        //     m_Destination.position = Vector3.SmoothDamp(
+        //         m_Destination.position,
+        //         GetCorrectedPos(curvePos),
+        //         ref m_CorrectionVel,
+        //         m_CorrectionSmoothTime,
+        //         m_CorrectionSpeed);
+        // } else {
+        //     m_Destination.position = curvePos;
+        // }
     }
 
     // -- queries --
@@ -467,17 +347,17 @@ public class CameraFollowTarget: MonoBehaviour {
         return destPos;
     }
 
-    public void SetInvertY(bool value) {
-        m_InvertY = value;
+    public void SetInvertX(bool value) {
+        m_Tuning.IsInvertedX = value;
     }
 
-    public void SetInvertX(bool value) {
-        m_InvertX = value;
+    public void SetInvertY(bool value) {
+        m_Tuning.IsInvertedY = value;
     }
 
     /// the target's position
     public Vector3 TargetPosition {
-        get => m_Target.position;
+        get => m_Destination.position;
     }
 
     /// the base follow distance

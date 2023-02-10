@@ -1,0 +1,204 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03525cb169f549cb9d3761f54d33a83, type: 3}
+  m_Name: CameraTuning
+  m_EditorClassIdentifier: 
+  IsInvertedX: 0
+  IsInvertedY: 0
+  CollisionMask:
+    serializedVersion: 2
+    m_Bits: 385
+  MinRadius: 13
+  Tracking_YawCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: -0.0039499043
+      outSlope: -0.0039499043
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.42439348
+    - serializedVersion: 3
+      time: 0.21468762
+      value: 0.045855977
+      inSlope: 0.7736388
+      outSlope: 1.1899492
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.3583635
+      value: 0.21682298
+      inSlope: 1.1899492
+      outSlope: 2.9161344
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.45298088
+      value: 0.9946823
+      inSlope: 0.08988013
+      outSlope: -0.059889928
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.59472996
+      value: 0.9999924
+      inSlope: 0.03746097
+      outSlope: -0.7517467
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.810614
+      value: 0.0027160645
+      inSlope: -0.06780722
+      outSlope: -0.0143414205
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.1342596
+      outWeight: 1
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.547909
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  Tracking_YawSpeed: 300
+  YawAcceleration: 80
+  Tracking_MinPitch: 25.5
+  Tracking_MaxPitch: 60
+  Tracking_PitchSpeed: 50
+  Tracking_PitchAcceleration: 100
+  CorrectionSpeed: 5
+  CorrectionSmoothTime: 0.3
+  ContactOffset: 0.38
+  DollySpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.029391985
+      outSlope: 0.029391985
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.13501143
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2.9582162
+      outSlope: 2.9582162
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.11670482
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  DollyTargetMinSpeed: 30
+  DollyTargetMaxSpeed: 200
+  MaxRadius: 80
+  FreeLook_YawSpeed: 100
+  FreeLook_YawAcceleration: 350
+  FreeLook_PitchSpeed: 100
+  FreeLook_PitchAcceleration: 300
+  DollySpeed: 1
+  FreeLook_MinPitch: -60
+  FreeLook_MaxPitch: 80
+  Distance_PitchCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 5.337135
+      outSlope: 5.337135
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.05106164
+    - serializedVersion: 3
+      time: 0.48858643
+      value: 0.99728394
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.21705483
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -5.32876
+      outSlope: -5.32876
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.05284766
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  MinUndershootDistance: 2.8
+  FreeLook_Timeout: 5
+  FreeLook_MoveIntentTimeout: 5
+  FreeLook_OvershootLookUp: 0.02
+  Recenter_IdleTime: 0.7
+  Recenter_YawSpeed: 100
+  Recenter_YawCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.052630637
+    - serializedVersion: 3
+      time: 0.3247159
+      value: 0.79806584
+      inSlope: 1.0203979
+      outSlope: 1.0203979
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.15103072
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
