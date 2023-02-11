@@ -1,18 +1,20 @@
 using System;
 using UnityEngine;
 
+namespace ThirdPerson {
+
 /// a spherical coordinate
 [Serializable]
 struct Spherical {
     // -- props --
-    /// the radius of the coordinate arm
+    /// <summary>the radius of the coordinate arm</summary>
     public float Radius;
 
-    /// the zenith angle in degrees; the inclination
+    /// <summary>the zenith angle in degrees; the inclination</summary>
     [Range(-90.0f, 90.0f)]
     public float Zenith;
 
-    /// the azimuth angle in degrees; the sweep
+    /// <summary>the azimuth angle in degrees; the sweep</summary>
     [Range(-180.0f, 180.0f)]
     public float Azimuth;
 
@@ -30,4 +32,6 @@ struct Spherical {
 
         return pt;
     }
+}
+
 }

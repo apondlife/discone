@@ -22,17 +22,10 @@ sealed class CameraFollowSystem: System {
     SystemState m_State;
 
     /// the current position of the camera
-    public Vector3 m_CurrPosition { get; set; }
+    Vector3 m_CurrPos;
 
-    // TODO: replace these three with a Spherical
-    // the current yaw (rotation around the y-axis); relative to the zero dir
-    float m_Yaw = 0.0f;
-
-    // the current pitch (rotation around the x-axis)
-    float m_Pitch = 0.0f;
-
-    // the current radius
-    float m_Radius = 0.0f;
+    /// the current spherical position
+    Spherical m_SphericalPos;
 
      /// the current yaw speed
     float m_YawSpeed = 0.0f;
@@ -56,8 +49,11 @@ sealed class CameraFollowSystem: System {
         m_CharacterState = characterState;
         m_Offset = offset;
 
-        // set props
+        // set initial state
         m_ZeroYawDir = Vector3.ProjectOnPlane(-TargetForward, Vector3.up).normalized;
+        m_SphericalPos.Radius = m_Tuning.MinRadius;
+        m_SphericalPos.Azimuth = 0f;
+        m_SphericalPos.Zenith = m_Tuning.Tracking_MinPitch;
     }
 
     // -- System --
@@ -185,12 +181,18 @@ sealed class CameraFollowSystem: System {
     }
 
     // -- commands --
-    void Tracking_Orbit(float delta) {
-        // m_Yaw can be wrong in collisions, but why not use this?
-        // var yawRot = Quaternion.AngleAxis(m_Yaw, Vector3.up);
-        // var currFwd = yawRot * m_ZeroYawDir;
+    /// sync position from external state
+    public void SyncCurrPos(Vector3 currPosition) {
+        m_CurrPos = currPosition;
+    }
 
-        var currDir = m_CurrPosition - TargetPosition;
+    /// resolve tracking camera orbit
+    void Tracking_Orbit(float delta) {
+        // TODO: yaw speed could be wrong at this point (yawSpeed !=
+        // deltaYaw/deltaTime). we should resample yaw speed from the current
+        // state.
+
+        var currDir = m_CurrPos - TargetPosition;
         var currFwd = Vector3.ProjectOnPlane(currDir, Vector3.up);
 
         // get current yaw
@@ -209,23 +211,29 @@ sealed class CameraFollowSystem: System {
         );
 
         // sample yaw speed along recenter / active curve & accelerate towards it
-        var yawDisp = Mathf.Abs(destYaw - currYaw);
+        var deltaYaw = Mathf.DeltaAngle(currYaw, destYaw);
+        var deltaYawMag = Mathf.Abs(deltaYaw);
+        var deltaYawDir = Mathf.Sign(deltaYaw);
+
+        // TODO: make these range curves
         var destYawSpeed = m_CharacterState.IdleTime > m_Tuning.Recenter_IdleTime
-            ? Mathf.Lerp(0, m_Tuning.Recenter_YawSpeed, m_Tuning.Recenter_YawCurve.Evaluate(yawDisp / 180.0f))
-            : Mathf.Lerp(0, m_Tuning.Tracking_YawSpeed, m_Tuning.Tracking_YawCurve.Evaluate(yawDisp / 180.0f));
+            ? Mathf.Lerp(0, m_Tuning.Recenter_YawSpeed, m_Tuning.Recenter_YawCurve.Evaluate(deltaYawMag / 180.0f))
+            : Mathf.Lerp(0, m_Tuning.Tracking_YawSpeed, m_Tuning.Tracking_YawCurve.Evaluate(deltaYawMag / 180.0f));
 
         // integrate yaw acceleration
         m_YawSpeed = Mathf.MoveTowards(
             m_YawSpeed,
-            destYawSpeed,
+            deltaYawDir * destYawSpeed,
             m_Tuning.YawAcceleration * delta
         );
+
+        // Debug.Log($"speed: {m_YawSpeed}");
 
         // integrate yaw speed
         var nextYaw = Mathf.MoveTowardsAngle(
             currYaw,
             destYaw,
-            m_YawSpeed * delta
+            Mathf.Abs(m_YawSpeed * delta)
         );
 
         // rotate pitch on the plane containing the target's position and up
@@ -243,23 +251,24 @@ sealed class CameraFollowSystem: System {
         );
 
         var nextPitch = Mathf.MoveTowardsAngle(
-            m_Pitch,
+            m_SphericalPos.Zenith,
             destPitch,
             m_PitchSpeed * delta
         );
 
         // update state
-        m_Yaw = nextYaw;
-        m_Pitch = nextPitch;
+        m_SphericalPos.Azimuth = nextYaw;
+        m_SphericalPos.Zenith = nextPitch;
     }
 
+    /// resolve free look camera orbit
     void FreeLook_Orbit(float delta) {
         // get camera input
         var input = m_Input.ReadValue<Vector2>();
         input.x = m_Tuning.IsInvertedX ? -input.x : input.x;
         input.y = m_Tuning.IsInvertedY ? -input.y : input.y;
 
-        var currDir = m_CurrPosition - TargetPosition;
+        var currDir = m_CurrPos - TargetPosition;
         var currFwd = Vector3.ProjectOnPlane(currDir, Vector3.up);
 
         // get current yaw
@@ -303,12 +312,11 @@ sealed class CameraFollowSystem: System {
         );
 
         // update state
-        // TODO: integrate radius
-        m_Yaw = nextYaw;
-        m_Pitch = nextPitch;
-        m_Radius = currDir.magnitude;
+        m_SphericalPos.Azimuth = nextYaw;
+        m_SphericalPos.Zenith = nextPitch;
     }
 
+    /// dolly in or out
     void Dolly(float delta) {
         // dolly back; scale dolly radius based on character speed
         var radiusScale = Mathf.Lerp(
@@ -323,34 +331,42 @@ sealed class CameraFollowSystem: System {
 
         // integrate dolly speed
         var nextRadius =  Mathf.MoveTowards(
-            m_Radius,
+            m_SphericalPos.Radius,
             m_Tuning.MinRadius * radiusScale,
             m_Tuning.DollySpeed * delta
         );
 
         // update radius
-        m_Radius = nextRadius;
+        m_SphericalPos.Radius = nextRadius;
     }
 
     // -- queries --
-    public Vector3 DestPosition() {
+    /// the current spherical position
+    public Spherical SphericalPos {
+        get => m_SphericalPos;
+    }
+
+    /// calculate the next position
+    public Vector3 IntoPosition() {
         // calc dest forward from yaw
-        var yawRot = Quaternion.AngleAxis(m_Yaw, Vector3.up);
+        var yawRot = Quaternion.AngleAxis(m_SphericalPos.Azimuth, Vector3.up);
         var yawFwd = yawRot * m_ZeroYawDir;
 
         // rotate pitch on the plane containing the target's forward and up
         var pitchRot = Quaternion.AngleAxis(
-            m_Pitch,
+            m_SphericalPos.Zenith,
             Vector3.Cross(yawFwd, Vector3.up).normalized
         );
 
-        return TargetPosition + pitchRot * yawFwd * m_Radius;
+        return TargetPosition + pitchRot * yawFwd * m_SphericalPos.Radius;
     }
 
+    /// .
     Vector3 TargetForward {
         get => m_CharacterState.Forward;
     }
 
+    /// .
     Vector3 TargetPosition {
         get => m_CharacterState.Position + m_Offset;
     }
