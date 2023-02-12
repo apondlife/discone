@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 [CreateAssetMenu(fileName = "CameraTuning", menuName = "thirdperson/CameraTuning", order = 1)]
-sealed class CameraTuning: ScriptableObject {
+public sealed class CameraTuning: ScriptableObject {
     // -- axis --
     [Header("axis")]
     [Tooltip("if the x-axis is inverted")]

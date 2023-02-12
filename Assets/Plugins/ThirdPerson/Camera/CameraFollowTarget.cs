@@ -83,22 +83,21 @@ public class CameraFollowTarget: MonoBehaviour {
     void FixedUpdate() {
         var delta = Time.deltaTime;
 
+        var frame = new CameraState.Frame();
+        var state = new CameraState(frame, m_Tuning);
+
         m_FollowSystem.SyncCurrPos(m_Destination.position);
         m_FollowSystem.Update(delta);
         m_Destination.position = m_FollowSystem.IntoPosition();
 
-        // // find the camera's final pos
-        // var shouldCorrectPosition = !m_FreeLook_Enabled;
-        // if (shouldCorrectPosition) {
-        //     m_Destination.position = Vector3.SmoothDamp(
-        //         m_Destination.position,
-        //         GetCorrectedPos(curvePos),
-        //         ref m_CorrectionVel,
-        //         m_CorrectionSmoothTime,
-        //         m_CorrectionSpeed);
-        // } else {
-        //     m_Destination.position = curvePos;
-        // }
+        // find the camera's final pos
+        m_Destination.position = Vector3.SmoothDamp(
+            m_Destination.position,
+            GetCorrectedPos(m_Destination.position),
+            ref m_CorrectionVel,
+            m_Tuning.CorrectionSmoothTime,
+            m_Tuning.CorrectionSpeed
+        );
     }
 
     // -- queries --
