@@ -7,90 +7,95 @@ using System.Text;
 using System;
 
 namespace ThirdPerson.SourceGeneration {
+    /// generates state code from the nodes discovered by `FrameSyntaxReceiver`
     [Generator]
-    public class CharacterStateGenerator : ISourceGenerator {
+    public class CharacterStateGenerator: ISourceGenerator {
         public void Initialize(GeneratorInitializationContext context) {
             context.RegisterForSyntaxNotifications(() => new FrameClassReceiver());
         }
 
         public void Execute(GeneratorExecutionContext context) {
+            // find our syntax receiver
             var receiver = (FrameClassReceiver)context.SyntaxReceiver;
 
-            if (!receiver.FrameClasses.Any()) {
-                throw new Exception("[state generator] no state class in this assembly");
-            }
+            // generate each state type
+            foreach (var (className, classes) in receiver.FrameClasses) {
+                if (!classes.Any()) {
+                    throw new Exception($"[ThirdPerson.SourceGeneration] no {className} class in this assembly");
+                }
 
-            // find all generatable fields
-            var frameFields = receiver.FrameClasses
-                .SelectMany((c) => c.Members)
-                .Select((m) => m as FieldDeclarationSyntax)
-                .Where((m) => !(m is null))
-                .SelectMany((m) =>
-                    m.Declaration.Variables.Select(v => ((
-                        name: v.Identifier.ValueText,
-                        type: m.Declaration.Type.ToString()
-                    )))
+                // find all generatable fields
+                var frameFields = classes
+                    .SelectMany((c) => c.Members)
+                    .Select((m) => m as FieldDeclarationSyntax)
+                    .Where((m) => !(m is null))
+                    .SelectMany((m) =>
+                        m.Declaration.Variables.Select(v => ((
+                            name: v.Identifier.ValueText,
+                            type: m.Declaration.Type.ToString()
+                        )))
+                    );
+
+                // frame constructor
+                var frameCtorImpl = IntoLines(
+                    frameFields,
+                    "{0} = f.{0};",
+                    (f) => f.name
                 );
 
-            // frame constructor
-            var frameCtorImpl = IntoLines(
-                frameFields,
-                "{0} = f.{0};",
-                (f) => f.name
-            );
+                // frame equality
+                var frameEqualsImpl = frameFields.Count() == 0 ? "true" : IntoLines(
+                    frameFields,
+                    "{0} == o.{0}", " && ",
+                    (f) => f.name
+                );
 
-            // frame equality
-            var frameEqualsImpl = frameFields.Count() == 0 ? "true" : IntoLines(
-                frameFields,
-                "{0} == o.{0}", " && ",
-                (f) => f.name
-            );
+                // accessors for properties on the current frame
+                var stateFieldsImpl = IntoLines(
+                    frameFields,
+                    @"public {1} {0} {{
+                        get => m_Frames[0].{0};
+                        set => m_Frames[0].{0} = value;
+                    }}",
+                    (f) => f.name,
+                    (f) => f.type
+                );
 
-            // accessors for properties on the current frame
-            var stateFieldsImpl = IntoLines(
-                frameFields,
-                @"public {1} {0} {{
-                    get => m_Frames[0].{0};
-                    set => m_Frames[0].{0} = value;
-                }}",
-                (f) => f.name,
-                (f) => f.type
-            );
+                // the state impl
+                var stateImpl = $@"
+                    using UnityEngine;
 
-            // the state
-            var stateImpl = $@"
-                using UnityEngine;
+                    namespace ThirdPerson {{
 
-                namespace ThirdPerson {{
+                    public partial class {className} {{
+                        {stateFieldsImpl}
 
-                public partial class CharacterState {{
-                    {stateFieldsImpl}
-
-                    public partial class Frame {{
-                        /// create a copy of an existing frame
-                        public Frame(CharacterState.Frame f) {{
-                            {frameCtorImpl}
-                        }}
-
-                        public bool Equals(Frame o) {{
-                            if (o == null) {{
-                                return false;
+                        public partial class Frame {{
+                            /// create a copy of an existing frame
+                            public Frame({className}.Frame f) {{
+                                {frameCtorImpl}
                             }}
 
-                            return (
-                                {frameEqualsImpl}
-                            );
+                            public bool Equals(Frame o) {{
+                                if (o == null) {{
+                                    return false;
+                                }}
+
+                                return (
+                                    {frameEqualsImpl}
+                                );
+                            }}
                         }}
                     }}
-                }}
 
-                }}
-            ";
+                    }}
+                ";
 
-            // produce the state/frame extensions
-            context.AddSource("CharacterState.Generated.cs",
-                SourceText.From(stateImpl, Encoding.UTF8)
-            );
+                // produce the state/frame extensions
+                var filename = $"{className}.Generated.cs";
+                context.AddSource(filename, SourceText.From(stateImpl, Encoding.UTF8));
+                Console.WriteLine($"[ThirdPerson.SourceGeneration] generated: {filename}\n---\n{stateImpl}\n---");
+            }
         }
 
         // -- helpers --
@@ -109,18 +114,24 @@ namespace ThirdPerson.SourceGeneration {
         }
     }
 
-    /// the syntax receiver to search for the frame class
+    /// finds syntax nodes for various <>State classes
     sealed class FrameClassReceiver: ISyntaxReceiver {
         // -- props --
         /// the list of classes; there could be multiple partial frame classes
-        public List<ClassDeclarationSyntax> FrameClasses = new List<ClassDeclarationSyntax>();
+        public Dictionary<string, List<ClassDeclarationSyntax>> FrameClasses = new Dictionary<string, List<ClassDeclarationSyntax>>() {
+            {"CharacterState", new List<ClassDeclarationSyntax>()},
+            {"CameraState", new List<ClassDeclarationSyntax>()},
+        };
 
         // -- ISyntaxReceiver --
         public void OnVisitSyntaxNode(SyntaxNode node) {
             // find all the partial frame classes
             if (node is ClassDeclarationSyntax c) {
-                if (FindFullyQualifiedName(node) == "ThirdPerson.CharacterState.Frame") {
-                    FrameClasses.Add(c);
+                foreach (var (className, classes) in FrameClasses) {
+                    var name = FindFullyQualifiedName(node);
+                    if (name == $"ThirdPerson.{className}.Frame") {
+                        classes.Add(c);
+                    }
                 }
             }
         }
@@ -143,6 +154,15 @@ namespace ThirdPerson.SourceGeneration {
 
             names.Reverse();
             return string.Join(".", names);
+        }
+    }
+
+    /// extensions for dictionaries and related types
+    static class DictionaryExt {
+        /// deconstruct a dictionary's key-value pair
+        public static void Deconstruct<K, V>(this KeyValuePair<K, V> p, out K k, out V v) {
+            k = p.Key;
+            v = p.Value;
         }
     }
 }
