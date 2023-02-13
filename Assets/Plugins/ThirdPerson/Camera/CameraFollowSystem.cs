@@ -56,17 +56,13 @@ sealed class CameraFollowSystem: System {
     public override void Init() {
         base.Init();
 
-        // set initial state
+        // set zero values
         m_ZeroYawDir = Vector3.ProjectOnPlane(-TargetForward, Vector3.up).normalized;
+
+        // set initial state
         m_State.Next.Spherical.Radius = m_Tuning.MinRadius;
         m_State.Next.Spherical.Azimuth = 0f;
         m_State.Next.Spherical.Zenith = m_Tuning.Tracking_MinPitch;
-    }
-
-    public override void Update(float delta) {
-        base.Update(delta);
-
-        // synchronize the world position every frame
         m_State.Next.Pos = IntoPosition();
     }
 
@@ -80,6 +76,7 @@ sealed class CameraFollowSystem: System {
 
     void Tracking_Enter() {
         m_State.Next.IsTracking = true;
+        m_State.Next.Spherical = IntoSpherical();
     }
 
     void Tracking_Update(float delta) {
@@ -95,6 +92,7 @@ sealed class CameraFollowSystem: System {
 
     void Tracking_Exit() {
         m_State.Next.IsTracking = false;
+        m_State.Next.Spherical = IntoSpherical();
     }
 
     // -- FreeLook --
@@ -201,15 +199,8 @@ sealed class CameraFollowSystem: System {
         // deltaYaw/deltaTime). we should resample yaw speed from the current
         // state.
 
-        var currDir = m_State.Curr.Pos - TargetPosition;
-        var currFwd = Vector3.ProjectOnPlane(currDir, Vector3.up);
-
         // get current yaw
-        var currYaw = Vector3.SignedAngle(
-            m_ZeroYawDir,
-            currFwd,
-            Vector3.up
-        );
+        var currYaw = m_State.Spherical.Azimuth;
 
         // get desired yaw behind model
         var destFwd = -Vector3.ProjectOnPlane(TargetForward, Vector3.up);
@@ -277,16 +268,6 @@ sealed class CameraFollowSystem: System {
         input.x = m_Tuning.IsInvertedX ? -input.x : input.x;
         input.y = m_Tuning.IsInvertedY ? -input.y : input.y;
 
-        var currDir = m_State.Curr.Pos - TargetPosition;
-        var currFwd = Vector3.ProjectOnPlane(currDir, Vector3.up);
-
-        // get current yaw
-        var currYaw = Vector3.SignedAngle(
-            m_ZeroYawDir,
-            currFwd,
-            Vector3.up
-        );
-
         // integrate yaw acceleration
         var nextYawSpeed = Mathf.MoveTowards(
             m_State.Curr.Velocity.Azimuth,
@@ -295,10 +276,12 @@ sealed class CameraFollowSystem: System {
         );
 
         // integrate updated yaw
-        var nextYaw = currYaw + nextYawSpeed * delta;
-
-        // get current pitch
-        var currPitch = Mathf.Rad2Deg * Mathf.Atan2(currDir.y, currFwd.magnitude);
+        var currYaw = m_State.Curr.Spherical.Azimuth;
+        var nextYaw = Mathf.MoveTowardsAngle(
+            currYaw,
+            currYaw + nextYawSpeed * delta,
+            float.MaxValue
+        );
 
         // integrate pitch acceleration
         var nextPitchSpeed = Mathf.MoveTowards(
@@ -308,10 +291,11 @@ sealed class CameraFollowSystem: System {
         );
 
         // integrate updated pitch
+        var currPitch = m_State.Curr.Spherical.Zenith;
         var nextPitch = Mathf.MoveTowardsAngle(
             currPitch,
             currPitch + nextPitchSpeed * delta,
-            Mathf.Abs(nextPitchSpeed * delta)
+            float.MaxValue
         );
 
         nextPitch = Mathf.Clamp(
@@ -329,7 +313,13 @@ sealed class CameraFollowSystem: System {
 
     /// dolly in or out
     void Dolly(float delta) {
+        // only dolly if not colliding
+        if (m_State.Curr.IsColliding) {
+            return;
+        }
+
         // dolly back; scale dolly radius based on character speed
+        var currRadius = m_State.Curr.Spherical.Radius;
         var radiusScale = Mathf.Lerp(
             1.0f,
             m_Tuning.MaxRadius / m_Tuning.MinRadius,
@@ -342,7 +332,7 @@ sealed class CameraFollowSystem: System {
 
         // integrate dolly speed
         var nextRadius =  Mathf.MoveTowards(
-            m_State.Curr.Spherical.Radius,
+            currRadius,
             m_Tuning.MinRadius * radiusScale,
             m_Tuning.DollySpeed * delta
         );
@@ -363,8 +353,31 @@ sealed class CameraFollowSystem: System {
     }
 
     /// calculate the next position
-    Vector3 IntoPosition() {
+    // TODO: this should probably be on CameraState
+    public Vector3 IntoPosition() {
         return TargetPosition + IntoLocalPosition();
+    }
+
+    Spherical IntoSpherical() {
+        var currDir = m_State.Curr.Pos - TargetPosition;
+        var currFwd = Vector3.ProjectOnPlane(currDir, Vector3.up);
+
+        var radius = currDir.magnitude;
+
+        // get current yaw
+        var yaw = Vector3.SignedAngle(
+            m_ZeroYawDir,
+            currFwd,
+            Vector3.up);
+
+        var pitch = Mathf.Rad2Deg * Mathf.Atan2(currDir.y, currFwd.magnitude);
+
+        var spherical = new Spherical();
+        spherical.Radius = radius;
+        spherical.Azimuth = yaw;
+        spherical.Zenith = pitch;
+
+        return spherical;
     }
 
     /// calculate the next local position

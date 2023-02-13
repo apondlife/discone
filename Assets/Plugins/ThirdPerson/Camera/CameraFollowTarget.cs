@@ -62,15 +62,16 @@ public class CameraFollowTarget: MonoBehaviour {
         );
 
         m_FollowSystem.Init();
+        m_State.Next.Pos = m_FollowSystem.IntoPosition();
 
         // set initial position
-        m_Destination.position = m_State.Pos;
+        m_Destination.position = m_State.Next.Pos;
     }
 
     void FixedUpdate() {
         var delta = Time.deltaTime;
 
-        // snapshot state w/ current world position
+        // snapshot state w/ current world position (given character movement)
         m_State.Next.Pos = m_Destination.position;
         m_State.Snapshot();
 
@@ -78,16 +79,15 @@ public class CameraFollowTarget: MonoBehaviour {
         m_FollowSystem.Update(delta);
 
         // run collision system
-        m_State.Next.Pos = Vector3.SmoothDamp(
-            m_State.Next.Pos,
-            GetCorrectedPos(m_State.Next.Pos),
-            ref m_CorrectionVel,
-            m_Tuning.CorrectionSmoothTime,
-            m_Tuning.CorrectionSpeed
-        );
+        // m_State.Next.Pos = Vector3.SmoothDamp(
+        //     m_State.Next.Pos,
+        //     GetCorrectedPos(m_State.Next.Pos),
+        //     ref m_CorrectionVel,
+        //     m_Tuning.CorrectionSmoothTime,
+        //     m_Tuning.CorrectionSpeed
+        // );
 
-        // TODO:
-        // m_State.Next.Spherical = IntoSpherical(m_State.Next.Pos);
+        m_State.Next.Pos = GetCorrectedPos(m_FollowSystem.IntoPosition());
 
         // update camera pos
         m_Destination.position = m_State.Next.Pos;
@@ -119,6 +119,8 @@ public class CameraFollowTarget: MonoBehaviour {
             m_Tuning.CollisionMask,
             QueryTriggerInteraction.Ignore
         );
+
+        m_State.Next.IsColliding = didHit;
 
         // if the target is visible, we have our desired position
         if (!didHit) {
