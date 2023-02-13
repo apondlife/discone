@@ -38,7 +38,7 @@ public abstract class System {
         m_Name = this.GetType().Name;
     }
 
-    public void Init() {
+    public virtual void Init() {
         // set the initial phase
         // TODO: should this call m_Phase.Enter() (e.g. use ChangeTo here)?
         SetPhase(InitInitialPhase());

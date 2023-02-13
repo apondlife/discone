@@ -26,33 +26,14 @@ public class CameraFollowTarget: MonoBehaviour {
     [SerializeField] InputActionReference m_Input;
 
     // -- props --
-    /// the current yaw speed
-    float m_YawSpeed = 0.0f;
-
-    /// the current pitch speed
-    float m_PitchSpeed = 0.0f;
-
-    /// the direction for zero yaw
-    Vector3 m_ZeroYawDir;
-
-    /// if the camera is in free look mode
-    bool m_FreeLook_Enabled;
-
-    /// the last timestamp when free look was active
-    float m_FreeLook_Time;
-
-    /// if the free look intention is for idle or movement
-    bool m_FreeLook_IntendsMovement;
-
-    /// if the player started their intended state
-    bool m_FreeLook_StartedIntention;
+    /// the current camera state
+    CameraState m_State;
 
     /// the current character state
-    CharacterState m_State;
+    CharacterState m_CharacterState;
 
     /// storage for raycasts
     RaycastHit m_Hit;
-
 
     /// target damping velocity
     Vector3 m_CorrectionVel;
@@ -61,43 +42,55 @@ public class CameraFollowTarget: MonoBehaviour {
     CameraFollowSystem m_FollowSystem;
 
     // -- lifecycle --
+    void Awake() {
+        // set props
+        m_State = new CameraState(new CameraState.Frame());
+    }
+
     void Start() {
         // set deps
         var character = GetComponentInParent<Character>();
-        m_State = character.State;
+        m_CharacterState = character.State;
 
-        // start system
+        // init systems
         m_FollowSystem = new CameraFollowSystem(
-            m_Input.action,
-            m_Tuning,
             m_State,
+            m_Tuning,
+            m_Input.action,
+            m_CharacterState,
             transform.localPosition
         );
 
         m_FollowSystem.Init();
 
         // set initial position
-        m_Destination.position = m_FollowSystem.IntoPosition();
+        m_Destination.position = m_State.Pos;
     }
 
     void FixedUpdate() {
         var delta = Time.deltaTime;
 
-        var frame = new CameraState.Frame();
-        var state = new CameraState(frame, m_Tuning);
+        // snapshot state w/ current world position
+        m_State.Next.Pos = m_Destination.position;
+        m_State.Snapshot();
 
-        m_FollowSystem.SyncCurrPos(m_Destination.position);
+        // run systems
         m_FollowSystem.Update(delta);
-        m_Destination.position = m_FollowSystem.IntoPosition();
 
-        // find the camera's final pos
-        m_Destination.position = Vector3.SmoothDamp(
-            m_Destination.position,
-            GetCorrectedPos(m_Destination.position),
+        // run collision system
+        m_State.Next.Pos = Vector3.SmoothDamp(
+            m_State.Next.Pos,
+            GetCorrectedPos(m_State.Next.Pos),
             ref m_CorrectionVel,
             m_Tuning.CorrectionSmoothTime,
             m_Tuning.CorrectionSpeed
         );
+
+        // TODO:
+        // m_State.Next.Spherical = IntoSpherical(m_State.Next.Pos);
+
+        // update camera pos
+        m_Destination.position = m_State.Next.Pos;
     }
 
     // -- queries --
@@ -145,7 +138,7 @@ public class CameraFollowTarget: MonoBehaviour {
         // scale the projection down if the pitch is < 0 so that we can pan
         // into the character
         var projK = 1.0f;
-        var pitch = m_FollowSystem.SphericalPos.Zenith;
+        var pitch = m_State.Next.Spherical.Zenith;
         if (pitch < 0.0f) {
             projK = 1.0f - pitch / m_Tuning.FreeLook_MinPitch;
         }
@@ -246,7 +239,7 @@ public class CameraFollowTarget: MonoBehaviour {
 
     /// if free look is enabled
     public bool IsFreeLookEnabled {
-        get => m_FreeLook_Enabled;
+        get => !m_State.IsTracking;
     }
 
     /// the hit point adjusted by the contact offset
