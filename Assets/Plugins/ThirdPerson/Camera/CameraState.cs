@@ -12,23 +12,13 @@ public sealed partial class CameraState {
     const uint k_BufferSize = 5;
     #endif
 
-    // -- deps --
-    /// the tunables
-    CameraTuning m_Tuning;
-
     // -- props --
     /// the queue of frames
     Queue<Frame> m_Frames = new Queue<Frame>(k_BufferSize);
 
     // -- lifetime --
-    /// create state from intial frame and dependencies
-    public CameraState(
-        Frame initial,
-        CameraTuning tuning
-    ) {
-        // set deps
-        m_Tuning = tuning;
-
+    /// create state from intial frame
+    public CameraState(Frame initial) {
         // set props
         Fill(initial);
     }
@@ -81,20 +71,20 @@ public sealed partial class CameraState {
     public sealed partial class Frame: IEquatable<Frame> {
         // -- props --
         /// the world position
-        public Spherical Position;
+        public Vector3 Pos;
 
-        /// the camera's velocity
+        /// the local spherical position
+        public Spherical Spherical;
+
+        /// the sphecial velocity
         public Spherical Velocity;
+
+        /// if the camera is in tracking mode
+        public bool IsTracking;
 
         // -- lifetime --
         /// create an empty frame
         public Frame() {
-        }
-
-        /// create an initial frame
-        public Frame(Spherical position, Spherical velocity) {
-            Position = position;
-            Velocity = velocity;
         }
 
         // -- factories --
