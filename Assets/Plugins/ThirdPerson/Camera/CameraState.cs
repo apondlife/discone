@@ -73,7 +73,7 @@ public sealed partial class CameraState {
         /// the world position
         public Vector3 Pos;
 
-        /// the local spherical position
+        /// the ideal local spherical position (w/o collision)
         public Spherical Spherical;
 
         /// the sphecial velocity
@@ -81,6 +81,9 @@ public sealed partial class CameraState {
 
         /// if the camera is in tracking mode
         public bool IsTracking;
+
+        /// if the camera is colliding with something
+        public bool IsColliding;
 
         // -- lifetime --
         /// create an empty frame
