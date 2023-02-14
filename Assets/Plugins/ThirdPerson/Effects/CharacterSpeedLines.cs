@@ -57,37 +57,42 @@ public class CharacterSpeedLines: MonoBehaviour {
         // scale speed line based on ground speed
         var main = m_Particles.main;
 
-        var speedTarget = v.sqrMagnitude * m_SpeedScale;
-        var speed = Mathf.MoveTowards(
+        var destSpeed = v.sqrMagnitude * m_SpeedScale;
+        var nextSpeed = Mathf.MoveTowards(
             main.startSpeed.constant,
-            speedTarget,
+            destSpeed,
             m_MaxSpeedDelta * Time.deltaTime
         );
 
-        main.startSpeed = speed;
+        main.startSpeed = nextSpeed;
 
         // rotate speed line emitter opposite planar movement
         if (v != Vector3.zero) {
-            transform.forward = Vector3.RotateTowards(transform.forward, dir, m_MaxRotationDelta * Time.deltaTime, 0.0f);
+            transform.forward = Vector3.RotateTowards(
+                transform.forward,
+                dir,
+                m_MaxRotationDelta * Time.deltaTime,
+                0.0f
+            );
         }
 
-        // turn lines as character accelerates
-        var a = state.Acceleration;
-        var la = transform.InverseTransformVector(a);
+        // rotate lines as character accelerates
         var vol = m_Particles.velocityOverLifetime;
-        var orbitalTarget = new Vector2(
-            la.y,
-            -la.x
-        ) * m_RotationScale * m_SpeedScale;
 
-        var orbital = Vector2.MoveTowards(
-            new Vector2(vol.orbitalX.constant, vol.orbitalY.constant),
-            orbitalTarget,
+        var a = transform.InverseTransformVector(state.Acceleration);
+        var destOrbital = new Vector2(a.y, -a.x) * m_RotationScale * m_SpeedScale;
+        var nextOrbital = Vector2.MoveTowards(
+            new Vector2(
+                vol.orbitalX.constant,
+                vol.orbitalY.constant
+            ),
+            destOrbital,
             m_MaxOrbitDelta * Time.deltaTime
         );
 
-        vol.orbitalX = orbital.x;
-        vol.orbitalY = orbital.y;
+        vol.orbitalX = nextOrbital.x;
+        vol.orbitalY = nextOrbital.y;
+        vol.orbitalZ = 1f;
     }
 }
 
