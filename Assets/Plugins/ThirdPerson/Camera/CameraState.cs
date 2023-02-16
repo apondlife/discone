@@ -16,11 +16,26 @@ public sealed partial class CameraState {
     /// the queue of frames
     Queue<Frame> m_Frames = new Queue<Frame>(k_BufferSize);
 
+    /// the tracked character state
+    CharacterState m_CharacterState;
+
+    /// an offset from the character pos to follow
+    Vector3 m_FollowOffset;
+
+    /// the yaw world-direction at init
+    Vector3 m_ZeroYawDir;
+
     // -- lifetime --
     /// create state from intial frame
-    public CameraState(Frame initial) {
+    public CameraState(Frame initial, CharacterState characterState, Vector3 followOffset) {
         // set props
         Fill(initial);
+        m_CharacterState = characterState;
+        m_FollowOffset = followOffset;
+
+        // set zero values
+        m_ZeroYawDir = Vector3.ProjectOnPlane(-TargetForward, Vector3.up).normalized;
+
     }
 
     // -- commands --
@@ -40,6 +55,64 @@ public sealed partial class CameraState {
     }
 
     // -- queries --
+    /// .
+    public Vector3 ZeroYawDir {
+        get => m_ZeroYawDir;
+    }
+
+    /// .
+    public Vector3 FollowPosition {
+        get => m_CharacterState.Curr.Position + m_FollowOffset;
+    }
+
+    /// .
+    public Vector3 TargetForward {
+        get => m_CharacterState.Curr.Forward;
+    }
+
+    /// .
+    public CharacterState Character {
+        get => m_CharacterState;
+    }
+
+    /// converts next spherical coordinates into cartesian coordinates
+    public Vector3 IntoPosition() {
+        // calc dest forward from yaw
+        var yawRot = Quaternion.AngleAxis(Next.Spherical.Azimuth, Vector3.up);
+        var yawFwd = yawRot * m_ZeroYawDir;
+
+        // rotate pitch on the plane containing the target's forward and up
+        var pitchRot = Quaternion.AngleAxis(
+            Next.Spherical.Zenith,
+            Vector3.Cross(yawFwd, Vector3.up).normalized
+        );
+
+        return FollowPosition + pitchRot * yawFwd * Next.Spherical.Radius;
+    }
+
+    /// converts current position into spherical coordinates
+    public Spherical IntoSpherical() {
+        var currDir = Curr.Pos - FollowPosition;
+        var currFwd = Vector3.ProjectOnPlane(currDir, Vector3.up);
+
+        var radius = currDir.magnitude;
+
+        // get current yaw
+        var yaw = Vector3.SignedAngle(
+            ZeroYawDir,
+            currFwd,
+            Vector3.up);
+
+        var pitch = Mathf.Rad2Deg * Mathf.Atan2(currDir.y, currFwd.magnitude);
+
+        var spherical = new Spherical();
+        spherical.Radius = radius;
+        spherical.Azimuth = yaw;
+        spherical.Zenith = pitch;
+
+        return spherical;
+    }
+
     /// the buffer size
     public uint BufferSize {
         get => k_BufferSize;
