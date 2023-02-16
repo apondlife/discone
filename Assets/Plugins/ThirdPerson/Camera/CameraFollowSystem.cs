@@ -14,9 +14,6 @@ sealed class CameraFollowSystem: System {
     /// the free look camera input
     InputAction m_Input;
 
-    /// .
-    CharacterState m_CharacterState;
-
     /// an offset at relative to the character pos
     Vector3 m_Offset;
 
@@ -24,23 +21,16 @@ sealed class CameraFollowSystem: System {
     /// the state-machine's state
     SystemState m_SystemState;
 
-    /// the yaw world-direction at init
-    Vector3 m_ZeroYawDir;
-
     // -- lifetime --
     public CameraFollowSystem(
         CameraState state,
         CameraTuning tuning,
-        InputAction input,
-        CharacterState characterState,
-        Vector3 offset
+        InputAction input
     ) {
         // set deps
         m_State = state;
         m_Tuning = tuning;
         m_Input = input;
-        m_CharacterState = characterState;
-        m_Offset = offset;
     }
 
     // -- System --
@@ -56,14 +46,10 @@ sealed class CameraFollowSystem: System {
     public override void Init() {
         base.Init();
 
-        // set zero values
-        m_ZeroYawDir = Vector3.ProjectOnPlane(-TargetForward, Vector3.up).normalized;
-
         // set initial state
         m_State.Next.Spherical.Radius = m_Tuning.MinRadius;
         m_State.Next.Spherical.Azimuth = 0f;
         m_State.Next.Spherical.Zenith = m_Tuning.Tracking_MinPitch;
-        m_State.Next.Pos = IntoPosition();
     }
 
     // -- Tracking --
@@ -76,7 +62,7 @@ sealed class CameraFollowSystem: System {
 
     void Tracking_Enter() {
         m_State.Next.IsTracking = true;
-        m_State.Next.Spherical = IntoSpherical();
+        m_State.Next.Spherical = m_State.IntoSpherical();
     }
 
     void Tracking_Update(float delta) {
@@ -92,7 +78,7 @@ sealed class CameraFollowSystem: System {
 
     void Tracking_Exit() {
         m_State.Next.IsTracking = false;
-        m_State.Next.Spherical = IntoSpherical();
+        m_State.Next.Spherical = m_State.IntoSpherical();
     }
 
     // -- FreeLook --
@@ -131,7 +117,7 @@ sealed class CameraFollowSystem: System {
 
         // if the character moves, then we assume they intend to set the camera
         // for athletics
-        if (!m_CharacterState.IsIdle) {
+        if (!m_State.Character.IsIdle) {
             ChangeTo(FreeLook_MoveIntent);
             return;
         }
@@ -162,7 +148,7 @@ sealed class CameraFollowSystem: System {
 
         // if the player sits around for a while after moving, we assume they've
         // finished moving and reset the camera
-        if (m_CharacterState.IdleTime > m_Tuning.FreeLook_MoveIntentTimeout) {
+        if (m_State.Character.IdleTime > m_Tuning.FreeLook_MoveIntentTimeout) {
             ChangeTo(Tracking);
             return;
         }
@@ -186,7 +172,7 @@ sealed class CameraFollowSystem: System {
 
         // if the player starts moving, we assume the camera for looking at the
         // sky is not so useful anymore
-        if (!m_CharacterState.IsIdle) {
+        if (!m_State.Character.IsIdle) {
             ChangeTo(Tracking);
             return;
         }
@@ -203,9 +189,9 @@ sealed class CameraFollowSystem: System {
         var currYaw = m_State.Spherical.Azimuth;
 
         // get desired yaw behind model
-        var destFwd = -Vector3.ProjectOnPlane(TargetForward, Vector3.up);
+        var destFwd = -Vector3.ProjectOnPlane(m_State.TargetForward, Vector3.up);
         var destYaw = Vector3.SignedAngle(
-            m_ZeroYawDir,
+            m_State.ZeroYawDir,
             destFwd,
             Vector3.up
         );
@@ -216,7 +202,7 @@ sealed class CameraFollowSystem: System {
         var deltaYawDir = Mathf.Sign(deltaYaw);
 
         // TODO: make these range curves
-        var destYawSpeed = m_CharacterState.IdleTime > m_Tuning.Recenter_IdleTime
+        var destYawSpeed = m_State.Character.IdleTime > m_Tuning.Recenter_IdleTime
             ? Mathf.Lerp(0, m_Tuning.Recenter_YawSpeed, m_Tuning.Recenter_YawCurve.Evaluate(deltaYawMag / 180.0f))
             : Mathf.Lerp(0, m_Tuning.Tracking_YawSpeed, m_Tuning.Tracking_YawCurve.Evaluate(deltaYawMag / 180.0f));
 
@@ -326,7 +312,7 @@ sealed class CameraFollowSystem: System {
             m_Tuning.DollySpeedCurve.Evaluate(Mathf.InverseLerp(
                 m_Tuning.DollyTargetMinSpeed,
                 m_Tuning.DollyTargetMaxSpeed,
-                m_CharacterState.Next.PlanarVelocity.magnitude
+                m_State.Character.Next.PlanarVelocity.magnitude
             ))
         );
 
@@ -341,59 +327,9 @@ sealed class CameraFollowSystem: System {
         m_State.Next.Spherical.Radius = nextRadius;
     }
 
-    // -- queries --
-    /// .
-    Vector3 TargetForward {
-        get => m_CharacterState.Forward;
-    }
 
-    /// .
-    Vector3 TargetPosition {
-        get => m_CharacterState.Position + m_Offset;
-    }
 
-    /// calculate the next position
-    // TODO: this should probably be on CameraState
-    public Vector3 IntoPosition() {
-        return TargetPosition + IntoLocalPosition();
-    }
 
-    Spherical IntoSpherical() {
-        var currDir = m_State.Curr.Pos - TargetPosition;
-        var currFwd = Vector3.ProjectOnPlane(currDir, Vector3.up);
-
-        var radius = currDir.magnitude;
-
-        // get current yaw
-        var yaw = Vector3.SignedAngle(
-            m_ZeroYawDir,
-            currFwd,
-            Vector3.up);
-
-        var pitch = Mathf.Rad2Deg * Mathf.Atan2(currDir.y, currFwd.magnitude);
-
-        var spherical = new Spherical();
-        spherical.Radius = radius;
-        spherical.Azimuth = yaw;
-        spherical.Zenith = pitch;
-
-        return spherical;
-    }
-
-    /// calculate the next local position
-    Vector3 IntoLocalPosition() {
-        // calc dest forward from yaw
-        var yawRot = Quaternion.AngleAxis(m_State.Next.Spherical.Azimuth, Vector3.up);
-        var yawFwd = yawRot * m_ZeroYawDir;
-
-        // rotate pitch on the plane containing the target's forward and up
-        var pitchRot = Quaternion.AngleAxis(
-            m_State.Next.Spherical.Zenith,
-            Vector3.Cross(yawFwd, Vector3.up).normalized
-        );
-
-        return pitchRot * yawFwd * m_State.Next.Spherical.Radius;
-    }
 }
 
 }
