@@ -18,9 +18,10 @@ public struct RangeCurve {
 
     // -- queries --
     /// evaluate the curve in the range
-    public float Evaluate(float k) {
+    public float Evaluate(float input) {
+        var k = input;
         if (m_Curve != null && m_Curve.length != 0) {
-            k = m_Curve.Evaluate(k);
+            k = m_Curve.Evaluate(input);
         }
 
         return Mathf.Lerp(m_Min, m_Max, k);
