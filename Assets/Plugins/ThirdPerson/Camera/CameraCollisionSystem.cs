@@ -9,6 +9,9 @@ sealed class CameraCollisionSystem: CameraSystem {
     /// storage for raycasts
     RaycastHit m_Hit;
 
+    /// the normal of the current hit surface
+    Vector3 m_HitNormal;
+
     // -- System --
     protected override Phase InitInitialPhase() {
         return Tracking;
@@ -34,7 +37,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         }
 
         var ideal = m_State.IntoIdealPosition();
-        var corrected = GetCorrectedPos(ideal);
+        var corrected = GetTrackingPos(ideal);
         m_State.Next.Pos = ideal;
 
         if (ideal != corrected) {
@@ -56,7 +59,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         }
 
         var idealPos = m_State.IntoIdealPosition();
-        var correctPos = GetCorrectedPos(idealPos);
+        var correctPos = GetTrackingPos(idealPos);
 
         var nextPos = Vector3.MoveTowards(
             m_State.Curr.Pos,
@@ -85,7 +88,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         }
 
         var ideal = m_State.IntoIdealPosition();
-        var corrected = GetCorrectedPos(ideal);
+        var corrected = GetTrackingPos(ideal);
 
         m_State.Next.Pos = ideal;
 
@@ -108,7 +111,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         }
 
         var ideal = m_State.IntoIdealPosition();
-        var corrected = GetCorrectedPos(ideal);
+        var corrected = GetFreeLookPos(ideal);
 
         m_State.Next.Pos = Vector3.MoveTowards(
             m_State.Curr.Pos,
@@ -121,7 +124,12 @@ sealed class CameraCollisionSystem: CameraSystem {
             return;
         }
 
-        if (Vector3.Magnitude(ideal - corrected) > m_Tuning.Collision_ClipTolerance) {
+        // scale tolerance with hit normal
+        var dot = Vector3.Dot(m_HitNormal, Vector3.up);
+        var tolerance = m_Tuning.Collision_ClipToleranceByNormal.Evaluate(dot);
+        var mag = Vector3.Magnitude(ideal - corrected);
+        Debug.Log($"tolerance {tolerance}, mag {mag}, nrm {m_HitNormal}, dot {dot}");
+        if (mag > tolerance) {
             ChangeTo(FreeLook_Clipping);
             return;
         }
@@ -140,7 +148,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         }
 
         var ideal = m_State.IntoIdealPosition();
-        var corrected = GetCorrectedPos(ideal);
+        var corrected = GetFreeLookPos(ideal);
 
         m_State.Next.Pos = Vector3.MoveTowards(
             m_State.Curr.Pos,
@@ -166,7 +174,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         }
 
         var ideal = m_State.IntoIdealPosition();
-        var corrected = GetCorrectedPos(ideal);
+        var corrected = GetFreeLookPos(ideal);
 
         m_State.Next.Pos = Vector3.MoveTowards(
             m_State.Curr.Pos,
@@ -186,9 +194,7 @@ sealed class CameraCollisionSystem: CameraSystem {
     }
 
     // -- queries --
-    /// correct camera position in attempt to preserve line of sight
-    /// see: https://miro.com/app/board/uXjVOWfpI6I=/?moveToWidget=3458764535240497690&cot=14
-    private Vector3 GetCorrectedPos(Vector3 candidate) {
+    Vector3 GetFreeLookPos(Vector3 candidate) {
         // the final position
         var destPos = candidate;
 
@@ -214,6 +220,69 @@ sealed class CameraCollisionSystem: CameraSystem {
 
         // TODO: don't set state in here
         m_State.Next.IsColliding = didHit;
+        m_HitNormal = m_Hit.normal;
+
+        // if the target is visible, we have our desired position
+        if (!didHit) {
+            return destPos;
+        }
+
+        // otherwise, we found the point on this surface (note: offset by c.o.
+        // so that step 3b works)
+        var vizNormal = m_Hit.normal;
+        var vizPos = OffsetHit(m_Hit);
+
+        destPos = vizPos;
+
+        // step 2: project the candidate along the plane of the hit surface
+        // using the remaining distance to candidate
+
+        // scale the projection down if the pitch is < 0 so that we can pan
+        // into the character
+        var projK = 1.0f;
+        var pitch = m_State.Next.Spherical.Zenith;
+        if (pitch < 0.0f) {
+            projK = 1.0f - pitch / m_Tuning.FreeLook_MinPitch;
+        }
+
+        var projLen = Vector3.Distance(candidate, vizPos);
+        var projDir = Vector3.Cross(vizNormal, Vector3.Cross(vizDir, vizNormal)).normalized;
+        var projPos = vizPos + projK * projLen * projDir;
+
+        destPos = projPos;
+
+        return destPos;
+    }
+
+    /// correct camera position in attempt to preserve line of sight
+    /// see: https://miro.com/app/board/uXjVOWfpI6I=/?moveToWidget=3458764535240497690&cot=14
+    private Vector3 GetTrackingPos(Vector3 candidate) {
+        // the final position
+        var destPos = candidate;
+
+        // the character's position
+        var origin = m_State.FollowPosition;
+
+        // step 1: cast from the character to the ideal position to see if any
+        // surface is blocking visibility; use a sphere cast so we don't get
+        // closer than the contact offset
+        var vizCastStart = candidate - origin;
+        var vizLen = vizCastStart.magnitude;
+        var vizDir = vizCastStart.normalized;
+
+        var didHit = Physics.SphereCast(
+            origin,
+            m_Tuning.Collision_ContactOffset,
+            vizDir,
+            out m_Hit,
+            vizLen,
+            m_Tuning.Collision_Mask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        // TODO: don't set state in here
+        m_State.Next.IsColliding = didHit;
+        m_HitNormal = m_Hit.normal;
 
         // if the target is visible, we have our desired position
         if (!didHit) {

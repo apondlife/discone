@@ -101,8 +101,10 @@ public sealed class CameraTuning: ScriptableObject {
     public LayerMask Collision_Mask;
 
     [Tooltip("how far away the corrected collision position should be from the ideal position before clipping")]
-    [UnityEngine.Serialization.FormerlySerializedAs("FreeLook_ClipTolerance")]
     public float Collision_ClipTolerance;
+
+    [Tooltip("how far away the corrected collision position should be from the ideal position before clipping, scaled by hit normal")]
+    public RangeCurve Collision_ClipToleranceByNormal;
 
     [Tooltip("the exit duration before clipping transitions back to free look")]
     public float Collision_ClipCooldown;

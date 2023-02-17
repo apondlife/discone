@@ -1,6 +1,14 @@
 what is projected
 ---
 
+# camera
+> ground angle look up stuff
+> move look to systems
+> consolidate Follow/Look/Camera
+> dolly too slow when it gets very wrong (see elastic below)
+> BUG: doesn't follow when going back to flower
+> should be more elastic/physical (acceleration)
+
 # scrap notes from businessman
 > is the blob shadow from discone or third person? if TP make sure its portable
 > character drive event to fix how the camera currently works, its horrible
@@ -20,8 +28,6 @@ what is projected
 > convert from test to real world
 > delete when not finding ground
 
-# camera
-> start follow from corrected position
 
 # tools
 > test pt script on windows
