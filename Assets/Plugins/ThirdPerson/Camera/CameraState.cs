@@ -12,30 +12,36 @@ public sealed partial class CameraState {
     const uint k_BufferSize = 5;
     #endif
 
+    // -- deps --
+    /// the tracked character state
+    CharacterState m_CharacterState;
+
     // -- props --
     /// the queue of frames
     Queue<Frame> m_Frames = new Queue<Frame>(k_BufferSize);
-
-    /// the tracked character state
-    CharacterState m_CharacterState;
 
     /// an offset from the character pos to follow
     Vector3 m_FollowOffset;
 
     /// the yaw world-direction at init
-    Vector3 m_ZeroYawDir;
+    Vector3 m_FollowYawZeroDir;
 
     // -- lifetime --
     /// create state from intial frame
-    public CameraState(Frame initial, CharacterState characterState, Vector3 followOffset) {
+    public CameraState(
+        Frame initial,
+        Vector3 followOffset,
+        CharacterState characterState
+    ) {
+        // set deps
+        m_CharacterState = characterState;
+
         // set props
         Fill(initial);
-        m_CharacterState = characterState;
         m_FollowOffset = followOffset;
 
         // set zero values
-        m_ZeroYawDir = Vector3.ProjectOnPlane(-TargetForward, Vector3.up).normalized;
-
+        m_FollowYawZeroDir = Vector3.ProjectOnPlane(-FollowForward, Vector3.up).normalized;
     }
 
     // -- commands --
@@ -56,61 +62,73 @@ public sealed partial class CameraState {
 
     // -- queries --
     /// .
-    public Vector3 ZeroYawDir {
-        get => m_ZeroYawDir;
-    }
-
-    /// .
-    public Vector3 FollowPosition {
-        get => m_CharacterState.Curr.Position + m_FollowOffset;
-    }
-
-    /// .
-    public Vector3 TargetForward {
-        get => m_CharacterState.Curr.Forward;
-    }
-
-    /// .
     public CharacterState Character {
         get => m_CharacterState;
     }
 
-    /// converts next spherical coordinates into cartesian coordinates
-    public Vector3 IntoPosition() {
-        // calc dest forward from yaw
-        var yawRot = Quaternion.AngleAxis(Next.Spherical.Azimuth, Vector3.up);
-        var yawFwd = yawRot * m_ZeroYawDir;
+    /// the follow target's current position
+    public Vector3 FollowPosition {
+        get => m_CharacterState.Curr.Position + m_FollowOffset;
+    }
 
-        // rotate pitch on the plane containing the target's forward and up
-        var pitchRot = Quaternion.AngleAxis(
-            Next.Spherical.Zenith,
-            Vector3.Cross(yawFwd, Vector3.up).normalized
-        );
+    /// the follow target's current forward dir
+    public Vector3 FollowForward {
+        get => m_CharacterState.Curr.Forward;
+    }
 
-        return FollowPosition + pitchRot * yawFwd * Next.Spherical.Radius;
+    /// .
+    public Vector3 FollowYawZeroDir {
+        get => m_FollowYawZeroDir;
+    }
+
+    /// the current position on the camera sphere in world coords
+    public Vector3 IntoIdealPosition() {
+        return SphericalIntoWorld(Next.Spherical);
+    }
+
+    /// the destination position on the camera sphere in world coords
+    public Vector3 IntoIdealDestPosition() {
+        return SphericalIntoWorld(Next.DestSpherical);
     }
 
     /// converts current position into spherical coordinates
-    public Spherical IntoSpherical() {
+    public Spherical IntoCurrSpherical() {
         var currDir = Curr.Pos - FollowPosition;
         var currFwd = Vector3.ProjectOnPlane(currDir, Vector3.up);
 
         var radius = currDir.magnitude;
 
-        // get current yaw
         var yaw = Vector3.SignedAngle(
-            ZeroYawDir,
+            m_FollowYawZeroDir,
             currFwd,
-            Vector3.up);
+            Vector3.up
+        );
 
-        var pitch = Mathf.Rad2Deg * Mathf.Atan2(currDir.y, currFwd.magnitude);
+        var pitch = Mathf.Rad2Deg * Mathf.Atan2(
+            currDir.y,
+            currFwd.magnitude
+        );
 
-        var spherical = new Spherical();
-        spherical.Radius = radius;
-        spherical.Azimuth = yaw;
-        spherical.Zenith = pitch;
+        return new Spherical(radius, yaw, pitch);
+    }
 
-        return spherical;
+    /// converts a local spherical position into a world position
+    Vector3 SphericalIntoWorld(Spherical spherical) {
+        // calc dest forward from yaw
+        var yawRot = Quaternion.AngleAxis(
+            spherical.Azimuth,
+            Vector3.up
+        );
+
+        var yawFwd = yawRot * m_FollowYawZeroDir;
+
+        // rotate pitch on the plane containing the target's forward and up
+        var pitchRot = Quaternion.AngleAxis(
+            spherical.Zenith,
+            Vector3.Cross(yawFwd, Vector3.up).normalized
+        );
+
+        return FollowPosition + pitchRot * yawFwd * spherical.Radius;
     }
 
     /// the buffer size
@@ -143,17 +161,23 @@ public sealed partial class CameraState {
     [Serializable]
     public sealed partial class Frame: IEquatable<Frame> {
         // -- props --
-        /// the world position
+        /// the actual world position post-collision
         public Vector3 Pos;
 
-        /// the ideal local spherical position (w/o collision)
+        /// the destination world position post-collision
+        public Vector3 DestPos;
+
+        /// the ideal spherical local position
         public Spherical Spherical;
+
+        /// the ideal destination spherical local position
+        public Spherical DestSpherical;
 
         /// the sphecial velocity
         public Spherical Velocity;
 
-        /// if the camera is in tracking mode
-        public bool IsTracking;
+        /// if the camera is in free look mode
+        public bool IsFreeLook;
 
         /// if the camera is colliding with something
         public bool IsColliding;

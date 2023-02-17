@@ -1,39 +1,15 @@
+using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace ThirdPerson {
 
-sealed class CameraCollisionSystem: System {
-    // -- deps --
-    /// the current camera state
-    CameraState m_State;
-
-    /// .
-    CameraTuning m_Tuning;
-
+[Serializable]
+sealed class CameraCollisionSystem: CameraSystem {
     // -- props --
-    /// the state-machine's state
-    SystemState m_SystemState;
-
     /// storage for raycasts
     RaycastHit m_Hit;
 
-    // -- lifetime --
-    public CameraCollisionSystem(
-        CameraState state,
-        CameraTuning tuning
-    ) {
-        // set deps
-        m_State = state;
-        m_Tuning = tuning;
-    }
-
     // -- System --
-    protected override SystemState State {
-        get => m_SystemState;
-        set => m_SystemState = value;
-    }
-
     protected override Phase InitInitialPhase() {
         return Tracking;
     }
@@ -42,9 +18,8 @@ sealed class CameraCollisionSystem: System {
         base.Init();
 
         // set initial state
-        m_State.Next.Pos = m_State.IntoPosition();
+        m_State.Next.Pos = m_State.IntoIdealPosition();
     }
-
 
     // -- Tracking --
     Phase Tracking => new Phase(
@@ -53,12 +28,48 @@ sealed class CameraCollisionSystem: System {
     );
 
     void Tracking_Update(float delta) {
-        if (!m_State.IsTracking) {
+        if (m_State.IsFreeLook) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
 
-        m_State.Next.Pos = GetCorrectedPos(m_State.IntoPosition());
+        var ideal = m_State.IntoIdealPosition();
+        var corrected = GetCorrectedPos(ideal);
+        m_State.Next.Pos = ideal;
+
+        if (ideal != corrected) {
+            ChangeTo(Tracking_Correcting);
+            return;
+        }
+    }
+
+    // -- Tracking_Correcting --
+    Phase Tracking_Correcting => new Phase(
+        name: "Tracking_Correcting",
+        update: Tracking_Correcting_Update
+    );
+
+    void Tracking_Correcting_Update(float delta) {
+        if (m_State.IsFreeLook) {
+            ChangeToImmediate(FreeLook, delta);
+            return;
+        }
+
+        var idealPos = m_State.IntoIdealPosition();
+        var correctPos = GetCorrectedPos(idealPos);
+
+        var nextPos = Vector3.MoveTowards(
+            m_State.Curr.Pos,
+            correctPos,
+            m_Tuning.Collision_Tracking_CorrectionSpeed * delta
+        );
+
+        m_State.Next.Pos = nextPos;
+
+        if (nextPos == idealPos) {
+            ChangeTo(Tracking);
+            return;
+        }
     }
 
     // -- FreeLook --
@@ -68,12 +79,110 @@ sealed class CameraCollisionSystem: System {
     );
 
     void FreeLook_Update(float delta) {
-        if (m_State.IsTracking) {
+        if (!m_State.IsFreeLook) {
             ChangeToImmediate(Tracking, delta);
             return;
         }
 
-        m_State.Next.Pos = GetCorrectedPos(m_State.IntoPosition());
+        var ideal = m_State.IntoIdealPosition();
+        var corrected = GetCorrectedPos(ideal);
+
+        m_State.Next.Pos = ideal;
+
+        if (ideal != corrected) {
+            ChangeTo(FreeLook_Colliding);
+            return;
+        }
+    }
+
+    // -- FreeLook_Colliding --
+    Phase FreeLook_Colliding => new Phase(
+        name: "FreeLook_Colliding",
+        update: FreeLook_Colliding_Update
+    );
+
+    void FreeLook_Colliding_Update(float delta) {
+        if (!m_State.IsFreeLook) {
+            ChangeToImmediate(Tracking, delta);
+            return;
+        }
+
+        var ideal = m_State.IntoIdealPosition();
+        var corrected = GetCorrectedPos(ideal);
+
+        m_State.Next.Pos = Vector3.MoveTowards(
+            m_State.Curr.Pos,
+            corrected,
+            m_Tuning.Collision_FreeLook_CorrectionSpeed * delta
+        );
+
+        if (ideal == corrected) {
+            ChangeTo(FreeLook);
+            return;
+        }
+
+        if (Vector3.Magnitude(ideal - corrected) > m_Tuning.Collision_ClipTolerance) {
+            ChangeTo(FreeLook_Clipping);
+            return;
+        }
+    }
+
+    // -- FreeLook_Clipping--
+    Phase FreeLook_Clipping => new Phase(
+        name: "FreeLook_Clipping",
+        update: FreeLook_Clipping_Update
+    );
+
+    void FreeLook_Clipping_Update(float delta) {
+        if (!m_State.IsFreeLook) {
+            ChangeToImmediate(Tracking, delta);
+            return;
+        }
+
+        var ideal = m_State.IntoIdealPosition();
+        var corrected = GetCorrectedPos(ideal);
+
+        m_State.Next.Pos = Vector3.MoveTowards(
+            m_State.Curr.Pos,
+            ideal,
+            m_Tuning.Collision_FreeLook_CorrectionSpeed * delta
+        );
+
+        if (ideal == corrected) {
+            ChangeTo(FreeLook_ClippingCooldown);
+            return;
+        }
+    }
+
+    Phase FreeLook_ClippingCooldown => new Phase(
+        name: "FreeLook_ClippingCooldown",
+        update: FreeLook_ClippingCooldown_Update
+    );
+
+    void FreeLook_ClippingCooldown_Update(float delta) {
+        if (!m_State.IsFreeLook) {
+            ChangeToImmediate(Tracking, delta);
+            return;
+        }
+
+        var ideal = m_State.IntoIdealPosition();
+        var corrected = GetCorrectedPos(ideal);
+
+        m_State.Next.Pos = Vector3.MoveTowards(
+            m_State.Curr.Pos,
+            ideal,
+            m_Tuning.Collision_FreeLook_CorrectionSpeed * delta
+        );
+
+        if (ideal != corrected) {
+            ChangeTo(FreeLook_Clipping);
+            return;
+        }
+
+        if (PhaseElapsed >= m_Tuning.Collision_ClipCooldown) {
+            ChangeTo(FreeLook);
+            return;
+        }
     }
 
     // -- queries --
@@ -95,14 +204,15 @@ sealed class CameraCollisionSystem: System {
 
         var didHit = Physics.SphereCast(
             origin,
-            m_Tuning.ContactOffset,
+            m_Tuning.Collision_ContactOffset,
             vizDir,
             out m_Hit,
             vizLen,
-            m_Tuning.CollisionMask,
+            m_Tuning.Collision_Mask,
             QueryTriggerInteraction.Ignore
         );
 
+        // TODO: don't set state in here
         m_State.Next.IsColliding = didHit;
 
         // if the target is visible, we have our desired position
@@ -151,7 +261,7 @@ sealed class CameraCollisionSystem: System {
             exitVertDir,
             out m_Hit,
             exitVertLen,
-            m_Tuning.CollisionMask,
+            m_Tuning.Collision_Mask,
             QueryTriggerInteraction.Ignore
         );
 
@@ -170,7 +280,7 @@ sealed class CameraCollisionSystem: System {
                 exitPlaneSrc,
                 exitPlaneDst,
                 out m_Hit,
-                m_Tuning.CollisionMask,
+                m_Tuning.Collision_Mask,
                 QueryTriggerInteraction.Ignore
             );
 
@@ -188,7 +298,7 @@ sealed class CameraCollisionSystem: System {
             vizCastEndSrc,
             vizCastEndDst,
             out m_Hit,
-            m_Tuning.CollisionMask,
+            m_Tuning.Collision_Mask,
             QueryTriggerInteraction.Ignore
         );
 
@@ -201,7 +311,7 @@ sealed class CameraCollisionSystem: System {
 
     /// the hit point adjusted by the contact offset
     Vector3 OffsetHit(RaycastHit hit) {
-        return hit.point + m_Tuning.ContactOffset * hit.normal;
+        return hit.point + m_Tuning.Collision_ContactOffset * hit.normal;
     }
 }
 

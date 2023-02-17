@@ -18,6 +18,17 @@ public struct Spherical: IEquatable<Spherical> {
     [Range(-90.0f, 90.0f)]
     public float Zenith;
 
+    // -- init --
+    public Spherical(
+        float radius,
+        float azimuth,
+        float zenith
+    ) {
+        Radius = radius;
+        Azimuth = azimuth;
+        Zenith = zenith;
+    }
+
     // -- queries --
     /// convert the spherical coordinate into a cartesian coordinate
     public Vector3 IntoCartesian() {

@@ -14,9 +14,6 @@ public sealed class CameraTuning: ScriptableObject {
 
     // -- movement --
     [Header("movement")]
-    [Tooltip("the collision mask for the camera with the world")]
-    public LayerMask CollisionMask;
-
     [Tooltip("the fixed distance from the target")]
     public float MinRadius;
 
@@ -41,19 +38,11 @@ public sealed class CameraTuning: ScriptableObject {
     [Tooltip("the acceleration of the camera pitch")]
     public float Tracking_PitchAcceleration;
 
-    [Tooltip("the rate of change of local distance of the camera to the target, if correcting")]
-    public float CorrectionSpeed;
-
-    [Tooltip("the smooth time for moving the camera to target, if correcting")]
-    public float CorrectionSmoothTime = 0.5f;
-
-    // TODO: this is the camera's radius
-    // TODO: make all the camera's casts sphere casts
-    [Tooltip("the amount of offset the camera during collision")]
-    public float ContactOffset;
-
     // -- target speed --
     [Header("target speed")]
+    [Tooltip("the speed the camera distance adjusts in freelook")]
+    public float DollySpeed;
+
     [Tooltip("the camera distance multiplier as a function of target speed")]
     public AnimationCurve DollySpeedCurve;
 
@@ -80,9 +69,6 @@ public sealed class CameraTuning: ScriptableObject {
     [Tooltip("the acceleration of the camera pitch while in freelook")]
     public float FreeLook_PitchAcceleration;
 
-    [Tooltip("the speed the camera distance adjusts in freelook")]
-    public float DollySpeed;
-
     // TODO: very weird for this to be smaller than min pitch
     [Tooltip("the minimum pitch when in free look mode")]
     public float FreeLook_MinPitch;
@@ -93,9 +79,6 @@ public sealed class CameraTuning: ScriptableObject {
     [Tooltip("the distance change when undershooting the min pitch angle (gets closer to the character)")]
     public AnimationCurve Distance_PitchCurve;
 
-    [Tooltip("the minimum distance from the target, when undershooting")]
-    public float MinUndershootDistance;
-
     [Tooltip("the delay in seconds after free look when the camera returns to active mode")]
     public float FreeLook_Timeout;
 
@@ -104,6 +87,32 @@ public sealed class CameraTuning: ScriptableObject {
 
     [Tooltip("the delay in seconds after free look when the camera returns to active mode")]
     public float FreeLook_OvershootLookUp;
+
+    [Tooltip("the minimum distance from the target, when undershooting")]
+    public float MinUndershootDistance;
+
+    [Header("collision")]
+    // TODO: this is the camera's radius
+    // TODO: make all the camera's casts sphere casts
+    [Tooltip("the amount of offset the camera during collision")]
+    public float Collision_ContactOffset;
+
+    [Tooltip("the collision mask for the camera with the world")]
+    public LayerMask Collision_Mask;
+
+    [Tooltip("how far away the corrected collision position should be from the ideal position before clipping")]
+    [UnityEngine.Serialization.FormerlySerializedAs("FreeLook_ClipTolerance")]
+    public float Collision_ClipTolerance;
+
+    [Tooltip("the exit duration before clipping transitions back to free look")]
+    public float Collision_ClipCooldown;
+
+    [Tooltip("the rate of change of local distance of the camera to the target, if correcting")]
+    [UnityEngine.Serialization.FormerlySerializedAs("Collision_CorrectionSpeed")]
+    public float Collision_FreeLook_CorrectionSpeed;
+
+    [Tooltip("the rate of change of local distance of the camera to the target, if correcting, when tracking")]
+    public float Collision_Tracking_CorrectionSpeed;
 
     // -- recenter --
     [Header("recenter")]

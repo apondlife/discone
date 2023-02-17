@@ -50,7 +50,7 @@ abstract class CharacterSystem: System {
         // set props
         m_Data = d;
 
-        base.Init();
+        this.Init();
     }
 
     #if UNITY_EDITOR

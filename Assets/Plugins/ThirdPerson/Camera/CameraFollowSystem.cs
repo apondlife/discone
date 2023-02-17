@@ -1,44 +1,11 @@
+using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace ThirdPerson {
 
-sealed class CameraFollowSystem: System {
-    // -- deps --
-    /// the current camera state
-    CameraState m_State;
-
-    /// .
-    CameraTuning m_Tuning;
-
-    /// the free look camera input
-    InputAction m_Input;
-
-    /// an offset at relative to the character pos
-    Vector3 m_Offset;
-
-    // -- props --
-    /// the state-machine's state
-    SystemState m_SystemState;
-
-    // -- lifetime --
-    public CameraFollowSystem(
-        CameraState state,
-        CameraTuning tuning,
-        InputAction input
-    ) {
-        // set deps
-        m_State = state;
-        m_Tuning = tuning;
-        m_Input = input;
-    }
-
+[Serializable]
+sealed class CameraFollowSystem: CameraSystem {
     // -- System --
-    protected override SystemState State {
-        get => m_SystemState;
-        set => m_SystemState = value;
-    }
-
     protected override Phase InitInitialPhase() {
         return Tracking;
     }
@@ -61,8 +28,8 @@ sealed class CameraFollowSystem: System {
     );
 
     void Tracking_Enter() {
-        m_State.Next.IsTracking = true;
-        m_State.Next.Spherical = m_State.IntoSpherical();
+        m_State.Next.IsFreeLook = false;
+        m_State.Next.Spherical = m_State.IntoCurrSpherical();
     }
 
     void Tracking_Update(float delta) {
@@ -77,8 +44,8 @@ sealed class CameraFollowSystem: System {
     }
 
     void Tracking_Exit() {
-        m_State.Next.IsTracking = false;
-        m_State.Next.Spherical = m_State.IntoSpherical();
+        m_State.Next.IsFreeLook = true;
+        m_State.Next.Spherical = m_State.IntoCurrSpherical();
     }
 
     // -- FreeLook --
@@ -189,9 +156,9 @@ sealed class CameraFollowSystem: System {
         var currYaw = m_State.Spherical.Azimuth;
 
         // get desired yaw behind model
-        var destFwd = -Vector3.ProjectOnPlane(m_State.TargetForward, Vector3.up);
+        var destFwd = -Vector3.ProjectOnPlane(m_State.FollowForward, Vector3.up);
         var destYaw = Vector3.SignedAngle(
-            m_State.ZeroYawDir,
+            m_State.FollowYawZeroDir,
             destFwd,
             Vector3.up
         );
@@ -241,10 +208,15 @@ sealed class CameraFollowSystem: System {
         );
 
         // update state
-        m_State.Next.Spherical.Azimuth = nextYaw;
-        m_State.Next.Spherical.Zenith = nextPitch;
-        m_State.Next.Velocity.Azimuth = nextYawSpeed;
-        m_State.Next.Velocity.Zenith = nextPitchSpeed;
+        var next = m_State.Next;
+        next.Spherical.Azimuth = nextYaw;
+        next.Spherical.Zenith = nextPitch;
+
+        next.DestSpherical.Azimuth = destYaw;
+        next.DestSpherical.Zenith = destPitch;
+
+        next.Velocity.Azimuth = nextYawSpeed;
+        next.Velocity.Zenith = nextPitchSpeed;
     }
 
     /// resolve free look camera orbit
@@ -291,10 +263,15 @@ sealed class CameraFollowSystem: System {
         );
 
         // update state
-        m_State.Next.Spherical.Azimuth = nextYaw;
-        m_State.Next.Spherical.Zenith = nextPitch;
-        m_State.Next.Velocity.Azimuth = nextYawSpeed;
-        m_State.Next.Velocity.Zenith = nextPitchSpeed;
+        var next = m_State.Next;
+        next.Spherical.Azimuth = nextYaw;
+        next.Spherical.Zenith = nextPitch;
+
+        next.DestSpherical.Azimuth = nextYaw;
+        next.DestSpherical.Zenith = nextPitch;
+
+        next.Velocity.Azimuth = nextYawSpeed;
+        next.Velocity.Zenith = nextPitchSpeed;
     }
 
     /// dolly in or out
@@ -317,14 +294,17 @@ sealed class CameraFollowSystem: System {
         );
 
         // integrate dolly speed
+        var destRadius = m_Tuning.MinRadius * radiusScale;
         var nextRadius =  Mathf.MoveTowards(
             currRadius,
-            m_Tuning.MinRadius * radiusScale,
+            destRadius,
             m_Tuning.DollySpeed * delta
         );
 
         // update radius
-        m_State.Next.Spherical.Radius = nextRadius;
+        var next = m_State.Next;
+        next.Spherical.Radius = nextRadius;
+        next.DestSpherical.Radius = destRadius;
     }
 
 
