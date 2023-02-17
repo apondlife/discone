@@ -14,9 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsInvertedX: 0
   IsInvertedY: 0
-  CollisionMask:
-    serializedVersion: 2
-    m_Bits: 385
   MinRadius: 13
   Tracking_YawCurve:
     serializedVersion: 2
@@ -111,9 +108,7 @@ MonoBehaviour:
   Tracking_MaxPitch: 60
   Tracking_PitchSpeed: 50
   Tracking_PitchAcceleration: 100
-  CorrectionSpeed: 5
-  CorrectionSmoothTime: 0.3
-  ContactOffset: 0.38
+  DollySpeed: 1
   DollySpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -145,7 +140,6 @@ MonoBehaviour:
   FreeLook_YawAcceleration: 350
   FreeLook_PitchSpeed: 100
   FreeLook_PitchAcceleration: 300
-  DollySpeed: 1
   FreeLook_MinPitch: -60
   FreeLook_MaxPitch: 80
   Distance_PitchCurve:
@@ -181,10 +175,18 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  MinUndershootDistance: 2.8
   FreeLook_Timeout: 1
   FreeLook_MoveIntentTimeout: 1
   FreeLook_OvershootLookUp: 0.02
+  MinUndershootDistance: 2.8
+  Collision_ContactOffset: 0.38
+  Collision_Mask:
+    serializedVersion: 2
+    m_Bits: 385
+  Collision_ClipTolerance: 4
+  Collision_ClipCooldown: 1
+  Collision_FreeLook_CorrectionSpeed: 25
+  Collision_Tracking_CorrectionSpeed: 5
   Recenter_IdleTime: 0.7
   Recenter_YawSpeed: 100
   Recenter_YawCurve:

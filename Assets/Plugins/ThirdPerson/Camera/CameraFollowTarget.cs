@@ -29,43 +29,37 @@ public class CameraFollowTarget: MonoBehaviour {
     /// the current camera state
     CameraState m_State;
 
-    /// the current character state
-    CharacterState m_CharacterState;
-
     /// target damping velocity
     Vector3 m_CorrectionVel;
 
-    /// the camera following sytem (state machine)
-    CameraFollowSystem m_FollowSystem;
+    /// the list of systems acting on this camera
+    CameraSystem[] m_Systems;
 
     /// the camera following sytem (state machine)
-    CameraCollisionSystem m_CollisionSystem;
+    [SerializeField] CameraFollowSystem m_FollowSystem;
+
+    /// the camera following sytem (state machine)
+    [SerializeField] CameraCollisionSystem m_CollisionSystem;
 
     // -- lifecycle --
-    void Awake() {
-        // set props
-        m_State = new CameraState(new CameraState.Frame(), m_CharacterState, transform.localPosition);
-    }
-
     void Start() {
         // set deps
         var character = GetComponentInParent<Character>();
-        m_CharacterState = character.State;
+        m_State = new CameraState(
+            new CameraState.Frame(),
+            transform.localPosition,
+            character.State
+        );
 
         // init systems
-        m_FollowSystem = new CameraFollowSystem(
-            m_State,
-            m_Tuning,
-            m_Input.action
-        );
+        m_Systems = new CameraSystem[]{
+            m_FollowSystem,
+            m_CollisionSystem
+        };
 
-        m_CollisionSystem = new CameraCollisionSystem(
-            m_State,
-            m_Tuning
-        );
-
-        m_FollowSystem.Init();
-        m_CollisionSystem.Init();
+        foreach (var system in m_Systems) {
+            system.Init(m_State, m_Tuning, m_Input);
+        }
 
         // set initial position
         m_Destination.position = m_State.Next.Pos;
@@ -79,8 +73,9 @@ public class CameraFollowTarget: MonoBehaviour {
         m_State.Snapshot();
 
         // run systems
-        m_FollowSystem.Update(delta);
-        m_CollisionSystem.Update(delta);
+        foreach (var system in m_Systems) {
+            system.Update(delta);
+        }
 
         // run collision system
         // m_State.Next.Pos = Vector3.SmoothDamp(
@@ -90,7 +85,6 @@ public class CameraFollowTarget: MonoBehaviour {
         //     m_Tuning.CorrectionSmoothTime,
         //     m_Tuning.CorrectionSpeed
         // );
-
 
         // update camera pos
         m_Destination.position = m_State.Next.Pos;
@@ -122,7 +116,25 @@ public class CameraFollowTarget: MonoBehaviour {
 
     /// if free look is enabled
     public bool IsFreeLookEnabled {
-        get => !m_State.IsTracking;
+        get => m_State.IsFreeLook;
+    }
+
+    // -- debug --
+    void OnDrawGizmos() {
+        var ideal = m_State.IntoIdealPosition();
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(ideal, 0.3f);
+
+        var idealDest = m_State.IntoIdealDestPosition();
+        Gizmos.color = Color.green + Color.yellow * 0.5f;
+        Gizmos.DrawWireSphere(idealDest, 0.3f);
+
+        var actual = m_State.Pos;
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(actual, 0.15f);
+
+        Gizmos.color = Vector3.Distance(actual, ideal) < m_Tuning.Collision_ClipTolerance ? Color.green : Color.red;
+        Gizmos.DrawLine(actual, ideal);
     }
 }
 
