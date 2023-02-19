@@ -29,8 +29,13 @@ static class ShaderProps {
     /// the region letterbox pct
     public static readonly int LetterboxAmount = Shader.PropertyToID("_LetterboxAmount");
 
-    /// the inverse view projection matrix
+    /// the current character position
+    public static readonly int CharacterPos = Shader.PropertyToID("_CharacterPos");
+
+    /// the inverse view matrix
     public static readonly int InvView = Shader.PropertyToID("_InvView");
+
+    /// the inverse view projection matrix
     public static readonly int InvProjection = Shader.PropertyToID("_InvProjection");
 
 }

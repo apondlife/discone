@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TestBowl
+  m_Name: TestInclineBowl
   m_Shader: {fileID: 4800000, guid: e4f41a5b43e31b146a653f2fbc945da4, type: 3}
   m_ShaderKeywords: _BLEND_NONE
   m_LightmapFlags: 4
@@ -94,6 +94,10 @@ Material:
     - _SrcBlend: 1
     - _Steep: 80
     - _UVSec: 0
+    - _VertexColorBlend: 0
+    - _VertexWobble: 0
+    - _VertexWobbleRadius: 50
+    - _VertexWobbleSpeed: 1.6
     - _WallAngle: 80
     - _ZWrite: 1
     m_Colors:
@@ -116,5 +120,6 @@ Material:
     - _ShallowCeilingColor: {r: 0.7647059, g: 0.9254902, b: 0.4627451, a: 1}
     - _ShallowFloorColor: {r: 0.7647059, g: 0.9254902, b: 0.4627451, a: 1}
     - _SteepColor: {r: 1.1486983, g: 0.6847143, b: 0.7252566, a: 1}
+    - _VertexWobbleRange: {r: 20, g: 1000, b: 0, a: 0}
     - _WallColor: {r: 1, g: 0.6509804, b: 0.9607843, a: 1}
   m_BuildTextureStacks: []

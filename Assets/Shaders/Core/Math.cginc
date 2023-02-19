@@ -34,13 +34,13 @@ float1 LerpSpan(float2 span, float t) {
 }
 
 /// inverse lerp a value (v) given a min (a) and max (b): (a, b) -> (0, 1)
-float3 Unlerp(float a, float b, float v) {
-    return (v - a) / (b - a);
+float1 Unlerp(float a, float b, float v) {
+    return saturate((v - a) / (b - a));
 }
 
 /// inverse lerp a span vector (min and length)
 float1 UnlerpSpan(float2 span, float v) {
-    return (v - span.x) / span.y;
+    return Unlerp(span.x, span.y, v);
 }
 
 /// sample a random value, between 0 and 1, for a 2d coordinate

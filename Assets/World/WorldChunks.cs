@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
+using Discone;
 
 /// the world chunks
 [ExecuteAlways]
@@ -199,23 +200,11 @@ public sealed class WorldChunks: MonoBehaviour {
 
     /// create chunks for the editor field
     void CreateEditorChunks() {
-        // get the editor camera
-        var scene = UnityEditor.SceneView.lastActiveSceneView;
-        if (scene == null) {
-            return;
-        }
-
-        var camera = scene.camera;
+        var camera = EditorCamera.Get;
         if (camera == null) {
             return;
         }
-
-        // don't create chunks in prefab mode
-        var preview = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
-        if (preview != null) {
-            return;
-        }
-
+        
         // get the look position and direction
         var ct = camera.transform;
         var lp = ct.position;

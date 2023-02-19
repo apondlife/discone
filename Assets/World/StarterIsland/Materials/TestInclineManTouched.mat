@@ -94,6 +94,10 @@ Material:
     - _SrcBlend: 1
     - _Steep: 80
     - _UVSec: 0
+    - _VertexColorBlend: 0.5
+    - _VertexWobble: 0
+    - _VertexWobbleRadius: 50
+    - _VertexWobbleSpeed: 1.6
     - _WallAngle: 80
     - _ZWrite: 1
     m_Colors:
@@ -116,5 +120,6 @@ Material:
     - _ShallowCeilingColor: {r: 0.7647059, g: 0.9254902, b: 0.4627451, a: 1}
     - _ShallowFloorColor: {r: 0.7647059, g: 0.9254902, b: 0.4627451, a: 1}
     - _SteepColor: {r: 1, g: 0.5, b: 0.5457516, a: 1}
+    - _VertexWobbleRange: {r: 20, g: 1000, b: 0, a: 0}
     - _WallColor: {r: 1, g: 0.5019608, b: 0.94509804, a: 1}
   m_BuildTextureStacks: []
