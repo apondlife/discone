@@ -8,6 +8,8 @@ using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+namespace Discone {
+
 /// the persistence container
 public sealed class Store: ScriptableObject {
     // -- published --
@@ -254,4 +256,5 @@ public sealed class Store: ScriptableObject {
 
         return path;
     }
+}
 }

@@ -1,6 +1,10 @@
 Shader "Custom/InclineShader" {
     Properties {
         [Header(Surface)]
+        [Space(5)]
+        _VertexWobbleRadius ("Vertex Wobble Radius", Float) = 0.0
+        _VertexWobbleSpeed ("Vertex Wobble Speed", Float) = 0.0
+        [ShowAsVector2] _VertexWobbleRange ("Vertex Wobble Range", Vector) = (0, 0, 0, 0)
 
         [Space]
         [Header(Texture)]
@@ -91,7 +95,9 @@ Shader "Custom/InclineShader" {
             #include "AutoLight.cginc"
             #include "UnityLightingCommon.cginc"
             #include "Assets/Shaders/Core/Math.cginc"
+            #include "Assets/Shaders/Core/Globals.hlsl"
             #include "Assets/Shaders/Core/Color.cginc"
+            #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 
             // -- types --
             struct VertIn {
@@ -114,6 +120,16 @@ Shader "Custom/InclineShader" {
             };
 
             // -- props --
+            // -- surface
+            // the vertex position wobble radius
+            float _VertexWobbleRadius;
+
+            // the vertex position wobble speed
+            float _VertexWobbleSpeed;
+
+            // the min/max range for the vertex wobble
+            float2 _VertexWobbleRange;
+
             // -- p/texture
             // the texture
             sampler2D _MainTex;
@@ -193,10 +209,28 @@ Shader "Custom/InclineShader" {
 
             // -- program --
             FragIn DrawVert(VertIn IN) {
+                float4 vertex = IN.vertex;
+                float4 worldPos = mul(unity_ObjectToWorld, vertex);
+
+                float wobbleRadius = _VertexWobbleRadius * UnlerpSpan(
+                    _VertexWobbleRange,
+                    min(
+                        distance(_CharacterPos.y, worldPos.y),
+                        distance(_CharacterPos.xz, worldPos.xz)
+                    )
+                );
+
+                worldPos += wobbleRadius *
+                    float4(
+                        0,//SimplexNoise(worldPos + _Time.x * _VertexWobbleSpeed * float3(1, 1, 1) + float3(1, 0, 0)),
+                        SimplexNoise(worldPos + _Time.x * _VertexWobbleSpeed * float3(1, 1, 1) + float3(2, 0, 0)),
+                        0,//SimplexNoise(worldPos + _Time.x * _VertexWobbleSpeed * float3(1, 1, 1) + float3(3, 0, 0)),
+                    0);
+
                 FragIn o;
-                o.pos = UnityObjectToClipPos(IN.vertex);
+                o.pos = UnityWorldToClipPos(worldPos);
                 o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
-                o.worldPos = mul(unity_ObjectToWorld, IN.vertex);
+                o.worldPos = worldPos;
                 o.worldNormal = UnityObjectToWorldNormal(IN.normal);
                 o.vertexColor = IN.vertexColor;
 

@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityAtoms.BaseAtoms;
 using System;
 
+namespace Discone {
+
 /// the online "manager"
 public class Online: NetworkManager {
     // -- types --
@@ -335,4 +337,6 @@ public class Online: NetworkManager {
 }
 
 public struct CreatePlayerMessage: NetworkMessage {
+}
+
 }

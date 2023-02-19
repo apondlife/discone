@@ -3,6 +3,7 @@ using Mirror;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using ThirdPerson;
+using Discone;
 
 /// an online player
 /// TODO: swap (drive) characters by setting m_LocalCharacter

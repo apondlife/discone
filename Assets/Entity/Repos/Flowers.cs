@@ -5,6 +5,8 @@ using Mirror;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
+namespace Discone {
+
 /// a repository of flowers
 public sealed class Flowers: MonoBehaviour {
     // -- config --
@@ -121,4 +123,6 @@ public sealed class Flowers: MonoBehaviour {
     void Server_OnStoreLoadFinished() {
         Server_SpawnFlowers();
     }
+}
+
 }

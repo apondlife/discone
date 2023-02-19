@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 
+namespace Discone {
+
 /// the discone (local) player; there is only one of these!
 [RequireComponent(typeof(ThirdPerson.Player))]
 public sealed class DisconePlayer: MonoBehaviour {
@@ -55,6 +57,27 @@ public sealed class DisconePlayer: MonoBehaviour {
             .Add(m_Store.LoadFinished, OnStoreLoadFinished);
     }
 
+    void Update() {
+        // update global shader character pos
+        var characterPos = Vector3.zero;
+
+        // if we have an editor camera, try that
+        #if UNITY_EDITOR
+        var camera = EditorCamera.Get;
+        if (camera != null) {
+            characterPos = camera.transform.position;
+        }
+        #endif
+
+        // use the current character's position
+        var character = m_Character.Value;
+        if (character != null) {
+            characterPos = character.Position;
+        }
+
+        Shader.SetGlobalVector(ShaderProps.CharacterPos, characterPos);
+    }
+
     void OnDestroy() {
         // unbind events
         m_Subscriptions.Dispose();
@@ -104,4 +127,6 @@ public sealed class DisconePlayer: MonoBehaviour {
     void OnIsDialogueActiveChanged(bool isDialogueActive) {
         m_InputSource.enabled = !isDialogueActive;
     }
+}
+
 }

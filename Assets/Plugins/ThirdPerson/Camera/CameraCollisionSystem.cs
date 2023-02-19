@@ -128,7 +128,6 @@ sealed class CameraCollisionSystem: CameraSystem {
         var dot = Vector3.Dot(m_HitNormal, Vector3.up);
         var tolerance = m_Tuning.Collision_ClipToleranceByNormal.Evaluate(dot);
         var mag = Vector3.Magnitude(ideal - corrected);
-        Debug.Log($"tolerance {tolerance}, mag {mag}, nrm {m_HitNormal}, dot {dot}");
         if (mag > tolerance) {
             ChangeTo(FreeLook_Clipping);
             return;
