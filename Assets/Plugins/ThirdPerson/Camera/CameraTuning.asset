@@ -184,7 +184,52 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 385
   Collision_ClipTolerance: 4
-  Collision_ClipCooldown: 1
+  Collision_ClipToleranceByNormal:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.21630615
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.937
+        value: 0.937
+        inSlope: 2.5520837
+        outSlope: 2.5520837
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2.9582162
+        outSlope: 2.9582162
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.11670482
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Min: 4
+    m_Max: 14
+  Collision_ClipCooldown: 0.1
   Collision_FreeLook_CorrectionSpeed: 25
   Collision_Tracking_CorrectionSpeed: 5
   Recenter_IdleTime: 0.7
