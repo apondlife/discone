@@ -29,6 +29,7 @@ Shader "Custom/InclineShader" {
         [Space]
         [Header(Colors)]
         [Space(5)]
+        _VertexColorBlend ("Vertex Color Blend", Range(0.0, 1.0)) = 0.0
         [HDR] _FloorColor ("Floor", Color) = (1, 1, 1, 1)
         [HDR] _ShallowFloorColor ("Floor (Shallow)", Color) = (1, 1, 1, 1)
         [HDR] _PositiveRampColor ("Ramp (Positive)", Color) = (1, 1, 1, 1)
@@ -40,7 +41,7 @@ Shader "Custom/InclineShader" {
         [HDR] _CeilingColor ("Ceiling", Color) = (1, 0, 1, 1)
 
         [Space]
-        [Header(Colors)]
+        [Header(Textures)]
         _MapScale("Triplanar Scale", Float) = 1
 
         [Space]
@@ -97,6 +98,7 @@ Shader "Custom/InclineShader" {
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
+                float4 vertexColor : COLOR;
             };
 
             struct FragIn {
@@ -106,6 +108,7 @@ Shader "Custom/InclineShader" {
                 float3 worldNormal : TEXCOORD2;
                 fixed3 diffuse : COLOR0;
                 fixed3 ambient : COLOR1;
+                float4 vertexColor : COLOR2;
                 SHADOW_COORDS(3)
                 UNITY_FOG_COORDS(4)
             };
@@ -136,6 +139,9 @@ Shader "Custom/InclineShader" {
 
             // the bump map scale
             float _BumpScale;
+
+            // the vertex color blend
+            float _VertexColorBlend;
 
             // -- p/angles
             // a near-zero value
@@ -192,6 +198,7 @@ Shader "Custom/InclineShader" {
                 o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
                 o.worldPos = mul(unity_ObjectToWorld, IN.vertex);
                 o.worldNormal = UnityObjectToWorldNormal(IN.normal);
+                o.vertexColor = IN.vertexColor;
 
                 // lambert shading
                 half normalDotLight = max(0, dot(o.worldNormal, _WorldSpaceLightPos0.xyz));
@@ -250,6 +257,9 @@ Shader "Custom/InclineShader" {
                 c = lerp(c, wallColor, step(d, cos(radians(_WallAngle))));
                 c = lerp(c, _WallColor, step(d, _Epsilon));
                 c = lerp(c, flatColor, step(1 - _Epsilon, d));
+
+                // -- blend vertex colors
+                c.rgb *= lerp(float3(1, 1, 1), IN.vertexColor.rgb, _VertexColorBlend);
 
                 // -- sample triplanar texture
                 // see: https://github.com/bgolus/Normal-Mapping-for-a-Triplanar-Shader/blob/master/TriplanarSurfaceShader.shader
