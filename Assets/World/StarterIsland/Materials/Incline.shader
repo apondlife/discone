@@ -1,4 +1,4 @@
-Shader "Custom/InclineShader" {
+Shader "Custom/Incline" {
     Properties {
         [Header(Surface)]
         [Space(5)]
@@ -11,18 +11,15 @@ Shader "Custom/InclineShader" {
         [Space(5)]
         [KeywordEnum(None, Multiply, Luminosity)]
         _Blend ("Blend Mode", Float) = 0
-        _MainTex ("Side Texture", 2D) = "black" {}
-        _TopTex ("Top Texture", 2D) = "black" {}
         _Hue ("Hue", Range(-1.0, 1.0)) = 0.0
         _Saturation ("Saturation", Range(-1.0, 1.0)) = 0.0
         _Brightness ("Brightness", Range(-1.0, 1.0)) = 0.0
+        _TexScale ("Triplanar Scale", Float) = 1
 
         [Space]
-        [Header(Bump Map)]
+        [Header(Vertex Colors)]
         [Space(5)]
-        [Toggle] _Bump_Map ("Enable", Float) = 0
-        _BumpMap ("Bump Map", 2D) = "bump" {}
-        _BumpScale ("Bump Scale", Float) = 0
+        _VertexColorBlend ("Vertex Color Blend", Range(0.0, 1.0)) = 0.0
 
         [Space]
         [Header(Angles)]
@@ -32,22 +29,35 @@ Shader "Custom/InclineShader" {
         _RampAngle ("Ramp Angle (deg)", Range(0, 90)) = 10
 
         [Space]
-        [Header(Colors)]
+        [Header(Ground)]
         [Space(5)]
-        _VertexColorBlend ("Vertex Color Blend", Range(0.0, 1.0)) = 0.0
-        [HDR] _FloorColor ("Floor", Color) = (1, 1, 1, 1)
-        [HDR] _ShallowFloorColor ("Floor (Shallow)", Color) = (1, 1, 1, 1)
-        [HDR] _PositiveRampColor ("Ramp (Positive)", Color) = (1, 1, 1, 1)
-        [HDR] _PositiveWallColor ("Wall (Positive)", Color) = (1, 1, 1, 1)
-        [HDR] _WallColor ("Wall (Flat)", Color) = (1, 1, 1, 1)
-        [HDR] _NegativeWallColor ("Wall (Negative)", Color) = (1, 1, 1, 1)
-        [HDR] _NegativeRampColor ("Ramp (Negative)", Color) = (1, 1, 1, 1)
-        [HDR] _ShallowCeilingColor ("Ceiling (Shallow)", Color) = (1, 1, 1, 1)
-        [HDR] _CeilingColor ("Ceiling", Color) = (1, 0, 1, 1)
+        _MainTex ("Ground Texture", 2D) = "black" {}
+        _MainColor ("Ground Color", Color) = (1, 1, 1, 1)
 
         [Space]
-        [Header(Textures)]
-        _TexScale("Triplanar Scale", Float) = 1
+        [Header(Ramp)]
+        [Space(5)]
+        _RampTex ("Ramp Texture", 2D) = "black" {}
+        _RampColor ("Ramp Color", Color) = (1, 1, 1, 1)
+
+        [Space]
+        [Header(Wall)]
+        [Space(5)]
+        _WallTex ("Wall Texture", 2D) = "black" {}
+        _WallColor ("Wall Color", Color) = (1, 1, 1, 1)
+
+        [Space]
+        [Header(Ceiling)]
+        [Space(5)]
+        _CeilTex ("Ceiling Texture", 2D) = "black" {}
+        _CeilColor ("Ceiling Color", Color) = (1, 0, 1, 1)
+
+        [Space]
+        [Header(Bump Map)]
+        [Space(5)]
+        [Toggle] _Bump_Map ("Enable", Float) = 0
+        _BumpMap ("Bump Map", 2D) = "bump" {}
+        _BumpScale ("Bump Scale", Float) = 0
 
         [Space]
         [Header(Back Face)]
@@ -132,18 +142,6 @@ Shader "Custom/InclineShader" {
             float2 _VertexWobbleRange;
 
             // -- p/texture
-            // the wall texture
-            sampler2D _MainTex;
-
-            // the wall texture scale/translation
-            float4 _MainTex_ST;
-
-            // the ground/ceiling texture
-            sampler2D _TopTex;
-
-            // the ground/ceiling texture scale/translation
-            float4 _TopTex_ST;
-
             // the scale of the triplanar mapping
             half _TexScale;
 
@@ -156,13 +154,7 @@ Shader "Custom/InclineShader" {
             // the brightness shift as a pct
             float _Brightness;
 
-            // -- p/bump map
-            // the bump map
-            sampler2D _BumpMap;
-
-            // the bump map scale
-            float _BumpScale;
-
+            // -- p/vertex
             // the vertex color blend
             float _VertexColorBlend;
 
@@ -176,43 +168,64 @@ Shader "Custom/InclineShader" {
             // the angle walls start at
             float _WallAngle;
 
-            // -- colors --
-            // the color of a flat floor
-            fixed4 _FloorColor;
+            // -- p/surface
+            // the ground texture
+            sampler2D _MainTex;
 
-            // the color of a floor w/ a slightly positive incline
-            fixed4 _ShallowFloorColor;
+            // the ground texture scale/translation
+            float4 _MainTex_ST;
 
-            // the color of a ramp w/ a positive incline
-            fixed4 _PositiveRampColor;
+            // the ground color
+            fixed4 _MainColor;
 
-            // the color of a postive wall
-            fixed4 _PositiveWallColor;
+            // the ramp texture
+            sampler2D _RampTex;
 
-            // the color of a flat wall
+            // the ramp texture scale/translation
+            float4 _RampTex_ST;
+
+            // the ramp color
+            fixed4 _RampColor;
+
+            // the wall texture
+            sampler2D _WallTex;
+
+            // the wall texture scale/translation
+            float4 _WallTex_ST;
+
+            // the wall color
             fixed4 _WallColor;
 
-            // the color of a wall w/ a slightly negative incline
-            fixed4 _NegativeWallColor;
+            // the ceiling texture
+            sampler2D _CeilTex;
 
-            // the color of a ramp w/ a negative incline
-            fixed4 _NegativeRampColor;
+            // the ceiling texture scale/translation
+            float4 _CeilTex_ST;
 
-            // the color of a ceiling w/ a slightly negative incline
-            fixed4 _ShallowCeilingColor;
+            // the  ceiling color
+            fixed4 _CeilColor;
 
-            // the color of a flat ceiling
-            fixed4 _CeilingColor;
+            // -- p/bump map
+            // the bump map
+            sampler2D _BumpMap;
+
+            // the bump map scale
+            float _BumpScale;
 
             // see: https://docs.unity3d.com/Manual/GPUInstancing.html for more
             UNITY_INSTANCING_BUFFER_START(Props)
             UNITY_INSTANCING_BUFFER_END(Props)
 
             // -- declarations --
+            fixed4 SampleTriplanar(sampler2D tex, float4 st, float3 bf, float3 worldPos);
+
             fixed luminosity(fixed3 rgb);
 
             // float3 worldToTangentNormalVector(Input IN, float3 normal);
             half3 blend_rnm(half3 n1, half3 n2);
+
+            // -- macros --
+            #define SAMPLE_TRIPLANAR(name) SampleTriplanar(name, name##_ST, bf, IN.worldPos)
 
             // -- program --
             FragIn DrawVert(VertIn IN) {
@@ -260,42 +273,21 @@ Shader "Custom/InclineShader" {
                 IN.worldNormal = WorldNormalVector(IN, float3(0,0,1));
                 #endif
 
+                // the output color
                 fixed4 c;
 
                 // -- pick color based on normal
                 fixed1 a = dot(IN.worldNormal, float3(0, 1, 0));
-                fixed1 d = abs(a);
 
-                fixed4 flatColor = lerp(
-                    _CeilingColor,
-                    _FloorColor,
-                    step(0, a)
-                );
-
-                fixed4 shallowColor = lerp(
-                    _ShallowCeilingColor,
-                    _ShallowFloorColor,
-                    step(0, a)
-                );
-
-                fixed4 rampColor = lerp(
-                    _NegativeRampColor,
-                    _PositiveRampColor,
-                    step(0, a)
-                );
-
-                fixed4 wallColor = lerp(
-                    _NegativeWallColor,
-                    _PositiveWallColor,
-                    step(0, a)
-                );
+                fixed1 wallAngle = cos(radians(_WallAngle));
+                fixed1 wrblend = smoothstep(a-_Epsilon, a+_Epsilon, wallAngle);
 
                 // pick color based on angle
-                c = shallowColor;
-                c = lerp(c, rampColor, step(d, cos(radians(_RampAngle))));
-                c = lerp(c, wallColor, step(d, cos(radians(_WallAngle))));
-                c = lerp(c, _WallColor, step(d, _Epsilon));
-                c = lerp(c, flatColor, step(1 - _Epsilon, d));
+                c = lerp(
+                    lerp(_MainColor, _RampColor, Unlerp(1, wallAngle, a)),
+                    lerp(_WallColor, _CeilColor, Unlerp(wallAngle, -1, a)),
+                    wrblend
+                );
 
                 // -- blend vertex colors
                 c.rgb *= lerp(float3(1, 1, 1), IN.vertexColor.rgb, _VertexColorBlend);
@@ -307,16 +299,19 @@ Shader "Custom/InclineShader" {
                 half3 bf = saturate(pow(IN.worldNormal, 4));
                 bf /= max(dot(bf, half3(1,1,1)), 0.0001);
 
-                // get texture
-                float2 uvX = IN.worldPos.zy * _TexScale * _MainTex_ST.xy + _MainTex_ST.zw;
-                float2 uvZ = IN.worldPos.xy * _TexScale * _MainTex_ST.xy + _MainTex_ST.zw;
-                float2 uvY = IN.worldPos.xz * _TexScale * _TopTex_ST.xy + _TopTex_ST.zw;
+                // the output texture color
+                fixed4 t;
 
-                // Base color
-                half4 cx = tex2D(_MainTex, uvX) * bf.x;
-                half4 cz = tex2D(_MainTex, uvZ) * bf.z;
-                half4 cy = tex2D(_TopTex, uvY) * bf.y;
-                fixed4 t = (cx + cy + cz);
+                fixed4 tG = SAMPLE_TRIPLANAR(_MainTex);
+                fixed4 tR = SAMPLE_TRIPLANAR(_RampTex);
+                fixed4 tW = SAMPLE_TRIPLANAR(_WallTex);
+                fixed4 tC = SAMPLE_TRIPLANAR(_CeilTex);
+
+                t = lerp(
+                    lerp(tG, tR, Unlerp(1, wallAngle, a)),
+                    lerp(tW, tC, Unlerp(wallAngle, -1, a)),
+                    wrblend
+                );
 
                 // shift texture hsv
                 fixed3 hsv = IntoHsv(t.rgb);
@@ -327,7 +322,8 @@ Shader "Custom/InclineShader" {
 
                 // blend texture as multiply
                 #ifdef _BLEND_MULTIPLY
-                c.rgb *= t.rgb;
+                // c.rgb *= t.rgb;
+                c.rgb *= t.rrr;
                 #endif
 
                 // blend texture as luminosity
@@ -409,6 +405,21 @@ Shader "Custom/InclineShader" {
             //     float3x3 t2w = float3x3(t2w0, t2w1, t2w2);
             //     return normalize(mul(t2w, normal));
             // }
+
+            fixed4 SampleTriplanar(sampler2D tex, float4 st, float3 bf, float3 worldPos) {
+                // calculate per-component blend
+                float2 uvx = worldPos.zy * _TexScale * st.xy + st.zw;
+                float2 uvy = worldPos.xz * _TexScale * st.xy + st.zw;
+                float2 uvz = worldPos.xy * _TexScale * st.xy + st.zw;
+
+                // sample colors
+                half4 cx = tex2D(tex, uvx) * bf.x;
+                half4 cy = tex2D(tex, uvy) * bf.y;
+                half4 cz = tex2D(tex, uvz) * bf.z;
+
+                // produce color
+                return cx + cy + cz;
+            }
 
             fixed luminosity(fixed3 c) {
                 return 0.3f * c.r + 0.59f * c.g + 0.11f * c.b;
