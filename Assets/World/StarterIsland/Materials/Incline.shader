@@ -9,7 +9,7 @@ Shader "Custom/Incline" {
         [Space]
         [Header(Texture)]
         [Space(5)]
-        [KeywordEnum(None, Multiply, Luminosity, Grayscale)]
+        [KeywordEnum(None, Multiply, Luminosity, Grayscale, Gradient)]
         _Blend ("Blend Mode", Float) = 0
         _Hue ("Hue", Range(-1.0, 1.0)) = 0.0
         _Saturation ("Saturation", Range(-1.0, 1.0)) = 0.0
@@ -32,29 +32,37 @@ Shader "Custom/Incline" {
         [Space]
         [Header(Ground)]
         [Space(5)]
-        _MainColor ("Ground Color", Color) = (1, 1, 1, 1)
-        _MainTex ("Ground Texture", 2D) = "black" {}
+        _MainColor ("Color", Color) = (1, 1, 1, 1)
+        _MainColor1 ("Color 1", Color) = (0, 0, 0, 1)
+        _MainTexAlpha ("Texture Alpha", Range(0, 1)) = 1
+        _MainTex ("Texture", 2D) = "black" {}
         _MainBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Ramp)]
         [Space(5)]
-        _RampColor ("Ramp Color", Color) = (1, 1, 1, 1)
-        _RampTex ("Ramp Texture", 2D) = "black" {}
+        _RampColor ("Color", Color) = (1, 1, 1, 1)
+        _RampColor1 ("Color1", Color) = (0, 0, 0, 1)
+        _RampTexAlpha ("Texture Alpha", Range(0, 1)) = 1
+        _RampTex ("Texture", 2D) = "black" {}
         _RampBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Wall)]
         [Space(5)]
-        _WallColor ("Wall Color", Color) = (1, 1, 1, 1)
-        _WallTex ("Wall Texture", 2D) = "black" {}
+        _WallColor ("Color", Color) = (1, 1, 1, 1)
+        _WallColor1 ("Color 1", Color) = (0, 0, 0, 1)
+        _WallTexAlpha ("Texture Alpha", Range(0, 1)) = 1
+        _WallTex ("Texture", 2D) = "black" {}
         _WallBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Ceiling)]
         [Space(5)]
-        _CeilColor ("Ceiling Color", Color) = (1, 0, 1, 1)
-        _CeilTex ("Ceiling Texture", 2D) = "black" {}
+        _CeilColor ("Color", Color) = (1, 0, 1, 1)
+        _CeilColor1 ("Color 1", Color) = (0, 0, 0, 1)
+        _CeilTexAlpha ("Texture Alpha", Range(0, 1)) = 1
+        _CeilTex ("Texture", 2D) = "black" {}
         _CeilBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
@@ -99,7 +107,7 @@ Shader "Custom/Incline" {
             #pragma multi_compile_fog
 
             // blend modes
-            #pragma multi_compile _BLEND_NONE _BLEND_MULTIPLY _BLEND_LUMINOSITY _BLEND_GRAYSCALE
+            #pragma multi_compile _BLEND_NONE _BLEND_MULTIPLY _BLEND_LUMINOSITY _BLEND_GRAYSCALE _BLEND_GRADIENT
 
             // bump map
             #pragma multi_compile __ _BUMP_MAP_ON
@@ -178,6 +186,12 @@ Shader "Custom/Incline" {
             // the ground color
             fixed4 _MainColor;
 
+            // the second ground color (for gradients)
+            fixed4 _MainColor1;
+
+            // the ground color
+            float1 _MainTexAlpha;
+
             // the ground texture
             sampler2D _MainTex;
 
@@ -192,6 +206,12 @@ Shader "Custom/Incline" {
 
             // the ramp color
             fixed4 _RampColor;
+
+            // the second ramp color (for gradients)
+            fixed4 _RampColor1;
+
+            // the ramp alpha
+            float1 _RampTexAlpha;
 
             // the ramp texture
             sampler2D _RampTex;
@@ -208,6 +228,12 @@ Shader "Custom/Incline" {
             // the wall color
             fixed4 _WallColor;
 
+            // the second wall color (for gradients)
+            fixed4 _WallColor1;
+
+            // the ramp alpha
+            float1 _WallTexAlpha;
+
             // the wall texture
             sampler2D _WallTex;
 
@@ -220,8 +246,14 @@ Shader "Custom/Incline" {
             // the wall bump map scale/translation
             float4 _WallBumpMap_ST;
 
-            // the  ceiling color
+            // the ceiling color
             fixed4 _CeilColor;
+
+            // the second ceiling color (for gradients)
+            fixed4 _CeilColor1;
+
+            // the ceiling alpha
+            float1 _CeilTexAlpha;
 
             // the ceiling texture
             sampler2D _CeilTex;
@@ -344,6 +376,17 @@ Shader "Custom/Incline" {
                 t.rgb = IntoRgb(hsv);
 
                 // blend texture as multiply
+                #ifdef  _BLEND_GRADIENT
+                // pick color based on angle
+                fixed4 c2 = lerp(
+                    lerp(_MainColor1, _RampColor1, rampBlend),
+                    lerp(_WallColor1, _CeilColor1, wallBlend),
+                    mainBlend
+                );
+                // gradient on grayscale
+                c.rgb = lerp(c.rgb, c2.rgb, 1-dot(t.rgb, float3(1, 1, 1))/3.0f);
+                #endif
+
                 #ifdef  _BLEND_GRAYSCALE
                 c.rgb *= dot(t.rgb, float3(1, 1, 1))/3.0f;
                 #endif
@@ -428,7 +471,7 @@ Shader "Custom/Incline" {
                 half4 cz = tex2D(tex, uvz) * bf.z;
 
                 // produce color
-                return cx + cy + cz;
+                return cx + cy + cz;;
             }
 
             inline float3 SampleTriplanarNormal(sampler2D tex, float4 st, float3 bf, FragIn IN) {
