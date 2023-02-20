@@ -1,23 +1,63 @@
+#ifndef CORE_MATH_HLSL
+#define CORE_MATH_HLSL
+
 // -- defines --
-#ifndef float1
 #define float1 float
-#endif
-
-#ifndef fixed1
 #define fixed1 fixed
-#endif
-
-#ifndef half1
 #define half1 half
+
+#ifndef K_PI
+#define K_PI 3.14159265359
 #endif
 
-// -- functions --
+#ifndef K_2PI
+#define K_2PI 6.28318530718
+#endif
+
+#ifndef K_PI2
+#define K_PI2 1.57079632679
+#endif
+
+// -- vectors --
+/// create a half3 from a repeated value
+inline half3 half3r(half val) {
+    return half3(val, val, val);
+}
+
+/// create a fixed3 from a repeated value
+inline fixed3 fixed3r(fixed val) {
+    return fixed3(val, val, val);
+}
+
+/// create a float3 from a repeated value
+inline float3 float3r(float val) {
+    return float3(val, val, val);
+}
+
+// -- fns --
+/// the square length of the vec
+float1 SqrLength(fixed2 vec) {
+    return vec.x * vec.x + vec.y * vec.y;
+}
+
+/// lerp a span vector (min and length)
+float1 LerpSpan(float2 span, float t) {
+    return fmod(span.x, 1.0f) + fmod(span.y, 1.0f) * t;
+}
+
 /// inverse lerp a value (v) given a min (a) and max (b): (a, b) -> (0, 1)
-float Unlerp(float a, float b, float v) {
-    return (v - a) / (b - a);
+float1 Unlerp(float a, float b, float v) {
+    return saturate((v - a) / (b - a));
+}
+
+/// inverse lerp a span vector (min and length)
+float1 UnlerpSpan(float2 span, float v) {
+    return Unlerp(span.x, span.y, v);
 }
 
 /// sample a random value, between 0 and 1, for a 2d coordinate
-float Rand(float2 st) {
+float1 Rand(float2 st) {
     return frac(sin(dot(st, float2(12.9898f, 78.233f))) * 43758.5453123f);
 }
+
+#endif

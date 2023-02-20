@@ -27,7 +27,8 @@ Shader "Custom/Incline" {
         [Space(5)]
         _Epsilon ("Epsilon", Range(0, 0.1)) = 0.01
         _WallAngle ("Wall Angle (deg)", Range(0, 90)) = 80
-        _RampAngle ("Ramp Angle (deg)", Range(0, 90)) = 10
+        _RampCurve ("Ramp Curve", Float) = 1
+        _WallCurve ("Wall Curve", Float) = 1
 
         [Space]
         [Header(Ground)]
@@ -173,11 +174,14 @@ Shader "Custom/Incline" {
             // a near-zero value
             float _Epsilon;
 
-            // the angle ramps start at
-            float _RampAngle;
-
             // the angle walls start at
             float _WallAngle;
+
+            // the power curve for the ground->ramp transition
+            float _RampCurve;
+
+            // the power curve for the wall->ceil transition
+            float _WallCurve;
 
             // how much the bump map affects the final normal
             float _BumpScale;
@@ -330,20 +334,19 @@ Shader "Custom/Incline" {
                 fixed4 c;
 
                 // -- pick color based on normal
-                fixed1 a = dot(IN.worldNormal, float3(0, 1, 0));
+                fixed1 a = acos(dot(IN.worldNormal, float3(0, 1, 0)));
+                fixed1 wallAngle = radians(_WallAngle);
 
-                fixed1 wallAngle = cos(radians(_WallAngle));
-
-                fixed1 mainBlend = smoothstep(a-_Epsilon, a+_Epsilon, wallAngle);
-                fixed1 rampBlend = Unlerp(1, wallAngle, a);
-                fixed1 wallBlend = Unlerp(wallAngle, -1, a);
+                fixed1 mainBlend = smoothstep(wallAngle - _Epsilon, wallAngle + _Epsilon, a);
+                fixed1 rampBlend = pow(Unlerp(0, wallAngle, a), _RampCurve);
+                fixed1 wallBlend = pow(Unlerp(wallAngle, K_PI, a), _WallCurve);
 
                 // pick color based on angle
-                c = lerp(
-                    lerp(_MainColor, _RampColor, rampBlend),
-                    lerp(_WallColor, _CeilColor, wallBlend),
+                c.rgb = IntoRgb(lerp(
+                    lerp(IntoHsv(_MainColor), IntoHsv(_RampColor), rampBlend),
+                    lerp(IntoHsv(_WallColor), IntoHsv(_CeilColor), wallBlend),
                     mainBlend
-                );
+                ));
 
                 // -- blend vertex colors
                 c.rgb *= lerp(float3(1, 1, 1), IN.vertexColor.rgb, _VertexColorBlend);
@@ -378,11 +381,12 @@ Shader "Custom/Incline" {
                 // blend texture as multiply
                 #ifdef  _BLEND_GRADIENT
                 // pick color based on angle
-                fixed4 c2 = lerp(
-                    lerp(_MainColor1, _RampColor1, rampBlend),
-                    lerp(_WallColor1, _CeilColor1, wallBlend),
+                fixed3 c2 = IntoRgb(lerp(
+                    lerp(IntoHsv(_MainColor1), IntoHsv(_RampColor1), rampBlend),
+                    lerp(IntoHsv(_WallColor1), IntoHsv(_CeilColor1), wallBlend),
                     mainBlend
-                );
+                ));
+
                 // gradient on grayscale
                 c.rgb = lerp(c.rgb, c2.rgb, 1-dot(t.rgb, float3(1, 1, 1))/3.0f);
                 #endif
@@ -421,16 +425,14 @@ Shader "Custom/Incline" {
 
                 // -- add bump map
                 #ifdef _BUMP_MAP_ON
-
                 fixed3 nG = SAMPLE_TRIPLANAR_NORMAL(_MainBumpMap);
                 fixed3 nR = SAMPLE_TRIPLANAR_NORMAL(_RampBumpMap);
                 fixed3 nW = SAMPLE_TRIPLANAR_NORMAL(_WallBumpMap);
                 fixed3 nC = SAMPLE_TRIPLANAR_NORMAL(_CeilBumpMap);
 
-                fixed3 worldNormal =
-                    lerpNormal(
-                        lerpNormal(nG, nR, rampBlend),
-                        lerpNormal(nW, nC, wallBlend),
+                fixed3 worldNormal = lerpNormal(
+                    lerpNormal(nG, nR, rampBlend),
+                    lerpNormal(nW, nC, wallBlend),
                     mainBlend
                 );
 
@@ -443,8 +445,8 @@ Shader "Custom/Incline" {
                 #endif
 
                 // lighting (shading + shadows)
-                fixed3 lighting = IN.diffuse * SHADOW_ATTENUATION(IN) + IN.ambient;
-                c.rgb *= lighting;
+                // fixed3 lighting = IN.diffuse * SHADOW_ATTENUATION(IN) + IN.ambient;
+                // c.rgb *= lighting;
 
                 // output color
                 return c;

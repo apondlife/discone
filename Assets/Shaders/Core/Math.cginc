@@ -6,6 +6,18 @@
 #define fixed1 fixed
 #define half1 half
 
+#ifndef K_PI
+#define K_PI 3.14159265359
+#endif
+
+#ifndef K_2PI
+#define K_2PI 6.28318530718
+#endif
+
+#ifndef K_PI2
+#define K_PI2 1.57079632679
+#endif
+
 // -- vectors --
 /// create a half3 from a repeated value
 inline half3 half3r(half val) {
