@@ -9,12 +9,13 @@ Shader "Custom/Incline" {
         [Space]
         [Header(Texture)]
         [Space(5)]
-        [KeywordEnum(None, Multiply, Luminosity)]
+        [KeywordEnum(None, Multiply, Luminosity, Grayscale)]
         _Blend ("Blend Mode", Float) = 0
         _Hue ("Hue", Range(-1.0, 1.0)) = 0.0
         _Saturation ("Saturation", Range(-1.0, 1.0)) = 0.0
         _Brightness ("Brightness", Range(-1.0, 1.0)) = 0.0
         _TexScale ("Triplanar Scale", Float) = 1
+        _BumpScale ("BumpMap Scale", Float) = 1
 
         [Space]
         [Header(Vertex Colors)]
@@ -31,33 +32,35 @@ Shader "Custom/Incline" {
         [Space]
         [Header(Ground)]
         [Space(5)]
-        _MainTex ("Ground Texture", 2D) = "black" {}
         _MainColor ("Ground Color", Color) = (1, 1, 1, 1)
+        _MainTex ("Ground Texture", 2D) = "black" {}
+        _MainBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Ramp)]
         [Space(5)]
-        _RampTex ("Ramp Texture", 2D) = "black" {}
         _RampColor ("Ramp Color", Color) = (1, 1, 1, 1)
+        _RampTex ("Ramp Texture", 2D) = "black" {}
+        _RampBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Wall)]
         [Space(5)]
-        _WallTex ("Wall Texture", 2D) = "black" {}
         _WallColor ("Wall Color", Color) = (1, 1, 1, 1)
+        _WallTex ("Wall Texture", 2D) = "black" {}
+        _WallBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Ceiling)]
         [Space(5)]
-        _CeilTex ("Ceiling Texture", 2D) = "black" {}
         _CeilColor ("Ceiling Color", Color) = (1, 0, 1, 1)
+        _CeilTex ("Ceiling Texture", 2D) = "black" {}
+        _CeilBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Bump Map)]
         [Space(5)]
         [Toggle] _Bump_Map ("Enable", Float) = 0
-        _BumpMap ("Bump Map", 2D) = "bump" {}
-        _BumpScale ("Bump Scale", Float) = 0
 
         [Space]
         [Header(Back Face)]
@@ -96,7 +99,7 @@ Shader "Custom/Incline" {
             #pragma multi_compile_fog
 
             // blend modes
-            #pragma multi_compile _BLEND_NONE _BLEND_MULTIPLY _BLEND_LUMINOSITY
+            #pragma multi_compile _BLEND_NONE _BLEND_MULTIPLY _BLEND_LUMINOSITY _BLEND_GRAYSCALE
 
             // bump map
             #pragma multi_compile __ _BUMP_MAP_ON
@@ -168,15 +171,27 @@ Shader "Custom/Incline" {
             // the angle walls start at
             float _WallAngle;
 
+            // how much the bump map affects the final normal
+            float _BumpScale;
+
             // -- p/surface
+            // the ground color
+            fixed4 _MainColor;
+
             // the ground texture
             sampler2D _MainTex;
 
             // the ground texture scale/translation
             float4 _MainTex_ST;
 
-            // the ground color
-            fixed4 _MainColor;
+            // the ground bump map
+            sampler2D _MainBumpMap;
+
+            // the ground bump map scale/translation
+            float4 _MainBumpMap_ST;
+
+            // the ramp color
+            fixed4 _RampColor;
 
             // the ramp texture
             sampler2D _RampTex;
@@ -184,8 +199,14 @@ Shader "Custom/Incline" {
             // the ramp texture scale/translation
             float4 _RampTex_ST;
 
-            // the ramp color
-            fixed4 _RampColor;
+            // the ramp bump map
+            sampler2D _RampBumpMap;
+
+            // the ramp bump map scale/translation
+            float4 _RampBumpMap_ST;
+
+            // the wall color
+            fixed4 _WallColor;
 
             // the wall texture
             sampler2D _WallTex;
@@ -193,8 +214,14 @@ Shader "Custom/Incline" {
             // the wall texture scale/translation
             float4 _WallTex_ST;
 
-            // the wall color
-            fixed4 _WallColor;
+            // the wall bump map
+            sampler2D _WallBumpMap;
+
+            // the wall bump map scale/translation
+            float4 _WallBumpMap_ST;
+
+            // the  ceiling color
+            fixed4 _CeilColor;
 
             // the ceiling texture
             sampler2D _CeilTex;
@@ -202,30 +229,29 @@ Shader "Custom/Incline" {
             // the ceiling texture scale/translation
             float4 _CeilTex_ST;
 
-            // the  ceiling color
-            fixed4 _CeilColor;
+            // the ceil bump map
+            sampler2D _CeilBumpMap;
 
-            // -- p/bump map
-            // the bump map
-            sampler2D _BumpMap;
-
-            // the bump map scale
-            float _BumpScale;
+            // the ceil bump map scale/translation
+            float4 _CeilBumpMap_ST;
 
             // see: https://docs.unity3d.com/Manual/GPUInstancing.html for more
             UNITY_INSTANCING_BUFFER_START(Props)
             UNITY_INSTANCING_BUFFER_END(Props)
 
             // -- declarations --
-            fixed4 SampleTriplanar(sampler2D tex, float4 st, float3 bf, float3 worldPos);
+            float3 SampleTriplanarNormal(sampler2D tex, float4 st, float3 bf, FragIn IN);
+            fixed4 SampleTriplanar(sampler2D tex, float4 st, float3 bf, FragIn IN);
 
             fixed luminosity(fixed3 rgb);
 
             // float3 worldToTangentNormalVector(Input IN, float3 normal);
             half3 blend_rnm(half3 n1, half3 n2);
+            half3 lerpNormal(half3 n1, half3 n2, half v);
 
             // -- macros --
-            #define SAMPLE_TRIPLANAR(name) SampleTriplanar(name, name##_ST, bf, IN.worldPos)
+            #define SAMPLE_TRIPLANAR(name) SampleTriplanar(name, name##_ST, bf, IN)
+            #define SAMPLE_TRIPLANAR_NORMAL(name) SampleTriplanarNormal(name, name##_ST, bf, IN)
 
             // -- program --
             FragIn DrawVert(VertIn IN) {
@@ -268,11 +294,6 @@ Shader "Custom/Incline" {
             }
 
             fixed4 DrawFrag(FragIn IN) : SV_Target {
-                // work around bug where IN.worldNormal is always (0,0,0)!
-                #ifdef _BUMP_MAP_ON
-                IN.worldNormal = WorldNormalVector(IN, float3(0,0,1));
-                #endif
-
                 // the output color
                 fixed4 c;
 
@@ -280,13 +301,16 @@ Shader "Custom/Incline" {
                 fixed1 a = dot(IN.worldNormal, float3(0, 1, 0));
 
                 fixed1 wallAngle = cos(radians(_WallAngle));
-                fixed1 wrblend = smoothstep(a-_Epsilon, a+_Epsilon, wallAngle);
+
+                fixed1 mainBlend = smoothstep(a-_Epsilon, a+_Epsilon, wallAngle);
+                fixed1 rampBlend = Unlerp(1, wallAngle, a);
+                fixed1 wallBlend = Unlerp(wallAngle, -1, a);
 
                 // pick color based on angle
                 c = lerp(
-                    lerp(_MainColor, _RampColor, Unlerp(1, wallAngle, a)),
-                    lerp(_WallColor, _CeilColor, Unlerp(wallAngle, -1, a)),
-                    wrblend
+                    lerp(_MainColor, _RampColor, rampBlend),
+                    lerp(_WallColor, _CeilColor, wallBlend),
+                    mainBlend
                 );
 
                 // -- blend vertex colors
@@ -299,18 +323,17 @@ Shader "Custom/Incline" {
                 half3 bf = saturate(pow(IN.worldNormal, 4));
                 bf /= max(dot(bf, half3(1,1,1)), 0.0001);
 
-                // the output texture color
-                fixed4 t;
-
+                // calculate each individual direction triplanar texture
                 fixed4 tG = SAMPLE_TRIPLANAR(_MainTex);
                 fixed4 tR = SAMPLE_TRIPLANAR(_RampTex);
                 fixed4 tW = SAMPLE_TRIPLANAR(_WallTex);
                 fixed4 tC = SAMPLE_TRIPLANAR(_CeilTex);
 
-                t = lerp(
-                    lerp(tG, tR, Unlerp(1, wallAngle, a)),
-                    lerp(tW, tC, Unlerp(wallAngle, -1, a)),
-                    wrblend
+                // the output texture color
+                fixed4 t = lerp(
+                    lerp(tG, tR, rampBlend),
+                    lerp(tW, tC, wallBlend),
+                    mainBlend
                 );
 
                 // shift texture hsv
@@ -321,9 +344,12 @@ Shader "Custom/Incline" {
                 t.rgb = IntoRgb(hsv);
 
                 // blend texture as multiply
+                #ifdef  _BLEND_GRAYSCALE
+                c.rgb *= dot(t.rgb, float3(1, 1, 1))/3.0f;
+                #endif
+
                 #ifdef _BLEND_MULTIPLY
-                // c.rgb *= t.rgb;
-                c.rgb *= t.rrr;
+                c.rgb *= t.rgb;
                 #endif
 
                 // blend texture as luminosity
@@ -352,41 +378,25 @@ Shader "Custom/Incline" {
 
                 // -- add bump map
                 #ifdef _BUMP_MAP_ON
-                // tangent space normal maps
-                half3 tnormalX = UnpackNormal(tex2D(_BumpMap, uvX));
-                half3 tnormalY = UnpackNormal(tex2D(_BumpMap, uvY));
-                half3 tnormalZ = UnpackNormal(tex2D(_BumpMap, uvZ));
 
-                // flip normal maps' x axis to account for flipped UVs
-                // #if defined(TRIPLANAR_CORRECT_PROJECTED_U)
-                //     tnormalX.x *= axisSign.x;
-                //     tnormalY.x *= axisSign.y;
-                //     tnormalZ.x *= -axisSign.z;
-                // #endif
+                fixed3 nG = SAMPLE_TRIPLANAR_NORMAL(_MainBumpMap);
+                fixed3 nR = SAMPLE_TRIPLANAR_NORMAL(_RampBumpMap);
+                fixed3 nW = SAMPLE_TRIPLANAR_NORMAL(_WallBumpMap);
+                fixed3 nC = SAMPLE_TRIPLANAR_NORMAL(_CeilBumpMap);
 
-                half3 absVertNormal = abs(IN.worldNormal);
-
-                // swizzle world normals to match tangent space and apply reoriented normal mapping blend
-                tnormalX = blend_rnm(half3(IN.worldNormal.zy, absVertNormal.x), tnormalX);
-                tnormalY = blend_rnm(half3(IN.worldNormal.xz, absVertNormal.y), tnormalY);
-                tnormalZ = blend_rnm(half3(IN.worldNormal.xy, absVertNormal.z), tnormalZ);
-
-                // apply world space sign to tangent space Z
-                half3 axisSign = IN.worldNormal < 0 ? -1 : 1;
-                tnormalX.z *= axisSign.x;
-                tnormalY.z *= axisSign.y;
-                tnormalZ.z *= axisSign.z;
-
-                // sizzle tangent normals to match world normal and blend together
-                half3 worldNormal = normalize(
-                    tnormalX.zyx * bf.x +
-                    tnormalY.xzy * bf.y +
-                    tnormalZ.xyz * bf.z
+                fixed3 worldNormal =
+                    lerpNormal(
+                        lerpNormal(nG, nR, rampBlend),
+                        lerpNormal(nW, nC, wallBlend),
+                    mainBlend
                 );
 
                 // https://catlikecoding.com/unity/tutorials/rendering/part-6/
                 // convert world space normals into tangent normals
                 // o.Normal = worldToTangentNormalVector(IN, worldNormal);
+                // return fixed4((worldNormal.rgb + fixed4(1, 1, 1, 1))/2, 1.0f);
+                half normalDotLight = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
+                IN.diffuse = normalDotLight * _LightColor0.rgb;
                 #endif
 
                 // lighting (shading + shadows)
@@ -406,11 +416,11 @@ Shader "Custom/Incline" {
             //     return normalize(mul(t2w, normal));
             // }
 
-            fixed4 SampleTriplanar(sampler2D tex, float4 st, float3 bf, float3 worldPos) {
+            inline fixed4 SampleTriplanar(sampler2D tex, float4 st, float3 bf, FragIn IN) {
                 // calculate per-component blend
-                float2 uvx = worldPos.zy * _TexScale * st.xy + st.zw;
-                float2 uvy = worldPos.xz * _TexScale * st.xy + st.zw;
-                float2 uvz = worldPos.xy * _TexScale * st.xy + st.zw;
+                float2 uvx = IN.worldPos.zy * _TexScale * st.xy + st.zw;
+                float2 uvy = IN.worldPos.xz * _TexScale * st.xy + st.zw;
+                float2 uvz = IN.worldPos.xy * _TexScale * st.xy + st.zw;
 
                 // sample colors
                 half4 cx = tex2D(tex, uvx) * bf.x;
@@ -419,6 +429,37 @@ Shader "Custom/Incline" {
 
                 // produce color
                 return cx + cy + cz;
+            }
+
+            inline float3 SampleTriplanarNormal(sampler2D tex, float4 st, float3 bf, FragIn IN) {
+                float2 uvX = IN.worldPos.zy *  _TexScale * st.xy + st.zw;
+                float2 uvY = IN.worldPos.xz *  _TexScale * st.xy + st.zw;
+                float2 uvZ = IN.worldPos.xy *  _TexScale * st.xy + st.zw;
+
+                // tangent space normal maps
+                half3 tnormalX = UnpackNormal(tex2D(tex, uvX)) * half3(_BumpScale, _BumpScale, 1);
+                half3 tnormalY = UnpackNormal(tex2D(tex, uvY)) * half3(_BumpScale, _BumpScale, 1);
+                half3 tnormalZ = UnpackNormal(tex2D(tex, uvZ)) * half3(_BumpScale, _BumpScale, 1);
+
+                half3 absVertNormal = abs(IN.worldNormal);
+
+                // swizzle world normals to match tangent space and apply reoriented normal mapping blend
+                tnormalX = blend_rnm(half3(IN.worldNormal.zy, absVertNormal.x), tnormalX);
+                tnormalY = blend_rnm(half3(IN.worldNormal.xz, absVertNormal.y), tnormalY);
+                tnormalZ = blend_rnm(half3(IN.worldNormal.xy, absVertNormal.z), tnormalZ);
+
+                // apply world space sign to tangent space Z
+                half3 axisSign = lerp(-1, 1, step(IN.worldNormal, 0));
+                tnormalX.z *= axisSign.x;
+                tnormalY.z *= axisSign.y;
+                tnormalZ.z *= axisSign.z;
+
+                // sizzle tangent normals to match world normal and blend together
+                return normalize(
+                    tnormalX.zyx * bf.x +
+                    tnormalY.xzy * bf.y +
+                    tnormalZ.xyz * bf.z
+                );
             }
 
             fixed luminosity(fixed3 c) {
@@ -434,6 +475,11 @@ Shader "Custom/Incline" {
                 n2.xy = -n2.xy;
                 return n1 * dot(n1, n2) / n1.z - n2;
             }
+
+            half3 lerpNormal(half3 n1, half3 n2, half v) {
+                return blend_rnm(n1 * float3(v, v, 1), n2 * float3(1-v, 1-v, 1));
+            }
+
             ENDCG
         }
 
