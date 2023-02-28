@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Incline_Main
+  m_Name: Incline_Touched_01
   m_Shader: {fileID: 4800000, guid: 17eaea66943ecc94b932acb7ffade775, type: 3}
   m_ShaderKeywords: _BLEND_GRADIENT
   m_LightmapFlags: 4
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CeilTex:
-        m_Texture: {fileID: 2800000, guid: b60578f92a561438195f1fc134ec6c06, type: 3}
+        m_Texture: {fileID: 2800000, guid: 654c5142ea3b04176824fe9f525a73df, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -76,8 +76,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RampTex:
-        m_Texture: {fileID: 2800000, guid: b60578f92a561438195f1fc134ec6c06, type: 3}
-        m_Scale: {x: 0.8, y: 0.8}
+        m_Texture: {fileID: 2800000, guid: f68d6b1f965e3467b973209e3795d337, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _WallBumpMap:
         m_Texture: {fileID: 0}
@@ -85,7 +85,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _WallTex:
         m_Texture: {fileID: 2800000, guid: 76153cbc41e084c44b58c675c8a82ab8, type: 3}
-        m_Scale: {x: 0.04, y: 0.3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
@@ -114,7 +114,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RampAngle: 10
-    - _RampCurve: 0.52
+    - _RampCurve: 0.5
     - _RampTexAlpha: 1
     - _Saturation: 0
     - _SmoothnessTextureChannel: 0
@@ -126,20 +126,20 @@ Material:
     - _VertexWobbleRadius: 50
     - _VertexWobbleSpeed: 1.6
     - _WallAngle: 80
-    - _WallCurve: 1.4
+    - _WallCurve: 1
     - _WallTexAlpha: 1
     - _ZWrite: 1
     m_Colors:
     - _BackfaceNoiseVelocity: {r: -0.01, g: -0.02, b: 0.5, a: 0}
-    - _CeilColor: {r: 0.90588236, g: 0.7254902, b: 0.73717487, a: 1}
-    - _CeilColor1: {r: 0.9254902, g: 0.24705882, b: 0.29803923, a: 1}
+    - _CeilColor: {r: 0.9245283, g: 0.5800107, b: 0.90850425, a: 1}
+    - _CeilColor1: {r: 0.95543015, g: 0.8820755, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MainColor: {r: 0.48723674, g: 0.78039217, b: 0.26274514, a: 1}
-    - _MainColor1: {r: 0.90588236, g: 0.42123526, b: 0.45758373, a: 1}
-    - _RampColor: {r: 0.70138717, g: 0.95199996, b: 0.53312, a: 1}
-    - _RampColor1: {r: 0.6895209, g: 0.71699995, b: 0.350613, a: 1}
+    - _MainColor: {r: 0.5581929, g: 0.8962264, b: 0.41006586, a: 1}
+    - _MainColor1: {r: 0.6954835, g: 0.735849, b: 0.13536847, a: 1}
+    - _RampColor: {r: 0.7924528, g: 0.75619435, b: 0.42986828, a: 1}
+    - _RampColor1: {r: 0.7203281, g: 0.53555536, b: 0.7830189, a: 1}
     - _VertexWobbleRange: {r: 20, g: 1000, b: 0, a: 0}
-    - _WallColor: {r: 1, g: 0.66354537, b: 0.5254902, a: 1}
-    - _WallColor1: {r: 0.92156863, g: 0.29455936, b: 0.16470587, a: 1}
+    - _WallColor: {r: 1, g: 0.9447968, b: 0.6462264, a: 1}
+    - _WallColor1: {r: 1, g: 0.6936515, b: 0.5921569, a: 1}
   m_BuildTextureStacks: []

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Incline_Main
+  m_Name: Incline_Main_01
   m_Shader: {fileID: 4800000, guid: 17eaea66943ecc94b932acb7ffade775, type: 3}
   m_ShaderKeywords: _BLEND_GRADIENT
   m_LightmapFlags: 4
@@ -77,7 +77,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _RampTex:
         m_Texture: {fileID: 2800000, guid: b60578f92a561438195f1fc134ec6c06, type: 3}
-        m_Scale: {x: 0.8, y: 0.8}
+        m_Scale: {x: 0.5, y: 0.2}
         m_Offset: {x: 0, y: 0}
     - _WallBumpMap:
         m_Texture: {fileID: 0}
@@ -131,15 +131,15 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BackfaceNoiseVelocity: {r: -0.01, g: -0.02, b: 0.5, a: 0}
-    - _CeilColor: {r: 0.90588236, g: 0.7254902, b: 0.73717487, a: 1}
+    - _CeilColor: {r: 0.90588236, g: 0.7490196, b: 0.79979295, a: 1}
     - _CeilColor1: {r: 0.9254902, g: 0.24705882, b: 0.29803923, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MainColor: {r: 0.48723674, g: 0.78039217, b: 0.26274514, a: 1}
-    - _MainColor1: {r: 0.90588236, g: 0.42123526, b: 0.45758373, a: 1}
-    - _RampColor: {r: 0.70138717, g: 0.95199996, b: 0.53312, a: 1}
-    - _RampColor1: {r: 0.6895209, g: 0.71699995, b: 0.350613, a: 1}
+    - _MainColor: {r: 0.61448306, g: 0.7169812, b: 0.26650053, a: 1}
+    - _MainColor1: {r: 0.90588236, g: 0.7490196, b: 0.7607843, a: 1}
+    - _RampColor: {r: 0.49019608, g: 0.7176471, b: 0.52167636, a: 1}
+    - _RampColor1: {r: 0.8490566, g: 0.5238519, b: 0.702272, a: 1}
     - _VertexWobbleRange: {r: 20, g: 1000, b: 0, a: 0}
-    - _WallColor: {r: 1, g: 0.66354537, b: 0.5254902, a: 1}
-    - _WallColor1: {r: 0.92156863, g: 0.29455936, b: 0.16470587, a: 1}
+    - _WallColor: {r: 0.9433962, g: 0.8359403, b: 0.59985757, a: 1}
+    - _WallColor1: {r: 0.92156863, g: 0.23376828, b: 0.16470587, a: 1}
   m_BuildTextureStacks: []
