@@ -3,8 +3,15 @@
 
 // -- defines --
 #define float1 float
-#define fixed1 fixed
 #define half1 half
+#define fixed half
+
+// https://docs.unity3d.com/Manual/SL-DataTypesAndPrecision.html
+// unity transforms fixed into half if not OpenGl ES 2
+#define fixed1 half1
+#define fixed2 half2
+#define fixed3 half3
+#define fixed4 half4
 
 #ifndef K_PI
 #define K_PI 3.14159265359
@@ -20,11 +27,6 @@
 
 // -- vectors --
 /// create a half3 from a repeated value
-inline half3 half3r(half val) {
-    return half3(val, val, val);
-}
-
-/// create a fixed3 from a repeated value
 inline fixed3 fixed3r(fixed val) {
     return fixed3(val, val, val);
 }
@@ -36,7 +38,7 @@ inline float3 float3r(float val) {
 
 // -- fns --
 /// the square length of the vec
-float1 SqrLength(fixed2 vec) {
+float1 SqrLength(float2 vec) {
     return vec.x * vec.x + vec.y * vec.y;
 }
 

@@ -117,9 +117,9 @@ Shader "Custom/Incline" {
             #include "UnityStandardUtils.cginc"
             #include "AutoLight.cginc"
             #include "UnityLightingCommon.cginc"
-            #include "Assets/Shaders/Core/Math.cginc"
+            #include "Assets/Shaders/Core/Math.hlsl"
             #include "Assets/Shaders/Core/Globals.hlsl"
-            #include "Assets/Shaders/Core/Color.cginc"
+            #include "Assets/Shaders/Core/Color.hlsl"
             #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 
             // -- types --
@@ -343,8 +343,8 @@ Shader "Custom/Incline" {
 
                 // pick color based on angle
                 c.rgb = IntoRgb(lerp(
-                    lerp(IntoHsv(_MainColor), IntoHsv(_RampColor), rampBlend),
-                    lerp(IntoHsv(_WallColor), IntoHsv(_CeilColor), wallBlend),
+                    LerpHsv(IntoHsv(_MainColor), IntoHsv(_RampColor), rampBlend),
+                    LerpHsv(IntoHsv(_WallColor), IntoHsv(_CeilColor), wallBlend),
                     mainBlend
                 ));
 
@@ -382,8 +382,8 @@ Shader "Custom/Incline" {
                 #ifdef  _BLEND_GRADIENT
                 // pick color based on angle
                 fixed3 c2 = IntoRgb(lerp(
-                    lerp(IntoHsv(_MainColor1), IntoHsv(_RampColor1), rampBlend),
-                    lerp(IntoHsv(_WallColor1), IntoHsv(_CeilColor1), wallBlend),
+                    LerpHsv(IntoHsv(_MainColor1), IntoHsv(_RampColor1), rampBlend),
+                    LerpHsv(IntoHsv(_WallColor1), IntoHsv(_CeilColor1), wallBlend),
                     mainBlend
                 ));
 
@@ -445,8 +445,8 @@ Shader "Custom/Incline" {
                 #endif
 
                 // lighting (shading + shadows)
-                // fixed3 lighting = IN.diffuse * SHADOW_ATTENUATION(IN) + IN.ambient;
-                // c.rgb *= lighting;
+                fixed3 lighting = IN.diffuse * SHADOW_ATTENUATION(IN) + IN.ambient;
+                c.rgb *= lighting;
 
                 // output color
                 return c;

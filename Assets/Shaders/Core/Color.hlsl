@@ -5,6 +5,19 @@
 
 // TODO: shouldn't color all be fixed -ty
 
+float3 LerpHsv(float3 a, float3 b, float t) {
+    float1 h = lerp(
+        lerp(a.x, b.x, t),
+        frac(lerp(a.x, b.x + 1, t)),
+        step(b, a)
+    );
+
+    float2 sv = lerp(a.yz, b.yz, t);
+
+    return float3(h, sv);
+}
+
+
 /// convert rgb color into hsv
 /// see: https://stackoverflow.com/questions/15095909/from-rgb-to-hsv-in-opengl-glsl
 float3 IntoHsv(float3 c) {
