@@ -294,7 +294,7 @@ Shader "Custom/Incline" {
                 float4 vertex = IN.vertex;
                 float4 worldPos = mul(unity_ObjectToWorld, vertex);
 
-                float wobbleRadius = _VertexWobbleRadius * UnlerpSpan(
+                float wobbleRadius = 0*_VertexWobbleRadius * UnlerpSpan(
                     _VertexWobbleRange,
                     min(
                         distance(_CharacterPos.y, worldPos.y),
