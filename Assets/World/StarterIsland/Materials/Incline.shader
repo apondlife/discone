@@ -6,6 +6,11 @@ Shader "Custom/Incline" {
         _VertexWobbleSpeed ("Vertex Wobble Speed", Float) = 0.0
         [ShowAsVector2] _VertexWobbleRange ("Vertex Wobble Range", Vector) = (0, 0, 0, 0)
 
+        [Header(Lighting)]
+        [Space(5)]
+        _ReflectedLightIntensity ("Reflected Light", Range(0, 1)) = 0.2
+        _AmbientLightIntensity ("Ambient Light", Range(0, 1)) = 0.2
+
         [Space]
         [Header(Texture)]
         [Space(5)]
@@ -143,7 +148,7 @@ Shader "Custom/Incline" {
             };
 
             // -- props --
-            // -- surface
+            // -- p/surface
             // the vertex position wobble radius
             float _VertexWobbleRadius;
 
@@ -152,6 +157,13 @@ Shader "Custom/Incline" {
 
             // the min/max range for the vertex wobble
             float2 _VertexWobbleRange;
+
+            // -- p/lighting
+            // the relative intensity of the reflected light
+            float _ReflectedLightIntensity;
+
+            // the relative intensity of the ambient light
+            float _AmbientLightIntensity;
 
             // -- p/texture
             // the scale of the triplanar mapping
@@ -315,8 +327,11 @@ Shader "Custom/Incline" {
                 o.vertexColor = IN.vertexColor;
 
                 // lambert shading
-                half normalDotLight = max(0, dot(o.worldNormal, _WorldSpaceLightPos0.xyz));
-                o.diffuse = normalDotLight * _LightColor0.rgb;
+                half1 normalDotLight = dot(o.worldNormal, _WorldSpaceLightPos0.xyz);
+                fixed3 lightD = max(0, normalDotLight) * _LightColor0.rgb;
+                fixed3 lightR = max(0, -normalDotLight) * _LightColor0.rgb * _ReflectedLightIntensity;
+                fixed3 lightA = _LightColor0.rgb * _AmbientLightIntensity;
+                o.diffuse = lightD + lightR + lightA;
 
                 // ambient light (and light probes)
                 o.ambient = ShadeSH9(half4(o.worldNormal, 1));
@@ -445,7 +460,7 @@ Shader "Custom/Incline" {
                 #endif
 
                 // lighting (shading + shadows)
-                fixed3 lighting = IN.diffuse * SHADOW_ATTENUATION(IN) + IN.ambient;
+                fixed3 lighting = IN.diffuse * SHADOW_ATTENUATION(IN);
                 c.rgb *= lighting;
 
                 // output color
