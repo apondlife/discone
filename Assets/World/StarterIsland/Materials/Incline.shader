@@ -6,19 +6,11 @@ Shader "Custom/Incline" {
         _VertexWobbleSpeed ("Vertex Wobble Speed", Float) = 0.0
         [ShowAsVector2] _VertexWobbleRange ("Vertex Wobble Range", Vector) = (0, 0, 0, 0)
 
-        [Header(Lighting)]
-        [Space(5)]
-        _ReflectedLightIntensity ("Reflected Light", Range(0, 1)) = 0.2
-        _AmbientLightIntensity ("Ambient Light", Range(0, 1)) = 0.2
-
         [Space]
         [Header(Texture)]
         [Space(5)]
         [KeywordEnum(None, Multiply, Luminosity, Grayscale, Gradient)]
         _Blend ("Blend Mode", Float) = 0
-        _Hue ("Hue", Range(-1.0, 1.0)) = 0.0
-        _Saturation ("Saturation", Range(-1.0, 1.0)) = 0.0
-        _Brightness ("Brightness", Range(-1.0, 1.0)) = 0.0
         _TexScale ("Triplanar Scale", Float) = 1
         _BumpScale ("BumpMap Scale", Float) = 1
 
@@ -30,44 +22,38 @@ Shader "Custom/Incline" {
         [Space]
         [Header(Angles)]
         [Space(5)]
-        _Epsilon ("Epsilon", Range(0, 0.1)) = 0.01
-        _WallAngle ("Wall Angle (deg)", Range(0, 90)) = 80
         _RampCurve ("Ramp Curve", Float) = 1
         _WallCurve ("Wall Curve", Float) = 1
 
         [Space]
         [Header(Ground)]
         [Space(5)]
-        _MainColor ("Color", Color) = (1, 1, 1, 1)
-        _MainColor1 ("Color 1", Color) = (0, 0, 0, 1)
-        _MainTexAlpha ("Texture Alpha", Range(0, 1)) = 1
+        _MainColor ("Color (W)", Color) = (1, 1, 1, 1)
+        _MainColor1 ("Color (B)", Color) = (0, 0, 0, 1)
         _MainTex ("Texture", 2D) = "black" {}
         _MainBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Ramp)]
         [Space(5)]
-        _RampColor ("Color", Color) = (1, 1, 1, 1)
-        _RampColor1 ("Color1", Color) = (0, 0, 0, 1)
-        _RampTexAlpha ("Texture Alpha", Range(0, 1)) = 1
+        _RampColor ("Color (W)", Color) = (1, 1, 1, 1)
+        _RampColor1 ("Color (B)", Color) = (0, 0, 0, 1)
         _RampTex ("Texture", 2D) = "black" {}
         _RampBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Wall)]
         [Space(5)]
-        _WallColor ("Color", Color) = (1, 1, 1, 1)
-        _WallColor1 ("Color 1", Color) = (0, 0, 0, 1)
-        _WallTexAlpha ("Texture Alpha", Range(0, 1)) = 1
+        _WallColor ("Color (W)", Color) = (1, 1, 1, 1)
+        _WallColor1 ("Color (B)", Color) = (0, 0, 0, 1)
         _WallTex ("Texture", 2D) = "black" {}
         _WallBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
         [Header(Ceiling)]
         [Space(5)]
-        _CeilColor ("Color", Color) = (1, 0, 1, 1)
-        _CeilColor1 ("Color 1", Color) = (0, 0, 0, 1)
-        _CeilTexAlpha ("Texture Alpha", Range(0, 1)) = 1
+        _CeilColor ("Color (W)", Color) = (1, 0, 1, 1)
+        _CeilColor1 ("Color (B)", Color) = (0, 0, 0, 1)
         _CeilTex ("Texture", 2D) = "black" {}
         _CeilBumpMap ("Bump Map", 2D) = "bump" {}
 
@@ -169,15 +155,6 @@ Shader "Custom/Incline" {
             // the scale of the triplanar mapping
             half _TexScale;
 
-            // the hue shift as a pct
-            float _Hue;
-
-            // the saturation shift as a pct
-            float _Saturation;
-
-            // the brightness shift as a pct
-            float _Brightness;
-
             // -- p/vertex
             // the vertex color blend
             float _VertexColorBlend;
@@ -205,9 +182,6 @@ Shader "Custom/Incline" {
             // the second ground color (for gradients)
             fixed4 _MainColor1;
 
-            // the ground color
-            float1 _MainTexAlpha;
-
             // the ground texture
             sampler2D _MainTex;
 
@@ -225,9 +199,6 @@ Shader "Custom/Incline" {
 
             // the second ramp color (for gradients)
             fixed4 _RampColor1;
-
-            // the ramp alpha
-            float1 _RampTexAlpha;
 
             // the ramp texture
             sampler2D _RampTex;
@@ -247,9 +218,6 @@ Shader "Custom/Incline" {
             // the second wall color (for gradients)
             fixed4 _WallColor1;
 
-            // the ramp alpha
-            float1 _WallTexAlpha;
-
             // the wall texture
             sampler2D _WallTex;
 
@@ -267,9 +235,6 @@ Shader "Custom/Incline" {
 
             // the second ceiling color (for gradients)
             fixed4 _CeilColor1;
-
-            // the ceiling alpha
-            float1 _CeilTexAlpha;
 
             // the ceiling texture
             sampler2D _CeilTex;
@@ -306,7 +271,7 @@ Shader "Custom/Incline" {
                 float4 vertex = IN.vertex;
                 float4 worldPos = mul(unity_ObjectToWorld, vertex);
 
-                float wobbleRadius = 0*_VertexWobbleRadius * UnlerpSpan(
+                float wobbleRadius = _VertexWobbleRadius * UnlerpSpan(
                     _VertexWobbleRange,
                     min(
                         distance(_CharacterPos.y, worldPos.y),
@@ -314,10 +279,9 @@ Shader "Custom/Incline" {
                     )
                 );
 
-                worldPos.y += wobbleRadius *
-                        SimplexNoise(
-                            worldPos + _Time.x * _VertexWobbleSpeed * float3(1, 1, 1)
-                        );
+                worldPos.y += wobbleRadius * SimplexNoise(
+                    worldPos + _Time.x * _VertexWobbleSpeed * float3(1, 1, 1)
+                );
 
                 FragIn o;
                 o.pos = UnityWorldToClipPos(worldPos);
@@ -325,13 +289,6 @@ Shader "Custom/Incline" {
                 o.worldPos = worldPos;
                 o.worldNormal = UnityObjectToWorldNormal(IN.normal);
                 o.vertexColor = IN.vertexColor;
-
-                // lambert shading
-                half1 normalDotLight = dot(o.worldNormal, _WorldSpaceLightPos0.xyz);
-                fixed3 lightD = max(0, normalDotLight) * _LightColor0.rgb;
-                fixed3 lightR = max(0, -normalDotLight) * _LightColor0.rgb * _ReflectedLightIntensity;
-                fixed3 lightA = _LightColor0.rgb * _AmbientLightIntensity;
-                o.diffuse = lightD + lightR + lightA;
 
                 // ambient light (and light probes)
                 o.ambient = ShadeSH9(half4(o.worldNormal, 1));
@@ -385,13 +342,6 @@ Shader "Custom/Incline" {
                     lerp(tW, tC, wallBlend),
                     mainBlend
                 );
-
-                // shift texture hsv
-                fixed3 hsv = IntoHsv(t.rgb);
-                hsv.x += _Hue;
-                hsv.y += _Saturation;
-                hsv.z += _Brightness;
-                t.rgb = IntoRgb(hsv);
 
                 // blend texture as multiply
                 #ifdef  _BLEND_GRADIENT
@@ -459,8 +409,16 @@ Shader "Custom/Incline" {
                 IN.diffuse = normalDotLight * _LightColor0.rgb;
                 #endif
 
+                // lambert shading
+                fixed1 lightDotNormal = dot(IN.worldNormal, _WorldSpaceLightPos0.xyz);
+                fixed3 lightD = max(0, lightDotNormal) * _LightColor0.rgb;
+                fixed3 lightR = max(0, -lightDotNormal) * _LightColor0.rgb * _ReflectedLightIntensity;
+
+                fixed3 diffuse = lightD + lightR;
+                fixed3 ambient = _LightColor0.rgb * _AmbientLightIntensity;
+
                 // lighting (shading + shadows)
-                fixed3 lighting = IN.diffuse * SHADOW_ATTENUATION(IN);
+                fixed3 lighting = diffuse * SHADOW_ATTENUATION(IN) + ambient;
                 c.rgb *= lighting;
 
                 // output color

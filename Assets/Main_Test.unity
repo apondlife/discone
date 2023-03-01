@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.6654831, g: 0.4609627, b: 0.59636706, a: 1}
+  m_IndirectSpecularColor: {r: 0.66529846, g: 0.4607274, b: 0.59616697, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1435,6 +1435,120 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1001 &34024793
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 433977916}
+    m_Modifications:
+    - target: {fileID: 6850294355792211, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_Name
+      value: Render
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3761371386409774908, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_AmbientLightIntensity
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3761371386409774908, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_ReflectedLightIntensity
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7111216065683344148, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 1046822769}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+--- !u!224 &34024794 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6850294355792215, guid: 717bcdac4df0e724b8c4c4c9158b71e7, type: 3}
+  m_PrefabInstance: {fileID: 34024793}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &35624230
 Mesh:
   m_ObjectHideFlags: 0
@@ -14298,6 +14412,7 @@ Transform:
   - {fileID: 2045005706}
   - {fileID: 6471376369090055585}
   - {fileID: 392159607}
+  - {fileID: 34024794}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -20730,7 +20845,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3369733957395073297, guid: fa768253876023c47a0f72ac31485da1, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 73.12
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3369733957395073297, guid: fa768253876023c47a0f72ac31485da1, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -20754,7 +20869,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4072213287046625266, guid: fa768253876023c47a0f72ac31485da1, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 103.82
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4072213287046625266, guid: fa768253876023c47a0f72ac31485da1, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -20778,7 +20893,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5727337350808587835, guid: fa768253876023c47a0f72ac31485da1, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 51.91
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5727337350808587835, guid: fa768253876023c47a0f72ac31485da1, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -20802,7 +20917,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6798898705865209569, guid: fa768253876023c47a0f72ac31485da1, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 146.24
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6798898705865209569, guid: fa768253876023c47a0f72ac31485da1, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -23657,7 +23772,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 0.6
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -36256,6 +36371,94 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!21 &1046822769
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UIShaderMat
+  m_Shader: {fileID: 4800000, guid: c8a0429fe49784e449eab529c6b4a1cc, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DissolveTex:
+        m_Texture: {fileID: 2800000, guid: 341f65d4cc8f5be4a96d38d37dfcf5a4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BlurDirections: 16
+    - _BlurQuality: 3
+    - _BlurSize: 8
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DissolveAmount: 0.7309038
+    - _DissolveScale: 1
+    - _DstBlend: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _LetterboxAmount: 1
+    - _LetterboxSize: 0.179347
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _UVSec: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!1001 &1067366507
 PrefabInstance:
   m_ObjectHideFlags: 0

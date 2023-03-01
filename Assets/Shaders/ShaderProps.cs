@@ -38,6 +38,17 @@ static class ShaderProps {
     /// the inverse view projection matrix
     public static readonly int InvProjection = Shader.PropertyToID("_InvProjection");
 
+    /// the angle that is considered to be a wall
+    public static readonly int WallAngle = Shader.PropertyToID("_WallAngle");
+
+    /// a small value shared by all shaders
+    public static readonly int Epsilon = Shader.PropertyToID("_Epsilon");
+
+    /// the ambient light intensity relative to the directional light
+    public static readonly int AmbientLightIntensity = Shader.PropertyToID("_AmbientLightIntensity");
+
+    /// the reflected light intensity relative to the directional light
+    public static readonly int ReflectedLightIntensity = Shader.PropertyToID("_ReflectedLightIntensity");
 }
 
 }

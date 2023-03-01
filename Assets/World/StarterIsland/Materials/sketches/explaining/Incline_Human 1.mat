@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Incline_Touched
+  m_Name: Incline_Human 1
   m_Shader: {fileID: 4800000, guid: 17eaea66943ecc94b932acb7ffade775, type: 3}
   m_ShaderKeywords: _BLEND_GRADIENT
   m_LightmapFlags: 4
@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BackfaceTex:
-        m_Texture: {fileID: 2800000, guid: 9f69629cf61c2437790a6d48caea3840, type: 3}
+        m_Texture: {fileID: 2800000, guid: 79b101ef74763446ab0efbfb8c0cd567, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -33,7 +33,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _CeilTex:
         m_Texture: {fileID: 2800000, guid: 654c5142ea3b04176824fe9f525a73df, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
         m_Texture: {fileID: 0}
@@ -56,9 +56,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: b60578f92a561438195f1fc134ec6c06, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+        m_Texture: {fileID: 2800000, guid: 1fa35801a1df546dcb67700745340842, type: 3}
+        m_Scale: {x: 0.001, y: 0.001}
+        m_Offset: {x: 0.72, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -76,20 +76,20 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RampTex:
-        m_Texture: {fileID: 2800000, guid: f68d6b1f965e3467b973209e3795d337, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 1fa35801a1df546dcb67700745340842, type: 3}
+        m_Scale: {x: 0.001, y: 0.001}
         m_Offset: {x: 0, y: 0}
     - _WallBumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _WallTex:
-        m_Texture: {fileID: 2800000, guid: 76153cbc41e084c44b58c675c8a82ab8, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 654c5142ea3b04176824fe9f525a73df, type: 3}
+        m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AmbientLightIntensity: 0.2
+    - _AmbientLightIntensity: 0.414
     - _BackfaceNoiseOffset: 0.5
     - _BackfaceNoiseScale: 0.5
     - _BackfaceNoiseZoom: 0.1
@@ -117,7 +117,7 @@ Material:
     - _RampAngle: 10
     - _RampCurve: 0.5
     - _RampTexAlpha: 1
-    - _ReflectedLightIntensity: 0.2
+    - _ReflectedLightIntensity: 0.118
     - _Saturation: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -125,7 +125,7 @@ Material:
     - _TexScale: 0.15
     - _UVSec: 0
     - _VertexColorBlend: 1
-    - _VertexWobbleRadius: 0
+    - _VertexWobbleRadius: 50
     - _VertexWobbleSpeed: 1.6
     - _WallAngle: 80
     - _WallCurve: 1
@@ -133,15 +133,15 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BackfaceNoiseVelocity: {r: -0.01, g: -0.02, b: 0.5, a: 0}
-    - _CeilColor: {r: 0.9245283, g: 0.5800107, b: 0.90850425, a: 1}
-    - _CeilColor1: {r: 0.95543015, g: 0.8820755, b: 1, a: 1}
+    - _CeilColor: {r: 0.9150943, g: 0.8305928, b: 0.6940904, a: 1}
+    - _CeilColor1: {r: 0.7924528, g: 0.75637525, b: 0.6907796, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MainColor: {r: 0.5581929, g: 0.8962264, b: 0.41006586, a: 1}
-    - _MainColor1: {r: 0.6954835, g: 0.735849, b: 0.13536847, a: 1}
-    - _RampColor: {r: 0.7924528, g: 0.75619435, b: 0.42986828, a: 1}
-    - _RampColor1: {r: 0.7203281, g: 0.53555536, b: 0.7830189, a: 1}
+    - _MainColor: {r: 0.5254902, g: 0.61561435, b: 0.62352943, a: 1}
+    - _MainColor1: {r: 0.41568628, g: 0.44701347, b: 0.53333336, a: 1}
+    - _RampColor: {r: 0.76351607, g: 0.77254903, b: 0.5647059, a: 1}
+    - _RampColor1: {r: 0.85490197, g: 0.85882354, b: 0.6313726, a: 1}
     - _VertexWobbleRange: {r: 20, g: 1000, b: 0, a: 0}
-    - _WallColor: {r: 1, g: 0.9447968, b: 0.6462264, a: 1}
-    - _WallColor1: {r: 1, g: 0.6936515, b: 0.5921569, a: 1}
+    - _WallColor: {r: 0.81011003, g: 0.98664445, b: 0.994, a: 1}
+    - _WallColor1: {r: 0.9477876, g: 0.95199996, b: 0.64028317, a: 1}
   m_BuildTextureStacks: []
