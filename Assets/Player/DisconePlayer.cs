@@ -61,14 +61,6 @@ public sealed class DisconePlayer: MonoBehaviour {
         // update global shader character pos
         var characterPos = Vector3.zero;
 
-        // if we have an editor camera, try that
-        #if UNITY_EDITOR
-        var camera = EditorCamera.Get;
-        if (camera != null) {
-            characterPos = camera.transform.position;
-        }
-        #endif
-
         // use the current character's position
         var character = m_Character.Value;
         if (character != null) {

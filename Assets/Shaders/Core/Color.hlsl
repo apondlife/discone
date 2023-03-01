@@ -12,7 +12,11 @@ float3 LerpHsv(float3 a, float3 b, float t) {
         step(b, a)
     );
 
-    float2 sv = lerp(a.yz, b.yz, t);
+    float2 sv = lerp(
+        a.yz,
+        b.yz,
+        t
+    );
 
     return float3(h, sv);
 }

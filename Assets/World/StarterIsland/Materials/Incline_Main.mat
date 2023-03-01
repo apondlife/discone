@@ -89,6 +89,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AmbientLightIntensity: 0.2
     - _BackfaceNoiseOffset: 0.5
     - _BackfaceNoiseScale: 0.5
     - _BackfaceNoiseZoom: 0.1
@@ -116,6 +117,7 @@ Material:
     - _RampAngle: 10
     - _RampCurve: 0.52
     - _RampTexAlpha: 1
+    - _ReflectedLightIntensity: 0.2
     - _Saturation: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -123,7 +125,7 @@ Material:
     - _TexScale: 0.15
     - _UVSec: 0
     - _VertexColorBlend: 1
-    - _VertexWobbleRadius: 50
+    - _VertexWobbleRadius: 0
     - _VertexWobbleSpeed: 1.6
     - _WallAngle: 80
     - _WallCurve: 1.4
