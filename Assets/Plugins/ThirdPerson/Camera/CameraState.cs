@@ -68,12 +68,12 @@ public sealed partial class CameraState {
 
     /// the follow target's current position
     public Vector3 FollowPosition {
-        get => m_CharacterState.Curr.Position + m_FollowOffset;
+        get => m_CharacterState.Next.Position + m_FollowOffset;
     }
 
     /// the follow target's current forward dir
     public Vector3 FollowForward {
-        get => m_CharacterState.Curr.Forward;
+        get => m_CharacterState.Next.Forward;
     }
 
     /// .
