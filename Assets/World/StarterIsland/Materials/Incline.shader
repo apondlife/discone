@@ -412,11 +412,12 @@ Shader "Custom/Incline" {
 
                 // lambert shading
                 fixed1 lightDotNormal = dot(IN.worldNormal, _WorldSpaceLightPos0.xyz);
+                fixed1 lightDotNormalMag = abs(lightDotNormal);
                 fixed3 lightD = max(0, lightDotNormal) * _LightColor0.rgb;
                 fixed3 lightR = max(0, -lightDotNormal) * _LightColor0.rgb * _ReflectedLightIntensity;
 
                 fixed3 diffuse = lightD + lightR;
-                fixed3 ambient = _LightColor0.rgb * _AmbientLightIntensity;
+                fixed3 ambient = _LightColor0.rgb * lerp(0, _AmbientLightIntensity, 1 - lightDotNormalMag);
 
                 // lighting (shading + shadows)
                 fixed3 lighting = diffuse * SHADOW_ATTENUATION(IN) + ambient;
