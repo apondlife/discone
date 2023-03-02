@@ -1,60 +1,88 @@
 #if UNITY_EDITOR
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEditor;
 
 /// swap materials for all children between two channels
 public class SwapMaterial: MonoBehaviour {
-    // -- types --
-    /// the channel
-    enum Channel {
-        One,
-        Two
-    }
-
-    /// a pair of materials for two channels
-    [Serializable]
-    class Swap {
-        /// the first channel
-        public Material ChannelOne;
-
-        /// the second channel
-        public Material ChannelTwo;
-    }
+    // -- input --
+    [Header("input")]
+    [Tooltip("the name of the material set")]
+    [SerializeField] string m_SetName;
 
     // -- config --
     [Header("config")]
     [Tooltip("the target object")]
     [SerializeField] GameObject m_Target;
 
-    [Tooltip("the list of swap pairs")]
-    [SerializeField] List<Swap> m_Swaps;
+    // -- defaults --
+    [Header("defaults")]
+    [Tooltip("the default main material")]
+    [SerializeField] Material m_Main;
+
+    [Tooltip("the default human material")]
+    [SerializeField] Material m_Human;
+
+    [Tooltip("the default bowl material")]
+    [SerializeField] Material m_Bowl;
 
     // -- commands --
-    [ContextMenu("swap to channel one")]
-    public void SwapToChannelOne() {
-        SwapTo(Channel.One);
-    }
+    [ContextMenu("Load Materials")]
+    void LoadMaterials() {
+        // find the matching assets
+        var guids = null as string[];
+        if (m_SetName != "") {
+            guids = AssetDatabase.FindAssets($"t:material Incline_{m_SetName}_");
+        }
 
-    [ContextMenu("swap to channel two")]
-    public void SwapToChannelTwo() {
-        SwapTo(Channel.Two);
-    }
+        // find the set of the materials
+        var materials = DefaultMaterials;
+        if (guids != null && guids.Length == 3) {
+            // find the set of the materials
+            foreach (var guid in guids) {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
 
-    /// swap all materials to the channel
-    void SwapTo(Channel channel) {
-        // build material -> material map
-        var map = channel == Channel.One
-            ? m_Swaps.ToDictionary(a => a.ChannelTwo, a => a.ChannelOne)
-            : m_Swaps.ToDictionary(a => a.ChannelOne, a => a.ChannelTwo);
+                var key = FindKeyFromName(path);
+                if (key == null) {
+                    Debug.LogError($"[swap materials] cannot find key from {name}");
+                    continue;
+                }
+
+                materials[key] = AssetDatabase.LoadAssetAtPath<Material>(path);;
+            }
+        }
 
         // swap all materials
         foreach (var renderer in m_Target.GetComponentsInChildren<Renderer>()) {
-            if (map.TryGetValue(renderer.sharedMaterial, out var other)) {
-                renderer.sharedMaterial = other;
+            var key = FindKeyFromName(renderer.sharedMaterial.name);
+            if (key == null) {
+                continue;
             }
+
+            renderer.sharedMaterial = materials[key];
         }
+    }
+
+    // -- queries --
+    /// a memoized dictionray of default materials
+    Dictionary<string, Material> DefaultMaterials {
+        get {
+            var defaults = new Dictionary<string, Material>();
+            defaults["Main"] = m_Main;
+            defaults["Human"] = m_Human;
+            defaults["Bowl"] = m_Bowl;
+            return defaults;
+        }
+    }
+
+    /// extract material key from path/name
+    string FindKeyFromName(string name) {
+        return name switch {
+            var s when s.Contains("Main") => "Main",
+            var s when s.Contains("Bowl") => "Bowl",
+            var s when s.Contains("Human") => "Human",
+            _ => null
+        };
     }
 }
 #endif
