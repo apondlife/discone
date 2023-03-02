@@ -59,8 +59,6 @@ public class SwapMaterial: MonoBehaviour {
                 continue;
             }
 
-            Debug.Log($"key {key}");
-
             renderer.sharedMaterial = materials[key];
         }
     }
