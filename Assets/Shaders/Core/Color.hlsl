@@ -6,9 +6,9 @@
 // TODO: shouldn't color all be fixed -ty
 float3 LerpHsv(float3 a, float3 b, float t) {
     float1 h = lerp(
-        lerp(a.x, b.x, t),
         frac(lerp(a.x, b.x + 1, t)),
-        step(b, a)
+        lerp(a.x, b.x, t),
+        step(a.x, b.x)
     );
 
     float2 sv = lerp(

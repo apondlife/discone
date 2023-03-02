@@ -7,8 +7,8 @@ using UnityEditor;
 public class SwapMaterial: MonoBehaviour {
     // -- input --
     [Header("input")]
-    [Tooltip("the name of the material set")]
-    [SerializeField] string m_SetName;
+    [Tooltip("the name of the material palette")]
+    [SerializeField] string m_Palette;
 
     // -- config --
     [Header("config")]
@@ -31,8 +31,8 @@ public class SwapMaterial: MonoBehaviour {
     void LoadMaterials() {
         // find the matching assets
         var guids = null as string[];
-        if (m_SetName != "") {
-            guids = AssetDatabase.FindAssets($"t:material Incline_{m_SetName}_");
+        if (m_Palette != "") {
+            guids = AssetDatabase.FindAssets($"t:material Incline_{m_Palette}_");
         }
 
         // find the set of the materials
