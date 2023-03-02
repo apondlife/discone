@@ -4,7 +4,6 @@
 #include "./Math.hlsl"
 
 // TODO: shouldn't color all be fixed -ty
-
 float3 LerpHsv(float3 a, float3 b, float t) {
     float1 h = lerp(
         lerp(a.x, b.x, t),
@@ -38,9 +37,9 @@ float3 IntoHsv(float3 c) {
 /// https://stackoverflow.com/questions/15095909/from-rgb-to-hsv-in-opengl-glsl
 float3 IntoRgb(float3 c) {
     c.y = clamp(c.y, 0.0f, 1.0f);
-    float4 K = float4(1.0f, 2.0f / 3.0f, 1.0f / 3.0f, 3.0f);
-    float3 p = abs(frac(c.xxx + K.xyz) * 6.0f - K.www);
-    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0f, 1.0f), c.y);
+    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
 /// get the lumninance from an rgb color using an arbitrary mix found on the internet

@@ -2,9 +2,9 @@
 #define CORE_MATH_HLSL
 
 // -- defines --
+#define fixed half
 #define float1 float
 #define half1 half
-#define fixed half
 
 // https://docs.unity3d.com/Manual/SL-DataTypesAndPrecision.html
 // unity transforms fixed into half if not OpenGl ES 2

@@ -304,6 +304,7 @@ Shader "Custom/Incline" {
             fixed4 DrawFrag(FragIn IN) : SV_Target {
                 // the output color
                 fixed4 c;
+                c.a = 1.0f;
 
                 // -- pick color based on normal
                 fixed1 a = acos(dot(IN.worldNormal, float3(0, 1, 0)));

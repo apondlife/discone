@@ -198,9 +198,7 @@ Shader "Image/Fuzz" {
 
                 // the actual good return value here v
                 // return float4(lerp(col, lerp(col, other_col, sobel), step(tex2D(_Texture, f.uv).r, sobel)), 1.0f);
-
                 col = lerp(col, other_col, step(tex2D(_Texture, f.uv).r, sobel));
-
 
                 // get max fuzz angle
                 // float nmax = _MaxOrthogonality * _DepthScale * depth;

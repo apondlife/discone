@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2087496062607543009}
   m_Layer: 0
   m_Name: Camera-empty
-  m_TagString: Untagged
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9867,6 +9867,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3631135297334503180, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
@@ -9903,10 +9915,6 @@ PrefabInstance:
       value: 5000
       objectReference: {fileID: 0}
     - target: {fileID: 8363059297454598032, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
-      propertyPath: m_TargetTexture
-      value: 
-      objectReference: {fileID: 8400000, guid: 3e9b166e85c9d1145813b99f63c87b00, type: 2}
-    - target: {fileID: 8363059297454598032, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_BackGroundColor.a
       value: 0
       objectReference: {fileID: 0}
@@ -9932,31 +9940,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 14.57802
+      value: -5.68
       objectReference: {fileID: 0}
     - target: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 38.643745
+      value: 2.03
       objectReference: {fileID: 0}
     - target: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 184.63852
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.12491875
+      value: 0.9946253
       objectReference: {fileID: 0}
     - target: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.019502921
+      value: -0.10354013
       objectReference: {fileID: 0}
     - target: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.98010224
+      value: 0.0000000042784754
       objectReference: {fileID: 0}
     - target: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.15301836
+      value: 4.453877e-10
       objectReference: {fileID: 0}
     - target: {fileID: 8709894415673100267, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -9992,7 +10000,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Character: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
-  m_SaveCheckpointAction: {fileID: -1762270237703457392, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   m_LoadCheckpointAction: {fileID: -5483817469226027952, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
 --- !u!114 &3924706523105078006
 MonoBehaviour:
