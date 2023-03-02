@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Incline_Human_nice_concrete
+  m_Name: Incline_YellowSide_Main
   m_Shader: {fileID: 4800000, guid: 17eaea66943ecc94b932acb7ffade775, type: 3}
   m_ShaderKeywords: _BLEND_GRADIENT
   m_LightmapFlags: 4
@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BackfaceTex:
-        m_Texture: {fileID: 2800000, guid: 79b101ef74763446ab0efbfb8c0cd567, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9f69629cf61c2437790a6d48caea3840, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CeilTex:
-        m_Texture: {fileID: 2800000, guid: 7c389e1fc34b85249a8e1d97c3abcfbd, type: 3}
+        m_Texture: {fileID: 2800000, guid: b60578f92a561438195f1fc134ec6c06, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -56,8 +56,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 1fa35801a1df546dcb67700745340842, type: 3}
-        m_Scale: {x: 0.005, y: 0}
+        m_Texture: {fileID: 2800000, guid: b60578f92a561438195f1fc134ec6c06, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
@@ -76,16 +76,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RampTex:
-        m_Texture: {fileID: 2800000, guid: 3017c0320990b440ba228cf719305415, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: b60578f92a561438195f1fc134ec6c06, type: 3}
+        m_Scale: {x: 0.5, y: 0.2}
         m_Offset: {x: 0, y: 0}
     - _WallBumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _WallTex:
-        m_Texture: {fileID: 2800000, guid: 2250ff0160319744ba22a48d766b677c, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 76153cbc41e084c44b58c675c8a82ab8, type: 3}
+        m_Scale: {x: 0.04, y: 0.3}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
@@ -114,7 +114,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RampAngle: 10
-    - _RampCurve: 0.5
+    - _RampCurve: 0.52
     - _RampTexAlpha: 1
     - _Saturation: 0
     - _SmoothnessTextureChannel: 0
@@ -126,20 +126,20 @@ Material:
     - _VertexWobbleRadius: 50
     - _VertexWobbleSpeed: 1.6
     - _WallAngle: 80
-    - _WallCurve: 1
+    - _WallCurve: 1.4
     - _WallTexAlpha: 1
     - _ZWrite: 1
     m_Colors:
     - _BackfaceNoiseVelocity: {r: -0.01, g: -0.02, b: 0.5, a: 0}
-    - _CeilColor: {r: 0.4811321, g: 0.3018423, b: 0.344015, a: 1}
-    - _CeilColor1: {r: 1, g: 0, b: 1, a: 1}
+    - _CeilColor: {r: 0.90588236, g: 0.7490196, b: 0.79979295, a: 1}
+    - _CeilColor1: {r: 0.9254902, g: 0.24705882, b: 0.29803923, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MainColor: {r: 0.76458406, g: 0.7735849, b: 0.63857245, a: 1}
-    - _MainColor1: {r: 0.7647059, g: 0.77254903, b: 0.6392157, a: 1}
-    - _RampColor: {r: 0.6316305, g: 0.8289298, b: 0.8867924, a: 1}
-    - _RampColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _MainColor: {r: 0.61448306, g: 0.7169812, b: 0.26650053, a: 1}
+    - _MainColor1: {r: 0.90588236, g: 0.7490196, b: 0.7607843, a: 1}
+    - _RampColor: {r: 0.49019608, g: 0.7176471, b: 0.52167636, a: 1}
+    - _RampColor1: {r: 0.8490566, g: 0.5238519, b: 0.702272, a: 1}
     - _VertexWobbleRange: {r: 20, g: 1000, b: 0, a: 0}
-    - _WallColor: {r: 0.9877777, g: 0.990566, b: 0.80833924, a: 1}
-    - _WallColor1: {r: 0.94890946, g: 0.9528302, b: 0.7685564, a: 1}
+    - _WallColor: {r: 0.9433962, g: 0.8359403, b: 0.59985757, a: 1}
+    - _WallColor1: {r: 0.92156863, g: 0.23376828, b: 0.16470587, a: 1}
   m_BuildTextureStacks: []
