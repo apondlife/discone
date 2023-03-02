@@ -56,6 +56,9 @@ public sealed class CharacterModel: MonoBehaviour {
     [Tooltip("the body's rotation speed in degrees")]
     [SerializeField] float m_RotationSpeed = 0.0f;
 
+    [Tooltip("the body's rotation away from the wall in degrees")]
+    [SerializeField] float m_WallRotation = 30.0f;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the shared third person animator controller")]
@@ -197,12 +200,19 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// tilt the model as a fn of character acceleration
     void Tilt() {
+        var rotation = m_State.Next.LookRotation;
+        if (m_State.IsOnWall) {
+            // rotation *= Quaternion.LookRotation(m_State.Forward, Vector3.up);
+            rotation *= Quaternion.AngleAxis(m_WallRotation, m_State.Forward);
+        }
+
         // is this a fundamental misunderstanding of quaternions? maybe
         transform.rotation = Quaternion.RotateTowards(
             transform.rotation,
-            m_State.Next.LookRotation,
+            rotation,
             m_RotationSpeed * Time.deltaTime
         );
+
     }
 
     /// change character scale according to acceleration
