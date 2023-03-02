@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -54,9 +55,16 @@ public sealed class CharacterModel: MonoBehaviour {
     // -- rotation --
     [Header("rotation")]
     [Tooltip("the body's rotation speed in degrees")]
-    [SerializeField] float m_RotationSpeed = 0.0f;
+    [FormerlySerializedAs("m_RotationSpeed")]
+    [SerializeField] float m_RotationSpeed_Look = 0.0f;
 
-    [Tooltip("the body's rotation away from the wall in degrees")]
+    [Tooltip("the rotation speed in degrees away from the wall")]
+    [SerializeField] float m_RotationSpeed_Wall = 0.0f;
+
+    [Tooltip("the rotation speed in degrees away for tilting")]
+    [SerializeField] float m_RotationSpeed_Tilt = 100.0f;
+
+    [Tooltip("the rotation away from the wall in degrees")]
     [SerializeField] float m_WallRotation = 30.0f;
 
     // -- refs --
@@ -199,20 +207,37 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     /// tilt the model as a fn of character acceleration
+    Quaternion lookRotation = Quaternion.identity;
+    Quaternion wallRotation = Quaternion.identity;
+    Quaternion tiltRotation = Quaternion.identity;
     void Tilt() {
-        var rotation = m_State.Next.LookRotation;
+        var destWallRotation = Quaternion.identity;
         if (m_State.IsOnWall) {
-            // rotation *= Quaternion.LookRotation(m_State.Forward, Vector3.up);
-            rotation *= Quaternion.AngleAxis(m_WallRotation, m_State.Forward);
+            var tangent = Vector3.Cross(Vector3.up, m_State.Wall.Normal);
+
+            destWallRotation = Quaternion.AngleAxis(m_WallRotation, tangent);
         }
 
-        // is this a fundamental misunderstanding of quaternions? maybe
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation,
-            rotation,
-            m_RotationSpeed * Time.deltaTime
+        wallRotation = Quaternion.RotateTowards(
+                wallRotation,
+                destWallRotation,
+                m_RotationSpeed_Wall * Time.deltaTime
         );
 
+        tiltRotation = Quaternion.RotateTowards(
+                tiltRotation,
+                m_State.Next.Tilt,
+                m_RotationSpeed_Tilt * Time.deltaTime
+        );
+
+        // is this a fundamental misunderstanding of quaternions? maybe
+        lookRotation = Quaternion.RotateTowards(
+            lookRotation,
+            m_State.Next.LookRotation,
+            m_RotationSpeed_Look * Time.deltaTime
+        );
+
+        transform.localRotation = wallRotation * tiltRotation * lookRotation;
     }
 
     /// change character scale according to acceleration
