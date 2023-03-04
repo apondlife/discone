@@ -1,11 +1,11 @@
 using System.Text.RegularExpressions;
 using UnityEditor;
 
-namespace ThirdPerson {
+namespace ThirdPerson.Editor {
 
 [CustomEditor(typeof(CharacterTunables))]
 [CanEditMultipleObjects]
-sealed class CharacterTunablesEditor: Editor {
+sealed class CharacterTunablesEditor: UnityEditor.Editor {
     // -- statics --
     /// a pattern to add spaces to property names
     private static Regex s_NamePattern;
