@@ -21,8 +21,14 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the move speed animator prop
     const string k_PropMoveSpeed = "MoveSpeed";
 
+    /// the move input animator prop
+    const string k_PropMoveInputMag = "MoveInputMag";
+
     /// the vertical speed animator prop
     const string k_PropVerticalSpeed = "VerticalSpeed";
+
+    /// the dot product of move facing and velocity prop
+    const string k_PropMoveFacingDotVelocity = "MoveFacingDotVelocity";
 
     // -- fields --
     [Header("parameters")]
@@ -179,6 +185,11 @@ public sealed class CharacterModel: MonoBehaviour {
             )
         );
 
+        anim.SetFloat(
+            k_PropMoveInputMag,
+            m_Input.Move.magnitude
+        );
+
         // set jump animation params
         anim.SetBool(
             k_PropIsAirborne,
@@ -193,6 +204,11 @@ public sealed class CharacterModel: MonoBehaviour {
         anim.SetFloat(
             k_PropVerticalSpeed,
             m_State.Velocity.y
+        );
+
+        anim.SetFloat(
+            k_PropMoveFacingDotVelocity,
+            Vector3.Dot(m_State.Next.GroundVelocity.normalized, m_State.Next.Forward)
         );
 
         // blend yoshiing
