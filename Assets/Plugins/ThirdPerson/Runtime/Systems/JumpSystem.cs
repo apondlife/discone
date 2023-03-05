@@ -25,6 +25,11 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     // -- lifecycle --
+    public override void Init() {
+        base.Init();
+        ResetJumps();
+    }
+
     public override void Update(float delta) {
         base.Update(delta);
 
@@ -40,7 +45,7 @@ sealed class JumpSystem: CharacterSystem {
     );
 
     void NotJumping_Enter() {
-        ResetJumps();
+        m_State.Next.IsLanding = false;
     }
 
     void NotJumping_Update(float _) {
@@ -63,6 +68,48 @@ sealed class JumpSystem: CharacterSystem {
         // if you jump
         if (CanJump() && m_Input.IsJumpDown(m_Tunables.JumpBuffer)) {
             ChangeTo(JumpSquat);
+            return;
+        }
+    }
+
+    // -- Landing --
+    Phase Landing => new Phase(
+        name: "Landing",
+        enter: Landing_Enter,
+        update: Landing_Update
+    );
+
+    void Landing_Enter() {
+        ResetJumps();
+        m_State.Next.IsLanding = true;
+    }
+
+    void Landing_Update(float _) {
+        // count coyote frames; reset to max whenever (this determine's if the
+        // character is grounded)
+        if (m_State.Curr.Ground.IsSome) {
+            m_State.CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
+        }
+        // but if not, subtract a frame
+        else {
+            m_State.CoyoteFrames -= 1;
+        }
+
+        // fall once coyote time expires
+        if (m_State.CoyoteFrames <= 0) {
+            ChangeTo(Falling);
+            return;
+        }
+
+        // if you jump
+        if (CanJump() && m_Input.IsJumpDown(m_Tunables.JumpBuffer)) {
+            ChangeTo(JumpSquat);
+            return;
+        }
+
+        // once landing completes
+        if (PhaseElapsed > m_Tunables.Landing_Duration) {
+            ChangeTo(NotJumping);
             return;
         }
     }
@@ -136,6 +183,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void Falling_Enter() {
         IncrementJumps();
+        m_State.Next.IsLanding = false;
     }
 
     void Falling_Update(float delta) {
@@ -165,7 +213,7 @@ sealed class JumpSystem: CharacterSystem {
 
         // transition out of jump
         if (m_State.Curr.Ground.IsSome) {
-            ChangeTo(NotJumping);
+            ChangeTo(Landing);
             return;
         }
     }
@@ -212,7 +260,6 @@ sealed class JumpSystem: CharacterSystem {
         dv += horizontalSpeed * m_State.Curr.Forward;
 
         m_State.Next.Velocity += dv;
-        m_State.Next.IsInJumpStart = true;
         m_State.Next.CoyoteFrames = 0;
         m_State.Next.CooldownFrames = (int)JumpTunables.CooldownFrames;
 

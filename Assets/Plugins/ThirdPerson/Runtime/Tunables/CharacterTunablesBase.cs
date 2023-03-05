@@ -53,6 +53,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float FallGravity { get; }
     public abstract float FallAcceleration { get; }
 
+    public abstract float Landing_Duration { get; }
     public abstract JumpTunablesBase[] Jumps { get; }
 
     public abstract class JumpTunablesBase {

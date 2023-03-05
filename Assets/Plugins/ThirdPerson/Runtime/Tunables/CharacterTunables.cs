@@ -155,6 +155,10 @@ public sealed class CharacterTunables: CharacterTunablesBase {
         get => m_FallGravity - m_Gravity;
     }
 
+    [Tooltip("how long the landing state lasts when falling")]
+    [SerializeField] private float m_Landing_Duration;
+    public override float Landing_Duration => m_Landing_Duration;
+
     [Tooltip("the tunables for each jump, sequentially")]
     [SerializeField] private JumpTunables[] m_Jumps;
     public override JumpTunablesBase[] Jumps => m_Jumps;

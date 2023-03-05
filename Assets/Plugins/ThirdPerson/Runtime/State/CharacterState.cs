@@ -107,13 +107,13 @@ public sealed partial class CharacterState {
         /// the facing direction
         public Vector3 Forward = Vector3.forward;
 
+        /// if the character is landing
+        public bool IsLanding = false;
+
         /// if the character is in jump squat
         public bool IsInJumpSquat = false;
 
-        /// if the character is in its first jump frame
-        public bool IsInJumpStart = false;
-
-        /// if the characer is on the wall
+        /// if the character is on the wall
         public bool IsOnWall = false;
 
         /// if the character is crouching
