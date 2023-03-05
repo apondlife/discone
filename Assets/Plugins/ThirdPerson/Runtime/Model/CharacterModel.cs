@@ -15,6 +15,9 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the airborne animator prop
     const string k_PropIsAirborne = "IsAirborne";
 
+    /// the is landing animator prop
+    const string k_PropIsLanding = "IsLanding";
+
     /// the crouching animator prop
     const string k_PropIsCrouching = "IsCrouching";
 
@@ -138,6 +141,12 @@ public sealed class CharacterModel: MonoBehaviour {
                 m_Animator.runtimeAnimatorController = m_AnimatorController;
             }
 
+            // disable root motion
+            if (m_Animator.applyRootMotion) {
+                Debug.LogWarning("[cmodel] disabled animator root motion, make sure to uncheck this in animator");
+                m_Animator.applyRootMotion = false;
+            }
+
             // set layers indices
             m_LayerLegs = m_Animator.GetLayerIndex(k_LayerLegs);
             m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
@@ -192,18 +201,24 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // set jump animation params
         anim.SetBool(
+            k_PropIsLanding,
+            m_State.Next.IsLanding
+        );
+
+        anim.SetBool(
             k_PropIsAirborne,
-            !m_State.Next.IsOnGround
+            // has to actually be grounded/airborne
+            !m_State.Curr.IsOnGround
         );
 
         anim.SetBool(
             k_PropIsCrouching,
-            m_State.IsInJumpSquat || m_State.IsCrouching
+            m_State.Next.IsInJumpSquat || m_State.Next.IsCrouching
         );
 
         anim.SetFloat(
             k_PropVerticalSpeed,
-            m_State.Velocity.y
+            m_State.Next.Velocity.y
         );
 
         anim.SetFloat(
@@ -235,7 +250,7 @@ public sealed class CharacterModel: MonoBehaviour {
     /// tilt the model as a fn of character acceleration
     void Tilt() {
         var destWallRotation = Quaternion.identity;
-        if (m_State.Wall.IsSome && m_State.Ground.IsNone) {
+        if (m_State.Next.IsOnWall && !m_State.Next.IsOnGround) {
             var tangent = Vector3.Cross(Vector3.up, m_State.Wall.Normal);
             destWallRotation = Quaternion.AngleAxis(m_MaxWallRotation, tangent);
         }

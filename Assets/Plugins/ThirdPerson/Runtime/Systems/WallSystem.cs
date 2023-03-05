@@ -39,7 +39,7 @@ sealed class WallSystem: CharacterSystem {
     );
 
     void NotOnWall_Enter() {
-        m_State.IsOnWall = false;
+        m_State.Next.IsOnWall = false;
     }
 
     void NotOnWall_Update(float delta) {
@@ -59,7 +59,7 @@ sealed class WallSystem: CharacterSystem {
 
     void WallSlide_Enter() {
         // update state
-        m_State.IsOnWall = true;
+        m_State.Next.IsOnWall = true;
     }
 
     void WallSlide_Update(float delta) {
