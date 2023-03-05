@@ -200,7 +200,12 @@ public class Online: NetworkManager {
         Debug.Log($"[online] disconnect [id={conn.connectionId} addr={conn.address}]");
 
         // give player a chance to clean up before being destroyed
-        var player = conn.identity.gameObject.GetComponent<OnlinePlayer>();
+        var identity = conn.identity;
+        if (identity == null) {
+            Debug.LogError($"[online] diconnected player did not have an identity");
+        }
+
+        var player = identity?.gameObject.GetComponent<OnlinePlayer>();
         if (player == null) {
             Debug.LogError($"[online] diconnected player is not an OnlinePlayer!");
         } else {

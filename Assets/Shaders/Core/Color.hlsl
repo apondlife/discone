@@ -4,11 +4,19 @@
 #include "./Math.hlsl"
 
 // TODO: shouldn't color all be fixed -ty
-float3 LerpHsv(float3 a, float3 b, float t) {
-    float1 h = lerp(
-        frac(lerp(a.x, b.x + 1, t)),
-        lerp(a.x, b.x, t),
+float3 LerpHsv(float3 a, float3 b, float1 t) {
+    float1 ax = a.x;
+    float1 bx = lerp(
+        b.x + 1,
+        b.x,
         step(a.x, b.x)
+    );
+    bx = b.x;
+
+    float1 h = lerp(
+        lerp(ax, bx, t),
+        lerp(bx, ax, t),
+        step(0.5, bx - ax)
     );
 
     float2 sv = lerp(
