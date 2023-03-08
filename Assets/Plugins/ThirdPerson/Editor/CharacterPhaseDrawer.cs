@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace ThirdPerson {
+namespace ThirdPerson.Editor {
 
 [CustomPropertyDrawer(typeof(Phase))]
 public sealed class CharacterPhaseDrawer: PropertyDrawer {
