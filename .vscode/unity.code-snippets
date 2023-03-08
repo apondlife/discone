@@ -1,0 +1,40 @@
+{
+    "unity.prop": {
+        "prefix": "uprop",
+        "description": "class prop",
+        "body": [
+            "/// ${3:desc}",
+            "${1:Type} ${2:m_Name};"
+        ],
+    },
+    "unity.log": {
+        "prefix": "log",
+        "description": "log statement",
+        "body": [
+            "Debug.Log($\"$1\");",
+        ],
+    },
+    "unity.header": {
+        "prefix": "uheader",
+        "description": "field header",
+        "body": [
+            "// -- ${1:name} --",
+            "[Header(\"$1\")]",
+        ],
+    },
+    "unity.field": {
+        "prefix": "ufield",
+        "description": "editor field",
+        "body": [
+            "[Tooltip(\"${3:desc}\")]",
+            "[SerializeField] $1 ${2:m_Name};"
+        ],
+    },
+    "unity.rename": {
+        "prefix": "urename",
+        "description": "'formerly serialized as' attr",
+        "body": [
+            "[UnityEngine.Serialization.FormerlySerializedAs(\"$1\")]"
+        ],
+    }
+}
