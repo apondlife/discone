@@ -13,6 +13,8 @@ Shader "Custom/Incline" {
         _Blend ("Blend Mode", Float) = 0
         _TexScale ("Triplanar Scale", Float) = 1
         _BumpScale ("BumpMap Scale", Float) = 1
+        _UnderTex ("Underlying Texture", 2D) = "black" {}
+        _UnderTexBlend ("Underlying Texture Blend", Range(0.0, 1.0)) = 0.0
 
         [Space]
         [Header(Vertex Colors)]
@@ -31,7 +33,6 @@ Shader "Custom/Incline" {
         _MainColor ("Color (W)", Color) = (1, 1, 1, 1)
         _MainColor1 ("Color (B)", Color) = (0, 0, 0, 1)
         _MainTex ("Texture", 2D) = "black" {}
-        _MainTex1 ("Texture Under", 2D) = "black" {}
         _MainBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
@@ -176,6 +177,15 @@ Shader "Custom/Incline" {
             // how much the bump map affects the final normal
             float _BumpScale;
 
+            // the texture under all other textures
+            sampler2D _UnderTex;
+
+            // the under texture scale/translation
+            float4 _UnderTex_ST;
+
+            // how much the under texture shows up
+            float _UnderTexBlend;
+
             // -- p/surface
             // the ground color
             fixed4 _MainColor;
@@ -185,9 +195,6 @@ Shader "Custom/Incline" {
 
             // the ground texture
             sampler2D _MainTex;
-
-            // the second ground texture
-            sampler2D _MainTex1;
 
             // the ground texture scale/translation
             float4 _MainTex_ST;
@@ -336,17 +343,18 @@ Shader "Custom/Incline" {
                 bf /= max(dot(bf, half3(1,1,1)), 0.0001);
 
                 // calculate each individual direction triplanar texture
+                fixed4 tU = SAMPLE_TRIPLANAR(_UnderTex);
                 fixed4 tG = SAMPLE_TRIPLANAR(_MainTex);
                 fixed4 tR = SAMPLE_TRIPLANAR(_RampTex);
                 fixed4 tW = SAMPLE_TRIPLANAR(_WallTex);
                 fixed4 tC = SAMPLE_TRIPLANAR(_CeilTex);
 
                 // the output texture color
-                fixed4 t = lerp(
+                fixed4 t = lerp(lerp(
                     lerp(tG, tR, rampBlend),
                     lerp(tW, tC, wallBlend),
                     mainBlend
-                );
+                ), tU, _UnderTexBlend);
 
                 // blend texture as multiply
                 #ifdef  _BLEND_GRADIENT
@@ -358,7 +366,7 @@ Shader "Custom/Incline" {
                 ));
 
                 // gradient on grayscale
-                c.rgb = lerp(c.rgb, c2.rgb, 1-dot(t.rgb, float3(1, 1, 1))/3.0f);
+                c.rgb = lerp(c.rgb, c2.rgb, 1-dot(t.rgb, float3r(1.0f/3.0)));
                 #endif
 
                 #ifdef  _BLEND_GRAYSCALE
