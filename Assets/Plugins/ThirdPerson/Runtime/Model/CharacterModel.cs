@@ -38,29 +38,6 @@ public sealed class CharacterModel: MonoBehaviour {
     [Tooltip("TODO: leave me a comment")]
     [SerializeField] bool AnimateScale;
 
-    // -- stretch & squash --
-    [Header("stretch & squash")]
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float MaxJumpSquatSquash;
-
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] AnimationCurve JumpSquatSquashCurve;
-
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float VerticalAccelerationStretch;
-
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] AnimationCurve VerticalAccelerationStretchCurve;
-
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float StretchAndSquashLerp;
-
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float MinSquashScale = 0;
-
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float MaxSquashScale = 2;
-
     // -- rotation --
     [Header("rotation")]
     [Tooltip("the rotation speed in degrees towards look direction")]
@@ -103,9 +80,6 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// the list of ik limbs
     CharacterLimb[] m_Limbs;
-
-    /// the current strech/squash multiplier
-    float m_CurrentSquashStretch = 1.0f;
 
     /// the initial scale of the character
     Vector3 m_InitialScale;
@@ -173,7 +147,6 @@ public sealed class CharacterModel: MonoBehaviour {
         // update animator & model
         SyncAnimator();
         Tilt();
-        StretchAndSquash();
     }
 
     // -- commands --
@@ -274,31 +247,6 @@ public sealed class CharacterModel: MonoBehaviour {
         );
 
         transform.localRotation = m_WallRotation * m_TiltRotation * m_LookRotation;
-    }
-
-    /// change character scale according to acceleration
-    void StretchAndSquash() {
-        if(!AnimateScale) {
-            return;
-        }
-
-        var targetScale = 0.0f;
-        if(m_State.IsInJumpSquat) {
-            var jumpSquatPct = m_Tunables.Jumps[0].MaxJumpSquatFrames == 0 ? 1.0f : (float)m_State.JumpSquatFrame / m_Tunables.Jumps[0].MaxJumpSquatFrames;
-            var jumpSquatDiff = 1.0f - MaxJumpSquatSquash;
-            targetScale = (1.0f - jumpSquatDiff * (1.0f-JumpSquatSquashCurve.Evaluate(jumpSquatPct)));
-        } else {
-            // if accelerating against velocity, sigh should squash (negative sign), otherwise, stretch
-            var sign = Mathf.Sign(m_State.Acceleration.y) * Mathf.Sign(m_State.Velocity.y);
-            targetScale = (1.0f + sign * Mathf.Abs(m_State.Acceleration.y) * VerticalAccelerationStretch);
-        }
-
-        targetScale = Mathf.Clamp(targetScale, MinSquashScale, MaxSquashScale);
-        m_CurrentSquashStretch = Mathf.Lerp(m_CurrentSquashStretch, targetScale, StretchAndSquashLerp * Time.deltaTime);
-
-        var newScale = m_InitialScale;
-        newScale.y *= m_CurrentSquashStretch;
-        transform.localScale = newScale;
     }
 
     static void SetDefaultLayersRecursively(GameObject parent, int layer) {

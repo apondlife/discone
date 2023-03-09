@@ -31,6 +31,7 @@ Shader "Custom/Incline" {
         _MainColor ("Color (W)", Color) = (1, 1, 1, 1)
         _MainColor1 ("Color (B)", Color) = (0, 0, 0, 1)
         _MainTex ("Texture", 2D) = "black" {}
+        _MainTex1 ("Texture Under", 2D) = "black" {}
         _MainBumpMap ("Bump Map", 2D) = "bump" {}
 
         [Space]
@@ -184,6 +185,9 @@ Shader "Custom/Incline" {
 
             // the ground texture
             sampler2D _MainTex;
+
+            // the second ground texture
+            sampler2D _MainTex1;
 
             // the ground texture scale/translation
             float4 _MainTex_ST;
