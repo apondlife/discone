@@ -119,6 +119,7 @@ sealed class CharacterDistortion: MonoBehaviour {
             var scaledADotB = m_VerticalAcceleration_StretchIntensity * aDotV;
 
             // sigmoid (thanks paradise)
+            // https://www.desmos.com/calculator/stfjbdj5lh
             destIntensity = 1 + (2 / Mathf.PI) * Mathf.Atan(
                 scaledADotB * Mathf.Pow(
                     Mathf.Abs(scaledADotB),
