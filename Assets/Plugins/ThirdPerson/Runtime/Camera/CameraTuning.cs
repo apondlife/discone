@@ -55,6 +55,18 @@ public sealed class CameraTuning: ScriptableObject {
     [Tooltip("the maximum speed to camera distance")]
     public float MaxRadius;
 
+    [Tooltip("the camera's field of view as a function of target speed")]
+    public RangeCurve Fov;
+
+    [Tooltip("the minimum speed for curving camera distance")]
+    public float FovTargetMinSpeed;
+
+    [Tooltip("the maximum speed for curving camera distance")]
+    public float FovTargetMaxSpeed;
+
+    [Tooltip("the rate of change for the fov")]
+    public float FovSpeed;
+
     // -- freelook --
     [Header("free look")]
     [Tooltip("the speed the free look camera yaws")]

@@ -289,7 +289,7 @@ sealed class CameraFollowSystem: CameraSystem {
             m_Tuning.DollySpeedCurve.Evaluate(Mathf.InverseLerp(
                 m_Tuning.DollyTargetMinSpeed,
                 m_Tuning.DollyTargetMaxSpeed,
-                m_State.Character.Next.PlanarVelocity.magnitude
+                m_State.Character.Next.Velocity.magnitude
             ))
         );
 
