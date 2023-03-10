@@ -139,6 +139,15 @@ public sealed class CameraTuning: ScriptableObject {
     [Tooltip("the curve the camera recenters looking at the character")]
     public AnimationCurve Recenter_YawCurve;
 
+    // -- tilt/dutch --
+    [Header("tilt/dutch")]
+    [Tooltip("the camera dutch angle (around z-axis) scale applied to the camera's target's rotation")]
+    public float DutchScale;
+
+    [Tooltip("the smoothing on the camera dutch angle (around z-axis)")]
+    public float DutchSmoothing;
+
+    // -- lifecycle --
     void OnValidate() {
         Tracking_MaxPitch = Mathf.Max(Tracking_MinPitch, Tracking_MaxPitch);
         FreeLook_MinPitch = Mathf.Min(FreeLook_MinPitch, Tracking_MinPitch);

@@ -49,6 +49,9 @@ public class CameraFollowTarget: MonoBehaviour {
     /// the camera zooming sytem (state machine)
     [SerializeField] CameraZoomSystem m_ZoomSystem;
 
+    /// the camera tilting sytem (state machine)
+    [SerializeField] CameraTiltSystem m_TiltSystem;
+
     // -- lifecycle --
     void Start() {
         // set deps
@@ -59,11 +62,16 @@ public class CameraFollowTarget: MonoBehaviour {
             character.State
         );
 
+        // synchronize state
+        m_State.Next.Forward = m_Camera.transform.forward;
+        m_State.Next.Up = m_Camera.transform.up;
+
         // init systems
         m_Systems = new CameraSystem[]{
             m_FollowSystem,
             m_CollisionSystem,
-            m_ZoomSystem
+            m_ZoomSystem,
+            m_TiltSystem,
         };
 
         foreach (var system in m_Systems) {
@@ -75,10 +83,15 @@ public class CameraFollowTarget: MonoBehaviour {
 
         // set camera lens properties
         m_Camera.m_Lens.FieldOfView = m_State.Next.Fov;
+        m_Camera.m_Lens.Dutch = m_State.Next.Dutch;
     }
 
     void FixedUpdate() {
         var delta = Time.deltaTime;
+
+        // synchronize state
+        m_State.Next.Forward = m_Camera.transform.forward;
+        m_State.Next.Up = m_Camera.transform.up;
 
         // snapshot state w/ current world position (given character movement)
         m_State.Next.Pos = m_Destination.position;
@@ -89,11 +102,12 @@ public class CameraFollowTarget: MonoBehaviour {
             system.Update(delta);
         }
 
-        // update camera pos
+        // update camera coords
         m_Destination.position = m_State.Next.Pos;
 
         // set camera lens properties
         m_Camera.m_Lens.FieldOfView = m_State.Next.Fov;
+        m_Camera.m_Lens.Dutch = m_State.Next.Dutch;
     }
 
     // -- queries --
