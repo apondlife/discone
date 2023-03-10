@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsInvertedX: 0
   IsInvertedY: 0
-  MinRadius: 13
+  MinRadius: 12
   Tracking_YawCurve:
     serializedVersion: 2
     m_Curve:
@@ -108,7 +108,7 @@ MonoBehaviour:
   Tracking_MaxPitch: 60
   Tracking_PitchSpeed: 50
   Tracking_PitchAcceleration: 100
-  DollySpeed: 1
+  DollySpeed: 3
   DollySpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -133,9 +133,57 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  DollyTargetMinSpeed: 30
-  DollyTargetMaxSpeed: 200
-  MaxRadius: 80
+  DollyTargetMinSpeed: 5
+  DollyTargetMaxSpeed: 40
+  MaxRadius: 18
+  Fov:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.15
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.85
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Min: 69
+    m_Max: 75
+  FovTargetMinSpeed: 5
+  FovTargetMaxSpeed: 40
+  FovSpeed: 3
   FreeLook_YawSpeed: 100
   FreeLook_YawAcceleration: 350
   FreeLook_PitchSpeed: 100

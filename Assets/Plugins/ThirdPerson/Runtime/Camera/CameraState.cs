@@ -182,6 +182,9 @@ public sealed partial class CameraState {
         /// if the camera is colliding with something
         public bool IsColliding;
 
+        /// the camera's field of view
+        public float Fov;
+
         // -- lifetime --
         /// create an empty frame
         public Frame() {

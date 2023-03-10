@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.InputSystem;
+using Cinemachine;
 
 namespace ThirdPerson {
 
 /// a follow target that rotates around the player
+// TODO: convert into camera.cs
 public class CameraFollowTarget: MonoBehaviour {
     // -- cfg --
     [Tooltip("the tuning parameters for the camera")]
@@ -12,6 +14,9 @@ public class CameraFollowTarget: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
+    [Tooltip("the cinemachine camera")]
+    [SerializeField] CinemachineVirtualCamera m_Camera;
+
     [Tooltip("the character model position we are trying to follow")]
     [SerializeField] Transform m_Model;
 
@@ -41,6 +46,9 @@ public class CameraFollowTarget: MonoBehaviour {
     /// the camera following sytem (state machine)
     [SerializeField] CameraCollisionSystem m_CollisionSystem;
 
+    /// the camera zooming sytem (state machine)
+    [SerializeField] CameraZoomSystem m_ZoomSystem;
+
     // -- lifecycle --
     void Start() {
         // set deps
@@ -54,7 +62,8 @@ public class CameraFollowTarget: MonoBehaviour {
         // init systems
         m_Systems = new CameraSystem[]{
             m_FollowSystem,
-            m_CollisionSystem
+            m_CollisionSystem,
+            m_ZoomSystem
         };
 
         foreach (var system in m_Systems) {
@@ -63,6 +72,9 @@ public class CameraFollowTarget: MonoBehaviour {
 
         // set initial position
         m_Destination.position = m_State.Next.Pos;
+
+        // set camera lens properties
+        m_Camera.m_Lens.FieldOfView = m_State.Next.Fov;
     }
 
     void FixedUpdate() {
@@ -77,17 +89,11 @@ public class CameraFollowTarget: MonoBehaviour {
             system.Update(delta);
         }
 
-        // run collision system
-        // m_State.Next.Pos = Vector3.SmoothDamp(
-        //     m_State.Next.Pos,
-        //     GetCorrectedPos(m_State.Next.Pos),
-        //     ref m_CorrectionVel,
-        //     m_Tuning.CorrectionSmoothTime,
-        //     m_Tuning.CorrectionSpeed
-        // );
-
         // update camera pos
         m_Destination.position = m_State.Next.Pos;
+
+        // set camera lens properties
+        m_Camera.m_Lens.FieldOfView = m_State.Next.Fov;
     }
 
     // -- queries --

@@ -58,7 +58,7 @@ MonoBehaviour:
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 5000
-    Dutch: -0.0000001318375
+    Dutch: 0.000009257594
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
@@ -83,6 +83,7 @@ GameObject:
   - component: {fileID: 1785480727}
   - component: {fileID: 1785480726}
   - component: {fileID: 7378359861793622521}
+  - component: {fileID: 8474415216082246997}
   m_Layer: 6
   m_Name: cm
   m_TagString: Untagged
@@ -136,13 +137,13 @@ MonoBehaviour:
   m_HorizontalDamping: 2.45
   m_VerticalDamping: 0.5
   m_ScreenX: 0.5
-  m_ScreenY: 0.71
+  m_ScreenY: 0.58
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
   m_SoftZoneWidth: 0.07
-  m_SoftZoneHeight: 0.38
+  m_SoftZoneHeight: 0.17
   m_BiasX: 0
-  m_BiasY: 0
+  m_BiasY: -0.00000035061555
   m_CenterOnActivate: 1
 --- !u!114 &7378359861793622521
 MonoBehaviour:
@@ -157,6 +158,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Damping: 0
+--- !u!114 &8474415216082246997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785480723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_NoiseProfile: {fileID: 11400000, guid: 46965f9cbaf525742a6da4c2172a99cd, type: 2}
+  m_PivotOffset: {x: 0, y: 0, z: 0}
+  m_AmplitudeGain: 0.1
+  m_FrequencyGain: 0.1
+  mNoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &745930052032446095
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,6 +300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Tuning: {fileID: 11400000, guid: 3f4f38b8f078747a5a3036a8b6e5c6e8, type: 2}
+  m_Camera: {fileID: 1289189456}
   m_Model: {fileID: 1061133086809451152}
   m_LookAtTarget: {fileID: 3032161264613087381}
   m_Destination: {fileID: 3673039484627793572}
@@ -291,6 +310,10 @@ MonoBehaviour:
       Name: 
     m_IsLogging: 0
   m_CollisionSystem:
+    m_Phase:
+      Name: 
+    m_IsLogging: 0
+  m_ZoomSystem:
     m_Phase:
       Name: 
     m_IsLogging: 0
@@ -463,45 +486,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AnimateScale: 1
-  MaxJumpSquatSquash: 0.8
-  JumpSquatSquashCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: -2.2470524
-      outSlope: -2.2470524
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.07391114
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: -0.032639936
-      outSlope: -0.032639936
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.43372136
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  VerticalAccelerationStretch: 0.01
-  VerticalAccelerationStretchCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  StretchAndSquashLerp: 8
-  MinSquashScale: 0.4
-  MaxSquashScale: 1.5
   m_RotationSpeed_Look: 300
   m_RotationSpeed_Wall: 0
   m_RotationSpeed_Tilt: 10
-  m_WallRotation: 40
+  m_MaxWallRotation: 40
   m_AnimatorController: {fileID: 9100000, guid: 597f755a64b35974b963a44170d24fb5, type: 2}
 --- !u!1 &7614967429340073447
 GameObject:
