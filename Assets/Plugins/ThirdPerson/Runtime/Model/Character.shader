@@ -63,7 +63,7 @@ Shader "ThirdPerson/Character" {
 
             // -- program --
             FragIn DrawVert(VertIn v) {
-                FragIn f;
+                FragIn o;
 
                 float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
                 float1 distance = dot(worldPos, _Distortion_Plane.xyz) + _Distortion_Plane.w;
@@ -80,12 +80,9 @@ Shader "ThirdPerson/Character" {
                 float1 intensity = _Distortion_Intensity - 1;
 
                 worldPos += distortion * intensity * _Distortion_Plane.xyz;
+                o.pos = UnityWorldToClipPos(worldPos);
 
-                f.pos = UnityWorldToClipPos(worldPos);
-                // f.pos = UnityObjectToClipPos(test);
-                // f.pos = UnityObjectToClipPos(v.vertex);
-
-                f.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
                 // lambert shading
                 float3 worldNormal = UnityObjectToWorldNormal(v.normal);
@@ -94,10 +91,10 @@ Shader "ThirdPerson/Character" {
                 fixed3 lightD = max(0, lightDotNormal) * _LightColor0.rgb;
                 fixed3 lightR = max(0, -lightDotNormal) * _LightColor0.rgb * _ReflectedLightIntensity;
 
-                f.diffuse = lightD + lightR;
-                f.ambient = _LightColor0.rgb * lerp(0, _AmbientLightIntensity, 1 - lightDotNormalMag);
+                o.diffuse = lightD + lightR;
+                o.ambient = _LightColor0.rgb * lerp(0, _AmbientLightIntensity, 1 - lightDotNormalMag);
 
-                return f;
+                return o;
             }
 
             fixed4 DrawFrag(FragIn IN) : SV_Target {
