@@ -34,7 +34,7 @@ sealed class CameraZoomSystem: CameraSystem {
         m_State.Next.Fov = Mathf.MoveTowards(
             m_State.Fov,
             destFov,
-            m_Tuning.FovSpeed * Time.deltaTime
+            m_Tuning.FovSpeed * delta
         );
     }
 }

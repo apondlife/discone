@@ -161,6 +161,12 @@ public sealed partial class CameraState {
     [Serializable]
     public sealed partial class Frame: IEquatable<Frame> {
         // -- props --
+        /// the camera's forward direction
+        public Vector3 Forward;
+
+        /// the camera's up direction
+        public Vector3 Up;
+
         /// the actual world position post-collision
         public Vector3 Pos;
 
@@ -184,6 +190,9 @@ public sealed partial class CameraState {
 
         /// the camera's field of view
         public float Fov;
+
+        /// the camera's dutch angle
+        public float Dutch;
 
         // -- lifetime --
         /// create an empty frame

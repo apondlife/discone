@@ -87,12 +87,5 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float TiltForBaseAcceleration { get; }
     public abstract float MaxTilt { get; }
     public abstract float TiltSmoothing { get; }
-
-    // -- camera --
-    public abstract float DutchScale { get; }
-    public abstract float DutchSmoothing { get; }
-    public abstract float Damping { get; }
-    public abstract float FastDamping { get; }
-
     }
 }
