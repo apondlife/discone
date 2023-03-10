@@ -11,12 +11,11 @@ float3 LerpHsv(float3 a, float3 b, float1 t) {
         b.x,
         step(a.x, b.x)
     );
-    bx = b.x;
 
     float1 h = lerp(
         lerp(ax, bx, t),
-        lerp(bx, ax, t),
-        step(0.5, bx - ax)
+        frac(lerp(ax, bx - 1, t) + 1),
+        step(0.5, abs(bx - ax))
     );
 
     float2 sv = lerp(

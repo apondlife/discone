@@ -13,8 +13,6 @@ Shader "Custom/Incline" {
         _Blend ("Blend Mode", Float) = 0
         _TexScale ("Triplanar Scale", Float) = 1
         _BumpScale ("BumpMap Scale", Float) = 1
-        _UnderTex ("Underlying Texture", 2D) = "black" {}
-        _UnderTexBlend ("Underlying Texture Blend", Range(0.0, 1.0)) = 0.0
 
         [Space]
         [Header(Vertex Colors)]
@@ -26,6 +24,12 @@ Shader "Custom/Incline" {
         [Space(5)]
         _RampCurve ("Ramp Curve", Float) = 1
         _WallCurve ("Wall Curve", Float) = 1
+
+        [Space]
+        [Header(Base Texture)]
+        [Space(5)]
+        _BaseTex ("Texture", 2D) = "black" {}
+        _BaseTexBlend ("Blend", Range(0.0, 1.0)) = 0.0
 
         [Space]
         [Header(Ground)]
@@ -178,13 +182,13 @@ Shader "Custom/Incline" {
             float _BumpScale;
 
             // the texture under all other textures
-            sampler2D _UnderTex;
+            sampler2D _BaseTex;
 
             // the under texture scale/translation
-            float4 _UnderTex_ST;
+            float4 _BaseTex_ST;
 
             // how much the under texture shows up
-            float _UnderTexBlend;
+            float _BaseTexBlend;
 
             // -- p/surface
             // the ground color
@@ -343,18 +347,22 @@ Shader "Custom/Incline" {
                 bf /= max(dot(bf, half3(1,1,1)), 0.0001);
 
                 // calculate each individual direction triplanar texture
-                fixed4 tU = SAMPLE_TRIPLANAR(_UnderTex);
                 fixed4 tG = SAMPLE_TRIPLANAR(_MainTex);
                 fixed4 tR = SAMPLE_TRIPLANAR(_RampTex);
                 fixed4 tW = SAMPLE_TRIPLANAR(_WallTex);
                 fixed4 tC = SAMPLE_TRIPLANAR(_CeilTex);
 
-                // the output texture color
-                fixed4 t = lerp(lerp(
+                // sample the incline textures
+                fixed4 t = lerp(
                     lerp(tG, tR, rampBlend),
                     lerp(tW, tC, wallBlend),
                     mainBlend
-                ), tU, _UnderTexBlend);
+                );
+
+                // blend in the base texture
+                fixed4 tB = SAMPLE_TRIPLANAR(_BaseTex);
+                t += tB * _BaseTexBlend;
+                saturate(t);
 
                 // blend texture as multiply
                 #ifdef  _BLEND_GRADIENT

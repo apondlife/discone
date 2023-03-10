@@ -256,9 +256,9 @@ Shader "Custom/InclineShader" {
 
             fixed4 DrawFrag(FragIn IN) : SV_Target {
                 // work around bug where IN.worldNormal is always (0,0,0)!
-                #ifdef _BUMP_MAP_ON
-                IN.worldNormal = WorldNormalVector(IN, float3(0,0,1));
-                #endif
+                // #ifdef _BUMP_MAP_ON
+                // IN.worldNormal = WorldNormalVector(IN, float3(0,0,1));
+                // #endif
 
                 fixed4 c;
 
