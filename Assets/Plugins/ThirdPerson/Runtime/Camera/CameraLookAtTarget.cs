@@ -68,7 +68,6 @@ public class CameraLookAtTarget: MonoBehaviour {
     void Update() {
         // first we find the ground target destination
         var groundDest = FindGroundDestination();
-        var lookOffset = Vector3.zero;
         var freelook = m_Follow.IsFreeLookEnabled;
 
         // while airborne, move the ground target towards the ground
@@ -91,24 +90,21 @@ public class CameraLookAtTarget: MonoBehaviour {
             );
         }
 
-        // we may be grounded and want to look up when close
-        if (m_Follow.IsFreeLookEnabled) {
-            // check proximity between model & follow target to push look at up
-            var followDist = Vector3.Distance(
-                m_Follow.transform.position, // TODO: should this be ground target?
-                m_Follow.TargetPosition
-            );
+        // check proximity between model & follow target to push look at up
+        var followDist = Vector3.Distance(
+            m_Follow.transform.position, // TODO: should this be ground target?
+            m_Follow.TargetPosition
+        );
 
-            var proximity = m_VerticalOffset_DistanceCurve.Evaluate(
-                Mathf.InverseLerp(
-                    m_Follow.MinDistance,
-                    m_Follow.BaseDistance,
-                    followDist
-                )
-            );
+        var proximity = m_VerticalOffset_DistanceCurve.Evaluate(
+            Mathf.InverseLerp(
+                m_Follow.MinDistance,
+                m_Follow.BaseDistance,
+                followDist
+            )
+        );
 
-            lookOffset = m_VerticalOffset_MaxHeight * proximity * Vector3.up;
-        }
+        var lookOffset = m_VerticalOffset_MaxHeight * proximity * Vector3.up;
 
         m_Target.localPosition = m_GroundTarget + lookOffset;
     }

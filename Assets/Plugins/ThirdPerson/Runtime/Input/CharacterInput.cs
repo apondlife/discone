@@ -68,6 +68,17 @@ public sealed class CharacterInput {
         return false;
     }
 
+    /// if jump was pressed in the past n frames
+    public bool IsMoveIdle(uint past = 1) {
+        for (var i = 0u; i < past; i++) {
+            if (m_Frames[i]?.Move != Vector3.zero) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /// the buffer size
     public uint BufferSize {
         get => k_BufferSize;

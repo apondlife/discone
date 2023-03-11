@@ -5,9 +5,13 @@ namespace ThirdPerson {
 
 [Serializable]
 sealed class CameraFollowSystem: CameraSystem {
+    // -- props --
+    // angle (in degrees) that camera is away from its target yaw
+    float m_DeltaYawMag;
+
     // -- System --
     protected override Phase InitInitialPhase() {
-        return Tracking;
+        return Idle;
     }
 
     public override void Init() {
@@ -19,16 +23,70 @@ sealed class CameraFollowSystem: CameraSystem {
         m_State.Next.Spherical.Zenith = m_Tuning.Tracking_MinPitch;
     }
 
+    // -- Idle --
+    // player not moving and not controlling the camera
+    Phase Idle => new Phase(
+        name: "Idle",
+        enter: Idle_Enter,
+        update: Idle_Update
+    );
+
+    void Idle_Enter() {
+        m_State.Next.Spherical = m_State.IntoCurrSpherical();
+    }
+
+    void Idle_Update(float delta) {
+        if (m_Input.WasPerformedThisFrame()) {
+            ChangeToImmediate(FreeLook, delta);
+            return;
+        }
+
+        if (!m_CharacterInput.IsMoveIdle(m_Tuning.Tracking_IdleFrames)) {
+            ChangeToImmediate(Tracking, delta);
+            return;
+        }
+    }
+
+    // -- Tracking_Recenter --
+    Phase Tracking_Recenter => new Phase(
+        name: "Tracking_Recenter",
+        enter: Tracking_Recenter_Enter,
+        update: Tracking_Recenter_Update
+    );
+
+    void Tracking_Recenter_Enter() {
+        m_State.Next.Spherical = m_State.IntoCurrSpherical();
+    }
+
+    void Tracking_Recenter_Update(float delta) {
+        if (m_Input.WasPerformedThisFrame()) {
+            ChangeToImmediate(FreeLook, delta);
+            return;
+        }
+
+        if (m_CharacterInput.IsMoveIdle(m_Tuning.Tracking_IdleFrames)) {
+            ChangeToImmediate(Idle, delta);
+            return;
+        }
+
+        Tracking_Orbit(delta, isRecentering: true);
+
+        // exit either some minimal error or time
+        if (m_DeltaYawMag < 10.0f) {
+            ChangeTo(Tracking);
+            return;
+        }
+    }
+
     // -- Tracking --
+    // camera following the player on its own
     Phase Tracking => new Phase(
         name: "Tracking",
         enter: Tracking_Enter,
-        update: Tracking_Update,
-        exit: Tracking_Exit
+        update: Tracking_Update
     );
 
     void Tracking_Enter() {
-        m_State.Next.IsFreeLook = false;
         m_State.Next.Spherical = m_State.IntoCurrSpherical();
     }
 
@@ -41,18 +99,26 @@ sealed class CameraFollowSystem: CameraSystem {
         // move camera
         Tracking_Orbit(delta);
         Dolly(delta);
-    }
 
-    void Tracking_Exit() {
-        m_State.Next.IsFreeLook = true;
-        m_State.Next.Spherical = m_State.IntoCurrSpherical();
+        // stop tracking wnen move input becomes idle
+        if (m_CharacterInput.IsMoveIdle(m_Tuning.Tracking_IdleFrames)) {
+            ChangeTo(Idle);
+            return;
+        }
     }
 
     // -- FreeLook --
+    // player controlling the camera
     Phase FreeLook => new Phase(
         name: "FreeLook",
+        enter: FreeLook_Enter,
         update: FreeLook_Update
     );
+
+    void FreeLook_Enter() {
+        m_State.Next.IsFreeLook = true;
+        m_State.Next.Spherical = m_State.IntoCurrSpherical();
+    }
 
     void FreeLook_Update(float delta) {
         // move camera
@@ -100,7 +166,8 @@ sealed class CameraFollowSystem: CameraSystem {
     // -- FreeLook_MoveIntent --
     Phase FreeLook_MoveIntent => new Phase(
         name: "FreeLook_MoveIntent",
-        update: FreeLook_MoveIntent_Update
+        update: FreeLook_MoveIntent_Update,
+        exit: FreeLook_MoveIntent_Exit
     );
 
     void FreeLook_MoveIntent_Update(float delta) {
@@ -116,18 +183,23 @@ sealed class CameraFollowSystem: CameraSystem {
         // if the player sits around for a while after moving, we assume they've
         // finished moving and reset the camera
         if (m_State.Character.IdleTime > m_Tuning.FreeLook_MoveIntentTimeout) {
-            ChangeTo(Tracking);
+            ChangeTo(Idle);
             return;
         }
+    }
+
+    void FreeLook_MoveIntent_Exit() {
+        m_State.Next.IsFreeLook = false;
     }
 
     // -- FreeLook_IdleIntent --
     Phase FreeLook_IdleIntent => new Phase(
         name: "FreeLook_IdleIntent",
-        update: FreeLook_Idle_Update
+        update: FreeLook_IdleIntent_Update,
+        exit: FreeLook_IdleIntent_Exit
     );
 
-    void FreeLook_Idle_Update(float delta) {
+    void FreeLook_IdleIntent_Update(float delta) {
         if (m_Input.WasPerformedThisFrame()) {
             ChangeToImmediate(FreeLook, delta);
             return;
@@ -145,9 +217,13 @@ sealed class CameraFollowSystem: CameraSystem {
         }
     }
 
+    void FreeLook_IdleIntent_Exit() {
+        m_State.Next.IsFreeLook = false;
+    }
+
     // -- commands --
     /// resolve tracking camera orbit
-    void Tracking_Orbit(float delta) {
+    void Tracking_Orbit(float delta, bool isRecentering = false) {
         // TODO: yaw speed could be wrong at this point (yawSpeed !=
         // deltaYaw/deltaTime). we should resample yaw speed from the current
         // state.
@@ -169,15 +245,20 @@ sealed class CameraFollowSystem: CameraSystem {
         var deltaYawDir = Mathf.Sign(deltaYaw);
 
         // TODO: make these range curves
-        var destYawSpeed = m_State.Character.IdleTime > m_Tuning.Recenter_IdleTime
+        var destYawSpeed = isRecentering
             ? Mathf.Lerp(0, m_Tuning.Recenter_YawSpeed, m_Tuning.Recenter_YawCurve.Evaluate(deltaYawMag / 180.0f))
             : Mathf.Lerp(0, m_Tuning.Tracking_YawSpeed, m_Tuning.Tracking_YawCurve.Evaluate(deltaYawMag / 180.0f));
+
+        // TODO: make sure recenter actually goes all the way to the back of the character, instead of accelerating forever
+        var yawAcceleration = isRecentering
+            ? m_Tuning.Recenter_YawAcceleration
+            : m_Tuning.YawAcceleration;
 
         // integrate yaw acceleration
         var nextYawSpeed = Mathf.MoveTowards(
             m_State.Curr.Velocity.Azimuth,
             deltaYawDir * destYawSpeed,
-            m_Tuning.YawAcceleration * delta
+            yawAcceleration * delta
         );
 
         // integrate yaw speed
@@ -217,6 +298,8 @@ sealed class CameraFollowSystem: CameraSystem {
 
         next.Velocity.Azimuth = nextYawSpeed;
         next.Velocity.Zenith = nextPitchSpeed;
+
+        m_DeltaYawMag = deltaYawMag;
     }
 
     /// resolve free look camera orbit
@@ -306,10 +389,6 @@ sealed class CameraFollowSystem: CameraSystem {
         next.Spherical.Radius = nextRadius;
         next.DestSpherical.Radius = destRadius;
     }
-
-
-
-
 }
 
 }

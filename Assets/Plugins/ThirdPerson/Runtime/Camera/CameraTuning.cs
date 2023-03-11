@@ -38,6 +38,9 @@ public sealed class CameraTuning: ScriptableObject {
     [Tooltip("the acceleration of the camera pitch")]
     public float Tracking_PitchAcceleration;
 
+    [Tooltip("the number of frames without input to move to idle")]
+    public uint Tracking_IdleFrames;
+
     // -- target speed --
     [Header("target speed")]
     [Tooltip("the speed the camera distance adjusts in freelook")]
@@ -130,8 +133,8 @@ public sealed class CameraTuning: ScriptableObject {
 
     // -- recenter --
     [Header("recenter")]
-    [Tooltip("the time the camera can be idle before recentering")]
-    public float Recenter_IdleTime;
+    [Tooltip("the camera's yaw acceleration when recentering")]
+    public float Recenter_YawAcceleration;
 
     [Tooltip("the speed the camera recenters after idle")]
     public float Recenter_YawSpeed;

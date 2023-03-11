@@ -13,6 +13,9 @@ abstract class CameraSystem: System {
     /// the free look camera input
     protected InputAction m_Input;
 
+    /// the character's input
+    protected CharacterInput m_CharacterInput;
+
     // -- props --
     /// the state-machine's state
     SystemState m_SystemState;
@@ -26,12 +29,14 @@ abstract class CameraSystem: System {
     public void Init(
         CameraState state,
         CameraTuning tuning,
-        InputAction input
+        InputAction input,
+        CharacterInput characterInput
     ) {
         // set deps
         m_State = state;
         m_Tuning = tuning;
         m_Input = input;
+        m_CharacterInput = characterInput;
 
         this.Init();
     }

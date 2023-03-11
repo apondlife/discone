@@ -74,8 +74,14 @@ public class CameraFollowTarget: MonoBehaviour {
             m_TiltSystem,
         };
 
+        var characterInput = character.Input;
         foreach (var system in m_Systems) {
-            system.Init(m_State, m_Tuning, m_Input);
+            system.Init(
+                m_State,
+                m_Tuning,
+                m_Input,
+                characterInput
+            );
         }
 
         // set initial position
