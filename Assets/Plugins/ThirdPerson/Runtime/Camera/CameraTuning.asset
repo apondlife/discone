@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d03525cb169f549cb9d3761f54d33a83, type: 3}
   m_Name: CameraTuning
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   IsInvertedX: 0
   IsInvertedY: 0
   MinRadius: 12
@@ -247,23 +247,14 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.21630615
       - serializedVersion: 3
-        time: 0
+        time: 0.3509171
         value: 0
         inSlope: 0
-        outSlope: 0
-        tangentMode: 0
+        outSlope: -Infinity
+        tangentMode: 1
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.937
-        value: 0.937
-        inSlope: 2.5520837
-        outSlope: 2.5520837
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0
       - serializedVersion: 3
         time: 1
         value: 1
@@ -276,12 +267,13 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 4
-    m_Max: 14
+    m_Min: 0
+    m_Max: 1000
   Collision_ClipCooldown: 0.1
-  Collision_FreeLook_CorrectionSpeed: 25
+  Collision_ClipDamping: 0
+  Collision_FreeLook_CorrectionSpeed: 0
   Collision_Tracking_CorrectionSpeed: 5
-  Recenter_IdleTime: 0.7
+  Recenter_YawAcceleration: 200
   Recenter_YawSpeed: 100
   Recenter_YawCurve:
     serializedVersion: 2

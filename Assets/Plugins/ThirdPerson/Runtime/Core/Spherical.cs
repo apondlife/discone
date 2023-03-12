@@ -75,6 +75,14 @@ public struct Spherical: IEquatable<Spherical> {
         return !(pos1 == pos2);
     }
 
+    public static Spherical operator *(Spherical pos, float scale) {
+        return new Spherical(
+            pos.Radius * scale,
+            pos.Azimuth * scale,
+            pos.Zenith * scale
+        );
+    }
+
     // -- debug --
     public override string ToString() {
         return $"<Spherical r={Radius} a={Azimuth} z={Zenith}";

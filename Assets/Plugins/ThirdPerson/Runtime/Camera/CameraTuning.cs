@@ -124,8 +124,10 @@ public sealed class CameraTuning: ScriptableObject {
     [Tooltip("the exit duration before clipping transitions back to free look")]
     public float Collision_ClipCooldown;
 
+    [Tooltip("the velocity damping the moment the camera clips")]
+    public AdsrCurve Collision_ClipDamping;
+
     [Tooltip("the rate of change of local distance of the camera to the target, if correcting")]
-    [UnityEngine.Serialization.FormerlySerializedAs("Collision_CorrectionSpeed")]
     public float Collision_FreeLook_CorrectionSpeed;
 
     [Tooltip("the rate of change of local distance of the camera to the target, if correcting, when tracking")]
