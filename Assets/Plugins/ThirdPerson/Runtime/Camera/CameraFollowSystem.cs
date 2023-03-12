@@ -51,7 +51,8 @@ sealed class CameraFollowSystem: CameraSystem {
     Phase Tracking_Recenter => new Phase(
         name: "Tracking_Recenter",
         enter: Tracking_Recenter_Enter,
-        update: Tracking_Recenter_Update
+        update: Tracking_Recenter_Update,
+        exit: Tracking_Recenter_Exit
     );
 
     void Tracking_Recenter_Enter() {
@@ -78,12 +79,17 @@ sealed class CameraFollowSystem: CameraSystem {
         }
     }
 
+    void Tracking_Recenter_Exit() {
+        m_State.Next.Spherical = m_State.IntoCurrSpherical();
+    }
+
     // -- Tracking --
     // camera following the player on its own
     Phase Tracking => new Phase(
         name: "Tracking",
         enter: Tracking_Enter,
-        update: Tracking_Update
+        update: Tracking_Update,
+        exit: Tracking_Exit
     );
 
     void Tracking_Enter() {
@@ -107,6 +113,10 @@ sealed class CameraFollowSystem: CameraSystem {
         }
     }
 
+    void Tracking_Exit() {
+        m_State.Next.Spherical = m_State.IntoCurrSpherical();
+    }
+
     // -- FreeLook --
     // player controlling the camera
     Phase FreeLook => new Phase(
@@ -117,7 +127,6 @@ sealed class CameraFollowSystem: CameraSystem {
 
     void FreeLook_Enter() {
         m_State.Next.IsFreeLook = true;
-        m_State.Next.Spherical = m_State.IntoCurrSpherical();
     }
 
     void FreeLook_Update(float delta) {

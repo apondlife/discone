@@ -88,7 +88,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         }
 
         var ideal = m_State.IntoIdealPosition();
-        var corrected = GetTrackingPos(ideal);
+        var corrected = GetFreeLookPos(ideal);
 
         m_State.Next.Pos = ideal;
 
@@ -113,32 +113,39 @@ sealed class CameraCollisionSystem: CameraSystem {
         var ideal = m_State.IntoIdealPosition();
         var corrected = GetFreeLookPos(ideal);
 
-        m_State.Next.Pos = Vector3.MoveTowards(
-            m_State.Curr.Pos,
-            corrected,
-            m_Tuning.Collision_FreeLook_CorrectionSpeed * delta
-        );
-
+        // m_State.Next.Pos = m_State.Curr.Pos + (inputImpulse + correctionImpulse);
         if (ideal == corrected) {
-            ChangeTo(FreeLook);
+            ChangeToImmediate(FreeLook, delta);
             return;
         }
 
         // scale tolerance with hit normal
-        var dot = Vector3.Dot(m_HitNormal, Vector3.up);
-        var tolerance = m_Tuning.Collision_ClipToleranceByNormal.Evaluate(dot);
+        var normalDotUp = Vector3.Dot(m_HitNormal, Vector3.up);
+        var tolerance = m_Tuning.Collision_ClipToleranceByNormal.Evaluate(normalDotUp);
         var mag = Vector3.Magnitude(ideal - corrected);
         if (mag > tolerance) {
-            ChangeTo(FreeLook_Clipping);
+            ChangeToImmediate(FreeLook_Clipping, delta);
             return;
         }
+
+        // interpolate towards corrected position while colliding
+        m_State.Next.Pos = Vector3.MoveTowards(
+            m_State.Next.Pos,
+            corrected,
+            m_Tuning.Collision_FreeLook_CorrectionSpeed * delta
+        );
     }
 
     // -- FreeLook_Clipping--
     Phase FreeLook_Clipping => new Phase(
         name: "FreeLook_Clipping",
+        enter: FreeLook_Clipping_Enter,
         update: FreeLook_Clipping_Update
     );
+
+    void FreeLook_Clipping_Enter() {
+        m_State.Next.Velocity *= 1.0f - m_Tuning.Collision_ClipDamping.Evaluate(PhaseStart, PhaseStart);
+    }
 
     void FreeLook_Clipping_Update(float delta) {
         if (!m_State.IsFreeLook) {
@@ -149,11 +156,8 @@ sealed class CameraCollisionSystem: CameraSystem {
         var ideal = m_State.IntoIdealPosition();
         var corrected = GetFreeLookPos(ideal);
 
-        m_State.Next.Pos = Vector3.MoveTowards(
-            m_State.Curr.Pos,
-            ideal,
-            m_Tuning.Collision_FreeLook_CorrectionSpeed * delta
-        );
+        m_State.Next.Pos = ideal;
+        m_State.Next.Velocity *= 1.0f - m_Tuning.Collision_ClipDamping.Evaluate(PhaseStart, PhaseStart);
 
         if (ideal == corrected) {
             ChangeTo(FreeLook_ClippingCooldown);
@@ -175,11 +179,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         var ideal = m_State.IntoIdealPosition();
         var corrected = GetFreeLookPos(ideal);
 
-        m_State.Next.Pos = Vector3.MoveTowards(
-            m_State.Curr.Pos,
-            ideal,
-            m_Tuning.Collision_FreeLook_CorrectionSpeed * delta
-        );
+        m_State.Next.Pos = ideal;
 
         if (ideal != corrected) {
             ChangeTo(FreeLook_Clipping);
@@ -238,6 +238,7 @@ sealed class CameraCollisionSystem: CameraSystem {
 
         // scale the projection down if the pitch is < 0 so that we can pan
         // into the character
+        // TODO: add a tuning to scale this differently
         var projK = 1.0f;
         var pitch = m_State.Next.Spherical.Zenith;
         if (pitch < 0.0f) {

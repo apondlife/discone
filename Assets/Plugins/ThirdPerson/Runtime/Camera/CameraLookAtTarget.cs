@@ -65,7 +65,7 @@ public class CameraLookAtTarget: MonoBehaviour {
         m_GroundTarget = transform.localPosition;
     }
 
-    void Update() {
+    void FixedUpdate() {
         // first we find the ground target destination
         var groundDest = FindGroundDestination();
         var freelook = m_Follow.IsFreeLookEnabled;
