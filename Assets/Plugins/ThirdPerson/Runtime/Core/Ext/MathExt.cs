@@ -6,6 +6,9 @@ namespace ThirdPerson {
 /// mathf "static" methods
 public static class Mathx {
     /// integrate a vector smoothing out the derivative over time
+    public static float InverseLerpUnclamped(float a, float b, float value) {
+        return (value - a) / (b-a);
+    }
     public static Vector3 Integrate_Heun<T>(
         Func<Vector3, T, Vector3> derivative,
         Vector3 v0,

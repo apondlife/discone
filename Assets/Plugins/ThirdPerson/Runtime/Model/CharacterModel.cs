@@ -30,6 +30,9 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the vertical speed animator prop
     const string k_PropVerticalSpeed = "VerticalSpeed";
 
+    /// the landing speed animator prop
+    const string k_PropLandingSpeed = "LandingSpeed";
+
     /// the dot product of move facing and velocity prop
     const string k_PropMoveFacingDotVelocity = "MoveFacingDotVelocity";
 
@@ -99,6 +102,9 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the stored tilt rotation
     Quaternion m_TiltRotation = Quaternion.identity;
 
+    /// the stored speed when landing
+    float m_LandingSpeed = 0.0f;
+
     // -- lifecycle --
     void Start() {
         // set dependencies
@@ -160,7 +166,7 @@ public sealed class CharacterModel: MonoBehaviour {
         // set move animation params
         anim.SetFloat(
             k_PropMoveSpeed,
-            Mathf.InverseLerp(
+            Mathx.InverseLerpUnclamped(
                 0.0f,
                 m_Tunables.Horizontal_MaxSpeed,
                 m_State.Next.GroundVelocity.magnitude
@@ -191,7 +197,17 @@ public sealed class CharacterModel: MonoBehaviour {
 
         anim.SetFloat(
             k_PropVerticalSpeed,
-            m_State.Next.Velocity.y
+            m_State.Prev.Velocity.y
+        );
+
+
+        if (!m_State.Next.IsOnGround) {
+            m_LandingSpeed = m_State.Prev.Velocity.y;
+        }
+
+        anim.SetFloat(
+            k_PropLandingSpeed,
+            m_LandingSpeed
         );
 
         anim.SetFloat(
