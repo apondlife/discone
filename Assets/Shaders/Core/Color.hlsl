@@ -3,6 +3,18 @@
 
 #include "./Math.hlsl"
 
+// -- queries --
+/// layer whichever color has higher alpha
+inline fixed4 Layer(fixed4 c1, fixed4 c2) {
+    return lerp(c1, c2, step(c1.a, c2.a));
+}
+
+/// layer whichever color has higher alpha
+inline fixed4 Layer(fixed4 c1, fixed4 c2, fixed4 c3) {
+    return Layer(Layer(c1, c2), c3);
+}
+
+// -- hsv --
 // TODO: shouldn't color all be fixed -ty
 float3 LerpHsv(float3 a, float3 b, float1 t) {
     float1 ax = a.x;

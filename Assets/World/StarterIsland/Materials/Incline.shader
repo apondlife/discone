@@ -716,13 +716,15 @@ Shader "Custom/Incline" {
                 trellis.a = max(tx.a, max(ty.a, tz.a));
 
                 // sample vines
-                fixed4 vx = tex2D(_BackfaceVineTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
-                fixed4 vy = tex2D(_BackfaceVineTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
-                fixed4 vz = tex2D(_BackfaceVineTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
+                fixed4 vx = tex2D(_BackfaceVineTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX)));
+                fixed4 vy = tex2D(_BackfaceVineTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY)));
+                fixed4 vz = tex2D(_BackfaceVineTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ)));
 
-                fixed4 vines;
-                vines.rgb = vx.rgb + vy.rgb + vz.rgb;
-                vines.a = max(vx.a, max(vy.a, vz.a));
+                vx.a *= bf.x;
+                vy.a *= bf.y;
+                vz.a *= bf.z;
+
+                fixed4 vines = Layer(vx, vy, vz);
 
                 // fade out patches of vines
                 float1 vinesFade = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom);
@@ -731,13 +733,15 @@ Shader "Custom/Incline" {
                 vines.a *= vinesFade;
 
                 // sample flowers
-                fixed4 fx = SampleFlowers(uvX) * bf.x;
-                fixed4 fy = SampleFlowers(uvY) * bf.y;
-                fixed4 fz = SampleFlowers(uvZ) * bf.z;
+                fixed4 fx = SampleFlowers(uvX);
+                fixed4 fy = SampleFlowers(uvY);
+                fixed4 fz = SampleFlowers(uvZ);
 
-                fixed4 flowers;
-                flowers.rgb = fx.rgb + fy.rgb + fz.rgb;
-                flowers.a = max(fx.a, max(fy.a, fz.a));
+                fx.a *= bf.x;
+                fy.a *= bf.y;
+                fz.a *= bf.z;
+
+                fixed4 flowers = Layer(fx, fy, fz);
 
                 // layer plants on trellis
                 fixed4 col;
