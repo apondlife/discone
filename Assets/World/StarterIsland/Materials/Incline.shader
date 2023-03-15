@@ -79,6 +79,14 @@ Shader "Custom/Incline" {
         _BackfaceNoiseScale ("Noise Scale", Range(0.0, 1.0)) = 0.5
         _BackfaceNoiseOffset ("Noise Offset", Range(0.0, 1.0)) = 0.5
         _BackfaceNoiseVelocity ("Noise Velocity", Vector) = (0, 0, 1, 0)
+        [ShowAsVector2] _BackfaceTrellisWidth ("Trellis Width (range)", Vector) = (0, 0, 0, 0)
+        _BackfaceTrellisGap ("Trellis Gap", Vector) = (0, 0, 0, 0)
+        _BackfaceTrellisColor ("Trellis Color", Color) = (1, 1, 1, 1)
+        [ShowAsVector2] _BackfaceTrellisDrop ("Trellis Drop Percent", Vector) = (0, 0, 0, 0)
+        [ShowAsVector2] _BackfaceTrellisBreak ("Trellis Break Percent", Vector) = (0, 0, 0, 0)
+        [ShowAsVector2] _BackfaceTrellisDisplacement ("Trellis Displacement", Vector) = (0, 0, 0, 0)
+        [ShowAsVector2] _BackfaceTrellisDisplacementFreq ("Trellis Displacement Frequency", Vector) = (0, 0, 0, 0)
+        _TestFloat ("Test", Float) = 1
     }
 
     SubShader {
@@ -575,8 +583,8 @@ Shader "Custom/Incline" {
 
             // -- includes --
             #include "UnityCG.cginc"
-            #include "Assets/Shaders/Core/Math.cginc"
-            #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
+            #include "Assets/Shaders/Core/Math.hlsl"
+            #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise2D.hlsl"
 
             // -- types --
             struct VertIn {
@@ -619,6 +627,33 @@ Shader "Custom/Incline" {
             // the backface noise velocity
             float3 _BackfaceNoiseVelocity;
 
+            // the trellis bar's width range
+            float2 _BackfaceTrellisWidth;
+
+            // the trellis bar gap
+            float3 _BackfaceTrellisGap;
+
+            // the chance of dropping a trellis
+            float2 _BackfaceTrellisDrop;
+
+            // the chance of breaking a trellis
+            float2 _BackfaceTrellisBreak;
+
+            // the trellis bar color
+            fixed3 _BackfaceTrellisColor;
+
+            // the trellis displacement amplitude
+            fixed2 _BackfaceTrellisDisplacement;
+
+            // the trellis displacement frequency
+            fixed2 _BackfaceTrellisDisplacementFreq;
+
+            float1 _Epsilon;
+
+            float1 _TestFloat;
+
+            fixed4 SampleTrellis(float2 uv);
+
             // -- program --
             FragIn DrawVert(VertIn IN) {
                 FragIn o;
@@ -636,25 +671,89 @@ Shader "Custom/Incline" {
                 bf /= max(dot(bf, half3(1, 1, 1)), 0.0001f);
 
                 // get texture
-                float2 uvX = IN.worldPos.zy * _BackfaceTex_ST.xy + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
-                float2 uvY = IN.worldPos.xz * _BackfaceTex_ST.xy + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
-                float2 uvZ = IN.worldPos.xy * _BackfaceTex_ST.xy + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
+                float2 uvX = IN.worldPos.zy * _BackfaceTex_ST.xy;// + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
+                float2 uvY = IN.worldPos.xz * _BackfaceTex_ST.xy;// + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
+                float2 uvZ = IN.worldPos.xy * _BackfaceTex_ST.xy;// + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
 
                 // base color
-                half4 cx = tex2D(_BackfaceTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
-                half4 cy = tex2D(_BackfaceTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
-                half4 cz = tex2D(_BackfaceTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
+                fixed4 cx = SampleTrellis(uvX) * bf.x;
+                fixed4 cy = SampleTrellis(uvY) * bf.y;
+                fixed4 cz = SampleTrellis(uvZ) * bf.z;
 
-                fixed4 col = (cx + cy + cz);
-                clip(col.r - _BackfaceTexThreshold - Rand(IN.uv) * _BackfaceTexTransparency);
+                fixed4 col = cx + cy + cz;
+                col.rgb = _BackfaceTrellisColor;
+                col.a = max(cx.a, max(cy.a, cz.a));
 
-                fixed noise = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom + _BackfaceNoiseVelocity * _Time.x);
-                noise *= _BackfaceNoiseScale;
-                noise += _BackfaceNoiseOffset;
-                clip(noise - Rand(IN.worldPos.xy));
+                // float1 trellisX = 1 - step(_BackfaceTrellisWidth, Mod(IN.worldPos.x, _BackfaceTrellisGap.x + _BackfaceTrellisWidth));
+                // float1 trellisY = 1 - step(_BackfaceTrellisWidth, Mod(IN.worldPos.y, _BackfaceTrellisGap.y + _BackfaceTrellisWidth));
+                // float1 trellisZ = 1 - step(_BackfaceTrellisWidth, Mod(IN.worldPos.z, _BackfaceTrellisGap.z + _BackfaceTrellisWidth));
+
+                // fixed4 col;
+                // col.rgb = _BackfaceTrellisColor;
+                // col.a = trellisX * bf.x + trellisZ * bf.z;
+                // col.a = max(trellisX, max(trellisY, trellisZ));
+
+                clip(col.a - _Epsilon);
+
+                return col;
+                // half4 cx = tex2D(_BackfaceTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
+                // half4 cy = tex2D(_BackfaceTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
+                // half4 cz = tex2D(_BackfaceTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
+
+                // fixed4 col = (cx + cy + cz);
+                // clip(col.r - _BackfaceTexThreshold - Rand(IN.uv) * _BackfaceTexTransparency);
+
+                // fixed noise = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom + _BackfaceNoiseVelocity * _Time.x);
+                // noise *= _BackfaceNoiseScale;
+                // noise += _BackfaceNoiseOffset;
+                // clip(noise - Rand(IN.worldPos.xy));
+
+                // return col;
+            }
+
+            fixed4 SampleTrellis(float2 uv) {
+                float1 seed = 1;
+
+                float2 gapWidth = _BackfaceTrellisGap;
+                // maximum possible column width
+                float2 colWidth = gapWidth + _BackfaceTrellisWidth.y;
+
+                // calculate the column index and the position of the uv within the column (mod)
+                float2 index = floor(uv / colWidth);
+                float2 pos = uv - colWidth * index;
+
+                float2 barWidth;
+                barWidth.x = lerp(_BackfaceTrellisWidth.x, _BackfaceTrellisWidth.y, Rand(index.x + (seed + 0)));
+                barWidth.y = lerp(_BackfaceTrellisWidth.x, _BackfaceTrellisWidth.y, Rand(index.y + (seed + 0)));
+
+                float2 offset;
+                offset.x = Rand(float2r(index.x + seed)) * (_BackfaceTrellisGap.x - barWidth.x);
+                offset.y = Rand(float2r(index.y + seed)) * (_BackfaceTrellisGap.y - barWidth.y);
+
+                // displace the offset perpendicular to the bar
+                offset.x += SimplexNoise(float2r(uv.y * _BackfaceTrellisDisplacementFreq.x + index)) * _BackfaceTrellisDisplacement.x;
+                offset.y += SimplexNoise(float2r(uv.x * _BackfaceTrellisDisplacementFreq.y + index)) * _BackfaceTrellisDisplacement.y;
+
+                float2 trellis;
+                trellis.x = step(offset.x, pos.x) * step(pos.x, offset.x + barWidth.x);
+                trellis.y = step(offset.y, pos.y) * step(pos.y, offset.y + barWidth.y);
+
+                // drop some of them
+                trellis.x *= step(_BackfaceTrellisDrop.x, Rand(float2r(index.x + (seed + 1))));
+                trellis.y *= step(_BackfaceTrellisDrop.y, Rand(float2r(index.y + (seed + 1))));
+
+                // break some of them
+                trellis.x *= step(_BackfaceTrellisBreak.y, Rand(index.yx + (seed + 2)));
+                trellis.y *= step(_BackfaceTrellisBreak.x, Rand(index.xy + (seed + 2)));
+
+                // TODO: sample flower textures as well
+                fixed4 col;
+                col.rgb = _BackfaceTrellisColor;
+                col.a = max(trellis.x, trellis.y);
 
                 return col;
             }
+
             ENDCG
         }
     }

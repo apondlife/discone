@@ -26,9 +26,19 @@
 #endif
 
 // -- vectors --
-/// create a half3 from a repeated value
+/// create a fixed3 from a repeated value
+inline fixed2 fixed2r(fixed val) {
+    return fixed2(val, val);
+}
+
+/// create a fixed3 from a repeated value
 inline fixed3 fixed3r(fixed val) {
     return fixed3(val, val, val);
+}
+
+/// create a float2 from a repeated value
+inline float2 float2r(float val) {
+    return float2(val, val);
 }
 
 /// create a float3 from a repeated value
@@ -60,6 +70,11 @@ float1 UnlerpSpan(float2 span, float v) {
 /// sample a random value, between 0 and 1, for a 2d coordinate
 float1 Rand(float2 st) {
     return frac(sin(dot(st, float2(12.9898f, 78.233f))) * 43758.5453123f);
+}
+
+/// a mod that uses the sign of a
+float1 Mod(float a, float b) {
+    return a - b * floor(a / b);
 }
 
 #endif
