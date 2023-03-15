@@ -73,8 +73,6 @@ Shader "Custom/Incline" {
         [Space(5)]
         _BackfaceVineTex ("Texture", 2D) = "gray" {}
         _BackfaceTexDisplacement ("Texture Displacement", Range(0.0, 1.0)) = 0.9
-        _BackfaceTexThreshold ("Texture Threshold", Range(0.0, 1.0)) = 0.5
-        _BackfaceTexTransparency ("Texture Transparency", Range(0.0, 2.0)) = 0.95
         _BackfaceNoiseZoom ("Noise Zoom", Float) = 1.0
         _BackfaceNoiseScale ("Noise Scale", Range(0.0, 1.0)) = 0.5
         _BackfaceNoiseOffset ("Noise Offset", Range(0.0, 1.0)) = 0.5
@@ -586,7 +584,6 @@ Shader "Custom/Incline" {
         Pass {
             Tags {
                 "RenderType" = "Opaque"
-                // "Queue" = "AlphaTest"
             }
 
             LOD 100
@@ -620,19 +617,14 @@ Shader "Custom/Incline" {
             };
 
             // -- props --
+            // the vine texture
             sampler2D _BackfaceVineTex;
 
-            /// the texture coordinate
+            /// the vine texture coordinate
             float4 _BackfaceVineTex_ST;
 
             // the backface texture displacement
             float _BackfaceTexDisplacement;
-
-            // the backface texture threshold
-            float _BackfaceTexThreshold;
-
-            // the backface texture transparency
-            float _BackfaceTexTransparency;
 
             // the backface noise zoom
             float _BackfaceNoiseZoom;
@@ -644,7 +636,6 @@ Shader "Custom/Incline" {
             float _BackfaceNoiseOffset;
 
             // -- props/trellis
-
             // the trellis texture
             sampler2D _BackfaceTrellisTex;
 
@@ -676,7 +667,6 @@ Shader "Custom/Incline" {
             float2 _BackfaceTrellisDisplacementFreq;
 
             // -- props/flower
-
             // the flower texture
             sampler2D _BackfaceFlowerTex;
 
@@ -686,9 +676,11 @@ Shader "Custom/Incline" {
             // the flower size
             fixed2 _BackfaceFlowerSize;
 
-            float1 _Epsilon;
-
+            // -- props/debug
             float1 _TestFloat;
+
+            // -- globals --
+            float1 _Epsilon;
 
             // -- declarations --
             fixed4 SampleTrellis(float2 uv);
@@ -715,18 +707,19 @@ Shader "Custom/Incline" {
                 float2 uvY = IN.worldPos.xz;
                 float2 uvZ = IN.worldPos.xy;
 
-                // base trellis color
+                // sample trellis
                 fixed4 tx = SampleTrellis(uvX) * bf.x;
                 fixed4 ty = SampleTrellis(uvY) * bf.y;
                 fixed4 tz = SampleTrellis(uvZ) * bf.z;
-                fixed4 trellis = tx + ty + tz;
 
+                fixed4 trellis = tx + ty + tz;
                 trellis.a = max(tx.a, max(ty.a, tz.a));
 
                 // sample vines
                 fixed4 vx = tex2D(_BackfaceVineTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
                 fixed4 vy = tex2D(_BackfaceVineTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
                 fixed4 vz = tex2D(_BackfaceVineTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
+
                 fixed4 vines;
                 vines.rgb = vx.rgb + vy.rgb + vz.rgb;
                 vines.a = max(vx.a, max(vy.a, vz.a));
@@ -741,6 +734,7 @@ Shader "Custom/Incline" {
                 fixed4 fx = SampleFlowers(uvX) * bf.x;
                 fixed4 fy = SampleFlowers(uvY) * bf.y;
                 fixed4 fz = SampleFlowers(uvZ) * bf.z;
+
                 fixed4 flowers;
                 flowers.rgb = fx.rgb + fy.rgb + fz.rgb;
                 flowers.a = max(fx.a, max(fy.a, fz.a));
@@ -758,13 +752,16 @@ Shader "Custom/Incline" {
             }
 
             fixed4 SampleFlowers(float2 uv) {
-                float1 seed = 1;
-
                 // calculate the grid index and normalize of the uv within the grid
                 float2 index = floor(uv / _BackfaceFlowerSize.y);
-                float2 size = float2r(lerp(_BackfaceFlowerSize.x, _BackfaceFlowerSize.y, Rand(index + (seed + 0))));
+                float2 size = float2r(lerp(
+                    _BackfaceFlowerSize.x,
+                    _BackfaceFlowerSize.y,
+                    Rand(index + Seed(0))
+                ));
 
-                float1 a = Rand(index + (seed + 0)) * K_2PI;
+                // calculate flower rotation
+                float1 a = Rand(index + Seed(1)) * K_2PI;
                 float1 asin = sin(a);
                 float1 acos = cos(a);
                 float2x2 rot = {
@@ -772,34 +769,26 @@ Shader "Custom/Incline" {
                     +asin, +acos
                 };
 
-                float2 uvg = (uv - size * index) / _BackfaceFlowerSize.y;
+                // normalize the uv to the grid
+                float2 uvg = (uv - _BackfaceFlowerSize.y * index) / _BackfaceFlowerSize.y;
                 uvg -= float2r(0.5);
+                uvg /= size / _BackfaceFlowerSize.y;
                 uvg = mul(rot, uvg);
                 uvg += float2r(0.5);
-
-                // float2 flower;
-                // flower.x = step(offset.x, pos.x) * step(pos.x, offset.x + barWidth.x);
-                // flower.y = step(offset.y, pos.y) * step(pos.y, offset.y + barWidth.y);
-
-                // // break some of them
-                // flower.x *= step(_BackfaceTrellisBreak.y, Rand(index.yx + (seed + 2)));
-                // flower.y *= step(_BackfaceTrellisBreak.x, Rand(index.xy + (seed + 2)));
 
                 // TODO: sample textures as well
                 // TODO: fake normals for shading?
                 fixed4 col;
                 col = tex2D(_BackfaceFlowerTex, uvg);
+
                 // drop some of them
-                col.a *= step(_BackfaceFlowerDrop, Rand(index + (seed + 1)));
+                col.a *= step(_BackfaceFlowerDrop, Rand(index + Seed(2)));
 
                 return col;
             }
 
             fixed4 SampleTrellis(float2 uv) {
-                float1 seed = 1;
-
                 float2 gapWidth = _BackfaceTrellisGap;
-                // maximum possible column width
                 float2 colWidth = gapWidth + _BackfaceTrellisWidth.y;
 
                 // calculate the column index and the position of the uv within the column (mod)
@@ -807,12 +796,12 @@ Shader "Custom/Incline" {
                 float2 pos = uv - colWidth * index;
 
                 float2 barWidth;
-                barWidth.x = lerp(_BackfaceTrellisWidth.x, _BackfaceTrellisWidth.y, Rand(index.x + (seed + 0)));
-                barWidth.y = lerp(_BackfaceTrellisWidth.x, _BackfaceTrellisWidth.y, Rand(index.y + (seed + 0)));
+                barWidth.x = lerp(_BackfaceTrellisWidth.x, _BackfaceTrellisWidth.y, Rand(index.x + Seed(0)));
+                barWidth.y = lerp(_BackfaceTrellisWidth.x, _BackfaceTrellisWidth.y, Rand(index.y + Seed(0)));
 
                 float2 offset;
-                offset.x = Rand(float2r(index.x + seed)) * (_BackfaceTrellisGap.x - barWidth.x);
-                offset.y = Rand(float2r(index.y + seed)) * (_BackfaceTrellisGap.y - barWidth.y);
+                offset.x = Rand(float2r(index.x + Seed(1))) * (_BackfaceTrellisGap.x - barWidth.x);
+                offset.y = Rand(float2r(index.y + Seed(1))) * (_BackfaceTrellisGap.y - barWidth.y);
 
                 // displace the offset perpendicular to the bar
                 offset.x += SimplexNoise(float3(uv.y * _BackfaceTrellisDisplacementFreq.x, 0, 0)) * _BackfaceTrellisDisplacement.x;
@@ -823,19 +812,19 @@ Shader "Custom/Incline" {
                 trellis.y = step(offset.y, pos.y) * step(pos.y, offset.y + barWidth.y);
 
                 // drop some of them
-                trellis.x *= step(_BackfaceTrellisDrop.x, Rand(float2r(index.x + (seed + 1))));
-                trellis.y *= step(_BackfaceTrellisDrop.y, Rand(float2r(index.y + (seed + 1))));
+                trellis.x *= step(_BackfaceTrellisDrop.x, Rand(float2r(index.x + Seed(2))));
+                trellis.y *= step(_BackfaceTrellisDrop.y, Rand(float2r(index.y + Seed(2))));
 
                 // break some of them
-                trellis.x *= step(_BackfaceTrellisBreak.y, Rand(index.yx + (seed + 2)));
-                trellis.y *= step(_BackfaceTrellisBreak.x, Rand(index.xy + (seed + 2)));
+                trellis.x *= step(_BackfaceTrellisBreak.y, Rand(index.yx + Seed(3)));
+                trellis.y *= step(_BackfaceTrellisBreak.x, Rand(index.xy + Seed(3)));
 
                 // TODO: fake normals for shading?
                 fixed4 col;
                 col.rgb = IntoRgb(LerpHsv(
                     IntoHsv(_BackfaceTrellisColor0),
                     IntoHsv(_BackfaceTrellisColor1),
-                    dot(tex2D(_BackfaceTrellisTex, uv + _BackfaceTrellisTex_ST.xy).rgb, float3r(1.0/3.0))
+                    dot(tex2D(_BackfaceTrellisTex, uv + _BackfaceTrellisTex_ST.xy).rgb, float3r(1.0 / 3.0))
                 ));
 
                 col.a = max(trellis.x, trellis.y);

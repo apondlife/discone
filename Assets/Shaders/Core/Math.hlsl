@@ -72,6 +72,11 @@ float1 Rand(float2 st) {
     return frac(sin(dot(st, float2(12.9898f, 78.233f))) * 43758.5453123f);
 }
 
+/// a seed value with an offset
+inline float1 Seed(float1 offset) {
+    return 69 + offset;
+}
+
 /// a mod that uses the sign of a
 float1 Mod(float a, float b) {
     return a - b * floor(a / b);
