@@ -71,7 +71,7 @@ Shader "Custom/Incline" {
         [Space]
         [Header(Back Face Vines)]
         [Space(5)]
-        _BackfaceTex ("Texture", 2D) = "gray" {}
+        _BackfaceVineTex ("Texture", 2D) = "gray" {}
         _BackfaceTexDisplacement ("Texture Displacement", Range(0.0, 1.0)) = 0.9
         _BackfaceTexThreshold ("Texture Threshold", Range(0.0, 1.0)) = 0.5
         _BackfaceTexTransparency ("Texture Transparency", Range(0.0, 2.0)) = 0.95
@@ -82,20 +82,26 @@ Shader "Custom/Incline" {
         [Space]
         [Header(Back Face Flower)]
         [Space(5)]
-        _BackfaceFlowerTex ("Texture", 2D) = "white" {}
+        _BackfaceFlowerTex ("Texture", 2D) = "gray" {}
         [ShowAsVector2] _BackfaceFlowerSize ("Size", Vector) = (0, 0, 0, 0)
         _BackfaceFlowerDrop ("Drop Percent", Float) = 0
 
         [Space]
         [Header(Back Face Trellis)]
         [Space(5)]
+        _BackfaceTrellisTex ("Texture", 2D) = "gray" {}
+        _BackfaceTrellisColor0 ("Color 0", Color) = (0, 0, 0, 1)
+        _BackfaceTrellisColor1 ("Color 1", Color) = (0, 0, 0, 1)
         [ShowAsVector2] _BackfaceTrellisWidth ("Width (range)", Vector) = (0, 0, 0, 0)
         _BackfaceTrellisGap ("Gap", Vector) = (0, 0, 0, 0)
-        _BackfaceTrellisColor ("Color", Color) = (1, 1, 1, 1)
         [ShowAsVector2] _BackfaceTrellisDrop ("Drop Percent", Vector) = (0, 0, 0, 0)
         [ShowAsVector2] _BackfaceTrellisBreak ("Break Percent", Vector) = (0, 0, 0, 0)
         [ShowAsVector2] _BackfaceTrellisDisplacement ("Displacement", Vector) = (0, 0, 0, 0)
         [ShowAsVector2] _BackfaceTrellisDisplacementFreq ("Displacement Frequency", Vector) = (0, 0, 0, 0)
+
+        [Space]
+        [Header(Debug)]
+        [Space(5)]
         _TestFloat ("Test", Float) = 1
 
     }
@@ -596,6 +602,7 @@ Shader "Custom/Incline" {
             // -- includes --
             #include "UnityCG.cginc"
             #include "Assets/Shaders/Core/Math.hlsl"
+            #include "Assets/Shaders/Core/Color.hlsl"
             #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 
             // -- types --
@@ -613,10 +620,10 @@ Shader "Custom/Incline" {
             };
 
             // -- props --
-            sampler2D _BackfaceTex;
+            sampler2D _BackfaceVineTex;
 
             /// the texture coordinate
-            float4 _BackfaceTex_ST;
+            float4 _BackfaceVineTex_ST;
 
             // the backface texture displacement
             float _BackfaceTexDisplacement;
@@ -636,6 +643,20 @@ Shader "Custom/Incline" {
             // the backface noise offset
             float _BackfaceNoiseOffset;
 
+            // -- props/trellis
+
+            // the trellis texture
+            sampler2D _BackfaceTrellisTex;
+
+            // the trellis texture scale/translation
+            float4 _BackfaceTrellisTex_ST;
+
+            // the trellis color at 0 brightness
+            fixed3 _BackfaceTrellisColor0;
+
+            // the trellis color at 1 brightness
+            fixed3 _BackfaceTrellisColor1;
+
             // the trellis bar's width range
             float2 _BackfaceTrellisWidth;
 
@@ -648,14 +669,13 @@ Shader "Custom/Incline" {
             // the chance of breaking a trellis
             float2 _BackfaceTrellisBreak;
 
-            // the trellis bar color
-            fixed3 _BackfaceTrellisColor;
-
             // the trellis displacement amplitude
             float2 _BackfaceTrellisDisplacement;
 
             // the trellis displacement frequency
             float2 _BackfaceTrellisDisplacementFreq;
+
+            // -- props/flower
 
             // the flower texture
             sampler2D _BackfaceFlowerTex;
@@ -678,7 +698,7 @@ Shader "Custom/Incline" {
             FragIn DrawVert(VertIn IN) {
                 FragIn o;
                 o.vertex = UnityObjectToClipPos(IN.vertex);
-                o.uv = TRANSFORM_TEX(IN.uv, _BackfaceTex);
+                o.uv = IN.uv;//TRANSFORM_TEX(IN.uv, _BackfaceVineTex);
                 o.worldPos = mul(unity_ObjectToWorld, IN.vertex);
                 o.worldNormal = UnityObjectToWorldNormal(IN.normal);
                 return o;
@@ -691,9 +711,9 @@ Shader "Custom/Incline" {
                 bf /= max(dot(bf, half3(1, 1, 1)), 0.0001f);
 
                 // get texture
-                float2 uvX = IN.worldPos.zy * _BackfaceTex_ST.xy;// + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
-                float2 uvY = IN.worldPos.xz * _BackfaceTex_ST.xy;// + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
-                float2 uvZ = IN.worldPos.xy * _BackfaceTex_ST.xy;// + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
+                float2 uvX = IN.worldPos.zy;
+                float2 uvY = IN.worldPos.xz;
+                float2 uvZ = IN.worldPos.xy;
 
                 // base trellis color
                 fixed4 tx = SampleTrellis(uvX) * bf.x;
@@ -701,14 +721,15 @@ Shader "Custom/Incline" {
                 fixed4 tz = SampleTrellis(uvZ) * bf.z;
                 fixed4 trellis = tx + ty + tz;
 
-                trellis.rgb = _BackfaceTrellisColor;
                 trellis.a = max(tx.a, max(ty.a, tz.a));
 
                 // sample vines
-                fixed4 vx = tex2D(_BackfaceTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
-                fixed4 vy = tex2D(_BackfaceTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
-                fixed4 vz = tex2D(_BackfaceTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
-                fixed4 vines = vx + vy + vz;
+                fixed4 vx = tex2D(_BackfaceVineTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
+                fixed4 vy = tex2D(_BackfaceVineTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
+                fixed4 vz = tex2D(_BackfaceVineTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
+                fixed4 vines;
+                vines.rgb = vx.rgb + vy.rgb + vz.rgb;
+                vines.a = max(vx.a, max(vy.a, vz.a));
 
                 // fade out patches of vines
                 float1 vinesFade = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom);
@@ -720,7 +741,9 @@ Shader "Custom/Incline" {
                 fixed4 fx = SampleFlowers(uvX) * bf.x;
                 fixed4 fy = SampleFlowers(uvY) * bf.y;
                 fixed4 fz = SampleFlowers(uvZ) * bf.z;
-                fixed4 flowers = fx + fy + fz;
+                fixed4 flowers;
+                flowers.rgb = fx.rgb + fy.rgb + fz.rgb;
+                flowers.a = max(fx.a, max(fy.a, fz.a));
 
                 // layer plants on trellis
                 fixed4 col;
@@ -792,8 +815,8 @@ Shader "Custom/Incline" {
                 offset.y = Rand(float2r(index.y + seed)) * (_BackfaceTrellisGap.y - barWidth.y);
 
                 // displace the offset perpendicular to the bar
-                offset.x += SimplexNoise(float3r(uv.y * _BackfaceTrellisDisplacementFreq.x + index)) * _BackfaceTrellisDisplacement.x;
-                offset.y += SimplexNoise(float3r(uv.x * _BackfaceTrellisDisplacementFreq.y + index)) * _BackfaceTrellisDisplacement.y;
+                offset.x += SimplexNoise(float3(uv.y * _BackfaceTrellisDisplacementFreq.x, 0, 0)) * _BackfaceTrellisDisplacement.x;
+                offset.y += SimplexNoise(float3(uv.x * _BackfaceTrellisDisplacementFreq.y, 0, 0)) * _BackfaceTrellisDisplacement.y;
 
                 float2 trellis;
                 trellis.x = step(offset.x, pos.x) * step(pos.x, offset.x + barWidth.x);
@@ -807,10 +830,14 @@ Shader "Custom/Incline" {
                 trellis.x *= step(_BackfaceTrellisBreak.y, Rand(index.yx + (seed + 2)));
                 trellis.y *= step(_BackfaceTrellisBreak.x, Rand(index.xy + (seed + 2)));
 
-                // TODO: sample textures as well
                 // TODO: fake normals for shading?
                 fixed4 col;
-                col.rgb = _BackfaceTrellisColor;
+                col.rgb = IntoRgb(LerpHsv(
+                    IntoHsv(_BackfaceTrellisColor0),
+                    IntoHsv(_BackfaceTrellisColor1),
+                    dot(tex2D(_BackfaceTrellisTex, uv + _BackfaceTrellisTex_ST.xy).rgb, float3r(1.0/3.0))
+                ));
+
                 col.a = max(trellis.x, trellis.y);
 
                 return col;
