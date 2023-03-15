@@ -1,0 +1,186 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Incline_Variation2_Human
+  m_Shader: {fileID: 4800000, guid: 17eaea66943ecc94b932acb7ffade775, type: 3}
+  m_ShaderKeywords: _BLEND_GRADIENT
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BackfaceFlowerTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BackfaceTex:
+        m_Texture: {fileID: 2800000, guid: 79b101ef74763446ab0efbfb8c0cd567, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BackfaceTrellisTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BackfaceVineTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseTex:
+        m_Texture: {fileID: 2800000, guid: a98d8f6575d59e64986428918683672b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CeilBumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CeilTex:
+        m_Texture: {fileID: 2800000, guid: 654c5142ea3b04176824fe9f525a73df, type: 3}
+        m_Scale: {x: 0.1, y: 0.1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainBumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 1fa35801a1df546dcb67700745340842, type: 3}
+        m_Scale: {x: 0.001, y: 0.001}
+        m_Offset: {x: 0.72, y: 0}
+    - _MainTex1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RampBumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RampTex:
+        m_Texture: {fileID: 2800000, guid: 1fa35801a1df546dcb67700745340842, type: 3}
+        m_Scale: {x: 0.001, y: 0.001}
+        m_Offset: {x: 0.72, y: 0}
+    - _UnderTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WallBumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WallTex:
+        m_Texture: {fileID: 2800000, guid: b2de10a40fc92e94cbcd248f73cbd791, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AmbientLightIntensity: 0.2
+    - _BackfaceFlowerDrop: 0
+    - _BackfaceNoiseOffset: 0.5
+    - _BackfaceNoiseScale: 0.5
+    - _BackfaceNoiseZoom: 0.1
+    - _BackfaceTexDisplacement: 0.95
+    - _BackfaceTexThreshold: 0.52
+    - _BackfaceTexTransparency: 0
+    - _BackfaceTrellisWidth: 0.593
+    - _BaseTexBlend: 0.937
+    - _Blend: 4
+    - _Brightness: 0
+    - _BumpScale: 0
+    - _Bump_Map: 0
+    - _CeilTexAlpha: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _Epsilon: 0.01
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Hue: 0
+    - _MainTexAlpha: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _RampAngle: 10
+    - _RampCurve: 0.5
+    - _RampTexAlpha: 1
+    - _ReflectedLightIntensity: 0.2
+    - _Saturation: 0
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _TestFloat: 1
+    - _TexScale: 0.15
+    - _UVSec: 0
+    - _UnderTexBlend: 0
+    - _VertexColorBlend: 1
+    - _VertexWobbleRadius: 0
+    - _VertexWobbleSpeed: 1.6
+    - _WallAngle: 80
+    - _WallCurve: 1
+    - _WallTexAlpha: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _BackfaceFlowerSize: {r: 0, g: 0, b: 0, a: 0}
+    - _BackfaceNoiseVelocity: {r: -0.01, g: -0.02, b: 0.5, a: 0}
+    - _BackfaceTrellisBreak: {r: 0, g: 0, b: 0, a: 0}
+    - _BackfaceTrellisColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BackfaceTrellisColor0: {r: 0, g: 0, b: 0, a: 1}
+    - _BackfaceTrellisColor1: {r: 0, g: 0, b: 0, a: 1}
+    - _BackfaceTrellisDisplacement: {r: 0, g: 0, b: 0, a: 0}
+    - _BackfaceTrellisDisplacementFreq: {r: 0, g: 0, b: 0, a: 0}
+    - _BackfaceTrellisDrop: {r: 0, g: 0, b: 0, a: 0}
+    - _BackfaceTrellisGap: {r: 1, g: 1, b: 1, a: 0}
+    - _BackfaceTrellisWidth: {r: 0, g: 0, b: 0, a: 0}
+    - _CeilColor: {r: 0.26415092, g: 0.26415092, b: 0.26415092, a: 1}
+    - _CeilColor1: {r: 0.20754719, g: 0.15174441, b: 0.15174441, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _MainColor: {r: 0.5647059, g: 0.5764706, b: 0.49803925, a: 1}
+    - _MainColor1: {r: 0.15739588, g: 0.2243434, b: 0.254717, a: 1}
+    - _RampColor: {r: 0.6981132, g: 0.6803992, b: 0.5696867, a: 1}
+    - _RampColor1: {r: 0.2014135, g: 0.2264151, b: 0.17194732, a: 1}
+    - _VertexWobbleRange: {r: 20, g: 1000, b: 0, a: 0}
+    - _WallColor: {r: 0.5943396, g: 0.5822491, b: 0.4962175, a: 1}
+    - _WallColor1: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 1}
+  m_BuildTextureStacks: []
