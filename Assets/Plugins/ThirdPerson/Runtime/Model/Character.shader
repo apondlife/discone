@@ -5,8 +5,8 @@ Shader "ThirdPerson/Character" {
 
     SubShader {
         Tags {
-            "RenderType" = "TransparentCutout"
-            "Queue" = "AlphaTest"
+            "RenderType" = "Opaque"
+            // "Queue" = "AlphaTest"
         }
 
         LOD 100
@@ -104,6 +104,7 @@ Shader "ThirdPerson/Character" {
                 // lighting (shading + shadows)
                 fixed3 lighting = IN.diffuse * SHADOW_ATTENUATION(IN) + IN.ambient;
                 c.rgb *= lighting;
+                c.a = 1;
 
                 return c;
             }

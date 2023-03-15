@@ -78,7 +78,6 @@ Shader "Custom/Incline" {
         _BackfaceNoiseZoom ("Noise Zoom", Float) = 1.0
         _BackfaceNoiseScale ("Noise Scale", Range(0.0, 1.0)) = 0.5
         _BackfaceNoiseOffset ("Noise Offset", Range(0.0, 1.0)) = 0.5
-        _BackfaceNoiseVelocity ("Noise Velocity", Vector) = (0, 0, 1, 0)
         [ShowAsVector2] _BackfaceTrellisWidth ("Trellis Width (range)", Vector) = (0, 0, 0, 0)
         _BackfaceTrellisGap ("Trellis Gap", Vector) = (0, 0, 0, 0)
         _BackfaceTrellisColor ("Trellis Color", Color) = (1, 1, 1, 1)
@@ -568,12 +567,13 @@ Shader "Custom/Incline" {
         // translucent backfaces
         Pass {
             Tags {
-                "RenderType" = "TransparentCutout"
-                "Queue" = "AlphaTest"
+                "RenderType" = "Opaque"
+                // "Queue" = "AlphaTest"
             }
 
             LOD 100
             Cull Front
+            ZWrite On
 
             CGPROGRAM
             // -- config --
@@ -584,7 +584,7 @@ Shader "Custom/Incline" {
             // -- includes --
             #include "UnityCG.cginc"
             #include "Assets/Shaders/Core/Math.hlsl"
-            #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise2D.hlsl"
+            #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 
             // -- types --
             struct VertIn {
@@ -623,9 +623,6 @@ Shader "Custom/Incline" {
 
             // the backface noise offset
             float _BackfaceNoiseOffset;
-
-            // the backface noise velocity
-            float3 _BackfaceNoiseVelocity;
 
             // the trellis bar's width range
             float2 _BackfaceTrellisWidth;
@@ -675,40 +672,34 @@ Shader "Custom/Incline" {
                 float2 uvY = IN.worldPos.xz * _BackfaceTex_ST.xy;// + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
                 float2 uvZ = IN.worldPos.xy * _BackfaceTex_ST.xy;// + _BackfaceTex_ST.zw * float2(_SinTime.x, _Time.x);
 
-                // base color
-                fixed4 cx = SampleTrellis(uvX) * bf.x;
-                fixed4 cy = SampleTrellis(uvY) * bf.y;
-                fixed4 cz = SampleTrellis(uvZ) * bf.z;
+                // base trellis color
+                fixed4 tx = SampleTrellis(uvX) * bf.x;
+                fixed4 ty = SampleTrellis(uvY) * bf.y;
+                fixed4 tz = SampleTrellis(uvZ) * bf.z;
+                fixed4 trellis = tx + ty + tz;
 
-                fixed4 col = cx + cy + cz;
-                col.rgb = _BackfaceTrellisColor;
-                col.a = max(cx.a, max(cy.a, cz.a));
+                trellis.rgb = _BackfaceTrellisColor;
+                trellis.a = max(tx.a, max(ty.a, tz.a));
 
-                // float1 trellisX = 1 - step(_BackfaceTrellisWidth, Mod(IN.worldPos.x, _BackfaceTrellisGap.x + _BackfaceTrellisWidth));
-                // float1 trellisY = 1 - step(_BackfaceTrellisWidth, Mod(IN.worldPos.y, _BackfaceTrellisGap.y + _BackfaceTrellisWidth));
-                // float1 trellisZ = 1 - step(_BackfaceTrellisWidth, Mod(IN.worldPos.z, _BackfaceTrellisGap.z + _BackfaceTrellisWidth));
+                // sample flowers
+                fixed4 fx = tex2D(_BackfaceTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
+                fixed4 fy = tex2D(_BackfaceTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
+                fixed4 fz = tex2D(_BackfaceTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
+                fixed4 flower = fx + fy + fz;
 
-                // fixed4 col;
-                // col.rgb = _BackfaceTrellisColor;
-                // col.a = trellisX * bf.x + trellisZ * bf.z;
-                // col.a = max(trellisX, max(trellisY, trellisZ));
+                // fade out patches of flowers
+                float1 flowerFade = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom);
+                flowerFade *= _BackfaceNoiseScale;
+                flowerFade += _BackfaceNoiseOffset;
+                flower.a *= flowerFade;
 
+                // layer plants on trellis
+                fixed4 col;
+                col = lerp(trellis, flower, step(_Epsilon, flower.a));
                 clip(col.a - _Epsilon);
+                col.a = 1;
 
                 return col;
-                // half4 cx = tex2D(_BackfaceTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
-                // half4 cy = tex2D(_BackfaceTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
-                // half4 cz = tex2D(_BackfaceTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
-
-                // fixed4 col = (cx + cy + cz);
-                // clip(col.r - _BackfaceTexThreshold - Rand(IN.uv) * _BackfaceTexTransparency);
-
-                // fixed noise = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom + _BackfaceNoiseVelocity * _Time.x);
-                // noise *= _BackfaceNoiseScale;
-                // noise += _BackfaceNoiseOffset;
-                // clip(noise - Rand(IN.worldPos.xy));
-
-                // return col;
             }
 
             fixed4 SampleTrellis(float2 uv) {
@@ -731,8 +722,8 @@ Shader "Custom/Incline" {
                 offset.y = Rand(float2r(index.y + seed)) * (_BackfaceTrellisGap.y - barWidth.y);
 
                 // displace the offset perpendicular to the bar
-                offset.x += SimplexNoise(float2r(uv.y * _BackfaceTrellisDisplacementFreq.x + index)) * _BackfaceTrellisDisplacement.x;
-                offset.y += SimplexNoise(float2r(uv.x * _BackfaceTrellisDisplacementFreq.y + index)) * _BackfaceTrellisDisplacement.y;
+                offset.x += SimplexNoise(float3r(uv.y * _BackfaceTrellisDisplacementFreq.x + index)) * _BackfaceTrellisDisplacement.x;
+                offset.y += SimplexNoise(float3r(uv.x * _BackfaceTrellisDisplacementFreq.y + index)) * _BackfaceTrellisDisplacement.y;
 
                 float2 trellis;
                 trellis.x = step(offset.x, pos.x) * step(pos.x, offset.x + barWidth.x);
@@ -746,7 +737,8 @@ Shader "Custom/Incline" {
                 trellis.x *= step(_BackfaceTrellisBreak.y, Rand(index.yx + (seed + 2)));
                 trellis.y *= step(_BackfaceTrellisBreak.x, Rand(index.xy + (seed + 2)));
 
-                // TODO: sample flower textures as well
+                // TODO: sample textures as well
+                // TODO: fake normals for shading?
                 fixed4 col;
                 col.rgb = _BackfaceTrellisColor;
                 col.a = max(trellis.x, trellis.y);
