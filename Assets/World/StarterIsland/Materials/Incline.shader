@@ -74,8 +74,7 @@ Shader "Custom/Incline" {
         _BackfaceVineTex ("Texture", 2D) = "gray" {}
         _BackfaceTexDisplacement ("Texture Displacement", Range(0.0, 1.0)) = 0.9
         _BackfaceNoiseZoom ("Noise Zoom", Float) = 1.0
-        _BackfaceNoiseScale ("Noise Scale", Range(0.0, 1.0)) = 0.5
-        _BackfaceNoiseOffset ("Noise Offset", Range(0.0, 1.0)) = 0.5
+        _BackfaceNoiseOffset ("Noise Offset", Range(-1.0, 1.0)) = 0.5
 
         [Space]
         [Header(Back Face Flower)]
@@ -629,9 +628,6 @@ Shader "Custom/Incline" {
             // the backface noise zoom
             float _BackfaceNoiseZoom;
 
-            // the backface noise scale
-            float _BackfaceNoiseScale;
-
             // the backface noise offset
             float _BackfaceNoiseOffset;
 
@@ -684,6 +680,7 @@ Shader "Custom/Incline" {
 
             // -- declarations --
             fixed4 SampleTrellis(float2 uv);
+            fixed4 SampleVines(float2 uv);
             fixed4 SampleFlowers(float2 uv);
 
             // -- program --
@@ -716,9 +713,9 @@ Shader "Custom/Incline" {
                 trellis.a = max(tx.a, max(ty.a, tz.a));
 
                 // sample vines
-                fixed4 vx = tex2D(_BackfaceVineTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX)));
-                fixed4 vy = tex2D(_BackfaceVineTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY)));
-                fixed4 vz = tex2D(_BackfaceVineTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ)));
+                fixed4 vx = SampleVines(uvX);
+                fixed4 vy = SampleVines(uvY);
+                fixed4 vz = SampleVines(uvZ);
 
                 vx.a *= bf.x;
                 vy.a *= bf.y;
@@ -727,8 +724,7 @@ Shader "Custom/Incline" {
                 fixed4 vines = Layer(vx, vy, vz);
 
                 // fade out patches of vines
-                float1 vinesFade = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom);
-                vinesFade *= _BackfaceNoiseScale;
+                float1 vinesFade = SimplexNoise(IN.worldPos / _BackfaceNoiseZoom);
                 vinesFade += _BackfaceNoiseOffset;
                 vines.a *= vinesFade;
 
@@ -751,42 +747,6 @@ Shader "Custom/Incline" {
 
                 clip(col.a - _Epsilon);
                 col.a = 1;
-
-                return col;
-            }
-
-            fixed4 SampleFlowers(float2 uv) {
-                // calculate the grid index and normalize of the uv within the grid
-                float2 index = floor(uv / _BackfaceFlowerSize.y);
-                float2 size = float2r(lerp(
-                    _BackfaceFlowerSize.x,
-                    _BackfaceFlowerSize.y,
-                    Rand(index + Seed(0))
-                ));
-
-                // calculate flower rotation
-                float1 a = Rand(index + Seed(1)) * K_2PI;
-                float1 asin = sin(a);
-                float1 acos = cos(a);
-                float2x2 rot = {
-                    +acos, -asin,
-                    +asin, +acos
-                };
-
-                // normalize the uv to the grid
-                float2 uvg = (uv - _BackfaceFlowerSize.y * index) / _BackfaceFlowerSize.y;
-                uvg -= float2r(0.5);
-                uvg /= size / _BackfaceFlowerSize.y;
-                uvg = mul(rot, uvg);
-                uvg += float2r(0.5);
-
-                // TODO: sample textures as well
-                // TODO: fake normals for shading?
-                fixed4 col;
-                col = tex2D(_BackfaceFlowerTex, uvg);
-
-                // drop some of them
-                col.a *= step(_BackfaceFlowerDrop, Rand(index + Seed(2)));
 
                 return col;
             }
@@ -836,7 +796,50 @@ Shader "Custom/Incline" {
                 return col;
             }
 
+            fixed4 SampleVines(float2 uv) {
+                float2 uvg = uv * _BackfaceVineTex_ST.xy;
+                float2 index = floor(uvg);
+                fixed4 col = tex2D(_BackfaceVineTex, uvg  + _BackfaceTexDisplacement * Rand(index + Seed(1)));
+                return col;
+            }
+
+            fixed4 SampleFlowers(float2 uv) {
+                // calculate the grid index and normalize of the uv within the grid
+                float2 index = floor(uv / _BackfaceFlowerSize.y);
+                float2 size = float2r(lerp(
+                    _BackfaceFlowerSize.x,
+                    _BackfaceFlowerSize.y,
+                    Rand(index + Seed(0))
+                ));
+
+                // calculate flower rotation
+                float1 a = Rand(index + Seed(1)) * K_2PI;
+                float1 asin = sin(a);
+                float1 acos = cos(a);
+                float2x2 rot = {
+                    +acos, -asin,
+                    +asin, +acos
+                };
+
+                // normalize the uv to the grid
+                float2 uvg = (uv - _BackfaceFlowerSize.y * index) / _BackfaceFlowerSize.y;
+                uvg -= float2r(0.5);
+                uvg /= size / _BackfaceFlowerSize.y;
+                uvg = mul(rot, uvg);
+                uvg += float2r(0.5);
+
+                // TODO: sample textures as well
+                // TODO: fake normals for shading?
+                fixed4 col;
+                col = tex2D(_BackfaceFlowerTex, uvg);
+
+                // drop some of them
+                col.a *= step(_BackfaceFlowerDrop, Rand(index + Seed(2)));
+
+                return col;
+            }
             ENDCG
         }
+
     }
 }
