@@ -36,6 +36,11 @@ inline fixed3 fixed3r(fixed val) {
     return fixed3(val, val, val);
 }
 
+/// create a fixed3 from a repeated value
+inline fixed4 fixed4r(fixed val) {
+    return fixed4(val, val, val, val);
+}
+
 /// create a float2 from a repeated value
 inline float2 float2r(float val) {
     return float2(val, val);
