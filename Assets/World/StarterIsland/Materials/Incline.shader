@@ -69,7 +69,7 @@ Shader "Custom/Incline" {
         [Toggle] _Bump_Map ("Enable", Float) = 0
 
         [Space]
-        [Header(Back Face)]
+        [Header(Back Face Vines)]
         [Space(5)]
         _BackfaceTex ("Texture", 2D) = "gray" {}
         _BackfaceTexDisplacement ("Texture Displacement", Range(0.0, 1.0)) = 0.9
@@ -78,14 +78,26 @@ Shader "Custom/Incline" {
         _BackfaceNoiseZoom ("Noise Zoom", Float) = 1.0
         _BackfaceNoiseScale ("Noise Scale", Range(0.0, 1.0)) = 0.5
         _BackfaceNoiseOffset ("Noise Offset", Range(0.0, 1.0)) = 0.5
-        [ShowAsVector2] _BackfaceTrellisWidth ("Trellis Width (range)", Vector) = (0, 0, 0, 0)
-        _BackfaceTrellisGap ("Trellis Gap", Vector) = (0, 0, 0, 0)
-        _BackfaceTrellisColor ("Trellis Color", Color) = (1, 1, 1, 1)
-        [ShowAsVector2] _BackfaceTrellisDrop ("Trellis Drop Percent", Vector) = (0, 0, 0, 0)
-        [ShowAsVector2] _BackfaceTrellisBreak ("Trellis Break Percent", Vector) = (0, 0, 0, 0)
-        [ShowAsVector2] _BackfaceTrellisDisplacement ("Trellis Displacement", Vector) = (0, 0, 0, 0)
-        [ShowAsVector2] _BackfaceTrellisDisplacementFreq ("Trellis Displacement Frequency", Vector) = (0, 0, 0, 0)
+
+        [Space]
+        [Header(Back Face Flower)]
+        [Space(5)]
+        _BackfaceFlowerTex ("Texture", 2D) = "white" {}
+        [ShowAsVector2] _BackfaceFlowerSize ("Size", Vector) = (0, 0, 0, 0)
+        _BackfaceFlowerDrop ("Drop Percent", Float) = 0
+
+        [Space]
+        [Header(Back Face Trellis)]
+        [Space(5)]
+        [ShowAsVector2] _BackfaceTrellisWidth ("Width (range)", Vector) = (0, 0, 0, 0)
+        _BackfaceTrellisGap ("Gap", Vector) = (0, 0, 0, 0)
+        _BackfaceTrellisColor ("Color", Color) = (1, 1, 1, 1)
+        [ShowAsVector2] _BackfaceTrellisDrop ("Drop Percent", Vector) = (0, 0, 0, 0)
+        [ShowAsVector2] _BackfaceTrellisBreak ("Break Percent", Vector) = (0, 0, 0, 0)
+        [ShowAsVector2] _BackfaceTrellisDisplacement ("Displacement", Vector) = (0, 0, 0, 0)
+        [ShowAsVector2] _BackfaceTrellisDisplacementFreq ("Displacement Frequency", Vector) = (0, 0, 0, 0)
         _TestFloat ("Test", Float) = 1
+
     }
 
     SubShader {
@@ -640,16 +652,27 @@ Shader "Custom/Incline" {
             fixed3 _BackfaceTrellisColor;
 
             // the trellis displacement amplitude
-            fixed2 _BackfaceTrellisDisplacement;
+            float2 _BackfaceTrellisDisplacement;
 
             // the trellis displacement frequency
-            fixed2 _BackfaceTrellisDisplacementFreq;
+            float2 _BackfaceTrellisDisplacementFreq;
+
+            // the flower texture
+            sampler2D _BackfaceFlowerTex;
+
+            // the chance a flower will disappear
+            float1 _BackfaceFlowerDrop;
+
+            // the flower size
+            fixed2 _BackfaceFlowerSize;
 
             float1 _Epsilon;
 
             float1 _TestFloat;
 
+            // -- declarations --
             fixed4 SampleTrellis(float2 uv);
+            fixed4 SampleFlowers(float2 uv);
 
             // -- program --
             FragIn DrawVert(VertIn IN) {
@@ -681,23 +704,70 @@ Shader "Custom/Incline" {
                 trellis.rgb = _BackfaceTrellisColor;
                 trellis.a = max(tx.a, max(ty.a, tz.a));
 
-                // sample flowers
-                fixed4 fx = tex2D(_BackfaceTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
-                fixed4 fy = tex2D(_BackfaceTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
-                fixed4 fz = tex2D(_BackfaceTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
-                fixed4 flower = fx + fy + fz;
+                // sample vines
+                fixed4 vx = tex2D(_BackfaceTex, uvX + _BackfaceTexDisplacement * Rand(floor(uvX))) * bf.x;
+                fixed4 vy = tex2D(_BackfaceTex, uvY + _BackfaceTexDisplacement * Rand(floor(uvY))) * bf.y;
+                fixed4 vz = tex2D(_BackfaceTex, uvZ + _BackfaceTexDisplacement * Rand(floor(uvZ))) * bf.z;
+                fixed4 vines = vx + vy + vz;
 
-                // fade out patches of flowers
-                float1 flowerFade = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom);
-                flowerFade *= _BackfaceNoiseScale;
-                flowerFade += _BackfaceNoiseOffset;
-                flower.a *= flowerFade;
+                // fade out patches of vines
+                float1 vinesFade = SimplexNoise(IN.worldPos * _BackfaceNoiseZoom);
+                vinesFade *= _BackfaceNoiseScale;
+                vinesFade += _BackfaceNoiseOffset;
+                vines.a *= vinesFade;
+
+                // sample flowers
+                fixed4 fx = SampleFlowers(uvX) * bf.x;
+                fixed4 fy = SampleFlowers(uvY) * bf.y;
+                fixed4 fz = SampleFlowers(uvZ) * bf.z;
+                fixed4 flowers = fx + fy + fz;
 
                 // layer plants on trellis
                 fixed4 col;
-                col = lerp(trellis, flower, step(_Epsilon, flower.a));
+                col = trellis;
+                col = lerp(col, vines, step(_Epsilon, vines.a));
+                col = lerp(col, flowers, step(_Epsilon, flowers.a));
+
                 clip(col.a - _Epsilon);
                 col.a = 1;
+
+                return col;
+            }
+
+            fixed4 SampleFlowers(float2 uv) {
+                float1 seed = 1;
+
+                // calculate the grid index and normalize of the uv within the grid
+                float2 index = floor(uv / _BackfaceFlowerSize.y);
+                float2 size = float2r(lerp(_BackfaceFlowerSize.x, _BackfaceFlowerSize.y, Rand(index + (seed + 0))));
+
+                float1 a = Rand(index + (seed + 0)) * K_2PI;
+                float1 asin = sin(a);
+                float1 acos = cos(a);
+                float2x2 rot = {
+                    +acos, -asin,
+                    +asin, +acos
+                };
+
+                float2 uvg = (uv - size * index) / _BackfaceFlowerSize.y;
+                uvg -= float2r(0.5);
+                uvg = mul(rot, uvg);
+                uvg += float2r(0.5);
+
+                // float2 flower;
+                // flower.x = step(offset.x, pos.x) * step(pos.x, offset.x + barWidth.x);
+                // flower.y = step(offset.y, pos.y) * step(pos.y, offset.y + barWidth.y);
+
+                // // break some of them
+                // flower.x *= step(_BackfaceTrellisBreak.y, Rand(index.yx + (seed + 2)));
+                // flower.y *= step(_BackfaceTrellisBreak.x, Rand(index.xy + (seed + 2)));
+
+                // TODO: sample textures as well
+                // TODO: fake normals for shading?
+                fixed4 col;
+                col = tex2D(_BackfaceFlowerTex, uvg);
+                // drop some of them
+                col.a *= step(_BackfaceFlowerDrop, Rand(index + (seed + 1)));
 
                 return col;
             }
