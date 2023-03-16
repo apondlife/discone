@@ -24,7 +24,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BackfaceFlowerTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6be73bf06da404842b1b7ad59ed83535, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BackfaceTex:
@@ -32,15 +32,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BackfaceTrellisTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 111848818ecbf0246b495d5a885bf269, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BackfaceVineTex:
-        m_Texture: {fileID: 2800000, guid: 9f69629cf61c2437790a6d48caea3840, type: 3}
+        m_Texture: {fileID: 2800000, guid: fbe7880f374a8164ea09e1bb07520a54, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseTex:
-        m_Texture: {fileID: 2800000, guid: 0130c23eb43fb3a47b70c7cff192b834, type: 3}
+        m_Texture: {fileID: 2800000, guid: fac44cd250a66a24ba05200e9fe849a1, type: 3}
         m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -118,15 +118,15 @@ Material:
     m_Ints: []
     m_Floats:
     - _AmbientLightIntensity: 0.2
-    - _BackfaceFlowerDrop: 0
+    - _BackfaceFlowerDrop: 0.85
     - _BackfaceFlowerSize: 0
-    - _BackfaceNoiseOffset: 0.5
+    - _BackfaceNoiseOffset: 0.04
     - _BackfaceNoiseScale: 0.5
-    - _BackfaceNoiseZoom: 0.1
-    - _BackfaceTexDisplacement: 0.95
+    - _BackfaceNoiseZoom: 5
+    - _BackfaceTexDisplacement: 0.71
     - _BackfaceTexThreshold: 0.52
     - _BackfaceTexTransparency: 0
-    - _BaseTexBlend: 0.448
+    - _BaseTexBlend: 0.393
     - _Blend: 4
     - _Brightness: 0
     - _BumpScale: 0
@@ -165,34 +165,34 @@ Material:
     - _WallTexAlpha: 1
     - _ZWrite: 1
     m_Colors:
-    - _BackfaceFlowerSize: {r: 0, g: 0, b: 0, a: 0}
+    - _BackfaceFlowerSize: {r: 0.6, g: 1.2, b: 0, a: 0}
     - _BackfaceNoiseVelocity: {r: -0.01, g: -0.02, b: 1, a: 0}
-    - _BackfaceTrellisBreak: {r: 0, g: 0, b: 0, a: 0}
+    - _BackfaceTrellisBreak: {r: 0.24, g: 0.05, b: 0, a: 0}
     - _BackfaceTrellisColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BackfaceTrellisColor0: {r: 0, g: 0, b: 0, a: 1}
-    - _BackfaceTrellisColor1: {r: 0, g: 0, b: 0, a: 1}
-    - _BackfaceTrellisDisplacement: {r: 0, g: 0, b: 0, a: 0}
+    - _BackfaceTrellisColor0: {r: 0.12941177, g: 0.09411765, b: 0.05490196, a: 1}
+    - _BackfaceTrellisColor1: {r: 0.8784314, g: 0.70980394, b: 0.3764706, a: 1}
+    - _BackfaceTrellisDisplacement: {r: 0.28, g: 0, b: 0, a: 0}
     - _BackfaceTrellisDisplacementFreq: {r: 0, g: 0, b: 0, a: 0}
-    - _BackfaceTrellisDrop: {r: 0, g: 0, b: 0, a: 0}
-    - _BackfaceTrellisGap: {r: 0, g: 0, b: 0, a: 0}
-    - _BackfaceTrellisWidth: {r: 0, g: 0, b: 0, a: 0}
-    - _CeilColor: {r: 0.6282353, g: 0.78431374, b: 0.65241647, a: 1}
-    - _CeilColor1: {r: 0.34509805, g: 0.62352943, b: 0.25490198, a: 1}
+    - _BackfaceTrellisDrop: {r: 0.13, g: 0.06, b: 0, a: 0}
+    - _BackfaceTrellisGap: {r: 0.95, g: 1.4, b: 2, a: 0}
+    - _BackfaceTrellisWidth: {r: 0.09, g: 0.15, b: 0, a: 0}
+    - _CeilColor: {r: 0.81960785, g: 0.4261961, b: 0.569145, a: 1}
+    - _CeilColor1: {r: 0.586412, g: 0.735849, b: 0.53800285, a: 1}
     - _CeilingColor: {r: 1, g: 0, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FloorColor: {r: 1, g: 1, b: 1, a: 1}
-    - _MainColor: {r: 0.53496975, g: 0.679, b: 0.55554545, a: 1}
-    - _MainColor1: {r: 0.30955556, g: 0.398, b: 0.32282224, a: 1}
+    - _MainColor: {r: 0.69824135, g: 0.7019608, b: 0.5529412, a: 1}
+    - _MainColor1: {r: 0.7075472, g: 0.5526669, b: 0.377136, a: 1}
     - _NegativeRampColor: {r: 1, g: 1, b: 1, a: 1}
     - _NegativeWallColor: {r: 1, g: 1, b: 1, a: 1}
     - _PositiveRampColor: {r: 1, g: 1, b: 1, a: 1}
     - _PositiveWallColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RampColor: {r: 0.5756498, g: 0.65260834, b: 0.66800004, a: 1}
-    - _RampColor1: {r: 0.42350253, g: 0.5834923, b: 0.618, a: 1}
+    - _RampColor: {r: 0.71599996, g: 0.3994526, b: 0.5012, a: 1}
+    - _RampColor1: {r: 0.6117647, g: 0.38039216, b: 0.4382353, a: 1}
     - _ShallowCeilingColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShallowFloorColor: {r: 1, g: 1, b: 1, a: 1}
     - _VertexWobbleRange: {r: 20, g: 1000, b: 0, a: 0}
-    - _WallColor: {r: 0.90588236, g: 0.8162, b: 0.82292616, a: 1}
-    - _WallColor1: {r: 0.9254902, g: 0.91992027, b: 0.7746353, a: 1}
+    - _WallColor: {r: 0.81960785, g: 0.4261961, b: 0.569145, a: 1}
+    - _WallColor1: {r: 0.83699995, g: 0.27227706, b: 0.611111, a: 1}
   m_BuildTextureStacks: []
