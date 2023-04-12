@@ -48,14 +48,17 @@ sealed class MovementSystem: CharacterSystem {
 
         m_State.Next.Velocity += dv;
 
+        // we're moving if the character is not stopped or if there's input
+        var shouldStartMoving = !m_State.IsStopped || HasMoveInput;
+
         // change to sliding if moving & crouching
-        if (!m_State.IsStopped && m_State.IsCrouching) {
+        if (shouldStartMoving && m_State.IsCrouching) {
             ChangeTo(Sliding);
             return;
         }
 
         // change to moving once moving
-        if (!m_State.IsStopped || HasMoveInput) {
+        if (shouldStartMoving) {
             ChangeTo(Moving);
             return;
         }
@@ -74,9 +77,18 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
+        // we're moving if the character is not stopped or if there's input
+        var shouldStopMoving = m_State.IsStopped && !HasMoveInput;
+
         // once speed is zero, stop moving
-        if (!HasMoveInput && m_State.IsStopped) {
+        if (shouldStopMoving) {
             ChangeToImmediate(NotMoving, delta);
+            return;
+        }
+
+        // if crouching, change to sliding
+        if (m_State.Next.IsCrouching) {
+            ChangeToImmediate(Sliding, delta);
             return;
         }
 
@@ -117,13 +129,6 @@ sealed class MovementSystem: CharacterSystem {
         );
 
         m_State.Next.Velocity += dv;
-
-        // if crouching, change to sliding
-        // 22.10.28: if this is an immediate change, you can't get out of crouch; a hack basicallly
-        if (m_State.Next.IsCrouching) {
-            ChangeTo(Sliding);
-            return;
-        }
     }
 
     // -- Sliding --
@@ -175,15 +180,18 @@ sealed class MovementSystem: CharacterSystem {
             delta
         );
 
-        // once speed is zero, stop moving
-        if (m_State.IsStopped) {
-            ChangeTo(HasMoveInput ? Moving : NotMoving);
-            return;
-        }
+        // we're moving if the character is not stopped or if there's input
+        var shouldStopMoving = m_State.IsStopped && !HasMoveInput;
 
         // once not crouching change to move/not move state
         if (!m_State.IsCrouching) {
-            ChangeTo(!m_State.IsStopped ? Moving : NotMoving);
+            ChangeTo(shouldStopMoving ? NotMoving : Moving);
+            return;
+        }
+
+        // once speed is zero, stop moving
+        if (shouldStopMoving) {
+            ChangeTo(NotMoving);
             return;
         }
     }
@@ -243,12 +251,7 @@ sealed class MovementSystem: CharacterSystem {
     void Floating_Update(float delta) {
         // return to the ground if grounded
         if (m_State.Next.IsOnGround) {
-            var next = m_State.IsCrouching switch {
-                true => Sliding,
-                false => Moving,
-            };
-
-            ChangeToImmediate(next, delta);
+            ChangeToImmediate(m_State.IsCrouching ? Sliding : Moving, delta);
             return;
         }
 
