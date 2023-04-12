@@ -150,6 +150,39 @@ MonoBehaviour:
   m_JumpBuffer: 10
   m_MaxCoyoteFrames: 12
   m_JumpGravity: -30
+  m_Jump_GroundAngleScale:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 10
+      value: 1
+      inSlope: 0
+      outSlope: -0.0028879747
+      tangentMode: 1
+      weightedMode: 2
+      inWeight: 0.33333334
+      outWeight: 0.4799145
+    - serializedVersion: 3
+      time: 80
+      value: 0
+      inSlope: -0.24270561
+      outSlope: -0.08758176
+      tangentMode: 1
+      weightedMode: 1
+      inWeight: 0.0366175
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   m_FallGravity: -40
   m_Landing_Duration: 0.3
   m_Jumps:
@@ -321,10 +354,57 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_Duration: 0
   m_WallMagnet: 0.5
+  m_WallAngleScale:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.48999134
+    - serializedVersion: 3
+      time: 9.813202
+      value: 0
+      inSlope: 0
+      outSlope: -0.00022537526
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.31804374
+    - serializedVersion: 3
+      time: 57.509247
+      value: 0.22192869
+      inSlope: 0.006958187
+      outSlope: 0.007081601
+      tangentMode: 1
+      weightedMode: 3
+      inWeight: 0.1358979
+      outWeight: 1
+    - serializedVersion: 3
+      time: 80
+      value: 1
+      inSlope: 0.020379573
+      outSlope: 0
+      tangentMode: 65
+      weightedMode: 3
+      inWeight: 0.16329966
+      outWeight: 0.4433403
+    - serializedVersion: 3
+      time: 90
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.08069881
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   m_TiltForBaseAcceleration: 30
   m_MaxTilt: 69
   m_TiltSmoothing: 0.1
-  m_DutchScale: 0.2
-  m_DutchSmoothing: 0.2
-  m_Damping: 20
-  m_FastDamping: 1

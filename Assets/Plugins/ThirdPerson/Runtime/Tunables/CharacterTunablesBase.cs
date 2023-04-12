@@ -50,6 +50,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     // regrabs
     public abstract float JumpGravity { get; }
     public abstract float JumpAcceleration { get; }
+    public abstract AnimationCurve Jump_GroundAngleScale { get; }
     public abstract float FallGravity { get; }
     public abstract float FallAcceleration { get; }
 
@@ -78,6 +79,7 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract AdsrCurve WallGravity { get; }
     public abstract AdsrCurve WallHoldGravity { get; }
     public abstract float WallMagnet { get; }
+    public abstract AnimationCurve WallAngleScale { get; }
 
     public float WallAcceleration(float wallGravity) {
         return wallGravity - Gravity + FallGravity;

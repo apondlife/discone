@@ -113,9 +113,6 @@ public sealed partial class CharacterState {
         /// if the character is in jump squat
         public bool IsInJumpSquat = false;
 
-        /// if the character is on the wall
-        public bool IsOnWall = false;
-
         /// if the character is crouching
         public bool IsCrouching = false;
 
@@ -211,6 +208,21 @@ public sealed partial class CharacterState {
         /// if the character is touching the ground (or thinks they are)
         public bool IsOnGround {
             get => Ground.IsSome || CoyoteFrames > 0;
+        }
+
+        /// the ground-like collision surface
+        public CharacterCollision GroundSurface {
+            get => Ground.IsSome ? Ground : Wall;
+        }
+
+        /// the wall-like collision surface
+        public CharacterCollision WallSurface {
+            get => Wall.IsSome ? Wall : Ground;
+        }
+
+        /// if the character is on the wall
+        public bool IsOnWall {
+            get => WallSurface.Angle > 0;
         }
 
         /// if currently idle

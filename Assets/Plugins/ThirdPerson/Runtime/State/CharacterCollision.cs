@@ -12,11 +12,18 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
     /// the collision point
     public Vector3 Point;
 
+    /// the surface angle relative to up
+    public float Angle;
+
     // -- lifetime --
     /// create a new collision
-    public CharacterCollision(Vector3 normal, Vector3 point) {
+    public CharacterCollision(
+        Vector3 normal,
+        Vector3 point
+    ) {
         Normal = normal;
         Point = point;
+        Angle = Vector3.Angle(normal, Vector3.up);
     }
 
     // -- queries --

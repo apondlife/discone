@@ -52,17 +52,15 @@ public class CharacterDust: MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (m_State.IsOnWall) {
+        if (m_State.Next.IsOnWall) {
             if (!m_WallParticles.isPlaying) {
                 m_WallParticles.Play();
             }
 
-            if (!m_State.Wall.IsNone) {
-                var c = m_State.Wall;
-                var t = m_WallParticles.transform;
-                t.position = c.Point;
-                t.forward = -c.Normal;
-            }
+            var c = m_State.Wall.IsSome ? m_State.Wall : m_State.Ground;
+            var t = m_WallParticles.transform;
+            t.position = c.Point;
+            t.forward = -c.Normal;
         } else {
             if (m_WallParticles.isPlaying) {
                 m_WallParticles.Stop();

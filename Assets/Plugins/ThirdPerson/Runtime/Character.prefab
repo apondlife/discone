@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.10354013, y: 0.0000000042784754, z: 4.453877e-10, w: 0.9946253}
+  m_LocalRotation: {x: -0.017977966, y: 0.0000000010752251, z: 1.9333484e-11, w: 0.9998384}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -174,7 +174,7 @@ MonoBehaviour:
   m_PivotOffset: {x: 0, y: 0, z: 0}
   m_AmplitudeGain: 0.1
   m_FrequencyGain: 0.1
-  mNoiseOffsets: {x: 0, y: 0, z: 0}
+  mNoiseOffsets: {x: 840.5249, y: 912.6732, z: 742.30695}
 --- !u!1 &745930052032446095
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,6 +604,7 @@ MonoBehaviour:
     m_Phase:
       Name: NotOnWall
     m_IsLogging: 0
+    AlwaysMagnet: 1
   m_Jump:
     m_Phase:
       Name: NotJumping
@@ -630,6 +631,33 @@ MonoBehaviour:
       m_Bits: 4294967295
     m_MinMove: 0.005
     m_WallAngle: 80
+    m_WallCurve:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0.16638947
+          value: 0
+          inSlope: 0.010929814
+          outSlope: 0.010929814
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.08753648
+        - serializedVersion: 3
+          time: 80
+          value: 1
+          inSlope: 0.01287067
+          outSlope: 0.01287067
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.1118968
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Min: 0
+      m_Max: 1
     m_CastOffset: 0.03
     m_ContactOffset: 0.01
     m_Capsule: {fileID: 1972163625}

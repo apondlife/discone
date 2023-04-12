@@ -240,7 +240,7 @@ public sealed class CharacterModel: MonoBehaviour {
     void Tilt() {
         var destWallRotation = Quaternion.identity;
         if (m_State.Next.IsOnWall && !m_State.Next.IsOnGround) {
-            var tangent = Vector3.Cross(Vector3.up, m_State.Wall.Normal);
+            var tangent = Vector3.Cross(Vector3.up, m_State.Next.WallSurface.Normal);
             destWallRotation = Quaternion.AngleAxis(m_MaxWallRotation, tangent);
         }
 

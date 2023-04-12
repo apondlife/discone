@@ -146,6 +146,11 @@ public sealed class CharacterTunables: CharacterTunablesBase {
         get => m_JumpGravity - m_Gravity;
     }
 
+    [Tooltip("the scaling factor of the jump depending on the ground angle")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Jump_WallAngleScale")]
+    [SerializeField] private  AnimationCurve m_Jump_GroundAngleScale;
+    public override AnimationCurve Jump_GroundAngleScale => m_Jump_GroundAngleScale;
+
     [Tooltip("the gravity while holding jump and falling")]
     [SerializeField] private float m_FallGravity;
     public override float FallGravity => m_FallGravity;
@@ -234,6 +239,11 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     [Tooltip("the force the wall pull the character to make it stick")]
     [SerializeField] public float m_WallMagnet;
     public override float WallMagnet => m_WallMagnet;
+
+    [Tooltip("the scaling factor of the wall slide depending on the wall angle")]
+    [SerializeField] private AnimationCurve m_WallAngleScale;
+    public override AnimationCurve WallAngleScale => m_WallAngleScale;
+
     #endregion
 
     #region model / animation

@@ -14,13 +14,6 @@ partial class CharacterState {
 /// how the character interacts with walls
 [Serializable]
 sealed class WallSystem: CharacterSystem {
-    // -- props --
-    /// the current wall normal
-    Vector3 m_WallNormal;
-
-    /// the up vector projected onto the current wall
-    Vector3 m_WallUp;
-
     // -- System --
     protected override Phase InitInitialPhase() {
         return NotOnWall;
@@ -34,18 +27,14 @@ sealed class WallSystem: CharacterSystem {
     // -- Grounded --
     Phase NotOnWall => new Phase(
         "NotOnWall",
-        enter: NotOnWall_Enter,
         update: NotOnWall_Update
     );
 
-    void NotOnWall_Enter() {
-        m_State.Next.IsOnWall = false;
-    }
-
     void NotOnWall_Update(float delta) {
         // if we're on a wall, enter slide
-        var wall = m_State.Curr.Wall;
-        if (!wall.IsNone) {
+        var wall = m_State.Curr.WallSurface;
+        var wallAngleScale = m_Tunables.WallAngleScale.Evaluate(wall.Angle);
+        if (wallAngleScale > Mathf.Epsilon) {
             ChangeToImmediate(WallSlide, delta);
         }
     }
@@ -53,30 +42,28 @@ sealed class WallSystem: CharacterSystem {
     // -- WallSlide --
     Phase WallSlide => new Phase(
         name: "WallSlide",
-        enter: WallSlide_Enter,
         update: WallSlide_Update
     );
 
-    void WallSlide_Enter() {
-        // update state
-        m_State.Next.IsOnWall = true;
-    }
-
     void WallSlide_Update(float delta) {
         // if we left the wall, exit
-        var wall = m_State.Curr.Wall;
-        if (wall.IsNone) {
+        var wall = m_State.Curr.WallSurface;
+        var wallAngleScale = m_Tunables.WallAngleScale.Evaluate(wall.Angle);
+        if (wallAngleScale <= Mathf.Epsilon) {
             ChangeTo(NotOnWall);
             return;
         }
 
         // update to new wall collision
-        UpdateWall(wall);
+        var wallNormal = wall.Normal;
+        var wallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
 
         // transfer velocity
+        // NOTE: unsure if we want to apply the magnet on things that are not "real"
+        // walls, but we are for now on account of our principle of No Rules
         var vd = Vector3.zero;
-        vd += TransferredVelocity();
-        vd -= m_WallNormal * m_Tunables.WallMagnet;
+        vd += TransferredVelocity(wallNormal, wallUp);
+        vd -= wallNormal * m_Tunables.WallMagnet;
 
         // accelerate while holding button
         var wallGravity = m_Input.IsWallHoldPressed
@@ -84,30 +71,29 @@ sealed class WallSystem: CharacterSystem {
             : m_Tunables.WallGravity.Evaluate(PhaseStart);
 
         var wallAcceleration = m_Tunables.WallAcceleration(wallGravity);
-        vd += wallAcceleration * delta * m_WallUp;
+        vd += wallAcceleration * delta * wallUp;
+
+        // scale acceleration by wall angle
+        vd *= wallAngleScale;
 
         // update state
         m_State.Velocity += vd;
     }
 
-    // -- commands --
-    /// update w/ the current wall collision
-    void UpdateWall(CharacterCollision wall) {
-        m_WallNormal = wall.Normal;
-        m_WallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
-    }
-
     // -- queries --
     /// find the velocity transferred into the wall plane
-    Vector3 TransferredVelocity() {
+    Vector3 TransferredVelocity(
+        Vector3 wallNormal,
+        Vector3 wallUp
+    ) {
         // get the component of our velocity into the wall
         var velocity = m_State.Prev.Velocity;
-        var velocityAlongWall = Vector3.ProjectOnPlane(velocity, m_WallNormal);
+        var velocityAlongWall = Vector3.ProjectOnPlane(velocity, wallNormal);
         var velocityIntoWall = velocity - velocityAlongWall;
 
         // and transfer it up the wall
         var transferMagnitude = velocityIntoWall.magnitude;
-        var transferred = transferMagnitude * m_WallUp;
+        var transferred = transferMagnitude * wallUp;
 
         return transferred;
     }

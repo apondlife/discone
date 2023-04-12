@@ -51,7 +51,7 @@ sealed class JumpSystem: CharacterSystem {
     void NotJumping_Update(float _) {
         // count coyote frames; reset to max whenever (this determine's if the
         // character is grounded)
-        if (m_State.Curr.Ground.IsSome) {
+        if (IsOnGround()) {
             m_State.CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
         }
         // but if not, subtract a frame
@@ -87,7 +87,7 @@ sealed class JumpSystem: CharacterSystem {
     void Landing_Update(float _) {
         // count coyote frames; reset to max whenever (this determine's if the
         // character is grounded)
-        if (m_State.Curr.Ground.IsSome) {
+        if (IsOnGround()) {
             m_State.CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
         }
         // but if not, subtract a frame
@@ -128,8 +128,8 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void JumpSquat_Update(float delta) {
-        // apply fall acceleration if not grounded
-        if (!m_State.Curr.Ground.IsSome && !m_State.Next.IsOnWall) {
+        // apply fall acceleration if airborne
+        if (m_State.Curr.Ground.IsNone && m_State.Curr.Wall.IsNone) {
             m_State.Next.Velocity += m_Tunables.FallAcceleration * delta * Vector3.up;
         }
 
@@ -150,7 +150,7 @@ sealed class JumpSystem: CharacterSystem {
         // if this is the first jump, you might be in coyote time
         if (m_State.JumpTunablesJumpIndex == 0) {
             // count coyote frames; reset to max whenever grounded
-            if (m_State.Curr.Ground.IsSome) {
+            if (IsOnGround()) {
                 m_State.CoyoteFrames = (int)m_Tunables.MaxCoyoteFrames;
             }
             // but if not, subtract a frame
@@ -188,7 +188,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void Falling_Update(float delta) {
         // apply fall acceleration while holding jump
-        // TODO: is this bad?
+        // TODO: is this bad? yes?
         // apply jump acceleration while holding jump
         if (m_Input.IsJumpPressed && !m_State.Next.IsOnWall) {
             var acceleration = m_State.Next.Velocity.y > 0.0f
@@ -212,7 +212,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // transition out of jump
-        if (m_State.Curr.Ground.IsSome) {
+        if (IsOnGround()) {
             ChangeTo(Landing);
             return;
         }
@@ -249,15 +249,18 @@ sealed class JumpSystem: CharacterSystem {
         var verticalLoss = v0.y > 0 ? JumpTunables.Upwards_MomentumLoss : 1;
         dv -= v0.y * verticalLoss * Vector3.up;
 
-        // cancel vertical momentum if falling
         // cancel horizontal momentum
         dv -= m_State.Curr.PlanarVelocity * JumpTunables.Horizontal_MomentumLoss;
 
+        // scale by wall factor
+        // TODO: maybe horizontal/vertical should be tangent/normal to ground or wall:
+        var groundAngleScale = m_Tunables.Jump_GroundAngleScale.Evaluate(m_State.Curr.GroundSurface.Angle);
+
         // add vertical jump
-        dv += verticalSpeed * Vector3.up;
+        dv += verticalSpeed * Vector3.up * groundAngleScale;
 
         // add horizontal jump
-        dv += horizontalSpeed * m_State.Curr.Forward;
+        dv += horizontalSpeed * m_State.Curr.Forward * groundAngleScale;
 
         m_State.Next.Velocity += dv;
         m_State.Next.CoyoteFrames = 0;
@@ -337,6 +340,16 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         return false;
+    }
+
+    /// if the character is on something ground like
+    bool IsOnGround() {
+        var ground = m_State.Curr.GroundSurface;
+        if (ground.IsNone) {
+            return false;
+        }
+
+        return m_Tunables.Jump_GroundAngleScale.Evaluate(ground.Angle) > Mathf.Epsilon;
     }
 }
 
