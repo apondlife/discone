@@ -299,6 +299,7 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- integrate --
+    public bool useNormalFriction = false;
     /// integrate velocity delta from all movement forces
     Vector3 IntegrateForces(
         Vector3 v0,
@@ -313,6 +314,9 @@ sealed class MovementSystem: CharacterSystem {
 
         // get separate acceleration and deceleration
         var acceleration = thrust;
+
+        // DONT MERGE:
+        friction *= useNormalFriction ? m_State.Curr.GroundSurface.Normal.y : 1;
         var deceleration = v0Dir * (friction + drag * v0SqrMag);
 
         // get velocity delta in each direction
