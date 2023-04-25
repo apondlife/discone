@@ -17,6 +17,11 @@ public sealed class Store: ScriptableObject {
     [Tooltip("when the load finishes")]
     [SerializeField] VoidEvent m_LoadFinished;
 
+    // -- config --
+    [Header("config")]
+    [Tooltip("if the store syncs the player file")]
+    [SerializeField] BoolReference m_IsSyncingPlayer;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the entity repos")]
@@ -76,6 +81,11 @@ public sealed class Store: ScriptableObject {
 
     /// try syncing the in-memory player record, fails if a player has no character
     public void SyncPlayer() {
+        // don't sync if disabled
+        if (!m_IsSyncingPlayer) {
+            return;
+        }
+
         // find the player's current character
         var character = FindPlayerCharacter();
         if (character == null) {
