@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Port: 7777
+  Port: 6969
   DualMode: 1
   NoDelay: 1
   Interval: 10
@@ -97,18 +97,18 @@ MonoBehaviour:
   - {fileID: 1759957223998774543, guid: 79fd96ee4619948bd95ee8b710b963af, type: 3}
   - {fileID: 2960029541259181288, guid: d3c90f4064219c34d92fa16228c6f295, type: 3}
   - {fileID: 1759957223998774543, guid: 37bb2736011fd4e4f80ace3fb099e7ca, type: 3}
-  m_HostAddress:
+  m_ServerAddres:
     _usage: 2
     _value: 
     _constant: {fileID: 0}
     _variable: {fileID: 11400000, guid: 9a1de8f959c00404e8f4ea3f74be29c0, type: 2}
     _variableInstancer: {fileID: 0}
-  m_IsHost: {fileID: 11400000, guid: 562ea9c4c723d4ba2a26fc6eb3e9c7c9, type: 2}
+  m_IsServer: {fileID: 11400000, guid: 562ea9c4c723d4ba2a26fc6eb3e9c7c9, type: 2}
   m_ConnectToServerOnStart: 0
   m_RestartHostOnDisconnect: 1
   m_StartClient: {fileID: 11400000, guid: 4317195ff7eed3b459aaacbfbb45ea67, type: 2}
   m_DisconnectClient: {fileID: 11400000, guid: dd783e5802f7a45bcb8bcd0772fc0c3c, type: 2}
-  m_ErrorEvent: {fileID: 11400000, guid: e9711abafc73c0746b74246738baaff4, type: 2}
+  m_ShowError: {fileID: 11400000, guid: e9711abafc73c0746b74246738baaff4, type: 2}
   m_ServerStarted: {fileID: 11400000, guid: d56e3ea26d2d08b4aa7b06b1182afcef, type: 2}
   m_ClientStarted: {fileID: 11400000, guid: 4087173ebab4a584f99eb394f8a19812, type: 2}
   m_IsStandalone:
