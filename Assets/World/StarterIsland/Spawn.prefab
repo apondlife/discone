@@ -222,6 +222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7372442316369437391}
   - component: {fileID: 8960566851578311834}
+  - component: {fileID: 4853773798723719586}
   m_Layer: 0
   m_Name: Spawn
   m_TagString: Untagged
@@ -259,6 +260,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f84591ce72545258ea98cb7518d8b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4853773798723719586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7053869914314142807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cea7e8349e7c54ba08b0ef7c62b3ea42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delay:
+    m_Duration: 1
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
+  m_IntroEnded: {fileID: 11400000, guid: 45e1e53611781437c92c6d5390d24c88, type: 2}
+  m_IntroCamera: {fileID: 3093085863227724897}
 --- !u!1001 &6986205109879641137
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -268,7 +310,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1157838640010231973, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
       propertyPath: m_AssetId
-      value: 2c0c5a43f12018d4cb70478602ef7b03
+      value: 3b7b3ebb755314612ad315b813d387c8
       objectReference: {fileID: 0}
     - target: {fileID: 2771430499345863989, guid: 1246d1888c509e648bb81bd1204988d8, type: 3}
       propertyPath: m_RootOrder
