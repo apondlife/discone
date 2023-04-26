@@ -14,8 +14,11 @@ public class IntroSequence: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the current character")]
+    [Tooltip("the player's current character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+
+    [Tooltip("if the eyes should be closed")]
+    [SerializeField] BoolVariable m_IsClosingEyes;
 
     [Tooltip("when the intro is over")]
     [SerializeField] VoidEvent m_IntroEnded;
@@ -31,6 +34,10 @@ public class IntroSequence: MonoBehaviour {
     DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
+    void Awake() {
+        m_IsClosingEyes.Value = true;
+    }
+
     void Start() {
         m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
     }
@@ -54,6 +61,7 @@ public class IntroSequence: MonoBehaviour {
     // -- events --
     void OnLoadFinished() {
         if (m_Store.Player.HasData) {
+            m_IsClosingEyes.Value = false;
             Finish();
         } else {
             m_Delay.Start();

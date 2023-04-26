@@ -28,9 +28,6 @@ public class PlayerEyelid: MonoBehaviour {
     [Tooltip("the image for the bottom eyelid")]
     [SerializeField] Image m_BottomEyelid;
 
-    // [Tooltip("the current character")]
-    // [SerializeField] DisconePlayerVariable m_Player;
-
     // -- props --
     /// the elapsed time in the close animation
     float m_ClosingElapsed;
@@ -39,18 +36,32 @@ public class PlayerEyelid: MonoBehaviour {
     void Start() {
         if (m_IsClosedOnStart) {
             UpdateElapsed(m_Duration);
+            UpdateVisibility();
         }
     }
 
     void Update() {
-        // update elapsed time
         if (m_IsClosing.Value) {
             UpdateElapsed(Time.deltaTime);
         } else if (m_ClosingElapsed > 0.0f) {
             UpdateElapsed(-Time.deltaTime);
         }
 
-        // update eyelid visibility
+        UpdateVisibility();
+    }
+
+    // -- commands --
+    /// add the delta to the elapsed time, clamped to its range
+    void UpdateElapsed(float delta) {
+        m_ClosingElapsed = Mathf.Clamp(
+            m_ClosingElapsed + delta,
+            0.0f,
+            m_Duration
+        );
+    }
+
+    /// update eyelid visibility
+    void UpdateVisibility() {
         var pct = m_Curve.Evaluate(Mathf.InverseLerp(
             0.0f,
             m_Duration,
@@ -59,15 +70,5 @@ public class PlayerEyelid: MonoBehaviour {
 
         m_TopEyelid.fillAmount = pct;
         m_BottomEyelid.fillAmount = pct;
-    }
-
-    // -- helpers --
-    /// add the delta to the elapsed time, clamped to its range
-    void UpdateElapsed(float delta) {
-        m_ClosingElapsed = Mathf.Clamp(
-            m_ClosingElapsed + delta,
-            0.0f,
-            m_Duration
-        );
     }
 }
