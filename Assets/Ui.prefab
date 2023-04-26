@@ -115,6 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2351d3508d81b4dd6b10d9abdeac092d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_IsClosing: {fileID: 11400000, guid: d62bdd20844ff42d3b5aeb3242568c15, type: 2}
   m_Duration: 0.3
   m_Curve:
     serializedVersion: 2
@@ -140,9 +141,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  m_IsClosedOnStart: 0
   m_TopEyelid: {fileID: 7244359769653384000}
   m_BottomEyelid: {fileID: 2306223185518007345}
-  m_Player: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
 --- !u!1 &3578791517409189936
 GameObject:
   m_ObjectHideFlags: 0
