@@ -12,4 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36baaa8bdcb9d8b49b9199833965d2c3, type: 3}
   m_Name: PlayerCamera_Blends
   m_EditorClassIdentifier: 
-  m_CustomBlends: []
+  m_CustomBlends:
+  - m_From: Spawn-camera
+    m_To: '**ANY CAMERA**'
+    m_Blend:
+      m_Style: 2
+      m_Time: 8
+      m_CustomCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0.017470341
+          outSlope: 0.017470341
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.675
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 0

@@ -35,6 +35,9 @@ public sealed class DisconePlayer: MonoBehaviour {
     [Tooltip("the distance to the far clip plane")]
     [SerializeField] FloatReference m_FarClipPlane;
 
+    [Tooltip("if the player is closing their eyes (aspirational)")]
+    [SerializeField] BoolVariable m_IsClosingEyes;
+
     // -- props --
     /// the checkpoint
     PlayerCheckpoint m_Checkpoint;
@@ -68,6 +71,11 @@ public sealed class DisconePlayer: MonoBehaviour {
         }
 
         Shader.SetGlobalVector(ShaderProps.CharacterPos, characterPos);
+
+        // sync external state
+        if (Checkpoint.IsSavingChanged) {
+            m_IsClosingEyes.Value = Checkpoint.IsSaving;
+        }
     }
 
     void OnDestroy() {

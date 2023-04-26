@@ -1,18 +1,24 @@
-using UnityAtoms;
+using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// the player's eyelid animation
 public class PlayerEyelid: MonoBehaviour {
+    // -- state --
+    [Header("state")]
+    [Tooltip("if the player is closing their eyes")]
+    [SerializeField] BoolVariable m_IsClosing;
+
     // -- config --
     [Header("config")]
     [Tooltip("the duration of the animation")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_CheckpointEyelidCloseDuration")]
     [SerializeField] float m_Duration;
 
     [Tooltip("the curve for the animation")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_EyelidCloseCurve")]
     [SerializeField] AnimationCurve m_Curve;
+
+    [Tooltip("if the eyelids start closed")]
+    [SerializeField] bool m_IsClosedOnStart;
 
     // -- refs --
     [Header("refs")]
@@ -22,17 +28,23 @@ public class PlayerEyelid: MonoBehaviour {
     [Tooltip("the image for the bottom eyelid")]
     [SerializeField] Image m_BottomEyelid;
 
-    [Tooltip("the current character")]
-    [SerializeField] DisconePlayerVariable m_Player;
+    // [Tooltip("the current character")]
+    // [SerializeField] DisconePlayerVariable m_Player;
 
     // -- props --
     /// the elapsed time in the close animation
     float m_ClosingElapsed;
 
     // -- lifecycle --
+    void Start() {
+        if (m_IsClosedOnStart) {
+            UpdateElapsed(m_Duration);
+        }
+    }
+
     void Update() {
         // update elapsed time
-        if (m_Player.Value.Checkpoint.IsSaving) {
+        if (m_IsClosing.Value) {
             UpdateElapsed(Time.deltaTime);
         } else if (m_ClosingElapsed > 0.0f) {
             UpdateElapsed(-Time.deltaTime);
