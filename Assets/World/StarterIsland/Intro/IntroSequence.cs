@@ -23,18 +23,41 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("the intro camera")]
     [SerializeField] GameObject m_IntroCamera;
 
+    [Tooltip("the shared data store")]
+    [SerializeField] Store m_Store;
+
+    // -- props --
+    /// the set of event subscriptions
+    DisposeBag m_Subscriptions = new DisposeBag();
+
     // -- lifecycle --
     void Start() {
-        m_Delay.Start();
+        m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
     }
 
     void FixedUpdate() {
         m_Delay.Tick();
 
         if (m_Delay.Raw >= 1f && !m_CurrentCharacter.Value.Character.State.IsIdle) {
-            m_IntroEnded.Raise();
-            m_IntroCamera.SetActive(false);
-            Destroy(this);
+            Finish();
+        }
+    }
+
+    // -- commands --
+    /// finish the sequnce and destroy it
+    void Finish() {
+        m_IntroEnded.Raise();
+        m_IntroCamera.SetActive(false);
+        Destroy(this);
+    }
+
+    // -- events --
+    void OnLoadFinished() {
+        if (m_Store.Player.HasData) {
+            Finish();
+        } else {
+            m_Delay.Start();
+            m_IntroCamera.SetActive(true);
         }
     }
 }
