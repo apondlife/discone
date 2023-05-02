@@ -27,17 +27,16 @@ class Mechanic: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        Debug.Log($"subs {m_Subscriptions} {m_IsEyelidClosed} {m_IsEyelidClosed.Changed}");
         m_Subscriptions
             .Add(m_IsEyelidClosed.Changed, OnEyelidClosedChanged);
     }
 
-    void Update() {
+    void FixedUpdate() {
         if (m_Delay.IsActive) {
             m_Delay.Tick();
 
             if (m_Delay.IsComplete) {
-                m_DialogueRunner.StartDialogue(m_Node);
+                StartDialogue();
             }
         }
     }
@@ -46,13 +45,40 @@ class Mechanic: MonoBehaviour {
         m_Subscriptions.Dispose();
     }
 
+    // -- commands --
+    /// .
+    void StartDelay() {
+        m_Delay.Start();
+    }
+
+    /// .
+    void StartDialogue() {
+        m_DialogueRunner.StartDialogue(m_Node);
+    }
+
+    /// .
+    void StopDialogue() {
+        m_Delay.Cancel();
+
+        // clean up the dialogue runner
+        if (m_DialogueRunner.IsDialogueRunning) {
+            m_DialogueRunner.Stop();
+
+            // manually call dialogue complete on the views, since yarn explicitly
+            // does not when you call stop?
+            foreach (var dialogueView in m_DialogueRunner.dialogueViews) {
+                dialogueView.DialogueComplete();
+            }
+        }
+    }
+
     // -- events --
     /// .
     void OnEyelidClosedChanged(bool isEyelidClosed) {
-        if (!isEyelidClosed) {
-            m_Delay.Cancel();
+        if (isEyelidClosed) {
+            StartDelay();
         } else {
-            m_Delay.Start();
+            StopDialogue();
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using TMPro;
-using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using Yarn.Unity;
 
@@ -22,7 +21,11 @@ class MechanicDialogueView: DialogueViewBase {
     [SerializeField] TMP_Text m_Voice;
 
     // -- lifecycle --
-    void Update() {
+    void Start() {
+        m_Group.alpha = 0f;
+    }
+
+    void FixedUpdate() {
         if (m_Fade.IsActive) {
             m_Fade.Tick();
             m_Group.alpha = m_Fade.Pct;
@@ -30,15 +33,22 @@ class MechanicDialogueView: DialogueViewBase {
     }
 
     // -- DialogueViewBase --
+    public override void DialogueStarted() {
+        base.DialogueStarted();
+
+        m_Fade.Start();
+    }
+
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
         base.RunLine(dialogueLine, onDialogueLineFinished);
 
-        m_Fade.Start();
+        m_Voice.text = dialogueLine.Text.Text;
+    }
 
-        // show the line
-        var line = dialogueLine.Text.Text;
-        Debug.Log($"[mechnic] show `{line}`");
-        m_Voice.text = line;
+    public override void DialogueComplete() {
+        base.DialogueComplete();
+
+        m_Fade.Start(isReversed: true);
     }
 }
 
