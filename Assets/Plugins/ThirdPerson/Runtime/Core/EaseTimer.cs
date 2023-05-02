@@ -40,6 +40,11 @@ public record EaseTimer {
         m_StartTime = Time.time + pct * m_Duration;
     }
 
+    /// cancel the timer
+    public void Cancel() {
+        m_StartTime = k_Inactive;
+    }
+
     /// advance the timer based on current time
     public void Tick() {
         // if not active, abort
@@ -66,6 +71,11 @@ public record EaseTimer {
     /// if the timer is active
     public bool IsActive {
         get => m_StartTime != k_Inactive;
+    }
+
+    /// if the timer is complete
+    public bool IsComplete {
+        get => Pct == 1f;
     }
 
     /// the curved progress
