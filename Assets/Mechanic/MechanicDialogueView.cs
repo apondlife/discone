@@ -6,7 +6,7 @@ using Yarn.Unity;
 namespace Discone {
 
 /// the mechanic's eyelid dialogue
-class MechanicDialogueView: DialogueViewBase {
+sealed class MechanicDialogueView: DialogueViewBase {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the delay before running a line")]
@@ -18,9 +18,14 @@ class MechanicDialogueView: DialogueViewBase {
     [SerializeField] CanvasGroup m_Group;
 
     [Tooltip("the mechanic's voice, materialized")]
-    [SerializeField] TMP_Text m_Voice;
+    [SerializeField] TMP_Text[] m_Voice;
 
     // -- lifecycle --
+    void Awake() {
+        // set props
+        m_Voice = GetComponentsInChildren<TMP_Text>();
+    }
+
     void Start() {
         m_Group.alpha = 0f;
     }

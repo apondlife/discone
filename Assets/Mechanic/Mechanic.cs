@@ -5,7 +5,7 @@ using Yarn.Unity;
 namespace Discone {
 
 /// the mechanic's eyelid dialogue
-class Mechanic: MonoBehaviour {
+sealed class Mechanic: MonoBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the node name")]
@@ -64,12 +64,19 @@ class Mechanic: MonoBehaviour {
         if (m_DialogueRunner.IsDialogueRunning) {
             m_DialogueRunner.Stop();
 
-            // manually call dialogue complete on the views, since yarn explicitly
-            // does not when you call stop?
+            // manually call DialogueComplete on views, since yarn explicitly
+            // does not when stop is called.
             foreach (var dialogueView in m_DialogueRunner.dialogueViews) {
                 dialogueView.DialogueComplete();
             }
         }
+    }
+
+    // -- c/yarn
+    [YarnCommand("then")]
+    public void Then(string nodeName) {
+        m_Node = nodeName;
+        StopDialogue();
     }
 
     // -- events --
