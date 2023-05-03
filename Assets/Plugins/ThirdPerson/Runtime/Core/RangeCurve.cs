@@ -26,6 +26,11 @@ public struct RangeCurve {
 
         return Mathf.Lerp(m_Min, m_Max, k);
     }
+
+    // -- debug --
+    public override string ToString() {
+        return $"<RangeCurve min={m_Min} max={m_Max}>";
+    }
 }
 
 }

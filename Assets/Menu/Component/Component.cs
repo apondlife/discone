@@ -23,7 +23,8 @@ sealed class Component: UIBehaviour {
     [SerializeField] bool m_JitterRotation_IsLocal;
 
     [Tooltip("a sample range the component translates during transitions")]
-    [SerializeField] ThirdPerson.RangeCurve m_TransitionDist;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_TransitionDist")]
+    [SerializeField] ThirdPerson.RangeCurve m_TranslationDist;
 
     // -- refs --
     [Header("refs")]
@@ -61,10 +62,10 @@ sealed class Component: UIBehaviour {
     public void Show(float pct, bool enter = true) {
         // update alpha
         var alpha = enter ? pct : 1.0f - pct;
-        Group.alpha = alpha;
+        m_Group.alpha = alpha;
 
         // update pos
-        var t = Content.transform as RectTransform;
+        var t = m_Content.transform as RectTransform;
         var k = enter ? 1.0f - pct : pct;
         t.anchoredPosition = m_InitialPos + m_Translation * k;
 
@@ -80,9 +81,9 @@ sealed class Component: UIBehaviour {
         // jitter rotation
         var rot = m_JitterRotation.Evaluate(Random.value);
         if (m_JitterRotation_IsLocal) {
-            Content.localEulerAngles = new Vector3(0f, 0f, rot);
+            m_Content.localEulerAngles = new Vector3(0f, 0f, rot);
         } else {
-            Content.eulerAngles = new Vector3(0f, 0f, rot);
+            m_Content.eulerAngles = new Vector3(0f, 0f, rot);
         }
 
         // jitter position
@@ -91,22 +92,22 @@ sealed class Component: UIBehaviour {
             dir = Random.insideUnitCircle;
         } else {
             dir = Mathf.Sign(Random.value - 0.5f) * Vector3.Normalize(
-                Content.up * m_JitterDist_Axis +
-                Content.right * (1f - m_JitterDist_Axis)
+                m_Content.up * m_JitterDist_Axis +
+                m_Content.right * (1f - m_JitterDist_Axis)
             );
         }
 
         var pos = dir * m_JitterDist.Evaluate(Random.value);
-        Content.anchoredPosition = pos;
+        m_Content.anchoredPosition = pos;
 
         // set initial pos
-        m_InitialPos = Content.anchoredPosition;
+        m_InitialPos = m_Content.anchoredPosition;
     }
 
     /// pick a new transition ray
     void ChangeTranslation() {
         var dir = Random.insideUnitCircle;
-        var len = m_TransitionDist.Evaluate(Random.value);
+        var len = m_TranslationDist.Evaluate(Random.value);
         m_Translation = dir * len;
     }
 
@@ -126,32 +127,6 @@ sealed class Component: UIBehaviour {
         }
 
         return content;
-    }
-
-    /// the canvas group
-    CanvasGroup Group {
-        get {
-            // TODO: it's unclear why, but the editor-assigned reference gets
-            // nulled out when used in the mechanic
-            if (m_Group == null) {
-                m_Group = GetComponent<CanvasGroup>();
-            }
-
-            return m_Group;
-        }
-    }
-
-    /// the content element
-    RectTransform Content {
-        get {
-            // TODO: it's unclear why, but the editor-assigned reference gets
-            // nulled out when used in the mechanic
-            if (m_Content == null) {
-                m_Content = FindContent();
-            }
-
-            return m_Content;
-        }
     }
 
     // -- events --

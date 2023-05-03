@@ -23,6 +23,9 @@ sealed class MechanicLine: UIBehaviour {
     protected override void Start() {
         base.Start();
 
+        // set the initial component values
+        m_Component.OnBeforeEnter();
+
         // start the label at 0 alpha
         m_Component.Show(0f, enter: true);
     }
