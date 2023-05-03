@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5768595927654759796}
   - component: {fileID: 75386988580149414}
   m_Layer: 0
-  m_Name: Component
+  m_Name: Transitionable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -134,6 +134,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Min: 30
     m_Max: 100
+  m_Group: {fileID: 5768595927654759796}
 --- !u!225 &5768595927654759796
 CanvasGroup:
   m_ObjectHideFlags: 0

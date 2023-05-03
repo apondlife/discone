@@ -6,8 +6,11 @@ using UnityEngine.UI;
 public class PlayerEyelid: MonoBehaviour {
     // -- state --
     [Header("state")]
-    [Tooltip("if the player is closing their eyes")]
+    [Tooltip("an event when the player is closing their eyes")]
     [SerializeField] BoolVariable m_IsClosing;
+
+    [Tooltip("an event when the eyelid just closes or starts to open")]
+    [SerializeField] BoolVariable m_IsClosed;
 
     // -- config --
     [Header("config")]
@@ -53,11 +56,17 @@ public class PlayerEyelid: MonoBehaviour {
     // -- commands --
     /// add the delta to the elapsed time, clamped to its range
     void UpdateElapsed(float delta) {
-        m_ClosingElapsed = Mathf.Clamp(
+        // caculate next elapsed duration
+        var curr = Mathf.Clamp(
             m_ClosingElapsed + delta,
             0.0f,
             m_Duration
         );
+
+        m_ClosingElapsed = curr;
+
+        // if the eyes just closed or just opened, fire the event
+        m_IsClosed.Value = curr == m_Duration;
     }
 
     /// update eyelid visibility
