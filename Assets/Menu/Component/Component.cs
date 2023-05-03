@@ -43,7 +43,7 @@ sealed class Component: UIBehaviour {
     // -- lifecycle --
     protected override void Awake() {
         base.Awake();
-
+        
         // set props
         m_Content = FindContent();
     }
@@ -61,10 +61,10 @@ sealed class Component: UIBehaviour {
     public void Show(float pct, bool enter) {
         // update alpha
         var alpha = enter ? pct : 1.0f - pct;
-        m_Group.alpha = alpha;
+        Group.alpha = alpha;
 
         // update pos
-        var t = m_Content.transform as RectTransform;
+        var t = Content.transform as RectTransform;
         var k = enter ? 1.0f - pct : pct;
         t.anchoredPosition = m_InitialPos + m_Translation * k;
 
@@ -80,9 +80,9 @@ sealed class Component: UIBehaviour {
         // jitter rotation
         var rot = m_JitterRotation.Evaluate(Random.value);
         if (m_JitterRotation_IsLocal) {
-            m_Content.localEulerAngles = new Vector3(0f, 0f, rot);
+            Content.localEulerAngles = new Vector3(0f, 0f, rot);
         } else {
-            m_Content.eulerAngles = new Vector3(0f, 0f, rot);
+            Content.eulerAngles = new Vector3(0f, 0f, rot);
         }
 
         // jitter position
@@ -91,16 +91,16 @@ sealed class Component: UIBehaviour {
             dir = Random.insideUnitCircle;
         } else {
             dir = Mathf.Sign(Random.value - 0.5f) * Vector3.Normalize(
-                m_Content.up * m_JitterDist_Axis +
-                m_Content.right * (1f - m_JitterDist_Axis)
+                Content.up * m_JitterDist_Axis +
+                Content.right * (1f - m_JitterDist_Axis)
             );
         }
 
         var pos = dir * m_JitterDist.Evaluate(Random.value);
-        m_Content.anchoredPosition = pos;
+        Content.anchoredPosition = pos;
 
         // set initial pos
-        m_InitialPos = m_Content.anchoredPosition;
+        m_InitialPos = Content.anchoredPosition;
     }
 
     /// pick a new transition ray
@@ -126,6 +126,32 @@ sealed class Component: UIBehaviour {
         }
 
         return content;
+    }
+
+    /// the canvas group
+    CanvasGroup Group {
+        get {
+            // TODO: it's unclear why, but the editor-assigned reference gets
+            // nulled out when used in the mechanic
+            if (m_Group == null) {
+                m_Group = GetComponent<CanvasGroup>();
+            }
+
+            return m_Group;
+        }
+    }
+
+    /// the content element
+    RectTransform Content {
+        get {
+            // TODO: it's unclear why, but the editor-assigned reference gets
+            // nulled out when used in the mechanic
+            if (m_Content == null) {
+                m_Content = FindContent();
+            }
+
+            return m_Content;
+        }
     }
 
     // -- events --
