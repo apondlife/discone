@@ -23,7 +23,7 @@ public record EaseTimer {
     /// the uncurved percent through the timer
     float m_RawPct;
 
-    /// if the timer is running in reverse;
+    /// if the timer is running in reverse
     bool m_IsReversed;
 
     // -- lifetime --
@@ -78,6 +78,11 @@ public record EaseTimer {
     /// if the timer is active
     public bool IsActive {
         get => m_Elapsed != k_Inactive;
+    }
+
+    /// if the timer is running in reverse
+    public bool isReversed {
+        get => m_IsReversed;
     }
 
     /// if the timer is complete

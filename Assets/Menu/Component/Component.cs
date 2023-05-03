@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 
 namespace Discone.Ui {
 
+// TODO: come up with a new name for this and extract it from menu
 /// a menu element on a page
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(RectTransform))]
@@ -21,13 +22,15 @@ sealed class Component: UIBehaviour {
     [Tooltip("if the rotation jitter is in world-space")]
     [SerializeField] bool m_JitterRotation_IsLocal;
 
-    [Tooltip("the transition distance range")]
+    [Tooltip("a sample range the component translates during transitions")]
     [SerializeField] ThirdPerson.RangeCurve m_TransitionDist;
 
-    // -- props --
-    /// the canvas group
-    CanvasGroup m_Group;
+    // -- refs --
+    [Header("refs")]
+    [Tooltip(".")]
+    [SerializeField] CanvasGroup m_Group;
 
+    // -- props --
     /// the content element
     RectTransform m_Content;
 
@@ -42,7 +45,6 @@ sealed class Component: UIBehaviour {
         base.Awake();
 
         // set props
-        m_Group = GetComponent<CanvasGroup>();
         m_Content = FindContent();
     }
 

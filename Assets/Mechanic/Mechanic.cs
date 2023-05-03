@@ -4,7 +4,7 @@ using Yarn.Unity;
 
 namespace Discone {
 
-/// the mechanic's eyelid dialogue
+/// the mechanic that speaks to the player
 sealed class Mechanic: MonoBehaviour {
     // -- cfg --
     [Header("cfg")]
