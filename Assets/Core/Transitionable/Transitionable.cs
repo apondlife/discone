@@ -7,7 +7,7 @@ namespace Discone.Ui {
 /// a menu element on a page
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(RectTransform))]
-sealed class Component: UIBehaviour {
+sealed class Transitionable: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the distance range to jitter the position")]

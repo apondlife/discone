@@ -14,7 +14,7 @@ sealed class MechanicLine: UIBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the ui component")]
-    [SerializeField] Component m_Component;
+    [SerializeField] Transitionable m_Component;
 
     [Tooltip("the text label")]
     [SerializeField] TMP_Text m_Text;
