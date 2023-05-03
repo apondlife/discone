@@ -28,6 +28,8 @@ sealed class MechanicDialogue: DialogueViewBase {
         currLine.Hide();
         nextLine.Show(dialogueLine.Text.Text);
 
+        Debug.Log($"[mechnik] run i: {next} line: {dialogueLine.Text.Text}");
+
         m_LineIndex = next;
     }
 

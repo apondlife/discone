@@ -75,8 +75,8 @@ sealed class Mechanic: MonoBehaviour {
     // -- c/yarn
     [YarnCommand("then")]
     public void Then(string nodeName) {
+        // TODO: save this to disk
         m_Node = nodeName;
-        StopDialogue();
     }
 
     // -- events --

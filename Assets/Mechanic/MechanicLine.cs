@@ -20,10 +20,18 @@ sealed class MechanicLine: UIBehaviour {
     [SerializeField] TMP_Text m_Text;
 
     // -- lifecycle --
-    void FixedUpdate() {
+    protected override void Start() {
+        base.Start();
+
+        // start the label at 0 alpha
+        m_Component.Show(0f, enter: true);
+    }
+
+    void Update() {
+        // transition the label in / out
         if (m_Fade.IsActive) {
             m_Fade.Tick();
-            m_Component.Show(m_Fade.Pct, enter: !m_Fade.isReversed);
+            m_Component.Show(m_Fade.Pct);
         }
     }
 

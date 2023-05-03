@@ -43,7 +43,7 @@ sealed class Component: UIBehaviour {
     // -- lifecycle --
     protected override void Awake() {
         base.Awake();
-        
+
         // set props
         m_Content = FindContent();
     }
@@ -58,7 +58,7 @@ sealed class Component: UIBehaviour {
 
     // -- commands --
     /// show or hide the component
-    public void Show(float pct, bool enter) {
+    public void Show(float pct, bool enter = true) {
         // update alpha
         var alpha = enter ? pct : 1.0f - pct;
         Group.alpha = alpha;
