@@ -47,6 +47,11 @@ sealed class MechanicLine: UIBehaviour {
 
     /// hide the dialogue line
     public void Hide() {
+        // ignore if already hidden
+        if (!m_Fade.IsActive && m_Fade.Raw == 0) {
+            return;
+        }
+
         m_Fade.Start(isReversed: true);
     }
 }

@@ -62,6 +62,7 @@ sealed class Mechanic: MonoBehaviour {
 
         // clean up the dialogue runner
         if (m_DialogueRunner.IsDialogueRunning) {
+            m_DialogueRunner.StopAllCoroutines();
             m_DialogueRunner.Stop();
 
             // manually call DialogueComplete on views, since yarn explicitly
@@ -75,6 +76,8 @@ sealed class Mechanic: MonoBehaviour {
     // -- c/yarn
     [YarnCommand("then")]
     public void Then(string nodeName) {
+        Debug.Log($"[mechnik] then: {nodeName}");
+
         // TODO: save this to disk
         m_Node = nodeName;
     }
