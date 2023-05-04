@@ -19,16 +19,19 @@ sealed class Mechanic: MonoBehaviour {
     [Tooltip(".")]
     [SerializeField] DialogueRunner m_DialogueRunner;
 
+    // -- subscribed --
+    [Header("subscribed")]
     [Tooltip("an event when the eyelid just closes or starts to open")]
-    [SerializeField] BoolVariable m_IsEyelidClosed;
+    [SerializeField] BoolEvent m_IsEyelidClosed_Changed;
 
+    // -- props --
     /// a bag of event subscriptions
     DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
     void Start() {
         m_Subscriptions
-            .Add(m_IsEyelidClosed.Changed, OnEyelidClosedChanged);
+            .Add(m_IsEyelidClosed_Changed, OnEyelidClosedChanged);
     }
 
     void FixedUpdate() {

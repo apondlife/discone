@@ -33,10 +33,10 @@ RectTransform:
   m_Father: {fileID: 1252723345320672300}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6744881207034726865
 CanvasRenderer:
@@ -68,8 +68,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6bedfbd7e45414697b58c7c3d8d7b36b, type: 2}
+  m_sharedMaterial: {fileID: -128255830900893661, guid: 6bedfbd7e45414697b58c7c3d8d7b36b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -93,8 +93,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 48
+  m_fontSizeBase: 48
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -198,6 +198,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mechanic-line
       objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_JitterDist.m_Max
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_JitterDist.m_Min
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_TranslationDist.m_Max
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_TranslationDist.m_Min
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
 --- !u!224 &1252723345320672300 stripped
@@ -223,7 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Fade:
-    m_Duration: 0.5
+    m_Duration: 0.8
     m_Curve:
       serializedVersion: 2
       m_Curve:
