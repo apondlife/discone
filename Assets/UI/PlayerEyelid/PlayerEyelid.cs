@@ -1,9 +1,12 @@
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+
+namespace Discone.Ui {
 
 /// the player's eyelid animation
-public class PlayerEyelid: MonoBehaviour {
+public class PlayerEyelid: UIBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("an event when the player is closing their eyes")]
@@ -36,7 +39,9 @@ public class PlayerEyelid: MonoBehaviour {
     float m_ClosingElapsed;
 
     // -- lifecycle --
-    void Start() {
+    protected override void Start() {
+        base.Start();
+
         if (m_IsClosedOnStart) {
             UpdateElapsed(m_Duration);
             UpdateVisibility();
@@ -44,6 +49,7 @@ public class PlayerEyelid: MonoBehaviour {
     }
 
     void Update() {
+        // open/close the eyes
         if (m_IsClosing.Value) {
             UpdateElapsed(Time.deltaTime);
         } else if (m_ClosingElapsed > 0.0f) {
@@ -80,4 +86,6 @@ public class PlayerEyelid: MonoBehaviour {
         m_TopEyelid.fillAmount = pct;
         m_BottomEyelid.fillAmount = pct;
     }
+}
+
 }

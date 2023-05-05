@@ -4,10 +4,20 @@ namespace Discone {
 
 /// ids for various shader props
 static class ShaderProps {
-    // -- constants --
+    // -- buffers --
     /// the main texture
     public static readonly int Main = Shader.PropertyToID("_MainTex");
 
+    /// the source texture for a command sequence
+    public static readonly int Src = Shader.PropertyToID("_SrcTex");
+
+    /// a temp texture for a command sequence
+    public static readonly int Tmp1 = Shader.PropertyToID("_TmpTex1");
+
+    /// a temp texture for a command sequence
+    public static readonly int Tmp2 = Shader.PropertyToID("_TmpTex2");
+
+    // -- discone --
     /// the emission texture
     public static readonly int Emission = Shader.PropertyToID("_EmissionMap");
 
@@ -49,6 +59,9 @@ static class ShaderProps {
 
     /// the reflected light intensity relative to the directional light
     public static readonly int ReflectedLightIntensity = Shader.PropertyToID("_ReflectedLightIntensity");
+
+    /// the eyelid blur offsets
+    public static readonly int Offsets = Shader.PropertyToID("_Offsets");
 }
 
 }
