@@ -85,6 +85,10 @@ public class PlayerEyelid_Filter: UIBehaviour {
         // upscale the image
         buf.Blit(blur2, m_DstImage);
 
+        // release temp buffers
+        buf.ReleaseTemporaryRT(blur1);
+        buf.ReleaseTemporaryRT(blur2);
+
         // store the buffer
         m_Buffer = buf;
     }

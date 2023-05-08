@@ -1,4 +1,4 @@
-Shader "Image/Fuzz" {
+Shader "Image/Fuzz2" {
     Properties {
         _Texture ("Texture", 2D) = "grey" {}
         _TextureScale ("Texture Scale", Float) = 1.0
@@ -8,12 +8,18 @@ Shader "Image/Fuzz" {
         _SaturationShift ("Saturation Shift", Range(-1.0, 1.0)) = 0.0
         _ValueShift ("Value Shift", Range(-1.0, 1.0)) = 0.0
 
+        [Space]
+        [Header(Depth Dissolve)]
+        [Space(5)]
         _DepthPower ("Depth Power", Range(0, 1.0)) = 1
         _DissolveDepthMin ("Dissolve Depth Min", Range(0, 1.0)) = 0.8
         _DissolveDepthMax ("Dissolve Depth Max", Range(0, 1.0)) = 1.0
         _NoiseTimeScale ("Noise Time Scale", Float) = 0.1
         _NoiseScale ("Noise Scale", Float) = 1000
 
+        [Space]
+        [Header(Noise)]
+        [Space(5)]
         _FuzzOffset ("Fuzz Offset", float) = 0.1
         _ConvolutionDelta ("Convolution Delta", Range(0, 1.0)) = 0.1
         _HueScale ("Hue Scale", Range(0, 1.0)) = 0.1
