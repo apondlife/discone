@@ -5,8 +5,8 @@ namespace ThirdPerson {
 
 /// the character's dust effect
 public class CharacterDust: MonoBehaviour {
-    // -- tunables --
-    [Header("tunables")]
+    // -- tuning --
+    [Header("tuning")]
     [Tooltip("the floor particle emission per unit of speed")]
     [SerializeField] float m_FloorParticlesBaseEmission;
 
@@ -24,10 +24,6 @@ public class CharacterDust: MonoBehaviour {
     [Header("refs")]
     [Tooltip("the wall particle emitter")]
     [SerializeField] ParticleSystem m_WallParticles;
-
-    [Tooltip("the floor dust particle emitter (high speed)")]
-    [FormerlySerializedAs("m_FloorParticles")]
-    [SerializeField] ParticleSystem m_FloorDust;
 
     [Tooltip("the floor skid lines particle (negative acceleration)")]
     [SerializeField] ParticleSystem m_FloorSkid;
@@ -74,20 +70,6 @@ public class CharacterDust: MonoBehaviour {
             var groundAcceleration = Vector3.ProjectOnPlane(m_State.Acceleration, m_State.Ground.Normal);
             var isDecelerating = Vector3.Dot(m_State.Velocity.normalized, groundAcceleration) < m_SkidDeceleration;
 
-            if (!m_FloorDust.isPlaying) {
-                m_FloorDust.Play();
-            }
-
-            if (!m_State.Ground.IsNone) {
-                var t = m_FloorDust.transform;
-                var c = m_State.Ground;
-                t.position = c.Point;
-            }
-
-            var emission = m_FloorDust.emission;
-            var emissionRate = m_FloorParticlesBaseEmission * m_State.Next.PlanarVelocity.sqrMagnitude;
-            emission.rateOverTimeMultiplier = emissionRate;
-
             // check for character deceleration
             if (m_State.IsCrouching || isDecelerating) {
                 m_FloorSkid.Play();
@@ -107,10 +89,6 @@ public class CharacterDust: MonoBehaviour {
                 m_PivotParticles.Emit(dustCount);
             }
         } else {
-            if (m_FloorDust.isPlaying) {
-                m_FloorDust.Stop();
-            }
-
             if (m_FloorSkid.isPlaying) {
                 m_FloorSkid.Stop();
             }

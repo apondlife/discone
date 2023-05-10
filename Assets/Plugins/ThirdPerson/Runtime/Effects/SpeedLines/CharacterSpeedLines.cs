@@ -3,9 +3,9 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the character's speed lines effect
-public class CharacterSpeedLines: MonoBehaviour {
-    // -- tunables --
-    [Header("tunables")]
+public sealed class CharacterSpeedLines: MonoBehaviour {
+    // -- tuning --
+    [Header("tuning")]
     [Tooltip("the scale for start speed as a fn of sqr velocity")]
     [SerializeField] float m_SpeedScale;
 
