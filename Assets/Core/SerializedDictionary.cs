@@ -1,4 +1,5 @@
-﻿using System;
+﻿// from: https://github.com/arimger/Unity-Editor-Toolbox/blob/master/Assets/Editor%20Toolbox/Runtime/Serialization/SerializedDictionary.cs
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
