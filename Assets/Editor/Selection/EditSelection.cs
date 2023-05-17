@@ -6,7 +6,7 @@ using G = UnityEngine.GUILayout;
 
 namespace Discone.Editor {
 
-/// a base class for selection editors
+/// an editor for a selection of game objects
 public sealed class EditSelection: EditorWindow {
     // -- props --
     /// the editor title
@@ -74,6 +74,7 @@ public sealed class EditSelection: EditorWindow {
                     new JitterSelection(),
                     new ReplaceSelection(),
                     new NormalizeSelection(),
+                    new RealignSelection(),
                 };
             }
 
@@ -93,7 +94,7 @@ public sealed class EditSelection: EditorWindow {
 
         // -- commands --
         /// create an undo record for the objects
-        protected void CreateUndoRecord(GameObject[] objs) {
+        protected void CreateUndoRecord(Object[] objs) {
             StartUndoRecord();
             StoreUndoState(objs);
             FinishUndoRecord();
@@ -106,14 +107,14 @@ public sealed class EditSelection: EditorWindow {
         }
 
         /// record the state of the objects in the current record
-        protected void StoreUndoState(GameObject[] objs) {
+        protected void StoreUndoState(Object[] objs) {
             foreach (var obj in objs) {
                 Undo.RegisterCompleteObjectUndo(obj, k_Name);
             }
         }
 
         /// record the creation of the object in the current record
-        protected void StoreUndoCreate(GameObject obj) {
+        protected void StoreUndoCreate(Object obj) {
             Undo.RegisterCreatedObjectUndo(obj, k_Name);
         }
 
@@ -124,8 +125,8 @@ public sealed class EditSelection: EditorWindow {
 
         // -- queries --
         /// all selected objects
-        protected GameObject[] FindAll() {
-            return Selection.gameObjects;
+        protected Object[] FindAll() {
+            return Selection.objects;
         }
     }
 }

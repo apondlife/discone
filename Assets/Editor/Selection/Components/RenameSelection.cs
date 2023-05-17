@@ -1,6 +1,5 @@
-using UnityEngine;
-using UnityEditor;
 using System.Linq;
+using UnityEngine;
 
 using E = UnityEditor.EditorGUILayout;
 using G = UnityEngine.GUILayout;
@@ -50,6 +49,7 @@ public sealed class RenameSelection: EditSelection.Component {
 
         // sort selected objects by index
         var sorted = all
+            .OfType<GameObject>()
             .OrderBy((o) => o.transform.GetSiblingIndex());
 
         // rename all the objects

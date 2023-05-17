@@ -1,5 +1,5 @@
+using System.Linq;
 using UnityEngine;
-using UnityEditor;
 
 using E = UnityEditor.EditorGUILayout;
 using G = UnityEngine.GUILayout;
@@ -57,7 +57,7 @@ public sealed class JitterSelection: EditSelection.Component {
         CreateUndoRecord(all);
 
         // jitter the rotation of all the objects
-        foreach (var obj in all) {
+        foreach (var obj in all.OfType<GameObject>()) {
             var t = obj.transform;
             var e = t.localEulerAngles + Sample(m_MaxRotation);
             t.localEulerAngles = e;
@@ -73,7 +73,7 @@ public sealed class JitterSelection: EditSelection.Component {
 
         // jitter the position of all the objects
         foreach (var obj in all) {
-            var t = obj.transform;
+            var t = (obj as GameObject).transform;
             var p = t.position + Sample(m_MaxTranslation);
             t.position = p;
         }
