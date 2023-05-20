@@ -78,7 +78,7 @@ public sealed class SimpleMusic: CharacterMusicBase {
     // -- c/play
     /// play step audio
     void PlayStep() {
-        // if were stepping at all
+        // if we are stepping at all
         if (StepVelocity == Vector3.zero) {
             return;
         }
