@@ -462,27 +462,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: EventReference.Path
-      value: event:/Character/Mousing-clone2
+      value: event:/Character/clone/Jump
       objectReference: {fileID: 0}
     - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: OverrideMaxDistance
-      value: 60
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: EventReference.Guid.Data1
-      value: -471674125
+      value: -1313267540
       objectReference: {fileID: 0}
     - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: EventReference.Guid.Data2
-      value: 1279799495
+      value: 1304981539
       objectReference: {fileID: 0}
     - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: EventReference.Guid.Data3
-      value: -2008397378
+      value: -197288292
       objectReference: {fileID: 0}
     - target: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: EventReference.Guid.Data4
-      value: -1303438276
+      value: -1914509363
       objectReference: {fileID: 0}
     - target: {fileID: 7612935115146947594, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_RootOrder
@@ -504,13 +504,83 @@ PrefabInstance:
       propertyPath: m_Anchor
       value: 
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1887449446056640631, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+    - {fileID: 8308671448248470874, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+--- !u!1 &455253245837561524 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1029445836574466050, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+  m_PrefabInstance: {fileID: 583271002712796854}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3008356988136581338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455253245837561524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0ff1ae5b5f6142a3939188b31feb6e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StepInterval: 0.2
+  m_JumpEmitter: {fileID: 8053217777064875184}
+  m_StepEmitter: {fileID: 7662501699474444792}
+  m_IsStandalone:
+    _usage: 0
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 0}
+    _variableInstancer: {fileID: 0}
+--- !u!114 &7662501699474444792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455253245837561524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: 1927773122
+      Data2: 1289340938
+      Data3: -1037098320
+      Data4: 9921071
+    Path: event:/Character/clone/Step
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!4 &4711384473151566414 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5294547428429929720, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
   m_PrefabInstance: {fileID: 583271002712796854}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8053217777064875184 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7483565329405934086, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+  m_PrefabInstance: {fileID: 583271002712796854}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455253245837561524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7683216032528747968
 PrefabInstance:
   m_ObjectHideFlags: 0

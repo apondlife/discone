@@ -66,6 +66,9 @@
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{d50f4d54-56c2-4e3b-8d91-98bd7e40274b}">
+		<property name="maxVoices">
+			<value>6</value>
+		</property>
 		<property name="maximumDistance">
 			<value>60</value>
 		</property>
@@ -87,6 +90,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{51233326-f757-42cd-8387-898a3b31bb1e}">
+		<property name="volume">
+			<value>-8</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{390b2336-ffcf-440e-8449-f84abf510289}</destination>
 		</relationship>
@@ -141,10 +147,6 @@
 		</relationship>
 	</object>
 	<object class="EventSound" id="{aeadc801-8ec2-4a6f-9888-20a53baeab5e}">
-		<relationship name="parameters">
-			<destination>{9551bccf-01d9-4e30-b5d8-7a5e0b01e54d}</destination>
-			<destination>{9b6227a1-1450-4b26-9017-f034f842c14f}</destination>
-		</relationship>
 		<relationship name="event">
 			<destination>{72e77bc2-c80a-4cd9-b022-2fc22f629700}</destination>
 		</relationship>
@@ -168,16 +170,6 @@
 		</property>
 		<relationship name="automationCurves">
 			<destination>{5214eb14-13c5-451d-9593-fd4b320dcb8d}</destination>
-		</relationship>
-	</object>
-	<object class="ParameterProperty" id="{9551bccf-01d9-4e30-b5d8-7a5e0b01e54d}">
-		<relationship name="parameter">
-			<destination>{c983287f-9af8-46f6-ac09-ce5b83e09e91}</destination>
-		</relationship>
-	</object>
-	<object class="ParameterProperty" id="{9b6227a1-1450-4b26-9017-f034f842c14f}">
-		<relationship name="parameter">
-			<destination>{7dd0c3a2-3406-4751-ab2e-01e89beaf7cb}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusFader" id="{5f09cfb4-650e-4446-b53b-48f05189eca1}" />

@@ -91,7 +91,7 @@ sealed class EntityPerception: MonoBehaviour {
 
             // step 1: check hearing (spherical)
             var hearDist = distXz + distY;
-            other.Music.SetIsAudible(hearDist < m_MaxHearingDist);
+            if (other.Music) other.Music.SetIsAudible(hearDist < m_MaxHearingDist);
 
             // step 2: check talking (cylindrical)
             var talkDist = distXz;
