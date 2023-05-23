@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 
@@ -6,7 +7,7 @@ using G = UnityEngine.GUILayout;
 
 namespace Discone.Editor {
 
-/// randomly rotate the selected objects by a bounded amount
+/// best effort replace objects with the selected prefab
 public sealed class ReplaceSelection: EditSelection.Component {
     // -- props --
     /// the prefab to replace with
@@ -49,7 +50,7 @@ public sealed class ReplaceSelection: EditSelection.Component {
         }
 
         // find all objs
-        var all = Selection.gameObjects;
+        var all = FindAll();
 
         // create undo record
         StartUndoRecord();
@@ -59,7 +60,7 @@ public sealed class ReplaceSelection: EditSelection.Component {
         var type = PrefabUtility.GetPrefabAssetType(m_Prefab);
 
         // for each object
-        foreach (var obj in all) {
+        foreach (var obj in all.OfType<GameObject>()) {
             GameObject sub;
 
             // create the substitute

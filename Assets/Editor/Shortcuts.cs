@@ -9,7 +9,6 @@ namespace Discone.Editor {
 
 /// a base class for selection editors
 public sealed class Shortcuts: EditorWindow {
-
     // -- props --
     /// the editor title
     const string k_Title = "shortcuts";
