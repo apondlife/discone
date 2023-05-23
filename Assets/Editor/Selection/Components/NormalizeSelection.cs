@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 
@@ -6,7 +7,7 @@ using G = UnityEngine.GUILayout;
 
 namespace Discone.Editor {
 
-/// normalize rotation of a single object, rotating and repositioning children
+/// normalize the transform a single object, rotating and repositioning children
 public sealed class NormalizeSelection: EditSelection.Component {
     // -- types --
     /// a stored transform record
@@ -53,7 +54,7 @@ public sealed class NormalizeSelection: EditSelection.Component {
             m_UpdatesScl = E.ToggleLeft(
                 "scale",
                 m_UpdatesScl,
-                G.MaxWidth(59f)
+                G.MaxWidth(69f)
             );
 
             m_UpdatesRot = E.ToggleLeft(
@@ -64,7 +65,7 @@ public sealed class NormalizeSelection: EditSelection.Component {
         L.EH();
 
         // show button
-        E.Space(5f);
+        E.Space(3f);
         if (G.Button("apply")) {
             Call();
         }
@@ -79,7 +80,7 @@ public sealed class NormalizeSelection: EditSelection.Component {
         CreateUndoRecord(all);
 
         // for each object
-        foreach (var obj in all) {
+        foreach (var obj in all.OfType<GameObject>()) {
             var t = obj.transform;
             var p = t.localPosition;
             var s = t.localScale;
