@@ -3,34 +3,34 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// a normalized curve with a min & max value
-/// TODO: rename to MapOutCurve
+/// a normalized curve with source and destination ranges
 [Serializable]
-public struct RangeCurve {
+public struct MapCurve {
     // -- fields --
     [Tooltip("the curve")]
     [SerializeField] AnimationCurve m_Curve;
 
-    [Tooltip("the min value")]
-    [SerializeField] float m_Min;
+    [Tooltip("the source range")]
+    [SerializeField] FloatRange m_Src;
 
-    [Tooltip("the max value")]
-    [SerializeField] float m_Max;
+    [Tooltip("the destination range")]
+    [SerializeField] FloatRange m_Dst;
 
     // -- queries --
-    /// evaluate the curve in the range
+    /// evaluate the value along the curve
     public float Evaluate(float input) {
-        var k = input;
+        var k = m_Src.InverseLerp(input);
+
         if (m_Curve != null && m_Curve.length != 0) {
             k = m_Curve.Evaluate(input);
         }
 
-        return Mathf.Lerp(m_Min, m_Max, k);
+        return m_Dst.Lerp(k);
     }
 
     // -- debug --
     public override string ToString() {
-        return $"<RangeCurve min={m_Min} max={m_Max}>";
+        return $"<MapCurve src={m_Src} dst={m_Dst}>";
     }
 }
 

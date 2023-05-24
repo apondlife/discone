@@ -14619,7 +14619,6 @@ MonoBehaviour:
   m_AccelerationToDust: 0.05
   m_LandingAccelerationToDust: 0.02
   m_WallParticles: {fileID: 7367711425216321050}
-  m_FloorDust: {fileID: 7367711424152537846}
   m_FloorSkid: {fileID: 9126817585881355969}
   m_LandingPuff: {fileID: 2788972137215246079}
   m_LandingStamp: {fileID: 5366554359282754112}
@@ -19699,34 +19698,6 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1334008369121381225, guid: 581870d6b141b455390c64647f805d67, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 1334008369121381225, guid: 581870d6b141b455390c64647f805d67, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -1.273
-      objectReference: {fileID: 0}
-    - target: {fileID: 1334008369121381225, guid: 581870d6b141b455390c64647f805d67, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.23
-      objectReference: {fileID: 0}
-    - target: {fileID: 1334008369121381225, guid: 581870d6b141b455390c64647f805d67, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1334008369121381225, guid: 581870d6b141b455390c64647f805d67, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1334008369121381225, guid: 581870d6b141b455390c64647f805d67, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1334008369121381225, guid: 581870d6b141b455390c64647f805d67, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1334008369121381225, guid: 581870d6b141b455390c64647f805d67, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -90
       objectReference: {fileID: 0}
@@ -19740,17 +19711,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1334008369121381226, guid: 581870d6b141b455390c64647f805d67, type: 3}
       propertyPath: m_Name
-      value: MoveSmoke
+      value: GroundDust
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 581870d6b141b455390c64647f805d67, type: 3}
 --- !u!4 &7367711424152537840 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1334008369121381225, guid: 581870d6b141b455390c64647f805d67, type: 3}
-  m_PrefabInstance: {fileID: 8411605944035951001}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &7367711424152537846 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 1334008369121381231, guid: 581870d6b141b455390c64647f805d67, type: 3}
   m_PrefabInstance: {fileID: 8411605944035951001}
   m_PrefabAsset: {fileID: 0}

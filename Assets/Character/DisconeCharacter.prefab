@@ -308,6 +308,14 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.000000007450581
       objectReference: {fileID: 0}
+    - target: {fileID: 1378686938, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2009803951, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_Name
+      value: Effects
+      objectReference: {fileID: 0}
     - target: {fileID: 2009803952, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -335,6 +343,10 @@ PrefabInstance:
     - target: {fileID: 3273269923708946028, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.78
+      objectReference: {fileID: 0}
+    - target: {fileID: 4550455896784943466, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_RootOrder
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6542079319371145381, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_Name
@@ -637,8 +649,8 @@ MonoBehaviour:
     Velocity: {x: 0, y: 0, z: 0}
     Acceleration: {x: 0, y: 0, z: 0}
     Forward: {x: 0, y: 0, z: 0}
+    IsLanding: 0
     IsInJumpSquat: 0
-    IsInJumpStart: 0
     IsOnWall: 0
     IsCrouching: 0
     Tilt: {x: 0, y: 0, z: 0, w: 1}
