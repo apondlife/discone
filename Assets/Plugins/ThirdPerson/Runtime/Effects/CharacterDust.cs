@@ -82,7 +82,6 @@ public class CharacterDust: MonoBehaviour {
             }
 
             // pivot effects
-            // if (m_State.Prev.PivotFrame == -1 && m_State.PivotFrame >= 0) {
             if (isDecelerating) {
                 m_PivotParticles.transform.forward = -m_State.Acceleration.normalized;
                 var dustCount = Mathf.FloorToInt(m_AccelerationToDust * m_State.Acceleration.magnitude);
