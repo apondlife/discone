@@ -118,38 +118,38 @@ MonoBehaviour:
       Max: 30
     m_Dst:
       Min: 0
-      Max: 7.5
+      Max: 12
   m_AccelerationMagSize:
     m_Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
+        time: 0.6642739
         value: 0
-        inSlope: 1
-        outSlope: 1
-        tangentMode: 34
-        weightedMode: 0
+        inSlope: 0.026040325
+        outSlope: 0.026040325
+        tangentMode: 0
+        weightedMode: 2
         inWeight: 0
-        outWeight: 0
+        outWeight: 1
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 1
-        outSlope: 1
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
+        inSlope: 103.548325
+        outSlope: 103.548325
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.026119612
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Src:
       Min: 0
-      Max: 30
+      Max: 26.5
     m_Dst:
       Min: 0
-      Max: 6
+      Max: 4
   m_Particles: {fileID: 1334008369121381231}
 --- !u!199 &1334008369121381224
 ParticleSystemRenderer:
@@ -1163,7 +1163,7 @@ ParticleSystem:
     m_BurstCount: 0
     m_Bursts: []
   SizeModule:
-    enabled: 1
+    enabled: 0
     curve:
       serializedVersion: 2
       minMaxState: 1
@@ -2260,7 +2260,7 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    inWorldSpace: 0
+    inWorldSpace: 1
   InheritVelocityModule:
     enabled: 0
     m_Mode: 1

@@ -22,7 +22,7 @@ public struct MapCurve {
         var k = m_Src.InverseLerp(input);
 
         if (m_Curve != null && m_Curve.length != 0) {
-            k = m_Curve.Evaluate(input);
+            k = m_Curve.Evaluate(k);
         }
 
         return m_Dst.Lerp(k);
