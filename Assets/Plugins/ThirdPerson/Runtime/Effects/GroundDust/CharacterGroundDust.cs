@@ -68,6 +68,10 @@ public sealed class CharacterGroundDust: MonoBehaviour {
         var size = m_AccelerationMagSize.Evaluate(aMag);
         var main = m_Particles.main;
         main.startSize = size;
+
+        if (aMag >= Mathf.Epsilon) {
+            Debug.Log($"[chrctr] a {aMag} a•v {aDotV} size {size}");
+        }
     }
 }
 
