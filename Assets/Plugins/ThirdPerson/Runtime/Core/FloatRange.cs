@@ -5,7 +5,7 @@ namespace ThirdPerson {
 
 /// a float value range
 [Serializable]
-struct FloatRange {
+public struct FloatRange {
     // -- fields --
     [Tooltip("the min value")]
     [SerializeField] float Min;
