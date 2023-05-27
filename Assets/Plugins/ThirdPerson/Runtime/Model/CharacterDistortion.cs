@@ -43,7 +43,7 @@ sealed class CharacterDistortion: MonoBehaviour {
     CharacterState m_State;
 
     /// .
-    CharacterTunablesBase m_Tunables;
+    CharacterTunables m_Tunables;
 
     // the list of distorted materials
     Material[] m_Materials;

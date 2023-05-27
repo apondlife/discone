@@ -295,7 +295,7 @@ sealed class JumpSystem: CharacterSystem {
 
     // -- queries --
     /// the current jump tunables
-    CharacterTunablesBase.JumpTunablesBase JumpTunables {
+    CharacterTunables.JumpTunables JumpTunables {
         get => m_Tunables.Jumps[m_State.JumpTunablesIndex];
     }
 

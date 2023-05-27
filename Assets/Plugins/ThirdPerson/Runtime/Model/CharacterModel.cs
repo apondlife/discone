@@ -75,7 +75,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// the character's tunables
     /// TODO: CharacterContainer, CharacterContainerConvertible
-    CharacterTunablesBase m_Tunables => m_Container.Tunables;
+    CharacterTunables m_Tunables => m_Container.Tunables;
 
     /// the character's tunables
     /// TODO: CharacterContainer, CharacterContainerConvertible

@@ -7,7 +7,7 @@ public partial class Character: MonoBehaviour {
     // -- data --
     [Header("data")]
     [Tooltip("the tunables; for tweaking the player's attributes")]
-    [SerializeField] CharacterTunablesBase m_Tunables;
+    [SerializeField] CharacterTunables m_Tunables;
 
     // -- state --
     [Header("state")]
@@ -178,7 +178,7 @@ public partial class Character: MonoBehaviour {
     }
 
     /// the character's tunables
-    public CharacterTunablesBase Tunables {
+    public CharacterTunables Tunables {
         get => m_Tunables;
     }
 

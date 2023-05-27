@@ -28,7 +28,7 @@ abstract class CharacterSystem: System {
 
     /// a ref to the character's tunables
     /// TODO: CharacterContainer, CharacterContainerConvertible
-    protected CharacterTunablesBase m_Tunables => m_Data.Tunables;
+    protected CharacterTunables m_Tunables => m_Data.Tunables;
 
     /// a ref to the character's controller
     /// TODO: CharacterContainer, CharacterContainerConvertible

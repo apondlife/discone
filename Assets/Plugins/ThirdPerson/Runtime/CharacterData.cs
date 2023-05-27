@@ -13,7 +13,7 @@ readonly struct CharacterData {
     public readonly CharacterState State;
 
     /// the character's tunables/constants
-    public readonly CharacterTunablesBase Tunables;
+    public readonly CharacterTunables Tunables;
 
     /// the raw unity character controller
     public readonly CharacterController Controller;
@@ -27,7 +27,7 @@ readonly struct CharacterData {
         string name,
         CharacterInput input,
         CharacterState state,
-        CharacterTunablesBase tunables,
+        CharacterTunables tunables,
         CharacterController controller,
         CharacterEvents events
     ) {

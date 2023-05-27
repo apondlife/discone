@@ -14,7 +14,7 @@ public sealed partial class CharacterState {
 
     // -- deps --
     /// the tunables
-    CharacterTunablesBase m_Tunables;
+    CharacterTunables m_Tunables;
 
     // -- props --
     /// the queue of frames
@@ -24,7 +24,7 @@ public sealed partial class CharacterState {
     /// create state from intial frame and dependencies
     public CharacterState(
         Frame initial,
-        CharacterTunablesBase tunables
+        CharacterTunables tunables
     ) {
         // set deps
         m_Tunables = tunables;
