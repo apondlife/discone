@@ -11,20 +11,20 @@ sealed class Transitionable: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the distance range to jitter the position")]
-    [SerializeField] ThirdPerson.RangeCurve m_JitterDist;
+    [SerializeField] ThirdPerson.MapOutCurve m_JitterDist;
 
     [Tooltip("an axis to jitter the position along; 0 is right, 1 is up; outside (0..1) is no axis (a random direction)")]
     [SerializeField] float m_JitterDist_Axis;
 
     [Tooltip("the angle range to jitter the rotation in degrees")]
-    [SerializeField] ThirdPerson.RangeCurve m_JitterRotation;
+    [SerializeField] ThirdPerson.MapOutCurve m_JitterRotation;
 
     [Tooltip("if the rotation jitter is in world-space")]
     [SerializeField] bool m_JitterRotation_IsLocal;
 
     [Tooltip("a sample range the component translates during transitions")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_TransitionDist")]
-    [SerializeField] ThirdPerson.RangeCurve m_TranslationDist;
+    [SerializeField] ThirdPerson.MapOutCurve m_TranslationDist;
 
     // -- refs --
     [Header("refs")]

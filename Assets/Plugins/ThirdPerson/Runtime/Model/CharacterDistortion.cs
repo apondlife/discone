@@ -24,7 +24,7 @@ sealed class CharacterDistortion: MonoBehaviour {
     // -- stretch & squash --
     [Header("tuning")]
     [Tooltip("TODO: leave me a comment")]
-    [SerializeField] RangeCurve m_JumpSquat_Intensity;
+    [SerializeField] MapOutCurve m_JumpSquat_Intensity;
 
     [Tooltip("TODO: leave me a comment")]
     [SerializeField] float m_VerticalAcceleration_StretchIntensity;
@@ -82,7 +82,6 @@ sealed class CharacterDistortion: MonoBehaviour {
     }
 
     /// change character scale according to acceleration
-
     public float destIntensity = 1f;
     void StretchAndSquash() {
         var v = m_State.Prev.Velocity.y;

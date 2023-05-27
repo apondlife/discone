@@ -107,20 +107,20 @@ public sealed class CharacterTunables: CharacterTunablesBase {
     public override float Crouch_Acceleration => Crouch_Gravity - Gravity;
 
     [Tooltip("the kinetic friction when crouching towards movement")]
-    [SerializeField] private RangeCurve m_Crouch_PositiveKineticFriction;
-    public override RangeCurve Crouch_PositiveKineticFriction => m_Crouch_PositiveKineticFriction;
+    [SerializeField] private MapOutCurve m_Crouch_PositiveKineticFriction;
+    public override MapOutCurve Crouch_PositiveKineticFriction => m_Crouch_PositiveKineticFriction;
 
     [Tooltip("the kinetic friction when crouching against movement")]
-    [SerializeField] private RangeCurve m_Crouch_NegativeKineticFriction;
-    public override RangeCurve Crouch_NegativeKineticFriction => m_Crouch_NegativeKineticFriction;
+    [SerializeField] private MapOutCurve m_Crouch_NegativeKineticFriction;
+    public override MapOutCurve Crouch_NegativeKineticFriction => m_Crouch_NegativeKineticFriction;
 
     [Tooltip("the drag when crouching towards movement")]
-    [SerializeField] private RangeCurve m_Crouch_PositiveDrag;
-    public override RangeCurve Crouch_PositiveDrag => m_Crouch_PositiveDrag;
+    [SerializeField] private MapOutCurve m_Crouch_PositiveDrag;
+    public override MapOutCurve Crouch_PositiveDrag => m_Crouch_PositiveDrag;
 
     [Tooltip("the drag when crouching against movement")]
-    [SerializeField] private RangeCurve m_Crouch_NegativeDrag;
-    public override RangeCurve Crouch_NegativeDrag => m_Crouch_NegativeDrag;
+    [SerializeField] private MapOutCurve m_Crouch_NegativeDrag;
+    public override MapOutCurve Crouch_NegativeDrag => m_Crouch_NegativeDrag;
 
     #region jump system
     [Header("jump system")]

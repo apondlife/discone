@@ -34,10 +34,10 @@ public abstract class CharacterTunablesBase: ScriptableObject {
     public abstract float Crouch_Gravity { get; }
     public abstract float Crouch_Acceleration { get; }
 
-    public abstract RangeCurve Crouch_PositiveDrag { get; }
-    public abstract RangeCurve Crouch_NegativeDrag { get; }
-    public abstract RangeCurve Crouch_PositiveKineticFriction { get; }
-    public abstract RangeCurve Crouch_NegativeKineticFriction { get; }
+    public abstract MapOutCurve Crouch_PositiveDrag { get; }
+    public abstract MapOutCurve Crouch_NegativeDrag { get; }
+    public abstract MapOutCurve Crouch_PositiveKineticFriction { get; }
+    public abstract MapOutCurve Crouch_NegativeKineticFriction { get; }
 
     // -- air movement --
     public abstract float Air_TurnSpeed { get; }

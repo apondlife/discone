@@ -6,16 +6,14 @@ namespace ThirdPerson {
 /// a normalized curve with a min & max value
 /// TODO: rename to MapOutCurve
 [Serializable]
-public struct RangeCurve {
+[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "RangeCurve")]
+public struct MapOutCurve {
     // -- fields --
     [Tooltip("the curve")]
     [SerializeField] AnimationCurve m_Curve;
 
-    [Tooltip("the min value")]
-    [SerializeField] float m_Min;
-
-    [Tooltip("the max value")]
-    [SerializeField] float m_Max;
+    [Tooltip("the destination range")]
+    [SerializeField] FloatRange m_Dst;
 
     // -- queries --
     /// evaluate the curve in the range
@@ -25,12 +23,12 @@ public struct RangeCurve {
             k = m_Curve.Evaluate(input);
         }
 
-        return Mathf.Lerp(m_Min, m_Max, k);
+        return m_Dst.Lerp(k);
     }
 
     // -- debug --
     public override string ToString() {
-        return $"<RangeCurve min={m_Min} max={m_Max}>";
+        return $"<MapOutCurve dst={m_Dst}>";
     }
 }
 

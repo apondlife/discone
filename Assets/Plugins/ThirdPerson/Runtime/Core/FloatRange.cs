@@ -8,10 +8,10 @@ namespace ThirdPerson {
 public struct FloatRange {
     // -- fields --
     [Tooltip("the min value")]
-    [SerializeField] float Min;
+    public float Min;
 
     [Tooltip("the max value")]
-    [SerializeField] float Max;
+    public float Max;
 
     // -- queries --
     /// interpolate between the min & max
