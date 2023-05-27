@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
 
@@ -30,21 +32,24 @@ sealed class CharacterTunablesEditor: UnityEditor.Editor {
 
         // show tunable properties
         var type = m_Tunables.GetType();
-        foreach (var p in type.GetProperties()) {
-            // skip properties from supertypes
-            if (p.DeclaringType != type) {
+
+        var members = type
+            .GetFields().Cast<MemberInfo>()
+            .Concat(type.GetProperties().Cast<MemberInfo>());
+
+        foreach (var m in members) {
+            // skip members from supertypes
+            if (m.DeclaringType != type) {
                 continue;
             }
 
-            var serialized = serializedObject.FindProperty($"m_{p.Name}");
-
             // render serialized properties as fields
-            if (serialized != null) {
-                Field(serialized);
+            if (m is FieldInfo) {
+                Field(serializedObject.FindProperty(m.Name));
             }
             // render everything else as readonly
-            else {
-                Row(s_NamePattern.Replace(p.Name, " $1"), p.GetValue(m_Tunables));
+            else if (m is PropertyInfo p) {
+                Row(s_NamePattern.Replace(m.Name, " $1"), p.GetValue(m_Tunables));
             }
         }
 

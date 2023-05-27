@@ -13,65 +13,125 @@ MonoBehaviour:
   m_Name: CharacterTunables
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
-  m_Acceleration: 30
-  m_Deceleration: 2
-  m_MinPlanarSpeed: 0.85
-  m_TurnSpeed: 360
-  m_PivotSpeed: 1080
-  m_TimeToPivot: 0.6
-  m_PivotStartThreshold: -0.5
-  m_TurningFriction: 7
-  m_AerialDriftAcceleration: 10
-  m_Gravity: -80
-  m_JumpBuffer: 5
-  m_MinJumpSquatFrames: 0
-  m_MaxJumpSquatFrames: 20
-  m_MaxCoyoteFrames: 8
-  m_JumpSpeedCurve:
-    serializedVersion: 2
+  Horizontal_MinSpeed: 0.85
+  Horizontal_Acceleration: 30
+  Horizontal_Drag: 2
+  Horizontal_StaticFriction: 0
+  Horizontal_KineticFriction: 7
+  TurnSpeed: 360
+  PivotSpeed: 1080
+  TimeToPivot: 0.6
+  PivotStartThreshold: -0.5
+  PivotSpeedThreshold: 0
+  Air_TurnSpeed: 0
+  AerialDriftAcceleration: 10
+  Crouch_StaticFriction: 0
+  Crouch_TurnSpeed: 0
+  Crouch_LateralMaxSpeed: 0
+  Crouch_Gravity: 0
+  Crouch_PositiveKineticFriction:
     m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0.029391985
-      outSlope: 0.029391985
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.13501143
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2.9582162
-      outSlope: 2.9582162
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.11670482
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  m_MinJumpSpeed: 20
-  m_MaxJumpSpeed: 20
-  m_JumpGravity: -30
-  m_FallGravity: -60
-  m_JumpSpeedCurve_Horizontal:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  m_MinJumpSpeed_Horizontal: 0
-  m_MaxJumpSpeed_Horizontal: 0
-  m_WallLayer:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Crouch_NegativeKineticFriction:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Crouch_PositiveDrag:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Crouch_NegativeDrag:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Gravity: -80
+  JumpBuffer: 5
+  MaxCoyoteFrames: 0
+  JumpGravity: -30
+  FallGravity: -60
+  Landing_Duration: 0
+  Jumps: []
+  WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_WallGravity: -85
-  m_WallMagnet: 0.5
-  m_TiltForBaseAcceleration: 30
-  m_MaxTilt: 69
-  m_TiltSmoothing: 0.1
-  m_DutchScale: 0.2
-  m_DutchSmoothing: 0.2
-  m_Damping: 20
-  m_FastDamping: 1
+  WallGravity:
+    m_Sustain: 0
+    m_Attack:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_Decay:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_Release:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+  WallHoldGravity:
+    m_Sustain: 0
+    m_Attack:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_Decay:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_Release:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+  WallMagnet: 0.5
+  TiltForBaseAcceleration: 30
+  MaxTilt: 69
+  TiltSmoothing: 0.1

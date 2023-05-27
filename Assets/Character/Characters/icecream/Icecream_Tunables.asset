@@ -13,23 +13,23 @@ MonoBehaviour:
   m_Name: Icecream_Tunables
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: iced cream
-  m_Horizontal_MinSpeed: 0.85
-  m_Horizontal_Acceleration: 35
-  m_Horizontal_Drag: 0.1
-  m_Horizontal_StaticFriction: 20
-  m_Horizontal_KineticFriction: 10
-  m_TurnSpeed: 360
-  m_PivotSpeed: 1080
-  m_TimeToPivot: 0.6
-  m_PivotStartThreshold: -0.5
-  m_PivotSpeedThreshold: 10
-  m_Air_TurnSpeed: 180
-  m_AerialDriftAcceleration: 10
-  m_Crouch_StaticFriction: 690
-  m_Crouch_TurnSpeed: 0
-  m_Crouch_LateralMaxSpeed: 0.03
-  m_Crouch_Gravity: -150
-  m_Crouch_PositiveKineticFriction:
+  Horizontal_MinSpeed: 0.85
+  Horizontal_Acceleration: 35
+  Horizontal_Drag: 0.1
+  Horizontal_StaticFriction: 20
+  Horizontal_KineticFriction: 10
+  TurnSpeed: 360
+  PivotSpeed: 1080
+  TimeToPivot: 0.6
+  PivotStartThreshold: -0.5
+  PivotSpeedThreshold: 10
+  Air_TurnSpeed: 180
+  AerialDriftAcceleration: 10
+  Crouch_StaticFriction: 690
+  Crouch_TurnSpeed: 0
+  Crouch_LateralMaxSpeed: 0.03
+  Crouch_Gravity: -150
+  Crouch_PositiveKineticFriction:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -54,12 +54,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 1.2
-    m_Max: 1.2
     m_Dst:
       Min: 1.2
       Max: 1.2
-  m_Crouch_NegativeKineticFriction:
+  Crouch_NegativeKineticFriction:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -93,12 +91,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 16
-    m_Max: 50
     m_Dst:
       Min: 16
       Max: 50
-  m_Crouch_PositiveDrag:
+  Crouch_PositiveDrag:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -123,12 +119,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 0.1
-    m_Max: 0.02
     m_Dst:
       Min: 0.1
       Max: 0.02
-  m_Crouch_NegativeDrag:
+  Crouch_NegativeDrag:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -153,25 +147,23 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 0.1
-    m_Max: 0.1
     m_Dst:
       Min: 0.1
       Max: 0.1
-  m_Gravity: -70
-  m_JumpBuffer: 10
-  m_MaxCoyoteFrames: 12
-  m_JumpGravity: -30
-  m_FallGravity: -40
-  m_Landing_Duration: 0.3
-  m_Jumps:
-  - m_Count: 1
-    m_CooldownFrames: 0
-    m_MinJumpSquatFrames: 0
-    m_MaxJumpSquatFrames: 20
-    m_Vertical_MinSpeed: 20
-    m_Vertical_MaxSpeed: 20
-    m_Vertical_SpeedCurve:
+  Gravity: -70
+  JumpBuffer: 10
+  MaxCoyoteFrames: 12
+  JumpGravity: -30
+  FallGravity: -40
+  Landing_Duration: 0.3
+  Jumps:
+  - Count: 1
+    CooldownFrames: 0
+    MinJumpSquatFrames: 0
+    MaxJumpSquatFrames: 20
+    Vertical_MinSpeed: 20
+    Vertical_MaxSpeed: 20
+    Vertical_SpeedCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -195,20 +187,20 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-    m_Upwards_MomentumLoss: 0
-    m_Horizontal_MinSpeed: 0
-    m_Horizontal_MaxSpeed: 0
-    m_Horizontal_SpeedCurve:
+    Upwards_MomentumLoss: 0
+    Horizontal_MinSpeed: 0
+    Horizontal_MaxSpeed: 0
+    Horizontal_SpeedCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 0
       m_PostInfinity: 0
       m_RotationOrder: 0
-    m_Horizontal_MomentumLoss: 0
-  m_WallLayer:
+    Horizontal_MomentumLoss: 0
+  WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_WallGravity:
+  WallGravity:
     m_Sustain: 12
     m_Attack:
       m_Curve:
@@ -270,7 +262,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       m_Duration: 0
-  m_WallHoldGravity:
+  WallHoldGravity:
     m_Sustain: 18
     m_Attack:
       m_Curve:
@@ -332,7 +324,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       m_Duration: 0
-  m_WallMagnet: 0.5
-  m_TiltForBaseAcceleration: 30
-  m_MaxTilt: 69
-  m_TiltSmoothing: 0.1
+  WallMagnet: 0.5
+  TiltForBaseAcceleration: 30
+  MaxTilt: 69
+  TiltSmoothing: 0.1
