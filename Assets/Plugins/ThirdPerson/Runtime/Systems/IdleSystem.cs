@@ -23,8 +23,8 @@ sealed class IdleSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_State.Next.IdleState;
-        set => m_State.Next.IdleState = value;
+        get => c.State.Next.IdleState;
+        set => c.State.Next.IdleState = value;
     }
 
     // -- NotIdle --
@@ -35,11 +35,11 @@ sealed class IdleSystem: CharacterSystem {
     );
 
     void NotIdle_Enter() {
-        m_State.Next.IdleTime = 0.0f;
+        c.State.Next.IdleTime = 0.0f;
     }
 
     void NotIdle_Update(float _) {
-        if (m_State.Curr.Velocity.sqrMagnitude <= k_IdleSpeedThreshold) {
+        if (c.State.Curr.Velocity.sqrMagnitude <= k_IdleSpeedThreshold) {
            ChangeTo(Idle);
         }
     }
@@ -52,14 +52,14 @@ sealed class IdleSystem: CharacterSystem {
     );
 
     void Idle_Enter() {
-        m_State.Next.IdleTime = Time.deltaTime;
-        m_Events.Schedule(CharacterEvent.Idle);
+        c.State.Next.IdleTime = Time.deltaTime;
+        c.Events.Schedule(CharacterEvent.Idle);
     }
 
     void Idle_Update(float delta) {
-        m_State.Next.IdleTime += delta;
+        c.State.Next.IdleTime += delta;
 
-        if (m_State.Curr.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
+        if (c.State.Curr.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
            ChangeTo(NotIdle);
         }
     }

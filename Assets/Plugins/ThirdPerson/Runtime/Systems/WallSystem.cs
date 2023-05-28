@@ -27,8 +27,8 @@ sealed class WallSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_State.Next.WallState;
-        set => m_State.Next.WallState = value;
+        get => c.State.Next.WallState;
+        set => c.State.Next.WallState = value;
     }
 
     // -- Grounded --
@@ -39,12 +39,12 @@ sealed class WallSystem: CharacterSystem {
     );
 
     void NotOnWall_Enter() {
-        m_State.Next.IsOnWall = false;
+        c.State.Next.IsOnWall = false;
     }
 
     void NotOnWall_Update(float delta) {
         // if we're on a wall, enter slide
-        var wall = m_State.Curr.Wall;
+        var wall = c.State.Curr.Wall;
         if (!wall.IsNone) {
             ChangeToImmediate(WallSlide, delta);
         }
@@ -59,12 +59,12 @@ sealed class WallSystem: CharacterSystem {
 
     void WallSlide_Enter() {
         // update state
-        m_State.Next.IsOnWall = true;
+        c.State.Next.IsOnWall = true;
     }
 
     void WallSlide_Update(float delta) {
         // if we left the wall, exit
-        var wall = m_State.Curr.Wall;
+        var wall = c.State.Curr.Wall;
         if (wall.IsNone) {
             ChangeTo(NotOnWall);
             return;
@@ -76,18 +76,18 @@ sealed class WallSystem: CharacterSystem {
         // transfer velocity
         var vd = Vector3.zero;
         vd += TransferredVelocity();
-        vd -= m_WallNormal * m_Tuning.WallMagnet;
+        vd -= m_WallNormal * c.Tuning.WallMagnet;
 
         // accelerate while holding button
-        var wallGravity = m_Input.IsWallHoldPressed
-            ? m_Tuning.WallHoldGravity.Evaluate(PhaseStart)
-            : m_Tuning.WallGravity.Evaluate(PhaseStart);
+        var wallGravity = c.Input.IsWallHoldPressed
+            ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart)
+            : c.Tuning.WallGravity.Evaluate(PhaseStart);
 
-        var wallAcceleration = m_Tuning.WallAcceleration(wallGravity);
+        var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
         vd += wallAcceleration * delta * m_WallUp;
 
         // update state
-        m_State.Velocity += vd;
+        c.State.Velocity += vd;
     }
 
     // -- commands --
@@ -101,7 +101,7 @@ sealed class WallSystem: CharacterSystem {
     /// find the velocity transferred into the wall plane
     Vector3 TransferredVelocity() {
         // get the component of our velocity into the wall
-        var velocity = m_State.Prev.Velocity;
+        var velocity = c.State.Prev.Velocity;
         var velocityAlongWall = Vector3.ProjectOnPlane(velocity, m_WallNormal);
         var velocityIntoWall = velocity - velocityAlongWall;
 
