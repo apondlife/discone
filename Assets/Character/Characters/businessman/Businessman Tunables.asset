@@ -10,34 +10,128 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
-  m_Name: icecream Tunables 1
+  m_Name: Businessman Tunables
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
-  m_Acceleration: 60
-  m_Deceleration: 3
-  m_MinPlanarSpeed: 0.85
-  m_TurnSpeed: 360
-  m_PivotSpeed: 1080
-  m_TimeToPivot: 0.6
-  m_PivotStartThreshold: -0.5
-  m_TurningFriction: 7
-  m_AerialDriftAcceleration: 10
-  m_Gravity: 0
-  m_JumpBuffer: 10
-  m_MaxCoyoteFrames: 0
-  m_MaxJumps: 1
-  m_JumpGravity: 0
-  m_FallGravity: 0
-  m_Jumps: []
-  m_WallLayer:
+  Horizontal_MinSpeed: 0.85
+  Horizontal_Acceleration: 60
+  Horizontal_Drag: 3
+  Horizontal_StaticFriction: 0
+  Horizontal_KineticFriction: 7
+  TurnSpeed: 360
+  PivotSpeed: 1080
+  TimeToPivot: 0.6
+  PivotStartThreshold: -0.5
+  PivotSpeedThreshold: 0
+  Air_TurnSpeed: 0
+  AerialDriftAcceleration: 10
+  Crouch_StaticFriction: 0
+  Crouch_TurnSpeed: 0
+  Crouch_LateralMaxSpeed: 0
+  Crouch_Gravity: 0
+  Crouch_PositiveKineticFriction:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Crouch_NegativeKineticFriction:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Crouch_PositiveDrag:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Crouch_NegativeDrag:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Gravity: 0
+  JumpBuffer: 10
+  MaxCoyoteFrames: 0
+  JumpGravity: 0
+  FallGravity: 0
+  Landing_Duration: 0
+  Jumps: []
+  WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_WallGravity: 0
-  m_WallMagnet: 0.5
-  m_TiltForBaseAcceleration: 30
-  m_MaxTilt: 69
-  m_TiltSmoothing: 0.1
-  m_DutchScale: 0.2
-  m_DutchSmoothing: 0.2
-  m_Damping: 20
-  m_FastDamping: 1
+  WallGravity:
+    m_Sustain: 0
+    m_Attack:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_Decay:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_Release:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+  WallHoldGravity:
+    m_Sustain: 0
+    m_Attack:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_Decay:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_Release:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+  WallMagnet: 0.5
+  TiltForBaseAcceleration: 30
+  MaxTilt: 69
+  TiltSmoothing: 0.1
