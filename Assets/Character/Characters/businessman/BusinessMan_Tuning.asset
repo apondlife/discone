@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
-  m_Name: Ivan_Tunables
+  m_Name: Businessman_Tuning
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
   Horizontal_MinSpeed: 0.85
-  Horizontal_Acceleration: 100
-  Horizontal_Drag: 0.004
-  Horizontal_StaticFriction: 30
-  Horizontal_KineticFriction: 6
-  TurnSpeed: 200
+  Horizontal_Acceleration: 60
+  Horizontal_Drag: 3
+  Horizontal_StaticFriction: 0
+  Horizontal_KineticFriction: 7
+  TurnSpeed: 360
   PivotSpeed: 1080
   TimeToPivot: 0.6
   PivotStartThreshold: -0.5
@@ -69,53 +69,13 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 0
-  Gravity: -130
+  Gravity: 0
   JumpBuffer: 10
-  MaxCoyoteFrames: 8
-  JumpGravity: -30
-  FallGravity: -60
+  MaxCoyoteFrames: 0
+  JumpGravity: 0
+  FallGravity: 0
   Landing_Duration: 0
-  Jumps:
-  - Count: 1
-    CooldownFrames: 0
-    MinJumpSquatFrames: 0
-    MaxJumpSquatFrames: 20
-    Vertical_MinSpeed: 20
-    Vertical_MaxSpeed: 20
-    Vertical_SpeedCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0.029391985
-        outSlope: 0.029391985
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.13501143
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 2.9582162
-        outSlope: 2.9582162
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.11670482
-        outWeight: 0.33333334
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 0
-    Upwards_MomentumLoss: 0
-    Horizontal_MinSpeed: 0
-    Horizontal_MaxSpeed: 0
-    Horizontal_SpeedCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
-      m_RotationOrder: 0
-    Horizontal_MomentumLoss: 0
+  Jumps: []
   WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295

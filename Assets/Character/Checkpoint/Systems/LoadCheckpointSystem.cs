@@ -7,9 +7,9 @@ using UnityEngine;
 sealed class LoadCheckpointSystem: CheckpointSystem {
     const float k_Inactive = -1.0f;
     // -- types --
-    /// tunables for the load checkpoint system
+    /// tuning for the load checkpoint system
     [Serializable]
-    public sealed class Tunables {
+    public sealed class Tuning {
         /// the max load duration
         public float LoadCastMaxTime;
 
@@ -29,8 +29,9 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     }
 
     // -- deps --
-    [Tooltip("the tunables")]
-    [SerializeField] public Tunables m_Tunables;
+    [Tooltip("the tuning")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Tunables")]
+    [SerializeField] public Tuning m_Tuning;
 
     // -- props --
     /// the input state
@@ -95,10 +96,10 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
         );
 
         // calculate cast time
-        var f = m_Tunables.LoadCastPointTime / m_Tunables.LoadCastMaxTime;
-        var d = m_Tunables.LoadCastPointDistance;
+        var f = m_Tuning.LoadCastPointTime / m_Tuning.LoadCastMaxTime;
+        var d = m_Tuning.LoadCastPointDistance;
         var k = f / (d * (1 - f));
-        m_Duration = m_Tunables.LoadCastMaxTime * (1 - 1 / (k * distance + 1));
+        m_Duration = m_Tuning.LoadCastMaxTime * (1 - 1 / (k * distance + 1));
 
         // pause the character
         m_Checkpoint.Character.Pause();
@@ -115,7 +116,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
         if (m_Input.IsLoading) {
             m_Elapsed += delta;
         } else if (m_Elapsed >= 0.0f) {
-            m_Elapsed -= Mathf.Max(0, delta * m_Tunables.LoadCancelMultiplier);
+            m_Elapsed -= Mathf.Max(0, delta * m_Tuning.LoadCancelMultiplier);
         }
 
         // if we reach 0, cancel the load

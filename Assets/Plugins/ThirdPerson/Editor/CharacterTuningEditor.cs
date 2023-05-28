@@ -5,20 +5,20 @@ using UnityEditor;
 
 namespace ThirdPerson.Editor {
 
-[CustomEditor(typeof(CharacterTunables))]
+[CustomEditor(typeof(CharacterTuning))]
 [CanEditMultipleObjects]
-sealed class CharacterTunablesEditor: UnityEditor.Editor {
+sealed class CharacterTuningEditor: UnityEditor.Editor {
     // -- statics --
     /// a pattern to add spaces to property names
-    private static Regex s_NamePattern;
+    static Regex s_NamePattern;
 
     // -- fields --
-    /// the character tunables
-    private CharacterTunables m_Tunables;
+    /// the character tuning
+    CharacterTuning m_Tuning;
 
     // -- lifecycle --
     void OnEnable() {
-        m_Tunables = serializedObject.targetObject as CharacterTunables;
+        m_Tuning = serializedObject.targetObject as CharacterTuning;
 
         // set statics
         if (s_NamePattern == null) {
@@ -30,8 +30,8 @@ sealed class CharacterTunablesEditor: UnityEditor.Editor {
         // show developer description
         Field(serializedObject.FindProperty("m_Description"));
 
-        // show tunable properties
-        var type = m_Tunables.GetType();
+        // show tuning properties
+        var type = m_Tuning.GetType();
 
         var members = type
             .GetFields().Cast<MemberInfo>()
@@ -49,7 +49,7 @@ sealed class CharacterTunablesEditor: UnityEditor.Editor {
             }
             // render everything else as readonly
             else if (m is PropertyInfo p) {
-                Row(s_NamePattern.Replace(m.Name, " $1"), p.GetValue(m_Tunables));
+                Row(s_NamePattern.Replace(m.Name, " $1"), p.GetValue(m_Tuning));
             }
         }
 

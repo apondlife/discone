@@ -1,4 +1,4 @@
-gonna start this to keep track of why tunables were changed
+gonna start this to keep track of why tuning were changed
 
 2022.11.24.1
 

@@ -43,7 +43,7 @@ sealed class CharacterDistortion: MonoBehaviour {
     CharacterState m_State;
 
     /// .
-    CharacterTunables m_Tunables;
+    CharacterTuning m_Tuning;
 
     // the list of distorted materials
     Material[] m_Materials;
@@ -61,7 +61,7 @@ sealed class CharacterDistortion: MonoBehaviour {
         // set deps
         var character = GetComponentInParent<Character>();
         m_State = character.State;
-        m_Tunables = character.Tunables;
+        m_Tuning = character.Tuning;
 
         // aggregate a list of materials
         var materials = new HashSet<Material>();
@@ -105,8 +105,8 @@ sealed class CharacterDistortion: MonoBehaviour {
         // if in jump squat, add jump squash
         if (m_State.IsInJumpSquat) {
             var jumpSquatPct = 1f;
-            if (m_Tunables.Jumps[0].MaxJumpSquatFrames > 0) {
-                jumpSquatPct = (float)m_State.JumpSquatFrame / m_Tunables.Jumps[0].MaxJumpSquatFrames;
+            if (m_Tuning.Jumps[0].MaxJumpSquatFrames > 0) {
+                jumpSquatPct = (float)m_State.JumpSquatFrame / m_Tuning.Jumps[0].MaxJumpSquatFrames;
             }
 
             destIntensity = m_JumpSquat_Intensity.Evaluate(jumpSquatPct);

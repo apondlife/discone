@@ -90,8 +90,8 @@ sealed class MovementSystem: CharacterSystem {
 
         // pivot if direction change was significant
         var shouldPivot = (
-            inputDotFwd < m_Tunables.PivotStartThreshold &&
-            v.sqrMagnitude > m_Tunables.PivotSqrSpeedThreshold
+            inputDotFwd < m_Tuning.PivotStartThreshold &&
+            v.sqrMagnitude > m_Tuning.PivotSqrSpeedThreshold
         );
 
         if (shouldPivot) {
@@ -102,7 +102,7 @@ sealed class MovementSystem: CharacterSystem {
         // turn towards input direction
         TurnTowards(
             m_Input.Move,
-            m_Tunables.TurnSpeed,
+            m_Tuning.TurnSpeed,
             delta
         );
 
@@ -110,7 +110,7 @@ sealed class MovementSystem: CharacterSystem {
         // 22.10.26: removed static friction when in moving
         var dv = IntegrateForces(
             v,
-            m_Tunables.Horizontal_Acceleration * Vector3.Project(inputDir, m_State.Next.Forward),
+            m_Tuning.Horizontal_Acceleration * Vector3.Project(inputDir, m_State.Next.Forward),
             m_State.WasStopped ? 0.0f : m_State.Horizontal_Drag,
             m_State.Horizontal_KineticFriction,
             delta
@@ -155,12 +155,12 @@ sealed class MovementSystem: CharacterSystem {
         var scaleLateral = moveMag * (1.0f - Mathf.Abs(Vector3.Angle(moveDir, slideDir) / 90.0f));
 
         // calculate lateral thrust
-        var thrustLateral = scaleLateral * m_Tunables.Crouch_LateralMaxSpeed * inputSlideLateral;
+        var thrustLateral = scaleLateral * m_Tuning.Crouch_LateralMaxSpeed * inputSlideLateral;
 
         // integrate forces
         var dv = IntegrateForces(
             m_State.Next.GroundVelocity,
-            m_Tunables.Horizontal_Acceleration * thrustLateral,
+            m_Tuning.Horizontal_Acceleration * thrustLateral,
             m_State.WasStopped ? 0.0f : m_State.Horizontal_Drag,
             m_State.WasStopped ? m_State.Horizontal_StaticFriction : m_State.Horizontal_KineticFriction,
             delta
@@ -171,7 +171,7 @@ sealed class MovementSystem: CharacterSystem {
         // turn towards input direction
         TurnTowards(
             m_Input.Move,
-            m_Tunables.Crouch_TurnSpeed,
+            m_Tuning.Crouch_TurnSpeed,
             delta
         );
 
@@ -212,13 +212,13 @@ sealed class MovementSystem: CharacterSystem {
         // rotate towards pivot direction
         TurnTowards(
             m_State.Curr.PivotDirection,
-            m_Tunables.PivotSpeed,
+            m_Tuning.PivotSpeed,
             delta
         );
 
         // calculate next velocity, decelerating towards zero to finish pivot
         var v0 = m_State.Curr.GroundVelocity;
-        var dv = Mathf.Min(v0.magnitude, m_Tunables.PivotDeceleration * delta) * v0.normalized;
+        var dv = Mathf.Min(v0.magnitude, m_Tuning.PivotDeceleration * delta) * v0.normalized;
 
         // update velocity
         m_State.Next.Velocity -= dv;
@@ -254,18 +254,18 @@ sealed class MovementSystem: CharacterSystem {
 
         // rotate towards input direction
         // TODO: this should be a discone feature, not a third person one
-        // the ability to modify tunables at run time
+        // the ability to modify tuning at run time
         if (m_Input.IsCrouchPressed) {
             TurnTowards(
                 m_Input.Move,
-                m_Tunables.Air_TurnSpeed,
+                m_Tuning.Air_TurnSpeed,
                 delta
             );
         }
 
         // add aerial drift
         var v0 = m_State.Curr.PlanarVelocity;
-        var vd = m_Input.Move * m_Tunables.AerialDriftAcceleration * delta;
+        var vd = m_Input.Move * m_Tuning.AerialDriftAcceleration * delta;
         m_State.Next.Velocity += vd;
     }
 

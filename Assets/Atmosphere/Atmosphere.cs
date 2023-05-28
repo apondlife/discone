@@ -6,8 +6,8 @@ namespace Discone {
 
 /// the current skybox region
 public class Atmosphere: MonoBehaviour {
-    // -- tunables --
-    [Header("tunables")]
+    // -- tuning --
+    [Header("tuning")]
     [Tooltip("the transition timer between region colors")]
     [SerializeField] EaseTimer m_Timer;
 

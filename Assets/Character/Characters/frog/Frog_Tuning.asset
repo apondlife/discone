@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
-  m_Name: CharacterTunables
+  m_Name: Frog_Tuning
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
   Horizontal_MinSpeed: 0.85
-  Horizontal_Acceleration: 30
-  Horizontal_Drag: 2
-  Horizontal_StaticFriction: 0
-  Horizontal_KineticFriction: 7
-  TurnSpeed: 360
+  Horizontal_Acceleration: 7
+  Horizontal_Drag: 0.1
+  Horizontal_StaticFriction: 7
+  Horizontal_KineticFriction: 70
+  TurnSpeed: 200
   PivotSpeed: 1080
-  TimeToPivot: 0.6
+  TimeToPivot: 0
   PivotStartThreshold: -0.5
   PivotSpeedThreshold: 0
   Air_TurnSpeed: 0
-  AerialDriftAcceleration: 10
+  AerialDriftAcceleration: 20
   Crouch_StaticFriction: 0
   Crouch_TurnSpeed: 0
   Crouch_LateralMaxSpeed: 0
@@ -69,13 +69,71 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 0
-  Gravity: -80
-  JumpBuffer: 5
-  MaxCoyoteFrames: 0
+  Gravity: -130
+  JumpBuffer: 10
+  MaxCoyoteFrames: 10
   JumpGravity: -30
   FallGravity: -60
   Landing_Duration: 0
-  Jumps: []
+  Jumps:
+  - Count: 1
+    CooldownFrames: 0
+    MinJumpSquatFrames: 10
+    MaxJumpSquatFrames: 120
+    Vertical_MinSpeed: 20
+    Vertical_MaxSpeed: 100
+    Vertical_SpeedCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.029391985
+        outSlope: 0.029391985
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.13501143
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2.9582162
+        outSlope: 2.9582162
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.11670482
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    Upwards_MomentumLoss: 0
+    Horizontal_MinSpeed: 0
+    Horizontal_MaxSpeed: 5
+    Horizontal_SpeedCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0.007119988
+        outSlope: 0.007119988
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.6625
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.35833335
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    Horizontal_MomentumLoss: 0
   WallLayer:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -132,6 +190,6 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_Duration: 0
   WallMagnet: 0.5
-  TiltForBaseAcceleration: 30
-  MaxTilt: 69
+  TiltForBaseAcceleration: 10
+  MaxTilt: 20
   TiltSmoothing: 0.1

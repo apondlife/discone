@@ -13,8 +13,8 @@ public sealed partial class CharacterState {
     #endif
 
     // -- deps --
-    /// the tunables
-    CharacterTunables m_Tunables;
+    /// the tuning
+    CharacterTuning m_Tuning;
 
     // -- props --
     /// the queue of frames
@@ -24,10 +24,10 @@ public sealed partial class CharacterState {
     /// create state from intial frame and dependencies
     public CharacterState(
         Frame initial,
-        CharacterTunables tunables
+        CharacterTuning tuning
     ) {
         // set deps
-        m_Tunables = tunables;
+        m_Tuning = tuning;
 
         // set props
         Fill(initial);
@@ -77,12 +77,12 @@ public sealed partial class CharacterState {
 
     /// if the ground speed this frame is below the movement threshold
     public bool IsStopped {
-        get => Next.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+        get => Next.GroundVelocity.magnitude < m_Tuning.Horizontal_MinSpeed;
     }
 
     /// if the ground speed last frame was below the movement threshold
     public bool WasStopped {
-        get => Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+        get => Curr.GroundVelocity.magnitude < m_Tuning.Horizontal_MinSpeed;
     }
 
     /// the buffer size
@@ -161,11 +161,11 @@ public sealed partial class CharacterState {
         /// the number of cooldown frames available
         public int CooldownFrames = 0;
 
-        /// the current number of jumps in the current tunable
-        public uint JumpTunablesJumpIndex = 0;
+        /// the index of the current jump tuning
+        public uint JumpTuningIndex = 0;
 
-        /// the index of the current jump tunable
-        public uint JumpTunablesIndex = 0;
+        /// the current number of jumps in the current tuning
+        public uint JumpTuningJumpIndex = 0;
 
         /// the container of events that happened this frame
         public CharacterEventSet Events;

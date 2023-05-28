@@ -7,9 +7,9 @@ using UnityEngine;
 [Serializable]
 sealed class SaveCheckpointSystem: CheckpointSystem {
     // -- types --
-    /// the tunables for the checkpoint system
+    /// the tuning for the checkpoint system
     [Serializable]
-    public sealed class Tunables {
+    public sealed class Tuning {
         [Tooltip("the time (s) start smelling after crouch")]
         [SerializeField] float m_Delay;
 
@@ -37,8 +37,9 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     // -- deps --
-    [Tooltip("the tunables")]
-    [SerializeField] public Tunables m_Tunables;
+    [Tooltip("the tuning")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Tunables")]
+    [SerializeField] public Tuning m_Tuning;
 
     // -- props --
     /// whether the system is saving
@@ -92,7 +93,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         }
 
         // start smelling once delay elapses
-        if (PhaseElapsed > m_Tunables.Delay) {
+        if (PhaseElapsed > m_Tuning.Delay) {
             ChangeTo(Smelling);
         }
     }
@@ -116,7 +117,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         }
 
         // start planting once you finish smelling around for a flower
-        if (PhaseElapsed > m_Tunables.SmellDuration) {
+        if (PhaseElapsed > m_Tuning.SmellDuration) {
             ChangeTo(Planting);
         }
     }
@@ -141,7 +142,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         }
 
         // switch to simply existing after planting
-        if (PhaseElapsed > m_Tunables.PlantDuration) {
+        if (PhaseElapsed > m_Tuning.PlantDuration) {
             ChangeTo(Being);
         }
     }

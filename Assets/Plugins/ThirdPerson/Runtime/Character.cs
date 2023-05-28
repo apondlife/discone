@@ -6,8 +6,9 @@ namespace ThirdPerson {
 public partial class Character: MonoBehaviour {
     // -- data --
     [Header("data")]
-    [Tooltip("the tunables; for tweaking the player's attributes")]
-    [SerializeField] CharacterTunables m_Tunables;
+    [Tooltip("the tuning; for tweaking the player's attributes")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Tunables")]
+    [SerializeField] CharacterTuning m_Tuning;
 
     // -- state --
     [Header("state")]
@@ -63,7 +64,7 @@ public partial class Character: MonoBehaviour {
                 transform.position,
                 transform.forward
             ),
-            m_Tunables
+            m_Tuning
         );
 
         m_Events = new CharacterEvents(m_State);
@@ -84,7 +85,7 @@ public partial class Character: MonoBehaviour {
             name,
             m_Input,
             m_State,
-            m_Tunables,
+            m_Tuning,
             m_Controller,
             m_Events
         );
@@ -177,9 +178,9 @@ public partial class Character: MonoBehaviour {
         get => m_Controller;
     }
 
-    /// the character's tunables
-    public CharacterTunables Tunables {
-        get => m_Tunables;
+    /// the character's tuning
+    public CharacterTuning Tuning {
+        get => m_Tuning;
     }
 
     /// the character's input

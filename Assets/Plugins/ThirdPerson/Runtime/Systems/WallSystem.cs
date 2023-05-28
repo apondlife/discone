@@ -76,14 +76,14 @@ sealed class WallSystem: CharacterSystem {
         // transfer velocity
         var vd = Vector3.zero;
         vd += TransferredVelocity();
-        vd -= m_WallNormal * m_Tunables.WallMagnet;
+        vd -= m_WallNormal * m_Tuning.WallMagnet;
 
         // accelerate while holding button
         var wallGravity = m_Input.IsWallHoldPressed
-            ? m_Tunables.WallHoldGravity.Evaluate(PhaseStart)
-            : m_Tunables.WallGravity.Evaluate(PhaseStart);
+            ? m_Tuning.WallHoldGravity.Evaluate(PhaseStart)
+            : m_Tuning.WallGravity.Evaluate(PhaseStart);
 
-        var wallAcceleration = m_Tunables.WallAcceleration(wallGravity);
+        var wallAcceleration = m_Tuning.WallAcceleration(wallGravity);
         vd += wallAcceleration * delta * m_WallUp;
 
         // update state

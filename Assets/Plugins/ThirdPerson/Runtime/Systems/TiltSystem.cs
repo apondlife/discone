@@ -54,9 +54,9 @@ sealed class TiltSystem : CharacterSystem {
         }
 
         var tiltAngle = Mathf.Clamp(
-            acceleration.magnitude / m_Tunables.Horizontal_Acceleration * m_Tunables.TiltForBaseAcceleration,
+            acceleration.magnitude / m_Tuning.Horizontal_Acceleration * m_Tuning.TiltForBaseAcceleration,
             0,
-            m_Tunables.MaxTilt
+            m_Tuning.MaxTilt
         );
 
         var tiltAxis = Vector3.Cross(
@@ -78,7 +78,7 @@ sealed class TiltSystem : CharacterSystem {
         m_State.Next.Tilt = Quaternion.Slerp(
             m_State.Next.Tilt,
             target,
-            m_Tunables.TiltSmoothing
+            m_Tuning.TiltSmoothing
         );
     }
 }

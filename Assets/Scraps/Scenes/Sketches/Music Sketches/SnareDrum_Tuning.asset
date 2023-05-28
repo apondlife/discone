@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
-  m_Name: HiHat Tunables
+  m_Name: SnareDrum_Tuning
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
-  m_Acceleration: 40
-  m_Deceleration: 2
-  m_MinPlanarSpeed: 0.85
-  m_TurnSpeed: 720
+  m_Acceleration: 10
+  m_Deceleration: 24
+  m_MinPlanarSpeed: 0
+  m_TurnSpeed: 360
   m_PivotSpeed: 1080
   m_TimeToPivot: 0.6
   m_PivotStartThreshold: -0.5

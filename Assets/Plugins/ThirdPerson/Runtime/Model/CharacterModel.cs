@@ -73,11 +73,11 @@ public sealed class CharacterModel: MonoBehaviour {
     /// TODO: CharacterContainer, CharacterContainerConvertible
     CharacterState m_State => m_Container.State;
 
-    /// the character's tunables
+    /// the character's tuning
     /// TODO: CharacterContainer, CharacterContainerConvertible
-    CharacterTunables m_Tunables => m_Container.Tunables;
+    CharacterTuning m_Tuning => m_Container.Tuning;
 
-    /// the character's tunables
+    /// the character's tuning
     /// TODO: CharacterContainer, CharacterContainerConvertible
     CharacterInput m_Input => m_Container.Input;
 
@@ -168,7 +168,7 @@ public sealed class CharacterModel: MonoBehaviour {
             k_PropMoveSpeed,
             Mathx.InverseLerpUnclamped(
                 0.0f,
-                m_Tunables.Horizontal_MaxSpeed,
+                m_Tuning.Horizontal_MaxSpeed,
                 m_State.Next.GroundVelocity.magnitude
             )
         );

@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-[CreateAssetMenu(fileName = "CharacterTunables", menuName = "thirdperson/CharacterTunables", order = 0)]
-public sealed class CharacterTunables: ScriptableObject {
+[CreateAssetMenu(fileName = "CharacterTuning", menuName = "thirdperson/CharacterTuning", order = 0)]
+public sealed class CharacterTuning: ScriptableObject {
     // -- metadata --
     [Header("metadata")]
     [Tooltip("a friendly description for this config")]
@@ -126,11 +126,11 @@ public sealed class CharacterTunables: ScriptableObject {
     [Tooltip("how long the landing state lasts when falling")]
     public float Landing_Duration;
 
-    [Tooltip("the tunables for each jump, sequentially")]
-    public JumpTunables[] Jumps;
+    [Tooltip("the tuning for each jump, sequentially")]
+    public JumpTuning[] Jumps;
 
     [Serializable]
-    public class JumpTunables {
+    public class JumpTuning {
         [Tooltip("the number of times this jump can be executed; 0 = infinite")]
         public uint Count = 1;
 
