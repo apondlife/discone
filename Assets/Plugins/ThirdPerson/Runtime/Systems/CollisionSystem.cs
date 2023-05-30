@@ -19,8 +19,8 @@ sealed class CollisionSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_State.Next.CollisionState;
-        set => m_State.Next.CollisionState = value;
+        get => c.State.Next.CollisionState;
+        set => c.State.Next.CollisionState = value;
     }
 
     // -- NotIdle --
@@ -30,24 +30,24 @@ sealed class CollisionSystem: CharacterSystem {
     );
 
     void Active_Update(float delta) {
-        var v = m_State.Next.Velocity;
+        var v = c.State.Next.Velocity;
 
         // move character using controller if not idle
-        var frame = m_Controller.Move(
-            m_State.Next.Position,
-            m_State.Next.Velocity,
-            m_State.Next.Up,
+        var frame = c.Controller.Move(
+            c.State.Next.Position,
+            c.State.Next.Velocity,
+            c.State.Next.Up,
             delta
         );
 
         // find the ground collision if it exists
-        m_State.Next.Ground = frame.Ground;
-        m_State.Next.Wall = frame.Wall;
+        c.State.Next.Ground = frame.Ground;
+        c.State.Next.Wall = frame.Wall;
 
         // sync controller state back to character state
-        m_State.Next.Velocity = frame.Velocity;
-        m_State.Next.Acceleration = (m_State.Next.Velocity - m_State.Curr.Velocity) / delta;
-        m_State.Next.Position = frame.Position;
+        c.State.Next.Velocity = frame.Velocity;
+        c.State.Next.Acceleration = (c.State.Next.Velocity - c.State.Curr.Velocity) / delta;
+        c.State.Next.Position = frame.Position;
     }
 }
 

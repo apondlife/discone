@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.10354013, y: 0.0000000042784754, z: 4.453877e-10, w: 0.9946253}
+  m_LocalRotation: {x: -0.01797797, y: 0.0000000010752251, z: 1.9333488e-11, w: 0.9998384}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -594,7 +594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbee4fbcb00d71f4aad16e754a74fddc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Tunables: {fileID: 11400000, guid: bd25c329fc87d4c929c635a6754cb2e1, type: 2}
+  m_Tuning: {fileID: 11400000, guid: bd25c329fc87d4c929c635a6754cb2e1, type: 2}
   m_IsPaused: 0
   m_Idle:
     m_Phase:
@@ -639,6 +639,7 @@ MonoBehaviour:
     m_DrawCasts: 1
     m_DrawCastCapsule: 1
     m_DrawHits: 1
+  m_Model: {fileID: 7250430580801210356}
   m_ShowGizmos: 0
 --- !u!136 &1972163625
 CapsuleCollider:

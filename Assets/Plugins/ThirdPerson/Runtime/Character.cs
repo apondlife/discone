@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the main third person controller
-public partial class Character: MonoBehaviour {
+public partial class Character: MonoBehaviour, CharacterContainer {
     // -- data --
     [Header("data")]
     [Tooltip("the tuning; for tweaking the player's attributes")]
@@ -40,6 +40,9 @@ public partial class Character: MonoBehaviour {
 
     // -- children --
     [Header("children")]
+    [Tooltip("the character model")]
+    [SerializeField] CharacterModel m_Model;
+
     [Tooltip("the underlying character controller")]
     [SerializeField] CharacterController m_Controller;
 
@@ -80,16 +83,6 @@ public partial class Character: MonoBehaviour {
         // init controller
         m_Controller.Init();
 
-        // init data
-        var data = new CharacterData(
-            name,
-            m_Input,
-            m_State,
-            m_Tuning,
-            m_Controller,
-            m_Events
-        );
-
         // init systems
         m_Systems = new CharacterSystem[] {
             // runs last/first since it depends on real velocity after collision
@@ -107,7 +100,7 @@ public partial class Character: MonoBehaviour {
         };
 
         foreach (var system in m_Systems) {
-            system.Init(data);
+            system.Init(this);
         }
     }
 
@@ -173,34 +166,46 @@ public partial class Character: MonoBehaviour {
     }
 
     // -- queries --
-    /// the character's controller
-    public CharacterController Controller {
-        get => m_Controller;
+    /// the character's current state
+    public CharacterState.Frame CurrentState {
+        get => m_State.Next;
     }
 
-    /// the character's tuning
+    // -- CharacterContainer --
+    /// .
+    public string Name {
+        get => name;
+    }
+
+    /// .
     public CharacterTuning Tuning {
         get => m_Tuning;
     }
 
-    /// the character's input
+    /// .
     public CharacterInput Input {
         get => m_Input;
     }
 
-    /// the character's state
     // TODO: how should we make state immutable outside the class
+    /// .
     public CharacterState State {
         get => m_State;
     }
 
+    /// .
     public CharacterEvents Events {
         get => m_Events;
     }
 
-    /// the character's current state
-    public CharacterState.Frame CurrentState {
-        get => m_State.Next;
+    /// .
+    public CharacterModel Model {
+        get => m_Model;
+    }
+
+    /// .
+    public CharacterController Controller {
+        get => m_Controller;
     }
 
     // -- events --
