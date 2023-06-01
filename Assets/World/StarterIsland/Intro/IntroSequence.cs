@@ -1,8 +1,8 @@
-using System.Threading;
 using ThirdPerson;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Discone {
 
@@ -12,9 +12,17 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("the delay before the intro is active")]
     [SerializeField] EaseTimer m_Delay;
 
+    // -- inputs --
+    [Header("inputs")]
+    [Tooltip("the input action asset")]
+    [SerializeField] InputActionAsset m_Inputs;
+
+    [Tooltip("the input action for the intro")]
+    [SerializeField] InputActionReference m_IntroInput;
+
     // -- refs --
     [Header("refs")]
-    [Tooltip("the player's current character")]
+    [Tooltip("the player's character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
 
     [Tooltip("if the eyes should be closed")]
@@ -35,37 +43,66 @@ public class IntroSequence: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
+        // start with your eyes closed
         m_IsClosingEyes.Value = true;
+
+        // disable all input maps except the intro
+        foreach (var map in m_Inputs.actionMaps) {
+            map.Disable();
+        }
+
+        m_IntroInput.action.actionMap.Enable();
     }
 
     void Start() {
         m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
     }
 
-    void FixedUpdate() {
+    void Update() {
         m_Delay.Tick();
 
-        if (m_Delay.Raw >= 1f && !m_CurrentCharacter.Value.Character.State.IsIdle) {
+        if (m_IntroInput.action.WasReleasedThisFrame()) {
+            OpenEyes();
+        }
+
+        if (m_Delay.IsComplete && !m_CurrentCharacter.Value.Character.State.IsIdle) {
             Finish();
         }
     }
 
     // -- commands --
+    void OpenEyes() {
+        // enable all input maps except the intro
+        foreach (var map in m_Inputs.actionMaps) {
+            map.Enable();
+        }
+
+        m_IntroInput.action.actionMap.Disable();
+
+        // open the eyes
+        m_Delay.Start();
+        m_IsClosingEyes.Value = false;
+    }
+
     /// finish the sequnce and destroy it
     void Finish() {
-        m_IntroEnded.Raise();
+        // blend to the game camera
         m_IntroCamera.SetActive(false);
+
+        // signal the end of the intro
+        m_IntroEnded.Raise();
+
+        // ...
         Destroy(this);
     }
 
     // -- events --
     void OnLoadFinished() {
-        if (m_Store.Player.HasData) {
-            m_IsClosingEyes.Value = false;
-            Finish();
-        } else {
-            m_Delay.Start();
+        if (!m_Store.Player.HasData) {
             m_IntroCamera.SetActive(true);
+        } else {
+            OpenEyes();
+            Finish();
         }
     }
 }

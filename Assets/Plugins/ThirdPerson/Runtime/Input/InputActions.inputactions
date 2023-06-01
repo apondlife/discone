@@ -764,6 +764,122 @@
             ]
         },
         {
+            "name": "Intro",
+            "id": "f0a73cc7-10af-4a40-aa0d-cb69c76925c8",
+            "actions": [
+                {
+                    "name": "Start",
+                    "type": "Button",
+                    "id": "f6b9cc82-a8b9-4b56-b505-3d5bb0dcd1ba",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5d9211a0-e308-41fa-9b09-6663216c2b18",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b734dbc1-b341-41fd-8c37-baa7363fdccf",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f438a24b-fbfd-4b22-8ef3-d759619c6a72",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6053b63a-00f8-4667-aae4-ed49d03ca381",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e3752f62-c1a7-4e06-a8d0-03c18003faa0",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9e684eea-9544-4ead-81e3-986095e2d4cd",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4c1dcb3f-0107-4b0e-a81d-a2a9f599b9cc",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a63b9dde-a2a3-469d-8714-215537c5a3b3",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9c24bed1-88bc-47d5-bd4d-52b4f8e86301",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "UI",
             "id": "c142ff67-5651-4a3e-816a-57e518afac11",
             "actions": [

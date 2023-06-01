@@ -134,8 +134,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     void Planting_Update(float delta) {
-        // continue planting
-
         if (!CanSave) {
             ChangeTo(NotSaving);
             return;
