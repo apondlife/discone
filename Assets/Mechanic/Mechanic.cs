@@ -21,6 +21,9 @@ sealed class Mechanic: MonoBehaviour {
 
     // -- subscribed --
     [Header("subscribed")]
+    [Tooltip("an event that jumps to a new dialogue node immediately")]
+    [SerializeField] StringEvent m_JumpToNode;
+
     [Tooltip("an event when the eyelid just closes or starts to open")]
     [SerializeField] BoolEvent m_IsEyelidClosed_Changed;
 
@@ -31,6 +34,7 @@ sealed class Mechanic: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         m_Subscriptions
+            .Add(m_JumpToNode, OnJumpToNode)
             .Add(m_IsEyelidClosed_Changed, OnEyelidClosedChanged);
     }
 
@@ -50,12 +54,23 @@ sealed class Mechanic: MonoBehaviour {
 
     // -- commands --
     /// .
+    void SwitchNode(string node) {
+        // TODO: save this to disk
+        m_Node = node;
+    }
+
+    /// .
     void StartDelay() {
         m_Delay.Start();
     }
 
     /// .
     void StartDialogue() {
+        if (string.IsNullOrEmpty(m_Node)) {
+            Debug.LogWarning($"[mechnik] tried to start dialogue w/ no node set");
+            return;
+        }
+
         m_DialogueRunner.StartDialogue(m_Node);
     }
 
@@ -80,12 +95,18 @@ sealed class Mechanic: MonoBehaviour {
     [YarnCommand("then")]
     public void Then(string nodeName) {
         Debug.Log($"[mechnik] then: {nodeName}");
-
-        // TODO: save this to disk
-        m_Node = nodeName;
+        SwitchNode(nodeName);
     }
 
     // -- events --
+    /// when the mechanic should jump to a named node
+    void OnJumpToNode(string nodeName) {
+        Debug.Log($"[mechnik] jump: {nodeName}");
+        StopDialogue();
+        SwitchNode(nodeName);
+        StartDialogue();
+    }
+
     /// .
     void OnEyelidClosedChanged(bool isEyelidClosed) {
         if (isEyelidClosed) {

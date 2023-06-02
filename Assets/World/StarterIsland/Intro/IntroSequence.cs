@@ -9,8 +9,19 @@ namespace Discone {
 public class IntroSequence: MonoBehaviour {
     // -- config --
     [Header("config")]
-    [Tooltip("the delay before the intro is active")]
-    [SerializeField] EaseTimer m_Delay;
+    [Tooltip("the delay before starting the intro")]
+    [SerializeField] EaseTimer m_StartDelay;
+
+    [Tooltip("the delay before finishing the intro")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Delay")]
+    [SerializeField] EaseTimer m_FinishDelay;
+
+    [Tooltip("the mechanic node to play on start")]
+    [SerializeField] StringReference m_Mechanic_StartNode;
+
+    [Tooltip("the mechanic node to play on input")]
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Mechanic_Node")]
+    [SerializeField] StringReference m_Mechanic_InputNode;
 
     // -- inputs --
     [Header("inputs")]
@@ -28,16 +39,24 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("if the eyes should be closed")]
     [SerializeField] BoolVariable m_IsClosingEyes;
 
-    [Tooltip("when the intro is over")]
-    [SerializeField] VoidEvent m_IntroEnded;
-
     [Tooltip("the intro camera")]
     [SerializeField] GameObject m_IntroCamera;
 
     [Tooltip("the shared data store")]
     [SerializeField] Store m_Store;
 
+    // -- dispatched --
+    [Header("dispatched")]
+    [Tooltip("when the intro is over")]
+    [SerializeField] VoidEvent m_IntroEnded;
+
+    [Tooltip("when the mechanic should jump to a node")]
+    [SerializeField] StringEvent m_Mechanic_JumpToNode;
+
     // -- props --
+    /// if the input was performed
+    bool m_WasPerformed;
+
     /// the set of event subscriptions
     DisposeBag m_Subscriptions = new DisposeBag();
 
@@ -55,17 +74,41 @@ public class IntroSequence: MonoBehaviour {
     }
 
     void Start() {
+        m_StartDelay.Start();
+
+        // start intro dialogue
+        m_Mechanic_JumpToNode.Raise(m_Mechanic_StartNode);
+
+        // bind events
         m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
     }
 
     void Update() {
-        m_Delay.Tick();
+        // wait to start to ignore the input being pressed when the game starts
+        m_StartDelay.Tick();
+        if (!m_StartDelay.IsComplete) {
+            return;
+        }
 
-        if (m_IntroInput.action.WasReleasedThisFrame()) {
+        var input = m_IntroInput.action;
+
+        // play input dialogue
+        if (input.WasPressedThisFrame()) {
+            m_Mechanic_JumpToNode.Raise(m_Mechanic_InputNode);
+        }
+
+        // when the hold is performed
+        if (!m_WasPerformed) {
+            m_WasPerformed = input.phase == InputActionPhase.Performed;
+        }
+
+        if (input.WasReleasedThisFrame() && m_WasPerformed) {
             OpenEyes();
         }
 
-        if (m_Delay.IsComplete && !m_CurrentCharacter.Value.Character.State.IsIdle) {
+        // finish the intro once the character moves
+        m_FinishDelay.Tick();
+        if (m_FinishDelay.IsComplete && !m_CurrentCharacter.Value.Character.State.IsIdle) {
             Finish();
         }
     }
@@ -80,7 +123,7 @@ public class IntroSequence: MonoBehaviour {
         m_IntroInput.action.actionMap.Disable();
 
         // open the eyes
-        m_Delay.Start();
+        m_FinishDelay.Start();
         m_IsClosingEyes.Value = false;
     }
 

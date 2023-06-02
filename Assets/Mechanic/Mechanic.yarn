@@ -1,17 +1,22 @@
-﻿title: IntroRoot
+﻿title: IntroStart
 ---
-oh hey, wow. how did you already know to press "r" to,
-<<wait 3>>
-close your eyes?
-<<wait 2>>
-<<then Mechanic Intro1>>
+oh hey, wow. how did you already know to hold "right or left trigger" to,
 <<wait 60>>
 ===
 
-title: Intro1
+title: IntroInput
+---
+close your eyes?
+<<then Mechanic IntroEnd>>
+<<wait 6>>
+and then release "right or left trigger" to open them?
+<<wait 60>>
+===
+
+title: IntroEnd
 ---
 // okay
 <<wait 2>>
-<<then Mechanic Intro1>>
+<<then Mechanic Intro2>>
 <<wait 60>>
 ===

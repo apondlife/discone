@@ -175,7 +175,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cea7e8349e7c54ba08b0ef7c62b3ea42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Delay:
+  m_StartDelay:
+    m_Duration: 0.5
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_FinishDelay:
     m_Duration: 1
     m_Curve:
       serializedVersion: 2
@@ -201,13 +209,26 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  m_Mechanic_StartNode:
+    _usage: 0
+    _value: IntroStart
+    _constant: {fileID: 0}
+    _variable: {fileID: 0}
+    _variableInstancer: {fileID: 0}
+  m_Mechanic_InputNode:
+    _usage: 0
+    _value: IntroInput
+    _constant: {fileID: 0}
+    _variable: {fileID: 0}
+    _variableInstancer: {fileID: 0}
   m_Inputs: {fileID: -944628639613478452, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   m_IntroInput: {fileID: 6535942328617530698, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
   m_IsClosingEyes: {fileID: 11400000, guid: d62bdd20844ff42d3b5aeb3242568c15, type: 2}
-  m_IntroEnded: {fileID: 11400000, guid: 45e1e53611781437c92c6d5390d24c88, type: 2}
   m_IntroCamera: {fileID: 3093085863227724897}
   m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
+  m_IntroEnded: {fileID: 11400000, guid: 45e1e53611781437c92c6d5390d24c88, type: 2}
+  m_Mechanic_JumpToNode: {fileID: 11400000, guid: 24238e53c72c14c908cd529b69ca0357, type: 2}
 --- !u!1001 &169736197265832265
 PrefabInstance:
   m_ObjectHideFlags: 0

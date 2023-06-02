@@ -57,7 +57,6 @@ public record EaseTimer {
             return;
         }
 
-
         // check progress
         // TODO: do unscaled time?
         // TODO: do negative time?
@@ -81,7 +80,7 @@ public record EaseTimer {
     }
 
     /// if the timer is running in reverse
-    public bool isReversed {
+    public bool IsReversed {
         get => m_IsReversed;
     }
 
