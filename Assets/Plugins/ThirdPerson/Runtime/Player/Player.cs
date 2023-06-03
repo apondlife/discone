@@ -8,7 +8,7 @@ public class Player: MonoBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("the currently controlled character")]
-    [SerializeField] private Character m_CurrentCharacter;
+    [SerializeField] Character m_CurrentCharacter;
 
     // -- refs --
     [Header("refs")]

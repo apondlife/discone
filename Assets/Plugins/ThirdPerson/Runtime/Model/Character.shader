@@ -6,7 +6,6 @@ Shader "ThirdPerson/Character" {
     SubShader {
         Tags {
             "RenderType" = "Opaque"
-            // "Queue" = "AlphaTest"
         }
 
         LOD 100
@@ -40,7 +39,6 @@ Shader "ThirdPerson/Character" {
                 float2 uv : TEXCOORD0;
                 fixed3 diffuse : COLOR0;
                 fixed3 ambient : COLOR1;
-                float4 vertexColor : COLOR2;
                 SHADOW_COORDS(3)
                 UNITY_FOG_COORDS(4)
             };
