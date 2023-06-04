@@ -15,6 +15,9 @@ public sealed class CharacterGroundDust: MonoBehaviour {
     [Tooltip("a curve of acceleration mag to dust size")]
     [SerializeField] MapCurve m_AccelerationMagSize;
 
+    [Tooltip("a curve of acceleration mag to dust lifetime")]
+    [SerializeField] MapCurve m_AccelerationMagLifetime;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the floor dust particle emitter (high speed)")]
@@ -56,18 +59,23 @@ public sealed class CharacterGroundDust: MonoBehaviour {
         // normalize a • v
         aDotV /= aMag;
 
-        // set rate (strong when changing direction, when mag is high)
+        // set emission
+        var emission = m_Particles.emission;
+
+        // ...rate (strong when changing direction quickly)
         var rate = 0f;
         rate += m_AcclerationDirRate.Evaluate(aDotV);
         rate *= m_AccelerationMagRate.Evaluate(aMag);
-
-        var emission = m_Particles.emission;
         emission.rateOverTime = rate;
 
-        // set size (large when accelerating quickly)
-        var size = m_AccelerationMagSize.Evaluate(aMag);
+        // set main
         var main = m_Particles.main;
-        main.startSize = size;
+
+        // ...lifetime (long when accelerating quickly)
+        main.startLifetime = m_AccelerationMagLifetime.Evaluate(aMag);
+
+        // ...size (large when accelerating quickly)
+        main.startSize = m_AccelerationMagSize.Evaluate(aMag);
     }
 }
 

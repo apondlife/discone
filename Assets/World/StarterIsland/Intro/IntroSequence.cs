@@ -12,8 +12,10 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("the delay before starting the intro")]
     [SerializeField] EaseTimer m_StartDelay;
 
+    [Tooltip("the delay before showing the first line of dialogue (hack)")]
+    [SerializeField] EaseTimer m_DialogueDelay;
+
     [Tooltip("the delay before finishing the intro")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Delay")]
     [SerializeField] EaseTimer m_FinishDelay;
 
     [Tooltip("the mechanic node to play on start")]
@@ -76,15 +78,21 @@ public class IntroSequence: MonoBehaviour {
     void Start() {
         m_StartDelay.Start();
 
-        // start intro dialogue
-        m_Mechanic_JumpToNode.Raise(m_Mechanic_StartNode);
-
         // bind events
         m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
     }
 
     void Update() {
-        // wait to start to ignore the input being pressed when the game starts
+        // show start dialogue
+        if (m_DialogueDelay.IsActive) {
+            m_DialogueDelay.Tick();
+
+            if (m_DialogueDelay.IsComplete) {
+                m_Mechanic_JumpToNode.Raise(m_Mechanic_StartNode);
+            }
+        }
+
+        // delay intro to ignore the input being pressed when the game starts
         m_StartDelay.Tick();
         if (!m_StartDelay.IsComplete) {
             return;
@@ -114,6 +122,16 @@ public class IntroSequence: MonoBehaviour {
     }
 
     // -- commands --
+    /// begin the intro sequence
+    void Init() {
+        // start intro dialogue
+        m_DialogueDelay.Start();
+
+        // switch to the intro camera
+        m_IntroCamera.SetActive(true);
+    }
+
+    /// open the player's eyes
     void OpenEyes() {
         // enable all input maps except the intro
         foreach (var map in m_Inputs.actionMaps) {
@@ -142,7 +160,7 @@ public class IntroSequence: MonoBehaviour {
     // -- events --
     void OnLoadFinished() {
         if (!m_Store.Player.HasData) {
-            m_IntroCamera.SetActive(true);
+            Init();
         } else {
             OpenEyes();
             Finish();

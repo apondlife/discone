@@ -119,7 +119,7 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
 
         // error on misconfiguration
         if (!IsValid) {
-            Debug.LogError($"[chrctr] {m_Container.name} has a limb w/ no matching bone: {Goal}");
+            Debug.LogError($"[chrctr] {m_Container.name} - has a limb w/ no matching bone: {Goal}");
         }
     }
 

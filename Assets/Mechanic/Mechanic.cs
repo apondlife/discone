@@ -60,14 +60,14 @@ sealed class Mechanic: MonoBehaviour {
     }
 
     /// .
-    void StartDelay() {
+    void StartDialogueDelay() {
         m_Delay.Start();
     }
 
     /// .
     void StartDialogue() {
         if (string.IsNullOrEmpty(m_Node)) {
-            Debug.LogWarning($"[mechnik] tried to start dialogue w/ no node set");
+            Debug.LogWarning($"[mechnk] tried to start dialogue w/ no node set");
             return;
         }
 
@@ -94,14 +94,14 @@ sealed class Mechanic: MonoBehaviour {
     // -- c/yarn
     [YarnCommand("then")]
     public void Then(string nodeName) {
-        Debug.Log($"[mechnik] then: {nodeName}");
+        Debug.Log($"[mechnk] then: {nodeName}");
         SwitchNode(nodeName);
     }
 
     // -- events --
     /// when the mechanic should jump to a named node
     void OnJumpToNode(string nodeName) {
-        Debug.Log($"[mechnik] jump: {nodeName}");
+        Debug.Log($"[mechnk] jump: {nodeName}");
         StopDialogue();
         SwitchNode(nodeName);
         StartDialogue();
@@ -110,7 +110,7 @@ sealed class Mechanic: MonoBehaviour {
     /// .
     void OnEyelidClosedChanged(bool isEyelidClosed) {
         if (isEyelidClosed) {
-            StartDelay();
+            StartDialogueDelay();
         } else {
             StopDialogue();
         }

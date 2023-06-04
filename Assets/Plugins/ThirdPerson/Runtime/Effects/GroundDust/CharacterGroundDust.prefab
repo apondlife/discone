@@ -115,10 +115,10 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Src:
       Min: 0
-      Max: 30
+      Max: 26.5
     m_Dst:
       Min: 0
-      Max: 12
+      Max: 18
   m_AccelerationMagSize:
     m_Curve:
       serializedVersion: 2
@@ -126,20 +126,51 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0.6642739
         value: 0
-        inSlope: 0.026040325
-        outSlope: 0.026040325
+        inSlope: 2.5881894
+        outSlope: 2.5881894
         tangentMode: 0
         weightedMode: 2
         inWeight: 0
-        outWeight: 1
+        outWeight: 0.4749972
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 103.548325
-        outSlope: 103.548325
+        inSlope: 712.1494
+        outSlope: 712.1494
         tangentMode: 0
         weightedMode: 1
-        inWeight: 0.026119612
+        inWeight: 0.004172711
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Src:
+      Min: 0
+      Max: 26.5
+    m_Dst:
+      Min: 0.6
+      Max: 2.6
+  m_AccelerationMagLifetime:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.6642739
+        value: 0
+        inSlope: 2.5881894
+        outSlope: 2.5881894
+        tangentMode: 0
+        weightedMode: 2
+        inWeight: 0
+        outWeight: 0.4749972
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 712.1494
+        outSlope: 712.1494
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.004172711
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -149,7 +180,7 @@ MonoBehaviour:
       Max: 26.5
     m_Dst:
       Min: 0
-      Max: 4
+      Max: 0
   m_Particles: {fileID: 1334008369121381231}
 --- !u!199 &1334008369121381224
 ParticleSystemRenderer:

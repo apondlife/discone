@@ -77,6 +77,11 @@ public class CharacterCheckpoint: NetworkBehaviour {
     public override void OnStartServer() {
         base.OnStartServer();
 
+        if (m_Container == null) {
+            Debug.LogError($"[chrctr] {name} - started server w/ no container!");
+            return;
+        }
+
         m_Container.OnSimulationChanged += Server_OnSimulationChanged;
     }
 
