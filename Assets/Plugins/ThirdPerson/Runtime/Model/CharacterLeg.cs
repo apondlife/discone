@@ -173,6 +173,11 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
             return;
         }
 
+        // ignore terrain since getting closes point for terrains will be very unlikely
+        if (other is TerrainCollider) {
+            return;
+        }
+
         // TODO: closest point returns its arg if the mesh is convex
         var pos = other.ClosestPoint(m_Anchor.position);
         if (pos == m_Anchor.position) {
@@ -193,6 +198,11 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
 
     void OnTriggerStay(Collider other) {
         if (!m_IsActive || !IsValid) {
+            return;
+        }
+
+        // ignore terrain since getting closes point for terrains will be very unlikely
+        if (other is TerrainCollider) {
             return;
         }
 

@@ -89,6 +89,14 @@ public sealed class CharacterHead: MonoBehaviour, CharacterLimb {
 
         // set props
         m_HeadBone = m_Animator.GetBoneTransform(HumanBodyBones.Head);
+
+        // if no headbone, this character has no head, destroy self
+        if(m_HeadBone == null) {
+            Debug.LogWarning($"[CharacterHead] destroying head for character: {m_Animator.transform.parent.name}");
+            Destroy(this);
+            return;
+        }
+
         m_NeckBone = m_HeadBone.parent;
         m_CurrRotation = m_HeadBone.rotation;
     }
