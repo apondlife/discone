@@ -44,6 +44,9 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("the intro camera")]
     [SerializeField] GameObject m_IntroCamera;
 
+    [Tooltip("the character's rotation reference for the inital shot")]
+    [SerializeField] Transform m_CharacterRotationReference;
+
     [Tooltip("the shared data store")]
     [SerializeField] Store m_Store;
 
@@ -79,7 +82,18 @@ public class IntroSequence: MonoBehaviour {
         m_StartDelay.Start();
 
         // bind events
-        m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
+        m_Subscriptions
+            .Add(m_Store.LoadFinished, OnLoadFinished)
+            // HACK HACK HACK: do this better later
+            // this is so that the follow camera points towards
+            // a different direction then ice creams orientation
+            .Add<DisconeCharacterPair>(m_CurrentCharacter.ChangedWithHistory, _ => {
+                this.DoAfterTime(0.1f, () => {
+                    var initialState = m_CurrentCharacter.Value.Character.State.Curr.Copy();
+                    initialState.Forward = m_CharacterRotationReference.forward;
+                    m_CurrentCharacter.Value.Character.ForceState(initialState);
+                });
+            });
     }
 
     void Update() {
