@@ -62,6 +62,9 @@ static class ShaderProps {
 
     /// the eyelid blur offsets
     public static readonly int Offsets = Shader.PropertyToID("_Offsets");
+
+    /// the spritesheet current sprite
+    public static readonly int CurrentSprite = Shader.PropertyToID("_CurrentSprite");
 }
 
 }
