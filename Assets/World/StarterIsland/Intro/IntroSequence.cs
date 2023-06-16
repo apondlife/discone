@@ -18,11 +18,12 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("the delay before finishing the intro")]
     [SerializeField] EaseTimer m_FinishDelay;
 
+    // -- mechanic --
+    [Header("mechanic")]
     [Tooltip("the mechanic node to play on start")]
     [SerializeField] StringReference m_Mechanic_StartNode;
 
     [Tooltip("the mechanic node to play on input")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Mechanic_Node")]
     [SerializeField] StringReference m_Mechanic_InputNode;
 
     // -- inputs --
@@ -83,17 +84,17 @@ public class IntroSequence: MonoBehaviour {
 
         // bind events
         m_Subscriptions
-            .Add(m_Store.LoadFinished, OnLoadFinished)
+            .Add(m_Store.LoadFinished, OnLoadFinished);
             // HACK HACK HACK: do this better later
             // this is so that the follow camera points towards
             // a different direction then ice creams orientation
-            .Add<DisconeCharacterPair>(m_CurrentCharacter.ChangedWithHistory, _ => {
-                this.DoAfterTime(0.1f, () => {
-                    var initialState = m_CurrentCharacter.Value.Character.State.Curr.Copy();
-                    initialState.Forward = m_CharacterRotationReference.forward;
-                    m_CurrentCharacter.Value.Character.ForceState(initialState);
-                });
-            });
+            // .Add<DisconeCharacterPair>(m_CurrentCharacter.ChangedWithHistory, _ => {
+            //     this.DoAfterTime(0.1f, () => {
+            //         var initialState = m_CurrentCharacter.Value.Character.State.Curr.Copy();
+            //         initialState.Forward = m_CharacterRotationReference.forward;
+            //         m_CurrentCharacter.Value.Character.ForceState(initialState);
+            //     });
+            // });
     }
 
     void Update() {
@@ -107,9 +108,12 @@ public class IntroSequence: MonoBehaviour {
         }
 
         // delay intro to ignore the input being pressed when the game starts
-        m_StartDelay.Tick();
-        if (!m_StartDelay.IsComplete) {
-            return;
+        if (m_StartDelay.IsActive) {
+            m_StartDelay.Tick();
+
+            if (!m_StartDelay.IsComplete) {
+                return;
+            }
         }
 
         var input = m_IntroInput.action;

@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 
-/// treat a vector shader property as a vector2
+/// shows shader vector prop as a vector2
 public class ShowAsVector2Drawer: MaterialPropertyDrawer {
+    // -- PropertyDrawer --
     public override void OnGUI(
         Rect rect,
         MaterialProperty prop,

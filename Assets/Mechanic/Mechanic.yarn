@@ -6,8 +6,8 @@ oh hey, wow. how did you already know to hold "right or left trigger" to,
 
 title: IntroInput
 ---
-close your eyes?
 <<then Mechanic IntroEnd>>
+close your eyes?
 <<wait 6>>
 and then release "right or left trigger" to open them?
 <<wait 60>>
@@ -15,8 +15,44 @@ and then release "right or left trigger" to open them?
 
 title: IntroEnd
 ---
-// okay
-<<wait 2>>
-<<then Mechanic Intro2>>
+===
+
+title: Start
+---
+<<wait 10>>
+<<then Mechanic StartThanks>>
+if you want to talk to me again
+<<wait 3>>
+you can press "right or left trigger"
+<<wait 3>>
+& close your eyes for a little.
+<<wait 3>>
+===
+
+title: StartThanks
+---
+<<then Mechanic BirthplaceTree>>
+ah, thanks for pressing my “button”!
+<<wait 3>>
+sorry to bother you there, earlier.
+<<wait 60>>
+===
+
+title: BirthplaceTree
+---
+<<if $BirthplaceStep == "None">>
+<<jump BirthplaceRamp>>
+<<endif>>
+===
+
+title: BirthplaceRamp
+---
+this ramp...
+<<wait 3>>
+i hope you liked my letter hehe...
+<<wait 6>>
+if you mash the "jump button" as you approach that
+<<wait 6>>
+ramp & i think you can do it
 <<wait 60>>
 ===

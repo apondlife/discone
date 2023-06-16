@@ -6,13 +6,19 @@ namespace Discone {
 
 /// the mechanic that speaks to the player
 sealed class Mechanic: MonoBehaviour {
-    // -- cfg --
-    [Header("cfg")]
+    // -- state --
+    [Header("state")]
     [Tooltip("the node name")]
+    [ReadOnly]
     [SerializeField] string m_Node;
 
+    // -- cfg --
+    [Header("cfg")]
     [Tooltip("the delay before running a line")]
     [SerializeField] ThirdPerson.EaseTimer m_Delay;
+
+    [Tooltip("the node to start w/ after the intro")]
+    [SerializeField] string m_StartNode;
 
     // -- refs --
     [Header("refs")]
@@ -24,8 +30,14 @@ sealed class Mechanic: MonoBehaviour {
     [Tooltip("an event that jumps to a new dialogue node immediately")]
     [SerializeField] StringEvent m_JumpToNode;
 
+    [Tooltip("an event that sets the current birthplace step")]
+    [SerializeField] StringEvent m_SetBirthplaceStep;
+
     [Tooltip("an event when the eyelid just closes or starts to open")]
     [SerializeField] BoolEvent m_IsEyelidClosed_Changed;
+
+    [Tooltip("an event when the intro sequence finishes")]
+    [SerializeField] VoidEvent m_Intro_SequenceEnded;
 
     // -- props --
     /// a bag of event subscriptions
@@ -33,9 +45,15 @@ sealed class Mechanic: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
+        m_DialogueRunner.VariableStorage.SetValue(
+            MechanicBirthplaceStep.Name,
+            MechanicBirthplaceStep.Values[0]
+        );
+
         m_Subscriptions
             .Add(m_JumpToNode, OnJumpToNode)
-            .Add(m_IsEyelidClosed_Changed, OnEyelidClosedChanged);
+            .Add(m_IsEyelidClosed_Changed, OnEyelidClosedChanged)
+            .Add(m_Intro_SequenceEnded, OnIntroSequenceEnded);
     }
 
     void FixedUpdate() {
@@ -57,6 +75,13 @@ sealed class Mechanic: MonoBehaviour {
     void SwitchNode(string node) {
         // TODO: save this to disk
         m_Node = node;
+    }
+
+    /// .
+    void JumpToNode(string node) {
+        StopDialogue();
+        SwitchNode(node);
+        StartDialogue();
     }
 
     /// .
@@ -102,10 +127,15 @@ sealed class Mechanic: MonoBehaviour {
     /// when the mechanic should jump to a named node
     void OnJumpToNode(string nodeName) {
         Debug.Log($"[mechnk] jump: {nodeName}");
-        StopDialogue();
-        SwitchNode(nodeName);
-        StartDialogue();
+        JumpToNode(nodeName);
     }
+
+    /// .
+    void OnSetBirthplaceStep(string step) {
+        Debug.Log($"[mechnk] birthplace: {step}");
+        m_DialogueRunner.VariableStorage.SetValue(MechanicBirthplaceStep.Name, step);
+    }
+
 
     /// .
     void OnEyelidClosedChanged(bool isEyelidClosed) {
@@ -114,6 +144,11 @@ sealed class Mechanic: MonoBehaviour {
         } else {
             StopDialogue();
         }
+    }
+
+    /// .
+    void OnIntroSequenceEnded() {
+        JumpToNode(m_StartNode);
     }
 }
 
