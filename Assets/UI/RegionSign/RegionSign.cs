@@ -10,6 +10,9 @@ namespace Discone {
 sealed class RegionSign: MonoBehaviour {
     // -- config --
     [Header("config")]
+    [Tooltip("the time it takes for the same region sign to reappear if reentering same previous region")]
+    [SerializeField] float m_RepeatCooldown = 60.0f;
+
     [Tooltip("the time it takes to dissolve the text in/out")]
     [SerializeField] float m_DissolveTime = 1.0f;
 
@@ -47,6 +50,9 @@ sealed class RegionSign: MonoBehaviour {
 
     /// if the region sign is visible
     bool m_IsVisible;
+
+    /// last time at which entered current region
+    float m_CurrentRegionEnterTime;
 
     /// a bag of subscriptions
     DisposeBag m_Subscriptions = new DisposeBag();
@@ -119,8 +125,15 @@ sealed class RegionSign: MonoBehaviour {
         var prev = m_CurrentRegion;
         m_CurrentRegion = region;
 
-        // don't show sign on first region
-        if (prev == null) {
+        var showRegionSign =
+            // don't show sign on first region
+            prev != null
+            // don't show if still in cooldown for current region
+            && (prev == m_CurrentRegion && Time.time - m_CurrentRegionEnterTime > m_RepeatCooldown);
+
+        m_CurrentRegionEnterTime = Time.time;
+
+        if(!showRegionSign) {
             return;
         }
 
