@@ -121,24 +121,28 @@ sealed class RegionSign: MonoBehaviour {
         m_IsVisible = false;
     }
 
-    public void OnRegionEntered(Region region) {
+    public void OnRegionEntered(Region next) {
+        var time = Time.time;
         var prev = m_CurrentRegion;
-        m_CurrentRegion = region;
 
-        var showRegionSign =
+        var showsRegionSign = (
             // don't show sign on first region
-            prev != null
+            prev != null &&
             // don't show if still in cooldown for current region
-            && (prev == m_CurrentRegion && Time.time - m_CurrentRegionEnterTime > m_RepeatCooldown);
+            (prev == next && time - m_CurrentRegionEnterTime > m_RepeatCooldown)
+        );
 
-        m_CurrentRegionEnterTime = Time.time;
+        m_CurrentRegion = next;
+        m_CurrentRegionEnterTime = time;
 
-        if(!showRegionSign) {
+        if(!showsRegionSign) {
             return;
         }
 
+        Debug.Log($"[region] show sign {next?.DisplayName}");
+
         m_CanvasGroup.alpha = 1f;
-        m_Text.SetText(region.DisplayName);
+        m_Text.SetText(next.DisplayName);
 
         // only start a new animation if the current one is over
         if (m_IsVisible) {
