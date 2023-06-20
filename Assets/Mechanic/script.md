@@ -8,16 +8,18 @@ if you want to talk to me again\
 you can press my "button"\
 & close your eyes for a little.
 
-ah, thanks for pressing my “button”!\
-sorry to bother you there, earlier.
+ah, thanks for holding my “button”!\
+sorry to bother you there, earlier...\
+i'm always here if you want to talk.
 
 # birthplace
 
 [ramp]
-this ramp...\
-i hope you liked my letter hehe...\
-if you mash the "jump button" as you approach that ramp i think you\
-can do it.
+this ramp, did you...\
+see my letter too?\
+if you mash the "jump button" as you approach...\
+it,\
+i think you can do it.
 
 # intro (real)
 

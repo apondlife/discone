@@ -1,6 +1,10 @@
-﻿title: IntroStart
+﻿// -----------
+// -- Intro --
+// -----------
+
+title: Intro
 ---
-oh hey, wow. how did you already know to hold "right or left trigger" to,
+hello? wow. how did you already know to hold "right or left trigger" to,
 <<wait 60>>
 ===
 
@@ -17,13 +21,17 @@ title: IntroEnd
 ---
 ===
 
+// -----------
+// -- Start --
+// -----------
+
 title: Start
 ---
 <<wait 10>>
 <<then Mechanic StartThanks>>
 if you want to talk to me again
 <<wait 3>>
-you can press "right or left trigger"
+you can hold "right or left trigger"
 <<wait 3>>
 & close your eyes for a little.
 <<wait 3>>
@@ -31,28 +39,42 @@ you can press "right or left trigger"
 
 title: StartThanks
 ---
-<<then Mechanic BirthplaceTree>>
-ah, thanks for pressing my “button”!
+<<then Mechanic Birthplace>>
+ah, thanks for holding my “button”!
 <<wait 3>>
 sorry to bother you there, earlier.
+<<wait 3>>
+i'm always here if you want to talk.
 <<wait 60>>
 ===
 
-title: BirthplaceTree
+// ----------------
+// -- Birthplace --
+// ----------------
+
+title: Birthplace
 ---
-<<if $BirthplaceStep == "None">>
-<<jump BirthplaceRamp>>
+<<if $BirthplaceStep == "Ramp">>
+    <<jump BirthplaceRamp>>
+<<elseif $BirthplaceStep == "Wall">>
+    <<jump BirthplaceWall>>
 <<endif>>
 ===
 
 title: BirthplaceRamp
 ---
-this ramp...
+this ramp, did you...
 <<wait 3>>
-i hope you liked my letter hehe...
-<<wait 6>>
-if you mash the "jump button" as you approach that
-<<wait 6>>
-ramp & i think you can do it
+see my letter too?
+<<wait 3>>
+if you mash the "jump button" as you approach...
+<<wait 5>>
+it,
+<<wait 1>>
+i think you can do it
 <<wait 60>>
+===
+
+title: BirthplaceWall
+---
 ===

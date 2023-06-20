@@ -17,6 +17,10 @@ sealed class BirthplaceTrigger: MonoBehaviour {
 
     // -- events --
     void OnTriggerEnter() {
+        if (gameObject == null) {
+            return;
+        }
+
         m_Mechanic_SetBirthplaceStep.Raise(m_Step);
         Destroy(gameObject);
     }

@@ -47,13 +47,14 @@ sealed class Mechanic: MonoBehaviour {
     void Start() {
         m_DialogueRunner.VariableStorage.SetValue(
             MechanicBirthplaceStep.Name,
-            MechanicBirthplaceStep.Values[0]
+            MechanicBirthplaceStep.InitialValue
         );
 
         m_Subscriptions
             .Add(m_JumpToNode, OnJumpToNode)
             .Add(m_IsEyelidClosed_Changed, OnEyelidClosedChanged)
-            .Add(m_Intro_SequenceEnded, OnIntroSequenceEnded);
+            .Add(m_Intro_SequenceEnded, OnIntroSequenceEnded)
+            .Add(m_SetBirthplaceStep, OnSetBirthplaceStep);
     }
 
     void FixedUpdate() {
@@ -79,6 +80,7 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void JumpToNode(string node) {
+        Debug.Log($"[mechnk] jump: {node}");
         StopDialogue();
         SwitchNode(node);
         StartDialogue();
@@ -126,16 +128,17 @@ sealed class Mechanic: MonoBehaviour {
     // -- events --
     /// when the mechanic should jump to a named node
     void OnJumpToNode(string nodeName) {
-        Debug.Log($"[mechnk] jump: {nodeName}");
         JumpToNode(nodeName);
     }
 
     /// .
     void OnSetBirthplaceStep(string step) {
         Debug.Log($"[mechnk] birthplace: {step}");
-        m_DialogueRunner.VariableStorage.SetValue(MechanicBirthplaceStep.Name, step);
+        m_DialogueRunner.VariableStorage.SetValue(
+            MechanicBirthplaceStep.Name,
+            step
+        );
     }
-
 
     /// .
     void OnEyelidClosedChanged(bool isEyelidClosed) {
