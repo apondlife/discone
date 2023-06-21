@@ -42,12 +42,6 @@ static class ShaderProps {
     /// the current character position
     public static readonly int CharacterPos = Shader.PropertyToID("_CharacterPos");
 
-    /// the inverse view matrix
-    public static readonly int InvView = Shader.PropertyToID("_InvView");
-
-    /// the inverse view projection matrix
-    public static readonly int InvProjection = Shader.PropertyToID("_InvProjection");
-
     /// the angle that is considered to be a wall
     public static readonly int WallAngle = Shader.PropertyToID("_WallAngle");
 

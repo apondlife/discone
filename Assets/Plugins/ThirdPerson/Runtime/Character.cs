@@ -122,6 +122,17 @@ public partial class Character: MonoBehaviour, CharacterContainer {
 
         // update external state
         transform.position = m_State.Position;
+
+        // set shader uniforms
+        var plane = new Plane(
+            m_State.Next.Ground.IsSome ? m_State.Next.Ground.Normal : m_State.Next.Up,
+            m_State.Next.Ground.Point
+        );
+
+        Shader.SetGlobalVector(
+            ShaderProps.CharacterGroundPlane,
+            plane.AsVector4()
+        );
     }
 
     /// run the character systems

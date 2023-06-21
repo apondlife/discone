@@ -9,6 +9,9 @@ sealed class CameraCollisionSystem: CameraSystem {
     /// storage for raycasts
     RaycastHit m_Hit;
 
+    /// the pos of the current hit surface
+    Vector3 m_HitPos;
+
     /// the normal of the current hit surface
     Vector3 m_HitNormal;
 
@@ -219,6 +222,7 @@ sealed class CameraCollisionSystem: CameraSystem {
 
         // TODO: don't set state in here
         m_State.Next.IsColliding = didHit;
+        m_HitPos = m_Hit.point;
         m_HitNormal = m_Hit.normal;
 
         // if the target is visible, we have our desired position
@@ -282,6 +286,7 @@ sealed class CameraCollisionSystem: CameraSystem {
 
         // TODO: don't set state in here
         m_State.Next.IsColliding = didHit;
+        m_HitPos = m_Hit.point;
         m_HitNormal = m_Hit.normal;
 
         // if the target is visible, we have our desired position
@@ -381,6 +386,17 @@ sealed class CameraCollisionSystem: CameraSystem {
     /// the hit point adjusted by the contact offset
     Vector3 OffsetHit(RaycastHit hit) {
         return hit.point + m_Tuning.Collision_ContactOffset * hit.normal;
+    }
+
+    // -- queries --
+    /// the pos of the current hit surface
+    public Vector3 ClipPos {
+        get => m_State.Next.IsColliding ? m_HitPos : m_State.Next.Pos;
+    }
+
+    /// the normal of the current hit surface
+    public Vector3 ClipNormal {
+        get => m_State.Next.IsColliding ? m_HitNormal : m_State.Next.Forward;
     }
 }
 

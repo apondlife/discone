@@ -154,11 +154,12 @@ Shader "Custom/Incline" {
                 float2 uv : TEXCOORD0;
                 float3 worldPos : TEXCOORD1;
                 float3 worldNormal : TEXCOORD2;
+                float3 normal : TEXCOORD3;
                 fixed3 diffuse : COLOR0;
                 fixed3 ambient : COLOR1;
                 float4 vertexColor : COLOR2;
-                SHADOW_COORDS(3)
-                UNITY_FOG_COORDS(4)
+                SHADOW_COORDS(4)
+                UNITY_FOG_COORDS(5)
             };
 
             // -- props --
@@ -285,6 +286,13 @@ Shader "Custom/Incline" {
             // the ceil bump map scale/translation
             float4 _CeilBumpMap_ST;
 
+            // -- globals --
+            // the camera's current clipping plane
+            float4 _CameraClipPlane;
+
+            // the character's current ground surface plane
+            float4 _CharacterGroundPlane;
+
             // see: https://docs.unity3d.com/Manual/GPUInstancing.html for more
             UNITY_INSTANCING_BUFFER_START(Props)
             UNITY_INSTANCING_BUFFER_END(Props)
@@ -325,6 +333,7 @@ Shader "Custom/Incline" {
                 o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
                 o.worldPos = worldPos;
                 o.worldNormal = UnityObjectToWorldNormal(IN.normal);
+                o.normal = IN.normal;
                 o.vertexColor = IN.vertexColor;
 
                 // ambient light (and light probes)
@@ -343,6 +352,23 @@ Shader "Custom/Incline" {
                 fixed4 c;
                 c.a = 1.0f;
 
+                // don't show surfaces behind the current clipping plane
+                float1 clipDistance = dot(IN.worldPos, _CameraClipPlane.xyz) + _CameraClipPlane.w;
+                clip(clipDistance + _Epsilon);
+
+                // TODO: experiments in rendering more stuff behind the clip surface
+                // float3 viewNormal = mul(UNITY_MATRIX_V, float4(IN.normal, 0.0f)).xyz;
+                // float1 viewDotNormal = dot(float3(0, 0, 1), viewNormal);
+                // float1 clipDotNormal = dot(IN.worldNormal, _CameraClipPlane.xyz);
+                // float1 groundDistance = dot(IN.worldPos, _CharacterGroundPlane.xyz) + _CharacterGroundPlane.w;
+
+                // // float1 viewDotNormal = 1.0f - abs(dot(float3(0, 0, 1), viewNormal));
+                // // if (groundDistance < -2) {
+                // if (groundDistance < 0.0f) {
+                //     clip(clipDistance + _Epsilon);
+                // }
+
+                // clip(clipDistance + _Epsilon);
                 // -- pick color based on normal
                 fixed1 a = acos(dot(IN.worldNormal, float3(0, 1, 0)));
                 fixed1 wallAngle = radians(_WallAngle);
@@ -470,14 +496,6 @@ Shader "Custom/Incline" {
             }
 
             // -- helpers --
-            // float3 worldToTangentNormalVector(Input IN, float3 normal) {
-            //     float3 t2w0 = WorldNormalVector(IN, float3(1,0,0));
-            //     float3 t2w1 = WorldNormalVector(IN, float3(0,1,0));
-            //     float3 t2w2 = WorldNormalVector(IN, float3(0,0,1));
-            //     float3x3 t2w = float3x3(t2w0, t2w1, t2w2);
-            //     return normalize(mul(t2w, normal));
-            // }
-
             inline fixed4 SampleTriplanar(sampler2D tex, float4 st, float3 bf, FragIn IN) {
                 // calculate per-component blend
                 float2 uvx = IN.worldPos.zy * _TexScale * st.xy + st.zw;
@@ -531,8 +549,7 @@ Shader "Custom/Incline" {
             // Reoriented Normal Mapping
             // http://blog.selfshadow.com/publications/blending-in-detail/
             // Altered to take normals (-1 to 1 ranges) rather than unsigned normal maps (0 to 1 ranges)
-            half3 blend_rnm(half3 n1, half3 n2)
-            {
+            half3 blend_rnm(half3 n1, half3 n2) {
                 n1.z += 1;
                 n2.xy = -n2.xy;
                 return n1 * dot(n1, n2) / n1.z - n2;
