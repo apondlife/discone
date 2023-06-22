@@ -17,7 +17,7 @@ sealed class Page: UIBehaviour {
     [SerializeField] Selectable m_InitialSelection;
 
     [Tooltip("the elements on this page (set at runtime)")]
-    [SerializeField] Component[] m_Components;
+    [SerializeField] Transitionable[] m_Components;
 
     [Tooltip("the page buttons on this page (set at runtime)")]
     [SerializeField] PageButton[] m_Buttons;
@@ -33,7 +33,7 @@ sealed class Page: UIBehaviour {
         // set props
         m_Index = transform.GetSiblingIndex();
         m_Group = GetComponent<CanvasGroup>();
-        m_Components = GetComponentsInChildren<Component>(includeInactive: true);
+        m_Components = GetComponentsInChildren<Transitionable>(includeInactive: true);
         m_Buttons = GetComponentsInChildren<PageButton>(includeInactive: true);
     }
 

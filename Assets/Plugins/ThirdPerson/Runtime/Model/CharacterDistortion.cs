@@ -24,7 +24,7 @@ sealed class CharacterDistortion: MonoBehaviour {
     // -- stretch & squash --
     [Header("tuning")]
     [Tooltip("TODO: leave me a comment")]
-    [SerializeField] RangeCurve m_JumpSquat_Intensity;
+    [SerializeField] MapOutCurve m_JumpSquat_Intensity;
 
     [Tooltip("TODO: leave me a comment")]
     [SerializeField] float m_VerticalAcceleration_StretchIntensity;
@@ -43,7 +43,7 @@ sealed class CharacterDistortion: MonoBehaviour {
     CharacterState m_State;
 
     /// .
-    CharacterTunablesBase m_Tunables;
+    CharacterTuning m_Tuning;
 
     // the list of distorted materials
     Material[] m_Materials;
@@ -61,14 +61,14 @@ sealed class CharacterDistortion: MonoBehaviour {
         // set deps
         var character = GetComponentInParent<Character>();
         m_State = character.State;
-        m_Tunables = character.Tunables;
+        m_Tuning = character.Tuning;
 
         // aggregate a list of materials
         var materials = new HashSet<Material>();
 
-        var model = GetComponentInParent<CharacterModel>();
-        var renderers = model
+        var renderers = character.Model
             .GetComponentsInChildren<Renderer>();
+
         foreach (var renderer in renderers) {
             materials.UnionWith(renderer.materials);
         }
@@ -82,7 +82,6 @@ sealed class CharacterDistortion: MonoBehaviour {
     }
 
     /// change character scale according to acceleration
-
     public float destIntensity = 1f;
     void StretchAndSquash() {
         var v = m_State.Prev.Velocity.y;
@@ -106,8 +105,8 @@ sealed class CharacterDistortion: MonoBehaviour {
         // if in jump squat, add jump squash
         if (m_State.IsInJumpSquat) {
             var jumpSquatPct = 1f;
-            if (m_Tunables.Jumps[0].MaxJumpSquatFrames > 0) {
-                jumpSquatPct = (float)m_State.JumpSquatFrame / m_Tunables.Jumps[0].MaxJumpSquatFrames;
+            if (m_Tuning.Jumps[0].MaxJumpSquatFrames > 0) {
+                jumpSquatPct = (float)m_State.JumpSquatFrame / m_Tuning.Jumps[0].MaxJumpSquatFrames;
             }
 
             destIntensity = m_JumpSquat_Intensity.Evaluate(jumpSquatPct);
@@ -144,17 +143,11 @@ sealed class CharacterDistortion: MonoBehaviour {
     // -- commands --
     void Distort() {
         var plane = new Plane(transform.up, transform.position);
-        var plane2 = new Vector4(
-            plane.normal.x,
-            plane.normal.y,
-            plane.normal.z,
-            plane.distance
-        );
 
         foreach (var material in m_Materials) {
             material.SetVector(
                 ShaderProps.Distortion_Plane,
-                plane2
+                plane.AsVector4()
             );
 
             material.SetFloat(

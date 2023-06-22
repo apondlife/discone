@@ -1,13 +1,27 @@
 # intro
 
-hi
+hello? wow. how did you already know to hold "right or left trigger" to,\
+close your eyes?\
+and then release "right or left trigger" to open them?
 
-hello?
+if you want to talk to me again\
+you can press my "button"\
+& close your eyes for a little.
 
-ah, thanks for pressing my “button”!\
-sorry to bother you there, earlier.
+ah, thanks for holding my “button”!\
+sorry to bother you there, earlier...\
+i'm always here if you want to talk.
 
-going forward, i’ll be more respectful of your boundaries.
+# birthplace
+
+[ramp]
+this ramp, did you...\
+see my letter too?\
+if you mash the "jump button" as you approach...\
+it,\
+i think you can do it.
+
+# intro (real)
 
 do you know what you’re doing Here?
 
@@ -31,7 +45,7 @@ if you don’t, well, close your eyes i guess ;).
 but yeah, they call me “the mechanic”.\
 don’t ask me why, haha.
 
-i’ve spent a lifetime “jumping”. 
+i’ve spent a lifetime “jumping”.
 
 these days i believe that jumping is more about pushing through than is is about pushing against.
 
@@ -189,7 +203,7 @@ kinda the way it was for me back there.\
 i didn’t get tired of it.\
 heck, i didn’t even realize it, was just what i did!
 
-but then i did 
+but then i did
 here maybe, maybe there. i can’t remember\
 & then i had to keep going…
 

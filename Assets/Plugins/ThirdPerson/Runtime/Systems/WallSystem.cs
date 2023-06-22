@@ -20,8 +20,8 @@ sealed class WallSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_State.Next.WallState;
-        set => m_State.Next.WallState = value;
+        get => c.State.Next.WallState;
+        set => c.State.Next.WallState = value;
     }
 
     // -- Grounded --
@@ -32,8 +32,8 @@ sealed class WallSystem: CharacterSystem {
 
     void NotOnWall_Update(float delta) {
         // if we're on a wall, enter slide
-        var wall = m_State.Curr.WallSurface;
-        var wallAngleScale = m_Tunables.WallAngleScale.Evaluate(wall.Angle);
+        var wall = c.State.Curr.WallSurface;
+        var wallAngleScale = c.Tuning.WallAngleScale.Evaluate(wall.Angle);
         if (wallAngleScale > Mathf.Epsilon) {
             ChangeToImmediate(WallSlide, delta);
         }
@@ -47,8 +47,8 @@ sealed class WallSystem: CharacterSystem {
 
     void WallSlide_Update(float delta) {
         // if we left the wall, exit
-        var wall = m_State.Curr.WallSurface;
-        var wallAngleScale = m_Tunables.WallAngleScale.Evaluate(wall.Angle);
+        var wall = c.State.Curr.WallSurface;
+        var wallAngleScale = c.Tuning.WallAngleScale.Evaluate(wall.Angle);
         if (wallAngleScale <= Mathf.Epsilon) {
             ChangeTo(NotOnWall);
             return;
@@ -63,21 +63,21 @@ sealed class WallSystem: CharacterSystem {
         // walls, but we are for now on account of our principle of No Rules
         var vd = Vector3.zero;
         vd += TransferredVelocity(wallNormal, wallUp);
-        vd -= wallNormal * m_Tunables.WallMagnet;
+        vd -= wallNormal * c.Tuning.WallMagnet;
 
         // accelerate while holding button
-        var wallGravity = m_Input.IsWallHoldPressed
-            ? m_Tunables.WallHoldGravity.Evaluate(PhaseStart)
-            : m_Tunables.WallGravity.Evaluate(PhaseStart);
+        var wallGravity = c.Input.IsWallHoldPressed
+            ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart)
+            : c.Tuning.WallGravity.Evaluate(PhaseStart);
 
-        var wallAcceleration = m_Tunables.WallAcceleration(wallGravity);
+        var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
         vd += wallAcceleration * delta * wallUp;
 
         // scale acceleration by wall angle
         vd *= wallAngleScale;
 
         // update state
-        m_State.Velocity += vd;
+        c.State.Velocity += vd;
     }
 
     // -- queries --
@@ -87,7 +87,7 @@ sealed class WallSystem: CharacterSystem {
         Vector3 wallUp
     ) {
         // get the component of our velocity into the wall
-        var velocity = m_State.Prev.Velocity;
+        var velocity = c.State.Prev.Velocity;
         var velocityAlongWall = Vector3.ProjectOnPlane(velocity, wallNormal);
         var velocityIntoWall = velocity - velocityAlongWall;
 

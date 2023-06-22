@@ -385,7 +385,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // mirror zero-ing out sync vars for some reason?
         var pos = m_RemoteState.Position;
         if (pos == Vector3.zero) {
-            Debug.LogWarning("[chrctr] attempted to save character a zero-position");
+            Debug.LogWarning($"[chrctr] {name} - tried to save character w/ a zero-position");
             return null;
         }
 

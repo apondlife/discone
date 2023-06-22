@@ -4,10 +4,20 @@ namespace Discone {
 
 /// ids for various shader props
 static class ShaderProps {
-    // -- constants --
+    // -- buffers --
     /// the main texture
     public static readonly int Main = Shader.PropertyToID("_MainTex");
 
+    /// the source texture for a command sequence
+    public static readonly int Src = Shader.PropertyToID("_SrcTex");
+
+    /// a temp texture for a command sequence
+    public static readonly int Tmp1 = Shader.PropertyToID("_TmpTex1");
+
+    /// a temp texture for a command sequence
+    public static readonly int Tmp2 = Shader.PropertyToID("_TmpTex2");
+
+    // -- discone --
     /// the emission texture
     public static readonly int Emission = Shader.PropertyToID("_EmissionMap");
 
@@ -32,12 +42,6 @@ static class ShaderProps {
     /// the current character position
     public static readonly int CharacterPos = Shader.PropertyToID("_CharacterPos");
 
-    /// the inverse view matrix
-    public static readonly int InvView = Shader.PropertyToID("_InvView");
-
-    /// the inverse view projection matrix
-    public static readonly int InvProjection = Shader.PropertyToID("_InvProjection");
-
     /// the angle that is considered to be a wall
     public static readonly int WallAngle = Shader.PropertyToID("_WallAngle");
 
@@ -49,6 +53,12 @@ static class ShaderProps {
 
     /// the reflected light intensity relative to the directional light
     public static readonly int ReflectedLightIntensity = Shader.PropertyToID("_ReflectedLightIntensity");
+
+    /// the eyelid blur offsets
+    public static readonly int Offsets = Shader.PropertyToID("_Offsets");
+
+    /// the spritesheet current sprite
+    public static readonly int CurrentSprite = Shader.PropertyToID("_CurrentSprite");
 }
 
 }

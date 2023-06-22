@@ -17,6 +17,11 @@ public sealed class Store: ScriptableObject {
     [Tooltip("when the load finishes")]
     [SerializeField] VoidEvent m_LoadFinished;
 
+    // -- config --
+    [Header("config")]
+    [Tooltip("if the store syncs the player file")]
+    [SerializeField] BoolReference m_IsSyncingPlayer;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the entity repos")]
@@ -76,6 +81,11 @@ public sealed class Store: ScriptableObject {
 
     /// try syncing the in-memory player record, fails if a player has no character
     public void SyncPlayer() {
+        // don't sync if disabled
+        if (!m_IsSyncingPlayer) {
+            return;
+        }
+
         // find the player's current character
         var character = FindPlayerCharacter();
         if (character == null) {
@@ -85,7 +95,7 @@ public sealed class Store: ScriptableObject {
 
         // and update the record
         m_Player.Character = character.IntoRecord();
-        Debug.Log($"[store] updated player record {m_Player}");
+        Debug.Log($"[sstore] updated player record {m_Player}");
     }
 
     /// save the current state to file
@@ -205,14 +215,14 @@ public sealed class Store: ScriptableObject {
             await stream.WriteAsync(data, 0, data.Length);
         }
 
-        Debug.Log($"[store] saved file @ {RenderPath(path)} => {json}");
+        Debug.Log($"[sstore] saved file @ {RenderPath(path)} => {json}");
     }
 
     /// load the record from disk at path
     async Task<F> LoadRecord<F>(string path) where F: StoreFile {
         // check for file
         if (!File.Exists(path)) {
-            Debug.Log($"[store] no file found @ {RenderPath(path)}");
+            Debug.Log($"[sstore] no file found @ {RenderPath(path)}");
             return default;
         }
 
@@ -223,7 +233,7 @@ public sealed class Store: ScriptableObject {
             var read = await stream.ReadAsync(data, 0, (int)stream.Length);
 
             if (read != stream.Length) {
-                Debug.LogError($"[store] only read {read} of {stream.Length} bytes from file @ {RenderPath(path)}");
+                Debug.LogError($"[sstore] only read {read} of {stream.Length} bytes from file @ {RenderPath(path)}");
                 throw new System.Exception("couldn't read the entire file!");
             }
         }
@@ -231,12 +241,12 @@ public sealed class Store: ScriptableObject {
         // decode record from json
         var json = Encoding.UTF8.GetString(data);
         var record = JsonUtility.FromJson<F>(json);
-        Debug.Log($"[store] loaded file @ {RenderPath(path)} => {json}");
+        Debug.Log($"[sstore] loaded file @ {RenderPath(path)} => {json}");
 
         // check the file version
         var version = record.CurrentVersion();
         if (record.Version != version) {
-            Debug.LogWarning($"[store] read file w/ obsolete version: {record.Version} < {version}");
+            Debug.LogWarning($"[sstore] read file w/ obsolete version: {record.Version} < {version}");
             return default;
         }
 

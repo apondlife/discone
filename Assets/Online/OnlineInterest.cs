@@ -39,6 +39,9 @@ public class OnlineInterest: InterestManagement {
     /// the time of the last rebuild
     double m_LastRebuildTime = -1.0;
 
+    /// if the interest logged a warning about initialization w/ no netId
+    bool m_HasLoggedNoIdWarning;
+
     // -- lifecycle --
     [ServerCallback]
     void Update() {
@@ -281,7 +284,11 @@ public class OnlineInterest: InterestManagement {
         // get the id
         var id = identity.netId;
         if (id == 0) {
-            Debug.LogWarning("[interest] identity has not been initialized yet.");
+            if (!m_HasLoggedNoIdWarning) {
+                Debug.LogWarning("[interest] identity has not been initialized yet.");
+                m_HasLoggedNoIdWarning = true;
+            }
+
             return null;
         }
 

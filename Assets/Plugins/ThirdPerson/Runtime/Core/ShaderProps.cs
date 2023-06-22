@@ -19,6 +19,13 @@ static class ShaderProps {
 
     /// the amount the character distorts
     public static readonly int Distortion_Intensity = Shader.PropertyToID("_Distortion_Intensity");
+
+    // TODO: move these (and a lot of camera stuff) to discone
+    /// the camera's current clip plane
+    public static readonly int CameraClipPlane = Shader.PropertyToID("_CameraClipPlane");
+
+    /// the character's ground plane
+    public static readonly int CharacterGroundPlane = Shader.PropertyToID("_CharacterGroundPlane");
 }
 
 }

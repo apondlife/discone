@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Discone {
 
+/// the rendering pipeline
 [ExecuteAlways]
 sealed class Render: MonoBehaviour {
     // -- data --

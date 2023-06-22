@@ -2,16 +2,19 @@
 #define CORE_MATH_HLSL
 
 // -- defines --
-#define half1 half
-#define float1 float
 
 // https://docs.unity3d.com/Manual/SL-DataTypesAndPrecision.html
 // unity transforms fixed into half if not OpenGl ES 2
+#ifndef fixed
 #define fixed half
-#define fixed1 half1
 #define fixed2 half2
 #define fixed3 half3
 #define fixed4 half4
+#endif
+
+#define half1 half
+#define float1 float
+#define fixed1 fixed
 
 #ifndef K_PI
 #define K_PI 3.14159265359

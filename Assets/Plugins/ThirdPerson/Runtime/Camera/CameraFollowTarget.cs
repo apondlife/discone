@@ -87,9 +87,16 @@ public class CameraFollowTarget: MonoBehaviour {
         // set initial position
         m_Destination.position = m_State.Next.Pos;
 
-        // set camera lens properties
+        // set camera lens props
         m_Camera.m_Lens.FieldOfView = m_State.Next.Fov;
         m_Camera.m_Lens.Dutch = m_State.Next.Dutch;
+
+        // set camera clip shader props
+        var plane = new Plane(m_CollisionSystem.ClipNormal, m_CollisionSystem.ClipPos);
+        Shader.SetGlobalVector(
+            ShaderProps.CameraClipPlane,
+            plane.AsVector4()
+        );
     }
 
     void FixedUpdate() {
@@ -114,6 +121,13 @@ public class CameraFollowTarget: MonoBehaviour {
         // set camera lens properties
         m_Camera.m_Lens.FieldOfView = m_State.Next.Fov;
         m_Camera.m_Lens.Dutch = m_State.Next.Dutch;
+
+        // set camera clip shader props
+        var plane = new Plane(m_CollisionSystem.ClipNormal, m_CollisionSystem.ClipPos);
+        Shader.SetGlobalVector(
+            ShaderProps.CameraClipPlane,
+            plane.AsVector4()
+        );
     }
 
     // -- queries --

@@ -125,8 +125,9 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 1
-    m_Max: 0.1
+    m_Dst:
+      Min: 1
+      Max: 0.1
   m_VerticalAcceleration_StretchIntensity: 0.0069
   m_VerticalAcceleration_SquashIntensity: 1.5
   m_VerticalAcceleration_IntensitySpeed: 1020
@@ -236,6 +237,10 @@ PrefabInstance:
       propertyPath: MaxJumpSquatSquash
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 3345656352466467714, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Tuning
+      value: 
+      objectReference: {fileID: 11400000, guid: 6815713ba493a82468070560347114c6, type: 2}
     - target: {fileID: 3345656352466467714, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Tunables
       value: 
@@ -584,3 +589,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5f193421ea3f2184d9a5a6ab2182387d, type: 3}
+--- !u!23 &1642001035132472022 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8964920265831302934, guid: 5f193421ea3f2184d9a5a6ab2182387d, type: 3}
+  m_PrefabInstance: {fileID: 7683216032528747968}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4500179708823862530 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -3110969349252599614, guid: 5f193421ea3f2184d9a5a6ab2182387d, type: 3}
+  m_PrefabInstance: {fileID: 7683216032528747968}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7425380531364209883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4500179708823862530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2245c0debcc531d44b74e6d3b88a9d55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Renderer: {fileID: 1642001035132472022}
+  m_BlinkSpeed: 1

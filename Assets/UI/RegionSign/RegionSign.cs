@@ -10,6 +10,9 @@ namespace Discone {
 sealed class RegionSign: MonoBehaviour {
     // -- config --
     [Header("config")]
+    [Tooltip("the time it takes for the same region sign to reappear if reentering same previous region")]
+    [SerializeField] float m_RepeatCooldown = 60.0f;
+
     [Tooltip("the time it takes to dissolve the text in/out")]
     [SerializeField] float m_DissolveTime = 1.0f;
 
@@ -43,10 +46,13 @@ sealed class RegionSign: MonoBehaviour {
 
     // -- props --
     /// the local player's current region
-    Discone.Region m_CurrentRegion;
+    Region m_CurrentRegion = null;
 
     /// if the region sign is visible
     bool m_IsVisible;
+
+    /// last time at which entered current region
+    float m_CurrentRegionEnterTime;
 
     /// a bag of subscriptions
     DisposeBag m_Subscriptions = new DisposeBag();
@@ -115,10 +121,28 @@ sealed class RegionSign: MonoBehaviour {
         m_IsVisible = false;
     }
 
-    public void OnRegionEntered(Discone.Region region) {
-        m_CurrentRegion = region;
+    public void OnRegionEntered(Region next) {
+        var time = Time.time;
+        var prev = m_CurrentRegion;
+
+        var showsRegionSign = (
+            // don't show sign on first region
+            prev != null &&
+            // don't show if still in cooldown for current region
+            (prev == next && time - m_CurrentRegionEnterTime > m_RepeatCooldown)
+        );
+
+        m_CurrentRegion = next;
+        m_CurrentRegionEnterTime = time;
+
+        if(!showsRegionSign) {
+            return;
+        }
+
+        Debug.Log($"[region] show sign {next?.DisplayName}");
+
         m_CanvasGroup.alpha = 1f;
-        m_Text.SetText(region.DisplayName);
+        m_Text.SetText(next.DisplayName);
 
         // only start a new animation if the current one is over
         if (m_IsVisible) {

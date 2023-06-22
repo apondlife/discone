@@ -44,10 +44,10 @@ Shader "Image/Fuzz" {
             static const float3 k_Right = float3(1.0f, 0.0f, 0.0f);
 
             /// the fragment width of the sobel cookie
-            static const int k_CookieWidth = 3;
+            static const uint k_CookieWidth = 3;
 
             /// the number of fragments in the sobel cookie
-            static const int k_CookieSize = k_CookieWidth * k_CookieWidth;
+            static const uint k_CookieSize = k_CookieWidth * k_CookieWidth;
 
             /// the scale applied to a single fragement in the sobel value
             static const float1 k_CookieScale = 1.0f / k_CookieSize;
@@ -165,9 +165,9 @@ Shader "Image/Fuzz" {
                 float2 offset = float2(offmag, offmag);
 
                 // aggregate every value in the cookie
-                for (int j = 0; j < k_CookieSize; j++) {
-                    int x = j % k_CookieWidth;
-                    int y = j / k_CookieWidth;
+                for (uint j = 0; j < k_CookieSize; j++) {
+                    uint x = j % k_CookieWidth;
+                    uint y = j / k_CookieWidth;
 
                     // offset to position in cookie
                     float2 pos = f.uv + float2(x, y) * _ConvolutionDelta + offset;

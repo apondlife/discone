@@ -35,6 +35,9 @@ public class DialogueSystem: MonoBehaviour {
     [Tooltip("the dialogue runner")]
     [SerializeField] DialogueRunner yarnDialogueRunner;
 
+    [Tooltip("the dialogue canvas")]
+    [SerializeField] GameObject m_Canvas;
+
     [Header("textboxes")]
     [Tooltip("ivan textbox")]
     [SerializeField] DialogueViewBase ivanTextbox;
@@ -53,6 +56,8 @@ public class DialogueSystem: MonoBehaviour {
         m_Subscriptions
             .Add(m_StartDialogue, OnStartDialogue)
             .Add(m_Complete, OnDialogueComplete);
+
+        m_Canvas.SetActive(true);
     }
 
     void OnDestroy() {

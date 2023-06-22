@@ -14,8 +14,8 @@ sealed class RegionDetector: MonoBehaviour {
     [SerializeField] RegionEvent m_RegionEntered;
 
     // -- events --
-    // Physics settings should be set so that only things on the
-    // Player layer will trigger RegionDetector layer
+    // physics settings should be set so that only things on the player layer
+    // will trigger RegionDetector layer
     void OnTriggerEnter(Collider other) {
         var player = other.GetComponentInParent<DisconePlayer>();
         if (player == null || player.Character == null) {

@@ -14,7 +14,7 @@ sealed class Slider: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the value range")]
-    [SerializeField] ThirdPerson.RangeCurve m_Range;
+    [SerializeField] ThirdPerson.MapOutCurve m_Range;
 
     // -- refs --
     [Header("refs")]

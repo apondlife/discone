@@ -59,7 +59,7 @@ public sealed class CameraTuning: ScriptableObject {
     public float MaxRadius;
 
     [Tooltip("the camera's field of view as a function of target speed")]
-    public RangeCurve Fov;
+    public MapOutCurve Fov;
 
     [Tooltip("the minimum speed for curving camera distance")]
     public float FovTargetMinSpeed;
@@ -106,9 +106,9 @@ public sealed class CameraTuning: ScriptableObject {
     [Tooltip("the minimum distance from the target, when undershooting")]
     public float MinUndershootDistance;
 
-    [Header("collision")]
     // TODO: this is the camera's radius
     // TODO: make all the camera's casts sphere casts
+    [Header("collision")]
     [Tooltip("the amount of offset the camera during collision")]
     public float Collision_ContactOffset;
 
@@ -119,7 +119,7 @@ public sealed class CameraTuning: ScriptableObject {
     public float Collision_ClipTolerance;
 
     [Tooltip("how far away the corrected collision position should be from the ideal position before clipping, scaled by hit normal")]
-    public RangeCurve Collision_ClipToleranceByNormal;
+    public MapOutCurve Collision_ClipToleranceByNormal;
 
     [Tooltip("the exit duration before clipping transitions back to free look")]
     public float Collision_ClipCooldown;
@@ -159,4 +159,5 @@ public sealed class CameraTuning: ScriptableObject {
         FreeLook_MaxPitch = Mathf.Max(FreeLook_MinPitch, FreeLook_MaxPitch);
     }
 }
+
 }

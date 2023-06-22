@@ -1,12 +1,14 @@
 Shader "ThirdPerson/Character" {
     Properties {
         _MainTex ("Texture", 2D) = "white" {}
+        // TODO: split this into multiple variants
+        [ShowAsVector2] _SpriteSheet ("Sprite Rows & Columns", Vector) = (1, 1, 0, 0)
+        _CurrentSprite ("Current Sprite Index", Integer) = 0
     }
 
     SubShader {
         Tags {
             "RenderType" = "Opaque"
-            // "Queue" = "AlphaTest"
         }
 
         LOD 100
@@ -40,7 +42,6 @@ Shader "ThirdPerson/Character" {
                 float2 uv : TEXCOORD0;
                 fixed3 diffuse : COLOR0;
                 fixed3 ambient : COLOR1;
-                float4 vertexColor : COLOR2;
                 SHADOW_COORDS(3)
                 UNITY_FOG_COORDS(4)
             };
@@ -54,6 +55,12 @@ Shader "ThirdPerson/Character" {
             float1 _Distortion_NegativeScale;
             float1 _Distortion_Intensity;
             float4 _Distortion_Plane;
+
+            // the number of rows and columns for a spritesheet
+            float4 _SpriteSheet;
+
+            // the current sprite index
+            int _CurrentSprite;
 
             // the relative intensity of the reflected light
             float1 _ReflectedLightIntensity;
@@ -82,7 +89,20 @@ Shader "ThirdPerson/Character" {
                 worldPos += distortion * intensity * _Distortion_Plane.xyz;
                 o.pos = UnityWorldToClipPos(worldPos);
 
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                // get the sprite's uv
+                // u [0, 1]  => [0.00, 0.25] [0.25, 0.50]
+                float2 uv0 = TRANSFORM_TEX(v.uv, _MainTex);
+
+                float1 du = 1 / _SpriteSheet.x; // 0.25 (u + sprU)
+                float1 dv = 1 / _SpriteSheet.y;
+                int sprU = fmod(_CurrentSprite, floor(_SpriteSheet.x));
+                int sprV = floor(_CurrentSprite / floor(_SpriteSheet.y));
+                float2 uv = float2(
+                    (uv0.x + sprU) * du,
+                    (uv0.y + sprV) * dv
+                );
+
+                o.uv = uv;
 
                 // lambert shading
                 float3 worldNormal = UnityObjectToWorldNormal(v.normal);
