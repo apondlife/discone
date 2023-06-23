@@ -152,6 +152,9 @@ public sealed partial class CharacterState {
         /// the number of jumps executed since last grounded
         public uint Jumps = 0;
 
+        /// the buffered surface to jump from;
+        public CharacterCollision JumpSurface;
+
         /// the number of coyote frames the available
         public int CoyoteFrames = 0;
 

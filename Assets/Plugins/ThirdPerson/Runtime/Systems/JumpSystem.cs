@@ -49,10 +49,9 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void NotJumping_Update(float _) {
-        // count coyote frames; reset to max whenever (this determines if the
-        // character is grounded)
+        // reset jump surface whenever grounded
         if (IsOnGround()) {
-            c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
+            ResetJumpSurface();
         }
         // but if not, subtract a frame
         else {
@@ -85,10 +84,9 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void Landing_Update(float _) {
-        // count coyote frames; reset to max whenever (this determine's if the
-        // character is grounded)
+        // reset jump surface whenever grounded
         if (IsOnGround()) {
-            c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
+            ResetJumpSurface();
         }
         // but if not, subtract a frame
         else {
@@ -149,9 +147,9 @@ sealed class JumpSystem: CharacterSystem {
 
         // if this is the first jump, you might be in coyote time
         if (c.State.JumpTuningJumpIndex == 0) {
-            // count coyote frames; reset to max whenever grounded
+            // reset jump surface whenever grounded
             if (IsOnGround()) {
-                c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
+                ResetJumpSurface();
             }
             // but if not, subtract a frame
             else {
@@ -218,6 +216,13 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     // -- commands --
+    /// reset the next surface to jump from
+    void ResetJumpSurface() {
+        c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
+        c.State.JumpSurface = c.State.Next.Ground;
+    }
+
+    /// .
     void Jump() {
         // get curved percent complete through jump squat
         var pct = Mathf.InverseLerp(
@@ -253,7 +258,7 @@ sealed class JumpSystem: CharacterSystem {
 
         // scale by wall factor
         // TODO: maybe horizontal/vertical should be tangent/normal to ground or wall:
-        var groundAngleScale = c.Tuning.Jump_GroundAngleScale.Evaluate(c.State.Curr.GroundSurface.Angle);
+        var groundAngleScale = c.Tuning.Jump_GroundAngleScale.Evaluate(c.State.Curr.JumpSurface.Angle);
 
         // add vertical jump
         dv += verticalSpeed * Vector3.up * groundAngleScale;
