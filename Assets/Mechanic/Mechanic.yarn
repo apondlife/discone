@@ -11,8 +11,10 @@ hello? wow. how did you already know to hold "right or left trigger" to,
 title: IntroInput
 ---
 <<then Mechanic IntroEnd>>
+
 close your eyes?
 <<wait 6>>
+
 and then release "right or left trigger" to open them?
 <<wait 60>>
 ===
@@ -27,23 +29,30 @@ title: IntroEnd
 
 title: Start
 ---
-<<wait 10>>
 <<then Mechanic StartThanks>>
+<<wait 10>>
+
 if you want to talk to me again
 <<wait 3>>
+
 you can hold "right or left trigger"
 <<wait 3>>
+
 & close your eyes for a little.
 <<wait 3>>
 ===
 
 title: StartThanks
 ---
+<<wait 2>>
 <<then Mechanic Birthplace>>
+
 ah, thanks for holding my “button”!
 <<wait 3>>
+
 sorry to bother you there, earlier.
 <<wait 3>>
+
 i'm always here if you want to talk.
 <<wait 60>>
 ===
@@ -55,26 +64,33 @@ i'm always here if you want to talk.
 title: Birthplace
 ---
 <<if $BirthplaceStep == "Ramp">>
-    <<jump BirthplaceRamp>>
+  <<jump BirthplaceRamp>>
 <<elseif $BirthplaceStep == "Wall">>
-    <<jump BirthplaceWall>>
+  <<jump BirthplaceWall>>
 <<endif>>
 ===
 
 title: BirthplaceRamp
 ---
+<<wait 2>>
+
 this ramp, did you...
 <<wait 3>>
+
 see my letter too?
 <<wait 3>>
+
 if you mash the "jump button" as you approach...
 <<wait 5>>
+
 it,
 <<wait 1>>
+
 i think you can do it
 <<wait 60>>
 ===
 
 title: BirthplaceWall
 ---
+<<wait 2>>
 ===

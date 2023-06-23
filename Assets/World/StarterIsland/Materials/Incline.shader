@@ -857,6 +857,5 @@ Shader "Custom/Incline" {
             }
             ENDCG
         }
-
     }
 }

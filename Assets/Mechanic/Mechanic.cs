@@ -14,9 +14,6 @@ sealed class Mechanic: MonoBehaviour {
 
     // -- cfg --
     [Header("cfg")]
-    [Tooltip("the delay before running a line")]
-    [SerializeField] ThirdPerson.EaseTimer m_Delay;
-
     [Tooltip("the node to start w/ after the intro")]
     [SerializeField] string m_StartNode;
 
@@ -57,16 +54,6 @@ sealed class Mechanic: MonoBehaviour {
             .Add(m_SetBirthplaceStep, OnSetBirthplaceStep);
     }
 
-    void FixedUpdate() {
-        if (m_Delay.IsActive) {
-            m_Delay.Tick();
-
-            if (m_Delay.IsComplete) {
-                StartDialogue();
-            }
-        }
-    }
-
     void OnDestroy() {
         m_Subscriptions.Dispose();
     }
@@ -81,18 +68,16 @@ sealed class Mechanic: MonoBehaviour {
     /// .
     void JumpToNode(string node) {
         Debug.Log($"[mechnk] jump: {node}");
-        StopDialogue();
         SwitchNode(node);
         StartDialogue();
     }
 
     /// .
-    void StartDialogueDelay() {
-        m_Delay.Start();
-    }
-
-    /// .
     void StartDialogue() {
+        // interrupt any existing dialogue
+        StopDialogue();
+
+        // and start the new dialogue
         if (string.IsNullOrEmpty(m_Node)) {
             Debug.LogWarning($"[mechnk] tried to start dialogue w/ no node set");
             return;
@@ -103,8 +88,6 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void StopDialogue() {
-        m_Delay.Cancel();
-
         // clean up the dialogue runner
         if (m_DialogueRunner.IsDialogueRunning) {
             m_DialogueRunner.StopAllCoroutines();
@@ -143,7 +126,7 @@ sealed class Mechanic: MonoBehaviour {
     /// .
     void OnEyelidClosedChanged(bool isEyelidClosed) {
         if (isEyelidClosed) {
-            StartDialogueDelay();
+            StartDialogue();
         } else {
             StopDialogue();
         }
