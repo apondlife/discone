@@ -147,12 +147,14 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 0.1
-    m_Max: 0.1
+    m_Dst:
+      Min: 0.1
+      Max: 0.1
   Gravity: -70
   JumpBuffer: 10
   MaxCoyoteFrames: 12
   JumpGravity: -30
+  Jump_GroundAngle: 80
   Jump_GroundAngleScale:
     serializedVersion: 2
     m_Curve:
@@ -169,19 +171,19 @@ MonoBehaviour:
       time: 10
       value: 1
       inSlope: 0
-      outSlope: -0.0028879747
+      outSlope: -0.00044972563
       tangentMode: 1
       weightedMode: 2
       inWeight: 0.33333334
-      outWeight: 0.4799145
+      outWeight: 0.16781892
     - serializedVersion: 3
-      time: 80
-      value: 0
-      inSlope: -0.24270561
-      outSlope: -0.08758176
+      time: 74.40677
+      value: 0.82783204
+      inSlope: -0.008443532
+      outSlope: Infinity
       tangentMode: 1
-      weightedMode: 1
-      inWeight: 0.0366175
+      weightedMode: 0
+      inWeight: 0.04405666
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2

@@ -49,7 +49,7 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void NotJumping_Update(float _) {
-        // count coyote frames; reset to max whenever (this determine's if the
+        // count coyote frames; reset to max whenever (this determines if the
         // character is grounded)
         if (IsOnGround()) {
             c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
@@ -348,7 +348,7 @@ sealed class JumpSystem: CharacterSystem {
             return false;
         }
 
-        return c.Tuning.Jump_GroundAngleScale.Evaluate(ground.Angle) > Mathf.Epsilon;
+        return ground.Angle <= c.Tuning.Jump_GroundAngle;
     }
 }
 

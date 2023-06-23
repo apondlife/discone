@@ -115,8 +115,11 @@ public sealed class CharacterTuning: ScriptableObject {
         get => JumpGravity - Gravity;
     }
 
+    [Tooltip("the maximum ground angle for jumping")]
+    public float Jump_GroundAngle;
+
     [Tooltip("the scaling factor of the jump depending on the ground angle")]
-    public AnimationCurve Jump_GroundAngleScale;
+    public MapOutCurve Jump_GroundAngleScale;
 
     [Tooltip("the gravity while holding jump and falling")]
     public float FallGravity;
