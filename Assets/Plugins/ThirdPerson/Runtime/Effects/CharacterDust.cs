@@ -4,6 +4,7 @@ using UnityEngine.Serialization;
 namespace ThirdPerson {
 
 /// the character's dust effect
+/// TODO: rename me to CharacterEffects
 public class CharacterDust: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
@@ -28,6 +29,9 @@ public class CharacterDust: MonoBehaviour {
     [Tooltip("the floor skid lines particle (negative acceleration)")]
     [SerializeField] ParticleSystem m_FloorSkid;
 
+    [Tooltip("the plume when jump starts")]
+    [SerializeField] ParticleSystem m_JumpPlume;
+
     [Tooltip("the particle puff when landing")]
     [SerializeField] ParticleSystem m_LandingPuff;
 
@@ -48,6 +52,11 @@ public class CharacterDust: MonoBehaviour {
     }
 
     void FixedUpdate() {
+        // TODO: move into own script
+        if (m_State.Next.Events.Contains(CharacterEvent.Jump)) {
+            m_JumpPlume.Play();
+        }
+
         if (m_State.Next.IsOnWall) {
             if (!m_WallParticles.isPlaying) {
                 m_WallParticles.Play();
