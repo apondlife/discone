@@ -92,10 +92,9 @@ public class CameraFollowTarget: MonoBehaviour {
         m_Camera.m_Lens.Dutch = m_State.Next.Dutch;
 
         // set camera clip shader props
-        var plane = new Plane(m_CollisionSystem.ClipNormal, m_CollisionSystem.ClipPos);
         Shader.SetGlobalVector(
             ShaderProps.CameraClipPlane,
-            plane.AsVector4()
+            new Plane(m_CollisionSystem.ClipNormal, m_CollisionSystem.ClipPos).AsVector4()
         );
     }
 
@@ -123,10 +122,14 @@ public class CameraFollowTarget: MonoBehaviour {
         m_Camera.m_Lens.Dutch = m_State.Next.Dutch;
 
         // set camera clip shader props
-        var plane = new Plane(m_CollisionSystem.ClipNormal, m_CollisionSystem.ClipPos);
+        Shader.SetGlobalVector(
+            ShaderProps.CameraClipPos,
+            m_CollisionSystem.ClipPos
+        );
+
         Shader.SetGlobalVector(
             ShaderProps.CameraClipPlane,
-            plane.AsVector4()
+            new Plane(m_CollisionSystem.ClipNormal, m_CollisionSystem.ClipPos).AsVector4()
         );
     }
 

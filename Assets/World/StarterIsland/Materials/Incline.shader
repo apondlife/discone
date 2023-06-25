@@ -287,6 +287,9 @@ Shader "Custom/Incline" {
             float4 _CeilBumpMap_ST;
 
             // -- globals --
+            // the camera's current clipping pos
+            float3 _CameraClipPos;
+
             // the camera's current clipping plane
             float4 _CameraClipPlane;
 
@@ -352,9 +355,27 @@ Shader "Custom/Incline" {
                 fixed4 c;
                 c.a = 1.0f;
 
-                // don't show surfaces behind the current clipping plane
-                float1 clipDistance = dot(IN.worldPos, _CameraClipPlane.xyz) + _CameraClipPlane.w;
-                clip(clipDistance + _Epsilon);
+                // NOTE: it's difficult to distinguish a small pillar partially
+                // occluding ice cream from a wall occupying almost the entire
+                // screen occluding everything from a fully-clipped camera.
+                //
+                // it seems like there's some combination of clipping things
+                // behind the surface between ice cream and the camera, behind
+                // the clip point, and above the ground surface that will allow
+                // us to show most of the geomoetry.
+                //
+                // there's also an issue in the follow target where when ice
+                // cream is directly touching a surface, that the raycast misses
+                // and it doesn't register as obstructing the camera.
+
+                // don't show surfaces behind the current clipping plane and the
+                // camera's frustrum at the clip point
+                // TODO: show everything above ground
+
+                // float1 clipPlaneDistance = dot(IN.worldPos, _CameraClipPlane.xyz) + _CameraClipPlane.w;
+                // float3 cameraFwd = -UNITY_MATRIX_V._m20_m21_m22;
+                // float1 cameraPlaneDistance = dot(IN.worldPos - _CameraClipPos, cameraFwd);
+                // clip(max(cameraPlaneDistance, clipPlaneDistance) - _Epsilon);
 
                 // TODO: experiments in rendering more stuff behind the clip surface
                 // float3 viewNormal = mul(UNITY_MATRIX_V, float4(IN.normal, 0.0f)).xyz;

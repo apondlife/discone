@@ -21,6 +21,9 @@ static class ShaderProps {
     public static readonly int Distortion_Intensity = Shader.PropertyToID("_Distortion_Intensity");
 
     // TODO: move these (and a lot of camera stuff) to discone
+    /// the camera's current clip pos
+    public static readonly int CameraClipPos = Shader.PropertyToID("_CameraClipPos");
+
     /// the camera's current clip plane
     public static readonly int CameraClipPlane = Shader.PropertyToID("_CameraClipPlane");
 
