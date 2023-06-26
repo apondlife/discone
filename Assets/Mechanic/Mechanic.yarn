@@ -72,16 +72,26 @@ title: Birthplace
 
 title: BirthplaceRamp
 ---
+<<if $BirthplaceRampHelp_Visited>>
+  <<jump BirthplaceRampHelp>>
+<<endif>>
+
 <<wait 2>>
 
 this ramp, did you...
 <<wait 3>>
 
 see my letter too?
-<<wait 3>>
+<<jump BirthplaceRampHelp>>
+===
+
+title: BirthplaceRampHelp
+---
+<<set $BirthplaceRampHelp_Visited to true>>
+<<wait 2>>
 
 if you mash the "jump button" as you approach...
-<<wait 5>>
+<<wait 3>>
 
 it,
 <<wait 1>>
@@ -93,4 +103,16 @@ i think you can do it
 title: BirthplaceWall
 ---
 <<wait 2>>
+
+a wall is a nice place...
+<<wait 2>>
+
+to press your feet into,
+<<wait 2>>
+
+to hold the "jump button", along
+<<wait 2>>
+
+like any other floor.
+<<wait 60>>
 ===
