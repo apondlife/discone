@@ -42,11 +42,6 @@ sealed class Mechanic: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        m_DialogueRunner.VariableStorage.SetValue(
-            MechanicBirthplaceStep.Name,
-            MechanicBirthplaceStep.InitialValue
-        );
-
         m_Subscriptions
             .Add(m_JumpToNode, OnJumpToNode)
             .Add(m_IsEyelidClosed_Changed, OnEyelidClosedChanged)

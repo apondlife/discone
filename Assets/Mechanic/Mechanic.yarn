@@ -63,19 +63,32 @@ i'm always here if you want to talk.
 
 title: Birthplace
 ---
+<<declare $BirthplaceStep = "Ramp">>
+<<declare $BirthplaceRampHelp_Visited = false>>
+<<declare $BirthplaceStairBorn_Visited = false>>
+
 <<if $BirthplaceStep == "Ramp">>
   <<jump BirthplaceRamp>>
+<<elseif $BirthplaceStep == "Stair">>
+  <<jump BirthplaceStair>>
 <<elseif $BirthplaceStep == "Wall">>
   <<jump BirthplaceWall>>
+<<else>>
+  <<jump BirthplaceExit>>
 <<endif>>
 ===
 
 title: BirthplaceRamp
 ---
-<<if $BirthplaceRampHelp_Visited>>
+<<if !$BirthplaceRampHelp_Visited>>
+  <<jump BirthplaceRampLetter>>
+<<else>>
   <<jump BirthplaceRampHelp>>
 <<endif>>
+===
 
+title: BirthplaceRampLetter
+---
 <<wait 2>>
 
 this ramp, did you...
@@ -100,6 +113,32 @@ i think you can do it
 <<wait 60>>
 ===
 
+title: BirthplaceStair
+---
+<<if !$BirthplaceStairBorn_Visited && $BirthplaceRampHelp_Visited>>
+  <<jump BirthplaceStairSee>>
+<<else>>
+  <<jump BirthplaceStairBorn>>
+<<endif>>
+===
+
+title: BirthplaceStairSee
+---
+<<wait 2>>
+that was beautiful...
+
+<<jump BirthplaceStairBorn>>
+===
+
+title: BirthplaceStairBorn
+---
+<<set $BirthplaceStairBorn_Visited to true>>
+<<wait 2>>
+
+i remember when this stair was born.
+<<wait 60>>
+===
+
 title: BirthplaceWall
 ---
 <<wait 2>>
@@ -115,4 +154,111 @@ to hold the "jump button", along
 
 like any other floor.
 <<wait 60>>
+===
+
+title: BirthplaceExit
+---
+<<then Mechanic IntroReal>>
+<<jump IntroReal>>
+===
+
+// ---------------
+// -- IntroReal --
+// ---------------
+
+title: IntroReal
+---
+<<wait 2>>
+<<then Mechanic IntroRealNormal>>
+
+this is the place...
+<<wait 2>>
+
+do you know what you're doing Here?
+<<wait 60>>
+===
+
+title: IntroRealNormal
+---
+<<wait 2>>
+<<then Mechanic IntroRealSoon>>
+
+don't worry if you don't, that's normal.
+<<wait 2>>
+
+we never really do.
+<<wait 60>>
+===
+
+title: IntroRealSoon
+---
+<<wait 2>>
+<<then Mechanic IntroRealAsk>>
+
+but anyways i'm sure you'll figure it out...
+<<wait 2>>
+
+what you're doing Here
+<<wait 2>>
+
+soon.
+<<wait  60>>
+===
+
+title: IntroRealAsk
+---
+<<wait 2>>
+<<then Mechanic IntroRealTell>>
+
+don't ask me though, i couldn't tell you.
+<<wait  60>>
+===
+
+title: IntroRealTell
+---
+<<wait 2>>
+<<then Mechanic IntroRealMechanic>>
+
+i can't tell you, even.
+<<wait  60>>
+===
+
+title: IntroRealMechanic
+---
+<<wait 2>>
+<<then Mechanic IntroRealWant>>
+
+& speaking of asking me, i should...
+<<wait 2>>
+
+introduce myself. you could call me
+<<wait 2>>
+
+“the mechanic”,
+<<wait 2>>
+
+if you ever get the chance =).
+<<wait  60>>
+===
+
+title: IntroRealWant
+---
+<<wait 2>>
+<<then Mechanic IntroRealEyes>>
+
+but if you do want to hear me, i'm usually around here.
+<<wait  60>>
+===
+
+title: IntroRealEyes
+---
+<<wait 2>>
+<<then Mechanic IntroRealEnd>>
+
+if you don't, well, close your eyes i guess ;).
+<<wait  60>>
+===
+
+title: IntroRealEnd
+---
 ===

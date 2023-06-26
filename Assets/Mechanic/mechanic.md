@@ -24,7 +24,7 @@ i think you can do it.
 
 [Stair]
 that was beautiful...
-i love this staircase
+i remember when this stair was born.
 
 [Wall]
 a wall is a nice place... \
@@ -34,18 +34,24 @@ like any other floor.
 
 # intro (real)
 
+this is the place...\
 do you know what you’re doing Here?
 
 don’t worry if you don’t, that’s normal.\
 we never really do.
 
-but anyways, i’m sure you’ll start to figure out what you’re doing Here soon.
+but anyways i’m sure you’ll figure it out...\
+what you’re doing Here\
+soon.
 
 don’t ask me though, i couldn’t tell you.
 
 i can’t tell you, even.
 
-& speaking of asking me, i should introduce myself. you could call me “the mechanic”, if you ever get the chance =).
+& speaking of asking me, i should...\
+introduce myself. you could call me \
+“the mechanic”,\
+if you ever get the chance =).
 
 but if you do want to hear me, i’m usually around here.
 

@@ -14,12 +14,6 @@ struct MechanicBirthplaceStep {
         "Wall",
         "Exit",
     };
-
-    // -- queries --
-    /// .
-    public static string InitialValue {
-        get => Values[0];
-    }
 }
 
 }
