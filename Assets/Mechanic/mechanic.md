@@ -14,7 +14,7 @@ i'm always here if you want to talk.
 
 # birthplace
 
-[ramp]
+[Ramp]
 this ramp, did you...\
 see my letter too?\
 
@@ -22,7 +22,11 @@ if you mash the "jump button" as you approach...\
 it,\
 i think you can do it.
 
-[wall]
+[Stair]
+that was beautiful...
+i love this staircase
+
+[Wall]
 a wall is a nice place... \
 to press your feet into, \
 to hold the "jump button", along \

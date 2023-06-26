@@ -10,6 +10,7 @@ struct MechanicBirthplaceStep {
     /// .
     public static readonly string[] Values = new string[] {
         "Ramp",
+        "Stair",
         "Wall",
         "Exit",
     };
