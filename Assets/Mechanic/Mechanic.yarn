@@ -64,14 +64,17 @@ i'm always here if you want to talk.
 title: Birthplace
 ---
 <<declare $BirthplaceStep = "Ramp">>
-<<declare $BirthplaceRampHelp_Visited = false>>
-<<declare $BirthplaceStairBorn_Visited = false>>
+<<declare $BirthplaceRamp_Help_Visited = false>>
+<<declare $BirthplaceStair_Born_Visited = false>>
+<<declare $BirthplaceWall_Help_Visited = false>>
 
 <<if $BirthplaceStep == "Ramp">>
   <<jump BirthplaceRamp>>
 <<elseif $BirthplaceStep == "Stair">>
   <<jump BirthplaceStair>>
 <<elseif $BirthplaceStep == "Wall">>
+  <<jump BirthplaceWall>>
+<<elseif $BirthplaceStep == "Tunnel">>
   <<jump BirthplaceWall>>
 <<else>>
   <<jump BirthplaceExit>>
@@ -80,14 +83,14 @@ title: Birthplace
 
 title: BirthplaceRamp
 ---
-<<if !$BirthplaceRampHelp_Visited>>
-  <<jump BirthplaceRampLetter>>
+<<if !$BirthplaceRamp_Help_Visited>>
+  <<jump BirthplaceRamp_Letter>>
 <<else>>
-  <<jump BirthplaceRampHelp>>
+  <<jump BirthplaceRamp_Help>>
 <<endif>>
 ===
 
-title: BirthplaceRampLetter
+title: BirthplaceRamp_Letter
 ---
 <<wait 2>>
 
@@ -95,12 +98,12 @@ this ramp, did you...
 <<wait 3>>
 
 see my letter too?
-<<jump BirthplaceRampHelp>>
+<<jump BirthplaceRamp_Help>>
 ===
 
-title: BirthplaceRampHelp
+title: BirthplaceRamp_Help
 ---
-<<set $BirthplaceRampHelp_Visited to true>>
+<<set $BirthplaceRamp_Help_Visited to true>>
 <<wait 2>>
 
 if you mash the "jump button" as you approach...
@@ -115,24 +118,24 @@ i think you can do it
 
 title: BirthplaceStair
 ---
-<<if !$BirthplaceStairBorn_Visited && $BirthplaceRampHelp_Visited>>
-  <<jump BirthplaceStairSee>>
+<<if !$BirthplaceStair_Born_Visited && $BirthplaceRamp_Help_Visited>>
+  <<jump BirthplaceStair_See>>
 <<else>>
-  <<jump BirthplaceStairBorn>>
+  <<jump BirthplaceStair_Born>>
 <<endif>>
 ===
 
-title: BirthplaceStairSee
+title: BirthplaceStair_See
 ---
 <<wait 2>>
 that was beautiful...
 
-<<jump BirthplaceStairBorn>>
+<<jump BirthplaceStair_Born>>
 ===
 
-title: BirthplaceStairBorn
+title: BirthplaceStair_Born
 ---
-<<set $BirthplaceStairBorn_Visited to true>>
+<<set $BirthplaceStair_Born_Visited to true>>
 <<wait 2>>
 
 i remember when this stair was born.
@@ -141,18 +144,48 @@ i remember when this stair was born.
 
 title: BirthplaceWall
 ---
+<<if !$BirthplaceWall_Help_Visited>>
+  <<jump BirthplaceWall_Feet>>
+<<else>>
+  <<jump BirthplaceWall_Help>>
+<<endif>>
+===
+
+title: BirthplaceWall_Feet
+---
 <<wait 2>>
 
 a wall is a nice place...
 <<wait 2>>
 
 to press your feet into,
+<<jump BirthplaceWall_Help>>
+===
+
+title: BirthplaceWall_Help
+---
+<<set $BirthplaceRamp_Help_Visited to true>>
 <<wait 2>>
 
 to hold the "jump button", along
 <<wait 2>>
 
 like any other floor.
+<<wait 60>>
+===
+
+title: BirthplaceTunnel
+---
+<<if $BirthplaceWall_Help_Visited>>
+  <<jump BirthplaceTunnel_See>>
+<<endif>>
+===
+
+title: BirthplaceTunnel_See
+---
+<<wait 2>>
+
+how are your feet?
 <<wait 60>>
 ===
 

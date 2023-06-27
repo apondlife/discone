@@ -12,6 +12,7 @@ struct MechanicBirthplaceStep {
         "Ramp",
         "Stair",
         "Wall",
+        "Tunnel",
         "Exit",
     };
 }
