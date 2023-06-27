@@ -75,7 +75,7 @@ title: Birthplace
 <<elseif $BirthplaceStep == "Wall">>
   <<jump BirthplaceWall>>
 <<elseif $BirthplaceStep == "Tunnel">>
-  <<jump BirthplaceWall>>
+  <<jump BirthplaceTunnel>>
 <<else>>
   <<jump BirthplaceExit>>
 <<endif>>
@@ -164,7 +164,7 @@ to press your feet into,
 
 title: BirthplaceWall_Help
 ---
-<<set $BirthplaceRamp_Help_Visited to true>>
+<<set $BirthplaceWall_Help_Visited to true>>
 <<wait 2>>
 
 to hold the "jump button", along
@@ -207,7 +207,7 @@ title: IntroReal
 this is the place...
 <<wait 2>>
 
-do you know what you're doing Here?
+do you know what you're doing here?
 <<wait 60>>
 ===
 
@@ -231,7 +231,7 @@ title: IntroRealSoon
 but anyways i'm sure you'll figure it out...
 <<wait 2>>
 
-what you're doing Here
+what you're doing here
 <<wait 2>>
 
 soon.

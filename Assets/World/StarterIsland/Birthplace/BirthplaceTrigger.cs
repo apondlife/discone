@@ -21,6 +21,7 @@ sealed class BirthplaceTrigger: MonoBehaviour {
             return;
         }
 
+        Debug.Log($"[help] destroy {m_Step} {transform.position}");
         m_Mechanic_SetBirthplaceStep.Raise(m_Step);
         Destroy(gameObject);
     }
