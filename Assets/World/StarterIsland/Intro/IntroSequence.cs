@@ -139,6 +139,10 @@ public class IntroSequence: MonoBehaviour {
         }
     }
 
+    void OnDestroy() {
+        m_Subscriptions.Dispose();
+    }
+
     // -- commands --
     /// begin the intro sequence
     void Init() {

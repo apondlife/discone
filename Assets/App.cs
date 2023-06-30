@@ -5,10 +5,6 @@ namespace Discone {
 
 /// the app
 sealed class App: MonoBehaviour {
-    // -- module --
-    /// the singleton instance
-    static App s_Instance;
-
     // -- refs --
     [Header("refs")]
     [Tooltip("the store")]
@@ -17,8 +13,16 @@ sealed class App: MonoBehaviour {
     [Tooltip("the character definitions")]
     [SerializeField] CharacterDefs m_Defs;
 
-    [Tooltip("atom if the menu is open")]
+    // -- subscribed --
+    [Header("subscribed")]
+    [Tooltip("when the menu state changes")]
     [SerializeField] BoolEvent m_MenuOpenChanged;
+
+    [Tooltip("when the online server starts")]
+    [SerializeField] VoidEvent m_Online_ServerStarted;
+
+    [Tooltip("when the online client starts")]
+    [SerializeField] VoidEvent m_Online_ClientStarted;
 
     // -- props --
     /// the subscriptions
@@ -26,27 +30,28 @@ sealed class App: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
-        // destroy this if we already have an app
-        if (s_Instance != null) {
-            Destroy(gameObject);
-            return;
-        }
-
-        // store the singleton
-        s_Instance = this;
+        // move to top-level
         transform.SetParent(null);
-        DontDestroyOnLoad(gameObject);
 
         // hide cursor in build
         #if !UNITY_EDITOR
         Cursor.lockState = CursorLockMode.Locked;
-        m_Subscriptions.Add(m_MenuOpenChanged, OnMenuIsOpenChanged);
+        m_Subscriptions
+            .Add(m_MenuOpenChanged, OnMenuIsOpenChanged);
         #endif
+
+        // subscribe to events
+        Debug.Log($"[appppp] subscribing to online event");
+        #if UNITY_SERVER
+        m_Subscriptions.Add(m_Online_ServerStarted, OnOnlineStarted);
+        #else
+        m_Subscriptions.Add(m_Online_ClientStarted, OnOnlineStarted);
+        #endif
+        Debug.Log($"[appppp] subscribed to online event");
     }
 
-    void Start() {
-        // load the world state
-        m_Store.Load();
+    void OnDestroy() {
+        m_Subscriptions.Dispose();
     }
 
     async void OnApplicationQuit() {
@@ -55,10 +60,18 @@ sealed class App: MonoBehaviour {
         await m_Store.Save();
     }
 
+    // -- events --
+    /// .
     void OnMenuIsOpenChanged(bool isOpen) {
-        Cursor.lockState = isOpen
-            ? CursorLockMode.None
-            : CursorLockMode.Locked;
+        Cursor.lockState = isOpen ? CursorLockMode.None : CursorLockMode.Locked;
+    }
+
+    /// .
+    void OnOnlineStarted() {
+        // load the world state
+        Debug.Log($"[appppp] loading store");
+        Debug.Log($"[appppp] zzz");
+        m_Store.Load();
     }
 }
 

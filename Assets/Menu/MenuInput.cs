@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace Discone.Ui {
 
-/// the in-game menu
+/// the in-game menu input
 sealed class MenuInput: MonoBehaviour {
     // -- cfg --
     [Header("cfg")]
@@ -27,6 +27,7 @@ sealed class MenuInput: MonoBehaviour {
         m_Actions.Disable();
     }
 
+    // TODO: update these to mirror DebugInput (just make input public)
     // -- queries --
     /// the toggle action
     public InputAction Toggle {
