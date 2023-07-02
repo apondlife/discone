@@ -8,12 +8,18 @@ public class IcecreamFace : MonoBehaviour
     const int k_NumBlinkSprites = 4;
 
     /// index for the neutral face (i.e. open eyes)
-    // TODO: this should be 0... is there a bug in the shader code
-    const int k_NeutralFaceSpriteIndex = 2;
+    const int k_NeutralFaceSpriteIndex = 0;
 
     [Header("config")]
-    [SerializeField] float m_BlinkSpeed;
+    [Tooltip("the time it takes for a blink")]
+    [SerializeField] float m_BlinkTime;
 
+    [Tooltip("minimum time between blinks (in seconds)")]
+    [SerializeField] float m_MinTimeBetweenBlinks;
+    
+    [Tooltip("maximum time between blinks (in seconds)")]
+    [SerializeField] float m_MaxTimeBetweenBlinks;
+    
     [Header("refs")]
     [SerializeField] Renderer m_Renderer;
 
@@ -23,29 +29,21 @@ public class IcecreamFace : MonoBehaviour
     /// the blink animation
     Coroutine m_Blink;
 
-    // -- blink --
-    [Header("cfg/blink")]
-    [Tooltip("the time it takes for a blink")]
-    [SerializeField] float m_BlinkTime = 0.5f;
-
     void Start()
     {
         m_CurrentSpriteIndex = k_NeutralFaceSpriteIndex;
 
-        // TODO: uncomment to turn on blinking
-        // this.DoAfterTime(1f, DoBlink);
+        BlinkAfterRandomInterval();
     }
     // TODO: make fun blink
     void Update()
     {
-        // Debug.Log(" sprite = " + m_CurrentSpriteIndex);
         m_Renderer.material.SetInteger(ShaderProps.CurrentSprite, m_CurrentSpriteIndex);
     }
 
-    
     void BlinkAfterRandomInterval()  {
-        float interval = Random.Range(2, 4);
-        this.DoAfterTime(1f, DoBlink);
+        float interval = Random.Range(m_MinTimeBetweenBlinks, m_MaxTimeBetweenBlinks);
+        this.DoAfterTime(interval, DoBlink);
     }
     
     void DoBlink() {
@@ -60,7 +58,7 @@ public class IcecreamFace : MonoBehaviour
             () => {
                 m_CurrentSpriteIndex = k_NeutralFaceSpriteIndex;
                 m_Blink = null;
-                this.DoAfterTime(1f, DoBlink);
+                BlinkAfterRandomInterval();
             }
         ));
 
