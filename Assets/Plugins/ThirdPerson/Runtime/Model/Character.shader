@@ -97,6 +97,8 @@ Shader "ThirdPerson/Character" {
                 float1 dv = 1 / _SpriteSheet.y;
                 int sprU = fmod(_CurrentSprite, floor(_SpriteSheet.x));
                 int sprV = floor(_CurrentSprite / floor(_SpriteSheet.y));
+                // invert because uv coordinates origin is at bottom left
+                sprV = (_SpriteSheet.y - 1) - sprV;
                 float2 uv = float2(
                     (uv0.x + sprU) * du,
                     (uv0.y + sprV) * dv
