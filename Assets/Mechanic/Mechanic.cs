@@ -62,7 +62,7 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void JumpToNode(string node) {
-        Debug.Log($"[mechnk] jump: {node}");
+        Debug.Log(Tag.Mechanic.F($"jump: {node}"));
         SwitchNode(node);
         StartDialogue();
     }
@@ -74,7 +74,7 @@ sealed class Mechanic: MonoBehaviour {
 
         // and start the new dialogue
         if (string.IsNullOrEmpty(m_Node)) {
-            Debug.LogWarning($"[mechnk] tried to start dialogue w/ no node set");
+            Debug.LogWarning(Tag.Mechanic.F($"tried to start dialogue w/ no node set"));
             return;
         }
 
@@ -99,7 +99,7 @@ sealed class Mechanic: MonoBehaviour {
     // -- c/yarn
     [YarnCommand("then")]
     public void Then(string nodeName) {
-        Debug.Log($"[mechnk] then: {nodeName}");
+        Debug.Log(Tag.Mechanic.F($"then: {nodeName}"));
         SwitchNode(nodeName);
     }
 
@@ -111,7 +111,7 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void OnSetBirthplaceStep(string step) {
-        Debug.Log($"[mechnk] birthplace: {step}");
+        Debug.Log(Tag.Mechanic.F($"birthplace: {step}"));
         m_DialogueRunner.VariableStorage.SetValue(
             MechanicBirthplaceStep.Name,
             step

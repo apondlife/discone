@@ -58,7 +58,7 @@ public sealed class Flowers: MonoBehaviour {
         }
 
         // spawn all flowers
-        Debug.Log($"[worldd] loaded {flowers.Length} flowers, spawning...");
+        Debug.Log(Tag.World.F($"loaded {flowers.Length} flowers, spawning..."));
         foreach (var rec in flowers) {
             CharacterFlower.Server_Spawn(rec);
         }

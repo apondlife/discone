@@ -30,6 +30,8 @@ sealed class App: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
+        Debug.Log(Tag.App.F($"start"));
+
         // move to top-level
         transform.SetParent(null);
 
@@ -40,13 +42,11 @@ sealed class App: MonoBehaviour {
         #endif
 
         // subscribe to events
-        Debug.Log($"[appppp] subscribing to online event");
         #if UNITY_SERVER
         m_Subscriptions.Add(m_Online_ServerStarted, OnOnlineStarted);
         #else
         m_Subscriptions.Add(m_Online_ClientStarted, OnOnlineStarted);
         #endif
-        Debug.Log($"[appppp] subscribed to online event");
     }
 
     void OnDestroy() {
@@ -68,8 +68,6 @@ sealed class App: MonoBehaviour {
     /// .
     void OnOnlineStarted() {
         // load the world state
-        Debug.Log($"[appppp] loading store");
-        Debug.Log($"[appppp] zzz");
         m_Store.Load();
     }
 }
