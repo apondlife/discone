@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 
+namespace Discone {
+
 /// an infinite field
 [ExecuteAlways]
 public sealed class Field: MonoBehaviour {
@@ -40,7 +42,8 @@ public sealed class Field: MonoBehaviour {
     // -- events --
     [Header("events")]
     [Tooltip("when a chunk loads")]
-    [SerializeField] Vector2IntEvent m_LoadedChunk;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_LoadedChunk")]
+    [SerializeField] Vector2IntEvent m_EnteredChunk;
 
     [Tooltip("when a chunk unloads")]
     [SerializeField] Vector2IntEvent m_UnloadedChunk;
@@ -62,6 +65,8 @@ public sealed class Field: MonoBehaviour {
         ClearEditorChunks();
         #endif
 
+        Debug.Log(Tag.World.F($"field init"));
+
         // capture chunk size
         Debug.Assert(m_Chunk.Size.x == m_Chunk.Size.z, "field's terrain chunk was not square");
         m_ChunkSize.Value = m_Chunk.Size.x;
@@ -71,25 +76,16 @@ public sealed class Field: MonoBehaviour {
 
         // bind events
         m_Subscriptions
-            .Add(m_LoadedChunk, CreateChunk)
+            .Add(m_EnteredChunk, CreateChunk)
             .Add(m_UnloadedChunk, DestroyChunk);
     }
 
-    void Awake() {
+    void Start() {
         Init();
     }
 
-    #if UNITY_EDITOR
-    void Start() {
-        // if editor, don't do anything else
-        if (!Application.IsPlaying(gameObject)) {
-            Init();
-        }
-    }
-    #endif
-
     void OnValidate () {
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         m_FieldHeight.SetFloat("_FloorScale", m_FloorScale);
         m_FieldHeight.SetFloat("_MinFloor", m_MinFloor);
         m_FieldHeight.SetFloat("_MaxFloor", m_MaxFloor);
@@ -98,7 +94,7 @@ public sealed class Field: MonoBehaviour {
         m_FieldHeight.SetFloat("_MaxElevation", m_MaxElevation);
 
         ReloadEditorChunks();
-#endif
+        #endif
     }
 
     void OnDestroy() {
@@ -112,6 +108,8 @@ public sealed class Field: MonoBehaviour {
         if (m_Chunks.ContainsKey(coord)) {
             return;
         }
+
+        Debug.Log(Tag.World.F($"create chunk {coord}"));
 
         // add the chunk to the map of active chunks
         var chunk = DequeueChunk();
@@ -139,6 +137,8 @@ public sealed class Field: MonoBehaviour {
         if (!m_Chunks.ContainsKey(coord)) {
             return;
         }
+
+        Debug.Log(Tag.World.F($"destroy chunk {coord}"));
 
         // turn off the chunk
         var chunk = m_Chunks[coord];
@@ -189,4 +189,6 @@ public sealed class Field: MonoBehaviour {
         }
     }
     #endif
+}
+
 }
