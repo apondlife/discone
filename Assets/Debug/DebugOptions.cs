@@ -4,7 +4,6 @@ using UnityAtoms;
 using UnityEngine.InputSystem;
 using System.Reflection;
 using System.Collections;
-using System.Linq;
 
 namespace Discone {
 
@@ -55,14 +54,11 @@ public class DebugOptions: MonoBehaviour {
     }
 
     // -- commands --
-    void Reset() {
-        StartCoroutine(ResetAsync());
-    }
-
     /// reset the game to its initial state
-    IEnumerator ResetAsync() {
+    void Reset() {
         Debug.Log("[de-bug] restarting game");
 
+        // reset atom variables
         var variables = Resources.FindObjectsOfTypeAll(typeof(AtomBaseVariable));
         foreach (AtomBaseVariable variable in variables) {
             var typeName = variable.GetType().Name;
@@ -73,34 +69,19 @@ public class DebugOptions: MonoBehaviour {
             variable.Reset();
         }
 
+        // clear atom event replay buffers
         var events = Resources.FindObjectsOfTypeAll(typeof(AtomEventBase));
         foreach (AtomEventBase evt in events) {
-            var evtType = evt.GetType().BaseType;
-            var replayBufferField = evtType.GetField("_replayBuffer", BindingFlags.NonPublic | BindingFlags.Instance);
+            var replayBufferField = evt.GetType().BaseType.GetField("_replayBuffer", BindingFlags.NonPublic | BindingFlags.Instance);
             var replayBuffer = replayBufferField.GetValue(evt);
             var replayBufferType = replayBuffer.GetType();
             var replayBufferClear = replayBufferType.GetMethod("Clear");
             replayBufferClear.Invoke(replayBuffer, new object[]{});
         }
 
-        var mainScene = SceneManager.GetSceneAt(0);
-        var mainSceneName = mainScene.name;
-
-        var unload = SceneManager.UnloadSceneAsync(mainScene);
-        while (!unload.isDone) {
-            yield return unload;
-        }
-
-        var load = SceneManager.LoadSceneAsync(mainSceneName, LoadSceneMode.Additive);
-        while (!load.isDone) {
-            yield return load;
-        }
-
-        // var online = GameObject.FindObjectOfType<Online>();
-        // online.StopHost();
-        // this.DoAfterTime(1, () => {
-            // online.ServerChangeScene(currScene.name);
-        // });
+        // restart online, which will restart the game
+        var online = GameObject.FindObjectOfType<Online>();
+        online.Restart();
     }
 
     /// spawn the character at the scene camera's position

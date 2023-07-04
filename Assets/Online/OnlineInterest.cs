@@ -45,6 +45,10 @@ public class OnlineInterest: InterestManagement {
     // -- lifecycle --
     [ServerCallback]
     void Update() {
+        if (m_Entities.Value == null) {
+            return;
+        }
+
         // rebuild interest on an interval
         if (NetworkTime.time >= m_LastRebuildTime + m_RebuildInterval) {
             // see if we have any players
@@ -88,7 +92,7 @@ public class OnlineInterest: InterestManagement {
     public override void Reset() {
         base.Reset();
 
-        Debug.Log($"[interest] reset state");
+        Debug.Log($"[intrst] reset state");
 
         m_Interests.Clear();
         m_SimulatedCharacters.Clear();
@@ -285,7 +289,7 @@ public class OnlineInterest: InterestManagement {
         var id = identity.netId;
         if (id == 0) {
             if (!m_HasLoggedNoIdWarning) {
-                Debug.LogWarning("[interest] identity has not been initialized yet.");
+                Debug.LogWarning("[intrst] identity has not been initialized yet.");
                 m_HasLoggedNoIdWarning = true;
             }
 
@@ -385,7 +389,7 @@ public class OnlineInterest: InterestManagement {
         var type = c.GetType();
         if (!m_UninterestingTypes.Contains(type)) {
             m_UninterestingTypes.Add(type);
-            Debug.LogWarning($"[interest] interest in object of unknown type: {c.name}");
+            Debug.LogWarning($"[intrst] interest in object of unknown type: {c.name}");
         }
     }
     #endif

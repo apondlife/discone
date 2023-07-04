@@ -75,11 +75,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12cb46ad0fede984fb5831dd9cae46c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 0
+  dontDestroyOnLoad: 1
   runInBackground: 1
   autoStartServerBuild: 0
   serverTickRate: 30
-  offlineScene: Assets/Main.unity
+  offlineScene: Assets/Main_Offline.unity
   onlineScene: Assets/Main.unity
   transport: {fileID: 1244464915308659202}
   networkAddress: 72.80.180.97

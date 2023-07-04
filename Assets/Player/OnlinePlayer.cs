@@ -107,8 +107,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         Debug.Log("[player] starting local player");
 
         // bind to local player events
-        m_Subscriptions
-            .Add(m_SwitchCharacter, OnSwitchCharacter);
+        m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
 
         // destroy your own star
         var target = GetComponentInChildren<SkyTarget>();
@@ -119,8 +118,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // TODO: loading screen?
         if (m_IsHost) {
             // replay buffer should make sure this gets called again every time
-            m_Subscriptions
-                .Add(m_Store.LoadFinished, OnLoadFinished);
+            m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
         } else {
             OnLoadFinished();
         }
@@ -130,7 +128,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     // -- commands --
-
     /// creates a given charater at the given transform
     public void SpawnCharacterAtPoint(CharacterKey key, Transform t) {
         // spawn a new character

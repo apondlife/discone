@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace Discone {
 
+// TODO: code generate this stuff; unity can maybe kinda do this out of the box
 /// the debug input
 sealed class DebugInput: MonoBehaviour {
     // -- cfg --

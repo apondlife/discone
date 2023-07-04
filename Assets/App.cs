@@ -36,8 +36,7 @@ sealed class App: MonoBehaviour {
         // hide cursor in build
         #if !UNITY_EDITOR
         Cursor.lockState = CursorLockMode.Locked;
-        m_Subscriptions
-            .Add(m_MenuOpenChanged, OnMenuIsOpenChanged);
+        m_Subscriptions.Add(m_MenuOpenChanged, OnMenuIsOpenChanged);
         #endif
 
         // subscribe to events
