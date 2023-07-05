@@ -35,11 +35,6 @@ public class NeueArtfulDialogueView : DialogueViewBase
     TextColor textColorer;
     Color32 color;
 
-    // -- events --
-    [Header("events")]
-    [Tooltip("when the next line runs")]
-    [SerializeField] VoidEvent m_RunNextLine;
-
     [SerializeField] NeueArtfulBox[] boxes;
 
     // -- lifecycle --
@@ -82,7 +77,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
         // this just gets rid of the render that's queue'd by setting the text
         currentBox.lineText.ForceMeshUpdate();
 
-        
+
 
         foreach (MarkupAttribute attr in dialogueLine.TextWithoutCharacterName.Attributes) {
             if (attr.Name == "em") {
@@ -117,7 +112,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
 
             if (textInfo.characterCount == dialogueLine.TextWithoutCharacterName.Text.Length) {
                 tryBox.gameObject.SetActive(true);
-                
+
                 tryBox.lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
                 tryBox.currentlyUsed = true;
 
@@ -196,7 +191,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
 
             // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
             //lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
-            
+
         }
         lineText.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
     }
@@ -238,7 +233,7 @@ public class NeueArtfulDialogueView : DialogueViewBase
 
         }
         return c0;
-    } 
+    }
 
 
 
@@ -249,16 +244,5 @@ public class NeueArtfulDialogueView : DialogueViewBase
         canvasGroup.interactable = false;
         canvasGroup.alpha = 0;
         onDismissalComplete();
-    }
-
-    // -- events --
-    /// when the next line runs
-    void OnRunNextLine() {
-        // we're not actually displaying a line. no-op.
-        if (currentLine == null) {
-            return;
-        }
-
-        ReadyForNextLine();
     }
 }

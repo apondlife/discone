@@ -19,11 +19,6 @@ public class SubtitleShakyDialogueView : DialogueViewBase
     [SerializeField]
     TextShakeChars textAnimator;
 
-    // -- events --
-    [Header("events")]
-    [Tooltip("when the next line runs")]
-    [SerializeField] VoidEvent m_RunNextLine;
-
     // -- lifecycle --
     void Start() {
         canvasGroup.alpha = 0;
@@ -63,16 +58,5 @@ public class SubtitleShakyDialogueView : DialogueViewBase
         canvasGroup.alpha = 0;
         canvasGroup.blocksRaycasts = false;
         onDismissalComplete();
-    }
-
-    // -- events --
-    /// when the next line runs
-    void OnRunNextLine() {
-        // we're not actually displaying a line. no-op.
-        if (currentLine == null) {
-            return;
-        }
-
-        ReadyForNextLine();
     }
 }

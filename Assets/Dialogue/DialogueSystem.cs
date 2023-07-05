@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 using Yarn.Unity;
 using UnityAtoms.BaseAtoms;
 using UnityEngine.Serialization;
@@ -95,7 +94,7 @@ public class DialogueSystem: MonoBehaviour {
     /// advance dialgoue to the next line
     void RunNextLine() {
         Debug.Log($"[dialog] advance line <{m_ActiveDialogue.NodeTitle}>");
-        yarnDialogueRunner.OnViewUserIntentNextLine();
+        yarnDialogueRunner.OnViewRequestedInterrupt();
     }
 
     /// complete dialgoue with the current character
