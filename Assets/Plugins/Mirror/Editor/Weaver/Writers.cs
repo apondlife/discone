@@ -115,7 +115,9 @@ namespace Mirror.Weaver
                 return GenerateCollectionWriter(variableReference, elementType, nameof(NetworkWriterExtensions.WriteList), ref WeavingFailed);
             }
 
-            if (variableReference.IsDerivedFrom<NetworkBehaviour>())
+            // handle both NetworkBehaviour and inheritors.
+            // fixes: https://github.com/MirrorNetworking/Mirror/issues/2939
+            if (variableReference.IsDerivedFrom<NetworkBehaviour>() || variableReference.Is<NetworkBehaviour>())
             {
                 return GetNetworkBehaviourWriter(variableReference);
             }
@@ -250,7 +252,6 @@ namespace Mirror.Weaver
         // Find all fields in type and write them
         bool WriteAllFields(TypeReference variable, ILProcessor worker, ref bool WeavingFailed)
         {
-            uint fields = 0;
             foreach (FieldDefinition field in variable.FindAllPublicFields())
             {
                 MethodReference writeFunc = GetWriteFunc(field.FieldType, ref WeavingFailed);
@@ -259,7 +260,6 @@ namespace Mirror.Weaver
 
                 FieldReference fieldRef = assembly.MainModule.ImportReference(field);
 
-                fields++;
                 worker.Emit(OpCodes.Ldarg_0);
                 worker.Emit(OpCodes.Ldarg_1);
                 worker.Emit(OpCodes.Ldfld, fieldRef);

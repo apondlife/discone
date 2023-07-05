@@ -107,11 +107,11 @@ public class Online: NetworkManager {
 
     // -- l/client
     /// [Client]
-    public override void OnClientError(Exception exception) {
-        base.OnClientError(exception);
+    public override void OnClientError(TransportError error, string reason) {
+        base.OnClientError(error, reason);
 
-        Debug.Log(Tag.Online.F($"client error: {exception}"));
-        m_ShowError?.Raise(Tag.Online.F($"client error: {exception.Message}"));
+        Debug.Log(Tag.Online.F($"client error: {error}@{reason}"));
+        m_ShowError?.Raise(Tag.Online.F($"client error: {error}@{reason}"));
     }
 
     /// [Client]
@@ -190,13 +190,13 @@ public class Online: NetworkManager {
     }
 
     /// [Server]
-    public override void OnServerConnect(NetworkConnection conn) {
+    public override void OnServerConnect(NetworkConnectionToClient conn) {
         base.OnServerConnect(conn);
         Debug.Log(Tag.Online.F($"connect <id={conn.connectionId} addr={conn.address}>"));
     }
 
     /// [Server]
-    public override void OnServerDisconnect(NetworkConnection conn) {
+    public override void OnServerDisconnect(NetworkConnectionToClient conn) {
         Debug.Log(Tag.Online.F($"disconnect <id={conn.connectionId} addr={conn.address}>"));
 
         // give player a chance to clean up before being destroyed
@@ -301,7 +301,7 @@ public class Online: NetworkManager {
     // -- events --
     [Server]
     void Server_OnCreatePlayer(
-        NetworkConnection conn,
+        NetworkConnectionToClient conn,
         CreatePlayerMessage _,
         int channelId
     ) {

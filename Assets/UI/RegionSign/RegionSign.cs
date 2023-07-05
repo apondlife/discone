@@ -46,7 +46,7 @@ sealed class RegionSign: MonoBehaviour {
 
     // -- props --
     /// the local player's current region
-    Region m_CurrentRegion = null;
+    Region m_CurrentRegion;
 
     /// if the region sign is visible
     bool m_IsVisible;

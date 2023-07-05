@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Mirror
 {
+    [AddComponentMenu("Network/ Interest Management/ Scene/Scene Interest Management")]
     public class SceneInterestManagement : InterestManagement
     {
         // Use Scene instead of string scene.name because when additively
@@ -15,6 +17,7 @@ namespace Mirror
 
         HashSet<Scene> dirtyScenes = new HashSet<Scene>();
 
+        [ServerCallback]
         public override void OnSpawned(NetworkIdentity identity)
         {
             Scene currentScene = identity.gameObject.scene;
@@ -29,12 +32,19 @@ namespace Mirror
             objects.Add(identity);
         }
 
+        [ServerCallback]
         public override void OnDestroyed(NetworkIdentity identity)
         {
-            Scene currentScene = lastObjectScene[identity];
-            lastObjectScene.Remove(identity);
-            if (sceneObjects.TryGetValue(currentScene, out HashSet<NetworkIdentity> objects) && objects.Remove(identity))
-                RebuildSceneObservers(currentScene);
+            // Don't RebuildSceneObservers here - that will happen in Update.
+            // Multiple objects could be destroyed in same frame and we don't
+            // want to rebuild for each one...let Update do it once.
+            // We must add the current scene to dirtyScenes for Update to rebuild it.
+            if (lastObjectScene.TryGetValue(identity, out Scene currentScene))
+            {
+                lastObjectScene.Remove(identity);
+                if (sceneObjects.TryGetValue(currentScene, out HashSet<NetworkIdentity> objects) && objects.Remove(identity))
+                    dirtyScenes.Add(currentScene);
+            }
         }
 
         // internal so we can update from tests
@@ -47,9 +57,11 @@ namespace Mirror
             //     add new to dirty
             foreach (NetworkIdentity identity in NetworkServer.spawned.Values)
             {
-                Scene currentScene = lastObjectScene[identity];
+                if (!lastObjectScene.TryGetValue(identity, out Scene currentScene))
+                    continue;
+
                 Scene newScene = identity.gameObject.scene;
-                if (newScene == currentScene) 
+                if (newScene == currentScene)
                     continue;
 
                 // Mark new/old scenes as dirty so they get rebuilt
@@ -87,12 +99,12 @@ namespace Mirror
                     NetworkServer.RebuildObservers(netIdentity, false);
         }
 
-        public override bool OnCheckObserver(NetworkIdentity identity, NetworkConnection newObserver)
+        public override bool OnCheckObserver(NetworkIdentity identity, NetworkConnectionToClient newObserver)
         {
             return identity.gameObject.scene == newObserver.identity.gameObject.scene;
         }
 
-        public override void OnRebuildObservers(NetworkIdentity identity, HashSet<NetworkConnection> newObservers, bool initialize)
+        public override void OnRebuildObservers(NetworkIdentity identity, HashSet<NetworkConnectionToClient> newObservers)
         {
             if (!sceneObjects.TryGetValue(identity.gameObject.scene, out HashSet<NetworkIdentity> objects))
                 return;

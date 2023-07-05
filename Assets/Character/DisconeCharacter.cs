@@ -206,7 +206,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_RemoteState = state;
         m_LastSync = NetworkTime.time;
 
-        if (hasAuthority) {
+        if (isOwned) {
             Server_SendState(state, m_LastSync);
         }
     }
@@ -270,9 +270,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Character.ForceState(state);
     }
 
-    /// mark this character as unavaialble; only call on the server
+    /// mark this character as unavailable; only call on the server
     [Server]
-    public void Server_AssignClientAuthority(NetworkConnection connection) {
+    public void Server_AssignClientAuthority(NetworkConnectionToClient connection) {
         m_IsAvailable = false;
         netIdentity.AssignClientAuthority(connection);
     }

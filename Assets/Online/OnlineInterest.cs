@@ -100,10 +100,11 @@ public class OnlineInterest: InterestManagement {
         m_SimulatedChanged = false;
     }
 
+
     /// [Server]
     public override bool OnCheckObserver(
         NetworkIdentity identity,
-        NetworkConnection newObserver
+        NetworkConnectionToClient newObserver
     ) {
         var player = FindOrCreateInterestById(newObserver.identity) as PlayerInterest;
         if (player == null) {
@@ -116,8 +117,7 @@ public class OnlineInterest: InterestManagement {
     /// [Server]
     public override void OnRebuildObservers(
         NetworkIdentity identity,
-        HashSet<NetworkConnection> newObservers,
-        bool initialize
+        HashSet<NetworkConnectionToClient> newObservers
     ) {
         // check which players can see the identity
         var players = m_Entities.Value.Players.All;
@@ -392,5 +392,5 @@ public class OnlineInterest: InterestManagement {
             Debug.LogWarning($"[intrst] interest in object of unknown type: {c.name}");
         }
     }
-    #endif
+#endif
 }
