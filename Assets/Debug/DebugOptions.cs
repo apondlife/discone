@@ -1,9 +1,7 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityAtoms;
 using UnityEngine.InputSystem;
 using System.Reflection;
-using System.Collections;
 
 namespace Discone {
 
@@ -48,9 +46,10 @@ public class DebugOptions: MonoBehaviour {
         m_Input = GetComponent<DebugInput>();
 
         // bind events
-        m_Subscriptions
-            .Add(m_Input.Reset, OnResetPressed)
-            .Add(m_Input.SpawnCharacter, OnSpawnCharacterPressed);
+        m_Subscriptions.Add(m_Input.Reset, OnResetPressed);
+        #if UNITY_EDITOR
+        m_Subscriptions.Add(m_Input.SpawnCharacter, OnSpawnCharacterPressed);
+        #endif
     }
 
     // -- commands --
@@ -84,9 +83,9 @@ public class DebugOptions: MonoBehaviour {
         online.Restart();
     }
 
+    #if UNITY_EDITOR
     /// spawn the character at the scene camera's position
     void SpawnCharacterAtSceneView() {
-        #if UNITY_EDITOR
         // get the editor camera
         var scene = UnityEditor.SceneView.lastActiveSceneView;
         if (scene == null) {
@@ -101,7 +100,6 @@ public class DebugOptions: MonoBehaviour {
         var t = camera.transform;
 
         SpawnCharacterAtTransform(t);
-        #endif
     }
 
     /// spawn a character at the transform position
@@ -118,6 +116,7 @@ public class DebugOptions: MonoBehaviour {
 
         player.SpawnCharacterAtPoint(m_CharacterKey, t);
     }
+    #endif
 
     // -- events --
     /// .
@@ -125,10 +124,12 @@ public class DebugOptions: MonoBehaviour {
         Reset();
     }
 
+    #if UNITY_EDITOR
     /// .
     void OnSpawnCharacterPressed(InputAction.CallbackContext _) {
         SpawnCharacterAtSceneView();
     }
+    #endif
 }
 
 }
