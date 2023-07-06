@@ -3,24 +3,21 @@ using UnityEngine;
 using Yarn.Unity;
 using Yarn.Markup;
 using TMPro;
-using UnityAtoms.BaseAtoms;
 
-public class SubtitleShakyDialogueView : DialogueViewBase
-{
-
+public class SubtitleShakyDialogueView : DialogueViewBase {
     [SerializeField]
     internal CanvasGroup canvasGroup;
 
     [SerializeField]
-    internal TextMeshProUGUI lineText = null;
+    internal TextMeshProUGUI lineText;
 
-    LocalizedLine currentLine = null;
+    LocalizedLine currentLine;
 
     [SerializeField]
     TextShakeChars textAnimator;
 
     // -- lifecycle --
-    void Start() {
+    void Awake() {
         canvasGroup.alpha = 0;
     }
 
@@ -47,8 +44,6 @@ public class SubtitleShakyDialogueView : DialogueViewBase
         canvasGroup.interactable = true;
         canvasGroup.alpha = 1;
         canvasGroup.blocksRaycasts = true;
-
-        onDialogueLineFinished();
     }
 
     public override void DismissLine(Action onDismissalComplete) {

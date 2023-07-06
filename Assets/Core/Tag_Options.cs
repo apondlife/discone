@@ -10,6 +10,7 @@ partial record Tag {
     public static Tag Player   = new Tag("player", "#ff00aa");
     public static Tag Mechanic = new Tag("mechnk", "#00aabb");
     public static Tag Region   = new Tag("region", "#112211");
+    public static Tag Dialog   = new Tag("dialog", "#bbccaa");
 }
 
 }
