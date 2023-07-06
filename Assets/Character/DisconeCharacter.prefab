@@ -1,5 +1,139 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6525782890341790754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6981698257009597168}
+  - component: {fileID: 2425679652107311929}
+  - component: {fileID: 5615860732922796546}
+  - component: {fileID: 8205040218340086666}
+  m_Layer: 6
+  m_Name: Distortion
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6981698257009597168
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6525782890341790754}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.21911682, y: 0.21911682, z: 0.21911682}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5294547428429929720}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -60.344}
+--- !u!33 &2425679652107311929
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6525782890341790754}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &5615860732922796546
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6525782890341790754}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8205040218340086666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6525782890341790754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f1d68bc71f69c642971a7c7c53225f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Top: {x: 0, y: 3.5, z: 0}
+  m_Intensity: 1
+  m_NegativeScale: 1
+  m_PositiveScale: 1
+  m_JumpSquat_Intensity:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2.4881399
+        outSlope: 2.4881399
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.052630637
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0.052549157
+        outSlope: 0.052549157
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.15103072
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 1
+      Max: 0.1
+  m_VerticalAcceleration_StretchIntensity: 0.0069
+  m_VerticalAcceleration_SquashIntensity: 1.5
+  m_VerticalAcceleration_IntensitySpeed: 1020
+  m_VerticalAcceleration_IntensityDamp: 0.64
+  m_IntensitySpeed: 1.6302729e-16
+  destIntensity: 1
 --- !u!1 &6559145621683823563
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,7 +464,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1233429247980680919, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2505435118483560403, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
@@ -348,9 +482,21 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4841858408260341333, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5851062847133453444, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6542079319371145381, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_Name
       value: LookAtTarget
+      objectReference: {fileID: 0}
+    - target: {fileID: 6883150959805328182, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_RootOrder
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7238456180043096080, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_LocalPosition.y
@@ -520,17 +666,6 @@ PrefabInstance:
     - {fileID: 7614967429340073445, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
     - {fileID: 7614967429340073444, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
---- !u!114 &3215011315793297274 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7736594804511770898, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
-  m_PrefabInstance: {fileID: 5171227752169666152}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7631944678935784368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc3d0067bd335fb419b025c67fd4c1df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &3345656352466467715 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7614967429340073451, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
@@ -569,6 +704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6679b1258e4fb4827bfe39d0b0135b66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   m_GrabRadius: 5
@@ -576,7 +712,7 @@ MonoBehaviour:
     m_Phase:
       Name: 
     m_IsLogging: 0
-    m_Tunables:
+    m_Tuning:
       m_Delay: 0.5
       m_SmellDuration: 0.97
       m_PlantDuration: 4.3
@@ -584,7 +720,7 @@ MonoBehaviour:
     m_Phase:
       Name: 
     m_IsLogging: 0
-    m_Tunables:
+    m_Tuning:
       LoadCastMaxTime: 30
       LoadCastPointTime: 1
       LoadCastPointDistance: 35
@@ -621,6 +757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 221dacf21deba4905a57531c110be896, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   m_WrapMinY: -4000
@@ -637,6 +774,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0eee887177deb46d0a99a80352fa4831, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   m_Key: 0
@@ -665,8 +803,8 @@ MonoBehaviour:
     Jumps: 0
     CoyoteFrames: 0
     CooldownFrames: 0
-    JumpTunablesJumpIndex: 0
-    JumpTunablesIndex: 0
+    JumpTuningIndex: 0
+    JumpTuningJumpIndex: 0
     Events:
       m_Events: 0
     CollisionState:
@@ -713,9 +851,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 0
+  _assetId: 857494985
   serverOnly: 0
   visible: 0
-  m_AssetId: 5af35ff3d33824a088c62a008a1f654d
   hasSpawned: 0
 --- !u!114 &2828893429782085707
 MonoBehaviour:
@@ -729,6 +867,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e100a10352861a48b680ccc7ed07f19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   m_CurrentHat: none
@@ -763,7 +902,7 @@ MonoBehaviour:
   _unityEventResponse:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3215011315793297274}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ThirdPerson.CameraFollowTarget, Assembly-CSharp-firstpass
         m_MethodName: SetInvertX
         m_Mode: 0
@@ -801,7 +940,7 @@ MonoBehaviour:
   _unityEventResponse:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3215011315793297274}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ThirdPerson.CameraFollowTarget, Assembly-CSharp-firstpass
         m_MethodName: SetInvertY
         m_Mode: 0
