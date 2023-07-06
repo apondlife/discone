@@ -93,7 +93,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
 
         // cache list of simulated children -- anything that's active in the prefab
-        // TODO: this if for the camera, it's hacky right now
+        // TODO: this is for the camera, it's hacky right now
         m_Simulated = Enumerable.Range(0, transform.childCount)
             .Select((i) => transform.GetChild(i).gameObject)
             .Where((c) => c.activeSelf)

@@ -48,9 +48,9 @@ public class Player: MonoBehaviour {
     /// drive a particular character
     public void Drive(Character character) {
         var src = m_CurrentCharacter;
-        if(src != null) {
+        if (src != null) {
             src.Drive(null);
-            // TODO: i don't like this
+            // TODO(fun): i don't like this
             src.GetComponentInChildren<ThirdPerson.Camera>(true)?.gameObject.SetActive(false);
 
             m_OnDriveStop?.Invoke(src);
@@ -59,7 +59,7 @@ public class Player: MonoBehaviour {
         var dst = character;
         if (dst != null) {
             dst.Drive(m_InputSource);
-            // TODO: i don't like this
+            // TODO(fun): i don't like this
             dst.GetComponentInChildren<ThirdPerson.Camera>(true)?.gameObject.SetActive(true);
 
             m_OnDriveStart?.Invoke(dst);
