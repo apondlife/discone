@@ -32,7 +32,7 @@ public class Player: MonoBehaviour {
 
     void Update() {
         if (m_CurrentCharacter != null) {
-            transform.position = m_CurrentCharacter.transform.position;
+            SyncCharacter();
         }
     }
 
@@ -65,7 +65,14 @@ public class Player: MonoBehaviour {
             m_OnDriveStart?.Invoke(dst);
         }
 
+        // set current character and ensure initial state is correct
         m_CurrentCharacter = dst;
+        SyncCharacter();
+    }
+
+    /// sync state with character
+    public void SyncCharacter() {
+        transform.position = m_CurrentCharacter.transform.position;
     }
 
     // -- queries --

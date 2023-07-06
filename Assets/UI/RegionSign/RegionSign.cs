@@ -142,7 +142,7 @@ sealed class RegionSign: MonoBehaviour {
             return;
         }
 
-        Debug.Log(Tag.Region.F($"show sign {next?.DisplayName}"));
+        Debug.Log(Tag.Region.F($"show sign {prev?.DisplayName} -> {next?.DisplayName}"));
 
         m_CanvasGroup.alpha = 1f;
         m_Text.SetText(next.DisplayName);
