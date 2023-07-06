@@ -4,8 +4,7 @@
 
 title: Intro
 ---
-hello? wow. how did you already know to hold "right or left trigger" to,
-<<wait 60>>
+hello? wow. how did you already know to hold "right or left trigger" to, #last
 ===
 
 title: IntroInput
@@ -15,8 +14,7 @@ title: IntroInput
 close your eyes?
 <<wait 6>>
 
-and then release "right or left trigger" to open them?
-<<wait 60>>
+and then release "right or left trigger" to open them? #last
 ===
 
 title: IntroEnd
@@ -44,7 +42,6 @@ you can hold "right or left trigger"
 
 title: StartThanks
 ---
-<<wait 2>>
 <<then Mechanic Birthplace>>
 
 ah, thanks for holding my “button”!
@@ -53,8 +50,7 @@ ah, thanks for holding my “button”!
 sorry to bother you there, earlier.
 <<wait 3>>
 
-i'm always here if you want to talk.
-<<wait 60>>
+i'm always here if you want to talk. #last
 ===
 
 // ----------------
@@ -112,8 +108,7 @@ if you mash the "jump button" as you approach...
 it,
 <<wait 1>>
 
-i think you can do it
-<<wait 60>>
+i think you can do it #last
 ===
 
 title: BirthplaceStair
@@ -138,8 +133,7 @@ title: BirthplaceStair_Born
 <<set $BirthplaceStair_Born_Visited to true>>
 <<wait 2>>
 
-i remember when this stair was born.
-<<wait 60>>
+i remember when this stair was born. #last
 ===
 
 title: BirthplaceWall
@@ -170,8 +164,7 @@ title: BirthplaceWall_Help
 to hold the "jump button", along
 <<wait 2>>
 
-like any other floor.
-<<wait 60>>
+like any other floor. #last
 ===
 
 title: BirthplaceTunnel
@@ -185,8 +178,7 @@ title: BirthplaceTunnel_See
 ---
 <<wait 2>>
 
-how are your feet?
-<<wait 60>>
+how are your feet? #last
 ===
 
 title: BirthplaceExit
@@ -207,8 +199,7 @@ title: IntroReal
 this is the place...
 <<wait 2>>
 
-do you know what you're doing here?
-<<wait 60>>
+do you know what you're doing here? #last
 ===
 
 title: IntroRealNormal
@@ -219,8 +210,7 @@ title: IntroRealNormal
 don't worry if you don't, that's normal.
 <<wait 2>>
 
-we never really do.
-<<wait 60>>
+we never really do. #last
 ===
 
 title: IntroRealSoon
@@ -234,8 +224,7 @@ but anyways i'm sure you'll figure it out...
 what you're doing here
 <<wait 2>>
 
-soon.
-<<wait  60>>
+soon. #last
 ===
 
 title: IntroRealAsk
@@ -243,8 +232,7 @@ title: IntroRealAsk
 <<wait 2>>
 <<then Mechanic IntroRealTell>>
 
-don't ask me though, i couldn't tell you.
-<<wait  60>>
+don't ask me though, i couldn't tell you. #last
 ===
 
 title: IntroRealTell
@@ -252,8 +240,7 @@ title: IntroRealTell
 <<wait 2>>
 <<then Mechanic IntroRealMechanic>>
 
-i can't tell you, even.
-<<wait  60>>
+i can't tell you, even. #last
 ===
 
 title: IntroRealMechanic
@@ -270,8 +257,7 @@ introduce myself. you could call me
 “the mechanic”,
 <<wait 2>>
 
-if you ever get the chance =).
-<<wait  60>>
+if you ever get the chance =). #last
 ===
 
 title: IntroRealWant
@@ -279,8 +265,7 @@ title: IntroRealWant
 <<wait 2>>
 <<then Mechanic IntroRealEyes>>
 
-but if you do want to hear me, i'm usually around here.
-<<wait  60>>
+but if you do want to hear me, i'm usually around here. #last
 ===
 
 title: IntroRealEyes
@@ -288,8 +273,7 @@ title: IntroRealEyes
 <<wait 2>>
 <<then Mechanic IntroRealEnd>>
 
-if you don't, well, close your eyes i guess ;).
-<<wait  60>>
+if you don't, well, close your eyes i guess ;). #last
 ===
 
 title: IntroRealEnd
