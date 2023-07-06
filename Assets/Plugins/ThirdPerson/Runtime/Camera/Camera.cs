@@ -6,7 +6,6 @@ using Cinemachine;
 namespace ThirdPerson {
 
 /// a follow target that rotates around the player
-// TODO: convert into camera.cs
 public class Camera: MonoBehaviour {
     // -- cfg --
     [Tooltip("the tuning parameters for the camera")]
