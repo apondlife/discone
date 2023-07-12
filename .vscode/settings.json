@@ -1,9 +1,8 @@
 {
-    "files.exclude":
-    {
+    "todo-tree.tree.scanMode": "workspace only",
+    "files.exclude": {
         "**/.DS_Store":true,
         "**/.git":true,
-        "**/.gitignore":true,
         "**/.gitmodules":true,
         "**/*.booproj":true,
         "**/*.pidb":true,
@@ -51,7 +50,8 @@
         "Obj/":true,
         "ProjectSettings/":true,
         "temp/":true,
-        "Temp/":true
+        "Temp/":true,
+        "*.csproj": true,
+        "*.sln": true
     },
-    "todo-tree.tree.scanMode": "workspace only"
 }
