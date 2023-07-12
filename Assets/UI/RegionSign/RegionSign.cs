@@ -46,7 +46,7 @@ sealed class RegionSign: MonoBehaviour {
 
     // -- props --
     /// the local player's current region
-    Region m_CurrentRegion = null;
+    Region m_CurrentRegion;
 
     /// if the region sign is visible
     bool m_IsVisible;
@@ -63,6 +63,7 @@ sealed class RegionSign: MonoBehaviour {
         m_CanvasGroup.alpha = 0f;
         m_LetterboxAmount.Value = 0f;
         m_DissolveAmount.Value = 0f;
+        m_CurrentRegion = null;
 
         // bind events
         m_Subscriptions
@@ -126,20 +127,22 @@ sealed class RegionSign: MonoBehaviour {
         var prev = m_CurrentRegion;
 
         var showsRegionSign = (
-            // don't show sign on first region
+            // don't show first region sign
             prev != null &&
             // don't show if still in cooldown for current region
-            (prev == next && time - m_CurrentRegionEnterTime > m_RepeatCooldown)
+            (prev != next || time - m_CurrentRegionEnterTime < m_RepeatCooldown)
         );
 
         m_CurrentRegion = next;
+
+        // debounce current region enter time
         m_CurrentRegionEnterTime = time;
 
         if(!showsRegionSign) {
             return;
         }
 
-        Debug.Log($"[region] show sign {next?.DisplayName}");
+        Debug.Log(Tag.Region.F($"show sign {prev?.DisplayName} -> {next?.DisplayName}"));
 
         m_CanvasGroup.alpha = 1f;
         m_Text.SetText(next.DisplayName);

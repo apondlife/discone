@@ -215,7 +215,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2505435118483560403}
-  - component: {fileID: 5668836943055778505}
+  - component: {fileID: 8270296780509657005}
   m_Layer: 6
   m_Name: Camera
   m_TagString: Untagged
@@ -241,7 +241,7 @@ Transform:
   m_Father: {fileID: 7614967429340073451}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5668836943055778505
+--- !u!114 &8270296780509657005
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -250,9 +250,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 1114928914988804812}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc19de46a7935eb4a93b7f51484e68e2, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Script: {fileID: 11500000, guid: cc3d0067bd335fb419b025c67fd4c1df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Tuning: {fileID: 11400000, guid: 3f4f38b8f078747a5a3036a8b6e5c6e8, type: 2}
+  m_Camera: {fileID: 1289189456}
+  m_Model: {fileID: 1061133086809451152}
+  m_Follow: {fileID: 7435246552485848647}
+  m_Destination: {fileID: 3673039484627793572}
+  m_LookAtTarget: {fileID: 3032161264613087381}
+  m_Input: {fileID: 4626327253638621584, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
+  m_FollowSystem:
+    m_Phase:
+      Name: 
+    m_IsLogging: 0
+  m_CollisionSystem:
+    m_Phase:
+      Name: 
+    m_IsLogging: 0
+  m_ZoomSystem:
+    m_Phase:
+      Name: 
+    m_IsLogging: 0
+  m_TiltSystem:
+    m_Phase:
+      Name: 
+    m_IsLogging: 0
 --- !u!1 &3326463586402868696
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,7 +285,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7435246552485848647}
-  - component: {fileID: 7736594804511770898}
   m_Layer: 0
   m_Name: Follow
   m_TagString: Untagged
@@ -286,40 +308,6 @@ Transform:
   m_Father: {fileID: 2505435118483560403}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7736594804511770898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3326463586402868696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc3d0067bd335fb419b025c67fd4c1df, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  m_Tuning: {fileID: 11400000, guid: 3f4f38b8f078747a5a3036a8b6e5c6e8, type: 2}
-  m_Camera: {fileID: 1289189456}
-  m_Model: {fileID: 1061133086809451152}
-  m_LookAtTarget: {fileID: 3032161264613087381}
-  m_Destination: {fileID: 3673039484627793572}
-  m_Input: {fileID: 4626327253638621584, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
-  m_FollowSystem:
-    m_Phase:
-      Name:
-    m_IsLogging: 0
-  m_CollisionSystem:
-    m_Phase:
-      Name:
-    m_IsLogging: 0
-  m_ZoomSystem:
-    m_Phase:
-      Name:
-    m_IsLogging: 0
-  m_TiltSystem:
-    m_Phase:
-      Name:
-    m_IsLogging: 0
 --- !u!1 &3760618876817645504
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +395,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   m_VerticalOffset_MaxHeight: 5
   m_Target: {fileID: 5081405195371850226}
-  m_Follow: {fileID: 7736594804511770898}
+  m_Follow: {fileID: 8270296780509657005}
 --- !u!1 &6542079319371145381
 GameObject:
   m_ObjectHideFlags: 0
@@ -625,6 +613,7 @@ MonoBehaviour:
     m_Phase:
       Name: Active
     m_IsLogging: 0
+  m_Model: {fileID: 7250430580801210356}
   m_Controller:
     m_CollisionMask:
       serializedVersion: 2
@@ -667,7 +656,6 @@ MonoBehaviour:
     m_DrawCasts: 1
     m_DrawCastCapsule: 1
     m_DrawHits: 1
-  m_Model: {fileID: 7250430580801210356}
   m_ShowGizmos: 0
 --- !u!136 &1972163625
 CapsuleCollider:

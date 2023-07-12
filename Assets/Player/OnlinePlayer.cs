@@ -104,11 +104,10 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
 
-        Debug.Log("[player] starting local player");
+        Debug.Log(Tag.Player.F($"starting local player"));
 
         // bind to local player events
-        m_Subscriptions
-            .Add(m_SwitchCharacter, OnSwitchCharacter);
+        m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
 
         // destroy your own star
         var target = GetComponentInChildren<SkyTarget>();
@@ -119,8 +118,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // TODO: loading screen?
         if (m_IsHost) {
             // replay buffer should make sure this gets called again every time
-            m_Subscriptions
-                .Add(m_Store.LoadFinished, OnLoadFinished);
+            m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
         } else {
             OnLoadFinished();
         }
@@ -130,7 +128,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     // -- commands --
-
     /// creates a given charater at the given transform
     public void SpawnCharacterAtPoint(CharacterKey key, Transform t) {
         // spawn a new character
@@ -215,7 +212,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     void Server_DriveCharacter(DisconeCharacter dstChar) {
         // ensure we have a destination character
         if (dstChar == null) {
-            Debug.LogError($"[player] cannot drive a null character");
+            Debug.LogError(Tag.Player.F($"cannot drive a null character"));
             return;
         }
 
@@ -245,7 +242,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             return;
         }
 
-        Debug.Log($"[player] switching from {src?.name ?? "<none>"} to {dst.name}");
+        Debug.Log(Tag.Player.F($"switching from {src?.name ?? "<none>"} to {dst.name}"));
 
         // give this client authority over the character
         dstCharacter.Server_AssignClientAuthority(connectionToClient);
@@ -267,14 +264,14 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // if the player exists
         var player = m_LocalPlayer.GetComponent<Player>();
         if (player == null || !player.enabled) {
-            Debug.Assert(false, "[player] missing player!");
+            Debug.Assert(false, Tag.Player.F($"missing player!"));
             return;
         }
 
         // and the character exists
         var character = dst.GetComponent<DisconeCharacter>();
         if (character == null || !character.enabled) {
-            Debug.Assert(false, "[player] missing character");
+            Debug.Assert(false, Tag.Player.F($"missing character"));
             return;
         }
 
@@ -339,12 +336,12 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
         // spawn the character, if any
         if (character != null) {
-            Debug.Log($"[player] spawn character {character.Key.Name()} @ {character.Pos}");
+            Debug.Log(Tag.Player.F($"spawn character {character.Key.Name()} @ {character.Pos}"));
             Command_DriveSpawnedCharacter(character);
         }
         // if there's no record, drive an initial character
         else {
-            Debug.Log($"[player] drive random character");
+            Debug.Log(Tag.Player.F($"drive random character"));
             SpawnCharacterAtPoint(m_InitialCharacterKey, transform);
         }
     }

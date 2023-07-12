@@ -10,15 +10,11 @@ struct MechanicBirthplaceStep {
     /// .
     public static readonly string[] Values = new string[] {
         "Ramp",
+        "Stair",
         "Wall",
+        "Tunnel",
         "Exit",
     };
-
-    // -- queries --
-    /// .
-    public static string InitialValue {
-        get => Values[0];
-    }
 }
 
 }

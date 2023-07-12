@@ -137,7 +137,7 @@ public sealed class WorldChunks: MonoBehaviour {
 
         // if this is a new chunk, fire the event
         if (count == 1) {
-            Debug.Log($"[chunks] entered {coord}");
+            Debug.Log(Tag.World.F($"entered {coord}"));
             m_EnteredChunk.Raise(coord);
         }
     }
@@ -154,7 +154,7 @@ public sealed class WorldChunks: MonoBehaviour {
 
         // if this is an empty chunk, fire the event
         if (count == 0) {
-            Debug.Log($"[chunks] exited {coord}");
+            Debug.Log(Tag.World.F($"exited {coord}"));
             m_ExitedChunk.Raise(coord);
 
             // grab the debounced unload fn or create one
@@ -163,7 +163,7 @@ public sealed class WorldChunks: MonoBehaviour {
                 unload = Actions.Debounce(m_UnloadDelay, () => {
                     // if its still empty after the delay, unload it
                     if (m_Chunks[coord] == 0) {
-                        Debug.Log($"[chunks] unloaded {coord}");
+                        Debug.Log(Tag.World.F($"unloaded {coord}"));
                         m_UnloadedChunk.Raise(coord);
                     }
 
@@ -204,7 +204,7 @@ public sealed class WorldChunks: MonoBehaviour {
         if (camera == null) {
             return;
         }
-        
+
         // get the look position and direction
         var ct = camera.transform;
         var lp = ct.position;

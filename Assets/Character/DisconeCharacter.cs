@@ -93,7 +93,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
 
         // cache list of simulated children -- anything that's active in the prefab
-        // TODO: this if for the camera, it's hacky right now
+        // TODO: this is for the camera, it's hacky right now
         m_Simulated = Enumerable.Range(0, transform.childCount)
             .Select((i) => transform.GetChild(i).gameObject)
             .Where((c) => c.activeSelf)
@@ -206,7 +206,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_RemoteState = state;
         m_LastSync = NetworkTime.time;
 
-        if (hasAuthority) {
+        if (isOwned) {
             Server_SendState(state, m_LastSync);
         }
     }
@@ -270,9 +270,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Character.ForceState(state);
     }
 
-    /// mark this character as unavaialble; only call on the server
+    /// mark this character as unavailable; only call on the server
     [Server]
-    public void Server_AssignClientAuthority(NetworkConnection connection) {
+    public void Server_AssignClientAuthority(NetworkConnectionToClient connection) {
         m_IsAvailable = false;
         netIdentity.AssignClientAuthority(connection);
     }

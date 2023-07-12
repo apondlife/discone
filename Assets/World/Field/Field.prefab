@@ -9,13 +9,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 241846632514298457}
-  - component: {fileID: 6500960049770166275}
+  - component: {fileID: 1927703947733345251}
   m_Layer: 7
   m_Name: Field
   m_TagString: Untagged
   m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &241846632514298457
 Transform:
@@ -32,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6500960049770166275
+--- !u!114 &1927703947733345251
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -53,5 +53,5 @@ MonoBehaviour:
   m_ElevationScale: 0.97
   m_MinElevation: 0
   m_MaxElevation: 20
-  m_LoadedChunk: {fileID: 11400000, guid: 61495b5a5b35f4057867f5d384af0f51, type: 2}
+  m_EnteredChunk: {fileID: 11400000, guid: 61495b5a5b35f4057867f5d384af0f51, type: 2}
   m_UnloadedChunk: {fileID: 11400000, guid: f2493412529ec4d85a7e608bce180b9b, type: 2}

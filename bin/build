@@ -61,7 +61,7 @@ Main() {
   CheckEnv
 
   # load env
-  source ./.env
+  . ./.env
 
   # validate env
   if [ ! -f "$UNITY_PATH" ]; then

@@ -46,7 +46,8 @@ public class CameraLookAtTarget: MonoBehaviour {
     [SerializeField] private Transform m_Target;
 
     [Tooltip("the follow target")]
-    [SerializeField] CameraFollowTarget m_Follow;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_Follow")]
+    [SerializeField] Camera m_Camera;
 
     // -- props --
     /// a reference to the character
@@ -68,12 +69,12 @@ public class CameraLookAtTarget: MonoBehaviour {
     void FixedUpdate() {
         // first we find the ground target destination
         var groundDest = FindGroundDestination();
-        var freelook = m_Follow.IsFreeLookEnabled;
+        var freelook = m_Camera.IsFreeLookEnabled;
 
         // while airborne, move the ground target towards the ground
         if (m_GroundTarget != groundDest) {
             var dist = (m_GroundTarget - groundDest);
-            var sd = (m_Follow.IsFreeLookEnabled, dist.y < 0.0f) switch {
+            var sd = (m_Camera.IsFreeLookEnabled, dist.y < 0.0f) switch {
                 (true, _) => m_SpringDamp_FreeLook,
                 (_, true) => m_SpringDamp_Up,
                 (_, false) => m_SpringDamp_Down
@@ -91,16 +92,11 @@ public class CameraLookAtTarget: MonoBehaviour {
         }
 
         // check proximity between model & follow target to push look at up
-        var followDist = Vector3.Distance(
-            m_Follow.transform.position, // TODO: should this be ground target?
-            m_Follow.TargetPosition
-        );
-
         var proximity = m_VerticalOffset_DistanceCurve.Evaluate(
             Mathf.InverseLerp(
-                m_Follow.MinDistance,
-                m_Follow.BaseDistance,
-                followDist
+                m_Camera.MinDistance,
+                m_Camera.BaseDistance,
+                m_Camera.FollowDistance
             )
         );
 

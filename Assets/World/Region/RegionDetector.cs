@@ -22,7 +22,7 @@ sealed class RegionDetector: MonoBehaviour {
             return;
         }
 
-        Debug.Log($"[region] entered {m_Region.Value.DisplayName}");
+        Debug.Log(Tag.Region.F($"entered {m_Region.Value.DisplayName}"));
         m_RegionEntered.Raise(m_Region.Value);
     }
 }

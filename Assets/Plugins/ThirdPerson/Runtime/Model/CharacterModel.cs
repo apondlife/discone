@@ -143,6 +143,12 @@ public sealed class CharacterModel: MonoBehaviour {
             }
 
             proxy.Bind(OnAnimatorIK);
+        } else {
+            // destroy ik limbs
+            Debug.LogWarning($"[cmodel] character {m_Container.Name} has no animator, destroying limbs");
+            foreach (Component limb in m_Limbs) {
+                Destroy(limb.gameObject);
+            }
         }
 
         // make sure complex model trees have the correct layer

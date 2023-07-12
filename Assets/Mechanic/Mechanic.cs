@@ -14,9 +14,6 @@ sealed class Mechanic: MonoBehaviour {
 
     // -- cfg --
     [Header("cfg")]
-    [Tooltip("the delay before running a line")]
-    [SerializeField] ThirdPerson.EaseTimer m_Delay;
-
     [Tooltip("the node to start w/ after the intro")]
     [SerializeField] string m_StartNode;
 
@@ -45,26 +42,11 @@ sealed class Mechanic: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        m_DialogueRunner.VariableStorage.SetValue(
-            MechanicBirthplaceStep.Name,
-            MechanicBirthplaceStep.InitialValue
-        );
-
         m_Subscriptions
             .Add(m_JumpToNode, OnJumpToNode)
             .Add(m_IsEyelidClosed_Changed, OnEyelidClosedChanged)
             .Add(m_Intro_SequenceEnded, OnIntroSequenceEnded)
             .Add(m_SetBirthplaceStep, OnSetBirthplaceStep);
-    }
-
-    void FixedUpdate() {
-        if (m_Delay.IsActive) {
-            m_Delay.Tick();
-
-            if (m_Delay.IsComplete) {
-                StartDialogue();
-            }
-        }
     }
 
     void OnDestroy() {
@@ -80,21 +62,19 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void JumpToNode(string node) {
-        Debug.Log($"[mechnk] jump: {node}");
-        StopDialogue();
+        Debug.Log(Tag.Mechanic.F($"jump: {node}"));
         SwitchNode(node);
         StartDialogue();
     }
 
     /// .
-    void StartDialogueDelay() {
-        m_Delay.Start();
-    }
-
-    /// .
     void StartDialogue() {
+        // interrupt any existing dialogue
+        StopDialogue();
+
+        // and start the new dialogue
         if (string.IsNullOrEmpty(m_Node)) {
-            Debug.LogWarning($"[mechnk] tried to start dialogue w/ no node set");
+            Debug.LogWarning(Tag.Mechanic.F($"tried to start dialogue w/ no node set"));
             return;
         }
 
@@ -103,8 +83,6 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void StopDialogue() {
-        m_Delay.Cancel();
-
         // clean up the dialogue runner
         if (m_DialogueRunner.IsDialogueRunning) {
             m_DialogueRunner.StopAllCoroutines();
@@ -121,7 +99,7 @@ sealed class Mechanic: MonoBehaviour {
     // -- c/yarn
     [YarnCommand("then")]
     public void Then(string nodeName) {
-        Debug.Log($"[mechnk] then: {nodeName}");
+        Debug.Log(Tag.Mechanic.F($"then: {nodeName}"));
         SwitchNode(nodeName);
     }
 
@@ -133,7 +111,7 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void OnSetBirthplaceStep(string step) {
-        Debug.Log($"[mechnk] birthplace: {step}");
+        Debug.Log(Tag.Mechanic.F($"birthplace: {step}"));
         m_DialogueRunner.VariableStorage.SetValue(
             MechanicBirthplaceStep.Name,
             step
@@ -143,7 +121,7 @@ sealed class Mechanic: MonoBehaviour {
     /// .
     void OnEyelidClosedChanged(bool isEyelidClosed) {
         if (isEyelidClosed) {
-            StartDialogueDelay();
+            StartDialogue();
         } else {
             StopDialogue();
         }

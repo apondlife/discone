@@ -17,8 +17,6 @@ sealed class MechanicDialogue: DialogueViewBase {
 
     // -- DialogueViewBase --
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
-        base.RunLine(dialogueLine, onDialogueLineFinished);
-
         var curr = m_LineIndex;
         var next = (m_LineIndex + 1) % m_Lines.Length;
 
@@ -28,9 +26,12 @@ sealed class MechanicDialogue: DialogueViewBase {
         currLine.Hide();
         nextLine.Show(dialogueLine.Text.Text);
 
-        Debug.Log($"[mechnk] run i: {next} line: {dialogueLine.Text.Text}");
-
         m_LineIndex = next;
+
+        // continue automatically until last line
+        if (dialogueLine.Metadata == null || Array.IndexOf(dialogueLine.Metadata, "last") == -1) {
+            onDialogueLineFinished();
+        }
     }
 
     public override void DialogueComplete() {

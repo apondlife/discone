@@ -7,7 +7,7 @@ static class NetworkIdentityExt {
     public static bool IsOwner(this NetworkIdentity identity) {
         return (
             // if the client has authority
-            (identity.isClient && identity.hasAuthority) ||
+            (identity.isClient && identity.isOwned) ||
             // or the server knows no client has a authority
             (identity.isServer && identity.connectionToClient == null)
         );
