@@ -66,9 +66,21 @@ sealed class WallSystem: CharacterSystem {
         vd -= wallNormal * c.Tuning.WallMagnet;
 
         // accelerate while holding button
+        // AAA: make sure that last surface is the last (not current) surface touched
+        // TODO: fix AAA
+        var deltaAngle = Mathf.Abs(c.State.Curr.Wall.Angle - c.State.Curr.LastSurface.Angle);
+        var surfaceAngleDelta = Mathf.Abs(90f - deltaAngle);
+        var surfaceAngleScale = 1f - (surfaceAngleDelta / 90f);
+
+        var wallGravityAmplitudeScale = c.Tuning.WallGravityAmplitudeScale.Evaluate(surfaceAngleDelta);
+
         var wallGravity = c.Input.IsWallHoldPressed
-            ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart)
-            : c.Tuning.WallGravity.Evaluate(PhaseStart);
+            ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale)
+            : c.Tuning.WallGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale);
+
+        if (wallGravityAmplitudeScale < 1) {
+            Debug.Log($"[wallss] sad {surfaceAngleDelta} sas {surfaceAngleScale} amplitude scale {wallGravityAmplitudeScale} grav {wallGravity}");
+        }
 
         var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
         vd += wallAcceleration * delta * wallUp;

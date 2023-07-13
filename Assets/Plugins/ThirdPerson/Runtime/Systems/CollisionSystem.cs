@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace ThirdPerson {
 
@@ -43,6 +44,28 @@ sealed class CollisionSystem: CharacterSystem {
         // find the ground collision if it exists
         c.State.Next.Ground = frame.Ground;
         c.State.Next.Wall = frame.Wall;
+
+        // find the last most relevant touched surface
+        // if we weren't touching a wall, and now we are, it's the wall
+        if (c.State.Curr.Wall.IsNone && c.State.Next.Wall.IsSome) {
+            c.State.Next.LastSurface = c.State.Next.Wall;
+        }
+        // otherwise if we weren't touching a ground, and now we are, it's the ground
+        else if (c.State.Curr.Ground.IsNone && c.State.Next.Ground.IsSome) {
+            c.State.Next.LastSurface = c.State.Next.Ground;
+        }
+        // otherwise, if the last surface was a ground, use any new ground
+        else if (c.State.Curr.LastSurface.Normal == c.State.Curr.Ground.Normal && c.State.Next.Ground.IsSome) {
+            c.State.Next.LastSurface = c.State.Next.Ground;
+        }
+        // otherwise, if the last surface was a wall, use any new wall
+        else if (c.State.Curr.LastSurface.Normal == c.State.Curr.Wall.Normal && c.State.Next.Wall.IsSome) {
+            c.State.Next.LastSurface = c.State.Next.Wall;
+        }
+        // otherwise, the last surface stays the same
+        else {
+            c.State.Next.LastSurface = c.State.Curr.LastSurface;
+        }
 
         // sync controller state back to character state
         c.State.Next.Velocity = frame.Velocity;

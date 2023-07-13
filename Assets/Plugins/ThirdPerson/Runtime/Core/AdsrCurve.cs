@@ -23,6 +23,7 @@ public struct AdsrCurve {
     /// evaluate the curve in the range
     public float Evaluate(
         float startTime,
+        float amplitudeScale = 1f,
         float releaseStartTime = float.MaxValue
     ) {
         // elapsed in attack/decay/sustain
@@ -51,6 +52,9 @@ public struct AdsrCurve {
             0.0f,
             m_Release.Evaluate(releaseElapsed)
         );
+
+        // scale the amplitude of the curve (around 1) by a parameter
+        scale = 1 + (scale - 1) * amplitudeScale;
 
         return m_Sustain * scale;
     }

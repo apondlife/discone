@@ -125,6 +125,9 @@ public sealed partial class CharacterState {
         /// the wall collision for the previous frame
         public CharacterCollision Wall;
 
+        /// the collision for the last touched surface
+        public CharacterCollision LastSurface;
+
         /// the frame in the jump squat
         public int JumpSquatFrame = -1;
 

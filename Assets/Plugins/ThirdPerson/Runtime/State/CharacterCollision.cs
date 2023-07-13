@@ -4,6 +4,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the collision info
+[Serializable]
 public struct CharacterCollision: IEquatable<CharacterCollision> {
     // -- props --
     /// the normal at the on the collision surface

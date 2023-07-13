@@ -192,6 +192,9 @@ public sealed class CharacterTuning: ScriptableObject {
     [UnityEngine.Serialization.FormerlySerializedAs("WallAngleScale_New")]
     public MapOutCurve WallAngleScale;
 
+    [Tooltip("the scaling factor of the wall gravity amplitude as a fn of surface change angle")]
+    public MapOutCurve WallGravityAmplitudeScale;
+
     public float WallAcceleration(float wallGravity) {
         return wallGravity - Gravity + FallGravity;
     }
