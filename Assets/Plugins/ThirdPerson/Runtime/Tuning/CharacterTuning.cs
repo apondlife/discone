@@ -189,7 +189,8 @@ public sealed class CharacterTuning: ScriptableObject {
     public float WallMagnet;
 
     [Tooltip("the scaling factor of the wall slide depending on the wall angle")]
-    public AnimationCurve WallAngleScale;
+    [UnityEngine.Serialization.FormerlySerializedAs("WallAngleScale_New")]
+    public MapOutCurve WallAngleScale;
 
     public float WallAcceleration(float wallGravity) {
         return wallGravity - Gravity + FallGravity;

@@ -156,38 +156,42 @@ MonoBehaviour:
   JumpGravity: -30
   Jump_GroundAngle: 80
   Jump_GroundAngleScale:
-    serializedVersion: 2
     m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 10
-      value: 1
-      inSlope: 0
-      outSlope: -0.00044972563
-      tangentMode: 1
-      weightedMode: 2
-      inWeight: 0.33333334
-      outWeight: 0.16781892
-    - serializedVersion: 3
-      time: 74.40677
-      value: 0.82783204
-      inSlope: -0.008443532
-      outSlope: Infinity
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.04405666
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 10
+        value: 1
+        inSlope: 0
+        outSlope: -0.00009184288
+        tangentMode: 1
+        weightedMode: 2
+        inWeight: 0.33333334
+        outWeight: 0.12721032
+      - serializedVersion: 3
+        time: 80
+        value: 0
+        inSlope: -0.03224415
+        outSlope: Infinity
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.044291086
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 1
+      Max: 1
   FallGravity: -40
   Landing_Duration: 0.3
   Jumps:
@@ -360,56 +364,51 @@ MonoBehaviour:
       m_Duration: 0
   WallMagnet: 0.5
   WallAngleScale:
-    serializedVersion: 2
     m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.48999134
-    - serializedVersion: 3
-      time: 9.813202
-      value: 0
-      inSlope: 0
-      outSlope: -0.00022537526
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.31804374
-    - serializedVersion: 3
-      time: 57.509247
-      value: 0.22192869
-      inSlope: 0.006958187
-      outSlope: 0.007081601
-      tangentMode: 1
-      weightedMode: 3
-      inWeight: 0.1358979
-      outWeight: 1
-    - serializedVersion: 3
-      time: 80
-      value: 1
-      inSlope: 0.020379573
-      outSlope: 0
-      tangentMode: 65
-      weightedMode: 3
-      inWeight: 0.16329966
-      outWeight: 0.4433403
-    - serializedVersion: 3
-      time: 90
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.08069881
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 65
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.48999134
+      - serializedVersion: 3
+        time: 79.9
+        value: 0
+        inSlope: -0
+        outSlope: 10.000153
+        tangentMode: 69
+        weightedMode: 3
+        inWeight: 0.1358979
+        outWeight: 1
+      - serializedVersion: 3
+        time: 80
+        value: 1
+        inSlope: 10.000153
+        outSlope: 0
+        tangentMode: 69
+        weightedMode: 3
+        inWeight: 0.16329966
+        outWeight: 0.4433403
+      - serializedVersion: 3
+        time: 90
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.08069881
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 1
   TiltForBaseAcceleration: 30
   MaxTilt: 69
   TiltSmoothing: 0.1
