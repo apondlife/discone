@@ -18,26 +18,9 @@ sealed class FloatRangeDrawer: PropertyDrawer {
     /// the separator style
     static GUIStyle s_Separator;
 
-    // -- commands --
-    /// .
-    void Init() {
-        if (s_Separator != null) {
-            return;
-        }
-
-        s_Separator = new GUIStyle(GUI.skin.label);
-        s_Separator.alignment = TextAnchor.MiddleCenter;
-    }
-
     // -- lifecycle --
     public override void OnGUI(Rect r, SerializedProperty prop, GUIContent label) {
-        Init();
-
         E.BeginProperty(r, label, prop);
-
-        // get attrs
-        var min = prop.FindPropertyRelative("Min");
-        var max = prop.FindPropertyRelative("Max");
 
         // draw label w/ indent
         E.LabelField(r, label);
@@ -51,6 +34,21 @@ sealed class FloatRangeDrawer: PropertyDrawer {
         r.x += lw;
         r.width -= lw;
 
+        // draw the range input
+        DrawInput(r, prop);
+
+        // reset indent level
+        E.indentLevel = indent;
+
+        E.EndProperty();
+    }
+
+    // -- commands --
+    /// draw the range input
+    public static void DrawInput(Rect r, SerializedProperty prop) {
+        var min = prop.FindPropertyRelative("Min");
+        var max = prop.FindPropertyRelative("Max");
+
         // calc width of each field from remaining space
         var fw = (r.width - k_SeparatorWidth - k_Gap * 2f) / 2f;
 
@@ -61,17 +59,26 @@ sealed class FloatRangeDrawer: PropertyDrawer {
 
         // draw the separator
         r.width = k_SeparatorWidth;
-        E.LabelField(r, "...", s_Separator);
+        E.LabelField(r, "...", Separator());
         r.x += k_SeparatorWidth + k_Gap;
 
         // draw the max field
         r.width = fw;
         max.floatValue = E.FloatField(r, max.floatValue);
+    }
 
-        // reset indent level
-        E.indentLevel = indent;
+    // -- queries --
+    /// the separator
+    static GUIStyle Separator() {
+        if (s_Separator != null) {
+            return s_Separator;
+        }
 
-        E.EndProperty();
+        var separator = new GUIStyle(GUI.skin.label);
+        separator.alignment = TextAnchor.MiddleCenter;
+        s_Separator = separator;
+
+        return separator;
     }
 }
 
