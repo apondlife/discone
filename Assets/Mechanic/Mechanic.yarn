@@ -3,31 +3,33 @@
 // -----------
 
 title: Intro
+tags: #last
 ---
-hello? wow. how did you already know to hold "right or left trigger" to, #last
+hello? wow. how did you already know to hold "right or left trigger" to,
 ===
 
-title: IntroInput
+title: Intro_Eyes
+tags: #last
 ---
-<<then Mechanic IntroEnd>>
-
 close your eyes?
-<<wait 6>>
 
-and then release "right or left trigger" to open them? #last
+<<wait 6>>
+and then release "right or left trigger" to open them?
 ===
 
-title: IntroEnd
+title: Intro_End
+tags: #last
 ---
 ===
 
-// -----------
+// -- -- -- --
 // -- Start --
-// -----------
+// -- -- -- --
 
 title: Start
+tags: #last
 ---
-<<then Mechanic StartThanks>>
+<<then Mechanic Start_Thanks>>
 <<wait 10>>
 
 if you want to talk to me again
@@ -40,242 +42,270 @@ you can hold "right or left trigger"
 <<wait 3>>
 ===
 
-title: StartThanks
+title: Start_Thanks
 ---
-<<then Mechanic Birthplace>>
-
 ah, thanks for holding my “button”!
-<<wait 3>>
-
-sorry to bother you there, earlier.
-<<wait 3>>
-
-i'm always here if you want to talk. #last
 ===
 
-// ----------------
+title: Start_Bother
+---
+<<wait 3>>
+sorry to bother you there, earlier.
+===
+
+title: Start_Talk
+tags: #last
+---
+<<wait 3>>
+i'm always here if you want to talk.
+<<then Mechanic Birthplace>>
+===
+
+// -- --      -- --
 // -- Birthplace --
-// ----------------
+// -- --      -- --
 
 title: Birthplace
+tags: #tree
 ---
-<<declare $BirthplaceStep = "Ramp">>
-<<declare $BirthplaceRamp_Help_Visited = false>>
-<<declare $BirthplaceStair_Born_Visited = false>>
-<<declare $BirthplaceWall_Help_Visited = false>>
+<<declare $Birthplace_Step = "Ramp">>
+<<declare $Birthplace_RampHelp_Seen = false>>
+<<declare $Birthplace_StairSee_Seen = false>>
+<<declare $Birthplace_WallFeet_Seen = false>>
 
-<<if $BirthplaceStep == "Ramp">>
-  <<jump BirthplaceRamp>>
-<<elseif $BirthplaceStep == "Stair">>
-  <<jump BirthplaceStair>>
-<<elseif $BirthplaceStep == "Wall">>
-  <<jump BirthplaceWall>>
-<<elseif $BirthplaceStep == "Tunnel">>
-  <<jump BirthplaceTunnel>>
+<<if $Birthplace_Step == "Ramp">>
+  <<jump Birthplace_Ramp>>
+<<elseif $Birthplace_Step == "Stair">>
+  <<jump Birthplace_Stair>>
+<<elseif $Birthplace_Step == "Wall">>
+  <<jump Birthplace_Wall>>
+<<elseif $Birthplace_Step == "Tunnel">>
+  <<jump Birthplace_Tunnel>>
 <<else>>
-  <<jump BirthplaceExit>>
+  <<jump Birthplace_Exit>>
 <<endif>>
 ===
 
-title: BirthplaceRamp
----
-<<if !$BirthplaceRamp_Help_Visited>>
-  <<jump BirthplaceRamp_Letter>>
-<<else>>
-  <<jump BirthplaceRamp_Help>>
-<<endif>>
-===
+// -- --           -- --
+// -- Birthplace/Ramp --
+// -- --           -- --
 
-title: BirthplaceRamp_Letter
+title: Birthplace_Ramp
 ---
 <<wait 2>>
-
 this ramp, did you...
-<<wait 3>>
+===
 
+title: Birthplace_RampLetter
+---
+<<wait 3>>
 see my letter too?
-<<jump BirthplaceRamp_Help>>
 ===
 
-title: BirthplaceRamp_Help
+title: Birthplace_RampHelp
+tags: #last #leaf
 ---
-<<set $BirthplaceRamp_Help_Visited to true>>
 <<wait 2>>
-
 if you mash the "jump button" as you approach...
+
 <<wait 3>>
-
 it,
-<<wait 1>>
 
-i think you can do it #last
+<<wait 1>>
+i think you can do it
+
+<<set $Birthplace_RampHelp_Seen to true>>
 ===
 
-title: BirthplaceStair
+// -- --            -- --
+// -- Birthplace/Stair --
+// -- --            -- --
+
+title: Birthplace_Stair
+tags: #stem
 ---
-<<if !$BirthplaceStair_Born_Visited && $BirthplaceRamp_Help_Visited>>
-  <<jump BirthplaceStair_See>>
+<<if !$Birthplace_StairSee_Seen && $Birthplace_RampHelp_Seen>>
+  <<jump Birthplace_StairSee>>
 <<else>>
-  <<jump BirthplaceStair_Born>>
+  <<jump Birthplace_StairBorn>>
 <<endif>>
 ===
 
-title: BirthplaceStair_See
+title: Birthplace_StairSee
 ---
 <<wait 2>>
 that was beautiful...
 
-<<jump BirthplaceStair_Born>>
+<<set $Birthplace_StairSee_Seen to true>>
 ===
 
-title: BirthplaceStair_Born
----
-<<set $BirthplaceStair_Born_Visited to true>>
-<<wait 2>>
-
-i remember when this stair was born. #last
-===
-
-title: BirthplaceWall
----
-<<if !$BirthplaceWall_Help_Visited>>
-  <<jump BirthplaceWall_Feet>>
-<<else>>
-  <<jump BirthplaceWall_Help>>
-<<endif>>
-===
-
-title: BirthplaceWall_Feet
+title: Birthplace_StairBorn
+tags: #last #leaf
 ---
 <<wait 2>>
+i remember when this stair was born.
+===
 
+// -- --           -- --
+// -- Birthplace/Wall --
+// -- --           -- --
+
+title: Birthplace_Wall
+---
+<<wait 2>>
 a wall is a nice place...
-<<wait 2>>
+===
 
+title: Birthplace_WallFeet
+---
+<<wait 2>>
 to press your feet into,
-<<jump BirthplaceWall_Help>>
+
+<<set $Birthplace_WallFeet_Seen to true>>
 ===
 
-title: BirthplaceWall_Help
+title: Birthplace_WallHelp
+tags: #last #leaf
 ---
-<<set $BirthplaceWall_Help_Visited to true>>
 <<wait 2>>
-
 to hold the "jump button", along
-<<wait 2>>
 
-like any other floor. #last
+<<wait 2>>
+like any other floor.
 ===
 
-title: BirthplaceTunnel
+// -- --             -- --
+// -- Birthplace/Tunnel --
+// -- --             -- --
+
+title: Birthplace_Tunnel
+tags: #stem
 ---
-<<if $BirthplaceWall_Help_Visited>>
-  <<jump BirthplaceTunnel_See>>
+<<if $Birthplace_WallFeet_Seen>>
+  <<jump Birthplace_TunnelSee>>
 <<endif>>
 ===
 
-title: BirthplaceTunnel_See
+title: Birthplace_TunnelSee
+tags: #last #leaf
 ---
 <<wait 2>>
-
-how are your feet? #last
+how are your feet?
 ===
 
-title: BirthplaceExit
+// -- --           -- --
+// -- Birthplace/Exit --
+// -- --           -- --
+
+title: Birthplace_Exit
+tags: #leaf
 ---
 <<then Mechanic IntroReal>>
 <<jump IntroReal>>
 ===
 
-// ---------------
+// -- --     -- --
 // -- IntroReal --
-// ---------------
+// -- --     -- --
 
 title: IntroReal
 ---
 <<wait 2>>
-<<then Mechanic IntroRealNormal>>
-
 this is the place...
-<<wait 2>>
-
-do you know what you're doing here? #last
 ===
 
-title: IntroRealNormal
+title: IntroReal_Here
+tags: #last
 ---
 <<wait 2>>
-<<then Mechanic IntroRealSoon>>
+do you know what you're doing here?
+===
 
+title: IntroReal_Normal
+---
+<<wait 2>>
 don't worry if you don't, that's normal.
-<<wait 2>>
-
-we never really do. #last
 ===
 
-title: IntroRealSoon
+title: IntroReal_Never
+tags: #last
 ---
 <<wait 2>>
-<<then Mechanic IntroRealAsk>>
+we never really do.
+===
 
+title: IntroReal_Figure
+---
+<<wait 2>>
 but anyways i'm sure you'll figure it out...
-<<wait 2>>
+===
 
+title: IntroReal_Doing
+---
+<<wait 2>>
 what you're doing here
-<<wait 2>>
-
-soon. #last
 ===
 
-title: IntroRealAsk
+title: IntroRead_Soon
+tags: #last
 ---
 <<wait 2>>
-<<then Mechanic IntroRealTell>>
-
-don't ask me though, i couldn't tell you. #last
+soon.
 ===
 
-title: IntroRealTell
+title: IntroReal_Ask
+tags: #last
 ---
 <<wait 2>>
-<<then Mechanic IntroRealMechanic>>
-
-i can't tell you, even. #last
+don't ask me though, i couldn't tell you.
 ===
 
-title: IntroRealMechanic
+title: IntroReal_Tell
+tags: #last
+---
+<<then Mechanic IntroReal_Mechanic>>
+i can't tell you, even.
+===
+
+title: IntroReal_Mechanic
 ---
 <<wait 2>>
-<<then Mechanic IntroRealWant>>
-
 & speaking of asking me, i should...
-<<wait 2>>
+===
 
+title: IntroReal_MechanicCall
+---
+<<wait 2>>
 introduce myself. you could call me
-<<wait 2>>
-
-“the mechanic”,
-<<wait 2>>
-
-if you ever get the chance =). #last
 ===
 
-title: IntroRealWant
+title: IntroReal_MechanicName
 ---
 <<wait 2>>
-<<then Mechanic IntroRealEyes>>
-
-but if you do want to hear me, i'm usually around here. #last
+"the mechanic",
 ===
 
-title: IntroRealEyes
+title: IntroReal_MechanicChance
+tags: #last
 ---
 <<wait 2>>
-<<then Mechanic IntroRealEnd>>
-
-if you don't, well, close your eyes i guess ;). #last
+if you ever get the chance =).
 ===
 
-title: IntroRealEnd
+title: IntroReal_Want
+tags: #last
+---
+<<wait 2>>
+but if you do want to hear me, i'm usually around here.
+===
+
+title: IntroReal_Eyes
+tags: #last
+---
+<<wait 2>>
+if you don't, well, close your eyes i guess ;).
+===
+
+title: IntroReal_End
 ---
 ===

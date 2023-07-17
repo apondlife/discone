@@ -5,7 +5,7 @@ using Yarn.Unity;
 namespace Discone.Ui {
 
 /// the mechanic's eyelid dialogue view
-sealed class MechanicDialogue: DialogueViewBase {
+sealed class MechanicDialogueView: DialogueViewBase {
     // -- refs --
     [Header("refs")]
     [Tooltip("the mechanic's visible lines")]
@@ -15,8 +15,17 @@ sealed class MechanicDialogue: DialogueViewBase {
     /// the index of the current line label
     int m_LineIndex;
 
+    // -- commands --
+    /// hide any visible lines
+    public void Hide() {
+        var currLine = m_Lines[m_LineIndex];
+        currLine.Hide();
+    }
+
     // -- DialogueViewBase --
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
+        Debug.Log(Tag.Mechanic.F($"run line {dialogueLine.RawText}"));
+
         var curr = m_LineIndex;
         var next = (m_LineIndex + 1) % m_Lines.Length;
 
@@ -28,17 +37,7 @@ sealed class MechanicDialogue: DialogueViewBase {
 
         m_LineIndex = next;
 
-        // continue automatically until last line
-        if (dialogueLine.Metadata == null || Array.IndexOf(dialogueLine.Metadata, "last") == -1) {
-            onDialogueLineFinished();
-        }
-    }
-
-    public override void DialogueComplete() {
-        base.DialogueComplete();
-
-        var currLine = m_Lines[m_LineIndex];
-        currLine.Hide();
+        onDialogueLineFinished();
     }
 }
 
