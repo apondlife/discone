@@ -14,6 +14,13 @@
             "Debug.Log($\"$1\");",
         ],
     },
+    "unity.tagged-log": {
+        "prefix": "llog",
+        "description": "tagged log statement",
+        "body": [
+            "Debug.Log(Tag.$1.F($\"$2\"));",
+        ],
+    },
     "unity.header": {
         "prefix": "uheader",
         "description": "field header",
