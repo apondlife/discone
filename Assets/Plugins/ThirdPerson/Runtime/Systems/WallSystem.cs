@@ -57,6 +57,10 @@ sealed class WallSystem: CharacterSystem {
         // update to new wall collision
         var wallNormal = wall.Normal;
         var wallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
+        var prevLastSurface = c.State.Prev.LastSurface;
+        var wallTg = prevLastSurface.IsSome
+            ? Vector3.ProjectOnPlane(prevLastSurface.Normal, wall.Normal).normalized
+            : wallUp;
 
         // calculate added velocity
         var vd = Vector3.zero;
@@ -74,7 +78,7 @@ sealed class WallSystem: CharacterSystem {
 
         var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
 
-        var transferred = TransferredVelocity(wallNormal, wallUp) * wallTransferScale;
+        var transferred = TransferredVelocity(wallNormal, wallTg) * wallTransferScale;
         vd += transferred;
 
         if (deltaNormal >= Mathf.Epsilon) {
