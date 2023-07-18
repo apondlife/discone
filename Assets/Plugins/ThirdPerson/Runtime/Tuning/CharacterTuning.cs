@@ -195,6 +195,9 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the scaling factor of the wall gravity amplitude as a fn of surface change angle")]
     public MapOutCurve WallGravityAmplitudeScale;
 
+    [Tooltip("the scaling factor of the wall velocity transfer as a fn of surface change angle")]
+    public MapOutCurve WallTransferScale;
+
     public float WallAcceleration(float wallGravity) {
         return wallGravity - Gravity + FallGravity;
     }

@@ -10,6 +10,9 @@ public struct AdsrCurve {
     [Tooltip("the sustained value after attack & decay")]
     [SerializeField] float m_Sustain;
 
+    [Tooltip("the scale for the attack & decay")]
+    [SerializeField] float m_MaxScale;
+
     [Tooltip("the attack curve")]
     [SerializeField] DurationCurve m_Attack;
 
@@ -31,15 +34,16 @@ public struct AdsrCurve {
 
         // by default, sustain
         var scale = 1.0f;
+        var maxScale = m_MaxScale * amplitudeScale;
 
         // if in attack, use the attack scale
         if (elapsed < m_Attack.Duration) {
-            scale = m_Attack.Evaluate(elapsed);
+            scale = m_Attack.Evaluate(elapsed) * maxScale;
         }
         // if
         else if (elapsed < m_Attack.Duration + m_Decay.Duration) {
             scale = Mathf.Lerp(
-                m_Attack.Max,
+                maxScale,
                 1.0f,
                 m_Decay.Evaluate(elapsed - m_Attack.Duration)
             );
@@ -52,9 +56,6 @@ public struct AdsrCurve {
             0.0f,
             m_Release.Evaluate(releaseElapsed)
         );
-
-        // scale the amplitude of the curve (around 1) by a parameter
-        scale = 1 + (scale - 1) * amplitudeScale;
 
         return m_Sustain * scale;
     }

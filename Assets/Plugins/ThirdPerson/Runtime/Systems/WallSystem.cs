@@ -58,12 +58,28 @@ sealed class WallSystem: CharacterSystem {
         var wallNormal = wall.Normal;
         var wallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
 
-        // transfer velocity
+        // calculate added velocity
+        var vd = Vector3.zero;
         // NOTE: unsure if we want to apply the magnet on things that are not "real"
         // walls, but we are for now on account of our principle of No Rules
-        var vd = Vector3.zero;
-        vd += TransferredVelocity(wallNormal, wallUp);
         vd -= wallNormal * c.Tuning.WallMagnet;
+
+        // transfer velocity
+        var deltaNormal = Vector3.Angle(
+            c.State.Curr.WallSurface.Normal,
+            c.State.Curr.PrevLastSurface.Normal
+        );
+        var normalAngleDelta = Mathf.Abs(90f - deltaNormal);
+        var normalAngleScale = 1f - (normalAngleDelta / 90f);
+
+        var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
+
+        var transferred = TransferredVelocity(wallNormal, wallUp) * wallTransferScale;
+        vd += transferred;
+
+        if (deltaNormal >= Mathf.Epsilon) {
+            Debug.Log($"[wallss] dn {deltaNormal} nad {normalAngleDelta} nas {normalAngleScale} wts {wallTransferScale} tra {transferred} tra ({transferred.magnitude})");
+        }
 
         // accelerate while holding button
         var deltaAngle = Mathf.Abs(c.State.Curr.WallSurface.Angle - c.State.Curr.PrevLastSurface.Angle);
@@ -75,15 +91,15 @@ sealed class WallSystem: CharacterSystem {
             ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale)
             : c.Tuning.WallGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale);
 
-        // if (deltaAngle >= Mathf.Epsilon) {
-            // Debug.Log($"[wallss] da {deltaAngle} sad {surfaceAngleDelta} sas {surfaceAngleScale} gas {wallGravityAmplitudeScale} g {wallGravity}");
-        // }
+        if (deltaAngle >= Mathf.Epsilon) {
+            Debug.Log($"[wallss] da {deltaAngle} sad {surfaceAngleDelta} sas {surfaceAngleScale} gas {wallGravityAmplitudeScale} g {wallGravity}");
+        }
 
         var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
-        vd += wallAcceleration * delta * wallUp;
+        vd += wallAcceleration * wallAngleScale * delta * wallUp;
 
         // scale acceleration by wall angle
-        vd *= wallAngleScale;
+        // vd *= wallAngleScale;
 
         // update state
         c.State.Velocity += vd;
