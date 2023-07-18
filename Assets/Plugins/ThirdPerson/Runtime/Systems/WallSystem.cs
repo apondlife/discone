@@ -66,21 +66,18 @@ sealed class WallSystem: CharacterSystem {
         vd -= wallNormal * c.Tuning.WallMagnet;
 
         // accelerate while holding button
-        // AAA: make sure that last surface is the last (not current) surface touched
-        // TODO: fix AAA
-        var deltaAngle = Mathf.Abs(c.State.Curr.Wall.Angle - c.State.Curr.LastSurface.Angle);
+        var deltaAngle = Mathf.Abs(c.State.Curr.WallSurface.Angle - c.State.Curr.PrevLastSurface.Angle);
         var surfaceAngleDelta = Mathf.Abs(90f - deltaAngle);
         var surfaceAngleScale = 1f - (surfaceAngleDelta / 90f);
 
-        var wallGravityAmplitudeScale = c.Tuning.WallGravityAmplitudeScale.Evaluate(surfaceAngleDelta);
-
+        var wallGravityAmplitudeScale = c.Tuning.WallGravityAmplitudeScale.Evaluate(surfaceAngleScale);
         var wallGravity = c.Input.IsWallHoldPressed
             ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale)
             : c.Tuning.WallGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale);
 
-        if (wallGravityAmplitudeScale < 1) {
-            Debug.Log($"[wallss] sad {surfaceAngleDelta} sas {surfaceAngleScale} amplitude scale {wallGravityAmplitudeScale} grav {wallGravity}");
-        }
+        // if (deltaAngle >= Mathf.Epsilon) {
+            // Debug.Log($"[wallss] da {deltaAngle} sad {surfaceAngleDelta} sas {surfaceAngleScale} gas {wallGravityAmplitudeScale} g {wallGravity}");
+        // }
 
         var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
         vd += wallAcceleration * delta * wallUp;

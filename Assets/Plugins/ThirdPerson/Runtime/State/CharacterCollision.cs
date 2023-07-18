@@ -6,6 +6,14 @@ namespace ThirdPerson {
 /// the collision info
 [Serializable]
 public struct CharacterCollision: IEquatable<CharacterCollision> {
+    // -- constants --
+    /// an empty collision
+    public static CharacterCollision None = new CharacterCollision(
+        Vector3.zero,
+        Vector3.zero,
+        0f
+    );
+
     // -- props --
     /// the normal at the on the collision surface
     public Vector3 Normal;
@@ -25,6 +33,17 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
         Normal = normal;
         Point = point;
         Angle = Vector3.Angle(normal, Vector3.up);
+    }
+
+    /// create a new collision
+    CharacterCollision(
+        Vector3 normal,
+        Vector3 point,
+        float angle
+    ) {
+        Normal = normal;
+        Point = point;
+        Angle = angle;
     }
 
     // -- queries --

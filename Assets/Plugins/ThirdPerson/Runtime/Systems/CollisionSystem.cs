@@ -31,46 +31,64 @@ sealed class CollisionSystem: CharacterSystem {
     );
 
     void Active_Update(float delta) {
-        var v = c.State.Next.Velocity;
+        var curr = c.State.Curr;
+        var next = c.State.Next;
 
         // move character using controller if not idle
         var frame = c.Controller.Move(
-            c.State.Next.Position,
-            c.State.Next.Velocity,
-            c.State.Next.Up,
+            next.Position,
+            next.Velocity,
+            next.Up,
             delta
         );
 
         // find the ground collision if it exists
-        c.State.Next.Ground = frame.Ground;
-        c.State.Next.Wall = frame.Wall;
+        next.Ground = frame.Ground;
+        next.Wall = frame.Wall;
 
         // find the last most relevant touched surface
+        var surface = curr.LastSurface;
+
+        // if we're in the air, there's no surface
+        if (next.Ground.IsNone && next.Wall.IsNone) {
+            surface = CharacterCollision.None;
+        }
         // if we weren't touching a wall, and now we are, it's the wall
-        if (c.State.Curr.Wall.IsNone && c.State.Next.Wall.IsSome) {
-            c.State.Next.LastSurface = c.State.Next.Wall;
+        else if (curr.Wall.IsNone && next.Wall.IsSome) {
+            surface = next.Wall;
         }
         // otherwise if we weren't touching a ground, and now we are, it's the ground
-        else if (c.State.Curr.Ground.IsNone && c.State.Next.Ground.IsSome) {
-            c.State.Next.LastSurface = c.State.Next.Ground;
+        else if (curr.Ground.IsNone && next.Ground.IsSome) {
+            surface = next.Ground;
         }
         // otherwise, if the last surface was a ground, use any new ground
-        else if (c.State.Curr.LastSurface.Normal == c.State.Curr.Ground.Normal && c.State.Next.Ground.IsSome) {
-            c.State.Next.LastSurface = c.State.Next.Ground;
+        else if (curr.LastSurface.Normal == curr.Ground.Normal && next.Ground.IsSome) {
+            surface = next.Ground;
         }
         // otherwise, if the last surface was a wall, use any new wall
-        else if (c.State.Curr.LastSurface.Normal == c.State.Curr.Wall.Normal && c.State.Next.Wall.IsSome) {
-            c.State.Next.LastSurface = c.State.Next.Wall;
+        else if (curr.LastSurface.Normal == curr.Wall.Normal && next.Wall.IsSome) {
+            surface = next.Wall;
         }
-        // otherwise, the last surface stays the same
-        else {
-            c.State.Next.LastSurface = c.State.Curr.LastSurface;
+
+        // initialize prev last surface if unset
+        if (curr.PrevLastSurface.IsNone) {
+            next.LastSurface = surface;
+            next.PrevLastSurface = surface;
+        }
+        // if we were in there air, then replace the last surface
+        else if (curr.LastSurface.IsNone && surface.IsSome) {
+            next.LastSurface = surface;
+        }
+        // if we changed surfaces, push the new surface onto the queue
+        else if (curr.LastSurface.Normal != surface.Normal) {
+            next.PrevLastSurface = curr.LastSurface;
+            next.LastSurface = surface;
         }
 
         // sync controller state back to character state
-        c.State.Next.Velocity = frame.Velocity;
-        c.State.Next.Acceleration = (c.State.Next.Velocity - c.State.Curr.Velocity) / delta;
-        c.State.Next.Position = frame.Position;
+        next.Velocity = frame.Velocity;
+        next.Acceleration = (next.Velocity - curr.Velocity) / delta;
+        next.Position = frame.Position;
     }
 }
 
