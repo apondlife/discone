@@ -68,6 +68,7 @@ sealed class WallSystem: CharacterSystem {
         // walls, but we are for now on account of our principle of No Rules
         vd -= wallNormal * c.Tuning.WallMagnet;
 
+        // AAA: normalize all this code
         // transfer velocity
         var deltaNormal = Vector3.Angle(
             c.State.Curr.WallSurface.Normal,

@@ -65,7 +65,17 @@ public class CharacterDust: MonoBehaviour {
             var c = m_State.Wall.IsSome ? m_State.Wall : m_State.Ground;
             var t = m_WallParticles.transform;
             t.position = c.Point;
-            t.forward = -c.Normal;
+
+            // AAA: help here
+            var main = m_WallParticles.main;
+
+            var n = c.Normal;
+            n.z = -n.z;
+            var r = Quaternion.LookRotation(n).eulerAngles * Mathf.Deg2Rad;
+
+            main.startRotationX = r.x;
+            main.startRotationY = r.y;
+            main.startRotationZ = r.z;
         } else {
             if (m_WallParticles.isPlaying) {
                 m_WallParticles.Stop();
