@@ -9,9 +9,18 @@ namespace Discone.Editor {
 
 /// a base class for selection editors
 public sealed class Shortcuts: EditorWindow {
-    // -- props --
+    // -- constants --
     /// the editor title
     const string k_Title = "shortcuts";
+
+    /// the margin
+    const int k_Margin = 10;
+
+    /// the column max width
+    const float k_Spacing = 15f;
+
+    /// the column max width
+    const float k_ColumnWidth = 300f;
 
     // -- fields --
     [Tooltip("the entity repos")]
@@ -49,58 +58,91 @@ public sealed class Shortcuts: EditorWindow {
             .Character;
 
         // show ui
-        DrawCharacterView(character);
+        DrawView(character);
     }
 
     // -- ui --
     /// draw the character shortcuts
-    void DrawCharacterView(DisconeCharacter character) {
+    void DrawView(DisconeCharacter character) {
+        if (position.width >= k_ColumnWidth * 2 * k_Spacing) {
+            DrawViewHorizontal(character);
+        } else {
+            DrawViewVertical(character);
+        }
+    }
+
+    /// draw the vertical layout
+    void DrawViewVertical(DisconeCharacter character) {
         L.BH(new GUIStyle() {
-            margin = new RectOffset(10, 10, 10, 10)
+            margin = new RectOffset(k_Margin, k_Margin, k_Margin, k_Margin)
         });
-            L.BV(G.MaxWidth(300.0f));
-                // show current or selected character
-                E.LabelField(
-                    "current character",
-                    EditorStyles.boldLabel
-                );
-
-                m_Character = (DisconeCharacter)E.ObjectField(
-                    character ?? m_Character,
-                    typeof(DisconeCharacter),
-                    allowSceneObjects: true
-                );
-
-                // show the character ui
-                if (m_Character != null) {
-                    L.BV();
-                        // show query ui
-                        G.Space(5f);
-                        DrawChildSearch();
-                        G.Space(7f);
-
-                        // select the object
-                        if (G.Button("select it", G.ExpandWidth(false))) {
-                            SelectChild();
-                        }
-                    L.EV();
-                }
+            L.BV(G.MaxWidth(k_ColumnWidth));
+                DrawCharacterSearch(character);
             L.EV();
 
             // show the state ui
             if (m_Character != null) {
-                E.Space(15f, false);
+                E.Space(k_Spacing, false);
 
                 m_ScrollPos = L.BS(m_ScrollPos);
-                    L.BV(G.ExpandWidth(true));
-                        var state = new SerializedObject(m_Character)
-                            .FindProperty("m_RemoteState");
-
-                        E.PropertyField(state);
+                    L.BV(G.MaxWidth(k_ColumnWidth));
+                        DrawCharacterState(character);
                     L.EV();
                 L.ES();
             }
         L.EH();
+    }
+
+    /// draw the horizontal layout
+    void DrawViewHorizontal(DisconeCharacter character) {
+        L.BH(new GUIStyle() {
+            margin = new RectOffset(10, 10, 10, 10)
+        });
+            L.BV(G.MaxWidth(k_ColumnWidth));
+                DrawCharacterSearch(character);
+            L.EV();
+
+            // show the state ui
+            if (m_Character != null) {
+                E.Space(k_Spacing, false);
+
+                m_ScrollPos = L.BS(m_ScrollPos);
+                    L.BV(G.MaxWidth(k_ColumnWidth));
+                        DrawCharacterState(character);
+                    L.EV();
+                L.ES();
+            }
+        L.EH();
+    }
+
+    /// draw the character input and child search
+    void DrawCharacterSearch(DisconeCharacter character) {
+        // show current or selected character
+        E.LabelField(
+            "current character",
+            EditorStyles.boldLabel
+        );
+
+        m_Character = (DisconeCharacter)E.ObjectField(
+            character ?? m_Character,
+            typeof(DisconeCharacter),
+            allowSceneObjects: true
+        );
+
+        // show the character ui
+        if (m_Character != null) {
+            L.BV();
+                // show query ui
+                G.Space(5f);
+                DrawChildSearch();
+                G.Space(7f);
+
+                // select the object
+                if (G.Button("select it", G.ExpandWidth(false))) {
+                    SelectChild();
+                }
+            L.EV();
+        }
     }
 
     /// show input field to query child obj of character
@@ -118,6 +160,14 @@ public sealed class Shortcuts: EditorWindow {
                 }
             }
         L.EH();
+    }
+
+    /// draw the character's current state
+    void DrawCharacterState(DisconeCharacter character) {
+        var state = new SerializedObject(m_Character)
+            .FindProperty("m_RemoteState");
+
+        E.PropertyField(state);
     }
 
     // -- commands --
