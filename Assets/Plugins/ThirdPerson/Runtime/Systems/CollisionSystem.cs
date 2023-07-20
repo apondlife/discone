@@ -42,9 +42,17 @@ sealed class CollisionSystem: CharacterSystem {
             delta
         );
 
-        // find the ground collision if it exists
+        // update collisions
         next.Ground = frame.Ground;
         next.Wall = frame.Wall;
+
+        // find the newest collision surface
+        var newSurface = next.WallSurface;
+        if (curr.Wall.IsNone && next.Wall.IsSome) {
+            newSurface = next.Wall;
+        } else if (curr.Ground.IsNone && next.Ground.IsSome) {
+            newSurface = next.Ground;
+        }
 
         // find the last most relevant touched surface
         var surface = curr.LastSurface;
@@ -61,21 +69,17 @@ sealed class CollisionSystem: CharacterSystem {
         else if (curr.Ground.IsNone && next.Ground.IsSome) {
             surface = next.Ground;
         }
-        // otherwise, if the last surface was a ground, use any new ground
-        else if (curr.LastSurface.Normal == curr.Ground.Normal && next.Ground.IsSome) {
-            surface = next.Ground;
-        }
-        // otherwise, if the last surface was a wall, use any new wall
-        else if (curr.LastSurface.Normal == curr.Wall.Normal && next.Wall.IsSome) {
-            surface = next.Wall;
+        // otherwise, if the newest surface is different, use that
+        else if (curr.LastSurface.Normal != newSurface.Normal) {
+            surface = newSurface;
         }
 
-        // initialize prev last surface if unset
+        // update the last surface queue (initialize if unset)
         if (curr.PrevLastSurface.IsNone) {
             next.LastSurface = surface;
             next.PrevLastSurface = surface;
         }
-        // if we were in there air, then replace the last surface
+        // if we were in the air, then replace the last surface
         else if (curr.LastSurface.IsNone && surface.IsSome) {
             next.LastSurface = surface;
         }
