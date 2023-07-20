@@ -13,15 +13,6 @@ public sealed class Shortcuts: EditorWindow {
     /// the editor title
     const string k_Title = "shortcuts";
 
-    /// the margin
-    const int k_Margin = 10;
-
-    /// the column max width
-    const float k_Spacing = 15f;
-
-    /// the column max width
-    const float k_ColumnWidth = 300f;
-
     // -- fields --
     [Tooltip("the entity repos")]
     [SerializeField] EntitiesVariable m_Entities;
@@ -36,6 +27,9 @@ public sealed class Shortcuts: EditorWindow {
     /// the manually selected character
     DisconeCharacter m_Character;
 
+    /// the repaint timer
+    ThirdPerson.EaseTimer m_Repaint = new ThirdPerson.EaseTimer(1f / 60f);
+
     // -- lifecycle --
     /// show the window
     [MenuItem("GameObject/discone/shortcuts")]
@@ -49,6 +43,8 @@ public sealed class Shortcuts: EditorWindow {
     }
 
     void OnGUI() {
+        S.Init();
+
         var entities = m_Entities.Value;
 
         // find current character
@@ -61,10 +57,23 @@ public sealed class Shortcuts: EditorWindow {
         DrawView(character);
     }
 
+    void Start() {
+        if (EditorApplication.isPlaying && !EditorApplication.isPaused) {
+            m_Repaint.Start();
+        }
+
+    }
+
+    void OnInspectorUpdate() {
+        if (EditorApplication.isPlaying && !EditorApplication.isPaused) {
+            Repaint();
+        }
+    }
+
     // -- ui --
     /// draw the character shortcuts
     void DrawView(DisconeCharacter character) {
-        if (position.width >= k_ColumnWidth * 2 * k_Spacing) {
+        if (position.width >= (S.Margin + S.ColumnWidth) * 2 * S.Spacing) {
             DrawViewHorizontal(character);
         } else {
             DrawViewVertical(character);
@@ -73,41 +82,34 @@ public sealed class Shortcuts: EditorWindow {
 
     /// draw the vertical layout
     void DrawViewVertical(DisconeCharacter character) {
-        L.BH(new GUIStyle() {
-            margin = new RectOffset(k_Margin, k_Margin, k_Margin, k_Margin)
-        });
-            L.BV(G.MaxWidth(k_ColumnWidth));
+        m_ScrollPos = L.BS(m_ScrollPos);
+            L.BV(S.Margins, G.MaxWidth(S.ColumnWidth));
                 DrawCharacterSearch(character);
+
+                // show the state ui
+                if (m_Character != null) {
+                    L.HR();
+                    E.Space(S.Spacing, false);
+
+                    DrawCharacterState(character);
+                }
             L.EV();
-
-            // show the state ui
-            if (m_Character != null) {
-                E.Space(k_Spacing, false);
-
-                m_ScrollPos = L.BS(m_ScrollPos);
-                    L.BV(G.MaxWidth(k_ColumnWidth));
-                        DrawCharacterState(character);
-                    L.EV();
-                L.ES();
-            }
-        L.EH();
+        L.ES();
     }
 
     /// draw the horizontal layout
     void DrawViewHorizontal(DisconeCharacter character) {
-        L.BH(new GUIStyle() {
-            margin = new RectOffset(10, 10, 10, 10)
-        });
-            L.BV(G.MaxWidth(k_ColumnWidth));
+        L.BH(S.Margins);
+            L.BV(G.MaxWidth(S.ColumnWidth));
                 DrawCharacterSearch(character);
             L.EV();
 
             // show the state ui
             if (m_Character != null) {
-                E.Space(k_Spacing, false);
+                E.Space(S.Spacing, false);
 
                 m_ScrollPos = L.BS(m_ScrollPos);
-                    L.BV(G.MaxWidth(k_ColumnWidth));
+                    L.BV(G.MaxWidth(S.ColumnWidth));
                         DrawCharacterState(character);
                     L.EV();
                 L.ES();
@@ -124,6 +126,7 @@ public sealed class Shortcuts: EditorWindow {
         );
 
         m_Character = (DisconeCharacter)E.ObjectField(
+            "character",
             character ?? m_Character,
             typeof(DisconeCharacter),
             allowSceneObjects: true
@@ -133,12 +136,11 @@ public sealed class Shortcuts: EditorWindow {
         if (m_Character != null) {
             L.BV();
                 // show query ui
-                G.Space(5f);
                 DrawChildSearch();
-                G.Space(7f);
 
                 // select the object
-                if (G.Button("select it", G.ExpandWidth(false))) {
+                G.Space(3f);
+                if (G.Button("select it")) {
                     SelectChild();
                 }
             L.EV();
@@ -147,10 +149,11 @@ public sealed class Shortcuts: EditorWindow {
 
     /// show input field to query child obj of character
     void DrawChildSearch() {
-        G.Label("child query");
-
         L.BH();
-            m_Query = G.TextField(m_Query);
+            m_Query = E.TextField(
+                "child query",
+                m_Query
+            );
 
             if (m_Query != "") {
                 G.Space(5f);
