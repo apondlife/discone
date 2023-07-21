@@ -1,6 +1,5 @@
 what is projected
 ---
-aaa: jump ground angle scale tuning
 aaa: vertical attack on wall-to-wall transfer
 
 - wall particle proportional to wall influence
