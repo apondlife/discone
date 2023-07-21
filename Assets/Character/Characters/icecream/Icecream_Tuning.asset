@@ -16,8 +16,36 @@ MonoBehaviour:
   Horizontal_MinSpeed: 0.85
   Horizontal_Acceleration: 35
   Horizontal_Drag: 0.1
-  Horizontal_StaticFriction: 20
+  Horizontal_StaticFriction: 30
   Horizontal_KineticFriction: 10
+  Surface_FrictionScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -0.011111111
+        outSlope: -0.011111111
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 90
+        value: 0
+        inSlope: -0.011111111
+        outSlope: -0.011111111
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 1
   TurnSpeed: 360
   PivotSpeed: 1080
   TimeToPivot: 0.6

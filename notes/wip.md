@@ -1,15 +1,14 @@
 what is projected
 ---
 don't merge aaa
-- friction as a fn of slope
+- wall particle proportional to wall influence
 - jump ground angle scale tuning
 - vertical attack on wall-to-wall transfer
 - ground velocity vs. surface velocity (friction on walls? and jumpng?)
-- maybe? fix wall transfer tangent (goes negative, does weird stuff)
-- wall particle random rotation
-- wall particle disable when not moving
+- ceiling
 
-- wall system no wall gravity
+- maybe? fix wall transfer tangent (goes negative, does weird stuff)
+- maybe? wall system no wall gravity (all friction??)
 
 - look into crouching sliding down ramps
 ~ ui save paths are not accurate

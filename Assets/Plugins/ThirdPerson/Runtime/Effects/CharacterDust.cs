@@ -57,7 +57,8 @@ public class CharacterDust: MonoBehaviour {
             m_JumpPlume.Play();
         }
 
-        if (m_State.Next.IsOnWall) {
+        // TODO: extract into its own file / prefab
+        if (m_State.Next.IsOnWall && !m_State.Next.IsIdle) {
             if (!m_WallParticles.isPlaying) {
                 m_WallParticles.Play();
             }
@@ -71,11 +72,17 @@ public class CharacterDust: MonoBehaviour {
 
             var n = c.Normal;
             n.z = -n.z;
-            var r = Quaternion.LookRotation(n).eulerAngles * Mathf.Deg2Rad;
 
-            main.startRotationX = r.x;
-            main.startRotationY = r.y;
-            main.startRotationZ = r.z;
+            var rot = Quaternion.identity;
+            // point towards the current surface
+            rot *= Quaternion.LookRotation(n);
+            // rotate along the normal axis
+            rot *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward);
+
+            var angles = rot.eulerAngles * Mathf.Deg2Rad;
+            main.startRotationX = angles.x;
+            main.startRotationY = angles.y;
+            main.startRotationZ = angles.z;
         } else {
             if (m_WallParticles.isPlaying) {
                 m_WallParticles.Stop();
