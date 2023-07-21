@@ -57,38 +57,34 @@ sealed class WallSystem: CharacterSystem {
         // update to new wall collision
         var wallNormal = wall.Normal;
         var wallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
-        var prevLastSurface = c.State.Prev.LastSurface;
-        var wallTg = prevLastSurface.IsSome
-            ? Vector3.ProjectOnPlane(prevLastSurface.Normal, wall.Normal).normalized
+        var wallTg = c.State.Prev.LastSurface.IsSome
+            ? Vector3.ProjectOnPlane(c.State.Prev.LastSurface.Normal, wall.Normal).normalized
             : wallUp;
 
         // calculate added velocity
         var vd = Vector3.zero;
+
         // NOTE: unsure if we want to apply the magnet on things that are not "real"
         // walls, but we are for now on account of our principle of No Rules
         vd -= wallNormal * c.Tuning.WallMagnet;
 
-        // AAA: normalize all this code
         // transfer velocity
-        var deltaNormal = Vector3.Angle(
+        var normalAngleDelta = Mathf.Abs(90f - Vector3.Angle(
             c.State.Curr.WallSurface.Normal,
             c.State.Curr.PrevLastSurface.Normal
-        );
-        var normalAngleDelta = Mathf.Abs(90f - deltaNormal);
+        ));
         var normalAngleScale = 1f - (normalAngleDelta / 90f);
 
+        // scale by angle
         var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
-
         var transferred = TransferredVelocity(wallNormal, wallTg) * wallTransferScale;
         vd += transferred;
 
-        if (deltaNormal >= Mathf.Epsilon) {
-            Debug.Log($"[wallss] dn {deltaNormal} nad {normalAngleDelta} nas {normalAngleScale} wts {wallTransferScale} tra {transferred} tra ({transferred.magnitude})");
-        }
-
-        // accelerate while holding button
-        var deltaAngle = Mathf.Abs(c.State.Curr.WallSurface.Angle - c.State.Curr.PrevLastSurface.Angle);
-        var surfaceAngleDelta = Mathf.Abs(90f - deltaAngle);
+        // add wall gravity
+        var surfaceAngleDelta = Mathf.Abs(90f -  Mathf.Abs(
+            c.State.Curr.WallSurface.Angle -
+            c.State.Curr.PrevLastSurface.Angle
+        ));
         var surfaceAngleScale = 1f - (surfaceAngleDelta / 90f);
 
         var wallGravityAmplitudeScale = c.Tuning.WallGravityAmplitudeScale.Evaluate(surfaceAngleScale);
@@ -96,15 +92,9 @@ sealed class WallSystem: CharacterSystem {
             ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale)
             : c.Tuning.WallGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale);
 
-        if (deltaAngle >= Mathf.Epsilon) {
-            Debug.Log($"[wallss] da {deltaAngle} sad {surfaceAngleDelta} sas {surfaceAngleScale} gas {wallGravityAmplitudeScale} g {wallGravity}");
-        }
-
+        // scale by wall angle
         var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
         vd += wallAcceleration * wallAngleScale * delta * wallUp;
-
-        // scale acceleration by wall angle
-        // vd *= wallAngleScale;
 
         // update state
         c.State.Velocity += vd;

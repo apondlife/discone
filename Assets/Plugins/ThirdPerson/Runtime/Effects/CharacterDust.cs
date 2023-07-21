@@ -63,22 +63,22 @@ public class CharacterDust: MonoBehaviour {
                 m_WallParticles.Play();
             }
 
+            // spawn particle at collision
             var c = m_State.Wall.IsSome ? m_State.Wall : m_State.Ground;
             var t = m_WallParticles.transform;
             t.position = c.Point;
 
-            // AAA: help here
-            var main = m_WallParticles.main;
-
+            // use inverted z-axis bc particle systems want that
             var n = c.Normal;
             n.z = -n.z;
 
-            var rot = Quaternion.identity;
             // point towards the current surface
-            rot *= Quaternion.LookRotation(n);
-            // rotate along the normal axis
+            var rot = Quaternion.LookRotation(n);
+            // and rotate along the normal axis
             rot *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward);
 
+            // update the start rotation
+            var main = m_WallParticles.main;
             var angles = rot.eulerAngles * Mathf.Deg2Rad;
             main.startRotationX = angles.x;
             main.startRotationY = angles.y;

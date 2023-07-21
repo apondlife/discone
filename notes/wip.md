@@ -1,9 +1,11 @@
 what is projected
 ---
-don't merge aaa
+aaa: jump ground angle scale tuning
+aaa: vertical attack on wall-to-wall transfer
+
 - wall particle proportional to wall influence
-- jump ground angle scale tuning
-- vertical attack on wall-to-wall transfer
+- wall particle indicates state (attack, hold button)
+
 - ground velocity vs. surface velocity (friction on walls? and jumpng?)
 - ceiling
 
