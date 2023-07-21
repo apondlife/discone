@@ -53,22 +53,36 @@ public class CharacterDust: MonoBehaviour {
 
     void FixedUpdate() {
         // TODO: move into own script
-        if (m_State.Events.Contains(CharacterEvent.Jump)) {
+        if (m_State.Next.Events.Contains(CharacterEvent.Jump)) {
             m_JumpPlume.Play();
-            // m_JumpPlume.emission.dire
         }
 
-        if (m_State.IsOnWall) {
+        // TODO: extract into its own file / prefab
+        if (m_State.Next.IsOnWall && !m_State.Next.IsIdle) {
             if (!m_WallParticles.isPlaying) {
                 m_WallParticles.Play();
             }
 
-            if (!m_State.Wall.IsNone) {
-                var c = m_State.Wall;
-                var t = m_WallParticles.transform;
-                t.position = c.Point;
-                t.forward = -c.Normal;
-            }
+            // spawn particle at collision
+            var c = m_State.Wall.IsSome ? m_State.Wall : m_State.Ground;
+            var t = m_WallParticles.transform;
+            t.position = c.Point;
+
+            // use inverted z-axis bc particle systems want that
+            var n = c.Normal;
+            n.z = -n.z;
+
+            // point towards the current surface
+            var rot = Quaternion.LookRotation(n);
+            // and rotate along the normal axis
+            rot *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward);
+
+            // update the start rotation
+            var main = m_WallParticles.main;
+            var angles = rot.eulerAngles * Mathf.Deg2Rad;
+            main.startRotationX = angles.x;
+            main.startRotationY = angles.y;
+            main.startRotationZ = angles.z;
         } else {
             if (m_WallParticles.isPlaying) {
                 m_WallParticles.Stop();

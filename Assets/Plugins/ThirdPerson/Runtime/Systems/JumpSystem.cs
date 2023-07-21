@@ -49,10 +49,9 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void NotJumping_Update(float _) {
-        // count coyote frames; reset to max whenever (this determine's if the
-        // character is grounded)
-        if (c.State.Curr.Ground.IsSome) {
-            c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
+        // reset jump surface whenever grounded
+        if (IsOnGround()) {
+            ResetJumpSurface();
         }
         // but if not, subtract a frame
         else {
@@ -85,10 +84,9 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void Landing_Update(float _) {
-        // count coyote frames; reset to max whenever (this determine's if the
-        // character is grounded)
-        if (c.State.Curr.Ground.IsSome) {
-            c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
+        // reset jump surface whenever grounded
+        if (IsOnGround()) {
+            ResetJumpSurface();
         }
         // but if not, subtract a frame
         else {
@@ -128,8 +126,8 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void JumpSquat_Update(float delta) {
-        // apply fall acceleration if not grounded
-        if (!c.State.Curr.Ground.IsSome && !c.State.Next.IsOnWall) {
+        // apply fall acceleration if airborne
+        if (c.State.Curr.Ground.IsNone && c.State.Curr.Wall.IsNone) {
             c.State.Next.Velocity += c.Tuning.FallAcceleration * delta * Vector3.up;
         }
 
@@ -149,9 +147,9 @@ sealed class JumpSystem: CharacterSystem {
 
         // if this is the first jump, you might be in coyote time
         if (c.State.JumpTuningJumpIndex == 0) {
-            // count coyote frames; reset to max whenever grounded
-            if (c.State.Curr.Ground.IsSome) {
-                c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
+            // reset jump surface whenever grounded
+            if (IsOnGround()) {
+                ResetJumpSurface();
             }
             // but if not, subtract a frame
             else {
@@ -188,7 +186,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void Falling_Update(float delta) {
         // apply fall acceleration while holding jump
-        // TODO: is this bad?
+        // TODO: is this bad? yes?
         if (c.Input.IsJumpPressed && !c.State.Next.IsOnWall) {
             var acceleration = c.State.Next.Velocity.y > 0.0f
                 ? c.Tuning.JumpAcceleration
@@ -211,13 +209,20 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // transition out of jump
-        if (c.State.Curr.Ground.IsSome) {
+        if (IsOnGround()) {
             ChangeTo(Landing);
             return;
         }
     }
 
     // -- commands --
+    /// reset the next surface to jump from
+    void ResetJumpSurface() {
+        c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
+        c.State.JumpSurface = c.State.Next.Ground;
+    }
+
+    /// .
     void Jump() {
         // get curved percent complete through jump squat
         var pct = Mathf.InverseLerp(
@@ -248,15 +253,18 @@ sealed class JumpSystem: CharacterSystem {
         var verticalLoss = v0.y > 0 ? JumpTuning.Upwards_MomentumLoss : 1;
         dv -= v0.y * verticalLoss * Vector3.up;
 
-        // cancel vertical momentum if falling
         // cancel horizontal momentum
         dv -= c.State.Curr.PlanarVelocity * JumpTuning.Horizontal_MomentumLoss;
 
+        // scale by wall factor
+        // TODO: maybe horizontal/vertical should be tangent/normal to ground or wall:
+        var groundAngleScale = c.Tuning.Jump_GroundAngleScale.Evaluate(c.State.Curr.JumpSurface.Angle);
+
         // add vertical jump
-        dv += verticalSpeed * Vector3.up;
+        dv += verticalSpeed * Vector3.up * groundAngleScale;
 
         // add horizontal jump
-        dv += horizontalSpeed * c.State.Curr.Forward;
+        dv += horizontalSpeed * c.State.Curr.Forward * groundAngleScale;
 
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteFrames = 0;
@@ -336,6 +344,16 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         return false;
+    }
+
+    /// if the character is on something ground like
+    bool IsOnGround() {
+        var ground = c.State.Curr.GroundSurface;
+        if (ground.IsNone) {
+            return false;
+        }
+
+        return ground.Angle <= c.Tuning.Jump_GroundAngle;
     }
 }
 

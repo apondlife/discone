@@ -264,9 +264,8 @@ public sealed class CharacterController {
                 hit.point
             );
 
-            // track wall & ground collision separately, both for external
-            // querying and for determining our cast offset
-            if (Vector3.Angle(hit.normal, Vector3.up) > m_WallAngle) {
+            // track wall & ground collision separately for external querying
+            if (collision.Angle >= m_WallAngle) {
                 nextWall = collision;
             } else {
                 nextGround = collision;

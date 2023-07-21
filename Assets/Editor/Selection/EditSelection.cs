@@ -37,10 +37,8 @@ public sealed class EditSelection: EditorWindow {
     void OnGUI() {
         m_ScrollPos = L.BS(m_ScrollPos);
             L.BV(
-                new GUIStyle() {
-                    margin = new RectOffset(10, 10, 10, 10)
-                },
-                G.MaxWidth(300f)
+                S.Margins,
+                G.MaxWidth(S.ColumnWidth)
             );
                 var n = Components.Length;
                 for (var i = 0; i < n; i++) {
