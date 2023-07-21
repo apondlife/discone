@@ -1,10 +1,13 @@
 what is projected
 ---
 don't merge aaa
-- fix wall transfer tangent (goes negative, does weird stuff)
 - friction as a fn of slope
-- check/fix gaps in wall skid particle
+- jump ground angle scale tuning
 - vertical attack on wall-to-wall transfer
+- ground velocity vs. surface velocity (friction on walls? and jumpng?)
+- maybe? fix wall transfer tangent (goes negative, does weird stuff)
+- wall particle random rotation
+- wall particle disable when not moving
 
 - wall system no wall gravity
 

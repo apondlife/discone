@@ -32,6 +32,9 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the coefficient of friction when moving")]
     public float Horizontal_KineticFriction;
 
+    [Tooltip("the friction scale as a fn of the surface angle")]
+    public MapOutCurve Surface_FrictionScale;
+
     /// the time to to reach max speed from zero.
     public float TimeToMaxSpeed => TimeToPercentMaxSpeed(
         (Horizontal_MaxSpeed - Horizontal_MinSpeed) / Horizontal_MaxSpeed
