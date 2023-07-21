@@ -208,17 +208,17 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 80
         value: 0
-        inSlope: -0.03224415
+        inSlope: -0.046644054
         outSlope: Infinity
         tangentMode: 1
         weightedMode: 0
-        inWeight: 0.044291086
+        inWeight: 0.02025321
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 1
+      Min: 0.7
       Max: 1
   FallGravity: -40
   Landing_Duration: 0.3
@@ -331,7 +331,7 @@ MonoBehaviour:
       m_Duration: 0
   WallHoldGravity:
     m_Sustain: 18
-    m_MaxScale: 3
+    m_MaxScale: 2
     m_Attack:
       m_Curve:
         serializedVersion: 2
@@ -448,43 +448,6 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 1
-  WallGravityAmplitudeScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 2.2197819
-        outSlope: 2.2197819
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.9009894
-        value: 2
-        inSlope: 0.008254274
-        outSlope: 0.008254274
-        tangentMode: 0
-        weightedMode: 3
-        inWeight: 0.33333334
-        outWeight: 0.21819292
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: -97.44338
-        outSlope: -97.44338
-        tangentMode: 0
-        weightedMode: 1
-        inWeight: 0.0313079
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 1
   WallTransferScale:
     m_Curve:
       serializedVersion: 2
@@ -515,6 +478,43 @@ MonoBehaviour:
         tangentMode: 34
         weightedMode: 0
         inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 1
+  WallGravityAmplitudeScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2.2197819
+        outSlope: 2.2197819
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.9009894
+        value: 2
+        inSlope: 0.008254274
+        outSlope: 0.008254274
+        tangentMode: 0
+        weightedMode: 3
+        inWeight: 0.33333334
+        outWeight: 0.21819292
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: -97.44338
+        outSlope: -97.44338
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.0313079
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
