@@ -19,6 +19,15 @@ sealed class Mechanic: MonoBehaviour {
     [ReadOnly]
     [SerializeField] string m_TreeRoot;
 
+    [Tooltip("the current delay")]
+    [ReadOnly]
+    [SerializeField] float m_Delay;
+
+    // -- tuning --
+    [Header("tuning")]
+    [Tooltip("the fixed delay accumulated on eye close")]
+    [SerializeField] float m_DelayBonus;
+
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the node to start w/ after the intro")]
@@ -44,6 +53,9 @@ sealed class Mechanic: MonoBehaviour {
     [SerializeField] VoidEvent m_Intro_SequenceEnded;
 
     // -- props --
+    /// if delay is currently accumulating
+    bool m_IsDelayAccumulating;
+
     /// a map of nodes by name
     Dictionary<string, MechanicNode> m_Nodes;
 
@@ -67,6 +79,13 @@ sealed class Mechanic: MonoBehaviour {
             .Add(m_IsEyelidClosed_Changed, OnEyelidClosedChanged)
             .Add(m_Intro_SequenceEnded, OnIntroSequenceEnded)
             .Add(m_SetBirthplaceStep, OnSetBirthplaceStep);
+    }
+
+    void Update() {
+        // accumulate delay
+        if (m_IsDelayAccumulating) {
+            m_Delay += Time.deltaTime;
+        }
     }
 
     void OnDestroy() {
@@ -234,10 +253,26 @@ sealed class Mechanic: MonoBehaviour {
     }
 
     // -- c/yarn
+    /// set the next node
     [YarnCommand("then")]
     public void Then(string nodeName) {
         Debug.Log(Tag.Mechanic.F($"then: {nodeName}"));
         SwitchNode(nodeName);
+    }
+
+    /// wait for an aggregated number of seconds
+    [YarnCommand("idle")]
+    public IEnumerator Idle(float duration) {
+        // start accumulating delay
+        m_IsDelayAccumulating = true;
+
+        // wait however much longer we need to
+        var remaining = Mathf.Max(duration - m_Delay, 0f);
+        yield return new WaitForSeconds(remaining);
+
+        // reset delay if we finish
+        m_Delay = 0f;
+        m_IsDelayAccumulating = false;
     }
 
     // -- queries --
@@ -287,9 +322,14 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void OnEyelidClosedChanged(bool isEyelidClosed) {
+        // show dialogue; add bonus delay, but don't start accumulating until idle command
         if (isEyelidClosed) {
+            m_Delay += m_DelayBonus;
             StartDialogue();
-        } else {
+        }
+        // hide dialogue; stop accumulating when opening eyes
+        else {
+            m_IsDelayAccumulating = false;
             HideDialogue();
         }
     }

@@ -44,19 +44,20 @@ you can hold "right or left trigger"
 
 title: Start_Thanks
 ---
+<<idle Mechanic 0>>
 ah, thanks for holding my “button”!
 ===
 
 title: Start_Bother
 ---
-<<wait 3>>
+<<idle Mechanic 3>>
 sorry to bother you there, earlier.
 ===
 
 title: Start_Talk
 tags: #last
 ---
-<<wait 3>>
+<<idle Mechanic 3>>
 i'm always here if you want to talk.
 <<then Mechanic Birthplace>>
 ===
@@ -92,20 +93,20 @@ tags: #tree
 
 title: Birthplace_Ramp
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 this ramp, did you...
 ===
 
 title: Birthplace_RampLetter
 ---
-<<wait 3>>
+<<idle Mechanic 3>>
 see my letter too?
 ===
 
 title: Birthplace_RampHelp
 tags: #leaf #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 if you mash the "jump button" as you approach...
 
 <<wait 3>>
@@ -133,7 +134,7 @@ tags: #fork
 
 title: Birthplace_StairSee
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 that was beautiful...
 
 <<set $Birthplace_StairSee_Seen to true>>
@@ -142,7 +143,7 @@ that was beautiful...
 title: Birthplace_StairBorn
 tags: #leaf #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 i remember when this stair was born.
 ===
 
@@ -152,13 +153,13 @@ i remember when this stair was born.
 
 title: Birthplace_Wall
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 a wall is a nice place...
 ===
 
 title: Birthplace_WallFeet
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 to press your feet into,
 
 <<set $Birthplace_WallFeet_Seen to true>>
@@ -167,10 +168,10 @@ to press your feet into,
 title: Birthplace_WallHelp
 tags: #leaf #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 to hold the "jump button", along
 
-<<wait 2>>
+<<idle Mechanic 2>>
 like any other floor.
 ===
 
@@ -182,7 +183,7 @@ title: Birthplace_Tunnel
 tags:
 ---
 <<if $Birthplace_WallFeet_Seen>>
-  <<wait 2>>
+  <<idle Mechanic 2>>
   how are your feet?
 <<endif>>
 ===
@@ -209,53 +210,53 @@ tags: #fork
 
 title: IntroReal
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 this is the place...
 ===
 
 title: IntroReal_Here
 tags: #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 do you know what you're doing here?
 ===
 
 title: IntroReal_Normal
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 don't worry if you don't, that's normal.
 ===
 
 title: IntroReal_Never
 tags: #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 we never really do.
 ===
 
 title: IntroReal_Figure
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 but anyways i'm sure you'll figure it out...
 ===
 
 title: IntroReal_Doing
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 what you're doing here
 ===
 
 title: IntroRead_Soon
 tags: #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 soon.
 ===
 
 title: IntroReal_Ask
 tags: #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 don't ask me though, i couldn't tell you.
 ===
 
@@ -268,40 +269,40 @@ i can't tell you, even.
 
 title: IntroReal_Mechanic
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 & speaking of asking me, i should...
 ===
 
 title: IntroReal_MechanicCall
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 introduce myself. you could call me
 ===
 
 title: IntroReal_MechanicName
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 "the mechanic",
 ===
 
 title: IntroReal_MechanicChance
 tags: #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 if you ever get the chance =).
 ===
 
 title: IntroReal_Want
 tags: #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 but if you do want to hear me, i'm usually around here.
 ===
 
 title: IntroReal_Eyes
 tags: #last
 ---
-<<wait 2>>
+<<idle Mechanic 2>>
 if you don't, well, close your eyes i guess ;).
 ===
 
