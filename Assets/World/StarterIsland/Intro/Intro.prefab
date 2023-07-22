@@ -249,24 +249,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  m_Mechanic_StartNode:
-    _usage: 0
-    _value: Intro
-    _constant: {fileID: 0}
-    _variable: {fileID: 0}
-    _variableInstancer: {fileID: 0}
-  m_Mechanic_InputNode:
-    _usage: 0
-    _value: Intro_Eyes
-    _constant: {fileID: 0}
-    _variable: {fileID: 0}
-    _variableInstancer: {fileID: 0}
-  m_Mechanic_EndNode:
-    _usage: 0
-    _value: Intro_End
-    _constant: {fileID: 0}
-    _variable: {fileID: 0}
-    _variableInstancer: {fileID: 0}
+  m_Mechanic: {fileID: 7545569452688597077, guid: b2916276469f3434fbfd12489a5d0307, type: 3}
+  m_Mechanic_StartNode: Intro
+  m_Mechanic_InputNode: Intro_Eyes
+  m_Mechanic_EndNode: Intro_End
   m_Inputs: {fileID: -944628639613478452, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   m_IntroInput: {fileID: 6535942328617530698, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}

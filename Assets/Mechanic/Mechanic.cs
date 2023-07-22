@@ -30,7 +30,11 @@ sealed class Mechanic: MonoBehaviour {
 
     // -- cfg --
     [Header("cfg")]
+    [Tooltip("the yarn project")]
+    [SerializeField] YarnProject m_Project;
+
     [Tooltip("the node to start w/ after the intro")]
+    [YarnNode(nameof(m_Project))]
     [SerializeField] string m_StartNode;
 
     // -- refs --
@@ -68,8 +72,8 @@ sealed class Mechanic: MonoBehaviour {
         m_Nodes = InitNodes();
 
         // TODO: unity deserializes the default value of a string as "" instead of null?
-        m_Node = m_Node == "" ? null : m_Node;
-        m_TreeRoot = m_TreeRoot == "" ? null : m_TreeRoot;
+        m_Node = null;
+        m_TreeRoot = null;
 
         // bind events
         m_Subscriptions

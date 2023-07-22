@@ -59,6 +59,7 @@ MonoBehaviour:
   m_TreeRoot: 
   m_Delay: 0
   m_DelayBonus: 0.5
+  m_Project: {fileID: 7545569452688597077, guid: b2916276469f3434fbfd12489a5d0307, type: 3}
   m_StartNode: Start
   m_DialogueRunner: {fileID: 5037302081254551675}
   m_JumpToNode: {fileID: 11400000, guid: 24238e53c72c14c908cd529b69ca0357, type: 2}
@@ -90,6 +91,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onNodeComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onDialogueStart:
     m_PersistentCalls:
       m_Calls: []
   onDialogueComplete:

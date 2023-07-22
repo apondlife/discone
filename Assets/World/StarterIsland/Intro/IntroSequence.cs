@@ -3,6 +3,7 @@ using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Yarn.Unity;
 
 namespace Discone {
 
@@ -20,14 +21,20 @@ public class IntroSequence: MonoBehaviour {
 
     // -- mechanic --
     [Header("mechanic")]
+    [Tooltip("the mechanic yarn project")]
+    [SerializeField] YarnProject m_Mechanic;
+
     [Tooltip("the mechanic node to play on start")]
-    [SerializeField] StringReference m_Mechanic_StartNode;
+    [YarnNode(nameof(m_Mechanic))]
+    [SerializeField] string m_Mechanic_StartNode;
 
     [Tooltip("the mechanic node to play on input")]
-    [SerializeField] StringReference m_Mechanic_InputNode;
+    [YarnNode(nameof(m_Mechanic))]
+    [SerializeField] string m_Mechanic_InputNode;
 
     [Tooltip("the mechanic node to play on eyes open")]
-    [SerializeField] StringReference m_Mechanic_EndNode;
+    [YarnNode(nameof(m_Mechanic))]
+    [SerializeField] string m_Mechanic_EndNode;
 
     // -- inputs --
     [Header("inputs")]
