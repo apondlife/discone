@@ -44,6 +44,14 @@ static class L {
     public static void ES() {
         EditorGUILayout.EndScrollView();
     }
+
+    /// draw a horizontal rule
+    public static void HR() {
+        var c = GUI.color;
+        GUI.color = Color.white;
+        GUILayout.Box(GUIContent.none, S.Rule);
+        GUI.color = c;
+    }
 }
 
 }

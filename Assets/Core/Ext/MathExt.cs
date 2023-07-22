@@ -2,6 +2,7 @@ using UnityEngine;
 
 /// mathf "static" methods
 static class Mathx {
+    // -- queries --
     /// remap a value from one range to another
     public static float Remap(
         float min0, float max0,

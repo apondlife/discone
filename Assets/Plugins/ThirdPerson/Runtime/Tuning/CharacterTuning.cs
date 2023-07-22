@@ -32,6 +32,9 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the coefficient of friction when moving")]
     public float Horizontal_KineticFriction;
 
+    [Tooltip("the friction scale as a fn of the surface angle")]
+    public MapOutCurve Surface_FrictionScale;
+
     /// the time to to reach max speed from zero.
     public float TimeToMaxSpeed => TimeToPercentMaxSpeed(
         (Horizontal_MaxSpeed - Horizontal_MinSpeed) / Horizontal_MaxSpeed
@@ -115,6 +118,12 @@ public sealed class CharacterTuning: ScriptableObject {
         get => JumpGravity - Gravity;
     }
 
+    [Tooltip("the maximum ground angle for jumping")]
+    public float Jump_GroundAngle;
+
+    [Tooltip("the scaling factor of the jump depending on the ground angle")]
+    public MapOutCurve Jump_GroundAngleScale;
+
     [Tooltip("the gravity while holding jump and falling")]
     public float FallGravity;
 
@@ -173,6 +182,10 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the collision layer of what counts as walls for wall sliding")]
     public LayerMask WallLayer;
 
+    [Tooltip("the scaling factor of the wall slide depending on the wall angle")]
+    [UnityEngine.Serialization.FormerlySerializedAs("WallAngleScale_New")]
+    public MapOutCurve WallAngleScale;
+
     [Tooltip("the gravity while on the wall & holding jump")]
     public AdsrCurve WallGravity;
 
@@ -181,6 +194,14 @@ public sealed class CharacterTuning: ScriptableObject {
 
     [Tooltip("the force the wall pull the character to make it stick")]
     public float WallMagnet;
+
+    // TODO: these are currently mirrored around 90; they should curved over 180
+    // so that's not necessarily the case
+    [Tooltip("the scaling factor of the wall velocity transfer as a fn of surface change angle")]
+    public MapOutCurve WallTransferScale;
+
+    [Tooltip("the scaling factor of the wall gravity amplitude as a fn of surface change angle")]
+    public MapOutCurve WallGravityAmplitudeScale;
 
     public float WallAcceleration(float wallGravity) {
         return wallGravity - Gravity + FallGravity;
