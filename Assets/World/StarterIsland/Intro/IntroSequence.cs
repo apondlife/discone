@@ -26,6 +26,9 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("the mechanic node to play on input")]
     [SerializeField] StringReference m_Mechanic_InputNode;
 
+    [Tooltip("the mechanic node to play on eyes open")]
+    [SerializeField] StringReference m_Mechanic_EndNode;
+
     // -- inputs --
     [Header("inputs")]
     [Tooltip("the input action asset")]
@@ -161,6 +164,9 @@ public class IntroSequence: MonoBehaviour {
         }
 
         m_IntroInput.action.actionMap.Disable();
+
+        // jump to the end node
+        m_Mechanic_JumpToNode.Raise(m_Mechanic_EndNode);
 
         // open the eyes
         m_FinishDelay.Start();
