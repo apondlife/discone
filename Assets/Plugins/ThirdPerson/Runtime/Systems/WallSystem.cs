@@ -75,10 +75,6 @@ sealed class WallSystem: CharacterSystem {
         ));
         var normalAngleScale = 1f - (normalAngleDelta / 90f);
 
-        var ws = c.State.Curr.WallSurface;
-        var ps = c.State.Curr.PrevLastSurface;
-        Debug.Log($"u.a {Vector3.Angle(ws.Normal, ps.Normal)} wsa {ws.Angle} psa {ps.Angle}");
-
         // scale by angle
         var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
         var transferred = TransferredVelocity(wallNormal, wallTg) * wallTransferScale;
