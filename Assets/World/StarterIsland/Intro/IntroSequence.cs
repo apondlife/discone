@@ -13,6 +13,9 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("the delay before starting the intro")]
     [SerializeField] EaseTimer m_StartDelay;
 
+    [Tooltip("the delay before setting character facing")]
+    [SerializeField] EaseTimer m_CharacterDelay;
+
     [Tooltip("the delay before showing the first line of dialogue (hack)")]
     [SerializeField] EaseTimer m_DialogueDelay;
 
@@ -56,7 +59,8 @@ public class IntroSequence: MonoBehaviour {
     [SerializeField] GameObject m_IntroCamera;
 
     [Tooltip("the character's rotation reference for the inital shot")]
-    [SerializeField] Transform m_CharacterRotationReference;
+    [UnityEngine.Serialization.FormerlySerializedAs("m_CharacterRotationReference")]
+    [SerializeField] Transform m_InitialRotation;
 
     [Tooltip("the shared data store")]
     [SerializeField] Store m_Store;
@@ -94,36 +98,28 @@ public class IntroSequence: MonoBehaviour {
 
         // bind events
         m_Subscriptions
-            .Add(m_Store.LoadFinished, OnLoadFinished);
-            // HACK HACK HACK: do this better later
-            // this is so that the follow camera points towards
-            // a different direction then ice creams orientation
-            // .Add<DisconeCharacterPair>(m_CurrentCharacter.ChangedWithHistory, _ => {
-            //     this.DoAfterTime(0.1f, () => {
-            //         var initialState = m_CurrentCharacter.Value.Character.State.Curr.Copy();
-            //         initialState.Forward = m_CharacterRotationReference.forward;
-            //         m_CurrentCharacter.Value.Character.ForceState(initialState);
-            //     });
-            // });
+            .Add(m_Store.LoadFinished, OnLoadFinished)
+            .Add(m_CurrentCharacter.ChangedWithHistory, OnCurrentCharacterChanged);
     }
 
     void Update() {
         // show start dialogue
-        if (m_DialogueDelay.IsActive) {
-            m_DialogueDelay.Tick();
+        if (m_DialogueDelay.TryComplete()) {
+            m_Mechanic_JumpToNode.Raise(m_Mechanic_StartNode);
+        }
 
-            if (m_DialogueDelay.IsComplete) {
-                m_Mechanic_JumpToNode.Raise(m_Mechanic_StartNode);
-            }
+        // set the character facing
+        if (m_CharacterDelay.TryComplete()) {
+            // HACK: do this better later this is so that the follow camera points
+            // towards a different direction then ice creams orientation
+            var initialState = m_CurrentCharacter.Value.Character.State.Curr.Copy();
+            initialState.Forward = m_InitialRotation.forward;
+            m_CurrentCharacter.Value.Character.ForceState(initialState);
         }
 
         // delay intro to ignore the input being pressed when the game starts
-        if (m_StartDelay.IsActive) {
-            m_StartDelay.Tick();
-
-            if (!m_StartDelay.IsComplete) {
-                return;
-            }
+        if (m_StartDelay.IsActive && m_StartDelay.TryComplete()) {
+            return;
         }
 
         var input = m_IntroInput.action;
@@ -200,6 +196,10 @@ public class IntroSequence: MonoBehaviour {
             OpenEyes();
             Finish();
         }
+    }
+
+    void OnCurrentCharacterChanged(DisconeCharacterPair _) {
+        m_CharacterDelay.Start();
     }
 }
 
