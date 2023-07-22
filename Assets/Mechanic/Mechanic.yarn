@@ -29,17 +29,18 @@ tags: #last
 title: Start
 tags: #last
 ---
-<<then Mechanic Start_Thanks>>
-<<wait 10>>
+<<then Mechanic Birthplace>>
+// <<then Mechanic Start_Thanks>>
+// <<wait 10>>
 
-if you want to talk to me again
-<<wait 3>>
+// if you want to talk to me again
+// <<wait 3>>
 
-you can hold "right or left trigger"
-<<wait 3>>
+// you can hold "right or left trigger"
+// <<wait 3>>
 
-& close your eyes for a little.
-<<wait 3>>
+// & close your eyes for a little.
+// <<wait 3>>
 ===
 
 title: Start_Thanks
@@ -103,7 +104,7 @@ see my letter too?
 ===
 
 title: Birthplace_RampHelp
-tags: #last #leaf
+tags: #leaf #last
 ---
 <<wait 2>>
 if you mash the "jump button" as you approach...
@@ -122,7 +123,7 @@ i think you can do it
 // -- --            -- --
 
 title: Birthplace_Stair
-tags: #stem
+tags: #fork
 ---
 <<if !$Birthplace_StairSee_Seen && $Birthplace_RampHelp_Seen>>
   <<jump Birthplace_StairSee>>
@@ -140,7 +141,7 @@ that was beautiful...
 ===
 
 title: Birthplace_StairBorn
-tags: #last #leaf
+tags: #leaf #last
 ---
 <<wait 2>>
 i remember when this stair was born.
@@ -165,7 +166,7 @@ to press your feet into,
 ===
 
 title: Birthplace_WallHelp
-tags: #last #leaf
+tags: #leaf #last
 ---
 <<wait 2>>
 to hold the "jump button", along
@@ -179,7 +180,7 @@ like any other floor.
 // -- --             -- --
 
 title: Birthplace_Tunnel
-tags: #stem
+tags: #fork
 ---
 <<if $Birthplace_WallFeet_Seen>>
   <<jump Birthplace_TunnelSee>>
@@ -187,7 +188,7 @@ tags: #stem
 ===
 
 title: Birthplace_TunnelSee
-tags: #last #leaf
+tags: #leaf #last
 ---
 <<wait 2>>
 how are your feet?
