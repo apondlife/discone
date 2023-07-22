@@ -24,8 +24,6 @@ sealed class MechanicDialogueView: DialogueViewBase {
 
     // -- DialogueViewBase --
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
-        Debug.Log(Tag.Mechanic.F($"run line {dialogueLine.RawText}"));
-
         var curr = m_LineIndex;
         var next = (m_LineIndex + 1) % m_Lines.Length;
 

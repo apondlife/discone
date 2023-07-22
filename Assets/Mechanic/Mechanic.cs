@@ -55,13 +55,9 @@ sealed class Mechanic: MonoBehaviour {
         // set props
         m_Nodes = InitNodes();
 
-        if (m_Node == "") {
-            m_Node = null;
-        }
-
-        if (m_TreeRoot == "") {
-            m_TreeRoot = null;
-        }
+        // TODO: unity deserializes the default value of a string as "" instead of null?
+        m_Node = m_Node == "" ? null : m_Node;
+        m_TreeRoot = m_TreeRoot == "" ? null : m_TreeRoot;
 
         // bind events
         m_Subscriptions
@@ -96,6 +92,11 @@ sealed class Mechanic: MonoBehaviour {
         if (!node.IsLast) {
             StartCoroutine(ContinueToNextNode());
         }
+
+        // if this node auto hides on complete, hide now
+        if (node.isHiding) {
+            HideDialogue();
+        }
     }
 
     /// continue to the next line
@@ -112,7 +113,6 @@ sealed class Mechanic: MonoBehaviour {
         Debug.Log(Tag.Mechanic.F($"jump: {node}"));
         SwitchNode(node);
         StartDialogue(isContinue);
-        Debug.Log(Tag.Mechanic.F($"jump (finish): {node}"));
     }
 
     /// .
@@ -121,7 +121,6 @@ sealed class Mechanic: MonoBehaviour {
 
         // if we're starting in a dialogue tree, begin from the root
         if (!isContinue && IsInTree) {
-            Debug.Log(Tag.Mechanic.F($"swap {nodeName} w/ {m_TreeRoot}"));
             nodeName = m_TreeRoot;
         }
 
@@ -129,12 +128,15 @@ sealed class Mechanic: MonoBehaviour {
         StopDialogue();
 
         // and start the new dialogue
-        if (string.IsNullOrEmpty(nodeName)) {
+        if (nodeName == null) {
             Debug.LogWarning(Tag.Mechanic.F($"tried to start dialogue w/ no node set"));
             return;
         }
 
-        Debug.Log(Tag.Mechanic.F($"start dialogue {nodeName}"));
+        if (!isContinue) {
+            Debug.Log(Tag.Mechanic.F($"strt: {nodeName}"));
+        }
+
         m_DialogueRunner.StartDialogue(nodeName);
     }
 
@@ -158,6 +160,12 @@ sealed class Mechanic: MonoBehaviour {
         }
     }
 
+    /// .
+    void SetVariable(string key, string value) {
+        Debug.Log(Tag.Mechanic.F($"set var {key} => {value}"));
+        m_DialogueRunner.VariableStorage.SetValue(key, value);
+    }
+
     // -- c/tree
     /// set the current tree root
     void SwitchTreeRoot(string nodeName) {
@@ -165,13 +173,11 @@ sealed class Mechanic: MonoBehaviour {
     }
 
     /// start a node while in a tree
-    void TryStartTreeNode(string nodeName) {
-        Debug.Log(Tag.Mechanic.F($"stn {nodeName}"));
+    void StartTreeNode(string nodeName) {
         var node = m_Nodes.Get(nodeName);
 
-        // if this node is tree structural, it's not content. ignore it
-        if (node.IsTreeLike) {
-            Debug.Log(Tag.Mechanic.F($"stn {nodeName} - is tree like"));
+        // if this node is tree structural, it's not content; ignore it
+        if (node.IsBranching) {
             return;
         }
 
@@ -183,7 +189,6 @@ sealed class Mechanic: MonoBehaviour {
 
         // if this is the farthest node we've reached, let's play it
         if (nodeName == m_Node) {
-            Debug.Log(Tag.Mechanic.F($"stn {nodeName} - is node"));
             return;
         }
 
@@ -200,55 +205,32 @@ sealed class Mechanic: MonoBehaviour {
             }
         }
 
-        Debug.Log(Tag.Mechanic.F($"stn {nodeName} - found next {nextName}"));
-
         // if we found the leaf of a different branch, we diverged. this is the new current node
         if (nextName != m_Node) {
-            Debug.Log(Tag.Mechanic.F($"stn {nodeName} - switch branch {nextName}"));
-            SwitchNode(nextName);
+            SwitchNode(nodeName);
         }
         // otherwise, we found a node farther down the branch. start it immediately
         else {
-            Debug.Log(Tag.Mechanic.F($"stn {nodeName} - jump to {nextName}"));
-            if (jumped) {
-                Debug.LogError(Tag.Mechanic.F($"stn {nodeName} - shorting infinie jump"));
-                return;
-            }
-            jumped = true;
             JumpToNode(nextName, isContinue: true);
         }
     }
 
-    bool jumped = false;
-
     /// finish a node in a dialogue tree
     void FinishTreeNode(string nodeName) {
-        Debug.Log(Tag.Mechanic.F($"ftn {nodeName}"));
         var node = m_Nodes.Get(nodeName);
 
         // if this node is tree structural, it's not content; ignore it
-        if (node.IsTreeLike) {
-            Debug.Log(Tag.Mechanic.F($"ftn {nodeName} - is tree like"));
+        if (node.IsBranching) {
             return;
         }
 
         // if this is not the current node, ignore it
         if (nodeName != m_Node) {
-            Debug.Log(Tag.Mechanic.F($"ftn {nodeName} - is not node"));
+            Debug.LogError(Tag.Mechanic.F($"not current node {nodeName} vs {m_Node}"));
             return;
         }
 
-        // if something else didn't switch the node, set the next tree node
-        if (nodeName == m_Node && node.Next != null) {
-            Debug.Log(Tag.Mechanic.F($"ftn {nodeName} - set next {node.Next}"));
-            SwitchNode(node.Next);
-        }
-
-        // if this isn't the last in a sequence, keep going
-        if (!node.IsLast) {
-            Debug.Log(Tag.Mechanic.F($"ftn {nodeName} - continue to next"));
-            StartCoroutine(ContinueToNextNode());
-        }
+        FinishNode(nodeName);
     }
 
     // -- c/yarn
@@ -267,13 +249,20 @@ sealed class Mechanic: MonoBehaviour {
     // -- events --
     /// when a dialogue node is about to start
     void OnNodeWillStart(string nodeName) {
+        var node = m_Nodes.Get(nodeName);
+
+        // clear tree root if we start a node w/ a different scope
+        if (IsInTree && !m_TreeRoot.StartsWith(node.Scope)) {
+            SwitchTreeRoot(null);
+        }
+
         // if this is a tree, start the tree
-        if (!IsInTree && m_Nodes.Get(nodeName).IsTree) {
+        if (!IsInTree && node.IsTree) {
             SwitchTreeRoot(nodeName);
         }
 
         if (IsInTree) {
-            TryStartTreeNode(nodeName);
+            StartTreeNode(nodeName);
         }
     }
 
@@ -293,16 +282,11 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void OnSetBirthplaceStep(string step) {
-        Debug.Log(Tag.Mechanic.F($"birthplace: {step}"));
-        m_DialogueRunner.VariableStorage.SetValue(
-            MechanicBirthplaceStep.Name,
-            step
-        );
+        SetVariable(MechanicBirthplaceStep.Name, step);
     }
 
     /// .
     void OnEyelidClosedChanged(bool isEyelidClosed) {
-        jumped = false;
         if (isEyelidClosed) {
             StartDialogue();
         } else {
@@ -322,17 +306,17 @@ sealed class Mechanic: MonoBehaviour {
 
         // track curr name and prefix to iterate in pairs
         var currName = (string)null;
-        var currPrefix = (string)null;
+        var currScope = (string)null;
 
         // for each node
         foreach (var nextName in m_DialogueRunner.Dialogue.NodeNames) {
-            // get the prefix namespace
-            var nextPrefix = nextName.SubstringUntil('_');
+            // get the scope
+            var nextScope = nextName.SubstringUntil('_');
 
             // wait for a pair
             if (currName == null) {
                 currName = nextName;
-                currPrefix = nextPrefix;
+                currScope = nextScope;
                 continue;
             }
 
@@ -341,6 +325,7 @@ sealed class Mechanic: MonoBehaviour {
             foreach (var tag in m_DialogueRunner.GetTagsForNode(currName)) {
                 tags |= tag switch {
                     "#last" => MechanicNode.Tag.Last,
+                    "#hide" => MechanicNode.Tag.Hide,
                     "#tree" => MechanicNode.Tag.Tree,
                     "#fork" => MechanicNode.Tag.Fork,
                     "#leaf" => MechanicNode.Tag.Leaf,
@@ -350,18 +335,19 @@ sealed class Mechanic: MonoBehaviour {
 
             // add node
             var hasNext = (
-                currPrefix == nextPrefix &&
+                currScope == nextScope &&
                 (tags & MechanicNode.TreeLike) == 0
             );
 
             nodes.Add(currName, new MechanicNode(
                 next: hasNext ? nextName : null,
-                tags
+                tags,
+                currScope
             ));
 
             // bookkeeping
             currName = nextName;
-            currPrefix = nextPrefix;
+            currScope = nextScope;
         }
 
         return nodes;

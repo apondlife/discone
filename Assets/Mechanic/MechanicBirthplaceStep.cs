@@ -5,7 +5,7 @@ namespace Discone {
 struct MechanicBirthplaceStep {
     // -- data --
     ///.
-    public static readonly string Name = "$BirthplaceStep";
+    public static readonly string Name = "$Birthplace_Step";
 
     /// .
     public static readonly string[] Values = new string[] {

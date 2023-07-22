@@ -27,20 +27,19 @@ tags: #last
 // -- -- -- --
 
 title: Start
-tags: #last
+tags: #last #hide
 ---
-<<then Mechanic Birthplace>>
-// <<then Mechanic Start_Thanks>>
-// <<wait 10>>
+<<then Mechanic Start_Thanks>>
+<<wait 10>>
 
-// if you want to talk to me again
-// <<wait 3>>
+if you want to talk to me again
+<<wait 3>>
 
-// you can hold "right or left trigger"
-// <<wait 3>>
+you can hold "right or left trigger"
+<<wait 3>>
 
-// & close your eyes for a little.
-// <<wait 3>>
+& close your eyes for a little.
+<<wait 10>>
 ===
 
 title: Start_Thanks
@@ -180,18 +179,17 @@ like any other floor.
 // -- --             -- --
 
 title: Birthplace_Tunnel
-tags: #fork
+tags:
 ---
 <<if $Birthplace_WallFeet_Seen>>
-  <<jump Birthplace_TunnelSee>>
+  <<wait 2>>
+  how are your feet?
 <<endif>>
 ===
 
-title: Birthplace_TunnelSee
+title: Birthplace_TunnelEnd
 tags: #leaf #last
 ---
-<<wait 2>>
-how are your feet?
 ===
 
 // -- --           -- --
@@ -199,7 +197,7 @@ how are your feet?
 // -- --           -- --
 
 title: Birthplace_Exit
-tags: #leaf
+tags: #fork
 ---
 <<then Mechanic IntroReal>>
 <<jump IntroReal>>
