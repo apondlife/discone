@@ -383,11 +383,23 @@ sealed class Mechanic: MonoBehaviour {
                 (tags & MechanicNode.TreeLike) == 0
             );
 
-            nodes.Add(currName, new MechanicNode(
+            var node = new MechanicNode(
                 next: hasNext ? nextName : null,
                 tags,
                 currScope
-            ));
+            );
+
+            #if UNITY_EDITOR
+            if (!hasNext && !node.IsTreeLike) {
+                if (!node.IsLast) {
+                    Debug.LogError(Tag.Mechanic.F($"{currName} - node has no next, but is not last"));
+                } else if (currScope.DistanceTo(nextScope) <= 2) {
+                    Debug.LogError(Tag.Mechanic.F($"{currName} - the scopes '{currScope}' and '{nextScope}' are very similar; is there a typo?"));
+                }
+            }
+            #endif
+
+            nodes.Add(currName, node);
 
             // bookkeeping
             currName = nextName;

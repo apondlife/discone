@@ -64,6 +64,11 @@ readonly struct MechanicNode {
         get => (Tags & Branching) != 0;
     }
 
+    /// if this node is tree-like
+    public bool IsTreeLike {
+        get => (Tags & TreeLike) != 0;
+    }
+
     // -- debug --
     public override string ToString() {
         return $"<MechanicNode next={Next ?? "(none)"} tags=({Tags})>";
