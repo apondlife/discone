@@ -58,6 +58,9 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("the intro camera")]
     [SerializeField] GameObject m_IntroCamera;
 
+    [Tooltip("the intro retrigger camera")]
+    [SerializeField] GameObject m_IntroCameraRetrigger;
+
     [Tooltip("the character's rotation reference for the inital shot")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_CharacterRotationReference")]
     [SerializeField] Transform m_InitialRotation;
@@ -183,6 +186,9 @@ public class IntroSequence: MonoBehaviour {
 
         // signal the end of the intro
         m_IntroEnded.Raise();
+
+        // enable retriggering this camera
+        m_IntroCameraRetrigger.SetActive(true);
 
         // ...
         Destroy(this);
