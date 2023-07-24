@@ -147,7 +147,7 @@ sealed class CameraCollisionSystem: CameraSystem {
     );
 
     void FreeLook_Clipping_Enter() {
-        m_State.Next.Velocity *= 1.0f - m_Tuning.Collision_ClipDamping.Evaluate(PhaseStart, PhaseStart);
+        m_State.Next.Velocity *= 1.0f - m_Tuning.Collision_ClipDamping.Evaluate(PhaseStart, releaseStartTime: PhaseStart);
     }
 
     void FreeLook_Clipping_Update(float delta) {
@@ -160,7 +160,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         var corrected = GetFreeLookPos(ideal);
 
         m_State.Next.Pos = ideal;
-        m_State.Next.Velocity *= 1.0f - m_Tuning.Collision_ClipDamping.Evaluate(PhaseStart, PhaseStart);
+        m_State.Next.Velocity *= 1.0f - m_Tuning.Collision_ClipDamping.Evaluate(PhaseStart, releaseStartTime: PhaseStart);
 
         if (ideal == corrected) {
             ChangeTo(FreeLook_ClippingCooldown);
