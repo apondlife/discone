@@ -35,16 +35,20 @@ like any other floor.
 # intro (real)
 
 this is the place...\
-do you know what you’re doing Here?
+do you know what you’re doing here?
 
-don’t worry if you don’t, that’s normal.\
-we never really do.
+don’t worry if you don’t,\
+that’s normal, i think.\
+i still haven't quite figured it out,\
+anyways.
 
-but anyways i’m sure you’ll figure it out...\
-what you’re doing Here\
+but i believe you will...\
+figure out what you’re doing here\
 soon.
 
-don’t ask me though, i couldn’t tell you.
+if you haven't already haha h.
+
+just don’t ask me, i couldn’t tell you.
 
 i can’t tell you, even.
 
@@ -53,24 +57,24 @@ introduce myself. you could call me \
 “the mechanic”,\
 if you ever get the chance =).
 
-but if you do want to hear me, i’m usually around here.
-
-if you don’t, well, close your eyes i guess ;).
-
 # jumping
 
 but yeah, they call me “the mechanic”.\
 don’t ask me why, haha.
 
-i’ve spent a lifetime “jumping”.
+i guess i’ve spent a lifetime “jumping”.
 
-these days i believe that jumping is more about pushing through than is is about pushing against.
+& these days i believe that jumping is more about pushing through\
+than it is about pushing against.
 
 jumping around rather than jumping through.
 
-jumping about rather than jumping  because.
+jumping about rather than jumping because.
 
-jumping with, too. with your body. with another. with whatever. the whole thing.
+jumping with, too. with the body.\
+with another.\
+with whatever.\
+the whole thing.
 
 anyways…\
 you get it right?
@@ -79,13 +83,15 @@ don’t answer that…ha haha ha.
 
 does that make any sense? ugh…
 
-but yeah that “body” part. for me anyways, i really start to feel it after a while.
+but yeah, “body”.\
+for me anyways,\
+i really start to get into it, after a while.
 
-depending on how i’m feeling it, i’ve i like to close my eyes for a moment.\
-both of them.
+& depending on how i’m feeling, \
+i like to close my eyes, for a moment. both of them.
 
 & take a deep breath.\
-& then i can feel it again.\
+& then i can feel it again,\
 & differently.
 
 i think that’s why i keep at it.
