@@ -142,12 +142,12 @@ sealed class CharacterDistortion: MonoBehaviour {
 
     // -- commands --
     void Distort() {
-        var plane = new Plane(transform.up, transform.position);
+        var plane = new Plane(transform.up, transform.position).AsVector4();
 
         foreach (var material in m_Materials) {
             material.SetVector(
                 ShaderProps.Distortion_Plane,
-                plane.AsVector4()
+                plane
             );
 
             material.SetFloat(

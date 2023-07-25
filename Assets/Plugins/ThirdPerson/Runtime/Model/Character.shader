@@ -160,15 +160,12 @@ Shader "ThirdPerson/Character" {
 
             // -- program --
             CGPROGRAM
-
             #pragma vertex DrawVert
             #pragma fragment DrawFrag
-
             #pragma multi_compile_shadowcaster
 
             // -- includes --
             #include "UnityCG.cginc"
-            float1 _Epsilon;
 
             // -- props --
             float1 _Distortion_PositiveScale;
@@ -181,6 +178,7 @@ Shader "ThirdPerson/Character" {
                 V2F_SHADOW_CASTER;
             };
 
+            // -- program --
             FragIn DrawVert(appdata_base v) {
                 FragIn o;
                 TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
