@@ -1,21 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using ThirdPerson;
 
 namespace Discone {
 
-public class IntroRetrigger : MonoBehaviour
-{
-    // -- props --
+public class IntroRetrigger: MonoBehaviour {
+    // -- config --
     [Header("config")]
     [Tooltip("the time it takes within the collider to retrigger the camera")]
     [SerializeField] EaseTimer m_RetriggerDelay;
 
+    // -- refs --
     [Header("refs")]
     [Tooltip("the camera that shows the intro letter")]
     [SerializeField] GameObject m_RetriggerCamera;
 
+    // -- props --
+    /// .
     bool m_EnableCamera = false;
 
     // -- lifecycle --
@@ -37,7 +37,6 @@ public class IntroRetrigger : MonoBehaviour
         }
 
         m_EnableCamera = true;
-        m_RetriggerDelay.Cancel();
         m_RetriggerDelay.Start();
     }
 
@@ -53,10 +52,8 @@ public class IntroRetrigger : MonoBehaviour
         }
 
         m_EnableCamera = false;
-        m_RetriggerDelay.Cancel();
         m_RetriggerDelay.Start();
     }
-
-
 }
+
 }
