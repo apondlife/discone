@@ -14,6 +14,16 @@ partial class CharacterState {
 /// how the character interacts with walls
 [Serializable]
 sealed class WallSystem: CharacterSystem {
+    override public void Update(float delta) {
+        base.Update(delta);
+
+        DebugScope.Push("WallPhase", m_Phase.Name switch {
+            "NotOnWall" => 0,
+            "WallSlide" => 1,
+            _ => -1
+        });
+    }
+
     // -- System --
     protected override Phase InitInitialPhase() {
         return NotOnWall;

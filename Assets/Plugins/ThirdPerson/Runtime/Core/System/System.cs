@@ -13,7 +13,7 @@ public abstract class System {
     // -- state --
     [Header("state")]
     [Tooltip("the current phase")]
-    [SerializeField] Phase m_Phase;
+    [SerializeField] protected Phase m_Phase;
 
     // -- s/debug
     #if UNITY_EDITOR

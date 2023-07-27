@@ -58,7 +58,12 @@ public class CharacterDust: MonoBehaviour {
         }
 
         // TODO: extract into its own file / prefab
-        if (m_State.Next.IsOnWall && !m_State.Next.IsIdle) {
+        var isActive = (
+            m_State.Next.IsOnWall &&
+            !m_State.Next.IsIdle
+        );
+
+        if (isActive) {
             if (!m_WallParticles.isPlaying) {
                 m_WallParticles.Play();
             }
