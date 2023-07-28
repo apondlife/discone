@@ -502,6 +502,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 1.8769989
       objectReference: {fileID: 0}
+    - target: {fileID: 7238456180043201584, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7250430580801210356, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_Limbs.Array.size
       value: 4
@@ -711,6 +715,7 @@ MonoBehaviour:
   m_Save:
     m_Phase:
       Name: 
+    m_IsDisabled: 0
     m_IsLogging: 0
     m_Tuning:
       m_Delay: 0.5
@@ -719,6 +724,7 @@ MonoBehaviour:
   m_Load:
     m_Phase:
       Name: 
+    m_IsDisabled: 0
     m_IsLogging: 0
     m_Tuning:
       LoadCastMaxTime: 30
@@ -789,9 +795,24 @@ MonoBehaviour:
     Forward: {x: 0, y: 0, z: 0}
     IsLanding: 0
     IsInJumpSquat: 0
-    IsOnWall: 0
     IsCrouching: 0
     Tilt: {x: 0, y: 0, z: 0, w: 1}
+    Ground:
+      Normal: {x: 0, y: 0, z: 0}
+      Point: {x: 0, y: 0, z: 0}
+      Angle: 0
+    Wall:
+      Normal: {x: 0, y: 0, z: 0}
+      Point: {x: 0, y: 0, z: 0}
+      Angle: 0
+    LastSurface:
+      Normal: {x: 0, y: 0, z: 0}
+      Point: {x: 0, y: 0, z: 0}
+      Angle: 0
+    PrevLastSurface:
+      Normal: {x: 0, y: 0, z: 0}
+      Point: {x: 0, y: 0, z: 0}
+      Angle: 0
     JumpSquatFrame: -1
     IdleTime: 0
     Horizontal_Drag: 0
@@ -801,6 +822,10 @@ MonoBehaviour:
     PivotDirection: {x: 0, y: 0, z: 0}
     CrouchDirection: {x: 0, y: 0, z: 0}
     Jumps: 0
+    JumpSurface:
+      Normal: {x: 0, y: 0, z: 0}
+      Point: {x: 0, y: 0, z: 0}
+      Angle: 0
     CoyoteFrames: 0
     CooldownFrames: 0
     JumpTuningIndex: 0
@@ -1039,7 +1064,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
       propertyPath: Params.Array.data[0].Name
-      value: Tone
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
       propertyPath: Params.Array.data[1].Name
@@ -1052,6 +1077,10 @@ PrefabInstance:
     - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
       propertyPath: Params.Array.data[3].Name
       value: Tone
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451155947279716790, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
+      propertyPath: Params.Array.data[0].Value
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4283023995948312298, guid: d97d6942ed1a4b94497fdbf648e81dc7, type: 3}
       propertyPath: m_CurrentCharacter
