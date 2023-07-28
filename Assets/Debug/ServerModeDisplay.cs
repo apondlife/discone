@@ -6,13 +6,12 @@ namespace Discone {
 [RequireComponent(typeof(TMPro.TMP_Text))]
 public class ServerModeDisplay : MonoBehaviour
 {
-    [Tooltip("if this object should display or not")]
-    [SerializeField] BoolReference m_ShowText;
-
+    #if UNITY_SERVER
     void Awake()
     {
-        GetComponent<TMPro.TMP_Text>().enabled = m_ShowText;
+        GetComponent<TMPro.TMP_Text>().enabled = true;
     }
+    #endif
 }
 
 }
