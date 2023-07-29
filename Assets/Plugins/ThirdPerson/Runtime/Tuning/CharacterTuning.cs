@@ -189,7 +189,7 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the collision layer of what counts as walls for wall sliding")]
     public LayerMask WallLayer;
 
-    [Tooltip("the scaling factor of the wall slide depending on the wall angle")]
+    [Tooltip("the scaling factor of the wall slide as a fn of surface angle")]
     [UnityEngine.Serialization.FormerlySerializedAs("WallAngleScale_New")]
     public MapOutCurve WallAngleScale;
 
@@ -199,8 +199,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the gravity while on the wall & not holding jump")]
     public AdsrCurve WallHoldGravity;
 
-    [Tooltip("the force the wall pull the character to make it stick")]
-    public float WallMagnet;
+    [Tooltip("the force the surface pulls character in as a fn of surface angle")]
+    public MapOutCurve WallMagnet;
 
     // TODO: these are currently mirrored around 90; they should curved over 180
     // so that's not necessarily the case

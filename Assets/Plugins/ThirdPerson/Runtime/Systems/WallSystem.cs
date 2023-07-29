@@ -14,16 +14,6 @@ partial class CharacterState {
 /// how the character interacts with walls
 [Serializable]
 sealed class WallSystem: CharacterSystem {
-    override public void Update(float delta) {
-        base.Update(delta);
-
-        DebugScope.Push("WallPhase", m_Phase.Name switch {
-            "NotOnWall" => 0,
-            "WallSlide" => 1,
-            _ => -1
-        });
-    }
-
     // -- System --
     protected override Phase InitInitialPhase() {
         return NotOnWall;
@@ -74,9 +64,9 @@ sealed class WallSystem: CharacterSystem {
         // calculate added velocity
         var vd = Vector3.zero;
 
-        // NOTE: unsure if we want to apply the magnet on things that are not "real"
-        // walls, but we are for now on account of our principle of No Rules
-        vd -= wallNormal * c.Tuning.WallMagnet;
+        // add a magnet to pull the character towards the surface
+        var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * -Vector3.Dot(c.Input.Move, wallNormal);
+        vd -= wallMagnetMag * delta * wallNormal;
 
         // transfer velocity
         var normalAngleDelta = Mathf.Abs(90f - Vector3.Angle(
