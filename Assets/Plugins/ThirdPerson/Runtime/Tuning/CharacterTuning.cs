@@ -11,6 +11,14 @@ public sealed class CharacterTuning: ScriptableObject {
     [TextArea(3, 6)]
     [SerializeField] string m_Description;
 
+    // -- collision system --
+    [Header("collision system")]
+    [Tooltip("the speed the perceived surface's normal moves towards a zero")]
+    public float Surface_PerceptionLengthSpeed;
+
+    [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
+    public float Surface_PerceptionAngularSpeed;
+
     // -- movement system --
     [Header("movement system")]
     [Tooltip("the horizontal speed at which the character stops")]

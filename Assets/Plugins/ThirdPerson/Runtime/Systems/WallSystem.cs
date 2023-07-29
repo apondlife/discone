@@ -67,8 +67,8 @@ sealed class WallSystem: CharacterSystem {
         // update to new wall collision
         var wallNormal = wall.Normal;
         var wallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
-        var wallTg = c.State.Prev.LastSurface.IsSome
-            ? Vector3.ProjectOnPlane(c.State.Prev.LastSurface.Normal, wall.Normal).normalized
+        var wallTg = c.State.Prev.CurrSurface.IsSome
+            ? Vector3.ProjectOnPlane(c.State.Prev.CurrSurface.Normal, wall.Normal).normalized
             : wallUp;
 
         // calculate added velocity
@@ -81,7 +81,7 @@ sealed class WallSystem: CharacterSystem {
         // transfer velocity
         var normalAngleDelta = Mathf.Abs(90f - Vector3.Angle(
             c.State.Curr.WallSurface.Normal,
-            c.State.Curr.PrevLastSurface.Normal
+            c.State.Curr.PerceivedSurface.Normal
         ));
         var normalAngleScale = 1f - (normalAngleDelta / 90f);
 
@@ -91,9 +91,9 @@ sealed class WallSystem: CharacterSystem {
         vd += transferred;
 
         // add wall gravity
-        var surfaceAngleDelta = Mathf.Abs(90f -  Mathf.Abs(
+        var surfaceAngleDelta = Mathf.Abs(90f - Mathf.Abs(
             c.State.Curr.WallSurface.Angle -
-            c.State.Curr.PrevLastSurface.Angle
+            c.State.Curr.PerceivedSurface.Angle
         ));
         var surfaceAngleScale = 1f - (surfaceAngleDelta / 90f);
 

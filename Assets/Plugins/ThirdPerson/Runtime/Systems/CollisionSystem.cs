@@ -43,6 +43,7 @@ sealed class CollisionSystem: CharacterSystem {
         );
 
         // update collisions
+        // TODO: store a list of N collisions this frame
         next.Ground = frame.Ground;
         next.Wall = frame.Wall;
 
@@ -55,39 +56,30 @@ sealed class CollisionSystem: CharacterSystem {
         }
 
         // find the last most relevant touched surface
-        var surface = curr.LastSurface;
+        var surface = curr.CurrSurface;
 
         // if we're in the air, there's no surface
         if (next.Ground.IsNone && next.Wall.IsNone) {
             surface = CharacterCollision.None;
         }
-        // if we weren't touching a wall, and now we are, it's the wall
-        else if (curr.Wall.IsNone && next.Wall.IsSome) {
-            surface = next.Wall;
-        }
-        // otherwise if we weren't touching a ground, and now we are, it's the ground
-        else if (curr.Ground.IsNone && next.Ground.IsSome) {
-            surface = next.Ground;
-        }
         // otherwise, if the newest surface is different, use that
-        else if (curr.LastSurface.Normal != newSurface.Normal) {
+        else if (surface.Normal != newSurface.Normal) {
             surface = newSurface;
         }
 
-        // update the last surface queue (initialize if unset)
-        if (curr.PrevLastSurface.IsNone) {
-            next.LastSurface = surface;
-            next.PrevLastSurface = surface;
-        }
-        // if we were in the air, then replace the last surface
-        else if (curr.LastSurface.IsNone && surface.IsSome) {
-            next.LastSurface = surface;
-        }
-        // if we changed surfaces, push the new surface onto the queue
-        else if (curr.LastSurface.Normal != surface.Normal) {
-            next.PrevLastSurface = curr.LastSurface;
-            next.LastSurface = surface;
-        }
+        // TODO: maybe initialize PerceivedSurface on first contact
+        next.CurrSurface = surface;
+ 
+        // move the perceived surface towards the current surface
+        next.PerceivedSurface.SetNormal(Vector3.RotateTowards(
+            curr.PerceivedSurface.Normal,
+            next.CurrSurface.Normal,
+            c.Tuning.Surface_PerceptionAngularSpeed * Mathf.Deg2Rad * delta,
+            c.Tuning.Surface_PerceptionLengthSpeed * delta
+        ));
+ 
+        // point for perceived surface is invalid
+        next.PerceivedSurface.Point = Vector3.negativeInfinity;
 
         // sync controller state back to character state
         next.Velocity = frame.Velocity;
