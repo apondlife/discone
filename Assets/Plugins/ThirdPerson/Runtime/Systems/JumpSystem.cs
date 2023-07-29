@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -256,15 +256,15 @@ sealed class JumpSystem: CharacterSystem {
         // cancel horizontal momentum
         dv -= c.State.Curr.PlanarVelocity * JumpTuning.Horizontal_MomentumLoss;
 
-        // scale by wall factor
         // TODO: maybe horizontal/vertical should be tangent/normal to ground or wall:
-        var groundAngleScale = c.Tuning.Jump_GroundAngleScale.Evaluate(c.State.Curr.JumpSurface.Angle);
 
-        // add vertical jump
-        dv += verticalSpeed * Vector3.up * groundAngleScale;
+        // add vertical jump scaled by ground angle
+        var verticalGroundAngleScale = c.Tuning.Jump_Vertical_GroundAngleScale.Evaluate(c.State.Curr.JumpSurface.Angle);
+        dv += verticalSpeed * Vector3.up * verticalGroundAngleScale;
 
-        // add horizontal jump
-        dv += horizontalSpeed * c.State.Curr.Forward * groundAngleScale;
+        // add horizontal jump scaled by ground angle
+        var horizontalGroundAngleScale = c.Tuning.Jump_Horizontal_GroundAngleScale.Evaluate(c.State.Curr.JumpSurface.Angle);
+        dv += horizontalSpeed * c.State.Curr.Forward * horizontalGroundAngleScale;
 
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteFrames = 0;

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Icecream_Tuning
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: iced cream
-  Surface_PerceptionLengthSpeed: 10
+  Surface_PerceptionLengthSpeed: 1
   Surface_PerceptionAngularSpeed: 90
   Horizontal_MinSpeed: 0.85
   Horizontal_Acceleration: 35
@@ -222,6 +222,80 @@ MonoBehaviour:
     m_Dst:
       Min: 0.7
       Max: 1
+  Jump_Vertical_GroundAngleScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 10
+        value: 1
+        inSlope: 0
+        outSlope: -0.00009184288
+        tangentMode: 1
+        weightedMode: 2
+        inWeight: 0.33333334
+        outWeight: 0.12721032
+      - serializedVersion: 3
+        time: 80
+        value: 0
+        inSlope: -0.046644054
+        outSlope: Infinity
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.02025321
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0.7
+      Max: 1
+  Jump_Horizontal_GroundAngleScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 70
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 83.18346
+        value: 0.033477794
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
   FallGravity: -40
   Landing_Duration: 0.3
   Jumps:
@@ -256,8 +330,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
     Upwards_MomentumLoss: 0
-    Horizontal_MinSpeed: 0
-    Horizontal_MaxSpeed: 0
+    Horizontal_MinSpeed: 10
+    Horizontal_MaxSpeed: 10
     Horizontal_SpeedCurve:
       serializedVersion: 2
       m_Curve: []
