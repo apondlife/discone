@@ -129,14 +129,15 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the maximum ground angle for jumping")]
     public float Jump_GroundAngle;
 
-    [Tooltip("the scaling factor of the jump depending on the ground angle")]
-    public MapOutCurve Jump_GroundAngleScale;
+    [Tooltip("the jump scale as a fn of surface angle")]
+    [UnityEngine.Serialization.FormerlySerializedAs("Jump_GroundAngleScale")]
+    public MapOutCurve Jump_SurfaceAngleScale;
 
-    [Tooltip("the vertical scaling factor of the jump depending on the ground angle")]
-    public MapOutCurve Jump_Vertical_GroundAngleScale;
+    [Tooltip("the jump speed opposed to the surface normal as a fn of squat duration")]
+    public MapOutCurve Jump_Normal_Speed;
 
-    [Tooltip("the horizontal scaling factor of the jump depending on the ground angle")]
-    public MapOutCurve Jump_Horizontal_GroundAngleScale;
+    [Tooltip("the jump scale opposed to the surface normal as a fn of surface angle")]
+    public MapOutCurve Jump_Normal_SurfaceAngleScale;
 
     [Tooltip("the gravity while holding jump and falling")]
     public float FallGravity;
@@ -166,28 +167,20 @@ public sealed class CharacterTuning: ScriptableObject {
         [Tooltip("the max number of frames jump squat lasts")]
         public uint MaxJumpSquatFrames = 5;
 
+        // TODO: convert to map out curve & remember how to propely update all prefabs
         [Tooltip("the minimum jump speed (minimum length jump squat)")]
         public float Vertical_MinSpeed;
 
         [Tooltip("the maximum jump speed (maximum length jump squat)")]
         public float Vertical_MaxSpeed;
 
-        [Tooltip("how the jump speed changes from holding the squat")]
+        [Tooltip("jump speed as a fn of squat duration")]
         public AnimationCurve Vertical_SpeedCurve;
 
         [Tooltip("how much upwards speed is cancelled on jump")]
         public float Upwards_MomentumLoss;
 
-        [Tooltip("the minimum horizontal jump speed (minimum length jump squat)")]
-        public float Horizontal_MinSpeed;
-
-        [Tooltip("the maximum horizontal jump speed (maximum length jump squat)")]
-        public float Horizontal_MaxSpeed;
-
-        [Tooltip("how the jump speed changes from holding the squat")]
-        public AnimationCurve Horizontal_SpeedCurve;
-
-        [Tooltip("how much vertical speed is cancelled on jump")]
+        [Tooltip("how much horizontal speed is cancelled on jump")]
         public float Horizontal_MomentumLoss;
     }
 

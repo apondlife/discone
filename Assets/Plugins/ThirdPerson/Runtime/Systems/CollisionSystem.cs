@@ -43,7 +43,7 @@ sealed class CollisionSystem: CharacterSystem {
         );
 
         // update collisions
-        // TODO: store a list of N collisions this frame
+        // TODO: store a list of n collisions this frame
         next.Ground = frame.Ground;
         next.Wall = frame.Wall;
 
@@ -55,29 +55,30 @@ sealed class CollisionSystem: CharacterSystem {
             newSurface = next.Ground;
         }
 
-        // find the last most relevant touched surface
+        // find the last relevant touched surface
         var surface = curr.CurrSurface;
 
-        // if we're in the air, there's no surface
-        if (next.Ground.IsNone && next.Wall.IsNone) {
-            surface = CharacterCollision.None;
-        }
-        // otherwise, if the newest surface is different, use that
-        else if (surface.Normal != newSurface.Normal) {
+        // if the newest surface is different, use that
+        if (newSurface.IsSome && surface.Normal != newSurface.Normal) {
             surface = newSurface;
         }
 
-        // TODO: maybe initialize PerceivedSurface on first contact
         next.CurrSurface = surface;
- 
+
         // move the perceived surface towards the current surface
+        var perceivedNormal = curr.PerceivedSurface.Normal;
+        if (curr.PerceivedSurface.IsNone) {
+            perceivedNormal = next.CurrSurface.Normal;
+        }
+
+        // TODO: maybe update the time since last touching the curr surface
         next.PerceivedSurface.SetNormal(Vector3.RotateTowards(
-            curr.PerceivedSurface.Normal,
+            perceivedNormal,
             next.CurrSurface.Normal,
             c.Tuning.Surface_PerceptionAngularSpeed * Mathf.Deg2Rad * delta,
-            c.Tuning.Surface_PerceptionLengthSpeed * delta
+            0f
         ));
- 
+
         // point for perceived surface is invalid
         next.PerceivedSurface.Point = Vector3.negativeInfinity;
 

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: iced cream
   Surface_PerceptionLengthSpeed: 1
-  Surface_PerceptionAngularSpeed: 90
+  Surface_PerceptionAngularSpeed: 270
   Horizontal_MinSpeed: 0.85
   Horizontal_Acceleration: 35
   Horizontal_Drag: 0.1
@@ -185,7 +185,7 @@ MonoBehaviour:
   MaxCoyoteFrames: 12
   JumpGravity: -30
   Jump_GroundAngle: 80
-  Jump_GroundAngleScale:
+  Jump_SurfaceAngleScale:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -220,46 +220,37 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 0.7
+      Min: 0.6
       Max: 1
-  Jump_Vertical_GroundAngleScale:
+  Jump_Normal_Speed:
     m_Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 10
-        value: 1
-        inSlope: 0
-        outSlope: -0.00009184288
-        tangentMode: 1
-        weightedMode: 2
-        inWeight: 0.33333334
-        outWeight: 0.12721032
-      - serializedVersion: 3
-        time: 80
         value: 0
-        inSlope: -0.046644054
-        outSlope: Infinity
-        tangentMode: 1
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
         weightedMode: 0
-        inWeight: 0.02025321
-        outWeight: 0.33333334
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 0.7
-      Max: 1
-  Jump_Horizontal_GroundAngleScale:
+      Min: 3
+      Max: 10
+  Jump_Normal_SurfaceAngleScale:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -268,34 +259,34 @@ MonoBehaviour:
         value: 0
         inSlope: 0
         outSlope: 0
-        tangentMode: 136
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+        inWeight: 0
+        outWeight: 0
       - serializedVersion: 3
-        time: 70
+        time: 60
         value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
+        inSlope: Infinity
+        outSlope: 0.0010377245
+        tangentMode: 7
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0.14117192
       - serializedVersion: 3
-        time: 83.18346
-        value: 0.033477794
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
+        time: 80
+        value: 1
+        inSlope: 0.1521349
+        outSlope: 0.1521349
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+        inWeight: 0.03875656
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
       Min: 0
-      Max: 0
+      Max: 1
   FallGravity: -40
   Landing_Duration: 0.3
   Jumps:
@@ -330,14 +321,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
     Upwards_MomentumLoss: 0
-    Horizontal_MinSpeed: 10
-    Horizontal_MaxSpeed: 10
-    Horizontal_SpeedCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
-      m_RotationOrder: 0
     Horizontal_MomentumLoss: 0
   WallLayer:
     serializedVersion: 2
