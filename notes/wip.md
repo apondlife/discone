@@ -1,6 +1,6 @@
 what is projected
 ---
-- aaa: magnet (based on wall angle?)
+- bug: tuning to keep character on wall -- unsure of problem; add Scopes and plot it
 
 - wall particle proportional to wall influence
 - wall particle indicates state (attack, hold button)
@@ -10,6 +10,8 @@ what is projected
 
 - maybe? fix wall transfer tangent (goes negative, does weird stuff)
 - maybe? wall system no wall gravity (all friction??)
+- maybe? cache wall transfer on transfer to prevent transfering magnet and input every frame
+- maybe? move off wall on jump?
 - maybe? vertical attack on wall-to-wall transfer
 
 - look into crouching sliding down ramps
