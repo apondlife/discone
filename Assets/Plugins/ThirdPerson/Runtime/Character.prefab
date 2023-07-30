@@ -43,11 +43,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_ExcludedPropertiesInInspector:
   - m_Script
-  m_LockStageInInspector:
+  m_LockStageInInspector: 
   m_StreamingVersion: 20170927
   m_Priority: 10
   m_StandbyUpdate: 2
@@ -116,8 +116,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1785480726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,8 +128,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4044717213e31446939f7bd49c896ea, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_TrackedObjectOffset: {x: 0, y: 1, z: 0}
   m_LookaheadTime: 0.362
   m_LookaheadSmoothing: 7.6
@@ -155,8 +155,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 36d1163fa822e8b418a0a603ec078d5c, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Damping: 0
 --- !u!114 &8474415216082246997
 MonoBehaviour:
@@ -168,8 +168,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_NoiseProfile: {fileID: 11400000, guid: 46965f9cbaf525742a6da4c2172a99cd, type: 2}
   m_PivotOffset: {x: 0, y: 0, z: 0}
   m_AmplitudeGain: 0.1
@@ -263,18 +263,22 @@ MonoBehaviour:
   m_FollowSystem:
     m_Phase:
       Name: 
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_CollisionSystem:
     m_Phase:
       Name: 
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_ZoomSystem:
     m_Phase:
       Name: 
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_TiltSystem:
     m_Phase:
       Name: 
+    m_IsDisabled: 0
     m_IsLogging: 0
 --- !u!1 &3326463586402868696
 GameObject:
@@ -351,8 +355,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0cce15f68687b342b161d35ac99ba14, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_MaxDistance: 20
   m_TargetSpeed: 0
   m_SpringDamp_Down:
@@ -395,7 +399,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   m_VerticalOffset_MaxHeight: 5
   m_Target: {fileID: 5081405195371850226}
-  m_Follow: {fileID: 8270296780509657005}
+  m_Camera: {fileID: 8270296780509657005}
 --- !u!1 &6542079319371145381
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,8 +478,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b04aa04aaec9e841bd620ab61ec9231, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   AnimateScale: 1
   m_RotationSpeed_Look: 300
   m_RotationSpeed_Wall: 0
@@ -580,38 +584,44 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbee4fbcb00d71f4aad16e754a74fddc, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Tuning: {fileID: 11400000, guid: bd25c329fc87d4c929c635a6754cb2e1, type: 2}
   m_IsPaused: 0
   m_Idle:
     m_Phase:
       Name: Idle
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Wall:
     m_Phase:
       Name: NotOnWall
+    m_IsDisabled: 0
     m_IsLogging: 0
-    AlwaysMagnet: 1
   m_Jump:
     m_Phase:
       Name: NotJumping
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Movement:
     m_Phase:
       Name: NotMoving
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Crouch:
     m_Phase:
-      Name:
+      Name: 
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Tilt:
     m_Phase:
       Name: NotTilting
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Collision:
     m_Phase:
       Name: Active
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Model: {fileID: 7250430580801210356}
   m_Controller:
@@ -620,33 +630,6 @@ MonoBehaviour:
       m_Bits: 4294967295
     m_MinMove: 0.005
     m_WallAngle: 80
-    m_WallCurve:
-      m_Curve:
-        serializedVersion: 2
-        m_Curve:
-        - serializedVersion: 3
-          time: 0.16638947
-          value: 0
-          inSlope: 0.010929814
-          outSlope: 0.010929814
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0.33333334
-          outWeight: 0.08753648
-        - serializedVersion: 3
-          time: 80
-          value: 1
-          inSlope: 0.01287067
-          outSlope: 0.01287067
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0.1118968
-          outWeight: 0.33333334
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_Min: 0
-      m_Max: 1
     m_CastOffset: 0.03
     m_ContactOffset: 0.01
     m_Capsule: {fileID: 1972163625}
@@ -906,11 +889,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5133423388355021927, guid: d9e453f6707a7a249ab2d84a06302965, type: 3}
       propertyPath: m_CharacterFeet
-      value:
+      value: 
       objectReference: {fileID: 1061133086809451152}
     - target: {fileID: 7367711423575961989, guid: d9e453f6707a7a249ab2d84a06302965, type: 3}
       propertyPath: m_Name
-      value: FX
+      value: Effects
       objectReference: {fileID: 0}
     - target: {fileID: 7367711423575962010, guid: d9e453f6707a7a249ab2d84a06302965, type: 3}
       propertyPath: m_RootOrder
