@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.10354013, y: 0.0000000042784754, z: 4.453877e-10, w: 0.9946253}
+  m_LocalRotation: {x: -0.017977966, y: 0.0000000010752251, z: 1.9333484e-11, w: 0.9998384}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -174,7 +174,7 @@ MonoBehaviour:
   m_PivotOffset: {x: 0, y: 0, z: 0}
   m_AmplitudeGain: 0.1
   m_FrequencyGain: 0.1
-  mNoiseOffsets: {x: 0, y: 0, z: 0}
+  mNoiseOffsets: {x: 840.5249, y: 912.6732, z: 742.30695}
 --- !u!1 &745930052032446095
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,7 +215,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2505435118483560403}
-  - component: {fileID: 5668836943055778505}
+  - component: {fileID: 8270296780509657005}
   m_Layer: 6
   m_Name: Camera
   m_TagString: Untagged
@@ -241,7 +241,7 @@ Transform:
   m_Father: {fileID: 7614967429340073451}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5668836943055778505
+--- !u!114 &8270296780509657005
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -250,9 +250,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 1114928914988804812}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc19de46a7935eb4a93b7f51484e68e2, type: 3}
+  m_Script: {fileID: 11500000, guid: cc3d0067bd335fb419b025c67fd4c1df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Tuning: {fileID: 11400000, guid: 3f4f38b8f078747a5a3036a8b6e5c6e8, type: 2}
+  m_Camera: {fileID: 1289189456}
+  m_Model: {fileID: 1061133086809451152}
+  m_Follow: {fileID: 7435246552485848647}
+  m_Destination: {fileID: 3673039484627793572}
+  m_LookAtTarget: {fileID: 3032161264613087381}
+  m_Input: {fileID: 4626327253638621584, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
+  m_FollowSystem:
+    m_Phase:
+      Name: 
+    m_IsDisabled: 0
+    m_IsLogging: 0
+  m_CollisionSystem:
+    m_Phase:
+      Name: 
+    m_IsDisabled: 0
+    m_IsLogging: 0
+  m_ZoomSystem:
+    m_Phase:
+      Name: 
+    m_IsDisabled: 0
+    m_IsLogging: 0
+  m_TiltSystem:
+    m_Phase:
+      Name: 
+    m_IsDisabled: 0
+    m_IsLogging: 0
 --- !u!1 &3326463586402868696
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,7 +289,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7435246552485848647}
-  - component: {fileID: 7736594804511770898}
   m_Layer: 0
   m_Name: Follow
   m_TagString: Untagged
@@ -286,40 +312,6 @@ Transform:
   m_Father: {fileID: 2505435118483560403}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7736594804511770898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3326463586402868696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc3d0067bd335fb419b025c67fd4c1df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Tuning: {fileID: 11400000, guid: 3f4f38b8f078747a5a3036a8b6e5c6e8, type: 2}
-  m_Camera: {fileID: 1289189456}
-  m_Model: {fileID: 1061133086809451152}
-  m_LookAtTarget: {fileID: 3032161264613087381}
-  m_Destination: {fileID: 3673039484627793572}
-  m_Input: {fileID: 4626327253638621584, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
-  m_FollowSystem:
-    m_Phase:
-      Name: 
-    m_IsLogging: 0
-  m_CollisionSystem:
-    m_Phase:
-      Name: 
-    m_IsLogging: 0
-  m_ZoomSystem:
-    m_Phase:
-      Name: 
-    m_IsLogging: 0
-  m_TiltSystem:
-    m_Phase:
-      Name: 
-    m_IsLogging: 0
 --- !u!1 &3760618876817645504
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +399,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   m_VerticalOffset_MaxHeight: 5
   m_Target: {fileID: 5081405195371850226}
-  m_Follow: {fileID: 7736594804511770898}
+  m_Camera: {fileID: 8270296780509657005}
 --- !u!1 &6542079319371145381
 GameObject:
   m_ObjectHideFlags: 0
@@ -594,36 +586,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbee4fbcb00d71f4aad16e754a74fddc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Tunables: {fileID: 11400000, guid: bd25c329fc87d4c929c635a6754cb2e1, type: 2}
+  m_Tuning: {fileID: 11400000, guid: bd25c329fc87d4c929c635a6754cb2e1, type: 2}
   m_IsPaused: 0
   m_Idle:
     m_Phase:
       Name: Idle
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Wall:
     m_Phase:
       Name: NotOnWall
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Jump:
     m_Phase:
       Name: NotJumping
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Movement:
     m_Phase:
       Name: NotMoving
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Crouch:
     m_Phase:
       Name: 
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Tilt:
     m_Phase:
       Name: NotTilting
+    m_IsDisabled: 0
     m_IsLogging: 0
   m_Collision:
     m_Phase:
       Name: Active
+    m_IsDisabled: 0
     m_IsLogging: 0
+  m_Model: {fileID: 7250430580801210356}
   m_Controller:
     m_CollisionMask:
       serializedVersion: 2
@@ -893,7 +893,7 @@ PrefabInstance:
       objectReference: {fileID: 1061133086809451152}
     - target: {fileID: 7367711423575961989, guid: d9e453f6707a7a249ab2d84a06302965, type: 3}
       propertyPath: m_Name
-      value: FX
+      value: Effects
       objectReference: {fileID: 0}
     - target: {fileID: 7367711423575962010, guid: d9e453f6707a7a249ab2d84a06302965, type: 3}
       propertyPath: m_RootOrder

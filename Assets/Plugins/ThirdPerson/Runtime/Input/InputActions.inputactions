@@ -234,6 +234,61 @@
                     "isPartOfComposite": false
                 },
                 {
+                    "name": "QE",
+                    "id": "a122dd66-5ae8-4dc7-b012-fdfa9bdf609f",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "612bd964-05ec-40ed-baae-6d684f690d25",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "e47bda60-d8a1-4693-9a82-3d64e3d16799",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "fcb5ce80-a67f-4a3e-90c0-ff96c1892b67",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "e92cb032-da9b-4f35-8354-c07ad7cb46b7",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "up",
                     "id": "c1d5efbd-200b-4d7c-b949-c0c160aae8e6",
                     "path": "<Keyboard>/i",
@@ -300,62 +355,7 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "QE",
-                    "id": "a122dd66-5ae8-4dc7-b012-fdfa9bdf609f",
-                    "path": "2DVector",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "612bd964-05ec-40ed-baae-6d684f690d25",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "e47bda60-d8a1-4693-9a82-3d64e3d16799",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "fcb5ce80-a67f-4a3e-90c0-ff96c1892b67",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "e92cb032-da9b-4f35-8354-c07ad7cb46b7",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "One Modifier",
+                    "name": "GameCube Controller Look Hack",
                     "id": "34218fb5-c8b4-462b-b40e-554e2099fc67",
                     "path": "OneModifier",
                     "interactions": "",
@@ -380,6 +380,39 @@
                     "name": "binding",
                     "id": "e24c49bf-ee8a-4a14-92f0-bcbc1b8472ab",
                     "path": "<Joystick>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "2In1 USB Joystick Look Hack",
+                    "id": "96f55387-1866-4b03-8719-760f51fdf837",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "7a04564c-c93c-45a2-a681-63690d50a51e",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button11",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "733f0923-5db5-41be-976c-f9988cf5e76f",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/stick",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -444,6 +477,39 @@
                 },
                 {
                     "name": "",
+                    "id": "533047dc-33e8-4f9d-8879-0136673b0e66",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6d35a4d2-bdc3-4de4-bc3c-8eff2fc20ab8",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d6b1f45-cdb7-45c5-873b-20f793f86b88",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "e19bc3d3-8ebd-4206-a8f6-dd2c17912751",
                     "path": "<Keyboard>/r",
                     "interactions": "",
@@ -499,6 +565,17 @@
                 },
                 {
                     "name": "",
+                    "id": "bd18dbd0-3cdd-4876-80a0-3b0d06eaabbd",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Talk",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "867f5981-7cc4-43c2-80b0-d0d9ec717b30",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
@@ -515,6 +592,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "ToggleMenu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "862985af-802b-4567-a2fa-3f8ee176c02d",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button10",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "ToggleMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -556,6 +644,17 @@
                     "name": "",
                     "id": "993a6d3e-766a-4277-b911-596661ef3216",
                     "path": "<HID::Nintendo GameCube Controller Adapter>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LoadCheckpoint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0b160125-6642-40a0-93c4-ea97784872c9",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/trigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -615,6 +714,166 @@
                     "processors": "",
                     "groups": "",
                     "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4a776a6b-db77-4b7d-baf4-c8eb4ad34320",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b2f3c717-4577-484a-a19d-ba591ca4a976",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bc47c8bc-8271-4d7e-8326-f39e3e308473",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d200d285-9ca2-4fa3-b255-01bbd12ca196",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Intro",
+            "id": "f0a73cc7-10af-4a40-aa0d-cb69c76925c8",
+            "actions": [
+                {
+                    "name": "Start",
+                    "type": "Button",
+                    "id": "f6b9cc82-a8b9-4b56-b505-3d5bb0dcd1ba",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold(duration=0.5,pressPoint=1.401298E-45)",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5d9211a0-e308-41fa-9b09-6663216c2b18",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b734dbc1-b341-41fd-8c37-baa7363fdccf",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f438a24b-fbfd-4b22-8ef3-d759619c6a72",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6053b63a-00f8-4667-aae4-ed49d03ca381",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e3752f62-c1a7-4e06-a8d0-03c18003faa0",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9e684eea-9544-4ead-81e3-986095e2d4cd",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4c1dcb3f-0107-4b0e-a81d-a2a9f599b9cc",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a63b9dde-a2a3-469d-8714-215537c5a3b3",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9c24bed1-88bc-47d5-bd4d-52b4f8e86301",
+                    "path": "<HID::MY-POWER CO.,LTD. 2In1 USB Joystick>/button2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

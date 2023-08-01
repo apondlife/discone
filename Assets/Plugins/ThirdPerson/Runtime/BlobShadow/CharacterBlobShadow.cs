@@ -4,8 +4,7 @@ using UnityEngine.Serialization;
 namespace ThirdPerson {
 
 [RequireComponent(typeof(Projector))]
-public class CharacterBlobShadow : MonoBehaviour {
-
+public class CharacterBlobShadow: MonoBehaviour {
     // -- fields --
     [Header("cfg")]
     [Tooltip("the layer mask for the ground")]

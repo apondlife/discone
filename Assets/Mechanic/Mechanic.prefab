@@ -55,17 +55,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdfc79e4243d04161bd3f524cdb8031d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Node: IntroRoot
-  m_Delay:
-    m_Duration: 2
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
+  m_Node: 
+  m_TreeRoot: 
+  m_Delay: 0
+  m_DelayBonus: 0.5
+  m_Project: {fileID: 7545569452688597077, guid: b2916276469f3434fbfd12489a5d0307, type: 3}
+  m_StartNode: Start
   m_DialogueRunner: {fileID: 5037302081254551675}
+  m_JumpToNode: {fileID: 11400000, guid: 24238e53c72c14c908cd529b69ca0357, type: 2}
+  m_SetBirthplaceStep: {fileID: 11400000, guid: 2910dd0d7661a44ad8e3f8dd68c7cf01, type: 2}
   m_IsEyelidClosed_Changed: {fileID: 11400000, guid: 0238b40b7d0a14a19be46266781207db, type: 2}
+  m_Intro_SequenceEnded: {fileID: 11400000, guid: 45e1e53611781437c92c6d5390d24c88, type: 2}
 --- !u!114 &5037302081254551675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,20 +78,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bec29c0a230741bdac901dba8da47ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yarnProject: {fileID: 7545569452688597077, guid: 8eaeeac70c7c96f48b66a7b793acd779, type: 3}
+  yarnProject: {fileID: 7545569452688597077, guid: b2916276469f3434fbfd12489a5d0307, type: 3}
   _variableStorage: {fileID: 2985585376613756020}
   dialogueViews:
   - {fileID: 6558838173412632750}
   startNode: Start
   startAutomatically: 0
-  automaticallyContinueLines: 1
   runSelectedOptionAsLine: 0
   lineProvider: {fileID: 0}
-  verboseLogging: 1
+  verboseLogging: 0
   onNodeStart:
     m_PersistentCalls:
       m_Calls: []
   onNodeComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onDialogueStart:
     m_PersistentCalls:
       m_Calls: []
   onDialogueComplete:

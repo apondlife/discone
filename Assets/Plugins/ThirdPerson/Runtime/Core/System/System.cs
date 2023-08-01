@@ -13,10 +13,13 @@ public abstract class System {
     // -- state --
     [Header("state")]
     [Tooltip("the current phase")]
-    [SerializeField] Phase m_Phase;
+    [SerializeField] protected Phase m_Phase;
 
     // -- s/debug
     #if UNITY_EDITOR
+    [Tooltip("if this system is disabled")]
+    [SerializeField] bool m_IsDisabled;
+
     [Tooltip("if this system is logging")]
     [SerializeField] bool m_IsLogging;
     #endif
@@ -53,6 +56,11 @@ public abstract class System {
         #if UNITY_EDITOR
         // clear debug phases
         m_Debug_Phases.Clear();
+
+        // if the system is disabled, turn it off
+        if (m_IsDisabled) {
+            return;
+        }
 
         // ensure a phase!
         if (m_Phase.Update == null) {

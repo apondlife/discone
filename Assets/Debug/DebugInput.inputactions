@@ -1,0 +1,109 @@
+{
+    "name": "DebugInput",
+    "maps": [
+        {
+            "name": "Debug",
+            "id": "1697f20e-8028-49ed-920b-a9dd790816d3",
+            "actions": [
+                {
+                    "name": "Reset ",
+                    "type": "Button",
+                    "id": "0e0e726c-8d2e-41ee-ac8a-6ac82ec3de77",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SpawnCharacter",
+                    "type": "Button",
+                    "id": "f3f6fbe9-a0a5-4941-baa8-739cdd6b58c2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "Start + Select",
+                    "id": "97cfa6dd-f1cf-4b24-84d1-4c9490b39bcc",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reset ",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "binding",
+                    "id": "d01b5017-b4f5-4030-a061-1966a1a7056a",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reset ",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier",
+                    "id": "86552182-bf72-427b-b38c-8bdc7b412b3e",
+                    "path": "<Gamepad>/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reset ",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Ctrl + R",
+                    "id": "66be5ac0-9341-4770-8235-4cce217e9353",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reset ",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "bd758590-3e41-4a08-a050-e06a3cada60e",
+                    "path": "<Keyboard>/leftCtrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reset ",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "9e7cacac-8206-46a1-83d9-0e99d9171971",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reset ",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "58538816-168b-4660-8be7-32767cf72fc2",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SpawnCharacter",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

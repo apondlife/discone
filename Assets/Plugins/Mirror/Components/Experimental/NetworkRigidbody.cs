@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Mirror.Experimental
 {
-    [AddComponentMenu("Network/Experimental/NetworkRigidbody")]
+    [AddComponentMenu("Network/ Experimental/Network Rigidbody")]
     [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-rigidbody")]
     public class NetworkRigidbody : NetworkBehaviour
     {
@@ -13,7 +13,6 @@ namespace Mirror.Experimental
         public bool clientAuthority = false;
 
         [Header("Velocity")]
-
         [Tooltip("Syncs Velocity every SyncInterval")]
         [SerializeField] bool syncVelocity = true;
 
@@ -23,9 +22,7 @@ namespace Mirror.Experimental
         [Tooltip("Only Syncs Value if distance between previous and current is great than sensitivity")]
         [SerializeField] float velocitySensitivity = 0.1f;
 
-
         [Header("Angular Velocity")]
-
         [Tooltip("Syncs AngularVelocity every SyncInterval")]
         [SerializeField] bool syncAngularVelocity = true;
 
@@ -40,16 +37,15 @@ namespace Mirror.Experimental
         /// </summary>
         readonly ClientSyncState previousValue = new ClientSyncState();
 
-        void OnValidate()
+        protected override void OnValidate()
         {
+            base.OnValidate();
             if (target == null)
-            {
                 target = GetComponent<Rigidbody>();
-            }
         }
 
-
         #region Sync vars
+
         [SyncVar(hook = nameof(OnVelocityChanged))]
         Vector3 velocity;
 
@@ -74,7 +70,7 @@ namespace Mirror.Experimental
         /// <returns></returns>
         bool IgnoreSync => isServer || ClientWithAuthority;
 
-        bool ClientWithAuthority => clientAuthority && hasAuthority;
+        bool ClientWithAuthority => clientAuthority && isOwned;
 
         void OnVelocityChanged(Vector3 _, Vector3 newValue)
         {
@@ -83,7 +79,6 @@ namespace Mirror.Experimental
 
             target.velocity = newValue;
         }
-
 
         void OnAngularVelocityChanged(Vector3 _, Vector3 newValue)
         {
@@ -124,32 +119,24 @@ namespace Mirror.Experimental
 
             target.angularDrag = newValue;
         }
-        #endregion
 
+        #endregion
 
         internal void Update()
         {
             if (isServer)
-            {
                 SyncToClients();
-            }
             else if (ClientWithAuthority)
-            {
                 SendToServer();
-            }
         }
 
         internal void FixedUpdate()
         {
             if (clearAngularVelocity && !syncAngularVelocity)
-            {
                 target.angularVelocity = Vector3.zero;
-            }
 
             if (clearVelocity && !syncVelocity)
-            {
                 target.velocity = Vector3.zero;
-            }
         }
 
         /// <summary>
@@ -191,7 +178,7 @@ namespace Mirror.Experimental
         [Client]
         void SendToServer()
         {
-            if (!hasAuthority)
+            if (!isOwned)
             {
                 Debug.LogWarning("SendToServer called without authority");
                 return;
@@ -204,7 +191,7 @@ namespace Mirror.Experimental
         [Client]
         void SendVelocity()
         {
-            float now = Time.time;
+            double now = NetworkTime.localTime; // Unity 2019 doesn't have Time.timeAsDouble yet
             if (now < previousValue.nextSyncTime)
                 return;
 
@@ -231,9 +218,7 @@ namespace Mirror.Experimental
 
             // only update syncTime if either has changed
             if (angularVelocityChanged || velocityChanged)
-            {
                 previousValue.nextSyncTime = now + syncInterval;
-            }
         }
 
         [Client]
@@ -289,10 +274,9 @@ namespace Mirror.Experimental
             if (syncVelocity)
             {
                 this.velocity = velocity;
-
                 target.velocity = velocity;
-
             }
+
             this.angularVelocity = angularVelocity;
             target.angularVelocity = angularVelocity;
         }
@@ -349,7 +333,7 @@ namespace Mirror.Experimental
             /// <summary>
             /// Next sync time that velocity will be synced, based on syncInterval.
             /// </summary>
-            public float nextSyncTime;
+            public double nextSyncTime;
             public Vector3 velocity;
             public Vector3 angularVelocity;
             public bool isKinematic;

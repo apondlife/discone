@@ -4,12 +4,10 @@ using UnityEngine.Serialization;
 namespace ThirdPerson {
 
 /// the character's dust effect
+/// TODO: rename me to CharacterEffects & break me up into multiple prefabs & scripts
 public class CharacterDust: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
-    [Tooltip("the floor particle emission per unit of speed")]
-    [SerializeField] float m_FloorParticlesBaseEmission;
-
     [Tooltip("the minimum negative acceleration to start skidding")]
     [SerializeField] float m_SkidDeceleration;
 
@@ -22,11 +20,11 @@ public class CharacterDust: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the wall particle emitter")]
-    [SerializeField] ParticleSystem m_WallParticles;
-
     [Tooltip("the floor skid lines particle (negative acceleration)")]
     [SerializeField] ParticleSystem m_FloorSkid;
+
+    [Tooltip("the plume when jump starts")]
+    [SerializeField] ParticleSystem m_JumpPlume;
 
     [Tooltip("the particle puff when landing")]
     [SerializeField] ParticleSystem m_LandingPuff;
@@ -48,21 +46,9 @@ public class CharacterDust: MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (m_State.IsOnWall) {
-            if (!m_WallParticles.isPlaying) {
-                m_WallParticles.Play();
-            }
-
-            if (!m_State.Wall.IsNone) {
-                var c = m_State.Wall;
-                var t = m_WallParticles.transform;
-                t.position = c.Point;
-                t.forward = -c.Normal;
-            }
-        } else {
-            if (m_WallParticles.isPlaying) {
-                m_WallParticles.Stop();
-            }
+        // TODO: move into own script
+        if (m_State.Next.Events.Contains(CharacterEvent.Jump)) {
+            m_JumpPlume.Play();
         }
 
         if (m_State.Next.IsOnGround) {
@@ -82,7 +68,6 @@ public class CharacterDust: MonoBehaviour {
             }
 
             // pivot effects
-            // if (m_State.Prev.PivotFrame == -1 && m_State.PivotFrame >= 0) {
             if (isDecelerating) {
                 m_PivotParticles.transform.forward = -m_State.Acceleration.normalized;
                 var dustCount = Mathf.FloorToInt(m_AccelerationToDust * m_State.Acceleration.magnitude);

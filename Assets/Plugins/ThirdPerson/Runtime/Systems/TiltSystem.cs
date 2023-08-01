@@ -20,8 +20,8 @@ sealed class TiltSystem : CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_State.Next.TiltState;
-        set => m_State.Next.TiltState = value;
+        get => c.State.Next.TiltState;
+        set => c.State.Next.TiltState = value;
     }
 
     // -- NotTilting --
@@ -31,7 +31,7 @@ sealed class TiltSystem : CharacterSystem {
     );
 
     void NotTilting_Update(float _) {
-        var acceleration = Vector3.ProjectOnPlane(m_State.Acceleration, Vector3.up);
+        var acceleration = Vector3.ProjectOnPlane(c.State.Acceleration, Vector3.up);
         if (acceleration.sqrMagnitude != 0.0f) {
             ChangeTo(Tilting);
             return;
@@ -47,16 +47,16 @@ sealed class TiltSystem : CharacterSystem {
     );
 
     void Tilting_Update(float _) {
-        var acceleration = Vector3.ProjectOnPlane(m_State.Acceleration, Vector3.up);
+        var acceleration = Vector3.ProjectOnPlane(c.State.Acceleration, Vector3.up);
         if (acceleration.sqrMagnitude == 0.0f) {
             ChangeTo(NotTilting);
             return;
         }
 
         var tiltAngle = Mathf.Clamp(
-            acceleration.magnitude / m_Tunables.Horizontal_Acceleration * m_Tunables.TiltForBaseAcceleration,
+            acceleration.magnitude / c.Tuning.Horizontal_Acceleration * c.Tuning.TiltForBaseAcceleration,
             0,
-            m_Tunables.MaxTilt
+            c.Tuning.MaxTilt
         );
 
         var tiltAxis = Vector3.Cross(
@@ -75,10 +75,10 @@ sealed class TiltSystem : CharacterSystem {
     // -- commands --
     /// smooth tilt towards target
     void InterpolateTilt(Quaternion target) {
-        m_State.Next.Tilt = Quaternion.Slerp(
-            m_State.Next.Tilt,
+        c.State.Next.Tilt = Quaternion.Slerp(
+            c.State.Next.Tilt,
             target,
-            m_Tunables.TiltSmoothing
+            c.Tuning.TiltSmoothing
         );
     }
 }

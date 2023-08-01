@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Mirror
 {
+    [AddComponentMenu("Network/ Interest Management/ Match/Match Interest Management")]
     public class MatchInterestManagement : InterestManagement
     {
         readonly Dictionary<Guid, HashSet<NetworkIdentity>> matchObjects =
@@ -13,34 +15,47 @@ namespace Mirror
 
         readonly HashSet<Guid> dirtyMatches = new HashSet<Guid>();
 
+        [ServerCallback]
         public override void OnSpawned(NetworkIdentity identity)
         {
-            if (!identity.TryGetComponent<NetworkMatch>(out NetworkMatch networkMatch))
+            if (!identity.TryGetComponent(out NetworkMatch networkMatch))
                 return;
 
-            Guid currentMatch = networkMatch.matchId;
-            lastObjectMatch[identity] = currentMatch;
+            Guid networkMatchId = networkMatch.matchId;
+            lastObjectMatch[identity] = networkMatchId;
 
             // Guid.Empty is never a valid matchId...do not add to matchObjects collection
-            if (currentMatch == Guid.Empty)
+            if (networkMatchId == Guid.Empty)
                 return;
 
             // Debug.Log($"MatchInterestManagement.OnSpawned({identity.name}) currentMatch: {currentMatch}");
-            if (!matchObjects.TryGetValue(currentMatch, out HashSet<NetworkIdentity> objects))
+            if (!matchObjects.TryGetValue(networkMatchId, out HashSet<NetworkIdentity> objects))
             {
                 objects = new HashSet<NetworkIdentity>();
-                matchObjects.Add(currentMatch, objects);
+                matchObjects.Add(networkMatchId, objects);
             }
 
             objects.Add(identity);
+
+            // Match ID could have been set in NetworkBehaviour::OnStartServer on this object.
+            // Since that's after OnCheckObserver is called it would be missed, so force Rebuild here.
+            // Add the current match to dirtyMatches for Update to rebuild it.
+            dirtyMatches.Add(networkMatchId);
         }
 
+        [ServerCallback]
         public override void OnDestroyed(NetworkIdentity identity)
         {
-            lastObjectMatch.TryGetValue(identity, out Guid currentMatch);
-            lastObjectMatch.Remove(identity);
-            if (currentMatch != Guid.Empty && matchObjects.TryGetValue(currentMatch, out HashSet<NetworkIdentity> objects) && objects.Remove(identity))
-                RebuildMatchObservers(currentMatch);
+            // Don't RebuildSceneObservers here - that will happen in Update.
+            // Multiple objects could be destroyed in same frame and we don't
+            // want to rebuild for each one...let Update do it once.
+            // We must add the current match to dirtyMatches for Update to rebuild it.
+            if (lastObjectMatch.TryGetValue(identity, out Guid currentMatch))
+            {
+                lastObjectMatch.Remove(identity);
+                if (currentMatch != Guid.Empty && matchObjects.TryGetValue(currentMatch, out HashSet<NetworkIdentity> objects) && objects.Remove(identity))
+                    dirtyMatches.Add(currentMatch);
+            }
         }
 
         // internal so we can update from tests
@@ -51,14 +66,15 @@ namespace Mirror
             //   if match changed:
             //     add previous to dirty
             //     add new to dirty
-            foreach (NetworkIdentity netIdentity in NetworkServer.spawned.Values)
+            foreach (NetworkIdentity identity in NetworkServer.spawned.Values)
             {
                 // Ignore objects that don't have a NetworkMatch component
-                if (!netIdentity.TryGetComponent<NetworkMatch>(out NetworkMatch networkMatch))
+                if (!identity.TryGetComponent(out NetworkMatch networkMatch))
                     continue;
 
                 Guid newMatch = networkMatch.matchId;
-                lastObjectMatch.TryGetValue(netIdentity, out Guid currentMatch);
+                if (!lastObjectMatch.TryGetValue(identity, out Guid currentMatch))
+                    continue;
 
                 // Guid.Empty is never a valid matchId
                 // Nothing to do if matchId hasn't changed
@@ -70,10 +86,10 @@ namespace Mirror
 
                 // This object is in a new match so observers in the prior match
                 // and the new match need to rebuild their respective observers lists.
-                UpdateMatchObjects(netIdentity, newMatch, currentMatch);
+                UpdateMatchObjects(identity, newMatch, currentMatch);
             }
 
-            // rebuild all dirty matchs
+            // rebuild all dirty matches
             foreach (Guid dirtyMatch in dirtyMatches)
                 RebuildMatchObservers(dirtyMatch);
 
@@ -114,26 +130,36 @@ namespace Mirror
                     NetworkServer.RebuildObservers(netIdentity, false);
         }
 
-        public override bool OnCheckObserver(NetworkIdentity identity, NetworkConnection newObserver)
+        public override bool OnCheckObserver(NetworkIdentity identity, NetworkConnectionToClient newObserver)
         {
-            if (!identity.TryGetComponent<NetworkMatch>(out NetworkMatch identityNetworkMatch))
+            // Never observed if no NetworkMatch component
+            if (!identity.TryGetComponent(out NetworkMatch identityNetworkMatch))
                 return false;
 
-            if (!newObserver.identity.TryGetComponent<NetworkMatch>(out NetworkMatch newObserverNetworkMatch))
+            // Guid.Empty is never a valid matchId
+            if (identityNetworkMatch.matchId == Guid.Empty)
+                return false;
+
+            // Never observed if no NetworkMatch component
+            if (!newObserver.identity.TryGetComponent(out NetworkMatch newObserverNetworkMatch))
+                return false;
+
+            // Guid.Empty is never a valid matchId
+            if (newObserverNetworkMatch.matchId == Guid.Empty)
                 return false;
 
             return identityNetworkMatch.matchId == newObserverNetworkMatch.matchId;
         }
 
-        public override void OnRebuildObservers(NetworkIdentity identity, HashSet<NetworkConnection> newObservers, bool initialize)
+        public override void OnRebuildObservers(NetworkIdentity identity, HashSet<NetworkConnectionToClient> newObservers)
         {
-            if (!identity.TryGetComponent<NetworkMatch>(out NetworkMatch networkMatch))
+            if (!identity.TryGetComponent(out NetworkMatch networkMatch))
                 return;
 
             Guid matchId = networkMatch.matchId;
 
             // Guid.Empty is never a valid matchId
-            if (matchId == Guid.Empty) 
+            if (matchId == Guid.Empty)
                 return;
 
             if (!matchObjects.TryGetValue(matchId, out HashSet<NetworkIdentity> objects))

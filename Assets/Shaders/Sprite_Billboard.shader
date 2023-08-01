@@ -1,11 +1,18 @@
 Shader "Sprite/Billboard" {
     Properties {
         _MainTex ("Sprite", 2D) = "white" {}
+
+        [Space]
+        [Header(Effects)]
+        [Space(5)]
         _Saturation ("Saturation", Float) = 1.0
 
+        [Space]
         [Header(Rendering)]
+        [Space(5)]
+        _Cutoff ("Cutoff (Alpha)", Float) = 0.5
         [Enum(UnityEngine.Rendering.CullMode)] _Culling ("Cull Mode", Int) = 2
-        [Enum(Off,0,On,1)] _ZWrite("ZWrite", Int) = 1
+        [Enum(Off, 0, On, 1)] _ZWrite("ZWrite", Int) = 1
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Int) = 4
     }
 
@@ -24,17 +31,19 @@ Shader "Sprite/Billboard" {
         ZWrite [_ZWrite]
         ZTest [_ZTest]
         Lighting Off
-        Blend One OneMinusSrcAlpha
+        Blend Off
 
         // -- program --
         Pass {
             CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
+            #pragma vertex DrawVert
+            #pragma fragment DragFrag
 
+            // -- includes --
             #include "UnityCG.cginc"
             #include "Assets/Shaders/Core/Color.cginc"
 
+            // -- types --
             struct VertIn {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
@@ -45,15 +54,21 @@ Shader "Sprite/Billboard" {
                 float2 uv : TEXCOORD0;
             };
 
+            // -- props --
+            // the texture
             sampler2D _MainTex;
 
+            // the texture scale/transform
             float4 _MainTex_ST;
 
             // how saturated the sprite is [0,1]
-            float _Saturation;
+            float1 _Saturation;
 
-            FragIn vert(VertIn i)
-            {
+            // the cutoff before clipping
+            float1 _Cutoff;
+
+            // -- program --
+            FragIn DrawVert(VertIn i) {
                 FragIn o;
                 o.uv = TRANSFORM_TEX(i.uv, _MainTex);
 
@@ -90,10 +105,10 @@ Shader "Sprite/Billboard" {
                 return o;
             }
 
-            fixed4 frag(FragIn IN) : SV_Target {
+            fixed4 DragFrag(FragIn IN) : SV_Target {
                 fixed4 c = tex2D(_MainTex, IN.uv);
                 c = fixed4(c.rgb * _Saturation, c.a);
-                clip(c.a - 0.5f);
+                clip(c.a - _Cutoff);
                 return c;
             }
 
@@ -109,9 +124,17 @@ Shader "Sprite/Billboard" {
             #pragma vertex DrawVert
             #pragma fragment DrawFrag
 
+            // -- props --
+            // the texture
             sampler2D _MainTex;
+
+            // the texture scale/transform
             float4 _MainTex_ST;
 
+            // the cutoff before clipping
+            float1 _Cutoff;
+
+            // -- tyeps --
             struct VertIn {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
@@ -122,6 +145,7 @@ Shader "Sprite/Billboard" {
                 float2 uv : TEXCOORD0;
             };
 
+            // -- program --
             FragIn DrawVert(VertIn i) {
                 FragIn o;
                 o.vertex = UnityObjectToClipPos(i.vertex);
@@ -131,7 +155,7 @@ Shader "Sprite/Billboard" {
 
             float4 DrawFrag(FragIn i) : SV_TARGET {
                 fixed4 c = tex2D(_MainTex, i.uv);
-                clip(c.a - 0.5);
+                clip(c.a - _Cutoff);
                 return 0;
             }
 

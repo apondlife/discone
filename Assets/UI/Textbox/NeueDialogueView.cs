@@ -23,13 +23,8 @@ public class NeueDialogueView : DialogueViewBase
 
     TextboxPlacement placement = null;
 
-    
-    TextColor textColorer;
 
-    // -- events --
-    [Header("events")]
-    [Tooltip("when the next line runs")]
-    [SerializeField] VoidEvent m_RunNextLine;
+    TextColor textColorer;
 
     [SerializeField] TextboxPlacement[] placements;
 
@@ -44,11 +39,11 @@ public class NeueDialogueView : DialogueViewBase
     }
 
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
-        
+
 
         // if we're a new character, or have changed characters, choose a random placement
-        // there are more than one possible "placements" for how 
-        // the dialogue UI will be laid out 
+        // there are more than one possible "placements" for how
+        // the dialogue UI will be laid out
         if (currentLine == null || currentLine.CharacterName != dialogueLine.CharacterName) {
             currentLine = dialogueLine;
             Debug.Log(dialogueLine.CharacterName);
@@ -63,17 +58,17 @@ public class NeueDialogueView : DialogueViewBase
                 if (placements[i] != placement) {
                     placements[i].gameObject.SetActive(false);
                 }
-            }          
-        }    
-        
-        
+            }
+        }
+
+
         canvasGroup.gameObject.SetActive(true);
         characterNameText.SetText(dialogueLine.CharacterName);
         lineText.SetText(dialogueLine.TextWithoutCharacterName.Text);
 
         lineText.renderMode = TextRenderFlags.DontRender;
-        
-        
+
+
 
         //HideCharacters();
 
@@ -201,16 +196,5 @@ public class NeueDialogueView : DialogueViewBase
         canvasGroup.interactable = false;
         canvasGroup.alpha = 0;
         onDismissalComplete();
-    }
-
-    // -- events --
-    /// when the next line runs
-    void OnRunNextLine() {
-        // we're not actually displaying a line. no-op.
-        if (currentLine == null) {
-            return;
-        }
-
-        ReadyForNextLine();
     }
 }

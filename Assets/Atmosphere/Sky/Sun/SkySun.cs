@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
+using System;
 
 /// a sun that changes color
 public class SkySun: MonoBehaviour {
@@ -47,6 +48,7 @@ public class SkySun: MonoBehaviour {
 
     void OnDestroy() {
         // unbind events
+        s_MaterialCache.Clear();
         m_Subscriptions.Dispose();
     }
 

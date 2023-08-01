@@ -78,6 +78,9 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Min: 0
     m_Max: 0
+    m_Dst:
+      Min: 0
+      Max: 0
   m_JitterDist_Axis: -1
   m_JitterRotation:
     m_Curve:
@@ -106,8 +109,11 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Min: -3
     m_Max: 3
+    m_Dst:
+      Min: -3
+      Max: 3
   m_JitterRotation_IsLocal: 0
-  m_TransitionDist:
+  m_TranslationDist:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -134,6 +140,9 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Min: 30
     m_Max: 100
+    m_Dst:
+      Min: 30
+      Max: 100
   m_Group: {fileID: 5768595927654759796}
 --- !u!225 &5768595927654759796
 CanvasGroup:

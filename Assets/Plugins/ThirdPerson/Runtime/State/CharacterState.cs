@@ -13,8 +13,8 @@ public sealed partial class CharacterState {
     #endif
 
     // -- deps --
-    /// the tunables
-    CharacterTunablesBase m_Tunables;
+    /// the tuning
+    CharacterTuning m_Tuning;
 
     // -- props --
     /// the queue of frames
@@ -24,10 +24,10 @@ public sealed partial class CharacterState {
     /// create state from intial frame and dependencies
     public CharacterState(
         Frame initial,
-        CharacterTunablesBase tunables
+        CharacterTuning tuning
     ) {
         // set deps
-        m_Tunables = tunables;
+        m_Tuning = tuning;
 
         // set props
         Fill(initial);
@@ -77,12 +77,12 @@ public sealed partial class CharacterState {
 
     /// if the ground speed this frame is below the movement threshold
     public bool IsStopped {
-        get => Next.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+        get => Next.GroundVelocity.magnitude < m_Tuning.Horizontal_MinSpeed;
     }
 
     /// if the ground speed last frame was below the movement threshold
     public bool WasStopped {
-        get => Curr.GroundVelocity.magnitude < m_Tunables.Horizontal_MinSpeed;
+        get => Curr.GroundVelocity.magnitude < m_Tuning.Horizontal_MinSpeed;
     }
 
     /// the buffer size
@@ -113,9 +113,6 @@ public sealed partial class CharacterState {
         /// if the character is in jump squat
         public bool IsInJumpSquat = false;
 
-        /// if the character is on the wall
-        public bool IsOnWall = false;
-
         /// if the character is crouching
         public bool IsCrouching = false;
 
@@ -127,6 +124,12 @@ public sealed partial class CharacterState {
 
         /// the wall collision for the previous frame
         public CharacterCollision Wall;
+
+        /// the collision for the last touched surface
+        public CharacterCollision CurrSurface;
+
+        /// the collision for the current perceived surface
+        public CharacterCollision PerceivedSurface;
 
         /// the frame in the jump squat
         public int JumpSquatFrame = -1;
@@ -155,17 +158,20 @@ public sealed partial class CharacterState {
         /// the number of jumps executed since last grounded
         public uint Jumps = 0;
 
+        /// the buffered surface to jump from;
+        public CharacterCollision JumpSurface;
+
         /// the number of coyote frames the available
         public int CoyoteFrames = 0;
 
         /// the number of cooldown frames available
         public int CooldownFrames = 0;
 
-        /// the current number of jumps in the current tunable
-        public uint JumpTunablesJumpIndex = 0;
+        /// the index of the current jump tuning
+        public uint JumpTuningIndex = 0;
 
-        /// the index of the current jump tunable
-        public uint JumpTunablesIndex = 0;
+        /// the current number of jumps in the current tuning
+        public uint JumpTuningJumpIndex = 0;
 
         /// the container of events that happened this frame
         public CharacterEventSet Events;
@@ -211,6 +217,21 @@ public sealed partial class CharacterState {
         /// if the character is touching the ground (or thinks they are)
         public bool IsOnGround {
             get => Ground.IsSome || CoyoteFrames > 0;
+        }
+
+        /// the ground-like collision surface
+        public CharacterCollision GroundSurface {
+            get => Ground.IsSome ? Ground : Wall;
+        }
+
+        /// the wall-like collision surface
+        public CharacterCollision WallSurface {
+            get => Wall.IsSome ? Wall : Ground;
+        }
+
+        /// if the character is on the wall
+        public bool IsOnWall {
+            get => WallSurface.Angle > 0;
         }
 
         /// if currently idle

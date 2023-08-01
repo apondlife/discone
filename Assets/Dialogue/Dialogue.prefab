@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8417479896772305835
 RectTransform:
   m_ObjectHideFlags: 0
@@ -132,11 +132,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IsActive: {fileID: 11400000, guid: 1067f7063445aa4488603b681adaa4fb, type: 2}
   m_ActiveDialogue: {fileID: 0}
-  m_Start: {fileID: 11400000, guid: e776bc01eb723b046b946fb4461a0501, type: 2}
+  m_StartDialogue: {fileID: 11400000, guid: e776bc01eb723b046b946fb4461a0501, type: 2}
   m_Complete: {fileID: 11400000, guid: cf89df7ef459d4fcdabb208a3b98ed6c, type: 2}
   m_SwitchCharacter: {fileID: 11400000, guid: 1ffcf622465e24d1f82887e4c9b64359, type: 2}
   m_Talk: {fileID: -8194012608305008080, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   yarnDialogueRunner: {fileID: 678411839616086626}
+  m_Canvas: {fileID: 4348228721481088819}
   ivanTextbox: {fileID: 5369644482837740118}
   defaultTextbox: {fileID: 3571021123347224286}
 --- !u!1001 &1177216996790519631
@@ -547,6 +548,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TextboxSubtitlesOldSchool
       objectReference: {fileID: 0}
+    - target: {fileID: 477493382510890090, guid: 91b48e52def4f414da62a78924f11b59, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2833373779102467270, guid: 91b48e52def4f414da62a78924f11b59, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -599,6 +604,10 @@ PrefabInstance:
     - target: {fileID: 5498745658256887569, guid: aaa61c1c26a5d45958949fe7d789240b, type: 3}
       propertyPath: m_Name
       value: TextboxNeueArtful
+      objectReference: {fileID: 0}
+    - target: {fileID: 5498745658256887569, guid: aaa61c1c26a5d45958949fe7d789240b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5625156678061886025, guid: aaa61c1c26a5d45958949fe7d789240b, type: 3}
       propertyPath: m_Pivot.x

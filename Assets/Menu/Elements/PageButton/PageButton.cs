@@ -23,7 +23,7 @@ sealed class PageButton: UIBehaviour {
     [SerializeField] Orientation m_Orientations;
 
     [Tooltip("the set of orientations this button picks from")]
-    [SerializeField] ThirdPerson.RangeCurve m_CrossAxisRange;
+    [SerializeField] ThirdPerson.MapOutCurve m_CrossAxisRange;
 
     // -- commands --
     /// change the button's orientation

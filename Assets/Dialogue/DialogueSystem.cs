@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 using Yarn.Unity;
 using UnityAtoms.BaseAtoms;
 using UnityEngine.Serialization;
@@ -35,6 +34,9 @@ public class DialogueSystem: MonoBehaviour {
     [Tooltip("the dialogue runner")]
     [SerializeField] DialogueRunner yarnDialogueRunner;
 
+    [Tooltip("the dialogue canvas")]
+    [SerializeField] GameObject m_Canvas;
+
     [Header("textboxes")]
     [Tooltip("ivan textbox")]
     [SerializeField] DialogueViewBase ivanTextbox;
@@ -53,6 +55,8 @@ public class DialogueSystem: MonoBehaviour {
         m_Subscriptions
             .Add(m_StartDialogue, OnStartDialogue)
             .Add(m_Complete, OnDialogueComplete);
+
+        m_Canvas.SetActive(true);
     }
 
     void OnDestroy() {
@@ -64,7 +68,7 @@ public class DialogueSystem: MonoBehaviour {
     /// start dialogue with a particular character
     void StartDialogue(CharacterDialogue dialogue) {
         if (dialogue == null) {
-            Debug.LogError($"[dialog] tried to start dialogue w/ a character w/ no CharacterDialogue");
+            Debug.LogError(Discone.Tag.Dialog.F($"tried to start dialogue w/ a character w/ no CharacterDialogue"));
             return;
         }
 
@@ -72,11 +76,12 @@ public class DialogueSystem: MonoBehaviour {
             return;
         }
 
-        Debug.Log($"[dialog] start dialgoue <{dialogue.NodeTitle}>");
+        Debug.Log(Discone.Tag.Dialog.F($"start dialgoue <{dialogue.NodeTitle}>"));
 
-        DialogueViewBase textbox = ChooseTextbox(dialogue.NodeTitle);
-        DialogueViewBase[] textboxArray = { textbox };
-        yarnDialogueRunner.SetDialogueViews(textboxArray);
+        // prepare the dialogue view
+        var textbox = ChooseTextbox(dialogue.NodeTitle);
+        textbox.gameObject.SetActive(true);
+        yarnDialogueRunner.SetDialogueViews(new[] { textbox });
 
         // show the dialogue for this character
         m_IsActive.Value = true;
@@ -89,18 +94,18 @@ public class DialogueSystem: MonoBehaviour {
 
     /// advance dialgoue to the next line
     void RunNextLine() {
-        Debug.Log($"[dialog] advance line <{m_ActiveDialogue.NodeTitle}>");
-        yarnDialogueRunner.OnViewUserIntentNextLine();
+        Debug.Log(Discone.Tag.Dialog.F($"advance line <{m_ActiveDialogue.NodeTitle}>"));
+        yarnDialogueRunner.OnViewRequestedInterrupt();
     }
 
     /// complete dialgoue with the current character
     void CompleteDialogue() {
         if (m_ActiveDialogue == null) {
-            Debug.LogError($"[dialog] tried to complete dialogue w/ no active CharacterDialogue");
+            Debug.LogError(Discone.Tag.Dialog.F($"tried to complete dialogue w/ no active CharacterDialogue"));
             return;
         }
 
-        Debug.Log($"[dialog] complete dialogue <{m_ActiveDialogue.NodeTitle}>");
+        Debug.Log(Discone.Tag.Dialog.F($"complete dialogue <{m_ActiveDialogue.NodeTitle}>"));
 
         // complete the active dialgoue
         m_SwitchCharacter.Raise(m_ActiveDialogue.Character);

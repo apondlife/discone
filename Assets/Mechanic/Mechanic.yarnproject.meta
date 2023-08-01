@@ -1,0 +1,100 @@
+fileFormatVersion: 2
+guid: b2916276469f3434fbfd12489a5d0307
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 053561912b1654d80a424bb0696a74ae, type: 3}
+  sourceScripts:
+  - {fileID: 6391573757903218779, guid: 9fceca2b9c6674bc7a6254c4d6bd2fa0, type: 3}
+  compileErrors: []
+  serializedDeclarations:
+  - name: $BirthplaceStep
+    typeName: String
+    defaultValueBool: 0
+    defaultValueNumber: 0
+    defaultValueString: Ramp
+    description: 
+    isImplicit: 0
+    sourceYarnAsset: {fileID: 6391573757903218779, guid: 9fceca2b9c6674bc7a6254c4d6bd2fa0, type: 3}
+  - name: $BirthplaceRamp_Help_Visited
+    typeName: Bool
+    defaultValueBool: 0
+    defaultValueNumber: 0
+    defaultValueString: 
+    description: 
+    isImplicit: 0
+    sourceYarnAsset: {fileID: 6391573757903218779, guid: 9fceca2b9c6674bc7a6254c4d6bd2fa0, type: 3}
+  - name: $BirthplaceStair_Born_Visited
+    typeName: Bool
+    defaultValueBool: 0
+    defaultValueNumber: 0
+    defaultValueString: 
+    description: 
+    isImplicit: 0
+    sourceYarnAsset: {fileID: 6391573757903218779, guid: 9fceca2b9c6674bc7a6254c4d6bd2fa0, type: 3}
+  - name: $BirthplaceWall_Help_Visited
+    typeName: Bool
+    defaultValueBool: 0
+    defaultValueNumber: 0
+    defaultValueString: 
+    description: 
+    isImplicit: 0
+    sourceYarnAsset: {fileID: 6391573757903218779, guid: 9fceca2b9c6674bc7a6254c4d6bd2fa0, type: 3}
+  defaultLanguage: en-US
+  languagesToSourceAssets: []
+  useAddressableAssets: 0
+  searchAllAssembliesForActions: 1
+  assembliesToSearch: []
+  ListOfFunctions:
+  - Name: Random
+    ReturnType: -> Single
+    Parameters: []
+  - Name: RandomRange
+    ReturnType: -> Single
+    Parameters:
+    - minInclusive
+    - maxInclusive
+  - Name: Dice
+    ReturnType: -> Int32
+    Parameters:
+    - sides
+  - Name: Round
+    ReturnType: -> Int32
+    Parameters:
+    - num
+  - Name: RoundPlaces
+    ReturnType: -> Single
+    Parameters:
+    - num
+    - places
+  - Name: Floor
+    ReturnType: -> Int32
+    Parameters:
+    - num
+  - Name: Ceil
+    ReturnType: -> Int32
+    Parameters:
+    - num
+  - Name: Inc
+    ReturnType: -> Int32
+    Parameters:
+    - num
+  - Name: Dec
+    ReturnType: -> Int32
+    Parameters:
+    - num
+  - Name: Decimal
+    ReturnType: -> Single
+    Parameters:
+    - num
+  - Name: Int
+    ReturnType: -> Int32
+    Parameters:
+    - num
+  - Name: CoolFunction
+    ReturnType: -> Int32
+    Parameters: []

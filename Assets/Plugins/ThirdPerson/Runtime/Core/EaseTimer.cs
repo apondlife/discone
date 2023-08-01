@@ -53,10 +53,9 @@ public record EaseTimer {
     /// advance the timer based on current time
     public void Tick() {
         // if not active, abort
-        if (m_Elapsed == k_Inactive) {
+        if (!IsActive) {
             return;
         }
-
 
         // check progress
         // TODO: do unscaled time?
@@ -74,6 +73,16 @@ public record EaseTimer {
         m_RawPct = m_IsReversed ? 1f - k : k;
     }
 
+    /// try to complete this timer if it's active; calls #Tick
+    public bool TryComplete() {
+        if (!IsActive) {
+            return false;
+        }
+
+        Tick();
+        return IsComplete;
+    }
+
     // -- queries --
     /// if the timer is active
     public bool IsActive {
@@ -81,7 +90,7 @@ public record EaseTimer {
     }
 
     /// if the timer is running in reverse
-    public bool isReversed {
+    public bool IsReversed {
         get => m_IsReversed;
     }
 

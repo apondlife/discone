@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace ThirdPerson {
 
@@ -19,8 +20,8 @@ sealed class CollisionSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_State.Next.CollisionState;
-        set => m_State.Next.CollisionState = value;
+        get => c.State.Next.CollisionState;
+        set => c.State.Next.CollisionState = value;
     }
 
     // -- NotIdle --
@@ -30,24 +31,61 @@ sealed class CollisionSystem: CharacterSystem {
     );
 
     void Active_Update(float delta) {
-        var v = m_State.Next.Velocity;
+        var curr = c.State.Curr;
+        var next = c.State.Next;
 
         // move character using controller if not idle
-        var frame = m_Controller.Move(
-            m_State.Next.Position,
-            m_State.Next.Velocity,
-            m_State.Next.Up,
+        var frame = c.Controller.Move(
+            next.Position,
+            next.Velocity,
+            next.Up,
             delta
         );
 
-        // find the ground collision if it exists
-        m_State.Next.Ground = frame.Ground;
-        m_State.Next.Wall = frame.Wall;
+        // update collisions
+        // TODO: store a list of n collisions this frame
+        next.Ground = frame.Ground;
+        next.Wall = frame.Wall;
+
+        // find the newest collision surface
+        var newSurface = next.WallSurface;
+        if (curr.Wall.IsNone && next.Wall.IsSome) {
+            newSurface = next.Wall;
+        } else if (curr.Ground.IsNone && next.Ground.IsSome) {
+            newSurface = next.Ground;
+        }
+
+        // find the last relevant touched surface
+        var surface = curr.CurrSurface;
+
+        // if the newest surface is different, use that
+        if (newSurface.IsSome && surface.Normal != newSurface.Normal) {
+            surface = newSurface;
+        }
+
+        next.CurrSurface = surface;
+
+        // move the perceived surface towards the current surface
+        var perceivedNormal = curr.PerceivedSurface.Normal;
+        if (curr.PerceivedSurface.IsNone) {
+            perceivedNormal = next.CurrSurface.Normal;
+        }
+
+        // TODO: maybe update the time since last touching the curr surface
+        next.PerceivedSurface.SetNormal(Vector3.RotateTowards(
+            perceivedNormal,
+            next.CurrSurface.Normal,
+            c.Tuning.Surface_PerceptionAngularSpeed * Mathf.Deg2Rad * delta,
+            0f
+        ));
+
+        // point for perceived surface is invalid
+        next.PerceivedSurface.Point = Vector3.negativeInfinity;
 
         // sync controller state back to character state
-        m_State.Next.Velocity = frame.Velocity;
-        m_State.Next.Acceleration = (m_State.Next.Velocity - m_State.Curr.Velocity) / delta;
-        m_State.Next.Position = frame.Position;
+        next.Velocity = frame.Velocity;
+        next.Acceleration = (next.Velocity - curr.Velocity) / delta;
+        next.Position = frame.Position;
     }
 }
 

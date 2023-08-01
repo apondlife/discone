@@ -8,7 +8,7 @@ public class Player: MonoBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("the currently controlled character")]
-    [SerializeField] private Character m_CurrentCharacter;
+    [SerializeField] Character m_CurrentCharacter;
 
     // -- refs --
     [Header("refs")]
@@ -32,7 +32,7 @@ public class Player: MonoBehaviour {
 
     void Update() {
         if (m_CurrentCharacter != null) {
-            transform.position = m_CurrentCharacter.transform.position;
+            SyncCharacter();
         }
     }
 
@@ -48,9 +48,9 @@ public class Player: MonoBehaviour {
     /// drive a particular character
     public void Drive(Character character) {
         var src = m_CurrentCharacter;
-        if(src != null) {
+        if (src != null) {
             src.Drive(null);
-            // TODO: i don't like this
+            // TODO(fun): i don't like this
             src.GetComponentInChildren<ThirdPerson.Camera>(true)?.gameObject.SetActive(false);
 
             m_OnDriveStop?.Invoke(src);
@@ -59,13 +59,20 @@ public class Player: MonoBehaviour {
         var dst = character;
         if (dst != null) {
             dst.Drive(m_InputSource);
-            // TODO: i don't like this
+            // TODO(fun): i don't like this
             dst.GetComponentInChildren<ThirdPerson.Camera>(true)?.gameObject.SetActive(true);
 
             m_OnDriveStart?.Invoke(dst);
         }
 
+        // set current character and ensure initial state is correct
         m_CurrentCharacter = dst;
+        SyncCharacter();
+    }
+
+    /// sync state with character
+    public void SyncCharacter() {
+        transform.position = m_CurrentCharacter.transform.position;
     }
 
     // -- queries --

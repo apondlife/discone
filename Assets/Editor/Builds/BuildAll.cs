@@ -145,6 +145,7 @@ public class BuildAll {
         var o = new BuildPlayerOptions();
 
         // pick the right scene
+        // TODO: variants no longer work
         var scene = m_Options.Variant switch {
             Variant.Playtest => k_Scene_Playtest,
             Variant.Art      => k_Scene_Art,
@@ -153,6 +154,7 @@ public class BuildAll {
 
         // add src options
         o.scenes = new string[]{
+            Path.Combine("Assets", $"Main_Offline.unity"),
             Path.Combine("Assets", $"{scene}.unity")
         };
 

@@ -13,7 +13,7 @@ public sealed class DisconePlayer: MonoBehaviour {
     [Tooltip("the current player")]
     [SerializeField] DisconePlayerVariable m_Current;
 
-    [Tooltip("the current player")]
+    [Tooltip("the current player's character")]
     [SerializeField] DisconeCharacterVariable m_Character;
 
     [Tooltip("if this player is ready with a character")]

@@ -73,11 +73,11 @@ public sealed class CharacterModel: MonoBehaviour {
     /// TODO: CharacterContainer, CharacterContainerConvertible
     CharacterState m_State => m_Container.State;
 
-    /// the character's tunables
+    /// the character's tuning
     /// TODO: CharacterContainer, CharacterContainerConvertible
-    CharacterTunablesBase m_Tunables => m_Container.Tunables;
+    CharacterTuning m_Tuning => m_Container.Tuning;
 
-    /// the character's tunables
+    /// the character's tuning
     /// TODO: CharacterContainer, CharacterContainerConvertible
     CharacterInput m_Input => m_Container.Input;
 
@@ -143,6 +143,12 @@ public sealed class CharacterModel: MonoBehaviour {
             }
 
             proxy.Bind(OnAnimatorIK);
+        } else {
+            // destroy ik limbs
+            Debug.LogWarning($"[cmodel] character {m_Container.Name} has no animator, destroying limbs");
+            foreach (Component limb in m_Limbs) {
+                Destroy(limb.gameObject);
+            }
         }
 
         // make sure complex model trees have the correct layer
@@ -168,7 +174,7 @@ public sealed class CharacterModel: MonoBehaviour {
             k_PropMoveSpeed,
             Mathx.InverseLerpUnclamped(
                 0.0f,
-                m_Tunables.Horizontal_MaxSpeed,
+                m_Tuning.Horizontal_MaxSpeed,
                 m_State.Next.GroundVelocity.magnitude
             )
         );
@@ -240,7 +246,7 @@ public sealed class CharacterModel: MonoBehaviour {
     void Tilt() {
         var destWallRotation = Quaternion.identity;
         if (m_State.Next.IsOnWall && !m_State.Next.IsOnGround) {
-            var tangent = Vector3.Cross(Vector3.up, m_State.Wall.Normal);
+            var tangent = Vector3.Cross(Vector3.up, m_State.Next.WallSurface.Normal);
             destWallRotation = Quaternion.AngleAxis(m_MaxWallRotation, tangent);
         }
 

@@ -42,6 +42,21 @@
                 "value": "{\"m_Value\":true}"
             },
             {
+                "type": "System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "Scattering.UsePivotForPlacement",
+                "value": "{\"m_Value\":false}"
+            },
+            {
+                "type": "System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "Scattering.ParentObjectsWithSurface",
+                "value": "{\"m_Value\":true}"
+            },
+            {
+                "type": "System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "Scattering.AvoidOverlappingObjects",
+                "value": "{\"m_Value\":false}"
+            },
+            {
                 "type": "UnityEngine.Polybrush.BrushMirror, Unity.Polybrush, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                 "key": "Brush.MirrorAxis",
                 "value": "{\"m_Value\":0}"
@@ -85,6 +100,16 @@
                 "type": "System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "GI.WorkflowMode",
                 "value": "{\"m_Value\":1}"
+            },
+            {
+                "type": "System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "ScatteringEditor.PreviewThumSize",
+                "value": "{\"m_Value\":63}"
+            },
+            {
+                "type": "UnityEditor.Polybrush.PrefabLoadout, Unity.Polybrush.Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                "key": "ScatteringEditor.userLoadout",
+                "value": "{\"m_Value\":{\"infos\":[{\"palette\":{\"fileID\":11400000,\"guid\":\"18d515b0ae6a92746b845d0ccf65daf7\",\"type\":2},\"prefab\":{\"fileID\":3089944691691253015,\"guid\":\"cdbdc3784f0acf843b01fde5e2a01baf\",\"type\":3}}]}}"
             }
         ]
     }
