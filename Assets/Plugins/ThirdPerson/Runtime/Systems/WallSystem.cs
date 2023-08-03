@@ -57,9 +57,19 @@ sealed class WallSystem: CharacterSystem {
         // update to new wall collision
         var wallNormal = wall.Normal;
         var wallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
-        var wallTg = c.State.Prev.CurrSurface.IsSome
+        var wallTg = Vector3.Cross(wallNormal, wallUp);
+
+        var fwd = -Vector3.ProjectOnPlane(wall.Normal, Vector3.up).normalized;
+        var right = Vector3.Cross(Vector3.up, fwd).normalized;
+        var upInput = Vector3.Dot(c.Input.Move, fwd);
+        var rightInput = Vector3.Dot(c.Input.Move, right);
+        var wallInputTg = upInput * wallUp + rightInput * wallTg;
+
+        var wallSurfaceTg = c.State.Prev.CurrSurface.IsSome
             ? Vector3.ProjectOnPlane(c.State.Prev.CurrSurface.Normal, wall.Normal).normalized
             : wallUp;
+
+        var wallTransferTg = wallSurfaceTg;
 
         // calculate added velocity
         var vd = Vector3.zero;
@@ -80,7 +90,7 @@ sealed class WallSystem: CharacterSystem {
 
         // transfer velocity to new surface
         var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
-        var transferred = TransferredVelocity(wallNormal, wallTg) * wallTransferScale;
+        var transferred = TransferredVelocity(wallNormal, wallTransferTg) * wallTransferScale;
         vd += transferred;
 
         // add wall gravity
