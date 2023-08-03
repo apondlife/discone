@@ -24,7 +24,7 @@ sealed class WallSystem: CharacterSystem {
         set => c.State.Next.WallState = value;
     }
 
-    // -- Grounded --
+    // -- NotOnWall --
     Phase NotOnWall => new Phase(
         "NotOnWall",
         update: NotOnWall_Update

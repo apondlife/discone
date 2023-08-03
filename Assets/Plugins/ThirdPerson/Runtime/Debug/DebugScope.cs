@@ -28,27 +28,27 @@ public class DebugScope: MonoBehaviour {
     // -- commands --
     /// set the scope's current value
     public static void Push(string name, float value) {
-        s_Instance.PushNext(name, value);
+        s_Instance.PushNext(name, value, ProfilerMarkerDataUnit.Count);
     }
 
     /// set the scope's current value
     public static void Push(string name, int value) {
-        s_Instance.PushNext(name, value);
+        s_Instance.PushNext(name, value, ProfilerMarkerDataUnit.Count);
     }
 
     /// set the scope's current value
     public static void Push(string name, bool value) {
-        s_Instance.PushNext(name, value ? 1f : 0f);
+        s_Instance.PushNext(name, value ? 1f : 0f, ProfilerMarkerDataUnit.Count);
     }
 
     /// set the scope's current value
-    void PushNext(string name, float value) {
+    void PushNext(string name, float value, ProfilerMarkerDataUnit unit) {
         // find or create the scope
         if (!m_Scopes.TryGetValue(name, out var scope)) {
             scope = new Scope(new ProfilerCounterValue<float>(
                 ProfilerCategory.Scripts,
                 name,
-                ProfilerMarkerDataUnit.Count,
+                unit,
                 ProfilerCounterOptions.FlushOnEndOfFrame | ProfilerCounterOptions.ResetToZeroOnFlush
             ));
 
