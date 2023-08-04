@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="SandboxScene" id="{6141c6b5-9bde-4c8d-8782-34e53879fa90}">
+		<property name="name">
+			<value>test scene</value>
+		</property>
+		<relationship name="folder">
+			<destination>{dd06a847-9142-4164-aa04-19b560c13233}</destination>
+		</relationship>
+		<relationship name="markerTracks">
+			<destination>{be0aeaff-3f1c-4a6a-90bb-6ec2f263d2df}</destination>
+		</relationship>
+		<relationship name="timeline">
+			<destination>{4fb23f17-d4b7-4750-89c1-250c8605216c}</destination>
+		</relationship>
+		<relationship name="emitters">
+			<destination>{8463259a-8a12-4f03-85e7-68f89353d234}</destination>
+		</relationship>
+	</object>
+	<object class="MarkerTrack" id="{be0aeaff-3f1c-4a6a-90bb-6ec2f263d2df}" />
+	<object class="Timeline" id="{4fb23f17-d4b7-4750-89c1-250c8605216c}" />
+	<object class="SandboxEmitter" id="{8463259a-8a12-4f03-85e7-68f89353d234}">
+		<property name="positionX">
+			<value>-4.25</value>
+		</property>
+		<property name="positionZ">
+			<value>7.625</value>
+		</property>
+		<relationship name="sandboxParameters">
+			<destination>{53a44220-338b-4278-9dd4-69e99e0032f0}</destination>
+			<destination>{0c77d35a-293a-4c03-8d36-450ae363f5d1}</destination>
+		</relationship>
+		<relationship name="event">
+			<destination>{e3e2d2f3-30c7-4c48-be49-4a883c1c4fb2}</destination>
+		</relationship>
+	</object>
+	<object class="SandboxParameter" id="{53a44220-338b-4278-9dd4-69e99e0032f0}">
+		<property name="parameterValue">
+			<value>0</value>
+		</property>
+		<relationship name="parameter">
+			<destination>{02108159-2b9b-44ea-99da-cd0197600bc3}</destination>
+		</relationship>
+	</object>
+	<object class="SandboxParameter" id="{0c77d35a-293a-4c03-8d36-450ae363f5d1}">
+		<property name="parameterValue">
+			<value>0</value>
+		</property>
+		<relationship name="parameter">
+			<destination>{a7cc04f3-2974-4521-9a2d-55f27af27273}</destination>
+		</relationship>
+	</object>
+</objects>

@@ -66,7 +66,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     Character m_Character;
 
     /// the music
-    CharacterMusic m_Musics;
+    CharacterMusicBase m_Musics;
 
     /// the dialogue
     CharacterDialogue m_Dialogue;
@@ -88,7 +88,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     void Awake() {
         // set props
         m_Character = GetComponent<Character>();
-        m_Musics = GetComponentInChildren<CharacterMusic>();
+        m_Musics = GetComponentInChildren<CharacterMusicBase>();
         m_Dialogue = GetComponentInChildren<CharacterDialogue>();
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
 
@@ -349,7 +349,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     /// the music
-    public CharacterMusic Music {
+    public CharacterMusicBase Music {
         get => m_Musics;
     }
 
