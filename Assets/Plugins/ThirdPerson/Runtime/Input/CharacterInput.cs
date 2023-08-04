@@ -42,6 +42,11 @@ public sealed class CharacterInput {
         get => m_Frames[0]?.Move ?? Vector3.zero;
     }
 
+    /// the magnitude of the move input this frame
+    public float MoveMagnitude {
+        get => Move.magnitude;
+    }
+
     /// if jump is down this frame
     public bool IsJumpPressed {
         get => m_Frames[0]?.IsJumpDown ?? false;

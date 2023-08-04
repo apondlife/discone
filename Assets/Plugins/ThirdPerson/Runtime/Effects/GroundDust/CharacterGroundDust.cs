@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the character's grounded movement smoke effects
-public sealed class CharacterGroundDust: MonoBehaviour {
+sealed class CharacterGroundDust: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("a curve of acceleration dir to dust amount")]
@@ -24,16 +24,13 @@ public sealed class CharacterGroundDust: MonoBehaviour {
     [SerializeField] ParticleSystem m_Particles;
 
     // -- props --
-    /// the character's state
-    CharacterState m_State;
-
+    /// the character container
+    CharacterContainer c;
 
     // -- lifecycle --
     void Start() {
-        var character = GetComponentInParent<Character>();
-
         // set deps
-        m_State = character.State;
+        this.c = GetComponentInParent<Character>();
 
         // play the particles foreer
         m_Particles.Play();
@@ -41,17 +38,17 @@ public sealed class CharacterGroundDust: MonoBehaviour {
 
     void FixedUpdate() {
         // start particles facing forward
-        m_Particles.transform.forward = m_State.Forward;
+        m_Particles.transform.forward = c.State.Next.Forward;
 
         // get ground acceleration state
         var a = Vector3.ProjectOnPlane(
-            m_State.Curr.Acceleration,
-            m_State.Ground.Normal
+            c.State.Curr.Acceleration,
+            c.State.Next.Ground.Normal
         );
 
         var aDotV = Vector3.Dot(
             a,
-            m_State.Velocity.normalized
+            c.State.Next.Velocity.normalized
         );
 
         var aMag = a.magnitude;

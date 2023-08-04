@@ -43,6 +43,7 @@ sealed class CollisionSystem: CharacterSystem {
         );
 
         // update collisions
+        // TODO: store a list of n collisions this frame
         next.Ground = frame.Ground;
         next.Wall = frame.Wall;
 
@@ -54,40 +55,32 @@ sealed class CollisionSystem: CharacterSystem {
             newSurface = next.Ground;
         }
 
-        // find the last most relevant touched surface
-        var surface = curr.LastSurface;
+        // find the last relevant touched surface
+        var surface = curr.CurrSurface;
 
-        // if we're in the air, there's no surface
-        if (next.Ground.IsNone && next.Wall.IsNone) {
-            surface = CharacterCollision.None;
-        }
-        // if we weren't touching a wall, and now we are, it's the wall
-        else if (curr.Wall.IsNone && next.Wall.IsSome) {
-            surface = next.Wall;
-        }
-        // otherwise if we weren't touching a ground, and now we are, it's the ground
-        else if (curr.Ground.IsNone && next.Ground.IsSome) {
-            surface = next.Ground;
-        }
-        // otherwise, if the newest surface is different, use that
-        else if (curr.LastSurface.Normal != newSurface.Normal) {
+        // if the newest surface is different, use that
+        if (newSurface.IsSome && surface.Normal != newSurface.Normal) {
             surface = newSurface;
         }
 
-        // update the last surface queue (initialize if unset)
-        if (curr.PrevLastSurface.IsNone) {
-            next.LastSurface = surface;
-            next.PrevLastSurface = surface;
+        next.CurrSurface = surface;
+
+        // move the perceived surface towards the current surface
+        var perceivedNormal = curr.PerceivedSurface.Normal;
+        if (curr.PerceivedSurface.IsNone) {
+            perceivedNormal = next.CurrSurface.Normal;
         }
-        // if we were in the air, then replace the last surface
-        else if (curr.LastSurface.IsNone && surface.IsSome) {
-            next.LastSurface = surface;
-        }
-        // if we changed surfaces, push the new surface onto the queue
-        else if (curr.LastSurface.Normal != surface.Normal) {
-            next.PrevLastSurface = curr.LastSurface;
-            next.LastSurface = surface;
-        }
+
+        // TODO: maybe update the time since last touching the curr surface
+        next.PerceivedSurface.SetNormal(Vector3.RotateTowards(
+            perceivedNormal,
+            next.CurrSurface.Normal,
+            c.Tuning.Surface_PerceptionAngularSpeed * Mathf.Deg2Rad * delta,
+            0f
+        ));
+
+        // point for perceived surface is invalid
+        next.PerceivedSurface.Point = Vector3.negativeInfinity;
 
         // sync controller state back to character state
         next.Velocity = frame.Velocity;

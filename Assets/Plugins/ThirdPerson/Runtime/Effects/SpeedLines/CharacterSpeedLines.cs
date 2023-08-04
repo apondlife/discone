@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the character's speed lines effect
-public sealed class CharacterSpeedLines: MonoBehaviour {
+sealed class CharacterSpeedLines: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the scale for start speed as a fn of sqr velocity")]
@@ -30,14 +30,13 @@ public sealed class CharacterSpeedLines: MonoBehaviour {
     [SerializeField] ParticleSystem m_Particles;
 
     // -- props --
-    /// the character's state
-    CharacterState m_State;
+    /// the character container
+    CharacterContainer c;
 
     // -- lifecycle --
     void Start() {
         // set deps
-        var character = GetComponentInParent<Character>();
-        m_State = character.State;
+        this.c = GetComponentInParent<CharacterContainer>();
 
         // set initial state
         var emission = m_Particles.emission;
@@ -50,8 +49,7 @@ public sealed class CharacterSpeedLines: MonoBehaviour {
             transform.position = m_Anchor.position;
         }
 
-        var state = m_State.Next;
-        var v = state.GroundVelocity;
+        var v = c.State.Next.GroundVelocity;
         var dir = v.normalized;
 
         // scale speed line based on ground speed
@@ -79,7 +77,7 @@ public sealed class CharacterSpeedLines: MonoBehaviour {
         // rotate lines as character accelerates
         var vol = m_Particles.velocityOverLifetime;
 
-        var a = transform.InverseTransformVector(state.Acceleration);
+        var a = transform.InverseTransformVector(c.State.Next.Acceleration);
         var destOrbital = new Vector2(a.y, -a.x) * m_RotationScale * m_SpeedScale;
         var nextOrbital = Vector2.MoveTowards(
             new Vector2(

@@ -41,6 +41,11 @@ sealed partial class Character {
         if (m_State.Next.IsOnGround) {
             DrawLabel("Grounded");
         }
+
+        // draw surface perception
+        DrawRay(Color.green, m_State.Curr.CurrSurface.Normal);
+        DrawRay(Color.red, m_State.Curr.PerceivedSurface.Normal);
+
     }
 
     /// draw a label offset from the previous label

@@ -14,16 +14,6 @@ partial class CharacterState {
 /// how the character interacts with walls
 [Serializable]
 sealed class WallSystem: CharacterSystem {
-    override public void Update(float delta) {
-        base.Update(delta);
-
-        DebugScope.Push("WallPhase", m_Phase.Name switch {
-            "NotOnWall" => 0,
-            "WallSlide" => 1,
-            _ => -1
-        });
-    }
-
     // -- System --
     protected override Phase InitInitialPhase() {
         return NotOnWall;
@@ -34,7 +24,7 @@ sealed class WallSystem: CharacterSystem {
         set => c.State.Next.WallState = value;
     }
 
-    // -- Grounded --
+    // -- NotOnWall --
     Phase NotOnWall => new Phase(
         "NotOnWall",
         update: NotOnWall_Update
@@ -67,33 +57,53 @@ sealed class WallSystem: CharacterSystem {
         // update to new wall collision
         var wallNormal = wall.Normal;
         var wallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
-        var wallTg = c.State.Prev.LastSurface.IsSome
-            ? Vector3.ProjectOnPlane(c.State.Prev.LastSurface.Normal, wall.Normal).normalized
+        var wallTg = Vector3.Cross(wallNormal, wallUp);
+        var wallFwd = -Vector3.ProjectOnPlane(wall.Normal, Vector3.up).normalized;
+
+        var wallSurfaceTg = c.State.Prev.CurrSurface.IsSome
+            ? Vector3.ProjectOnPlane(c.State.Prev.CurrSurface.Normal, wall.Normal).normalized
             : wallUp;
 
         // calculate added velocity
         var vd = Vector3.zero;
 
-        // NOTE: unsure if we want to apply the magnet on things that are not "real"
-        // walls, but we are for now on account of our principle of No Rules
-        vd -= wallNormal * c.Tuning.WallMagnet;
-
-        // transfer velocity
+        // get delta between wall and perceived surface
         var normalAngleDelta = Mathf.Abs(90f - Vector3.Angle(
             c.State.Curr.WallSurface.Normal,
-            c.State.Curr.PrevLastSurface.Normal
+            c.State.Curr.PerceivedSurface.Normal
         ));
         var normalAngleScale = 1f - (normalAngleDelta / 90f);
 
-        // scale by angle
+        // add a magnet to pull the character towards the surface
+        // TODO: prefix wall tuning values w/ `Wall_<name>`
+        var wallWagnetInputScale = Mathf.Max(-Vector3.Dot(c.Input.Move, wallNormal), 0f);
+        var wallMagnetTransferScale = c.Tuning.WallMagnetTransferScale.Evaluate(normalAngleScale);
+        var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallWagnetInputScale * wallMagnetTransferScale;
+        vd -= wallMagnetMag * delta * wallNormal;
+
+        // get input in wall space
+        var wallInputUp = Vector3.Dot(c.Input.Move, wallFwd);
+        var wallInputRight = Vector3.Dot(c.Input.Move, wallTg);
+        var wallInputTg = (wallInputUp * wallUp + wallInputRight * wallTg).normalized;
+
+        // transfer velocity to new surface w/ di
+        var wallTransferDiAngle = Vector3.SignedAngle(wallSurfaceTg, wallInputTg, wallNormal);
+        var wallTransferDiAngleMag = Mathf.Abs(wallTransferDiAngle);
+        var wallTransferDiAngleSign = Mathf.Sign(wallTransferDiAngle);
+
+        var wallTransferDiRot = c.Tuning.WallTransferDiAngle.Evaluate(wallTransferDiAngleMag) * wallTransferDiAngleSign * c.Input.MoveMagnitude;
+        var wallTransferTg = Quaternion.AngleAxis(wallTransferDiRot, wallNormal) * wallSurfaceTg;
+
+        var wallTransferDiScale = c.Tuning.WallTransferDiScale.Evaluate(wallTransferDiAngleMag);
         var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
-        var transferred = TransferredVelocity(wallNormal, wallTg) * wallTransferScale;
-        vd += transferred;
+
+        var wallTransfer = TransferredVelocity(wallNormal, wallTransferTg) * wallTransferScale * wallTransferDiScale;
+        vd += wallTransfer;
 
         // add wall gravity
-        var surfaceAngleDelta = Mathf.Abs(90f -  Mathf.Abs(
+        var surfaceAngleDelta = Mathf.Abs(90f - Mathf.Abs(
             c.State.Curr.WallSurface.Angle -
-            c.State.Curr.PrevLastSurface.Angle
+            c.State.Curr.PerceivedSurface.Angle
         ));
         var surfaceAngleScale = 1f - (surfaceAngleDelta / 90f);
 

@@ -11,6 +11,14 @@ public sealed class CharacterTuning: ScriptableObject {
     [TextArea(3, 6)]
     [SerializeField] string m_Description;
 
+    // -- collision system --
+    [Header("collision system")]
+    [Tooltip("the speed the perceived surface's normal moves towards a zero")]
+    public float Surface_PerceptionLengthSpeed;
+
+    [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
+    public float Surface_PerceptionAngularSpeed;
+
     // -- movement system --
     [Header("movement system")]
     [Tooltip("the horizontal speed at which the character stops")]
@@ -121,8 +129,15 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the maximum ground angle for jumping")]
     public float Jump_GroundAngle;
 
-    [Tooltip("the scaling factor of the jump depending on the ground angle")]
-    public MapOutCurve Jump_GroundAngleScale;
+    [Tooltip("the jump scale as a fn of surface angle")]
+    [UnityEngine.Serialization.FormerlySerializedAs("Jump_GroundAngleScale")]
+    public MapOutCurve Jump_SurfaceAngleScale;
+
+    [Tooltip("the jump speed opposed to the surface normal as a fn of squat duration")]
+    public MapOutCurve Jump_Normal_Speed;
+
+    [Tooltip("the jump scale opposed to the surface normal as a fn of surface angle")]
+    public MapOutCurve Jump_Normal_SurfaceAngleScale;
 
     [Tooltip("the gravity while holding jump and falling")]
     public float FallGravity;
@@ -152,28 +167,20 @@ public sealed class CharacterTuning: ScriptableObject {
         [Tooltip("the max number of frames jump squat lasts")]
         public uint MaxJumpSquatFrames = 5;
 
+        // TODO: convert to map out curve & remember how to propely update all prefabs
         [Tooltip("the minimum jump speed (minimum length jump squat)")]
         public float Vertical_MinSpeed;
 
         [Tooltip("the maximum jump speed (maximum length jump squat)")]
         public float Vertical_MaxSpeed;
 
-        [Tooltip("how the jump speed changes from holding the squat")]
+        [Tooltip("jump speed as a fn of squat duration")]
         public AnimationCurve Vertical_SpeedCurve;
 
         [Tooltip("how much upwards speed is cancelled on jump")]
         public float Upwards_MomentumLoss;
 
-        [Tooltip("the minimum horizontal jump speed (minimum length jump squat)")]
-        public float Horizontal_MinSpeed;
-
-        [Tooltip("the maximum horizontal jump speed (maximum length jump squat)")]
-        public float Horizontal_MaxSpeed;
-
-        [Tooltip("how the jump speed changes from holding the squat")]
-        public AnimationCurve Horizontal_SpeedCurve;
-
-        [Tooltip("how much vertical speed is cancelled on jump")]
+        [Tooltip("how much horizontal speed is cancelled on jump")]
         public float Horizontal_MomentumLoss;
     }
 
@@ -182,7 +189,7 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the collision layer of what counts as walls for wall sliding")]
     public LayerMask WallLayer;
 
-    [Tooltip("the scaling factor of the wall slide depending on the wall angle")]
+    [Tooltip("the scaling factor of the wall slide as a fn of surface angle")]
     [UnityEngine.Serialization.FormerlySerializedAs("WallAngleScale_New")]
     public MapOutCurve WallAngleScale;
 
@@ -192,13 +199,22 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the gravity while on the wall & not holding jump")]
     public AdsrCurve WallHoldGravity;
 
-    [Tooltip("the force the wall pull the character to make it stick")]
-    public float WallMagnet;
+    [Tooltip("the force the surface pulls character in as a fn of surface angle")]
+    public MapOutCurve WallMagnet;
+
+    [Tooltip("the scaling factor on the wall magnet as a fn of perception delta")]
+    public MapOutCurve WallMagnetTransferScale;
 
     // TODO: these are currently mirrored around 90; they should curved over 180
     // so that's not necessarily the case
-    [Tooltip("the scaling factor of the wall velocity transfer as a fn of surface change angle")]
+    [Tooltip("the scaling factor of the wall transfer as a fn of surface change angle")]
     public MapOutCurve WallTransferScale;
+
+    [Tooltip("the angle to rotate the transfer surface direction as a fn of signed input-surface angle")]
+    public MapOutCurve WallTransferDiAngle;
+
+    [Tooltip("the scaling factor of the wall transfer as a fn of signed input-surface angle")]
+    public MapOutCurve WallTransferDiScale;
 
     [Tooltip("the scaling factor of the wall gravity amplitude as a fn of surface change angle")]
     public MapOutCurve WallGravityAmplitudeScale;

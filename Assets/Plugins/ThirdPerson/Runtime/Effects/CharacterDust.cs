@@ -4,13 +4,10 @@ using UnityEngine.Serialization;
 namespace ThirdPerson {
 
 /// the character's dust effect
-/// TODO: rename me to CharacterEffects
+/// TODO: rename me to CharacterEffects & break me up into multiple prefabs & scripts
 public class CharacterDust: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
-    [Tooltip("the floor particle emission per unit of speed")]
-    [SerializeField] float m_FloorParticlesBaseEmission;
-
     [Tooltip("the minimum negative acceleration to start skidding")]
     [SerializeField] float m_SkidDeceleration;
 
@@ -23,9 +20,6 @@ public class CharacterDust: MonoBehaviour {
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the wall particle emitter")]
-    [SerializeField] ParticleSystem m_WallParticles;
-
     [Tooltip("the floor skid lines particle (negative acceleration)")]
     [SerializeField] ParticleSystem m_FloorSkid;
 
@@ -55,43 +49,6 @@ public class CharacterDust: MonoBehaviour {
         // TODO: move into own script
         if (m_State.Next.Events.Contains(CharacterEvent.Jump)) {
             m_JumpPlume.Play();
-        }
-
-        // TODO: extract into its own file / prefab
-        var isActive = (
-            m_State.Next.IsOnWall &&
-            !m_State.Next.IsIdle
-        );
-
-        if (isActive) {
-            if (!m_WallParticles.isPlaying) {
-                m_WallParticles.Play();
-            }
-
-            // spawn particle at collision
-            var c = m_State.Wall.IsSome ? m_State.Wall : m_State.Ground;
-            var t = m_WallParticles.transform;
-            t.position = c.Point;
-
-            // use inverted z-axis bc particle systems want that
-            var n = c.Normal;
-            n.z = -n.z;
-
-            // point towards the current surface
-            var rot = Quaternion.LookRotation(n);
-            // and rotate along the normal axis
-            rot *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward);
-
-            // update the start rotation
-            var main = m_WallParticles.main;
-            var angles = rot.eulerAngles * Mathf.Deg2Rad;
-            main.startRotationX = angles.x;
-            main.startRotationY = angles.y;
-            main.startRotationZ = angles.z;
-        } else {
-            if (m_WallParticles.isPlaying) {
-                m_WallParticles.Stop();
-            }
         }
 
         if (m_State.Next.IsOnGround) {

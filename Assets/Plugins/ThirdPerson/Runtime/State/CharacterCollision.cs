@@ -46,6 +46,13 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
         Angle = angle;
     }
 
+    // -- command --
+    /// .
+    public void SetNormal(Vector3 normal) {
+        Normal = normal;
+        Angle = Vector3.Angle(normal, Vector3.up);
+    }
+
     // -- queries --
     /// if this is "some collision"
     public bool IsSome {

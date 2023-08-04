@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -224,26 +224,7 @@ sealed class JumpSystem: CharacterSystem {
 
     /// .
     void Jump() {
-        // get curved percent complete through jump squat
-        var pct = Mathf.InverseLerp(
-            JumpTuning.MinJumpSquatFrames,
-            JumpTuning.MaxJumpSquatFrames,
-            c.State.Next.JumpSquatFrame
-        );
-
-        // interpolate initial jump speed
-        var verticalSpeed = Mathf.Lerp(
-            JumpTuning.Vertical_MinSpeed,
-            JumpTuning.Vertical_MaxSpeed,
-            JumpTuning.Vertical_SpeedCurve.Evaluate(pct)
-        );
-
-        var horizontalSpeed = Mathf.Lerp(
-            JumpTuning.Horizontal_MinSpeed,
-            JumpTuning.Horizontal_MaxSpeed,
-            JumpTuning.Horizontal_SpeedCurve.Evaluate(pct)
-        );
-
+        // accumulate jump delta dv
         var v0 = c.State.Curr.Velocity;
         var dv = Vector3.zero;
 
@@ -256,16 +237,34 @@ sealed class JumpSystem: CharacterSystem {
         // cancel horizontal momentum
         dv -= c.State.Curr.PlanarVelocity * JumpTuning.Horizontal_MomentumLoss;
 
-        // scale by wall factor
-        // TODO: maybe horizontal/vertical should be tangent/normal to ground or wall:
-        var groundAngleScale = c.Tuning.Jump_GroundAngleScale.Evaluate(c.State.Curr.JumpSurface.Angle);
+        // get curved percent complete through jump squat
+        var pct = Mathf.InverseLerp(
+            JumpTuning.MinJumpSquatFrames,
+            JumpTuning.MaxJumpSquatFrames,
+            c.State.Next.JumpSquatFrame
+        );
 
-        // add vertical jump
-        dv += verticalSpeed * Vector3.up * groundAngleScale;
+        // add directional jump velocity
+        // TODO: change Vector3.up to JumpTuning.Direction
+        var jumpSpeed = Mathf.Lerp(
+            JumpTuning.Vertical_MinSpeed,
+            JumpTuning.Vertical_MaxSpeed,
+            JumpTuning.Vertical_SpeedCurve.Evaluate(pct)
+        );
 
-        // add horizontal jump
-        dv += horizontalSpeed * c.State.Curr.Forward * groundAngleScale;
+        var jumpSurface = c.State.JumpSurface;
+        var jumpAngleScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(jumpSurface.Angle);
+        dv += jumpSpeed * jumpAngleScale * Vector3.up;
 
+        // add surface normal jump velocity
+        if (c.State.PerceivedSurface.IsSome) {
+            var normalSpeed = c.Tuning.Jump_Normal_Speed.Evaluate(pct);
+            var normalSurface = c.State.Curr.PerceivedSurface;
+            var normalAngleScale = c.Tuning.Jump_Normal_SurfaceAngleScale.Evaluate(normalSurface.Angle);
+            dv += normalSpeed * normalAngleScale * normalSurface.Normal;
+        }
+
+        // update state
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteFrames = 0;
         c.State.Next.CooldownFrames = (int)JumpTuning.CooldownFrames;
