@@ -207,8 +207,14 @@ public sealed class CharacterTuning: ScriptableObject {
 
     // TODO: these are currently mirrored around 90; they should curved over 180
     // so that's not necessarily the case
-    [Tooltip("the scaling factor of the wall velocity transfer as a fn of surface change angle")]
+    [Tooltip("the scaling factor of the wall transfer as a fn of surface change angle")]
     public MapOutCurve WallTransferScale;
+
+    [Tooltip("the angle to rotate the transfer surface direction as a fn of signed input-surface angle")]
+    public MapOutCurve WallTransferDiAngle;
+
+    [Tooltip("the scaling factor of the wall transfer as a fn of signed input-surface angle")]
+    public MapOutCurve WallTransferDiScale;
 
     [Tooltip("the scaling factor of the wall gravity amplitude as a fn of surface change angle")]
     public MapOutCurve WallGravityAmplitudeScale;

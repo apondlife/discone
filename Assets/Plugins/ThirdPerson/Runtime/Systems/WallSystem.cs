@@ -58,18 +58,11 @@ sealed class WallSystem: CharacterSystem {
         var wallNormal = wall.Normal;
         var wallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
         var wallTg = Vector3.Cross(wallNormal, wallUp);
-
-        var fwd = -Vector3.ProjectOnPlane(wall.Normal, Vector3.up).normalized;
-        var right = Vector3.Cross(Vector3.up, fwd).normalized;
-        var upInput = Vector3.Dot(c.Input.Move, fwd);
-        var rightInput = Vector3.Dot(c.Input.Move, right);
-        var wallInputTg = upInput * wallUp + rightInput * wallTg;
+        var wallFwd = -Vector3.ProjectOnPlane(wall.Normal, Vector3.up).normalized;
 
         var wallSurfaceTg = c.State.Prev.CurrSurface.IsSome
             ? Vector3.ProjectOnPlane(c.State.Prev.CurrSurface.Normal, wall.Normal).normalized
             : wallUp;
-
-        var wallTransferTg = wallSurfaceTg;
 
         // calculate added velocity
         var vd = Vector3.zero;
@@ -88,10 +81,24 @@ sealed class WallSystem: CharacterSystem {
         var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallWagnetInputScale * wallMagnetTransferScale;
         vd -= wallMagnetMag * delta * wallNormal;
 
-        // transfer velocity to new surface
+        // get input in wall space
+        var wallInputUp = Vector3.Dot(c.Input.Move, wallFwd);
+        var wallInputRight = Vector3.Dot(c.Input.Move, wallTg);
+        var wallInputTg = (wallInputUp * wallUp + wallInputRight * wallTg).normalized;
+
+        // transfer velocity to new surface w/ di
+        var wallTransferDiAngle = Vector3.SignedAngle(wallSurfaceTg, wallInputTg, wallNormal);
+        var wallTransferDiAngleMag = Mathf.Abs(wallTransferDiAngle);
+        var wallTransferDiAngleSign = Mathf.Sign(wallTransferDiAngle);
+
+        var wallTransferDiRot = c.Tuning.WallTransferDiAngle.Evaluate(wallTransferDiAngleMag) * wallTransferDiAngleSign * c.Input.MoveMagnitude;
+        var wallTransferTg = Quaternion.AngleAxis(wallTransferDiRot, wallNormal) * wallSurfaceTg;
+
+        var wallTransferDiScale = c.Tuning.WallTransferDiScale.Evaluate(wallTransferDiAngleMag);
         var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
-        var transferred = TransferredVelocity(wallNormal, wallTransferTg) * wallTransferScale;
-        vd += transferred;
+
+        var wallTransfer = TransferredVelocity(wallNormal, wallTransferTg) * wallTransferScale * wallTransferDiScale;
+        vd += wallTransfer;
 
         // add wall gravity
         var surfaceAngleDelta = Mathf.Abs(90f - Mathf.Abs(
