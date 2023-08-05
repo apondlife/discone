@@ -60,8 +60,8 @@ sealed class WallSystem: CharacterSystem {
         var wallTg = Vector3.Cross(wallNormal, wallUp);
         var wallFwd = -Vector3.ProjectOnPlane(wall.Normal, Vector3.up).normalized;
 
-        var wallSurfaceTg = c.State.Prev.CurrSurface.IsSome
-            ? Vector3.ProjectOnPlane(c.State.Prev.CurrSurface.Normal, wall.Normal).normalized
+        var wallSurfaceTg = c.State.Prev.WallSurface.IsSome
+            ? Vector3.ProjectOnPlane(c.State.Prev.WallSurface.Normal, wall.Normal).normalized
             : wallUp;
 
         // calculate added velocity
@@ -100,10 +100,10 @@ sealed class WallSystem: CharacterSystem {
         var wallTransfer = TransferredVelocity(wallNormal, wallTransferTg) * wallTransferScale * wallTransferDiScale;
         vd += wallTransfer;
 
-        // get the surface to perceived surface angle
-        var surfaceAngleDelta = Mathf.Abs(90f - Mathf.Abs(
-            c.State.Curr.WallSurface.Angle -
-            c.State.Curr.PerceivedSurface.Angle
+        // get angle (upwards) delta between surface and perceived surface
+        var surfaceAngleDelta = Mathf.Abs(90f - Vector3.Angle(
+            c.State.Curr.WallSurface.Normal,
+            c.State.Curr.PerceivedSurface.Normal
         ));
         var surfaceAngleScale = 1f - (surfaceAngleDelta / 90f);
 
