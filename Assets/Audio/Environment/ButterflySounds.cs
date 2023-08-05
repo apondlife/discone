@@ -16,8 +16,7 @@ public class ButterflySounds : MonoBehaviour
 
     public EventReference fmodEvent;
 
-    // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
         _ps = GetComponent<ParticleSystem>();
         _particles = new ParticleSystem.Particle[_ps.main.maxParticles];
@@ -25,7 +24,6 @@ public class ButterflySounds : MonoBehaviour
         _initialized = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Initialize emitters
@@ -38,7 +36,7 @@ public class ButterflySounds : MonoBehaviour
                 emitter.EventReference = fmodEvent;
                 emitter.Play();
 
-                // emitter.transform.position = p.position;
+                emitter.transform.position = p.position;
                 // [Unfortunately seems like we can't get the startFrame (ie phase offset) of the texture sheet animation -
                 //  if we could then we could set the loop offset in fmod correspondingly. Instead for now just randomize it independently]
                 return emitter;

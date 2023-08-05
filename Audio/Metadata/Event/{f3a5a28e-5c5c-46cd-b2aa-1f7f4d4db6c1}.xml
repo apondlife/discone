@@ -110,7 +110,7 @@
 	</object>
 	<object class="EventMixerMaster" id="{4fbd59db-eb0e-416b-9901-3386e9663d6b}">
 		<property name="volume">
-			<value>1</value>
+			<value>-6</value>
 		</property>
 		<relationship name="automators">
 			<destination>{8abeb696-c424-4464-a23a-1e68bb6cb754}</destination>
@@ -155,6 +155,9 @@
 	<object class="SingleSound" id="{c0fbdb86-bb6e-4b8a-90a4-b193c380e0ed}">
 		<property name="length">
 			<value>2.4500000000000002</value>
+		</property>
+		<property name="pitch">
+			<value>-1</value>
 		</property>
 		<relationship name="audioFile">
 			<destination>{8cee6ff6-86ec-4d31-91a5-c30fe90120c3}</destination>

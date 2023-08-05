@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3483114584008866266}
   - component: {fileID: 7736611971190189811}
   - component: {fileID: 8616413416790149912}
+  - component: {fileID: 5231840046479507646}
   m_Layer: 0
   m_Name: Butterflies
   m_TagString: Untagged
@@ -4821,6 +4822,25 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &5231840046479507646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350585360642114066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba584601a12843fd9116b0e420e054e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fmodEvent:
+    Guid:
+      Data1: -900910437
+      Data2: 1200299000
+      Data3: 1496277922
+      Data4: 1538382374
+    Path: event:/Environment/Butterfly
 --- !u!1 &2412596115652366660
 GameObject:
   m_ObjectHideFlags: 0
@@ -10312,7 +10332,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attenuationObject: {fileID: 2221735472310936065}
-  ListenerNumber: -1
 --- !u!1 &3541555098412673283 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2132299862377982991, guid: 7e8a0685663e37640aa8ae291d138607, type: 3}
