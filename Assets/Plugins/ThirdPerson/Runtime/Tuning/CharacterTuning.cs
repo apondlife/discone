@@ -202,6 +202,9 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the force the surface pulls character in as a fn of surface angle")]
     public MapOutCurve WallMagnet;
 
+    [Tooltip("the scaling factor on the wall magnet as a fn of the input • wall forward")]
+    public MapOutCurve WallMagnetInputScale;
+
     [Tooltip("the scaling factor on the wall magnet as a fn of perception delta")]
     public MapOutCurve WallMagnetTransferScale;
 

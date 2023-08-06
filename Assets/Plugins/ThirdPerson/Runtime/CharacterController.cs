@@ -246,17 +246,7 @@ public sealed class CharacterController {
 
             // assuming velocity is constant during this period of time:
             timeLeft = moveRemaining.magnitude / nextVelocity.magnitude;
-
-            var projectedVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);
-
-            // if the angle between our raw remaining move and the move in the plane
-            // are pependicular-ish, don't move along the surface
-            var moveAngle = Vector3.Angle(nextVelocity, projectedVelocity);
-            if (moveAngle >= m_WallAngle) {
-                projectedVelocity = Vector3.zero;
-            }
-
-            nextVelocity = projectedVelocity;
+            nextVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);;
 
             // track collisions
             var collision = new CharacterCollision(
@@ -291,9 +281,6 @@ public sealed class CharacterController {
 
     // -- gizmos --
     #if UNITY_EDITOR
-    /// the radius
-    const float k_DebugGizmoRadius = 0.15f;
-
     // -- gizmos --
     [Header("gizmos")]
     [Tooltip("if the initial position and direction gizmo is visible")]
@@ -314,12 +301,15 @@ public sealed class CharacterController {
     [Tooltip("if the cast hit gizmos are visible")]
     [SerializeField] bool m_DrawHits = true;
 
+    [Tooltip("the radius of the gizmo spheres")]
+    [SerializeField] float m_DrawGizmoRadius;
+
     /// draw gizmos for the controller`
     public void OnDrawGizmos() {
         // draw the desired ray (pos & delta)
         if (m_DrawInput) {
             Gizmos.color = Color.black;
-            Gizmos.DrawSphere(m_DebugMoveOrigin, k_DebugGizmoRadius);
+            Gizmos.DrawSphere(m_DebugMoveOrigin, m_DrawGizmoRadius);
             Gizmos.DrawRay(m_DebugMoveOrigin, m_DebugMoveDelta);
         }
 
@@ -351,7 +341,7 @@ public sealed class CharacterController {
                 }
 
                 // draw the final line
-                Gizmos.DrawSphere(cast.Capsule.Center, k_DebugGizmoRadius*oS);
+                Gizmos.DrawSphere(cast.Capsule.Center, m_DrawGizmoRadius);
                 Gizmos.DrawLine(cast.Capsule.Center, cast.Capsule.Center + delta);
                 iS *= 0.6f;
                 oS *= 0.6f;
@@ -364,7 +354,7 @@ public sealed class CharacterController {
 
             foreach (var hit in m_DebugHits) {
                 Gizmos.color = Color.HSVToRGB(h, s, v);
-                Gizmos.DrawSphere(hit.point, k_DebugGizmoRadius);
+                Gizmos.DrawSphere(hit.point, m_DrawGizmoRadius);
                 Gizmos.DrawRay(hit.point, hit.normal * 0.5f);
                 s *= 0.6f;
             }

@@ -47,18 +47,11 @@ sealed class CollisionSystem: CharacterSystem {
         next.Ground = frame.Ground;
         next.Wall = frame.Wall;
 
-        // find the newest collision surface
-        var newSurface = next.WallSurface;
-        if (curr.Wall.IsNone && next.Wall.IsSome) {
-            newSurface = next.Wall;
-        } else if (curr.Ground.IsNone && next.Ground.IsSome) {
-            newSurface = next.Ground;
-        }
-
         // find the last relevant touched surface
         var surface = curr.CurrSurface;
 
         // if the newest surface is different, use that
+        var newSurface = next.GroundSurface;
         if (newSurface.IsSome && surface.Normal != newSurface.Normal) {
             surface = newSurface;
         }

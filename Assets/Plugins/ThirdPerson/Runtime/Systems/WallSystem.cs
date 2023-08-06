@@ -60,8 +60,8 @@ sealed class WallSystem: CharacterSystem {
         var wallTg = Vector3.Cross(wallNormal, wallUp);
         var wallFwd = -Vector3.ProjectOnPlane(wall.Normal, Vector3.up).normalized;
 
-        var wallSurfaceTg = c.State.Prev.CurrSurface.IsSome
-            ? Vector3.ProjectOnPlane(c.State.Prev.CurrSurface.Normal, wall.Normal).normalized
+        var wallSurfaceTg = c.State.Prev.WallSurface.IsSome
+            ? Vector3.ProjectOnPlane(c.State.Prev.WallSurface.Normal, wall.Normal).normalized
             : wallUp;
 
         // calculate added velocity
@@ -74,17 +74,17 @@ sealed class WallSystem: CharacterSystem {
         ));
         var normalAngleScale = 1f - (normalAngleDelta / 90f);
 
-        // add a magnet to pull the character towards the surface
-        // TODO: prefix wall tuning values w/ `Wall_<name>`
-        var wallWagnetInputScale = Mathf.Max(-Vector3.Dot(c.Input.Move, wallNormal), 0f);
-        var wallMagnetTransferScale = c.Tuning.WallMagnetTransferScale.Evaluate(normalAngleScale);
-        var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallWagnetInputScale * wallMagnetTransferScale;
-        vd -= wallMagnetMag * delta * wallNormal;
-
         // get input in wall space
         var wallInputUp = Vector3.Dot(c.Input.Move, wallFwd);
         var wallInputRight = Vector3.Dot(c.Input.Move, wallTg);
         var wallInputTg = (wallInputUp * wallUp + wallInputRight * wallTg).normalized;
+
+        // add a magnet to pull the character towards the surface
+        // TODO: prefix wall tuning values w/ `Wall_<name>`
+        var wallWagnetInputScale = c.Tuning.WallMagnetInputScale.Evaluate(wallInputUp);
+        var wallMagnetTransferScale = c.Tuning.WallMagnetTransferScale.Evaluate(normalAngleScale);
+        var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallWagnetInputScale * wallMagnetTransferScale;
+        vd -= wallMagnetMag * delta * wallNormal;
 
         // transfer velocity to new surface w/ di
         var wallTransferDiAngle = Vector3.SignedAngle(wallSurfaceTg, wallInputTg, wallNormal);
@@ -100,13 +100,14 @@ sealed class WallSystem: CharacterSystem {
         var wallTransfer = TransferredVelocity(wallNormal, wallTransferTg) * wallTransferScale * wallTransferDiScale;
         vd += wallTransfer;
 
-        // add wall gravity
-        var surfaceAngleDelta = Mathf.Abs(90f - Mathf.Abs(
-            c.State.Curr.WallSurface.Angle -
-            c.State.Curr.PerceivedSurface.Angle
+        // get angle (upwards) delta between surface and perceived surface
+        var surfaceAngleDelta = Mathf.Abs(90f - Vector3.Angle(
+            c.State.Curr.WallSurface.Normal,
+            c.State.Curr.PerceivedSurface.Normal
         ));
         var surfaceAngleScale = 1f - (surfaceAngleDelta / 90f);
 
+        // add wall gravity
         var wallGravityAmplitudeScale = c.Tuning.WallGravityAmplitudeScale.Evaluate(surfaceAngleScale);
         var wallGravity = c.Input.IsWallHoldPressed
             ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale)
