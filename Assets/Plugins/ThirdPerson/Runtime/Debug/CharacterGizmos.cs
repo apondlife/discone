@@ -21,31 +21,8 @@ sealed partial class Character {
             return;
         }
 
-        // draw gizmos
-        m_LabelOffset = Vector3.zero;
-
         // draw controller gizmos
         m_Controller.OnDrawGizmos();
-
-        if (m_State == null) {
-            return;
-        }
-
-        // draw state labels
-        DrawLabel($"vy{m_State.Velocity.y}");
-
-        if (m_State.IsInJumpSquat) {
-            DrawLabel("JumpSquat");
-        }
-
-        if (m_State.Next.IsOnGround) {
-            DrawLabel("Grounded");
-        }
-
-        // draw surface perception
-        DrawRay(Color.green, m_State.Curr.CurrSurface.Normal);
-        DrawRay(Color.red, m_State.Curr.PerceivedSurface.Normal);
-
     }
 
     /// draw a label offset from the previous label

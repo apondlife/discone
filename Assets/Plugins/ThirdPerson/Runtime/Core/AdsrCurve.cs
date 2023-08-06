@@ -40,7 +40,7 @@ public struct AdsrCurve {
         if (elapsed < m_Attack.Duration) {
             scale = m_Attack.Evaluate(elapsed) * maxScale;
         }
-        // if
+        // if in decay, decay down to sustain
         else if (elapsed < m_Attack.Duration + m_Decay.Duration) {
             scale = Mathf.Lerp(
                 maxScale,
