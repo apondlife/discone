@@ -24,7 +24,7 @@ sealed class WallSystem: CharacterSystem {
         set => c.State.Next.WallState = value;
     }
 
-    // -- Grounded --
+    // -- NotOnWall --
     Phase NotOnWall => new Phase(
         "NotOnWall",
         update: NotOnWall_Update
@@ -57,8 +57,11 @@ sealed class WallSystem: CharacterSystem {
         // update to new wall collision
         var wallNormal = wall.Normal;
         var wallUp = Vector3.ProjectOnPlane(Vector3.up, wall.Normal).normalized;
-        var wallTg = c.State.Prev.CurrSurface.IsSome
-            ? Vector3.ProjectOnPlane(c.State.Prev.CurrSurface.Normal, wall.Normal).normalized
+        var wallTg = Vector3.Cross(wallNormal, wallUp);
+        var wallFwd = -Vector3.ProjectOnPlane(wall.Normal, Vector3.up).normalized;
+
+        var wallSurfaceTg = c.State.Prev.WallSurface.IsSome
+            ? Vector3.ProjectOnPlane(c.State.Prev.WallSurface.Normal, wall.Normal).normalized
             : wallUp;
 
         // calculate added velocity
@@ -71,25 +74,40 @@ sealed class WallSystem: CharacterSystem {
         ));
         var normalAngleScale = 1f - (normalAngleDelta / 90f);
 
+        // get input in wall space
+        var wallInputUp = Vector3.Dot(c.Input.Move, wallFwd);
+        var wallInputRight = Vector3.Dot(c.Input.Move, wallTg);
+        var wallInputTg = (wallInputUp * wallUp + wallInputRight * wallTg).normalized;
+
         // add a magnet to pull the character towards the surface
         // TODO: prefix wall tuning values w/ `Wall_<name>`
-        var wallWagnetInputScale = Mathf.Max(-Vector3.Dot(c.Input.Move, wallNormal), 0f);
+        var wallWagnetInputScale = c.Tuning.WallMagnetInputScale.Evaluate(wallInputUp);
         var wallMagnetTransferScale = c.Tuning.WallMagnetTransferScale.Evaluate(normalAngleScale);
         var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallWagnetInputScale * wallMagnetTransferScale;
         vd -= wallMagnetMag * delta * wallNormal;
 
-        // transfer velocity to new surface
-        var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
-        var transferred = TransferredVelocity(wallNormal, wallTg) * wallTransferScale;
-        vd += transferred;
+        // transfer velocity to new surface w/ di
+        var wallTransferDiAngle = Vector3.SignedAngle(wallSurfaceTg, wallInputTg, wallNormal);
+        var wallTransferDiAngleMag = Mathf.Abs(wallTransferDiAngle);
+        var wallTransferDiAngleSign = Mathf.Sign(wallTransferDiAngle);
 
-        // add wall gravity
-        var surfaceAngleDelta = Mathf.Abs(90f - Mathf.Abs(
-            c.State.Curr.WallSurface.Angle -
-            c.State.Curr.PerceivedSurface.Angle
+        var wallTransferDiRot = c.Tuning.WallTransferDiAngle.Evaluate(wallTransferDiAngleMag) * wallTransferDiAngleSign * c.Input.MoveMagnitude;
+        var wallTransferTg = Quaternion.AngleAxis(wallTransferDiRot, wallNormal) * wallSurfaceTg;
+
+        var wallTransferDiScale = c.Tuning.WallTransferDiScale.Evaluate(wallTransferDiAngleMag);
+        var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
+
+        var wallTransfer = TransferredVelocity(wallNormal, wallTransferTg) * wallTransferScale * wallTransferDiScale;
+        vd += wallTransfer;
+
+        // get angle (upwards) delta between surface and perceived surface
+        var surfaceAngleDelta = Mathf.Abs(90f - Vector3.Angle(
+            c.State.Curr.WallSurface.Normal,
+            c.State.Curr.PerceivedSurface.Normal
         ));
         var surfaceAngleScale = 1f - (surfaceAngleDelta / 90f);
 
+        // add wall gravity
         var wallGravityAmplitudeScale = c.Tuning.WallGravityAmplitudeScale.Evaluate(surfaceAngleScale);
         var wallGravity = c.Input.IsWallHoldPressed
             ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale)

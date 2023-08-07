@@ -4,6 +4,11 @@ namespace ThirdPerson {
 
 /// the character's wall skid effect
 sealed class CharacterWallSkid: MonoBehaviour {
+    // -- tuning --
+    [Header("tuning")]
+    [Tooltip("the number of particles per frame")]
+    [SerializeField] int m_ParticleCount;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the wall particle emitter")]
@@ -20,20 +25,9 @@ sealed class CharacterWallSkid: MonoBehaviour {
     }
 
     void FixedUpdate() {
-        var isActive = c.State.Next.IsOnWall && !c.State.Next.IsIdle;
-
-        // stop the particles
-        if (!isActive) {
-            if (m_Particles.isPlaying) {
-                m_Particles.Stop();
-            }
-
+        // only play particles when wall & not idle
+        if (!c.State.Next.IsOnWall || c.State.Next.IsIdle) {
             return;
-        }
-
-        // or start them
-        if (!m_Particles.isPlaying) {
-            m_Particles.Play();
         }
 
         // spawn at collision
@@ -57,6 +51,9 @@ sealed class CharacterWallSkid: MonoBehaviour {
         main.startRotationX = a.x;
         main.startRotationY = a.y;
         main.startRotationZ = a.z;
+
+        // emit particles
+        m_Particles.Emit(m_ParticleCount);
     }
 }
 

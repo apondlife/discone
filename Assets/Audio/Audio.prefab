@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1867044733465391018}
   - component: {fileID: 2282944197371738240}
-  - component: {fileID: 3228194081746930371}
+  - component: {fileID: 7764961985424343428}
   m_Layer: 0
   m_Name: Audio
   m_TagString: Untagged
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_MainVolume: {fileID: 11400000, guid: 2a9c5620d3038ba41ae4cf4a2c3e9cda, type: 2}
   m_MusicVolume: {fileID: 11400000, guid: edaca7b46fd8f43429355ab60daca71c, type: 2}
   m_SfxVolume: {fileID: 11400000, guid: dc82f9c5645d6f545a3ac61b478bf740, type: 2}
-  m_Music: {fileID: 3228194081746930371}
+  m_Music: {fileID: 7764961985424343428}
   m_CharacterChangedWithHistory: {fileID: 11400000, guid: 3decf7ea46b8f4396a586324307a0b94, type: 2}
   m_IsStandalone:
     _usage: 1
@@ -56,7 +56,7 @@ MonoBehaviour:
     _constant: {fileID: 11400000, guid: 344cbe61e6c564b39a84f5d07d7caba7, type: 2}
     _variable: {fileID: 0}
     _variableInstancer: {fileID: 0}
---- !u!114 &3228194081746930371
+--- !u!114 &7764961985424343428
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,17 +71,18 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1723414527
-      Data2: 1101628317
-      Data3: 306630536
-      Data4: -777436437
-    Path: event:/Game/Start
+      Data1: 934917777
+      Data2: 1297903450
+      Data3: 472627341
+      Data4: -655719364
+    Path: event:/Game/Pad loop 1
   Event: 
   PlayEvent: 0
   StopEvent: 0
   AllowFadeout: 1
   TriggerOnce: 0
   Preload: 0
+  AllowNonRigidbodyDoppler: 0
   Params: []
   OverrideAttenuation: 0
   OverrideMinDistance: 1
