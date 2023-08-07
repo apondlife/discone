@@ -6,11 +6,6 @@ using UnityEngine;
 
 [RequireComponent(typeof(FMODUnity.StudioEventEmitter))]
 public sealed class SimpleCharacterMusic: CharacterMusicBase {
-    // -- tuning --
-    [Header("tuning")]
-    [Tooltip("the time interval between steps")]
-    [SerializeField] float m_StepInterval = 0.2f;
-
     // -- refs --
     [Header("refs")]
     [Tooltip("the fmod event emitter for steps")]
@@ -18,20 +13,16 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     [Tooltip("the fmod event emitter for jumps")]
     [SerializeField] FMODUnity.StudioEventEmitter m_StepEmitter;
 
-    // -- props --
-    /// the containing DisconeCharacter
-    // TODO: inject this better in the future (parent call these events)
-    DisconeCharacter m_Container;
+    // these should probably all just be somewhere shared (charactermusicbase?)
+    static readonly string k_ParamSpeed= "Speed";  // float, 0 to ~20
+    static readonly string k_ParamSlope = "Slope"; // float, -1 to 1
+    static readonly string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
 
-    /// the current step time
-    float m_StepTime = 0.0f;
-
-    /// the time of the next step
-    float m_NextStepTime = 0.0f;
+    bool _stepThisFrame = false;
 
     // -- lifecycle --
     #if !UNITY_SERVER
-    void Start() {
+    protected override void Start() {
         base.Start();
 
         // set deps
@@ -41,55 +32,58 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         m_Container.Character.Events.Bind(CharacterEvent.Jump, PlayJump);
         m_Container.OnSimulationChanged += OnSimulationChanged;
     }
+    public override void OnStep(int foot, bool isRunning) {
+        if (Speed < 0.01f) {
+            // we get ghostly step events from the animator even when idle
+            // since the walk animation is blended in at some epsilon amount
+            return;
+        }
+
+        _stepThisFrame = true; // do it this way to avoid duplicating sounds for walk and run animations
+
+        // Debug.Log($"Walk step {foot}");
+        // if (IsOnGround) {
+        //     PlayStep();
+        // }
+    }
 
     void Update() {
-        // update state
-        Step();
-
-        // play audio
-        PlayStep();
+        if (_stepThisFrame) {
+            // this might cause a single frame of latency, not sure, doesn't really matter i guess
+            if (IsOnGround) {
+                PlayStep();
+            }
+            _stepThisFrame = false;
+        }
     }
     #endif
 
-    // -- commands --
-    // update current step progress
-    void Step() {
-        if (!State.Next.IsOnGround) {
-            return;
-        }
-
-        // copy a bunch of stuff from gpc
-        float dist = StepVelocity.magnitude * Time.timeScale;
-        float stride = 1.0f + dist * 0.3f; // [what is this?]
-        m_StepTime += (dist / stride) * (Time.deltaTime / m_StepInterval);
-    }
-
-    // -- c/play
-    /// play step audio
-    void PlayStep() {
-        // if we are stepping at all
-        if (StepVelocity == Vector3.zero) {
-            return;
-        }
-
-        // if it's time to play a step
-        if (m_StepTime < m_NextStepTime) {
-            return;
-        }
-
-        FMODPlayer.PlayEvent(new FMODEvent {
-            emitter = m_StepEmitter,
-            parameters = CurrentFmodParams
-        });
-
-        // advance step
-        m_NextStepTime += 0.5f;
-    }
-
     /// play jump audio
     void PlayJump() {
-        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, CurrentFmodParams));
+        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, new FMODParams {
+            [k_ParamPitch] = 0f
+        }));
     }
+
+    void PlayStep() {
+        // do pitch quantization here because it's much harder to do in fmod
+        int[] pitches = {-5, -3, 0, 2, 5};
+        int i = (int)(Mathf.InverseLerp(-1f, 1f, Slope)*pitches.Length);
+        float pitch = (float)pitches[i];
+        // Debug.Log(pitch);
+        FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, new FMODParams {
+            [k_ParamPitch] = pitch
+        }));
+    }
+
+    // protected override FMODParams CurrentFmodParams {
+    //     get {
+    //         FMODParams b = base.CurrentFmodParams;
+    //         b[k_ParamSpeed] = Speed;
+    //         b[k_ParamSlope] = Slope;
+    //         return b;
+    //     }
+    // }
 
     // -- events --
     private void OnSimulationChanged(DisconeCharacter.Simulation sim)
@@ -98,8 +92,14 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
 
     // -- queries --
-    /// the character's step (planar) velocity
-    Vector3 StepVelocity {
-        get => State.Next.GroundVelocity;
+    // slope (-1 to 1) of current velocity
+    float Slope {
+        get => State.Next.Velocity.normalized.y;
+    }
+    float Speed {
+        get => State.Next.Velocity.magnitude;
+    }
+    bool IsOnGround {
+        get => State.Next.IsOnGround;
     }
 }
