@@ -84,7 +84,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         float pitch = (float)pitches[i];
         // Debug.Log(pitch);
         FMODParams ps = CurrentFmodParams;
-        Debug.Log(pitch);
         ps[k_ParamPitch] = pitch;
         FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, ps));
     }
