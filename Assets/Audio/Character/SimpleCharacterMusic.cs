@@ -67,12 +67,13 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     void PlayStep() {
         // do pitch quantization here because it's much harder to do in fmod
-        int[] pitches = {-5, -3, 0, 2, 5};
+        int[] pitches = {-5, -3, -3, 0, 2, 3, 5};
         int i = (int)(Mathf.InverseLerp(-1f, 1f, Slope)*pitches.Length);
         float pitch = (float)pitches[i];
         // Debug.Log(pitch);
         FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, new FMODParams {
-            [k_ParamPitch] = pitch
+            [k_ParamPitch] = pitch,
+            [k_ParamSlope] = Slope
         }));
     }
 
