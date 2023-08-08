@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace ThirdPerson {
@@ -105,6 +105,9 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the stored speed when landing
     float m_LandingSpeed = 0.0f;
 
+    /// the stored last time of fixedUpdate (for interpolation)
+    float m_LastFixedUpdate = 0.0f;
+
     // -- lifecycle --
     void Start() {
         // set dependencies
@@ -156,14 +159,23 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     void FixedUpdate() {
+        m_LastFixedUpdate = Time.time;
+    }
+
+    private void Update() {
+        // interpolate frame based on time since last update
+        var end = m_State.Next;
+        var delta = Time.time - m_LastFixedUpdate;
+        var state = CharacterState.Frame.Interpolate(m_State.Curr, end,  delta / Time.fixedDeltaTime);
+
         // update animator & model
-        SyncAnimator();
-        Tilt();
+        SyncAnimator(state);
+        Tilt(state);
     }
 
     // -- commands --
     /// sync the animator's params
-    void SyncAnimator() {
+    void SyncAnimator(CharacterState.Frame state) {
         var anim = m_Animator;
         if (anim == null || anim.runtimeAnimatorController == null) {
             return;
@@ -175,7 +187,7 @@ public sealed class CharacterModel: MonoBehaviour {
             Mathx.InverseLerpUnclamped(
                 0.0f,
                 m_Tuning.Horizontal_MaxSpeed,
-                m_State.Next.GroundVelocity.magnitude
+                state.GroundVelocity.magnitude
             )
         );
 
@@ -187,28 +199,28 @@ public sealed class CharacterModel: MonoBehaviour {
         // set jump animation params
         anim.SetBool(
             k_PropIsLanding,
-            m_State.Next.IsLanding
+            state.IsLanding
         );
 
         anim.SetBool(
             k_PropIsAirborne,
             // has to actually be grounded/airborne
-            !m_State.Curr.IsOnGround
+            !state.IsOnGround
         );
 
         anim.SetBool(
             k_PropIsCrouching,
-            m_State.Next.IsInJumpSquat || m_State.Next.IsCrouching
+            state.IsInJumpSquat || state.IsCrouching
         );
 
         anim.SetFloat(
             k_PropVerticalSpeed,
-            m_State.Prev.Velocity.y
+            state.Velocity.y
         );
 
 
-        if (!m_State.Next.IsOnGround) {
-            m_LandingSpeed = m_State.Prev.Velocity.y;
+        if (!state.IsOnGround) {
+            m_LandingSpeed = state.Velocity.y;
         }
 
         anim.SetFloat(
@@ -218,12 +230,12 @@ public sealed class CharacterModel: MonoBehaviour {
 
         anim.SetFloat(
             k_PropMoveFacingDotVelocity,
-            Vector3.Dot(m_State.Next.GroundVelocity.normalized, m_State.Next.Forward)
+            Vector3.Dot(state.GroundVelocity.normalized, state.Forward)
         );
 
         // blend yoshiing
         // TODO: lerp
-        var yoshiing = !m_State.Next.IsOnGround && m_Input.IsJumpPressed ? 1.0f : 0.0f;
+        var yoshiing = !state.IsOnGround && m_Input.IsJumpPressed ? 1.0f : 0.0f;
         anim.SetLayerWeight(
             m_LayerLegs,
             yoshiing
@@ -243,10 +255,10 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     /// tilt the model as a fn of character acceleration
-    void Tilt() {
+    void Tilt(CharacterState.Frame state) {
         var destWallRotation = Quaternion.identity;
-        if (m_State.Next.IsOnWall && !m_State.Next.IsOnGround) {
-            var tangent = Vector3.Cross(Vector3.up, m_State.Next.WallSurface.Normal);
+        if (state.IsOnWall && !state.IsOnGround) {
+            var tangent = Vector3.Cross(Vector3.up, state.WallSurface.Normal);
             destWallRotation = Quaternion.AngleAxis(m_MaxWallRotation, tangent);
         }
 
@@ -258,13 +270,13 @@ public sealed class CharacterModel: MonoBehaviour {
 
         m_TiltRotation = Quaternion.RotateTowards(
             m_TiltRotation,
-            m_State.Next.Tilt,
+            state.Tilt,
             m_RotationSpeed_Tilt * Time.deltaTime
         );
 
         m_LookRotation = Quaternion.RotateTowards(
             m_LookRotation,
-            m_State.Next.LookRotation,
+            state.LookRotation,
             m_RotationSpeed_Look * Time.deltaTime
         );
 
