@@ -16,7 +16,7 @@ public abstract class CharacterMusicBase: MonoBehaviour {
 
     // -- lifecycle --
     #if !UNITY_SERVER
-    protected void Start() {
+    protected virtual void Start() {
         // set deps
         m_Container = GetComponentInParent<DisconeCharacter>();
 
@@ -31,6 +31,8 @@ public abstract class CharacterMusicBase: MonoBehaviour {
         enabled = sim != DisconeCharacter.Simulation.None;
     }
 
+    public virtual void OnStep(int foot, bool isRunning) {}
+
     // -- c/audibility
     /// toggles the music
     public void SetIsAudible(bool isAudible) {
@@ -40,7 +42,7 @@ public abstract class CharacterMusicBase: MonoBehaviour {
         }
     }
 
-    protected FMODParams CurrentFmodParams => new FMODParams {
+    protected virtual FMODParams CurrentFmodParams => new FMODParams {
         [k_ParamGrounded] = State.Next.IsOnGround ? 1f : 0f
     };
 

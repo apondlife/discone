@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{400c0321-8c51-469c-bfda-6bb2f69c4fcb}">
+		<property name="name">
+			<value>Slope</value>
+		</property>
+		<relationship name="folder">
+			<destination>{c46d47d8-ae5c-4831-bc91-5682c635144b}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{058218ed-0e61-49d1-ad8c-12d58b8f9b0b}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{058218ed-0e61-49d1-ad8c-12d58b8f9b0b}">
+		<property name="minimum">
+			<value>-1</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
