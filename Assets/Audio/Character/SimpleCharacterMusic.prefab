@@ -9,9 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7530634531407672995}
-  - component: {fileID: 9191129975772048949}
-  - component: {fileID: 7493639627700739618}
-  - component: {fileID: 2381242590802084547}
   - component: {fileID: 6731682715643818766}
   m_Layer: 6
   m_Name: SimpleCharacterMusic
@@ -35,99 +32,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9191129975772048949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6591551224002563637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: 1631952785
-      Data2: 1155433101
-      Data3: -2094431608
-      Data4: 1406108548
-    Path: event:/Character/icecream/Continuous
-  Event: 
-  PlayEvent: 0
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params: []
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
---- !u!114 &7493639627700739618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6591551224002563637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: -914647554
-      Data2: 1322871488
-      Data3: -916854350
-      Data4: -1052453756
-    Path: event:/Character/icecream/Jump
-  Event: 
-  PlayEvent: 0
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params: []
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
---- !u!114 &2381242590802084547
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6591551224002563637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: 1686863232
-      Data2: 1318739678
-      Data3: -1563303278
-      Data4: 1007779647
-    Path: event:/Character/icecream/Step
-  Event: 
-  PlayEvent: 0
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params: []
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
 --- !u!114 &6731682715643818766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,6 +44,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0ff1ae5b5f6142a3939188b31feb6e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_JumpEmitter: {fileID: 7493639627700739618}
-  m_StepEmitter: {fileID: 2381242590802084547}
-  m_ContinuousEmitter: {fileID: 9191129975772048949}
+  m_Continuous:
+    Guid:
+      Data1: -963255134
+      Data2: 1102960756
+      Data3: -1918278733
+      Data4: -1042867841
+    Path: event:/Character/icecream 2/Continuous
+  m_Jump:
+    Guid:
+      Data1: 2070309279
+      Data2: 1162508157
+      Data3: -258795337
+      Data4: -314817720
+    Path: event:/Character/icecream 2/Jump
+  m_Step:
+    Guid:
+      Data1: -1117277354
+      Data2: 1156451993
+      Data3: 618073497
+      Data4: 2013089852
+    Path: event:/Character/icecream 2/Step
