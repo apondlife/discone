@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,15 +29,25 @@ public static class Dbg {
     }
 
     // -- c/unity
-    /// add a transform to a top-level named parent
+    /// add a transform to a top-level named parent (hierarchy with /)
     public static void AddToParent(string name, Component obj) {
-        // create parent if necessary
-        var parent = GameObject.Find(name)?.transform;
-        if (parent == null) {
-            parent = new GameObject(name).transform;
+        var tail = name;
+        Transform prevParent = null;
+        while (tail.Length > 0) {
+            var split = tail.Split('/', 2);
+            var head = split[0];
+            tail = split.Length > 1 ? split[1] : "";
+
+            // create parent if necessary
+            var parent = GameObject.Find(head)?.transform;
+            if (parent == null) {
+                parent = new GameObject(head).transform;
+            }
+            parent.parent = prevParent;
+            prevParent = parent;
         }
 
         // add object to parent
-        obj.transform.parent = parent;
+        obj.transform.parent = prevParent;
     }
 }
