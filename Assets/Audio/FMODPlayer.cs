@@ -26,15 +26,22 @@ public static class FMODPlayer {
         e.emitter.Play();
         
         if (e.parameters != null) {
-            foreach ((string name, float val) in e.parameters) {
-                e.emitter.SetParameter(name, val);
-            }
+            e.emitter.SetParameters(e.parameters);
         }
     }
 
     public static void PlayAll(IEnumerable<FMODEvent> es) {
         foreach (FMODEvent e in es) {
             PlayEvent(e);
+        }
+    }
+}
+
+public static class FMODExtensions
+{
+    public static void SetParameters(this StudioEventEmitter emitter, FMODParams parameters) {
+        foreach ((string name, float val) in parameters) {
+            emitter.SetParameter(name, val);
         }
     }
 }

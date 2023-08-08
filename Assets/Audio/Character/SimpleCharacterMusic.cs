@@ -8,6 +8,8 @@ using UnityEngine;
 public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // -- refs --
     [Header("refs")]
+    [Tooltip("the fmod event emitter for continuous character sounds")]
+    [SerializeField] FMODUnity.StudioEventEmitter m_ContinuousEmitter;
     [Tooltip("the fmod event emitter for steps")]
     [SerializeField] FMODUnity.StudioEventEmitter m_JumpEmitter;
     [Tooltip("the fmod event emitter for jumps")]
@@ -31,6 +33,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         //  set events
         m_Container.Character.Events.Bind(CharacterEvent.Jump, PlayJump);
         m_Container.OnSimulationChanged += OnSimulationChanged;
+
+        m_ContinuousEmitter.Play();
     }
     public override void OnStep(int foot, bool isRunning) {
         if (Speed < 0.01f) {
@@ -42,9 +46,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         _stepThisFrame = true; // do it this way to avoid duplicating sounds for walk and run animations
 
         // Debug.Log($"Walk step {foot}");
-        // if (IsOnGround) {
-        //     PlayStep();
-        // }
     }
 
     void Update() {
@@ -55,14 +56,15 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             }
             _stepThisFrame = false;
         }
+
+        // Update params for continuous emitter
+        m_ContinuousEmitter.SetParameters(CurrentFmodParams);
     }
     #endif
 
     /// play jump audio
     void PlayJump() {
-        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, new FMODParams {
-            [k_ParamPitch] = 0f
-        }));
+        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, CurrentFmodParams));
     }
 
     void PlayStep() {
@@ -71,20 +73,16 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         int i = (int)(Mathf.InverseLerp(-1f, 1f, Slope)*pitches.Length);
         float pitch = (float)pitches[i];
         // Debug.Log(pitch);
-        FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, new FMODParams {
-            [k_ParamPitch] = pitch,
-            [k_ParamSlope] = Slope
-        }));
+        FMODParams ps = CurrentFmodParams;
+        ps[k_ParamPitch] = pitch;
+        FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, ps));
     }
 
-    // protected override FMODParams CurrentFmodParams {
-    //     get {
-    //         FMODParams b = base.CurrentFmodParams;
-    //         b[k_ParamSpeed] = Speed;
-    //         b[k_ParamSlope] = Slope;
-    //         return b;
-    //     }
-    // }
+    protected override FMODParams CurrentFmodParams => new FMODParams {
+            [k_ParamSlope] = Slope,
+            [k_ParamSpeed] = Speed,
+            [k_ParamGrounded] = IsOnGround ? 1f : 0f
+    };
 
     // -- events --
     private void OnSimulationChanged(DisconeCharacter.Simulation sim)
