@@ -12,8 +12,6 @@ public abstract class CharacterMusicBase: MonoBehaviour {
     /// if the music is audible
     bool m_IsAudible = true;
 
-    public static readonly string k_ParamGrounded = "IsGrounded";
-
     // -- lifecycle --
     #if !UNITY_SERVER
     protected virtual void Start() {
@@ -42,9 +40,7 @@ public abstract class CharacterMusicBase: MonoBehaviour {
         }
     }
 
-    protected virtual FMODParams CurrentFmodParams => new FMODParams {
-        [k_ParamGrounded] = State.Next.IsOnGround ? 1f : 0f
-    };
+    protected virtual FMODParams CurrentFmodParams => new FMODParams {};
 
     protected ThirdPerson.CharacterState State => m_Container.Character.State;
 }

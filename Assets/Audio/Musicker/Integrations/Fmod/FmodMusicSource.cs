@@ -17,16 +17,6 @@ public sealed class FmodMusicSource: MonoBehaviour {
     /// the name of the delay param
     const string k_ParamDelay = "Delay";
 
-    /// the name of the speed param
-    const string k_ParamSpeed = "Speed";
-    /// the name of the grounded param
-    const string k_ParamGrounded = "IsGrounded";
-    /// the name of the crouching param
-    const string k_ParamCrouching = "IsCrouching";
-    /// the name of the idle param
-    const string k_ParamIdle = "IsIdle";
-
-
     // -- references --
     [Header("references")]
     [Tooltip("the fmod event emitter for this source")]

@@ -22,6 +22,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     static readonly string k_ParamSpeed= "Speed";  // float, 0 to ~20
     static readonly string k_ParamSlope = "Slope"; // float, -1 to 1
     static readonly string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
+    static readonly string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
+    static readonly string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
+
 
     bool _stepThisFrame = false;
 
@@ -60,8 +63,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     void Update() {
         if (_stepThisFrame) {
-            // this might cause a single frame of latency, not sure, doesn't really matter i guess
-            if (IsOnGround) {
+            // doing it this way might cause a single frame of latency, not sure, doesn't really matter i guess
+            if (IsOnGround || IsOnWall) {
                 PlayStep();
             }
             _stepThisFrame = false;
@@ -91,7 +94,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     protected override FMODParams CurrentFmodParams => new FMODParams {
             [k_ParamSlope] = Slope,
             [k_ParamSpeed] = Speed,
-            [k_ParamGrounded] = IsOnGround ? 1f : 0f
+            [k_ParamIsOnGround] = IsOnGround ? 1f : 0f,
+            [k_ParamIsOnWall] = IsOnWall ? 1f : 0f
     };
 
     // -- events --
@@ -110,5 +114,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
     bool IsOnGround {
         get => State.Next.IsOnGround;
+    }
+    bool IsOnWall {
+        get => State.Next.IsOnWall;
     }
 }
