@@ -15,6 +15,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     [Tooltip("the fmod event for steps")]
     [SerializeField] EventReference m_Step;
 
+    [Header("params")]
+    [SerializeField] float cellSize = 1f;
+
     StudioEventEmitter m_ContinuousEmitter;
     StudioEventEmitter m_JumpEmitter;
     StudioEventEmitter m_StepEmitter;
@@ -27,8 +30,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     static readonly string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
     static readonly string k_ParamIndex = "Index";   // int (0 to 100)
 
-    [ShowNonSerializedField]
     int soundIndex = 0;
+    int previousPositionHash = 0;
 
     bool _stepThisFrame = false;
 
@@ -74,6 +77,13 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             _stepThisFrame = false;
         }
 
+        // if moving into a new grid cell, reset the counter
+        int positionHash = PositionHash();
+        if (previousPositionHash != positionHash) {
+            soundIndex = 0;
+            previousPositionHash = positionHash;
+        }
+
         // Update params for continuous emitter
         m_ContinuousEmitter.SetParameters(CurrentFmodParams);
     }
@@ -103,8 +113,16 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         [k_ParamSpeed] = Speed,
         [k_ParamIsOnGround] = IsOnGround ? 1f : 0f,
         [k_ParamIsOnWall] = IsOnWall ? 1f : 0f,
-        [k_ParamIndex] = soundIndex%52 // TODO figure out a better way of looping the index in fmod
+        [k_ParamIndex] = Index
     };
+
+    private int PositionHash() {
+        // round position to cellSize
+        Vector3 pos = transform.position;
+        pos.y = 0f; // ignore vertical for now
+        Vector3Int gridToPos = Vector3Int.FloorToInt(pos/cellSize);
+        return Mathf.Abs(gridToPos.GetHashCode());
+    }
 
     // -- events --
     private void OnSimulationChanged(DisconeCharacter.Simulation sim)
@@ -114,6 +132,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     // -- queries --
     // slope (-1 to 1) of current velocity
+    [ShowNativeProperty]
+    float Index {
+        // get => soundIndex%52; // TODO figure out a better way of looping the index in fmod
+        get => (soundIndex + PositionHash())%52;
+    }
     [ShowNativeProperty]
     float Slope {
         get => State.Next.Velocity.normalized.y;
