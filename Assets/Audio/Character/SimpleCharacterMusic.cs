@@ -3,6 +3,7 @@ using ThirdPerson;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using FMODUnity;
+using NaughtyAttributes;
 
 public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // -- refs --
@@ -19,12 +20,15 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     StudioEventEmitter m_StepEmitter;
 
     // these should probably all just be somewhere shared (charactermusicbase?)
-    static readonly string k_ParamSpeed= "Speed";  // float, 0 to ~20
+    static readonly string k_ParamSpeed= "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
     static readonly string k_ParamSlope = "Slope"; // float, -1 to 1
     static readonly string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
     static readonly string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
     static readonly string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
+    static readonly string k_ParamIndex = "Index";   // int (0 to 100)
 
+    [ShowNonSerializedField]
+    int soundIndex = 0;
 
     bool _stepThisFrame = false;
 
@@ -77,7 +81,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     /// play jump audio
     void PlayJump() {
+        Debug.Log($"Jump speed: {Speed}");
         FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, CurrentFmodParams));
+        soundIndex++;
     }
 
     void PlayStep() {
@@ -89,13 +95,15 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         FMODParams ps = CurrentFmodParams;
         ps[k_ParamPitch] = pitch;
         FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, ps));
+        soundIndex++;
     }
 
     protected override FMODParams CurrentFmodParams => new FMODParams {
-            [k_ParamSlope] = Slope,
-            [k_ParamSpeed] = Speed,
-            [k_ParamIsOnGround] = IsOnGround ? 1f : 0f,
-            [k_ParamIsOnWall] = IsOnWall ? 1f : 0f
+        [k_ParamSlope] = Slope,
+        [k_ParamSpeed] = Speed,
+        [k_ParamIsOnGround] = IsOnGround ? 1f : 0f,
+        [k_ParamIsOnWall] = IsOnWall ? 1f : 0f,
+        [k_ParamIndex] = soundIndex%52 // TODO figure out a better way of looping the index in fmod
     };
 
     // -- events --
@@ -106,15 +114,19 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     // -- queries --
     // slope (-1 to 1) of current velocity
+    [ShowNativeProperty]
     float Slope {
         get => State.Next.Velocity.normalized.y;
     }
+    [ShowNativeProperty]
     float Speed {
         get => State.Next.Velocity.magnitude;
     }
+    [ShowNativeProperty]
     bool IsOnGround {
         get => State.Next.IsOnGround;
     }
+    [ShowNativeProperty]
     bool IsOnWall {
         get => State.Next.IsOnWall;
     }
