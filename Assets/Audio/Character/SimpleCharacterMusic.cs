@@ -30,7 +30,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     static readonly string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
     static readonly string k_ParamIndex = "Index";   // int (0 to 100)
 
-    int soundIndex = 0;
+    int stepIndex = 0;
+    int jumpIndex = 0;
     int previousPositionHash = 0;
 
     bool _stepThisFrame = false;
@@ -80,7 +81,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // if moving into a new grid cell, reset the counter
         int positionHash = PositionHash();
         if (previousPositionHash != positionHash) {
-            soundIndex = 0;
+            stepIndex = jumpIndex = 0;
             previousPositionHash = positionHash;
         }
 
@@ -91,9 +92,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     /// play jump audio
     void PlayJump() {
-        Debug.Log($"Jump speed: {Speed}");
-        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, CurrentFmodParams));
-        soundIndex++;
+        // Debug.Log($"Jump speed: {Speed}");
+        FMODParams ps = CurrentFmodParams;
+        ps[k_ParamIndex] = (jumpIndex + PositionHash())%52;
+        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, ps));
+        jumpIndex++;
     }
 
     void PlayStep() {
@@ -104,8 +107,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // Debug.Log(pitch);
         FMODParams ps = CurrentFmodParams;
         ps[k_ParamPitch] = pitch;
+        ps[k_ParamIndex] = (stepIndex + PositionHash())%52;
         FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, ps));
-        soundIndex++;
+        stepIndex++;
     }
 
     protected override FMODParams CurrentFmodParams => new FMODParams {
@@ -113,7 +117,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         [k_ParamSpeed] = Speed,
         [k_ParamIsOnGround] = IsOnGround ? 1f : 0f,
         [k_ParamIsOnWall] = IsOnWall ? 1f : 0f,
-        [k_ParamIndex] = Index
+        // [k_ParamIndex] = Index
     };
 
     private int PositionHash() {
@@ -132,11 +136,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     // -- queries --
     // slope (-1 to 1) of current velocity
-    [ShowNativeProperty]
-    float Index {
-        // get => soundIndex%52; // TODO figure out a better way of looping the index in fmod
-        get => (soundIndex + PositionHash())%52;
-    }
+    // [ShowNativeProperty]
+    // float Index {
+    //     // get => soundIndex%52; // TODO figure out a better way of looping the index in fmod
+    //     get => PositionHash()%52;
+    // }
     [ShowNativeProperty]
     float Slope {
         get => State.Next.Velocity.normalized.y;
