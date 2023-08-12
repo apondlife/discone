@@ -115,10 +115,10 @@ public partial class Character: MonoBehaviour, CharacterContainer {
 
             // step systems
             Step();
-
-            // dispatch events
-            m_Events.DispatchAll();
         }
+
+        // dispatch events (even if paused?)
+        m_Events.DispatchAll();
 
         // update external state
         transform.position = m_State.Position;
@@ -147,7 +147,6 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     /// if the character simulation is paused
     public bool IsPaused {
         get => m_IsPaused;
-        set => m_IsPaused = value;
     }
 
     // -- commands --
@@ -168,12 +167,20 @@ public partial class Character: MonoBehaviour, CharacterContainer {
 
     /// pause the character
     public void Pause() {
-        IsPaused = true;
+        if (!m_IsPaused) {
+            m_Events.Schedule(CharacterEvent.Paused);
+        }
+
+        m_IsPaused = true;
     }
 
     /// unpause the character
     public void Unpause() {
-        IsPaused = false;
+        if (m_IsPaused) {
+            m_Events.Schedule(CharacterEvent.Unpaused);
+        }
+
+        m_IsPaused = false;
     }
 
     // -- queries --

@@ -17,9 +17,21 @@ public class IcecreamHair : MonoBehaviour
     [Tooltip("the physics/bone rig that controls the hair")]
     [SerializeField] Rigidbody m_AttachedTo;
 
+    // the character that owns this hair
+    public DisconeCharacter m_Container;
+
+    // the colliders to disable when the character is paused
+    public Collider[] m_Colliders;
+
     ///  -- lifecycle --
     void Awake()
     {
+        // get the container
+        m_Container = GetComponentInParent<DisconeCharacter>(true);
+
+        // cache colliders
+        m_Colliders = GetComponentsInChildren<Collider>();
+
         // to get all possible motion from the attached rigidbody on the character,
         // we need the two rigidbody chains to be completely disconnected
         // this is the only way we get the actual inertia from the character into the hair
@@ -36,6 +48,13 @@ public class IcecreamHair : MonoBehaviour
         #endif
     }
 
+    void Start() {
+        // bind events
+        m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Paused, OnCharacterPaused);
+        m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Unpaused, OnCharacterUnpaused);
+    }
+
+
     void OnEnable() {
         m_Rig.gameObject.SetActive(true);
         m_Rig.transform.position = transform.position;
@@ -43,6 +62,21 @@ public class IcecreamHair : MonoBehaviour
 
     void OnDisable() {
         m_Rig.gameObject.SetActive(false);
+    }
+
+    /// -- events --
+    void OnCharacterPaused() {
+        foreach(var collider in m_Colliders) {
+            collider.enabled = false;
+        }
+        Debug.Log($"Disabling {m_Colliders.Length} Colliders for {m_Container.name}");
+    }
+
+    void OnCharacterUnpaused() {
+        foreach(var collider in m_Colliders) {
+            collider.enabled = true;
+        }
+        Debug.Log($"Enabling {m_Colliders.Length} Colliders for {m_Container.name}");
     }
 
     ///  -- commands --

@@ -238,7 +238,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
         // pause when not simulated at all
         // TODO: if extrapolating might not need to simulate locally at all
-        m_Character.IsPaused = !isSimulated;
+        if (!isSimulated) {
+            m_Character.Pause();
+        } else {
+            m_Character.Unpause();
+        }
 
         // toggle activity on all the children to turn off rendering, effects, &c
         foreach (var c in m_Simulated) {
