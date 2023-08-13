@@ -59,7 +59,7 @@ public sealed class WorldChunks: MonoBehaviour {
     #if UNITY_EDITOR
     void Update() {
         // if editor, create editor chunks
-        if (!Application.IsPlaying(gameObject)) {
+        if (s_IsCreatingTerrain && !Application.IsPlaying(gameObject)) {
             CreateEditorChunks();
             return;
         }
@@ -195,6 +195,22 @@ public sealed class WorldChunks: MonoBehaviour {
 
     // -- editor --
     #if UNITY_EDITOR
+    // TODO: move to editor file partial class
+    /// if the terrain is being generated in editor
+    // -- static --
+    static bool s_IsCreatingTerrain = true;
+
+    public static bool IsCreatingTerrain {
+        get => s_IsCreatingTerrain;
+    }
+
+    public static void ToggleIsCreatingTerrain() {
+        s_IsCreatingTerrain = !s_IsCreatingTerrain;
+        if (!s_IsCreatingTerrain) {
+            FindObjectOfType<WorldChunks>().ClearEditorChunks();
+        }
+    }
+
     /// the editor's world coordinate
     Vector2Int m_EditorCoord = WorldCoord.None;
 
