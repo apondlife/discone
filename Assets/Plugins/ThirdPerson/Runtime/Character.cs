@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ThirdPerson {
 
@@ -168,7 +168,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     /// pause the character
     public void Pause() {
         if (!m_IsPaused) {
-            m_Events.Schedule(CharacterEvent.Paused);
+            m_Events?.Schedule(CharacterEvent.Paused);
         }
 
         m_IsPaused = true;
@@ -177,7 +177,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     /// unpause the character
     public void Unpause() {
         if (m_IsPaused) {
-            m_Events.Schedule(CharacterEvent.Unpaused);
+            m_Events?.Schedule(CharacterEvent.Unpaused);
         }
 
         m_IsPaused = false;
