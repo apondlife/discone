@@ -1,7 +1,10 @@
 what is projected
 ---
+- negative walls feel like they have higher gravity
+
 - wall particle proportional to wall influence
 - wall particle indicates state (attack, hold button)
+- wall particle indicates direction of transfer
 
 - ground velocity vs. surface velocity (friction on walls? and jumpng?)
 
