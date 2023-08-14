@@ -373,10 +373,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bddedfa0723358a419d9c234bbe54f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Rig: {fileID: 5318372410400204482}
+  m_HasPhysics: 0
+  m_CurrentCharacter: {fileID: 0}
+  m_NoRigPrefab: {fileID: 0}
+  m_Mesh: {fileID: 0}
+  m_RigPrefab: {fileID: 8703047533596167698, guid: e15634b9867418b47b30e41021f5b4a8, type: 3}
   m_LeftRoot: {fileID: 5046311259153969843}
   m_RightRoot: {fileID: 8136033199256118034}
   m_AttachedTo: {fileID: 0}
+  m_Rig: {fileID: 5318372410400204482}
+  m_NoRig: {fileID: 0}
 --- !u!1 &5383527242996009854 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -1114564329083209696, guid: c5c0266886deff94b9ecdafaaed96b98, type: 3}
