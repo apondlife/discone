@@ -1,6 +1,4 @@
-using Musicker;
-using ThirdPerson;
-using UnityAtoms.BaseAtoms;
+﻿using ThirdPerson;
 using UnityEngine;
 using FMODUnity;
 using NaughtyAttributes;
@@ -10,8 +8,10 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     [Header("refs")]
     [Tooltip("the fmod event for continuous character sounds")]
     [SerializeField] EventReference m_Continuous;
+
     [Tooltip("the fmod event for jumps")]
     [SerializeField] EventReference m_Jump;
+
     [Tooltip("the fmod event for steps")]
     [SerializeField] EventReference m_Step;
 
@@ -23,12 +23,12 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     StudioEventEmitter m_StepEmitter;
 
     // these should probably all just be somewhere shared (charactermusicbase?)
-    static readonly string k_ParamSpeed= "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
-    static readonly string k_ParamSlope = "Slope"; // float, -1 to 1
-    static readonly string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
-    static readonly string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
-    static readonly string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
-    static readonly string k_ParamIndex = "Index";   // int (0 to 100)
+    const string k_ParamSpeed= "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
+    const string k_ParamSlope = "Slope"; // float, -1 to 1
+    const string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
+    const string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
+    const string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
+    const string k_ParamIndex = "Index";   // int (0 to 100)
 
     int stepIndex = 0;
     int jumpIndex = 0;
@@ -46,17 +46,20 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
         //  set events
         m_Container.Character.Events.Bind(CharacterEvent.Jump, PlayJump);
-        m_Container.OnSimulationChanged += OnSimulationChanged;
 
         // add emitters
         m_StepEmitter = gameObject.AddComponent<StudioEventEmitter>();
-        m_StepEmitter.EventReference = m_Step;
         m_JumpEmitter = gameObject.AddComponent<StudioEventEmitter>();
-        m_JumpEmitter.EventReference = m_Jump;
         m_ContinuousEmitter = gameObject.AddComponent<StudioEventEmitter>();
-        m_ContinuousEmitter.EventReference = m_Continuous;
+
+        // TODO: is it a bug that this game object might be enabled and disabled?
         m_ContinuousEmitter.Play();
+
+        m_StepEmitter.EventReference = m_Step;
+        m_JumpEmitter.EventReference = m_Jump;
+        m_ContinuousEmitter.EventReference = m_Continuous;
     }
+
     public override void OnStep(int foot, bool isRunning) {
         if (Speed < 0.01f) {
             // we get ghostly step events from the animator even when idle
@@ -120,18 +123,12 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // [k_ParamIndex] = Index
     };
 
-    private int PositionHash() {
+    int PositionHash() {
         // round position to cellSize
         Vector3 pos = transform.position;
         pos.y = 0f; // ignore vertical for now
         Vector3Int gridToPos = Vector3Int.FloorToInt(pos/cellSize);
         return Mathf.Abs(gridToPos.GetHashCode());
-    }
-
-    // -- events --
-    private void OnSimulationChanged(DisconeCharacter.Simulation sim)
-    {
-        enabled = sim != DisconeCharacter.Simulation.None;
     }
 
     // -- queries --
@@ -145,14 +142,17 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     float Slope {
         get => State.Next.Velocity.normalized.y;
     }
+
     [ShowNativeProperty]
     float Speed {
         get => State.Next.Velocity.magnitude;
     }
+
     [ShowNativeProperty]
     bool IsOnGround {
         get => State.Next.IsOnGround;
     }
+
     [ShowNativeProperty]
     bool IsOnWall {
         get => State.Next.IsOnWall;

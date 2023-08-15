@@ -1,4 +1,4 @@
-using Mirror;
+﻿using Mirror;
 using System.Linq;
 using ThirdPerson;
 using UnityAtoms;
@@ -88,8 +88,8 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     void Awake() {
         // set props
         m_Character = GetComponent<Character>();
-        m_Musics = GetComponentInChildren<CharacterMusicBase>();
-        m_Dialogue = GetComponentInChildren<CharacterDialogue>();
+        m_Musics = GetComponentInChildren<CharacterMusicBase>(true);
+        m_Dialogue = GetComponentInChildren<CharacterDialogue>(true);
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
 
         // cache list of simulated children -- anything that's active in the prefab

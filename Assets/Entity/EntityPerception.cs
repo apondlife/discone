@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// toggles perceivability of entities sound effects, dialogue, etc.
 sealed class EntityPerception: MonoBehaviour {
@@ -91,7 +91,7 @@ sealed class EntityPerception: MonoBehaviour {
 
             // step 1: check hearing (spherical)
             var hearDist = distXz + distY;
-            if (other.Music) other.Music.SetIsAudible(hearDist < m_MaxHearingDist);
+            other.Music.SetIsAudible(hearDist < m_MaxHearingDist);
 
             // step 2: check talking (cylindrical)
             var talkDist = distXz;

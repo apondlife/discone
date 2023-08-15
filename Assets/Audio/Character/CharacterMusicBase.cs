@@ -1,7 +1,4 @@
-using Musicker;
-using ThirdPerson;
-using UnityAtoms.BaseAtoms;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class CharacterMusicBase: MonoBehaviour {
     // -- props --
@@ -10,24 +7,15 @@ public abstract class CharacterMusicBase: MonoBehaviour {
     protected DisconeCharacter m_Container;
 
     /// if the music is audible
-    bool m_IsAudible = true;
+    bool m_IsAudible = false;
 
     // -- lifecycle --
     #if !UNITY_SERVER
     protected virtual void Start() {
         // set deps
         m_Container = GetComponentInParent<DisconeCharacter>();
-
-        //  set events
-        m_Container.OnSimulationChanged += OnSimulationChanged;
     }
     #endif
-
-    // -- events --
-    private void OnSimulationChanged(DisconeCharacter.Simulation sim)
-    {
-        enabled = sim != DisconeCharacter.Simulation.None;
-    }
 
     public virtual void OnStep(int foot, bool isRunning) {}
 
