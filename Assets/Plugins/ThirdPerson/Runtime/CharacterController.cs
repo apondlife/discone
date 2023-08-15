@@ -8,10 +8,18 @@ namespace ThirdPerson {
 /// collision handling
 [Serializable]
 public sealed class CharacterController {
+    /// .
     public struct Frame {
+        /// .
         public Vector3 Position;
+
+        /// .
         public Vector3 Velocity;
+
+        /// .
         public CharacterCollision Wall;
+
+        /// .
         public CharacterCollision Ground;
     }
 
@@ -83,7 +91,7 @@ public sealed class CharacterController {
         float deltaTime
     ) {
         // the slice of our delta time remaining to resolve
-        var timeLeft = deltaTime;
+        var timeRemaining = deltaTime;
 
         // the final velocity at the end of the move
         var nextVelocity = velocity;
@@ -159,14 +167,14 @@ public sealed class CharacterController {
         //     collisions
         //
         var i = 0;
-        while (timeLeft > 0f) {
+        while (timeRemaining > 0f) {
             // asdfasdf
             if (nextVelocity == Vector3.zero) {
                 break;
             }
 
             // move delta is however far we can move in the time slice
-            var moveDelta = nextVelocity * timeLeft;
+            var moveDelta = nextVelocity * timeRemaining;
 
             // if move remaining is less than min move, stop & add it to pending delta
             if (moveDelta.sqrMagnitude <= m_SqrMinMove) {
@@ -245,8 +253,8 @@ public sealed class CharacterController {
             var moveRemaining = castDst - moveDst;
 
             // assuming velocity is constant during this period of time:
-            timeLeft = moveRemaining.magnitude / nextVelocity.magnitude;
-            nextVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);;
+            timeRemaining = moveRemaining.magnitude / nextVelocity.magnitude;
+            nextVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);
 
             // track collisions
             var collision = new CharacterCollision(

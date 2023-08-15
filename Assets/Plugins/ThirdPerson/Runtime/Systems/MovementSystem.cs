@@ -320,7 +320,7 @@ sealed class MovementSystem: CharacterSystem {
         var deceleration = v0Dir * (friction + drag * v0SqrMag);
 
         // get velocity delta in each direction
-        var dva = thrust * delta;
+        var dva = acceleration * delta;
         var dvd = deceleration * delta;
 
         // if deceleration would overcome our accelerated velocity, cancel
