@@ -1,9 +1,14 @@
 what is projected
 ---
+- negative walls feel like they have higher gravity
+
 - wall particle proportional to wall influence
 - wall particle indicates state (attack, hold button)
+- wall particle indicates direction of transfer
 
-- ground velocity vs. surface velocity (friction on walls? and jumpng?)
+- ground velocity vs. surface velocity (friction on walls? and jumping?)
+- wall slide as floating state in movement?
+- wall system preserves momentum into wall (decaying)
 
 - maybe? wall system no wall gravity (all friction??)
 - maybe? cache wall transfer on transfer to prevent adding magnet and input every frame
