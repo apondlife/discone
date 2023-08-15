@@ -12,11 +12,12 @@ public class AudioFmodConfig: FMODUnity.PlatformCallbackHandler {
 
     // -- PlatformCallbackHandler --
     public override void PreInitialize(FMOD.Studio.System studioSystem, Action<FMOD.RESULT, string> reportResult) {
-        FMOD.System system;
-
         // get system
-        var res = studioSystem.getCoreSystem(out system);
+        var res = studioSystem.getCoreSystem(out var system);
         reportResult(res, "studioSystem.getCoreSystem");
+        if (res != FMOD.RESULT.OK) {
+            return;
+        }
 
         // check if standalone
         var isStandalone = m_IsStandalone.Value;
@@ -27,9 +28,10 @@ public class AudioFmodConfig: FMODUnity.PlatformCallbackHandler {
         #endif
 
         // disable audio in standalone
-        if (res == FMOD.RESULT.OK && isStandalone) {
+        if (isStandalone) {
             res = system.setOutput(FMOD.OUTPUTTYPE.NOSOUND);
             reportResult(res, "coreSystem.setOutput(NOSOUND)");
+            return;
         }
     }
 }
