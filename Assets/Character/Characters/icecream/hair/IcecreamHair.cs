@@ -92,7 +92,7 @@ public class IcecreamHair : MonoBehaviour
         m_Rig.gameObject.SetActive(false);
 
         // reset the rig
-        CopyTransformTree(m_RigPrefab.transform.GetChild(0), m_Rig.transform.GetChild(0));
+        // CopyTransformTree(m_RigPrefab.transform.GetChild(0), m_Rig.transform.GetChild(0));
     }
 
     /// -- events --
