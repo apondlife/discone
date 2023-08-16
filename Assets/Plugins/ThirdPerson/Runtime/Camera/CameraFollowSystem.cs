@@ -27,13 +27,8 @@ sealed class CameraFollowSystem: CameraSystem {
     // player not moving and not controlling the camera
     Phase Idle => new Phase(
         name: "Idle",
-        enter: Idle_Enter,
         update: Idle_Update
     );
-
-    void Idle_Enter() {
-        m_State.Next.Spherical = m_State.IntoCurrSpherical();
-    }
 
     void Idle_Update(float delta) {
         if (m_Input.WasPerformedThisFrame()) {
@@ -45,41 +40,7 @@ sealed class CameraFollowSystem: CameraSystem {
             ChangeToImmediate(Tracking, delta);
             return;
         }
-    }
 
-    // -- Tracking_Recenter --
-    Phase Tracking_Recenter => new Phase(
-        name: "Tracking_Recenter",
-        enter: Tracking_Recenter_Enter,
-        update: Tracking_Recenter_Update,
-        exit: Tracking_Recenter_Exit
-    );
-
-    void Tracking_Recenter_Enter() {
-        m_State.Next.Spherical = m_State.IntoCurrSpherical();
-    }
-
-    void Tracking_Recenter_Update(float delta) {
-        if (m_Input.WasPerformedThisFrame()) {
-            ChangeToImmediate(FreeLook, delta);
-            return;
-        }
-
-        if (m_CharacterInput.IsMoveIdle(m_Tuning.Tracking_IdleFrames)) {
-            ChangeToImmediate(Idle, delta);
-            return;
-        }
-
-        Tracking_Orbit(delta, isRecentering: true);
-
-        // exit either some minimal error or time
-        if (m_DeltaYawMag < 10.0f) {
-            ChangeTo(Tracking);
-            return;
-        }
-    }
-
-    void Tracking_Recenter_Exit() {
         m_State.Next.Spherical = m_State.IntoCurrSpherical();
     }
 
@@ -87,14 +48,8 @@ sealed class CameraFollowSystem: CameraSystem {
     // camera following the player on its own
     Phase Tracking => new Phase(
         name: "Tracking",
-        enter: Tracking_Enter,
-        update: Tracking_Update,
-        exit: Tracking_Exit
+        update: Tracking_Update
     );
-
-    void Tracking_Enter() {
-        m_State.Next.Spherical = m_State.IntoCurrSpherical();
-    }
 
     void Tracking_Update(float delta) {
         if (m_Input.WasPerformedThisFrame()) {
@@ -111,10 +66,6 @@ sealed class CameraFollowSystem: CameraSystem {
             ChangeTo(Idle);
             return;
         }
-    }
-
-    void Tracking_Exit() {
-        m_State.Next.Spherical = m_State.IntoCurrSpherical();
     }
 
     // -- FreeLook --
