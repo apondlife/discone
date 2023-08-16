@@ -31,7 +31,7 @@ sealed class CameraFollowSystem: CameraSystem {
     );
 
     void Idle_Update(float delta) {
-        if (m_Input.WasPerformedThisFrame()) {
+        if (m_Input.IsPressed()) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
@@ -52,7 +52,7 @@ sealed class CameraFollowSystem: CameraSystem {
     );
 
     void Tracking_Update(float delta) {
-        if (m_Input.WasPerformedThisFrame()) {
+        if (m_Input.IsPressed()) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
@@ -86,7 +86,7 @@ sealed class CameraFollowSystem: CameraSystem {
         Dolly(delta);
 
         // if the player stops moving the camera, check their intentions
-        if (!m_Input.WasPerformedThisFrame()) {
+        if (!m_Input.IsPressed()) {
             ChangeTo(FreeLook_Intent);
             return;
         }
@@ -99,7 +99,7 @@ sealed class CameraFollowSystem: CameraSystem {
     );
 
     void FreeLook_Intent_Update(float delta) {
-        if (m_Input.WasPerformedThisFrame()) {
+        if (m_Input.IsPressed()) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
@@ -131,7 +131,7 @@ sealed class CameraFollowSystem: CameraSystem {
     );
 
     void FreeLook_MoveIntent_Update(float delta) {
-        if (m_Input.WasPerformedThisFrame()) {
+        if (m_Input.IsPressed()) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
