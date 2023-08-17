@@ -74,7 +74,7 @@ public partial class Character: MonoBehaviour {
         }
 
         if (next < 0) {
-            m_State.Snapshot();
+            m_State.Advance();
             m_Input.Read();
             m_Debug_FrameOffset = 0;
         } else  {

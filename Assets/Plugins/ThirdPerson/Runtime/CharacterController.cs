@@ -249,7 +249,7 @@ public sealed class CharacterController {
             }
 
             // calculate the remaining movement in the plane
-            // TODO: ProjectOnPlane could be a slope function e.g. mR.dir * fn(mR.dir • N) * mR.mag
+            // TODO: ProjectOnPlane could be a slope function e.g. mR.dir * fn(mR.dir • N) * mR.mag
             var moveRemaining = castDst - moveDst;
 
             // assuming velocity is constant during this period of time:

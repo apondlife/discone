@@ -81,9 +81,9 @@ sealed class WallSystem: CharacterSystem {
 
         // add a magnet to pull the character towards the surface
         // TODO: prefix wall tuning values w/ `Wall_<name>`
-        var wallWagnetInputScale = c.Tuning.WallMagnetInputScale.Evaluate(wallInputUp);
+        var wallMagnetInputScale = c.Tuning.WallMagnetInputScale.Evaluate(wallInputUp);
         var wallMagnetTransferScale = c.Tuning.WallMagnetTransferScale.Evaluate(normalAngleScale);
-        var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallWagnetInputScale * wallMagnetTransferScale;
+        var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallMagnetInputScale * wallMagnetTransferScale;
         vd -= wallMagnetMag * delta * wallNormal;
 
         // transfer velocity to new surface w/ di
@@ -97,7 +97,7 @@ sealed class WallSystem: CharacterSystem {
         var wallTransferDiScale = c.Tuning.WallTransferDiScale.Evaluate(wallTransferDiAngleMag);
         var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
 
-        var wallTransfer = TransferredVelocity(wallNormal, wallTransferTg) * wallTransferScale * wallTransferDiScale;
+        var wallTransfer = wallTransferScale * wallTransferDiScale * TransferredVelocity(wallNormal, wallTransferTg);
         vd += wallTransfer;
 
         // get angle (upwards) delta between surface and perceived surface

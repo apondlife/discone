@@ -33,6 +33,12 @@ sealed class CollisionSystem: CharacterSystem {
     void Active_Update(float delta) {
         var curr = c.State.Curr;
         var next = c.State.Next;
+        
+        // keep track of the velocity before collision 
+        next.PreCollisionVelocity = next.Velocity;
+
+        // integrate acceleration (forces)
+        next.Velocity += next.Acceleration * delta;
 
         // move character using controller if not idle
         var frame = c.Controller.Move(

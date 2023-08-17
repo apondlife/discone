@@ -85,7 +85,7 @@ sealed class CharacterDistortion: MonoBehaviour {
     public float destIntensity = 1f;
     void StretchAndSquash() {
         var v = m_State.Prev.Velocity.y;
-        var a = m_State.Next.Acceleration.y;
+        var a = m_State.Curr.Acceleration.y;
         var aMag = Mathf.Abs(a);
 
         // when jumping, move a distortion plane to our feet

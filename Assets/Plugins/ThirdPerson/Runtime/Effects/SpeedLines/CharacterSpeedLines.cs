@@ -77,7 +77,7 @@ sealed class CharacterSpeedLines: MonoBehaviour {
         // rotate lines as character accelerates
         var vol = m_Particles.velocityOverLifetime;
 
-        var a = transform.InverseTransformVector(c.State.Next.Acceleration);
+        var a = transform.InverseTransformVector(c.State.Curr.Acceleration);
         var destOrbital = new Vector2(a.y, -a.x) * m_RotationScale * m_SpeedScale;
         var nextOrbital = Vector2.MoveTowards(
             new Vector2(

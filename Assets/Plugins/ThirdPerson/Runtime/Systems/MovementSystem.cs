@@ -38,7 +38,7 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // intergrate forces
-        var dv = IntegrateForces(
+        IntegrateForces(
             c.State.Next.GroundVelocity,
             Vector3.zero,
             c.State.WasStopped ? 0.0f : c.State.Next.Horizontal_Drag,
@@ -46,7 +46,6 @@ sealed class MovementSystem: CharacterSystem {
             delta
         );
 
-        c.State.Next.Velocity += dv;
 
         // we're moving if the character is not stopped or if there's input
         var shouldStartMoving = !c.State.IsStopped || HasMoveInput;
@@ -120,15 +119,13 @@ sealed class MovementSystem: CharacterSystem {
 
         // intergrate forces
         // 22.10.26: removed static friction when in moving
-        var dv = IntegrateForces(
+        IntegrateForces(
             v,
             c.Tuning.Horizontal_Acceleration * Vector3.Project(inputDir, c.State.Next.Forward),
             c.State.WasStopped ? 0.0f : c.State.Horizontal_Drag,
             c.State.Horizontal_KineticFriction,
             delta
         );
-
-        c.State.Next.Velocity += dv;
     }
 
     // -- Sliding --
@@ -163,15 +160,13 @@ sealed class MovementSystem: CharacterSystem {
         var thrustLateral = scaleLateral * c.Tuning.Crouch_LateralMaxSpeed * inputSlideLateral;
 
         // integrate forces
-        var dv = IntegrateForces(
+        IntegrateForces(
             c.State.Next.GroundVelocity,
             c.Tuning.Horizontal_Acceleration * thrustLateral,
             c.State.WasStopped ? 0.0f : c.State.Horizontal_Drag,
             c.State.WasStopped ? c.State.Horizontal_StaticFriction : c.State.Horizontal_KineticFriction,
             delta
         );
-
-        c.State.Next.Velocity += dv;
 
         // turn towards input direction
         TurnTowards(
@@ -226,10 +221,10 @@ sealed class MovementSystem: CharacterSystem {
 
         // calculate next velocity, decelerating towards zero to finish pivot
         var v0 = c.State.Curr.GroundVelocity;
-        var dv = Mathf.Min(v0.magnitude, c.Tuning.PivotDeceleration * delta) * v0.normalized;
+        var a = Mathf.Min(v0.magnitude / delta, c.Tuning.PivotDeceleration) * v0.normalized;
 
         // update velocity
-        c.State.Next.Velocity -= dv;
+        c.State.Next.Acceleration -= a;
 
         // once speed is zero, transition to next state
         if (c.State.IsStopped) {
@@ -268,8 +263,8 @@ sealed class MovementSystem: CharacterSystem {
 
         // add aerial drift
         var v0 = c.State.Curr.PlanarVelocity;
-        var vd = c.Input.Move * c.Tuning.AerialDriftAcceleration * delta;
-        c.State.Next.Velocity += vd;
+        var a = c.Input.Move * c.Tuning.AerialDriftAcceleration;
+        c.State.Next.Acceleration += a;
     }
 
     // -- commands --
@@ -299,8 +294,9 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- integrate --
+    // TODO: consider if this should be integrated somewhere more fundamental (e.g. on state v & a)
     /// integrate velocity delta from all movement forces
-    Vector3 IntegrateForces(
+    void IntegrateForces(
         Vector3 v0,
         Vector3 thrust,
         float drag,
@@ -327,10 +323,12 @@ sealed class MovementSystem: CharacterSystem {
         // current velocity instead
         var va = v0 + dva;
         if (dvd.sqrMagnitude >= va.sqrMagnitude) {
-            return -v0;
+            c.State.Next.Acceleration -= v0 / delta;
         }
-
-        return dva - dvd;
+        // otherwise, apply the movement acceleration
+        else {
+            c.State.Next.Acceleration += acceleration - deceleration;
+        }
     }
 }
 

@@ -108,7 +108,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         // run simulation
         if (!m_IsPaused) {
             // store the previous frame
-            m_State.Snapshot();
+            m_State.Advance();
 
             // read input
             m_Input.Read();

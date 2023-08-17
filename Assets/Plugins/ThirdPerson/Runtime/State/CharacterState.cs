@@ -18,7 +18,7 @@ public sealed partial class CharacterState {
 
     // -- props --
     /// the queue of frames
-    Queue<Frame> m_Frames = new Queue<Frame>(k_BufferSize);
+    Queue<Frame> m_Frames = new(k_BufferSize);
 
     // -- lifetime --
     /// create state from intial frame and dependencies
@@ -34,9 +34,14 @@ public sealed partial class CharacterState {
     }
 
     // -- commands --
-    /// snapshot the current state
-    public void Snapshot() {
-        m_Frames.Add(m_Frames[0].Copy());
+    /// create the next frame from the current frame
+    public void Advance() {
+        var next = m_Frames[0].Copy();
+
+        // every frame starts with no next acceleration (forces)
+        next.Acceleration = Vector3.zero;
+
+        m_Frames.Add(next);
     }
 
     /// fill the queue with the frame

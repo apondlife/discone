@@ -34,7 +34,7 @@ sealed class JumpSystem: CharacterSystem {
         base.Update(delta);
 
         // always add gravity
-        c.State.Next.Velocity += c.Tuning.Gravity * delta * Vector3.up;
+        c.State.Next.Acceleration += c.Tuning.Gravity * Vector3.up;
     }
 
     // -- NotJumping --
@@ -128,7 +128,7 @@ sealed class JumpSystem: CharacterSystem {
     void JumpSquat_Update(float delta) {
         // apply fall acceleration if airborne
         if (c.State.Curr.Ground.IsNone && c.State.Curr.Wall.IsNone) {
-            c.State.Next.Velocity += c.Tuning.FallAcceleration * delta * Vector3.up;
+            c.State.Next.Acceleration += c.Tuning.FallAcceleration * Vector3.up;
         }
 
         // jump if jump was released or jump squat ended
@@ -192,7 +192,7 @@ sealed class JumpSystem: CharacterSystem {
                 ? c.Tuning.JumpAcceleration
                 : c.Tuning.FallAcceleration;
 
-            c.State.Next.Velocity += acceleration * delta * Vector3.up;
+            c.State.Next.Acceleration += acceleration * Vector3.up;
         }
 
         // count coyote frames

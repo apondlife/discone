@@ -31,7 +31,7 @@ sealed class TiltSystem : CharacterSystem {
     );
 
     void NotTilting_Update(float _) {
-        var acceleration = Vector3.ProjectOnPlane(c.State.Acceleration, Vector3.up);
+        var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
         if (acceleration.sqrMagnitude != 0.0f) {
             ChangeTo(Tilting);
             return;
@@ -47,7 +47,7 @@ sealed class TiltSystem : CharacterSystem {
     );
 
     void Tilting_Update(float _) {
-        var acceleration = Vector3.ProjectOnPlane(c.State.Acceleration, Vector3.up);
+        var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
         if (acceleration.sqrMagnitude == 0.0f) {
             ChangeTo(NotTilting);
             return;
