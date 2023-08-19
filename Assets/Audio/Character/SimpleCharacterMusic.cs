@@ -17,10 +17,17 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     [Header("params")]
     [SerializeField] float cellSize = 1f;
+    public enum SequenceMode {
+        Sequential,
+        Random
+        // A 'Shuffle' mode like FMOD has might be useful too
+    }
+    [SerializeField] SequenceMode sequenceMode;
 
     StudioEventEmitter m_ContinuousEmitter;
     StudioEventEmitter m_JumpEmitter;
     StudioEventEmitter m_StepEmitter;
+
 
     // these should probably all just be somewhere shared (charactermusicbase?)
     const string k_ParamSpeed= "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
@@ -81,13 +88,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             _stepThisFrame = false;
         }
 
-        // if moving into a new grid cell, reset the counter
-        int positionHash = PositionHash();
-        if (previousPositionHash != positionHash) {
-            stepIndex = jumpIndex = 0;
-            previousPositionHash = positionHash;
-        }
-
         // Update params for continuous emitter
         m_ContinuousEmitter.SetParameters(CurrentFmodParams);
     }
@@ -95,22 +95,27 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     /// play jump audio
     void PlayJump() {
+        UpdatePositionHash();
+
         // Debug.Log($"Jump speed: {Speed}");
         FMODParams ps = CurrentFmodParams;
-        ps[k_ParamIndex] = (jumpIndex + PositionHash())%52;
+        ps[k_ParamIndex] = MakeIndex(jumpIndex, 52);
         FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, ps));
         jumpIndex++;
     }
 
     void PlayStep() {
+        UpdatePositionHash();
+
         // do pitch quantization here because it's much harder to do in fmod
-        int[] pitches = {-7, -7, -7, -7, -5, -5, 0, 2, 4, 5, 7, 7, 7};
+        int[] pitches = { -7, -7, -7, -7, -5, -5, 0, 2, 4, 5, 7, 7, 7 };
         int i = (int)(Mathf.InverseLerp(-1f, 1f, Slope)*pitches.Length);
         float pitch = (float)pitches[i];
         // Debug.Log(pitch);
         FMODParams ps = CurrentFmodParams;
         ps[k_ParamPitch] = pitch;
-        ps[k_ParamIndex] = (stepIndex + PositionHash())%52;
+        ps[k_ParamIndex] = MakeIndex(stepIndex, 52);
+        Debug.Log($"step index: {ps[k_ParamIndex]}");
         FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, ps));
         stepIndex++;
     }
@@ -123,11 +128,32 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // [k_ParamIndex] = Index
     };
 
+    int MakeIndex(int subIndex, int sampleCount) {
+        if (sequenceMode == SequenceMode.Random) {
+            // rather than a direct sequence (following fmod), play a random sequence determined by the position hash
+            System.Random rand = new System.Random(subIndex);
+            Debug.Log($"pre-twist subIndex: {subIndex}");
+            subIndex = Mathf.Abs(rand.Next());
+        }
+
+        Debug.Log($"positionhash: {PositionHash()}; subIndex: {subIndex}; sampleCount: {sampleCount}");
+        return (int)(((long)PositionHash() + subIndex) % sampleCount);
+    }
+
+    void UpdatePositionHash() {
+        // if jumping/stepping in a different grid cell to last time, reset the counters
+        // [should probably happen separately for jump/step but whatever]
+        int positionHash = PositionHash();
+        if (previousPositionHash != positionHash) {
+            stepIndex = jumpIndex = 0;
+            previousPositionHash = positionHash;
+        }
+    }
     int PositionHash() {
         // round position to cellSize
         Vector3 pos = transform.position;
-        pos.y = 0f; // ignore vertical for now
-        Vector3Int gridToPos = Vector3Int.FloorToInt(pos/cellSize);
+        // pos.y = 0f; // ignore vertical for now
+        Vector3Int gridToPos = Vector3Int.FloorToInt(pos / cellSize);
         return Mathf.Abs(gridToPos.GetHashCode());
     }
 
