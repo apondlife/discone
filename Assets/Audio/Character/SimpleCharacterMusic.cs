@@ -64,9 +64,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         m_JumpEmitter = gameObject.AddComponent<StudioEventEmitter>();
         m_ContinuousEmitter = gameObject.AddComponent<StudioEventEmitter>();
 
-        // TODO: is it a bug that this game object might be enabled and disabled?
-        m_ContinuousEmitter.Play();
-
         m_StepEmitter.EventReference = m_Step;
         m_JumpEmitter.EventReference = m_Jump;
         m_ContinuousEmitter.EventReference = m_Continuous;
@@ -89,6 +86,10 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
 
     void Update() {
+        if (!m_ContinuousEmitter.IsPlaying()) {
+            // [idk why this doesn't seem to work when called in Start()]
+            m_ContinuousEmitter.Play();
+        }
         if (_stepThisFrame) {
             // doing it this way might cause a single frame of latency, not sure, doesn't really matter i guess
             if (IsOnGround || IsOnWall) {
