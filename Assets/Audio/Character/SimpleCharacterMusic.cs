@@ -2,6 +2,7 @@
 using UnityEngine;
 using FMODUnity;
 using NaughtyAttributes;
+using NaughtyAttributes.Editor;
 
 public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // -- refs --
@@ -35,6 +36,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     const string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
     const string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
     const string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
+    const string k_ParamIsHittingGround = "IsHittingGround";   // bool (0 or 1)
+    const string k_ParamIsHittingWall = "IsHittingWall";   // bool (0 or 1)
+    const string k_ParamIsLeavingGround = "IsLeavingGround";   // bool (0 or 1)
     const string k_ParamIndex = "Index";   // int (0 to 100)
 
     int stepIndex = 0;
@@ -42,6 +46,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     int previousPositionHash = 0;
 
     bool _stepThisFrame = false;
+    bool _jumpThisFrame = false;
 
     // -- lifecycle --
     #if !UNITY_SERVER
@@ -52,7 +57,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         m_Container = GetComponentInParent<DisconeCharacter>();
 
         //  set events
-        m_Container.Character.Events.Bind(CharacterEvent.Jump, PlayJump);
+        m_Container.Character.Events.Bind(CharacterEvent.Jump, OnJump);
 
         // add emitters
         m_StepEmitter = gameObject.AddComponent<StudioEventEmitter>();
@@ -79,6 +84,10 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // Debug.Log($"Walk step {foot}");
     }
 
+    public void OnJump() {
+        _jumpThisFrame = true;
+    }
+
     void Update() {
         if (_stepThisFrame) {
             // doing it this way might cause a single frame of latency, not sure, doesn't really matter i guess
@@ -86,6 +95,22 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
                 PlayStep();
             }
             _stepThisFrame = false;
+        }
+
+        if ((IsHittingWall || IsHittingGround) && !_jumpThisFrame) {
+            // Debug.Log("hitting ground");
+            PlayStep(); // TODO should distinguish from step sound [maybe a muted or percussive pluck (or chord?)]
+        }
+
+        if (IsLeavingGround && !_jumpThisFrame) {
+            // TODO figure out why this doesn't seem to work, i swear it did before
+            // Debug.Log("leaving ground");
+            PlayJump(); // TODO should distinguish from jump sound [imagining a sustained guitar tone here]
+        }
+
+        if (_jumpThisFrame) {
+            PlayJump();
+            _jumpThisFrame = false;
         }
 
         // Update params for continuous emitter
@@ -115,7 +140,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         FMODParams ps = CurrentFmodParams;
         ps[k_ParamPitch] = pitch;
         ps[k_ParamIndex] = MakeIndex(stepIndex, 52);
-        Debug.Log($"step index: {ps[k_ParamIndex]}");
+        // Debug.Log($"step index: {ps[k_ParamIndex]}");
         FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, ps));
         stepIndex++;
     }
@@ -125,6 +150,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         [k_ParamSpeed] = Speed,
         [k_ParamIsOnGround] = IsOnGround ? 1f : 0f,
         [k_ParamIsOnWall] = IsOnWall ? 1f : 0f,
+        [k_ParamIsHittingWall] = IsHittingWall ? 1f : 0f,
+        [k_ParamIsHittingGround] = IsHittingGround ? 1f : 0f,
+        [k_ParamIsLeavingGround] = IsLeavingGround ? 1f : 0f
         // [k_ParamIndex] = Index
     };
 
@@ -132,11 +160,10 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         if (sequenceMode == SequenceMode.Random) {
             // rather than a direct sequence (following fmod), play a random sequence determined by the position hash
             System.Random rand = new System.Random(subIndex);
-            Debug.Log($"pre-twist subIndex: {subIndex}");
+            // Debug.Log($"pre-twist subIndex: {subIndex}");
             subIndex = Mathf.Abs(rand.Next());
         }
 
-        Debug.Log($"positionhash: {PositionHash()}; subIndex: {subIndex}; sampleCount: {sampleCount}");
         return (int)(((long)PositionHash() + subIndex) % sampleCount);
     }
 
@@ -158,13 +185,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
 
     // -- queries --
-    // slope (-1 to 1) of current velocity
-    // [ShowNativeProperty]
-    // float Index {
-    //     // get => soundIndex%52; // TODO figure out a better way of looping the index in fmod
-    //     get => PositionHash()%52;
-    // }
     [ShowNativeProperty]
+    // slope (-1 to 1) of current velocity
     float Slope {
         get => State.Next.Velocity.normalized.y;
     }
@@ -183,4 +205,29 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     bool IsOnWall {
         get => State.Next.IsOnWall;
     }
+
+    [ShowNativeProperty]
+    bool IsHittingWall {
+        get => !State.Curr.IsOnWall && State.Next.IsOnWall;
+    }
+
+    [ShowNativeProperty]
+    bool IsHittingGround {
+        get => !State.Curr.IsOnGround && State.Next.IsOnGround;
+    }
+
+    [ShowNativeProperty]
+    bool IsLeavingGround {
+        get => State.Curr.IsOnGround && !State.Next.IsOnGround;
+    }
 }
+
+
+// Force redraw of exposed native properties in inspector every frame
+#if UNITY_EDITOR
+    [UnityEditor.CustomEditor(typeof(SimpleCharacterMusic))]
+    sealed class Editor : NaughtyInspector
+    {
+        public override bool RequiresConstantRepaint() => true;
+    }
+#endif
