@@ -16,6 +16,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     [Tooltip("the fmod event for steps")]
     [SerializeField] EventReference m_Step;
 
+    [Tooltip("the fmod event for walking off ledge")]
+    [SerializeField] EventReference m_WalkOffLedge;
+
     [Header("params")]
     [SerializeField] float cellSize = 1f;
     public enum SequenceMode {
@@ -28,6 +31,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     StudioEventEmitter m_ContinuousEmitter;
     StudioEventEmitter m_JumpEmitter;
     StudioEventEmitter m_StepEmitter;
+    StudioEventEmitter m_WalkOffLedgeEmitter;
 
     FMODParams _fmodParams;
 
@@ -41,6 +45,12 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     const string k_ParamIsHittingWall = "IsHittingWall";   // bool (0 or 1)
     const string k_ParamIsLeavingGround = "IsLeavingGround";   // bool (0 or 1)
     const string k_ParamIndex = "Index";   // int (0 to 100)
+
+    // (This sucks, would be nice if we could get these from fmod somehow, or else figure out a different architecture)
+    const int k_NStepSamples = 45;
+    const int k_NJumpSamples = 52;
+    const int k_NWalkOffLedgeSamples = 6;
+
 
     int stepIndex = 0;
     int jumpIndex = 0;
@@ -63,10 +73,12 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // add emitters
         m_StepEmitter = gameObject.AddComponent<StudioEventEmitter>();
         m_JumpEmitter = gameObject.AddComponent<StudioEventEmitter>();
+        m_WalkOffLedgeEmitter = gameObject.AddComponent<StudioEventEmitter>();
         m_ContinuousEmitter = gameObject.AddComponent<StudioEventEmitter>();
 
         m_StepEmitter.EventReference = m_Step;
         m_JumpEmitter.EventReference = m_Jump;
+        m_WalkOffLedgeEmitter.EventReference = m_WalkOffLedge;
         m_ContinuousEmitter.EventReference = m_Continuous;
 
         _fmodParams = new();
@@ -108,8 +120,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         }
 
         if (IsLeavingGround && !_jumpThisFrame) {
-            // Debug.Log("leaving ground");
-            PlayJump(); // TODO should distinguish from jump sound [imagining a sustained guitar tone here]
+            Debug.Log("leaving ground");
+            PlayWalkOffLedge();
         }
 
         if (_jumpThisFrame) {
@@ -123,13 +135,13 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
 #endif
 
-    /// play jump audio
     void PlayJump() {
         UpdatePositionHash();
 
         // Debug.Log($"Jump speed: {Speed}");
         UpdateFmodParams();
-        _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, 52);
+        _fmodParams[k_ParamPitch] = 0f;
+        _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, k_NJumpSamples);
         FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, _fmodParams));
         jumpIndex++;
     }
@@ -137,17 +149,21 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     void PlayStep() {
         UpdatePositionHash();
 
-        // do pitch quantization here because it's much harder to do in fmod
-        int[] pitches = { -7, -7, -7, -7, -5, -5, 0, 2, 4, 5, 7, 7, 7 };
-        int i = (int)(Mathf.InverseLerp(-1f, 1f, Slope) * pitches.Length);
-        float pitch = (float)pitches[i];
-        // Debug.Log(pitch);
-
         UpdateFmodParams();
-        _fmodParams[k_ParamPitch] = pitch;
-        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, 52);
+        _fmodParams[k_ParamPitch] = SlopeToPitch(Slope);
+        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, k_NStepSamples);
         // Debug.Log($"step index: {ps[k_ParamIndex]}");
         FMODPlayer.PlayEvent(new FMODEvent(m_StepEmitter, _fmodParams));
+        stepIndex++;
+    }
+
+    void PlayWalkOffLedge() {
+        UpdatePositionHash();
+
+        UpdateFmodParams();
+        _fmodParams[k_ParamPitch] = SlopeToPitch(Slope);
+        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, k_NWalkOffLedgeSamples);
+        FMODPlayer.PlayEvent(new FMODEvent(m_WalkOffLedgeEmitter, _fmodParams));
         stepIndex++;
     }
 
@@ -164,7 +180,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     int MakeIndex(int subIndex, int sampleCount) {
         if (sequenceMode == SequenceMode.Random) {
             // rather than a direct sequence (following fmod), play a random sequence determined by the position hash
-            System.Random rand = new System.Random(subIndex);
+            System.Random rand = new(subIndex);
             // Debug.Log($"pre-twist subIndex: {subIndex}");
             subIndex = Mathf.Abs(rand.Next());
         }
@@ -187,6 +203,12 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // pos.y = 0f; // ignore vertical for now
         Vector3Int gridToPos = Vector3Int.FloorToInt(pos / cellSize);
         return Mathf.Abs(gridToPos.GetHashCode());
+    }
+
+    float SlopeToPitch(float slope) {
+        int[] pitches = { -7, -7, -7, -7, -5, -5, 0, 2, 4, 5, 7, 7, 7 };
+        int i = (int)(Mathf.InverseLerp(-1f, 1f, slope) * pitches.Length);
+        return (float)pitches[i];
     }
 
     // -- queries --

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{fffd106c-e6a6-4e5e-83f7-116a1e4aefbc}">
+		<property name="name">
+			<value>IsHittingGround</value>
+		</property>
+		<relationship name="folder">
+			<destination>{c46d47d8-ae5c-4831-bc91-5682c635144b}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{49ddb862-eafb-47fc-a369-0adfcdf92dea}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{49ddb862-eafb-47fc-a369-0adfcdf92dea}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

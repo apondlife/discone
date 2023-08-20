@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{c5f48a86-bb67-46be-9579-2fb07452e658}">
+		<property name="name">
+			<value>IsHittingWall</value>
+		</property>
+		<relationship name="folder">
+			<destination>{c46d47d8-ae5c-4831-bc91-5682c635144b}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{f7437ea4-1313-4f43-8d5d-34b9a027a7ee}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{f7437ea4-1313-4f43-8d5d-34b9a027a7ee}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
