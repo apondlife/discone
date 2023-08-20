@@ -29,9 +29,10 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     StudioEventEmitter m_JumpEmitter;
     StudioEventEmitter m_StepEmitter;
 
+    FMODParams _fmodParams;
 
     // these should probably all just be somewhere shared (charactermusicbase?)
-    const string k_ParamSpeed= "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
+    const string k_ParamSpeed = "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
     const string k_ParamSlope = "Slope"; // float, -1 to 1
     const string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
     const string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
@@ -49,7 +50,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     bool _jumpThisFrame = false;
 
     // -- lifecycle --
-    #if !UNITY_SERVER
+#if !UNITY_SERVER
     protected override void Start() {
         base.Start();
 
@@ -67,6 +68,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         m_StepEmitter.EventReference = m_Step;
         m_JumpEmitter.EventReference = m_Jump;
         m_ContinuousEmitter.EventReference = m_Continuous;
+
+        _fmodParams = new();
     }
 
     public override void OnStep(int foot, bool isRunning) {
@@ -85,7 +88,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         _jumpThisFrame = true;
     }
 
-    void Update() {
+    // Must run in fixed update for state checks to make sense!
+    void FixedUpdate() {
         if (!m_ContinuousEmitter.IsPlaying()) {
             // [idk why this doesn't seem to work when called in Start()]
             m_ContinuousEmitter.Play();
@@ -104,7 +108,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         }
 
         if (IsLeavingGround && !_jumpThisFrame) {
-            // TODO figure out why this doesn't seem to work, i swear it did before
             // Debug.Log("leaving ground");
             PlayJump(); // TODO should distinguish from jump sound [imagining a sustained guitar tone here]
         }
@@ -115,18 +118,19 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         }
 
         // Update params for continuous emitter
-        m_ContinuousEmitter.SetParameters(CurrentFmodParams);
+        UpdateFmodParams();
+        m_ContinuousEmitter.SetParameters(_fmodParams);
     }
-    #endif
+#endif
 
     /// play jump audio
     void PlayJump() {
         UpdatePositionHash();
 
         // Debug.Log($"Jump speed: {Speed}");
-        FMODParams ps = CurrentFmodParams;
-        ps[k_ParamIndex] = MakeIndex(jumpIndex, 52);
-        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, ps));
+        UpdateFmodParams();
+        _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, 52);
+        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, _fmodParams));
         jumpIndex++;
     }
 
@@ -135,27 +139,27 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
         // do pitch quantization here because it's much harder to do in fmod
         int[] pitches = { -7, -7, -7, -7, -5, -5, 0, 2, 4, 5, 7, 7, 7 };
-        int i = (int)(Mathf.InverseLerp(-1f, 1f, Slope)*pitches.Length);
+        int i = (int)(Mathf.InverseLerp(-1f, 1f, Slope) * pitches.Length);
         float pitch = (float)pitches[i];
         // Debug.Log(pitch);
-        FMODParams ps = CurrentFmodParams;
-        ps[k_ParamPitch] = pitch;
-        ps[k_ParamIndex] = MakeIndex(stepIndex, 52);
+
+        UpdateFmodParams();
+        _fmodParams[k_ParamPitch] = pitch;
+        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, 52);
         // Debug.Log($"step index: {ps[k_ParamIndex]}");
-        FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, ps));
+        FMODPlayer.PlayEvent(new FMODEvent(m_StepEmitter, _fmodParams));
         stepIndex++;
     }
 
-    protected override FMODParams CurrentFmodParams => new FMODParams {
-        [k_ParamSlope] = Slope,
-        [k_ParamSpeed] = Speed,
-        [k_ParamIsOnGround] = IsOnGround ? 1f : 0f,
-        [k_ParamIsOnWall] = IsOnWall ? 1f : 0f,
-        [k_ParamIsHittingWall] = IsHittingWall ? 1f : 0f,
-        [k_ParamIsHittingGround] = IsHittingGround ? 1f : 0f,
-        [k_ParamIsLeavingGround] = IsLeavingGround ? 1f : 0f
-        // [k_ParamIndex] = Index
-    };
+    void UpdateFmodParams() {
+        _fmodParams[k_ParamSlope]           = Slope;
+        _fmodParams[k_ParamSpeed]           = Speed;
+        _fmodParams[k_ParamIsOnGround]      = IsOnGround      ? 1f : 0f;
+        _fmodParams[k_ParamIsOnWall]        = IsOnWall        ? 1f : 0f;
+        _fmodParams[k_ParamIsHittingWall]   = IsHittingWall   ? 1f : 0f;
+        _fmodParams[k_ParamIsHittingGround] = IsHittingGround ? 1f : 0f;
+        _fmodParams[k_ParamIsLeavingGround] = IsLeavingGround ? 1f : 0f;
+    }
 
     int MakeIndex(int subIndex, int sampleCount) {
         if (sequenceMode == SequenceMode.Random) {
@@ -226,9 +230,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
 // Force redraw of exposed native properties in inspector every frame
 #if UNITY_EDITOR
-    [UnityEditor.CustomEditor(typeof(SimpleCharacterMusic))]
-    sealed class Editor : NaughtyInspector
-    {
-        public override bool RequiresConstantRepaint() => true;
-    }
+[UnityEditor.CustomEditor(typeof(SimpleCharacterMusic))]
+sealed class Editor: NaughtyInspector {
+    public override bool RequiresConstantRepaint() => true;
+}
 #endif
