@@ -24,7 +24,7 @@ public static class FMODPlayer {
         }
 
         e.emitter.Play();
-        
+
         if (e.parameters != null) {
             e.emitter.SetParameters(e.parameters);
         }

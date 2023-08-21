@@ -2,6 +2,7 @@
 using UnityEngine;
 using FMODUnity;
 using NaughtyAttributes;
+using NaughtyAttributes.Editor;
 
 public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // -- refs --
@@ -15,29 +16,51 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     [Tooltip("the fmod event for steps")]
     [SerializeField] EventReference m_Step;
 
+    [Tooltip("the fmod event for walking off ledge")]
+    [SerializeField] EventReference m_WalkOffLedge;
+
     [Header("params")]
     [SerializeField] float cellSize = 1f;
+    public enum SequenceMode {
+        Sequential,
+        Random
+        // A 'Shuffle' mode like FMOD has might be useful too
+    }
+    [SerializeField] SequenceMode sequenceMode;
 
     StudioEventEmitter m_ContinuousEmitter;
     StudioEventEmitter m_JumpEmitter;
     StudioEventEmitter m_StepEmitter;
+    StudioEventEmitter m_WalkOffLedgeEmitter;
+
+    FMODParams _fmodParams;
 
     // these should probably all just be somewhere shared (charactermusicbase?)
-    const string k_ParamSpeed= "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
-    const string k_ParamSlope = "Slope"; // float, -1 to 1
+    const string k_ParamSpeed = "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
+    // const string k_ParamSlope = "Slope"; // float, -1 to 1
     const string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
     const string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
     const string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
+    const string k_ParamIsHittingGround = "IsHittingGround";   // bool (0 or 1)
+    const string k_ParamIsHittingWall = "IsHittingWall";   // bool (0 or 1)
+    const string k_ParamIsLeavingGround = "IsLeavingGround";   // bool (0 or 1)
     const string k_ParamIndex = "Index";   // int (0 to 100)
+
+    // (This sucks, would be nice if we could get these from fmod somehow, or else figure out a different architecture)
+    const int k_NStepSamples = 45;
+    const int k_NJumpSamples = 52;
+    const int k_NWalkOffLedgeSamples = 6;
+
 
     int stepIndex = 0;
     int jumpIndex = 0;
     int previousPositionHash = 0;
 
     bool _stepThisFrame = false;
+    bool _jumpThisFrame = false;
 
     // -- lifecycle --
-    #if !UNITY_SERVER
+#if !UNITY_SERVER
     protected override void Start() {
         base.Start();
 
@@ -45,19 +68,20 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         m_Container = GetComponentInParent<DisconeCharacter>();
 
         //  set events
-        m_Container.Character.Events.Bind(CharacterEvent.Jump, PlayJump);
+        m_Container.Character.Events.Bind(CharacterEvent.Jump, OnJump);
 
         // add emitters
         m_StepEmitter = gameObject.AddComponent<StudioEventEmitter>();
         m_JumpEmitter = gameObject.AddComponent<StudioEventEmitter>();
+        m_WalkOffLedgeEmitter = gameObject.AddComponent<StudioEventEmitter>();
         m_ContinuousEmitter = gameObject.AddComponent<StudioEventEmitter>();
-
-        // TODO: is it a bug that this game object might be enabled and disabled?
-        m_ContinuousEmitter.Play();
 
         m_StepEmitter.EventReference = m_Step;
         m_JumpEmitter.EventReference = m_Jump;
+        m_WalkOffLedgeEmitter.EventReference = m_WalkOffLedge;
         m_ContinuousEmitter.EventReference = m_Continuous;
+
+        _fmodParams = new();
     }
 
     public override void OnStep(int foot, bool isRunning) {
@@ -72,7 +96,16 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // Debug.Log($"Walk step {foot}");
     }
 
-    void Update() {
+    public void OnJump() {
+        _jumpThisFrame = true;
+    }
+
+    // Must run in fixed update for state checks to make sense!
+    void FixedUpdate() {
+        if (!m_ContinuousEmitter.IsPlaying()) {
+            // [idk why this doesn't seem to work when called in Start()]
+            m_ContinuousEmitter.Play();
+        }
         if (_stepThisFrame) {
             // doing it this way might cause a single frame of latency, not sure, doesn't really matter i guess
             if (IsOnGround || IsOnWall) {
@@ -81,80 +114,150 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             _stepThisFrame = false;
         }
 
-        // if moving into a new grid cell, reset the counter
+        if ((IsHittingWall || IsHittingGround) && !_jumpThisFrame) {
+            // Debug.Log("hitting ground");
+            PlayStep(); // TODO should distinguish from step sound [maybe a muted or percussive pluck (or chord?)]
+        }
+
+        if (IsLeavingGround && !_jumpThisFrame) {
+            PlayWalkOffLedge();
+        }
+
+        if (_jumpThisFrame) {
+            PlayJump();
+            _jumpThisFrame = false;
+        }
+
+        // Update params for continuous emitter
+        UpdateFmodParams();
+        m_ContinuousEmitter.SetParameters(_fmodParams);
+    }
+#endif
+
+    void PlayJump() {
+        UpdatePositionHash();
+
+        // Debug.Log($"Jump speed: {Speed}");
+        UpdateFmodParams();
+        _fmodParams[k_ParamPitch] = 0f;
+        _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, k_NJumpSamples);
+        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, _fmodParams));
+        jumpIndex++;
+    }
+
+    void PlayStep() {
+        UpdatePositionHash();
+
+        UpdateFmodParams();
+        _fmodParams[k_ParamPitch] = SlopeToPitch(VelocitySlope);
+        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, k_NStepSamples);
+        // Debug.Log($"step index: {ps[k_ParamIndex]}");
+        FMODPlayer.PlayEvent(new FMODEvent(m_StepEmitter, _fmodParams));
+        stepIndex++;
+    }
+
+    void PlayWalkOffLedge() {
+        UpdatePositionHash();
+
+        UpdateFmodParams();
+        _fmodParams[k_ParamPitch] = SlopeToPitch(SurfaceSlope);
+        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, k_NWalkOffLedgeSamples);
+
+        FMODPlayer.PlayEvent(new FMODEvent(m_WalkOffLedgeEmitter, _fmodParams));
+        stepIndex++;
+    }
+
+    void UpdateFmodParams() {
+        // _fmodParams[k_ParamSlope]           = Slope;
+        _fmodParams[k_ParamSpeed]           = Speed;
+        _fmodParams[k_ParamIsOnGround]      = IsOnGround      ? 1f : 0f;
+        _fmodParams[k_ParamIsOnWall]        = IsOnWall        ? 1f : 0f;
+        _fmodParams[k_ParamIsHittingWall]   = IsHittingWall   ? 1f : 0f;
+        _fmodParams[k_ParamIsHittingGround] = IsHittingGround ? 1f : 0f;
+        _fmodParams[k_ParamIsLeavingGround] = IsLeavingGround ? 1f : 0f;
+    }
+
+    int MakeIndex(int subIndex, int sampleCount) {
+        if (sequenceMode == SequenceMode.Random) {
+            // rather than a direct sequence (following fmod), play a random sequence determined by the position hash
+            System.Random rand = new(subIndex);
+            // Debug.Log($"pre-twist subIndex: {subIndex}");
+            subIndex = Mathf.Abs(rand.Next());
+        }
+
+        return (int)(((long)PositionHash() + subIndex) % sampleCount);
+    }
+
+    void UpdatePositionHash() {
+        // if jumping/stepping in a different grid cell to last time, reset the counters
+        // [should probably happen separately for jump/step but whatever]
         int positionHash = PositionHash();
         if (previousPositionHash != positionHash) {
             stepIndex = jumpIndex = 0;
             previousPositionHash = positionHash;
         }
-
-        // Update params for continuous emitter
-        m_ContinuousEmitter.SetParameters(CurrentFmodParams);
     }
-    #endif
-
-    /// play jump audio
-    void PlayJump() {
-        // Debug.Log($"Jump speed: {Speed}");
-        FMODParams ps = CurrentFmodParams;
-        ps[k_ParamIndex] = (jumpIndex + PositionHash())%52;
-        FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, ps));
-        jumpIndex++;
-    }
-
-    void PlayStep() {
-        // do pitch quantization here because it's much harder to do in fmod
-        int[] pitches = {-7, -7, -7, -7, -5, -5, 0, 2, 4, 5, 7, 7, 7};
-        int i = (int)(Mathf.InverseLerp(-1f, 1f, Slope)*pitches.Length);
-        float pitch = (float)pitches[i];
-        // Debug.Log(pitch);
-        FMODParams ps = CurrentFmodParams;
-        ps[k_ParamPitch] = pitch;
-        ps[k_ParamIndex] = (stepIndex + PositionHash())%52;
-        FMODPlayer.PlayEvent(new FMODEvent (m_StepEmitter, ps));
-        stepIndex++;
-    }
-
-    protected override FMODParams CurrentFmodParams => new FMODParams {
-        [k_ParamSlope] = Slope,
-        [k_ParamSpeed] = Speed,
-        [k_ParamIsOnGround] = IsOnGround ? 1f : 0f,
-        [k_ParamIsOnWall] = IsOnWall ? 1f : 0f,
-        // [k_ParamIndex] = Index
-    };
-
     int PositionHash() {
         // round position to cellSize
         Vector3 pos = transform.position;
-        pos.y = 0f; // ignore vertical for now
-        Vector3Int gridToPos = Vector3Int.FloorToInt(pos/cellSize);
+        // pos.y = 0f; // ignore vertical for now
+        Vector3Int gridToPos = Vector3Int.FloorToInt(pos / cellSize);
         return Mathf.Abs(gridToPos.GetHashCode());
     }
 
+    float SlopeToPitch(float slope) {
+        int[] pitches = { -7, -7, -7, -7, -5, -5, 0, 2, 4, 5, 7, 7, 7 };
+        int i = (int)(Mathf.InverseLerp(-1f, 1f, slope) * pitches.Length);
+        return (float)pitches[i];
+    }
+
     // -- queries --
-    // slope (-1 to 1) of current velocity
-    // [ShowNativeProperty]
-    // float Index {
-    //     // get => soundIndex%52; // TODO figure out a better way of looping the index in fmod
-    //     get => PositionHash()%52;
-    // }
     [ShowNativeProperty]
-    float Slope {
-        get => State.Next.Velocity.normalized.y;
+    float VelocitySlope {
+        get => State.Curr.Velocity.normalized.y; // -1 to 1
+    }
+
+    [ShowNativeProperty]
+    float SurfaceSlope {
+        get => State.Curr.GroundSurface.Angle/180f; // 0 to 1? 
     }
 
     [ShowNativeProperty]
     float Speed {
-        get => State.Next.Velocity.magnitude;
+        get => State.Curr.Velocity.magnitude;
     }
 
     [ShowNativeProperty]
     bool IsOnGround {
-        get => State.Next.IsOnGround;
+        get => State.Curr.IsOnGround;
     }
 
     [ShowNativeProperty]
     bool IsOnWall {
-        get => State.Next.IsOnWall;
+        get => State.Curr.IsOnWall;
+    }
+
+    [ShowNativeProperty]
+    bool IsHittingWall {
+        get => !State.Curr.IsOnWall && State.Next.IsOnWall;
+    }
+
+    [ShowNativeProperty]
+    bool IsHittingGround {
+        get => !State.Curr.IsOnGround && State.Next.IsOnGround;
+    }
+
+    [ShowNativeProperty]
+    bool IsLeavingGround {
+        get => State.Curr.IsOnGround && !State.Next.IsOnGround;
     }
 }
+
+
+// Force redraw of exposed native properties in inspector every frame
+#if UNITY_EDITOR
+[UnityEditor.CustomEditor(typeof(SimpleCharacterMusic))]
+sealed class Editor: NaughtyInspector {
+    public override bool RequiresConstantRepaint() => true;
+}
+#endif

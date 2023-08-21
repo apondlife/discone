@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{16f612f7-7dee-48d6-8ccd-e95e7ad39933}">
+		<property name="name">
+			<value>IsLeavingGround</value>
+		</property>
+		<relationship name="folder">
+			<destination>{c46d47d8-ae5c-4831-bc91-5682c635144b}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{270cbf55-8441-4fbb-add8-396bb0eafb3e}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{270cbf55-8441-4fbb-add8-396bb0eafb3e}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
