@@ -37,7 +37,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     // these should probably all just be somewhere shared (charactermusicbase?)
     const string k_ParamSpeed = "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
-    const string k_ParamSlope = "Slope"; // float, -1 to 1
+    // const string k_ParamSlope = "Slope"; // float, -1 to 1
     const string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
     const string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
     const string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
@@ -120,7 +120,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         }
 
         if (IsLeavingGround && !_jumpThisFrame) {
-            Debug.Log("leaving ground");
             PlayWalkOffLedge();
         }
 
@@ -150,7 +149,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         UpdatePositionHash();
 
         UpdateFmodParams();
-        _fmodParams[k_ParamPitch] = SlopeToPitch(Slope);
+        _fmodParams[k_ParamPitch] = SlopeToPitch(VelocitySlope);
         _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, k_NStepSamples);
         // Debug.Log($"step index: {ps[k_ParamIndex]}");
         FMODPlayer.PlayEvent(new FMODEvent(m_StepEmitter, _fmodParams));
@@ -161,14 +160,15 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         UpdatePositionHash();
 
         UpdateFmodParams();
-        _fmodParams[k_ParamPitch] = SlopeToPitch(Slope);
+        _fmodParams[k_ParamPitch] = SlopeToPitch(SurfaceSlope);
         _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, k_NWalkOffLedgeSamples);
+
         FMODPlayer.PlayEvent(new FMODEvent(m_WalkOffLedgeEmitter, _fmodParams));
         stepIndex++;
     }
 
     void UpdateFmodParams() {
-        _fmodParams[k_ParamSlope]           = Slope;
+        // _fmodParams[k_ParamSlope]           = Slope;
         _fmodParams[k_ParamSpeed]           = Speed;
         _fmodParams[k_ParamIsOnGround]      = IsOnGround      ? 1f : 0f;
         _fmodParams[k_ParamIsOnWall]        = IsOnWall        ? 1f : 0f;
@@ -213,24 +213,28 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     // -- queries --
     [ShowNativeProperty]
-    // slope (-1 to 1) of current velocity
-    float Slope {
-        get => State.Next.Velocity.normalized.y;
+    float VelocitySlope {
+        get => State.Curr.Velocity.normalized.y; // -1 to 1
+    }
+
+    [ShowNativeProperty]
+    float SurfaceSlope {
+        get => State.Curr.GroundSurface.Angle/180f; // 0 to 1? 
     }
 
     [ShowNativeProperty]
     float Speed {
-        get => State.Next.Velocity.magnitude;
+        get => State.Curr.Velocity.magnitude;
     }
 
     [ShowNativeProperty]
     bool IsOnGround {
-        get => State.Next.IsOnGround;
+        get => State.Curr.IsOnGround;
     }
 
     [ShowNativeProperty]
     bool IsOnWall {
-        get => State.Next.IsOnWall;
+        get => State.Curr.IsOnWall;
     }
 
     [ShowNativeProperty]
