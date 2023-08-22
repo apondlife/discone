@@ -7,8 +7,6 @@ namespace ThirdPerson {
 public enum CharacterEvent {
     Jump = 1 << 0,
     Idle = 2 << 0,
-    Paused = 3 << 0,
-    Unpaused = 4 << 0,
 }
 
 // -- impl --

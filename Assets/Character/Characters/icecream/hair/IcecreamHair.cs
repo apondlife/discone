@@ -48,7 +48,7 @@ public class IcecreamHair : MonoBehaviour
         m_Container = GetComponentInParent<DisconeCharacter>(true);
 
         // cache colliders
-        m_Colliders = GetComponentsInChildren<Collider>();
+        m_Colliders = GetComponentsInChildren<Collider>(true);
 
         // instantiate prefabs
         //m_NoRig = Instantiate(m_NoRigPrefab, transform.position, transform.rotation, m_AttachedTo.transform);
@@ -75,13 +75,18 @@ public class IcecreamHair : MonoBehaviour
 
     void Start() {
         // bind events
-        m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Paused, OnCharacterPaused);
-        m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Unpaused, OnCharacterUnpaused);
-        
+        //m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Paused, OnCharacterPaused);
+        //m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Unpaused, OnCharacterUnpaused);
+
+        m_Container.Character.OnPause += OnCharacterPaused;
+        m_Container.Character.OnUnpause += OnCharacterUnpaused;
     }
+
     void OnDestroy() {
         // unbind events
         m_Subscriptions.Dispose();
+        m_Container.Character.OnPause -= OnCharacterPaused;
+        m_Container.Character.OnUnpause -= OnCharacterUnpaused;
     }
 
     void OnEnable() {

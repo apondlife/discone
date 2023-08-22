@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace ThirdPerson {
 
@@ -115,10 +116,10 @@ public partial class Character: MonoBehaviour, CharacterContainer {
 
             // step systems
             Step();
-        }
 
-        // dispatch events (even if paused?)
-        m_Events.DispatchAll();
+            // dispatch events
+            m_Events.DispatchAll();
+        }
 
         // update external state
         transform.position = m_State.Position;
@@ -168,7 +169,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     /// pause the character
     public void Pause() {
         if (!m_IsPaused) {
-            m_Events?.Schedule(CharacterEvent.Paused);
+            OnPause?.Invoke();
         }
 
         m_IsPaused = true;
@@ -177,11 +178,19 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     /// unpause the character
     public void Unpause() {
         if (m_IsPaused) {
-            m_Events?.Schedule(CharacterEvent.Unpaused);
+            OnUnpause?.Invoke();
         }
 
         m_IsPaused = false;
     }
+
+
+    // -- events --
+    /// event for when the character pauses
+    public event Action OnPause;
+
+    /// event for when the character unpauses
+    public event Action OnUnpause;
 
     // -- queries --
     /// the character's current state
