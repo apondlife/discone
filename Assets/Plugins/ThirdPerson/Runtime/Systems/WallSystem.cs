@@ -1,5 +1,8 @@
 using System;
+using System.Numerics;
 using UnityEngine;
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
 
 namespace ThirdPerson {
 
@@ -24,8 +27,18 @@ sealed class WallSystem: CharacterSystem {
         set => c.State.Next.WallState = value;
     }
 
+    public override void Update(float delta) {
+        // apply a decay to the raw momentum
+        // AAA: convert to a half life
+        c.State.Next.Inertia -= c.State.Next.Inertia * (1f - c.Tuning.Surface_MomentumDecay);
+
+        // c.State.Next.Velocity += momentum;
+
+        base.Update(delta);
+    }
+
     // -- NotOnWall --
-    Phase NotOnWall => new Phase(
+    Phase NotOnWall => new(
         "NotOnWall",
         update: NotOnWall_Update
     );
@@ -81,10 +94,10 @@ sealed class WallSystem: CharacterSystem {
 
         // add a magnet to pull the character towards the surface
         // TODO: prefix wall tuning values w/ `Wall_<name>`
-        var wallMagnetInputScale = c.Tuning.WallMagnetInputScale.Evaluate(wallInputUp);
-        var wallMagnetTransferScale = c.Tuning.WallMagnetTransferScale.Evaluate(normalAngleScale);
-        var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallMagnetInputScale * wallMagnetTransferScale;
-        vd -= wallMagnetMag * delta * wallNormal;
+        // var wallMagnetInputScale = c.Tuning.WallMagnetInputScale.Evaluate(wallInputUp);
+        // var wallMagnetTransferScale = c.Tuning.WallMagnetTransferScale.Evaluate(normalAngleScale);
+        // var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallMagnetInputScale * wallMagnetTransferScale;
+        // vd -= wallMagnetMag * delta * wallNormal;
 
         // transfer velocity to new surface w/ di
         var wallTransferDiAngle = Vector3.SignedAngle(wallSurfaceTg, wallInputTg, wallNormal);
@@ -108,17 +121,19 @@ sealed class WallSystem: CharacterSystem {
         var surfaceAngleScale = 1f - (surfaceAngleDelta / 90f);
 
         // add wall gravity
+        // AAA: consider whether we want to keep the adsr
         var wallGravityAmplitudeScale = c.Tuning.WallGravityAmplitudeScale.Evaluate(surfaceAngleScale);
         var wallGravity = c.Input.IsWallHoldPressed
-            ? c.Tuning.WallHoldGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale)
-            : c.Tuning.WallGravity.Evaluate(PhaseStart, wallGravityAmplitudeScale);
+            ? c.Tuning.WallHoldGravity.Evaluate(5f, wallGravityAmplitudeScale)
+            : c.Tuning.WallGravity.Evaluate(5f, wallGravityAmplitudeScale);
 
         // scale by wall angle
         var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
         vd += wallAcceleration * wallAngleScale * delta * wallUp;
 
         // update state
-        c.State.Velocity += vd;
+        /// AAA: add to acceleration properly
+        c.State.Acceleration += vd / delta;
     }
 
     // -- queries --
@@ -128,7 +143,7 @@ sealed class WallSystem: CharacterSystem {
         Vector3 wallUp
     ) {
         // get the component of our velocity into the wall
-        var velocity = c.State.Prev.Velocity;
+        var velocity = c.State.Curr.Inertia;
         var velocityAlongWall = Vector3.ProjectOnPlane(velocity, wallNormal);
         var velocityIntoWall = velocity - velocityAlongWall;
 

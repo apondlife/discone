@@ -265,6 +265,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // update state
+        c.State.Next.Inertia = Vector3.zero;
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteFrames = 0;
         c.State.Next.CooldownFrames = (int)JumpTuning.CooldownFrames;

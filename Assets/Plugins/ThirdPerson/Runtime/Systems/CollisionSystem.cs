@@ -1,4 +1,5 @@
 using System;
+using Cinemachine.Utility;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -33,12 +34,17 @@ sealed class CollisionSystem: CharacterSystem {
     void Active_Update(float delta) {
         var curr = c.State.Curr;
         var next = c.State.Next;
-        
-        // keep track of the velocity before collision 
-        next.PreCollisionVelocity = next.Velocity;
+
+        // keep track of the inertialized velocity before collision
+        DebugScope.Push("collision.inertia", next.Inertia.magnitude);
+        var dir = Vector3.Dot(next.Inertia, Vector3.up);
+        DebugScope.Push("collision.inertiaDir+", dir);
+        DebugScope.Push("collision.inertiaDir-", -dir);
+        var v0 = next.Velocity + next.Inertia;
 
         // integrate acceleration (forces)
-        next.Velocity += next.Acceleration * delta;
+        var a = next.Acceleration * delta;
+        next.Velocity += a;
 
         // move character using controller if not idle
         var frame = c.Controller.Move(
@@ -83,8 +89,14 @@ sealed class CollisionSystem: CharacterSystem {
 
         // sync controller state back to character state
         next.Velocity = frame.Velocity;
-        next.Acceleration = (next.Velocity - curr.Velocity) / delta;
+        next.Acceleration = (frame.Velocity - curr.Velocity) / delta;
         next.Position = frame.Position;
+
+        // calculate inertia (lost momentum after collision)
+        var inertia = v0 - frame.Velocity;
+        var acc = Vector3.Project(a, inertia).magnitude;
+        inertia -= inertia.normalized * Mathf.Min(acc, inertia.magnitude);
+        next.Inertia = inertia;
     }
 }
 

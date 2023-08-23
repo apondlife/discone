@@ -19,6 +19,9 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
     public float Surface_PerceptionAngularSpeed;
 
+    [Tooltip("a geometric decay on the character's momentum into a surface")]
+    public float Surface_MomentumDecay;
+
     // -- movement system --
     [Header("movement system")]
     [Tooltip("the horizontal speed at which the character stops")]

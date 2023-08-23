@@ -9,17 +9,25 @@ sealed partial class Character {
     // -- fields --
     [Header("config")]
     [Tooltip("if the gizmos are visible")]
-    [SerializeField] private bool m_ShowGizmos;
+    [SerializeField] bool m_ShowGizmos;
+
+    [Tooltip("the line magnitude scale")]
+    [SerializeField] float m_LineMagScale = 1f;
+
+    [Tooltip("the line thickness")]
+    [SerializeField] float m_LineThickness = 3f;
 
     // -- props --
     /// the aggregate vertical label offset
-    private Vector3 m_LabelOffset;
+    Vector3 m_LabelOffset;
 
     // -- lifecycle --
     void OnDrawGizmos() {
         if (!m_ShowGizmos) {
             return;
         }
+
+        DrawRay(Color.magenta, m_State.Next.Inertia);
 
         // draw controller gizmos
         m_Controller.OnDrawGizmos();
@@ -37,9 +45,10 @@ sealed partial class Character {
     }
 
     /// draw a ray in a direction from center
-    void DrawRay(Color color, Vector3 dir) {
+    void DrawRay(Color color, Vector3 ray) {
+        var p0 = transform.position;
         Gizmos.color = color;
-        Gizmos.DrawRay(transform.position, dir);
+        Gizmos.DrawLine(p0, p0 + ray * m_LineMagScale);
     }
 
     /// draw a cube at center
@@ -49,19 +58,8 @@ sealed partial class Character {
 
     /// draw a cube offset from center
     void DrawCube(Color color, float size, Vector3 offset) {
-        Gizmos.color = color;
-        Gizmos.DrawCube(transform.position + offset, Vector3.one * size);
-    }
-
-    /// draw a sphere at center
-    void DrawSphere(Color color, float radius)  {
-        DrawSphere(color, radius, Vector3.zero);
-    }
-
-    /// draw a sphere offset from center
-    void DrawSphere(Color color, float radius, Vector3 offset)  {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position + offset, 0.2f);
+        Handles.color = color;
+        Handles.DrawWireCube(transform.position + offset, Vector3.one * size);
     }
 }
 
