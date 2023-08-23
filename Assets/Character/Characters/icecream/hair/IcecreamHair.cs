@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityAtoms;
 using UnityEngine;
 
@@ -72,7 +73,7 @@ public class IcecreamHair : MonoBehaviour
         // attach rigs to character
         AttachToCharacter(m_Rig);
         AttachToCharacter(m_RightRoot);
-        AttachToCharacter(m_LeftRoot); 
+        AttachToCharacter(m_LeftRoot);
 
         if (m_HasPhysics) {
             EnablePhysics();
