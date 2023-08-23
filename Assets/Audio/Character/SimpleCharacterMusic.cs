@@ -2,7 +2,9 @@
 using UnityEngine;
 using FMODUnity;
 using NaughtyAttributes;
+#if UNITY_EDITOR
 using NaughtyAttributes.Editor;
+#endif
 
 public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // -- refs --
