@@ -205,7 +205,7 @@ public sealed class CharacterModel: MonoBehaviour {
         anim.SetBool(
             k_PropIsAirborne,
             // has to actually be grounded/airborne
-            !state.IsOnGround
+            state.GroundSurface.IsNone
         );
 
         anim.SetBool(
