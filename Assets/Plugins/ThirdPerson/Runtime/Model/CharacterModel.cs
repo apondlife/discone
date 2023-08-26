@@ -235,7 +235,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // blend yoshiing
         // TODO: lerp
-        var yoshiing = !state.IsOnGround && m_Input.IsJumpPressed ? 1.0f : 0.0f;
+        var yoshiing = state.GroundSurface.IsNone && m_Input.IsJumpPressed ? 1.0f : 0.0f;
         anim.SetLayerWeight(
             m_LayerLegs,
             yoshiing
