@@ -15,6 +15,9 @@ what is projected
 - maybe? move off wall on jump?
 - maybe? vertical attack on wall-to-wall transfer
 
+- wall gravity doesn't take yoshiing/regrabbing into account
+- falling while holding jump (no jump squat) doesn't trigger fall gravity
+
 - checkpoint system and state overhaul:
   - disable all colliders in character on load (how to do this in a nice way)
     - hairbones: since they get detached from the the body, they need to respond to some sort of event (the hair container could listen to)
