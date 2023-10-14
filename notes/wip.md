@@ -1,6 +1,10 @@
 what is projected
 ---
-- negative walls feel like they have higher gravity
+- inertia:
+    - negative walls feel like they have higher gravity
+    - lose inertia on wall transfer?
+    - test the alternative of calculating inertia w/o acceleration (re understand that relation)
+      - inertia = v0 - f.v   x   (v0 + a) - f.v - acc
 
 - wall particle proportional to wall influence
 - wall particle indicates state (attack, hold button)
@@ -10,10 +14,7 @@ what is projected
 - wall slide as floating state in movement?
 - wall system preserves momentum into wall (decaying)
 
-- maybe? wall system no wall gravity (all friction??)
-- maybe? cache wall transfer on transfer to prevent adding magnet and input every frame
 - maybe? move off wall on jump?
-- maybe? vertical attack on wall-to-wall transfer
 
 - checkpoint system and state overhaul:
   - disable all colliders in character on load (how to do this in a nice way)
@@ -22,4 +23,3 @@ what is projected
 
 - look into crouching sliding down ramps
 ~ ui save paths are not accurate
-

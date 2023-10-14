@@ -37,6 +37,7 @@ sealed class CollisionSystem: CharacterSystem {
 
         // keep track of the inertialized velocity before collision
         DebugScope.Push("collision.inertia", next.Inertia.magnitude);
+        DebugScope.Push("collision.velocity", next.Velocity.magnitude);
         var dir = Vector3.Dot(next.Inertia, Vector3.up);
         DebugScope.Push("collision.inertiaDir+", dir);
         DebugScope.Push("collision.inertiaDir-", -dir);
@@ -44,12 +45,12 @@ sealed class CollisionSystem: CharacterSystem {
 
         // integrate acceleration (forces)
         var a = next.Acceleration * delta;
-        next.Velocity += a;
+        var v1 = v0 + a;
 
         // move character using controller if not idle
         var frame = c.Controller.Move(
             next.Position,
-            next.Velocity,
+            v1,
             next.Up,
             delta
         );
@@ -93,9 +94,13 @@ sealed class CollisionSystem: CharacterSystem {
         next.Position = frame.Position;
 
         // calculate inertia (lost momentum after collision)
-        var inertia = v0 - frame.Velocity;
+        var inertia = v1 - frame.Velocity;
+
+        // remove acceleration component from inertia and prevent inversion of direction
         var acc = Vector3.Project(a, inertia).magnitude;
+        DebugScope.Push("collision.acc", acc);
         inertia -= inertia.normalized * Mathf.Min(acc, inertia.magnitude);
+
         next.Inertia = inertia;
     }
 }

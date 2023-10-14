@@ -108,7 +108,8 @@ public sealed partial class CharacterState {
         public Vector3 Velocity = Vector3.zero;
 
         ///  the character's velocity before it is resolved by the collision system
-        [FormerlySerializedAs("PreCollisionVelocity")] public Vector3 Inertia = Vector3.zero;
+        [FormerlySerializedAs("PreCollisionVelocity")]
+        public Vector3 Inertia = Vector3.zero;
 
         /// how much the velocity changed since last frame
         public Vector3 Acceleration = Vector3.zero;
