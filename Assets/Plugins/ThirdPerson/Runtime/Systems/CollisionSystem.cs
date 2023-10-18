@@ -35,22 +35,14 @@ sealed class CollisionSystem: CharacterSystem {
         var curr = c.State.Curr;
         var next = c.State.Next;
 
-        // keep track of the inertialized velocity before collision
-        DebugScope.Push("collision.inertia", next.Inertia.magnitude);
-        DebugScope.Push("collision.velocity", next.Velocity.magnitude);
-        var dir = Vector3.Dot(next.Inertia, Vector3.up);
-        DebugScope.Push("collision.inertiaDir+", dir);
-        DebugScope.Push("collision.inertiaDir-", -dir);
-        var v0 = next.Velocity + next.Inertia;
-
         // integrate acceleration (forces)
         var a = next.Acceleration * delta;
-        var v1 = v0 + a;
+        var v = next.Velocity + next.Inertia + a;
 
         // move character using controller if not idle
         var frame = c.Controller.Move(
             next.Position,
-            v1,
+            v,
             next.Up,
             delta
         );
@@ -93,13 +85,15 @@ sealed class CollisionSystem: CharacterSystem {
         next.Acceleration = (frame.Velocity - curr.Velocity) / delta;
         next.Position = frame.Position;
 
-        // calculate inertia (lost momentum after collision)
-        var inertia = v1 - frame.Velocity;
+        // calculate inertia, momentum lost after collision; the frame velocity is the
+        // velocity projected into each collision surface (if hitting a wall, it's 0)
+        var inertia = v - frame.Velocity;
+        var inertiaDir = inertia.normalized;
+        var inertiaMag = inertia.magnitude;
 
-        // remove acceleration component from inertia and prevent inversion of direction
-        var acc = Vector3.Project(a, inertia).magnitude;
-        DebugScope.Push("collision.acc", acc);
-        inertia -= inertia.normalized * Mathf.Min(acc, inertia.magnitude);
+        // remove acceleration into surface (unrealized) from inertia & prevent
+        // inversion of direction
+        inertia -= inertiaDir * Mathf.Clamp(Vector3.Dot(a, inertiaDir), 0f, inertiaMag);
 
         next.Inertia = inertia;
     }

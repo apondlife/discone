@@ -178,7 +178,7 @@ public sealed class CharacterController {
 
             // if move remaining is less than min move, stop & add it to pending delta
             if (moveDelta.sqrMagnitude <= m_SqrMinMove) {
-                // TODO: what to do about any remaining time/velocity/8c
+                // TODO: what to do about any remaining time/velocity/&c
                 break;
             }
 
@@ -275,16 +275,10 @@ public sealed class CharacterController {
 
         return new Frame() {
             Position = moveDst,
-            Velocity =  nextVelocity,
+            Velocity = nextVelocity,
             Wall = nextWall,
             Ground = nextGround,
         };
-    }
-
-    // -- queries --
-    /// the angle considered a wall
-    public float WallAngle {
-        get => m_WallAngle;
     }
 
     // -- gizmos --
@@ -372,17 +366,6 @@ public sealed class CharacterController {
                 Gizmos.DrawSphere(m_DebugErrorHit.Value.point, 0.5f);
             }
         }
-
-        // // draw the final position
-        // Gizmos.color = Color.cyan;
-        // Gizmos.DrawSphere(m_Position, k_DebugGizmoRadius);
-
-        // // draw labels
-        // UnityEditor.Handles.color = Color.yellow;
-        // UnityEditor.Handles.Label(
-        //     m_Position - Quaternion.AngleAxis(90.0f, Vector3.up) * m_Velocity.normalized * 0.3f,
-        //     $"casts: {m_DebugCasts.Count} hits: {m_DebugHits.Count}"
-        // );
     }
     #endif
 }

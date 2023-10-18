@@ -3,8 +3,6 @@ what is projected
 - inertia:
     - negative walls feel like they have higher gravity
     - lose inertia on wall transfer?
-    - test the alternative of calculating inertia w/o acceleration (re understand that relation)
-      - inertia = v0 - f.v   x   (v0 + a) - f.v - acc
 
 - wall particle proportional to wall influence
 - wall particle indicates state (attack, hold button)
