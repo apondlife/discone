@@ -46,10 +46,13 @@ sealed class WallSystem: CharacterSystem {
     void NotOnWall_Update(float delta) {
         // if we're on a wall, enter slide
         var wall = c.State.Curr.WallSurface;
-        var wallAngleScale = c.Tuning.WallAngleScale.Evaluate(wall.Angle);
-        if (wallAngleScale > Mathf.Epsilon) {
+        if (wall.IsSome) {
             ChangeToImmediate(WallSlide, delta);
         }
+        // var wallAngleScale = c.Tuning.WallAngleScale.Evaluate(wall.Angle);
+        // if (wallAngleScale > Mathf.Epsilon) {
+        //     ChangeToImmediate(WallSlide, delta);
+        // }
     }
 
     // -- WallSlide --
@@ -61,8 +64,7 @@ sealed class WallSystem: CharacterSystem {
     void WallSlide_Update(float delta) {
         // if we left the wall, exit
         var wall = c.State.Curr.WallSurface;
-        var wallAngleScale = c.Tuning.WallAngleScale.Evaluate(wall.Angle);
-        if (wallAngleScale <= Mathf.Epsilon) {
+        if (wall.IsNone) {
             ChangeTo(NotOnWall);
             return;
         }
@@ -81,10 +83,12 @@ sealed class WallSystem: CharacterSystem {
         var vd = Vector3.zero;
 
         // get delta between wall and perceived surface
-        var normalAngleDelta = Mathf.Abs(90f - Vector3.Angle(
+        var wallToSurface = Vector3.Angle(
             c.State.Curr.WallSurface.Normal,
             c.State.Curr.PerceivedSurface.Normal
-        ));
+        );
+
+        var normalAngleDelta = Mathf.Abs(90f - wallToSurface);
         var normalAngleScale = 1f - (normalAngleDelta / 90f);
 
         // get input in wall space
@@ -108,15 +112,18 @@ sealed class WallSystem: CharacterSystem {
         var transferTg = Quaternion.AngleAxis(transferDiRot, wallNormal) * wallSurfaceTg;
 
         var transferDiScale = c.Tuning.WallTransferDiScale.Evaluate(transferDiAngleMag);
-        var transferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
+        // AAA: this should have a better name
+        var transferScale = 1.0f;//c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
+        Debug.Log($"[inertia] wts {wallToSurface} -> nad {normalAngleDelta} -> nas {normalAngleScale} -> ts {transferScale}");
 
         // transfer inertia up new surface w/ di
         var inertia = c.State.Curr.Inertia;
         var inertiaTg = Vector3.ProjectOnPlane(inertia, wallNormal);
         var inertiaNormal = inertia - inertiaTg;
+        var inertiaDecay = inertiaNormal * c.Tuning.Surface_InertiaDecayScale.Evaluate(wall.Angle);
 
         // and transfer it along the surface tangent
-        var transferMagnitude = inertiaNormal.magnitude * transferScale * transferDiScale;
+        var transferMagnitude = inertiaDecay.magnitude * transferScale * transferDiScale;
         var transferVelocity = transferMagnitude * transferTg;
         vd +=  transferVelocity;
 
@@ -135,31 +142,14 @@ sealed class WallSystem: CharacterSystem {
             : c.Tuning.WallGravity.Evaluate(5f, wallGravityAmplitudeScale);
 
         // scale by wall angle
+        var wallAngleScale = c.Tuning.WallAngleScale.Evaluate(wall.Angle);
         var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
         vd += wallAcceleration * wallAngleScale * delta * wallUp;
 
         /// AAA: add to acceleration properly
         // update state
-        c.State.Inertia -= transferMagnitude * inertiaNormal.normalized;
+        c.State.Inertia -= inertiaDecay;
         c.State.Acceleration += vd / delta;
-    }
-
-    // -- queries --
-    /// find the velocity transferred into the wall plane
-    Vector3 TransferredVelocity(
-        Vector3 wallNormal,
-        Vector3 wallUp
-    ) {
-        // get the component of our velocity into the wall
-        var velocity = c.State.Curr.Inertia;
-        var velocityAlongWall = Vector3.ProjectOnPlane(velocity, wallNormal);
-        var velocityIntoWall = velocity - velocityAlongWall;
-
-        // and transfer it up the wall
-        var transferMagnitude = velocityIntoWall.magnitude;
-        var transferred = transferMagnitude * wallUp;
-
-        return transferred;
     }
 }
 

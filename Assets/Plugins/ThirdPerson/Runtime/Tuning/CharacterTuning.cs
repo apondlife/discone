@@ -19,6 +19,9 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
     public float Surface_PerceptionAngularSpeed;
 
+    [Tooltip("the inertia decay as a fn of surface angle")]
+    public MapOutCurve Surface_InertiaDecayScale;
+
     [Tooltip("a geometric decay on the character's momentum into a surface")]
     public float Surface_MomentumDecay;
 

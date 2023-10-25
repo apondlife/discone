@@ -3,9 +3,11 @@ what is projected
 
 # inertia & movement
 
+- lose inertia on wall transfer?
+  - need half life on inertia decay
+  - investigate interaction w/ perceived transfer scale
 - unrealized motion (minmove) be converted into inertia? 
   - set velocity to zero on min_move?
-- lose inertia on wall transfer?
 - negative walls feel like they have higher gravity
 
 - ground velocity vs. surface velocity (friction on walls? and jumping?)
