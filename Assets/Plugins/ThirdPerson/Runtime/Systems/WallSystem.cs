@@ -14,7 +14,8 @@ partial class CharacterState {
     }
 }
 
-/// how the character interacts with walls
+// TODO: make this surface system -ty
+/// how the character interacts with surfaces
 [Serializable]
 sealed class WallSystem: CharacterSystem {
     // -- System --
@@ -29,9 +30,8 @@ sealed class WallSystem: CharacterSystem {
 
     public override void Update(float delta) {
         // apply a decay to the raw momentum
-        // AAA: convert to a half life
-        c.State.Next.Inertia -= c.State.Next.Inertia * (1f - c.Tuning.Surface_MomentumDecay);
-
+        // AAA: convert to a half life (maybe)
+        // c.State.Next.Inertia -= c.State.Next.Inertia * (1f - c.Tuning.Surface_MomentumDecay);
         // c.State.Next.Velocity += momentum;
 
         base.Update(delta);
@@ -93,25 +93,32 @@ sealed class WallSystem: CharacterSystem {
         var wallInputTg = (wallInputUp * wallUp + wallInputRight * wallTg).normalized;
 
         // add a magnet to pull the character towards the surface
-        // TODO: prefix wall tuning values w/ `Wall_<name>`
+        // TODO: prefix surface tuning values w/ `Surface_<name>`
         // var wallMagnetInputScale = c.Tuning.WallMagnetInputScale.Evaluate(wallInputUp);
         // var wallMagnetTransferScale = c.Tuning.WallMagnetTransferScale.Evaluate(normalAngleScale);
         // var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallMagnetInputScale * wallMagnetTransferScale;
         // vd -= wallMagnetMag * delta * wallNormal;
 
-        // transfer velocity to new surface w/ di
-        var wallTransferDiAngle = Vector3.SignedAngle(wallSurfaceTg, wallInputTg, wallNormal);
-        var wallTransferDiAngleMag = Mathf.Abs(wallTransferDiAngle);
-        var wallTransferDiAngleSign = Mathf.Sign(wallTransferDiAngle);
+        // find surface-based transfer scale
+        var transferDiAngle = Vector3.SignedAngle(wallSurfaceTg, wallInputTg, wallNormal);
+        var transferDiAngleMag = Mathf.Abs(transferDiAngle);
+        var transferDiAngleSign = Mathf.Sign(transferDiAngle);
 
-        var wallTransferDiRot = c.Tuning.WallTransferDiAngle.Evaluate(wallTransferDiAngleMag) * wallTransferDiAngleSign * c.Input.MoveMagnitude;
-        var wallTransferTg = Quaternion.AngleAxis(wallTransferDiRot, wallNormal) * wallSurfaceTg;
+        var transferDiRot = c.Tuning.WallTransferDiAngle.Evaluate(transferDiAngleMag) * transferDiAngleSign * c.Input.MoveMagnitude;
+        var transferTg = Quaternion.AngleAxis(transferDiRot, wallNormal) * wallSurfaceTg;
 
-        var wallTransferDiScale = c.Tuning.WallTransferDiScale.Evaluate(wallTransferDiAngleMag);
-        var wallTransferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
+        var transferDiScale = c.Tuning.WallTransferDiScale.Evaluate(transferDiAngleMag);
+        var transferScale = c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
 
-        var wallTransfer = wallTransferScale * wallTransferDiScale * TransferredVelocity(wallNormal, wallTransferTg);
-        vd += wallTransfer;
+        // transfer inertia up new surface w/ di
+        var inertia = c.State.Curr.Inertia;
+        var inertiaTg = Vector3.ProjectOnPlane(inertia, wallNormal);
+        var inertiaNormal = inertia - inertiaTg;
+
+        // and transfer it along the surface tangent
+        var transferMagnitude = inertiaNormal.magnitude * transferScale * transferDiScale;
+        var transferVelocity = transferMagnitude * transferTg;
+        vd +=  transferVelocity;
 
         // get angle (upwards) delta between surface and perceived surface
         var surfaceAngleDelta = Mathf.Abs(90f - Vector3.Angle(
@@ -131,8 +138,9 @@ sealed class WallSystem: CharacterSystem {
         var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
         vd += wallAcceleration * wallAngleScale * delta * wallUp;
 
-        // update state
         /// AAA: add to acceleration properly
+        // update state
+        c.State.Inertia -= transferMagnitude * inertiaNormal.normalized;
         c.State.Acceleration += vd / delta;
     }
 
