@@ -19,9 +19,6 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
     public float Surface_PerceptionAngularSpeed;
 
-    [Tooltip("the inertia decay as a fn of surface angle")]
-    public MapOutCurve Surface_InertiaDecayScale;
-
     [Tooltip("a geometric decay on the character's momentum into a surface")]
     public float Surface_MomentumDecay;
 
@@ -216,8 +213,9 @@ public sealed class CharacterTuning: ScriptableObject {
 
     // TODO: these are currently mirrored around 90; they should curved over 180
     // so that's not necessarily the case
+    [UnityEngine.Serialization.FormerlySerializedAs("WallTransferScale")]
     [Tooltip("the scaling factor of the wall transfer as a fn of surface change angle")]
-    public MapOutCurve WallTransferScale;
+    public MapOutCurve Surface_TransferAttack;
 
     [Tooltip("the angle to rotate the transfer surface direction as a fn of signed input-surface angle")]
     public MapOutCurve WallTransferDiAngle;
@@ -227,6 +225,12 @@ public sealed class CharacterTuning: ScriptableObject {
 
     [Tooltip("the scaling factor of the wall gravity amplitude as a fn of surface change angle")]
     public MapOutCurve WallGravityAmplitudeScale;
+
+    [Tooltip("the inertia decay as a fn of surface angle")]
+    public MapOutCurve Surface_InertiaDecayScale;
+
+    [Tooltip("the scale on transferred inertia as a fn of surface angle")]
+    public MapOutCurve Surface_TransferScale;
 
     public float WallAcceleration(float wallGravity) {
         return wallGravity - Gravity + FallGravity;

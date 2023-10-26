@@ -111,19 +111,20 @@ sealed class WallSystem: CharacterSystem {
         var transferDiRot = c.Tuning.WallTransferDiAngle.Evaluate(transferDiAngleMag) * transferDiAngleSign * c.Input.MoveMagnitude;
         var transferTg = Quaternion.AngleAxis(transferDiRot, wallNormal) * wallSurfaceTg;
 
-        var transferDiScale = c.Tuning.WallTransferDiScale.Evaluate(transferDiAngleMag);
-        // AAA: this should have a better name
-        var transferScale = 1.0f;//c.Tuning.WallTransferScale.Evaluate(normalAngleScale);
-        Debug.Log($"[inertia] wts {wallToSurface} -> nad {normalAngleDelta} -> nas {normalAngleScale} -> ts {transferScale}");
-
         // transfer inertia up new surface w/ di
+        // TODO: should we consume tangent inertia as well? there's an issue when you hit wall & ground where
+        // inertia is tangent due to our collision ordering prioritizing the most recent surface (fix collision ordering)
         var inertia = c.State.Curr.Inertia;
         var inertiaTg = Vector3.ProjectOnPlane(inertia, wallNormal);
         var inertiaNormal = inertia - inertiaTg;
         var inertiaDecay = inertiaNormal * c.Tuning.Surface_InertiaDecayScale.Evaluate(wall.Angle);
 
+        var transferScale = c.Tuning.Surface_TransferScale.Evaluate(wall.Angle);
+        var transferDiScale = c.Tuning.WallTransferDiScale.Evaluate(transferDiAngleMag);
+        var transferAttack = c.Tuning.Surface_TransferAttack.Evaluate(normalAngleScale);
+
         // and transfer it along the surface tangent
-        var transferMagnitude = inertiaDecay.magnitude * transferScale * transferDiScale;
+        var transferMagnitude = inertiaDecay.magnitude * transferScale * transferDiScale * transferAttack;
         var transferVelocity = transferMagnitude * transferTg;
         vd +=  transferVelocity;
 
