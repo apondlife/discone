@@ -117,15 +117,27 @@ sealed class WallSystem: CharacterSystem {
         var inertia = c.State.Curr.Inertia;
         var inertiaTg = Vector3.ProjectOnPlane(inertia, wallNormal);
         var inertiaNormal = inertia - inertiaTg;
-        var inertiaDecay = inertiaNormal * c.Tuning.Surface_InertiaDecayScale.Evaluate(wall.Angle);
+
+        // calculate the decay to hit 1% of the inertia over a fixed interval
+        // TODO: can we optimize this pow by inverting this and showing the half-life as a debug query? -ty
+        var inertiaDecayTime = c.Tuning.Surface_InertiaDecayTime.Evaluate(wall.Angle);
+        var inertiaDecayScale = 1f - Mathf.Pow(0.01f, delta / inertiaDecayTime);
+        var inertiaDecay = inertiaNormal * inertiaDecayScale;
+        // AAA: hamsdfas
+        var inertiaDecayMag = Math.Min(inertiaDecay.magnitude, inertiaNormal.magnitude);
+        inertiaDecay = Vector3.ClampMagnitude(inertiaDecay, inertiaDecayMag);
+
+        DebugScope.Push("inertia-scale", inertiaDecayScale);
+        DebugScope.Push("inertia-decay", inertiaDecayMag);
+        DebugScope.Push("inertia-normal", inertiaNormal.magnitude);
 
         var transferScale = c.Tuning.Surface_TransferScale.Evaluate(wall.Angle);
         var transferDiScale = c.Tuning.WallTransferDiScale.Evaluate(transferDiAngleMag);
         var transferAttack = c.Tuning.Surface_TransferAttack.Evaluate(normalAngleScale);
 
         // and transfer it along the surface tangent
-        var transferMagnitude = inertiaDecay.magnitude * transferScale * transferDiScale * transferAttack;
-        var transferVelocity = transferMagnitude * transferTg;
+        var transferMag = inertiaDecayMag * transferScale * transferDiScale * transferAttack;
+        var transferVelocity = transferMag * transferTg;
         vd +=  transferVelocity;
 
         // get angle (upwards) delta between surface and perceived surface

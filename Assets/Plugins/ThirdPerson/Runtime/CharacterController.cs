@@ -168,8 +168,9 @@ public sealed class CharacterController {
         //
         var i = 0;
         while (timeRemaining > 0f) {
-            // asdfasdf
-            if (nextVelocity == Vector3.zero) {
+            // AAA: asdfasdf
+            if (nextVelocity.sqrMagnitude <= m_SqrMinMove / (deltaTime * deltaTime)) {
+                nextVelocity = Vector3.zero;
                 break;
             }
 

@@ -820,22 +820,22 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 1
-  Surface_InertiaDecayScale:
+  Surface_InertiaDecayTime:
     m_Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
-        inSlope: -0.011111111
-        outSlope: -0.011111111
+        value: 0
+        inSlope: 0.011111111
+        outSlope: 0.011111111
         tangentMode: 34
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 90
-        value: 0
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 34
@@ -844,9 +844,9 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 180
-        value: 1
-        inSlope: 0.011111111
-        outSlope: 0.011111111
+        value: 0
+        inSlope: -0.011111111
+        outSlope: -0.011111111
         tangentMode: 34
         weightedMode: 0
         inWeight: 0.33333334
@@ -855,8 +855,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 0.01
-      Max: 0.1
+      Min: 0.001
+      Max: 0.5
   Surface_TransferScale:
     m_Curve:
       serializedVersion: 2
@@ -892,8 +892,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 1
-      Max: 30
+      Min: 0.1
+      Max: 2
   TiltForBaseAcceleration: 30
   MaxTilt: 69
   TiltSmoothing: 0.1

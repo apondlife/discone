@@ -226,8 +226,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the scaling factor of the wall gravity amplitude as a fn of surface change angle")]
     public MapOutCurve WallGravityAmplitudeScale;
 
-    [Tooltip("the inertia decay as a fn of surface angle")]
-    public MapOutCurve Surface_InertiaDecayScale;
+    [Tooltip("the time for inertia to decay 99% as a fn of surface angle")]
+    public MapOutCurve Surface_InertiaDecayTime;
 
     [Tooltip("the scale on transferred inertia as a fn of surface angle")]
     public MapOutCurve Surface_TransferScale;
