@@ -57,7 +57,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     CharacterEvents m_Events;
 
     /// the input wrapper
-    CharacterInput m_Input = new CharacterInput();
+    CharacterInput m_Input = new();
 
     // -- lifecycle --
     void Awake() {

@@ -28,15 +28,6 @@ sealed class WallSystem: CharacterSystem {
         set => c.State.Next.WallState = value;
     }
 
-    public override void Update(float delta) {
-        // apply a decay to the raw momentum
-        // AAA: convert to a half life (maybe)
-        // c.State.Next.Inertia -= c.State.Next.Inertia * (1f - c.Tuning.Surface_MomentumDecay);
-        // c.State.Next.Velocity += momentum;
-
-        base.Update(delta);
-    }
-
     // -- NotOnWall --
     Phase NotOnWall => new(
         "NotOnWall",
@@ -97,11 +88,8 @@ sealed class WallSystem: CharacterSystem {
         var wallInputTg = (wallInputUp * wallUp + wallInputRight * wallTg).normalized;
 
         // add a magnet to pull the character towards the surface
-        // TODO: prefix surface tuning values w/ `Surface_<name>`
-        // var wallMagnetInputScale = c.Tuning.WallMagnetInputScale.Evaluate(wallInputUp);
-        // var wallMagnetTransferScale = c.Tuning.WallMagnetTransferScale.Evaluate(normalAngleScale);
-        // var wallMagnetMag = c.Tuning.WallMagnet.Evaluate(wall.Angle) * wallMagnetInputScale * wallMagnetTransferScale;
-        // vd -= wallMagnetMag * delta * wallNormal;
+        // TODO: should this be something the character controller does?
+        vd -= (c.Controller.ContactOffset / delta) * wallNormal;
 
         // find surface-based transfer scale
         var transferDiAngle = Vector3.SignedAngle(wallSurfaceTg, wallInputTg, wallNormal);
@@ -123,7 +111,8 @@ sealed class WallSystem: CharacterSystem {
         var inertiaDecayTime = c.Tuning.Surface_InertiaDecayTime.Evaluate(wall.Angle);
         var inertiaDecayScale = 1f - Mathf.Pow(0.01f, delta / inertiaDecayTime);
         var inertiaDecay = inertiaNormal * inertiaDecayScale;
-        // AAA: hamsdfas
+
+        // clamp decay so it doesn't bounce
         var inertiaDecayMag = Math.Min(inertiaDecay.magnitude, inertiaNormal.magnitude);
         inertiaDecay = Vector3.ClampMagnitude(inertiaDecay, inertiaDecayMag);
 
@@ -138,7 +127,7 @@ sealed class WallSystem: CharacterSystem {
         // and transfer it along the surface tangent
         var transferMag = inertiaDecayMag * transferScale * transferDiScale * transferAttack;
         var transferVelocity = transferMag * transferTg;
-        vd +=  transferVelocity;
+        vd += transferVelocity;
 
         // get angle (upwards) delta between surface and perceived surface
         var surfaceAngleDelta = Mathf.Abs(90f - Vector3.Angle(

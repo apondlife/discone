@@ -38,8 +38,11 @@ public sealed class CharacterController {
     [Tooltip("the collision mask for the character")]
     [SerializeField] LayerMask m_CollisionMask;
 
-    [Tooltip("the minimum move vector to have any effect")]
+    [Tooltip("the minimum move delta to have any effect")]
     [SerializeField] float m_MinMove;
+
+    [Tooltip("the minimum speed to have any effect")]
+    [SerializeField] float m_MinSpeed;
 
     [Tooltip("the highest angle in which colliding with is considered ground. ie slope angle")]
     [SerializeField] float m_WallAngle;
@@ -57,6 +60,9 @@ public sealed class CharacterController {
     // -- props --
     /// the square min move magnitude
     float m_SqrMinMove;
+
+    /// the square min speed
+    float m_SqrMinSpeed;
 
     // -- debug --
     #if UNITY_EDITOR
@@ -81,6 +87,7 @@ public sealed class CharacterController {
     public void Init() {
         // set props
         m_SqrMinMove = m_MinMove * m_MinMove;
+        m_SqrMinSpeed = m_MinSpeed * m_MinSpeed;
     }
 
     /// move the character by a position delta
@@ -88,10 +95,10 @@ public sealed class CharacterController {
         Vector3 pos,
         Vector3 velocity,
         Vector3 up,
-        float deltaTime
+        float delta
     ) {
         // the slice of our delta time remaining to resolve
-        var timeRemaining = deltaTime;
+        var timeRemaining = delta;
 
         // the final velocity at the end of the move
         var nextVelocity = velocity;
@@ -105,7 +112,7 @@ public sealed class CharacterController {
 
         // store debug move
         #if UNITY_EDITOR
-        m_DebugMoveDelta = velocity * deltaTime;
+        m_DebugMoveDelta = velocity * delta;
         m_DebugMoveOrigin = moveOrigin;
         #endif
 
@@ -166,14 +173,10 @@ public sealed class CharacterController {
         //     move by projecting the move into the collision surface 2d. track
         //     collisions
         //
+
+
         var i = 0;
         while (timeRemaining > 0f) {
-            // AAA: asdfasdf
-            if (nextVelocity.sqrMagnitude <= m_SqrMinMove / (deltaTime * deltaTime)) {
-                nextVelocity = Vector3.zero;
-                break;
-            }
-
             // move delta is however far we can move in the time slice
             var moveDelta = nextVelocity * timeRemaining;
 
@@ -274,12 +277,23 @@ public sealed class CharacterController {
             i++;
         }
 
+        // zero out small speed
+        if (nextVelocity.sqrMagnitude <= m_SqrMinSpeed) {
+            nextVelocity = Vector3.zero;
+        }
+
         return new Frame() {
             Position = moveDst,
             Velocity = nextVelocity,
             Wall = nextWall,
             Ground = nextGround,
         };
+    }
+
+    // -- queries --
+    /// the controller's contact offset
+    public float ContactOffset {
+        get => m_ContactOffset;
     }
 
     // -- gizmos --
