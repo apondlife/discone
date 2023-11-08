@@ -70,8 +70,8 @@ sealed class WallSystem: CharacterSystem {
             ? Vector3.ProjectOnPlane(c.State.Prev.WallSurface.Normal, wall.Normal).normalized
             : wallUp;
 
-        // calculate added velocity
-        var vd = Vector3.zero;
+        // calculate added acceleration
+        var acceleration = Vector3.zero;
 
         // get delta between wall and perceived surface
         var wallToSurface = Vector3.Angle(
@@ -89,7 +89,7 @@ sealed class WallSystem: CharacterSystem {
 
         // add a magnet to pull the character towards the surface
         // TODO: should this be something the character controller does?
-        vd -= (c.Controller.ContactOffset / delta) * wallNormal;
+        acceleration -= (c.Controller.ContactOffset / (delta * delta)) * wallNormal;
 
         // find surface-based transfer scale
         var transferDiAngle = Vector3.SignedAngle(wallSurfaceTg, wallInputTg, wallNormal);
@@ -116,18 +116,15 @@ sealed class WallSystem: CharacterSystem {
         var inertiaDecayMag = Math.Min(inertiaDecay.magnitude, inertiaNormal.magnitude);
         inertiaDecay = Vector3.ClampMagnitude(inertiaDecay, inertiaDecayMag);
 
-        DebugScope.Push("inertia-scale", inertiaDecayScale);
-        DebugScope.Push("inertia-decay", inertiaDecayMag);
-        DebugScope.Push("inertia-normal", inertiaNormal.magnitude);
-
+        // tune transfer
         var transferScale = c.Tuning.Surface_TransferScale.Evaluate(wall.Angle);
         var transferDiScale = c.Tuning.WallTransferDiScale.Evaluate(transferDiAngleMag);
         var transferAttack = c.Tuning.Surface_TransferAttack.Evaluate(normalAngleScale);
 
         // and transfer it along the surface tangent
         var transferMag = inertiaDecayMag * transferScale * transferDiScale * transferAttack;
-        var transferVelocity = transferMag * transferTg;
-        vd += transferVelocity;
+        var transferAcceleration = transferMag * transferTg;
+        acceleration += transferAcceleration;
 
         // get angle (upwards) delta between surface and perceived surface
         var surfaceAngleDelta = Mathf.Abs(90f - Vector3.Angle(
@@ -140,18 +137,17 @@ sealed class WallSystem: CharacterSystem {
         // AAA: consider whether we want to keep the adsr
         var wallGravityAmplitudeScale = c.Tuning.WallGravityAmplitudeScale.Evaluate(surfaceAngleScale);
         var wallGravity = c.Input.IsWallHoldPressed
-            ? c.Tuning.WallHoldGravity.Evaluate(5f, wallGravityAmplitudeScale)
-            : c.Tuning.WallGravity.Evaluate(5f, wallGravityAmplitudeScale);
+            ? c.Tuning.WallHoldGravity
+            : c.Tuning.WallGravity;
 
         // scale by wall angle
         var wallAngleScale = c.Tuning.WallAngleScale.Evaluate(wall.Angle);
         var wallAcceleration = c.Tuning.WallAcceleration(wallGravity);
-        vd += wallAcceleration * wallAngleScale * delta * wallUp;
+        acceleration += wallAcceleration * wallAngleScale * wallUp;
 
-        /// AAA: add to acceleration properly
         // update state
         c.State.Inertia -= inertiaDecay;
-        c.State.Acceleration += vd / delta;
+        c.State.Acceleration += acceleration;
     }
 }
 

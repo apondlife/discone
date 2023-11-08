@@ -197,10 +197,10 @@ public sealed class CharacterTuning: ScriptableObject {
     public MapOutCurve WallAngleScale;
 
     [Tooltip("the gravity while on the wall & holding jump")]
-    public AdsrCurve WallGravity;
+    public float WallGravity;
 
     [Tooltip("the gravity while on the wall & not holding jump")]
-    public AdsrCurve WallHoldGravity;
+    public float WallHoldGravity;
 
     [Tooltip("the force the surface pulls character in as a fn of surface angle")]
     public MapOutCurve WallMagnet;
