@@ -3,6 +3,8 @@ what is projected
 
 # inertia & movement
 
+- wall gravity too strong ? (see negative walls)
+- inertia transfer really strong
 - lose inertia on wall transfer?
   - need half life on inertia decay
   - investigate interaction w/ perceived transfer scale
@@ -23,6 +25,7 @@ what is projected
 - wall particle indicates direction of transfer
 
 # tools
+
 - Vector3 drawer that rounds to a reasonable number of digits
 - fix character state preview in shortcuts so it's more useful
 - make fields toggleable

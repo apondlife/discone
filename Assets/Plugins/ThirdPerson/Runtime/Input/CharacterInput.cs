@@ -52,8 +52,8 @@ public sealed class CharacterInput {
         get => m_Frames[0]?.IsJumpDown ?? false;
     }
 
-    /// if wall hold is down this frame
-    public bool IsWallHoldPressed {
+    /// if surface hold is down this frame
+    public bool IsSurfaceHoldPressed {
         get => m_Frames[0]?.IsJumpDown ?? false;
     }
 

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -7,7 +8,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     // -- data --
     [Header("data")]
     [Tooltip("the tuning; for tweaking the player's attributes")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Tunables")]
+    [FormerlySerializedAs("m_Tunables")]
     [SerializeField] CharacterTuning m_Tuning;
 
     // -- state --
@@ -20,8 +21,9 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     [Tooltip("the idle system")]
     [SerializeField] IdleSystem m_Idle;
 
-    [Tooltip("the wall system")]
-    [SerializeField] WallSystem m_Wall;
+    [Tooltip("the surface system")]
+    [FormerlySerializedAs("m_Wall")]
+    [SerializeField] SurfaceSystem m_Surface;
 
     [Tooltip("the jump system")]
     [SerializeField] JumpSystem m_Jump;
@@ -88,7 +90,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
             // runs last/first since it depends on real velocity after collision
             m_Idle,
             // these run first, they don't have dependencies
-            m_Wall,
+            m_Surface,
             m_Jump,
             m_Crouch,
             // movement system depends on gravity to calculate friciton,

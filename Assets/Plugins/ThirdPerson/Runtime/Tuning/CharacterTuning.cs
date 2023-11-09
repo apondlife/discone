@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -28,8 +29,9 @@ public sealed class CharacterTuning: ScriptableObject {
     public float Horizontal_MinSpeed;
 
     /// the character's theoretical max horizontal speed
-    public float Horizontal_MaxSpeed
-        => Mathf.Sqrt(Mathf.Max(0.0f, Horizontal_Acceleration - Horizontal_KineticFriction) / Horizontal_Drag);
+    public float Horizontal_MaxSpeed {
+        get => Mathf.Sqrt(Mathf.Max(0.0f, Horizontal_Acceleration - Horizontal_KineticFriction) / Horizontal_Drag);
+    }
 
     [Tooltip("the acceleration from 0 to max speed in units")]
     public float Horizontal_Acceleration;
@@ -72,9 +74,13 @@ public sealed class CharacterTuning: ScriptableObject {
     public float PivotSpeedThreshold;
 
     /// the deceleration of the character while pivoting
-    public float PivotDeceleration => TimeToPivot > 0 ? Horizontal_MaxSpeed / TimeToPivot : float.PositiveInfinity;
+    public float PivotDeceleration {
+        get => TimeToPivot > 0 ? Horizontal_MaxSpeed / TimeToPivot : float.PositiveInfinity;
+    }
 
-    public float PivotSqrSpeedThreshold => PivotSpeedThreshold * PivotSpeedThreshold;
+    public float PivotSqrSpeedThreshold {
+        get => PivotSpeedThreshold * PivotSpeedThreshold;
+    }
 
     [Tooltip("the turn speed while airborne")]
     public float Air_TurnSpeed;
@@ -96,7 +102,9 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the turn speed while crouching")]
     public float Crouch_Gravity;
 
-    public float Crouch_Acceleration => Crouch_Gravity - Gravity;
+    public float Crouch_Acceleration {
+        get => Crouch_Gravity - Gravity;
+    }
 
     [Tooltip("the kinetic friction when crouching towards movement")]
     public MapOutCurve Crouch_PositiveKineticFriction;
@@ -132,8 +140,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the maximum ground angle for jumping")]
     public float Jump_GroundAngle;
 
+    [FormerlySerializedAs("Jump_GroundAngleScale")]
     [Tooltip("the jump scale as a fn of surface angle")]
-    [UnityEngine.Serialization.FormerlySerializedAs("Jump_GroundAngleScale")]
     public MapOutCurve Jump_SurfaceAngleScale;
 
     [Tooltip("the jump speed opposed to the surface normal as a fn of squat duration")]
@@ -187,20 +195,24 @@ public sealed class CharacterTuning: ScriptableObject {
         public float Horizontal_MomentumLoss;
     }
 
-    // -- wall --
-    [Header("wall")]
-    [Tooltip("the collision layer of what counts as walls for wall sliding")]
-    public LayerMask WallLayer;
+    // -- surface --
+    [Header("surface")]
+    [FormerlySerializedAs("WallLayer")]
+    [Tooltip("the collision layer of what counts as surfaces for surface sliding")]
+    public LayerMask SurfaceLayer;
 
-    [Tooltip("the scaling factor of the wall slide as a fn of surface angle")]
-    [UnityEngine.Serialization.FormerlySerializedAs("WallAngleScale_New")]
-    public MapOutCurve WallAngleScale;
+    [FormerlySerializedAs("WallAngleScale")]
+    [FormerlySerializedAs("WallAngleScale_New")]
+    [Tooltip("the scaling factor of the surface slide as a fn of surface angle")]
+    public MapOutCurve Surface_AngleScale;
 
-    [Tooltip("the gravity while on the wall & holding jump")]
-    public float WallGravity;
+    [FormerlySerializedAs("WallGravity")]
+    [Tooltip("the gravity while on the surface & holding jump")]
+    public float Surface_Gravity;
 
-    [Tooltip("the gravity while on the wall & not holding jump")]
-    public float WallHoldGravity;
+    [FormerlySerializedAs("WallHoldGravity")]
+    [Tooltip("the gravity while on the surface & not holding jump")]
+    public float Surface_HoldGravity;
 
     [Tooltip("the force the surface pulls character in as a fn of surface angle")]
     public MapOutCurve WallMagnet;
@@ -213,18 +225,21 @@ public sealed class CharacterTuning: ScriptableObject {
 
     // TODO: these are currently mirrored around 90; they should curved over 180
     // so that's not necessarily the case
-    [UnityEngine.Serialization.FormerlySerializedAs("WallTransferScale")]
+    [FormerlySerializedAs("WallTransferScale")]
     [Tooltip("the scaling factor of the wall transfer as a fn of surface change angle")]
     public MapOutCurve Surface_TransferAttack;
 
+    [FormerlySerializedAs("WallTransferDiAngle")]
     [Tooltip("the angle to rotate the transfer surface direction as a fn of signed input-surface angle")]
-    public MapOutCurve WallTransferDiAngle;
+    public MapOutCurve Surface_TransferDiAngle;
 
+    [FormerlySerializedAs("WallTransferDiScale")]
     [Tooltip("the scaling factor of the wall transfer as a fn of signed input-surface angle")]
-    public MapOutCurve WallTransferDiScale;
+    public MapOutCurve Surface_TransferDiScale;
 
+    [FormerlySerializedAs("WallGravityAmplitudeScale")]
     [Tooltip("the scaling factor of the wall gravity amplitude as a fn of surface change angle")]
-    public MapOutCurve WallGravityAmplitudeScale;
+    public MapOutCurve Surface_GravityAmplitudeScale;
 
     [Tooltip("the time for inertia to decay 99% as a fn of surface angle")]
     public MapOutCurve Surface_InertiaDecayTime;
@@ -232,7 +247,7 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the scale on transferred inertia as a fn of surface angle")]
     public MapOutCurve Surface_TransferScale;
 
-    public float WallAcceleration(float wallGravity) {
+    public float Surface_Acceleration(float wallGravity) {
         return wallGravity - Gravity + FallGravity;
     }
 
