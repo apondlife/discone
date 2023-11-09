@@ -30,8 +30,11 @@ public sealed class CharacterController {
     // character, we can implement that as an add-on/child
 
     // -- constants --
-    /// the max amount of casts we do in a single frame
+    /// the max number of casts we do in a single frame
     const int k_MaxCasts = 4;
+
+    /// the max number of collisions we check for at the end of the frame
+    const int k_MaxCollisions = 4;
 
     // -- fields --
     [Header("config")]
@@ -50,14 +53,21 @@ public sealed class CharacterController {
     [Tooltip("the amount to offset collision casts against the movement to avoid precision issues")]
     [SerializeField] float m_CastOffset;
 
-    [Tooltip("the amount to offset TODO:...?????")]
+    [Tooltip("the amount to offset movement from collisions")]
     [SerializeField] float m_ContactOffset;
+
+    [Tooltip("the extra amount to check for nearby colliders")]
+    [SerializeField] float m_ContactEpsilon;
+
 
     [Header("refs")]
     [Tooltip("the character's capsule")]
     [SerializeField] CapsuleCollider m_Capsule;
 
     // -- props --
+    /// the list of colliders in contact offset range at the end of the frame
+    Collider[] m_Colliders;
+
     /// the square min move magnitude
     float m_SqrMinMove;
 
@@ -73,10 +83,10 @@ public sealed class CharacterController {
     Vector3 m_DebugMoveDelta;
 
     /// the last collision hit
-    List<RaycastHit> m_DebugHits = new List<RaycastHit>();
+    List<RaycastHit> m_DebugHits = new();
 
     /// the list of casts this frame
-    List<Capsule.Cast> m_DebugCasts = new List<Capsule.Cast>();
+    List<Capsule.Cast> m_DebugCasts = new();
 
     /// a bad hit, an error
     RaycastHit? m_DebugErrorHit = null;
@@ -86,6 +96,7 @@ public sealed class CharacterController {
     /// initialize the controller
     public void Init() {
         // set props
+        m_Colliders = new Collider[k_MaxCasts];
         m_SqrMinMove = m_MinMove * m_MinMove;
         m_SqrMinSpeed = m_MinSpeed * m_MinSpeed;
     }
@@ -124,6 +135,9 @@ public sealed class CharacterController {
             c.height,
             up
         );
+
+        // buffered storage
+        var hit = new RaycastHit();
 
         // clear the collisions
         var nextWall = new CharacterCollision();
@@ -174,8 +188,7 @@ public sealed class CharacterController {
         //     collisions
         //
 
-
-        var i = 0;
+        var nCasts = 0;
         while (timeRemaining > 0f) {
             // move delta is however far we can move in the time slice
             var moveDelta = nextVelocity * timeRemaining;
@@ -188,7 +201,7 @@ public sealed class CharacterController {
 
             // if we cast an unlikely number of times, cancel this move
             // TODO: should moveDelta be zero here?
-            if (i > k_MaxCasts) {
+            if (nCasts > k_MaxCasts) {
                 // TODO: what to do about any remaining time
                 moveDst = moveOrigin;
                 Debug.LogWarning($"[cntrlr] cast more than {k_MaxCasts + 1} times in a single frame!");
@@ -223,7 +236,7 @@ public sealed class CharacterController {
                 cast.Point2,
                 cast.Radius,
                 cast.Direction,
-                out var hit,
+                out hit,
                 cast.Length,
                 m_CollisionMask,
                 QueryTriggerInteraction.Ignore
@@ -260,6 +273,52 @@ public sealed class CharacterController {
             timeRemaining = moveRemaining.magnitude / nextVelocity.magnitude;
             nextVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);
 
+            // update state
+            nCasts++;
+        }
+
+        // check to see if we're still contact offset away from
+        var capsuleDst = capsule.Offset(moveDst);
+        var capsuleDstPoints = capsuleDst.Endpoints();
+        var nOverlaps = Physics.OverlapCapsuleNonAlloc(
+            capsuleDstPoints.point1,
+            capsuleDstPoints.point2,
+            capsuleDst.Radius + m_ContactOffset + m_ContactEpsilon,
+            m_Colliders,
+            m_CollisionMask
+        );
+
+        // find collision hit with each nearby collider
+        for (var i = 0; i < nOverlaps; i++) {
+            // check for a collision
+            var collider = m_Colliders[i];
+
+            // get next capsule cast towards collided surface
+            var castSrc = moveDst;
+            var castDst = collider.ClosestPoint(moveDst);
+            var castDir = castDst - castSrc;
+            var cast = capsule.IntoCast(
+                castSrc,
+                castDir.normalized,
+                castDir.magnitude
+            );
+
+            var didHit = Physics.CapsuleCast(
+                cast.Point1,
+                cast.Point2,
+                cast.Radius,
+                cast.Direction,
+                out hit,
+                cast.Length,
+                m_CollisionMask,
+                QueryTriggerInteraction.Ignore
+            );
+
+            if (!didHit) {
+                Debug.LogWarning("[cntrlr] final collision cast missed!");
+                continue;
+            }
+
             // track collisions
             var collision = new CharacterCollision(
                 hit.normal,
@@ -272,9 +331,6 @@ public sealed class CharacterController {
             } else {
                 nextGround = collision;
             }
-
-            // update state
-            i++;
         }
 
         // zero out small speed

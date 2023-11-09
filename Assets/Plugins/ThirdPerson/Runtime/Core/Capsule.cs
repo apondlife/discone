@@ -44,7 +44,11 @@ readonly struct Capsule {
 
     // -- factories --
     /// create a capsule ray from this capsule
-    public Cast IntoCast(Vector3 pos, Vector3 direction, float length) {
+    public Cast IntoCast(
+        Vector3 pos,
+        Vector3 direction,
+        float length
+    ) {
         return new Cast(Offset(pos), direction, length);
     }
 

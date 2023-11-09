@@ -70,10 +70,6 @@ sealed class SurfaceSystem: CharacterSystem {
         // calculate added acceleration
         var acceleration = Vector3.zero;
 
-        // add a magnet to pull the character towards the surface
-        // TODO: should this be something the character controller does?
-        acceleration -= (c.Controller.ContactOffset / (delta * delta)) * surfaceNormal;
-
         // get angle between surface and perceived surface
         var surfacePerceivedAngle = Mathf.Abs(90f - Vector3.Angle(
             surface.Normal,
@@ -122,9 +118,7 @@ sealed class SurfaceSystem: CharacterSystem {
         acceleration += transferAcceleration;
 
         // add surface gravity
-        var surfaceGravityAmplitudeScale = c.Tuning.Surface_GravityAmplitudeScale.Evaluate(surfacePerceivedScale);
-        var surfaceGravityMag = c.Input.IsSurfaceHoldPressed ? c.Tuning.Surface_HoldGravity : c.Tuning.Surface_Gravity;
-        var surfaceGravity = surfaceGravityMag * surfaceGravityAmplitudeScale;
+        var surfaceGravity = c.Input.IsSurfaceHoldPressed ? c.Tuning.Surface_HoldGravity : c.Tuning.Surface_Gravity;;
 
         // scale by surface angle
         var surfaceAngleScale = c.Tuning.Surface_AngleScale.Evaluate(surface.Angle);
