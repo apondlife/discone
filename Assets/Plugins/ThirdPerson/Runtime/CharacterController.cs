@@ -273,11 +273,26 @@ public sealed class CharacterController {
             timeRemaining = moveRemaining.magnitude / nextVelocity.magnitude;
             nextVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);
 
+            // track collisions
+            // TODO: this is a hack around issues w/ ClosestPoint & concave meshes; we shouldn't have
+            // to track collision here
+            var collision = new CharacterCollision(
+                hit.normal,
+                hit.point
+            );
+
+            // track wall & ground collision separately for external querying
+            if (collision.Angle >= m_WallAngle) {
+                nextWall = collision;
+            } else {
+                nextGround = collision;
+            }
+
             // update state
             nCasts++;
         }
 
-        // check to see if we're still contact offset away from
+        // find any colliders we're contact offset away from
         var capsuleDst = capsule.Offset(moveDst);
         var capsuleDstPoints = capsuleDst.Endpoints();
         var nOverlaps = Physics.OverlapCapsuleNonAlloc(
@@ -288,7 +303,17 @@ public sealed class CharacterController {
             m_CollisionMask
         );
 
-        // find collision hit with each nearby collider
+        // if there's no overlaps, any previous collisions were invalid (we exited the surface)
+        // TODO: this is a hack around issues w/ ClosestPoint & concave meshes
+        if (nOverlaps == 0) {
+            nextGround = CharacterCollision.None;
+            nextWall = CharacterCollision.None;
+        }
+
+        // accumulate an offset to ensure we're contact offset away from every collider
+        var collisionOffset = Vector3.zero;
+
+        // find collisions with each nearby collider
         for (var i = 0; i < nOverlaps; i++) {
             // check for a collision
             var collider = m_Colliders[i];
@@ -296,6 +321,12 @@ public sealed class CharacterController {
             // get next capsule cast towards collided surface
             var castSrc = moveDst;
             var castDst = collider.ClosestPoint(moveDst);
+
+            // TODO: search for a better way to handle closest point failing for concave meshes
+            if (castDst == moveDst) {
+                continue;
+            }
+
             var castDir = castDst - castSrc;
             var cast = capsule.IntoCast(
                 castSrc,
@@ -319,6 +350,9 @@ public sealed class CharacterController {
                 continue;
             }
 
+            // accumulate the offset
+            collisionOffset += Mathf.Max(m_ContactOffset - hit.distance, 0f) * hit.normal;
+
             // track collisions
             var collision = new CharacterCollision(
                 hit.normal,
@@ -332,6 +366,9 @@ public sealed class CharacterController {
                 nextGround = collision;
             }
         }
+
+        // apply offset to depenetrate from colliders
+        moveDst += collisionOffset;
 
         // zero out small speed
         if (nextVelocity.sqrMagnitude <= m_SqrMinSpeed) {
