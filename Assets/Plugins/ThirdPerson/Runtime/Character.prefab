@@ -24,8 +24,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.017977994, y: -0.000000029802322, z: -0, w: 0.9998385}
-  m_LocalPosition: {x: 0.0000006854534, y: 1, z: -10.000002}
+  m_LocalRotation: {x: -0.01797797, y: -9.95444e-10, z: -1.7898951e-11, w: 0.9998384}
+  m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -627,13 +627,14 @@ MonoBehaviour:
   m_Controller:
     m_CollisionMask:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 385
     m_MinMove: 0.005
     m_MinSpeed: 0.005
     m_WallAngle: 80
     m_CastOffset: 0.03
     m_ContactOffset: 0.01
-    m_ContactEpsilon: 0.003
+    m_ContactEpsilon: 0.001
+    m_ContactSearch: 1
     m_Capsule: {fileID: 1972163625}
     m_DrawInput: 1
     m_DrawTop: 1

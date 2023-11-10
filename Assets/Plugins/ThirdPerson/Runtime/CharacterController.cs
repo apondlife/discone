@@ -56,9 +56,11 @@ public sealed class CharacterController {
     [Tooltip("the amount to offset movement from collisions")]
     [SerializeField] float m_ContactOffset;
 
-    [Tooltip("the extra amount to check for nearby colliders")]
+    [Tooltip("a small amount over contact offset to detect hits")]
     [SerializeField] float m_ContactEpsilon;
 
+    [Tooltip("the extra amount to search for nearby colliders")]
+    [SerializeField] float m_ContactSearch;
 
     [Header("refs")]
     [Tooltip("the character's capsule")]
@@ -67,6 +69,9 @@ public sealed class CharacterController {
     // -- props --
     /// the list of colliders in contact offset range at the end of the frame
     Collider[] m_Colliders;
+
+    /// the character's capsule collider w/ the contact offset integrated into its radius
+    CapsuleCollider m_CapsuleWithSearch;
 
     /// the square min move magnitude
     float m_SqrMinMove;
@@ -99,6 +104,17 @@ public sealed class CharacterController {
         m_Colliders = new Collider[k_MaxCasts];
         m_SqrMinMove = m_MinMove * m_MinMove;
         m_SqrMinSpeed = m_MinSpeed * m_MinSpeed;
+
+        // clone collider & add contact offset for compute penetration
+        var src = m_Capsule;
+        var dst = m_Capsule.gameObject.AddComponent<CapsuleCollider>();
+        dst.center = src.center;
+        dst.height = src.height;
+        dst.radius = src.radius + m_ContactOffset + m_ContactSearch;
+        dst.direction = src.direction;
+        dst.isTrigger = true;
+
+        m_CapsuleWithSearch = dst;
     }
 
     /// move the character by a position delta
@@ -137,7 +153,10 @@ public sealed class CharacterController {
         );
 
         // buffered storage
+        var didHit = false;
         var hit = new RaycastHit();
+        var hitDir = Vector3.zero;
+        var hitDist = 0f;
 
         // clear the collisions
         var nextWall = new CharacterCollision();
@@ -231,7 +250,7 @@ public sealed class CharacterController {
             #endif
 
             // check for a collision
-            var didHit = Physics.CapsuleCast(
+            didHit = Physics.CapsuleCast(
                 cast.Point1,
                 cast.Point2,
                 cast.Radius,
@@ -273,68 +292,70 @@ public sealed class CharacterController {
             timeRemaining = moveRemaining.magnitude / nextVelocity.magnitude;
             nextVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);
 
-            // track collisions
-            // TODO: this is a hack around issues w/ ClosestPoint & concave meshes; we shouldn't have
-            // to track collision here
-            var collision = new CharacterCollision(
-                hit.normal,
-                hit.point
-            );
-
-            // track wall & ground collision separately for external querying
-            if (collision.Angle >= m_WallAngle) {
-                nextWall = collision;
-            } else {
-                nextGround = collision;
-            }
-
             // update state
             nCasts++;
         }
 
         // find any colliders we're contact offset away from
-        var capsuleDst = capsule.Offset(moveDst);
-        var capsuleDstPoints = capsuleDst.Endpoints();
-        var nOverlaps = Physics.OverlapCapsuleNonAlloc(
-            capsuleDstPoints.point1,
-            capsuleDstPoints.point2,
-            capsuleDst.Radius + m_ContactOffset + m_ContactEpsilon,
+        var capsulePoints = capsule.Offset(moveDst).Endpoints();
+        var numOverlaps = Physics.OverlapCapsuleNonAlloc(
+            capsulePoints.point1,
+            capsulePoints.point2,
+            m_CapsuleWithSearch.radius,
             m_Colliders,
             m_CollisionMask
         );
-
-        // if there's no overlaps, any previous collisions were invalid (we exited the surface)
-        // TODO: this is a hack around issues w/ ClosestPoint & concave meshes
-        if (nOverlaps == 0) {
-            nextGround = CharacterCollision.None;
-            nextWall = CharacterCollision.None;
-        }
 
         // accumulate an offset to ensure we're contact offset away from every collider
         var collisionOffset = Vector3.zero;
 
         // find collisions with each nearby collider
-        for (var i = 0; i < nOverlaps; i++) {
+        for (var i = 0; i < numOverlaps; i++) {
             // check for a collision
             var collider = m_Colliders[i];
 
             // get next capsule cast towards collided surface
             var castSrc = moveDst;
-            var castDst = collider.ClosestPoint(moveDst);
+            var castDir = Vector3.zero;
+            var castMax = m_ContactOffset + m_ContactEpsilon;
 
-            // TODO: search for a better way to handle closest point failing for concave meshes
-            if (castDst == moveDst) {
-                continue;
+            // if a convex collider, get cast dir using closest point
+            if (collider is not MeshCollider m || m.convex) {
+                castDir = collider.ClosestPoint(moveDst) - castSrc;
+            }
+            // otherwise, depenetrate from concave mesh to find dir
+            else {
+                var colliderTransform = collider.transform;
+                didHit = Physics.ComputePenetration(
+                    m_CapsuleWithSearch,
+                    moveDst,
+                    Quaternion.identity,
+                    collider,
+                    colliderTransform.position,
+                    colliderTransform.rotation,
+                    out hitDir,
+                    out hitDist
+                );
+
+                if (!didHit) {
+                    Debug.LogWarning($"[cntrlr] depenetration missed for {m}");
+                    continue;
+                }
+
+                castSrc += hitDist * hitDir;
+                castDir = -hitDir;
+                castMax += hitDist;
             }
 
-            var castDir = castDst - castSrc;
+            // find the contact point on the surface
             var cast = capsule.IntoCast(
                 castSrc,
                 castDir.normalized,
-                castDir.magnitude
+                length: m_ContactOffset + m_ContactSearch + 1000
             );
 
-            var didHit = Physics.CapsuleCast(
+            // TODO: this doesn't catch corners on concave mesh colliders
+            didHit = Physics.CapsuleCast(
                 cast.Point1,
                 cast.Point2,
                 cast.Radius,
@@ -347,6 +368,11 @@ public sealed class CharacterController {
 
             if (!didHit) {
                 Debug.LogWarning("[cntrlr] final collision cast missed!");
+                continue;
+            }
+
+            // ignore hits farther away than the offset but within search radius
+            if (hit.distance > castMax) {
                 continue;
             }
 
