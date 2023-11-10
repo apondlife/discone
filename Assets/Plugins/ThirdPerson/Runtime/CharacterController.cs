@@ -207,7 +207,7 @@ public sealed class CharacterController {
         //     collisions
         //
 
-        var nCasts = 0;
+        var numCasts = 0;
         while (timeRemaining > 0f) {
             // move delta is however far we can move in the time slice
             var moveDelta = nextVelocity * timeRemaining;
@@ -220,7 +220,7 @@ public sealed class CharacterController {
 
             // if we cast an unlikely number of times, cancel this move
             // TODO: should moveDelta be zero here?
-            if (nCasts > k_MaxCasts) {
+            if (numCasts > k_MaxCasts) {
                 // TODO: what to do about any remaining time
                 moveDst = moveOrigin;
                 Debug.LogWarning($"[cntrlr] cast more than {k_MaxCasts + 1} times in a single frame!");
@@ -293,14 +293,14 @@ public sealed class CharacterController {
             nextVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);
 
             // update state
-            nCasts++;
+            numCasts++;
         }
 
         // find any colliders we're contact offset away from
-        var capsulePoints = capsule.Offset(moveDst).Endpoints();
+        var capsulePts = capsule.Offset(moveDst).Points();
         var numOverlaps = Physics.OverlapCapsuleNonAlloc(
-            capsulePoints.point1,
-            capsulePoints.point2,
+            capsulePts.point1,
+            capsulePts.point2,
             m_CapsuleWithSearch.radius,
             m_Colliders,
             m_CollisionMask

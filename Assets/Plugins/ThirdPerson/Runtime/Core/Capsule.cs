@@ -34,7 +34,7 @@ readonly struct Capsule {
 
     // -- queries --
     /// find the centers of the start and end spheres
-    public (Vector3 point1, Vector3 point2) Endpoints() {
+    public (Vector3 point1, Vector3 point2) Points() {
         var offset = (Height * 0.5f - Radius) * Up;
         var point1 = Center - offset;
         var point2 = Center + offset;
@@ -79,7 +79,7 @@ readonly struct Capsule {
             Direction = direction;
             Length = length;
 
-            var (point1, point2) = capsule.Endpoints();
+            var (point1, point2) = capsule.Points();
             Point1 = point1;
             Point2 = point2;
         }
