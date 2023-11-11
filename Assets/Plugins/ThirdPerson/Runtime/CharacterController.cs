@@ -322,6 +322,21 @@ public sealed class CharacterController {
             // if a convex collider, get cast dir using closest point
             if (collider is not MeshCollider m || m.convex) {
                 castDir = collider.ClosestPoint(moveDst) - castSrc;
+
+                didHit = CollideCapsule(
+                    capsule,
+                    castSrc,
+                    castDir,
+                    castMax,
+                    ref hit,
+                    ref collisionOffset,
+                    ref nextWall,
+                    ref nextGround
+                );
+
+                if (!didHit) {
+                    Debug.LogWarning("[cntrlr] final collision cast missed!");
+                }
             }
             // otherwise, depenetrate from concave mesh to find dir
             else {
@@ -342,54 +357,46 @@ public sealed class CharacterController {
                     continue;
                 }
 
+                // move cast back by hit distance; increase cast length by search radius to account
+                // for difference between capsule & search capsule radii
                 castSrc += hitDist * hitDir;
                 castDir = -hitDir;
-                castMax += hitDist;
-            }
+                castMax += hitDist + m_ContactSearch;
 
-            // find the contact point on the surface
-            var cast = capsule.IntoCast(
-                castSrc,
-                castDir.normalized,
-                length: m_ContactOffset + m_ContactSearch + 1000
-            );
+                // cast along the surface to find all collision surfaces on the concave mesh
+                for (numCasts = 0; numCasts < k_MaxCasts; numCasts++) {
+                    didHit = CollideCapsule(
+                        capsule,
+                        castSrc,
+                        castDir,
+                        castMax,
+                        ref hit,
+                        ref collisionOffset,
+                        ref nextWall,
+                        ref nextGround
+                    );
 
-            // TODO: this doesn't catch corners on concave mesh colliders
-            didHit = Physics.CapsuleCast(
-                cast.Point1,
-                cast.Point2,
-                cast.Radius,
-                cast.Direction,
-                out hit,
-                cast.Length,
-                m_CollisionMask,
-                QueryTriggerInteraction.Ignore
-            );
+                    if (!didHit) {
+                        if (numCasts == 0) {
+                            Debug.LogWarning("[cntrlr] final collision cast missed!");
+                        }
 
-            if (!didHit) {
-                Debug.LogWarning("[cntrlr] final collision cast missed!");
-                continue;
-            }
+                        break;
+                    }
 
-            // ignore hits farther away than the offset but within search radius
-            if (hit.distance > castMax) {
-                continue;
-            }
+                    // project cast direction into the surface normal
+                    var nextDir = Vector3.ProjectOnPlane(castDir, hit.normal);
+                    var nextMag = nextDir.magnitude;
 
-            // accumulate the offset
-            collisionOffset += Mathf.Max(m_ContactOffset - hit.distance, 0f) * hit.normal;
+                    // project how much is left from our maximum cast, if any
+                    castMax *= nextMag;
+                    if (castMax <= 0f) {
+                        break;
+                    }
 
-            // track collisions
-            var collision = new CharacterCollision(
-                hit.normal,
-                hit.point
-            );
-
-            // track wall & ground collision separately for external querying
-            if (collision.Angle >= m_WallAngle) {
-                nextWall = collision;
-            } else {
-                nextGround = collision;
+                    // start next cast from the hit point
+                    castDir = nextDir / nextMag;
+                }
             }
         }
 
@@ -407,6 +414,63 @@ public sealed class CharacterController {
             Wall = nextWall,
             Ground = nextGround,
         };
+    }
+
+    bool CollideCapsule(
+        Capsule capsule,
+        Vector3 castSrc,
+        Vector3 castDir,
+        float castMax,
+        ref RaycastHit hit,
+        ref Vector3 offset,
+        ref CharacterCollision nextWall,
+        ref CharacterCollision nextGround
+    ) {
+        // find the contact point on the surface
+        var cast = capsule.IntoCast(
+            castSrc,
+            castDir.normalized,
+            castMax
+        );
+
+        var didHit = Physics.CapsuleCast(
+            cast.Point1,
+            cast.Point2,
+            cast.Radius,
+            cast.Direction,
+            out hit,
+            cast.Length,
+            m_CollisionMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        if (!didHit) {
+            Debug.Log($"[cntrlr] hit cast: {castDir} max: {castMax}");
+            return false;
+        }
+
+        // ignore hits farther away than the offset but within search radius
+        if (hit.distance > castMax) {
+            return false;
+        }
+
+        // accumulate the offset
+        offset += Mathf.Max(m_ContactOffset - hit.distance, 0f) * hit.normal;
+
+        // track collisions
+        var collision = new CharacterCollision(
+            hit.normal,
+            hit.point
+        );
+
+        // track wall & ground collision separately for external querying
+        if (collision.Angle >= m_WallAngle) {
+            nextWall = collision;
+        } else {
+            nextGround = collision;
+        }
+
+        return true;
     }
 
     // -- queries --

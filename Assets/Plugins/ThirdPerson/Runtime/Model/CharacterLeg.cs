@@ -178,12 +178,13 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
             return;
         }
 
-        // TODO: closest point returns its arg if the mesh is convex
-        var pos = other.ClosestPoint(m_Anchor.position);
-        if (pos == m_Anchor.position) {
+        // can't use closest point on concave meshes
+        // TODO: consider trying a raycast here
+        if (other is MeshCollider m && !m.convex) {
             return;
         }
 
+        var pos = other.ClosestPoint(m_Anchor.position);
         if (!m_HasTarget || HasCompletedStrideAt(pos)) {
             // start tracking the target
             m_HasTarget = true;
@@ -201,18 +202,15 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
             return;
         }
 
-        // ignore terrain since getting closes point for terrains will be very unlikely
-        if (other is TerrainCollider) {
-            return;
-        }
-
-        // TODO: closest point returns its arg if the mesh is convex
-        var pos = other.ClosestPoint(m_Anchor.position);
-        if (pos == m_Anchor.position) {
+        // can't use closest point on concave meshes
+        // TODO: consider trying a raycast here
+        if (other is MeshCollider m && !m.convex) {
             return;
         }
 
         m_HasTarget = true;
+
+        var pos = other.ClosestPoint(m_Anchor.position);
         if (HasCompletedStrideAt(pos)) {
             m_DestPosition = pos;
         }
