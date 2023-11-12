@@ -445,7 +445,6 @@ public sealed class CharacterController {
         );
 
         if (!didHit) {
-            Debug.Log($"[cntrlr] hit cast: {castDir} max: {castMax}");
             return false;
         }
 
