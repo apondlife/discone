@@ -46,7 +46,8 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             value = new Value(
                 name,
                 color: Random.ColorHSV(0f, 1f, 1f, 1f, 1f, 1f),
-                width: 1f
+                width: 1f,
+                lengthScale: 1f
             );
 
             m_Values.Add(value);
@@ -64,17 +65,20 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         [SerializeField] [HideInInspector] string m_Name;
 
         // -- fields --
-        /// the value's rendered color
+        [Tooltip("the rendered color")]
         [SerializeField] Color m_Color;
 
-        /// the value's line width
+        [Tooltip("the line width")]
         [SerializeField] float m_Width;
 
-        /// the n most recent values to draw
+        [Tooltip("the length scale")]
+        [SerializeField] float m_LengthScale;
+
+        [Tooltip("the n most recent values to draw")]
         [Range(0, k_BufferLen)]
         [SerializeField] uint m_Count;
 
-        /// the value's line width
+        [Tooltip("the line width")]
         [SerializeField] bool m_IsEnabled;
 
         // -- props --
@@ -85,11 +89,13 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         public Value(
             string name,
             Color color,
-            float width
+            float width,
+            float lengthScale
         ) {
             m_Name = name;
             m_Color = color;
             m_Width = width;
+            m_LengthScale = lengthScale;
             m_Count = k_BufferLen;
             m_IsEnabled = true;
             m_Buffer = new Queue<Ray>(k_BufferLen);
@@ -125,6 +131,11 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         ///  .
         public float Width {
             get => m_Width;
+        }
+
+        ///  .
+        public float LengthScale {
+            get => m_LengthScale;
         }
 
         ///  .

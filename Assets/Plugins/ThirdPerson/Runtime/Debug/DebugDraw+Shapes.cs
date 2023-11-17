@@ -33,7 +33,7 @@ public partial class DebugDraw {
 
                     Draw.Line(
                         ray.Pos,
-                        ray.Pos + m_LengthScale * ray.Dir,
+                        ray.Pos + m_LengthScale * value.LengthScale * ray.Dir,
                         value.Width * m_WidthScale,
                         value.Color
                     );

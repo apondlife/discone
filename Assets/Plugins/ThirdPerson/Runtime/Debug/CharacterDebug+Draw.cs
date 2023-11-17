@@ -10,7 +10,7 @@ public partial class Character {
     [SerializeField] bool m_IsDrawing;
 
     void Debug_Draw() {
-        if (!m_IsDrawing) {
+        if (!m_IsDrawing || m_IsPaused) {
             return;
         }
 
