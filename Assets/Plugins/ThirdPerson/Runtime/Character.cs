@@ -63,11 +63,13 @@ public partial class Character: MonoBehaviour, CharacterContainer {
 
     // -- lifecycle --
     void Awake() {
+        var t = transform;
+
         // init state
         m_State = new CharacterState(
             new CharacterState.Frame(
-                transform.position,
-                transform.forward
+                t.position,
+                t.forward
             ),
             m_Tuning
         );
@@ -75,7 +77,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         m_Events = new CharacterEvents(m_State);
 
         // reset rotation; model is the only transform that rotates
-        transform.rotation = Quaternion.identity;
+        t.rotation = Quaternion.identity;
 
         // if editor, stop here
         if (!Application.IsPlaying(gameObject)) {
@@ -104,6 +106,12 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         foreach (var system in m_Systems) {
             system.Init(this);
         }
+    }
+
+    void Update() {
+        #if UNITY_EDITOR
+        Debug_Update();
+        #endif
     }
 
     void FixedUpdate() {
@@ -135,6 +143,10 @@ public partial class Character: MonoBehaviour, CharacterContainer {
             ShaderProps.CharacterGroundPlane,
             plane.AsVector4()
         );
+
+        #if UNITY_EDITOR
+        Debug_FixedUpdate();
+        #endif
     }
 
     /// run the character systems

@@ -8,10 +8,10 @@ namespace ThirdPerson {
 public sealed class Buffer<T>: IEnumerable<T> {
     // -- props --
     /// the current count of items
-    private int m_Count;
+    int m_Count;
 
     /// the array of items in the buffer
-    private readonly T[] m_Buffer;
+    readonly T[] m_Buffer;
 
     // -- lifetime --
     public Buffer(uint size) {

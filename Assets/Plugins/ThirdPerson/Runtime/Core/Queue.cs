@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThirdPerson {
 
 /// a circular buffer of n data elements
-public sealed class Queue<T> {
+public sealed class Queue<T>: IEnumerable<T> {
     // -- constants --
     /// a null index
     const int k_None = -1;
@@ -62,8 +64,20 @@ public sealed class Queue<T> {
     }
 
     /// gets the circular index given an offset from the start index
-    private int GetIndex(int offset) {
+    int GetIndex(int offset) {
         return ((m_Head - offset) + m_Queue.Length) % m_Queue.Length;
+    }
+
+    // -- IEnumerable --
+    IEnumerator IEnumerable.GetEnumerator() {
+        return GetEnumerator();
+    }
+
+    public IEnumerator<T> GetEnumerator() {
+        var n = m_Queue.Length;
+        for (var i = 0; i < n; i++) {
+            yield return m_Queue[i];
+        }
     }
 }
 

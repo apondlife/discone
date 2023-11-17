@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// debug extensions for the character
-public partial class Character: MonoBehaviour {
+public partial class Character {
     // -- constants --
     /// no frame
     const int k_Debug_FrameNone = -1;
@@ -38,7 +38,7 @@ public partial class Character: MonoBehaviour {
     float m_CurrentKeyTime = -1.0f;
 
     // -- lifecycle --
-    void Update() {
+    void Debug_Update() {
         // capture key press
         if (UnityEngine.Input.GetKeyDown(k_Debug_Pause)) {
             Debug_OnKeyDown(k_Debug_Pause);
@@ -58,6 +58,11 @@ public partial class Character: MonoBehaviour {
         if (isRepeat) {
             Debug_OnKey();
         }
+    }
+
+    void Debug_FixedUpdate() {
+        // draw the character state
+        Debug_Draw();
     }
 
     // -- commands --
