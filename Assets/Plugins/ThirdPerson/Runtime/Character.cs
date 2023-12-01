@@ -175,7 +175,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         if (m_State.IsEmpty) {
             m_State.Fill(frame);
         } else {
-            m_State.Force(frame);
+            m_State.Override(frame);
         }
     }
 

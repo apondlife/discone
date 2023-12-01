@@ -35,7 +35,7 @@ sealed class CollisionSystem: CharacterSystem {
         var next = c.State.Next;
 
         // integrate acceleration (forces)
-        var a = next.Acceleration * delta;
+        var a = next.Force * delta;
         var v = next.Velocity + next.Inertia + a;
 
         // move character using controller if not idle

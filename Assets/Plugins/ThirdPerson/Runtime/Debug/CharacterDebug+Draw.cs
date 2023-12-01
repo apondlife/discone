@@ -28,6 +28,7 @@ public partial class Character {
         var pos = m_State.Position;
         DebugDraw.Push(s_Position, pos - 1f * Vector3.up, Vector3.up * 2f);
         DebugDraw.Push(s_Velocity, pos, m_State.Velocity);
+        DebugDraw.Push(s_Force, pos, m_State.Force - m_Tuning.Gravity * Vector3.up);
         DebugDraw.Push(s_Inertia, pos, m_State.Inertia);
     }
 
@@ -45,6 +46,14 @@ public partial class Character {
         name: "velocity",
         color: Color.magenta,
         count: 50,
+        minAlpha: 0.1f
+    );
+
+    static readonly DebugDraw.Value s_Force = new DebugDraw.Value(
+        name: "force",
+        color: new Color(1f, 0f, 0f, 0.5f),
+        count: 50,
+        lengthScale: 0.2f,
         minAlpha: 0.1f
     );
 

@@ -40,7 +40,7 @@ public sealed partial class CharacterState {
         var next = m_Frames[0].Copy();
 
         // every frame starts with no next acceleration (forces)
-        next.Acceleration = Vector3.zero;
+        next.Force = Vector3.zero;
 
         m_Frames.Add(next);
     }
@@ -50,8 +50,8 @@ public sealed partial class CharacterState {
         m_Frames.Fill(frame);
     }
 
-    /// force the current frame
-    public void Force(CharacterState.Frame frame) {
+    /// override the current frame
+    public void Override(CharacterState.Frame frame) {
         m_Frames[0] = frame;
     }
 
@@ -110,6 +110,9 @@ public sealed partial class CharacterState {
         ///  the character's velocity before it is resolved by the collision system
         [FormerlySerializedAs("PreCollisionVelocity")]
         public Vector3 Inertia = Vector3.zero;
+
+        /// the input force this frame
+        public Vector3 Force = Vector3.zero;
 
         /// how much the velocity changed since last frame
         public Vector3 Acceleration = Vector3.zero;
@@ -304,6 +307,7 @@ public sealed partial class CharacterState {
             // TODO: should bools be doing something different? past 50%?
             res.Position = Vector3.Lerp(start.Position, end.Position, k);
             res.Velocity = Vector3.Lerp(start.Velocity, end.Velocity, k);
+            res.Force = Vector3.Lerp(start.Force, end.Force, k);
             res.Acceleration = Vector3.Lerp(start.Acceleration, end.Acceleration, k);
             res.Forward = Vector3.Slerp(start.Forward, end.Forward, k);
             res.Tilt = Quaternion.Slerp(start.Tilt, end.Tilt, k);

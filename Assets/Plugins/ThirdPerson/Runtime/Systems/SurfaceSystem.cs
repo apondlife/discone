@@ -126,8 +126,8 @@ sealed class SurfaceSystem: CharacterSystem {
         acceleration += surfaceAcceleration * surfaceAngleScale * surfaceUp;
 
         // update state
-        c.State.Inertia -= inertiaDecay;
-        c.State.Acceleration += acceleration;
+        c.State.Next.Inertia -= inertiaDecay;
+        c.State.Next.Force += acceleration;
     }
 }
 

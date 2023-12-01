@@ -224,7 +224,7 @@ sealed class MovementSystem: CharacterSystem {
         var a = Mathf.Min(v0.magnitude / delta, c.Tuning.PivotDeceleration) * v0.normalized;
 
         // update velocity
-        c.State.Next.Acceleration -= a;
+        c.State.Next.Force -= a;
 
         // once speed is zero, transition to next state
         if (c.State.IsStopped) {
@@ -264,7 +264,7 @@ sealed class MovementSystem: CharacterSystem {
         // add aerial drift
         var v0 = c.State.Curr.PlanarVelocity;
         var a = c.Input.Move * c.Tuning.AerialDriftAcceleration;
-        c.State.Next.Acceleration += a;
+        c.State.Next.Force += a;
     }
 
     // -- commands --
@@ -323,11 +323,11 @@ sealed class MovementSystem: CharacterSystem {
         // current velocity instead
         var va = v0 + dva;
         if (dvd.sqrMagnitude >= va.sqrMagnitude) {
-            c.State.Next.Acceleration -= v0 / delta;
+            c.State.Next.Force -= v0 / delta;
         }
         // otherwise, apply the movement acceleration
         else {
-            c.State.Next.Acceleration += acceleration - deceleration;
+            c.State.Next.Force += acceleration - deceleration;
         }
     }
 }

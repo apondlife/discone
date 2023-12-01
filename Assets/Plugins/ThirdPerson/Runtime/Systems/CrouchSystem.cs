@@ -118,7 +118,7 @@ sealed class CrouchSystem: CharacterSystem {
         c.State.Next.Horizontal_KineticFriction = kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch));
 
         // apply crouch gravity
-        c.State.Next.Acceleration += c.Tuning.Crouch_Acceleration * Vector3.up;
+        c.State.Next.Force += c.Tuning.Crouch_Acceleration * Vector3.up;
     }
 }
 

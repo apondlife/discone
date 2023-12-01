@@ -101,7 +101,7 @@ public partial class Character {
             m_Debug_StateFrame = m_State.Next.Copy();
 
             // step from a clean copy of the previous state
-            m_State.Force(m_State.Curr);
+            m_State.Override(m_State.Curr);
         }
 
         // run the systems for the debug state/input
@@ -109,7 +109,7 @@ public partial class Character {
 
         // ignore any mutations from the step
         if (m_Debug_StateFrame != null) {
-            m_State.Force(m_Debug_StateFrame);
+            m_State.Override(m_Debug_StateFrame);
         }
 
         m_Debug_StateFrame = null;
