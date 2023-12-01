@@ -15,11 +15,33 @@ public partial class Character {
         }
 
         var pos = m_State.Position;
-        DebugDraw.Push("position", pos - 1f * Vector3.up, Vector3.up * 2f);
-        DebugDraw.Push("velocity", pos, m_State.Velocity);
-        DebugDraw.Push("acceleration", pos, m_State.Acceleration);
-        DebugDraw.Push("inertia", pos, m_State.Inertia);
+        DebugDraw.Push(s_Position, pos - 1f * Vector3.up, Vector3.up * 2f);
+        DebugDraw.Push(s_Velocity, pos, m_State.Velocity);
+        DebugDraw.Push(s_Inertia, pos, m_State.Inertia);
     }
+
+    // -- config --
+    // TODO: consider whether this should be applied via an attribute on the
+    // state prop, via a scriptable object, &c
+    static readonly DebugDraw.Value s_Position = new DebugDraw.Value(
+        name: "position",
+        color: Color.yellow,
+        count: 100,
+        minAlpha: 0.1f
+    );
+
+    static readonly DebugDraw.Value s_Velocity = new DebugDraw.Value(
+        name: "velocity",
+        color: Color.magenta,
+        count: 50,
+        minAlpha: 0.1f
+    );
+
+    static readonly DebugDraw.Value s_Inertia = new DebugDraw.Value(
+        name: "inertia",
+        count: 100,
+        color: Color.green
+    );
 }
 
 }

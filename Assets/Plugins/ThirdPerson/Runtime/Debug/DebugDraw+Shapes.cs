@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 using Shapes;
 
 namespace  ThirdPerson {
@@ -28,14 +27,26 @@ public partial class DebugDraw {
                     continue;
                 }
 
-                for (var i = 0u; i < value.Count; i++) {
+                var color = value.Color;
+                var maxAlpha = color.a;
+
+                var n = value.Count;
+                for (var i = 0u; i < n; i++) {
                     var ray = value[i];
 
+                    // interpolate alpha to fade out older values
+                    color.a = Mathf.Lerp(
+                        maxAlpha,
+                        value.MinAlpha,
+                        (float)i / n
+                    );
+
+                    // draw line
                     Draw.Line(
                         ray.Pos,
                         ray.Pos + m_LengthScale * value.LengthScale * ray.Dir,
                         value.Width * m_WidthScale,
-                        value.Color
+                        color
                     );
                 }
             }
