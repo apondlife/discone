@@ -274,8 +274,10 @@ public sealed class CharacterController {
 
             // move backwards along the move dir to the last point where we were
             // at least contact offset away from the hit surface
+            // TODO: is the max right? we can end up < contact offset away now mid move
             var moveOffset = m_ContactOffset / Vector3.Dot(-moveDir, hit.normal);
-            moveDst = castSrc + (hit.distance - moveOffset) * moveDir;
+            var moveMag = Math.Max(hit.distance - moveOffset, 0f);
+            moveDst = castSrc + moveMag * moveDir;
 
             // if displacement is less than min move, try again from the prev
             // position w/ next velocity
@@ -318,24 +320,27 @@ public sealed class CharacterController {
             var castSrc = moveDst;
             var castDir = Vector3.zero;
             var castMax = m_ContactOffset + m_ContactEpsilon;
+            var castLen = m_ContactOffset + m_ContactSearch;
+            var castRes = CastResult.Miss;
 
             // if a convex collider, get cast dir using closest point
             if (collider is not MeshCollider m || m.convex) {
                 castDir = collider.ClosestPoint(moveDst) - castSrc;
 
-                didHit = CollideCapsule(
+                castRes = CollideCapsule(
                     capsule,
                     castSrc,
                     castDir,
                     castMax,
+                    castLen,
                     ref hit,
                     ref collisionOffset,
                     ref nextWall,
                     ref nextGround
                 );
 
-                if (!didHit) {
-                    Debug.LogWarning("[cntrlr] final collision cast missed!");
+                if (castRes == CastResult.Miss) {
+                    Debug.LogWarning($"[cntrlr] final collision cast missed convex mesh {collider}");
                 }
             }
             // otherwise, depenetrate from concave mesh to find dir
@@ -365,20 +370,21 @@ public sealed class CharacterController {
 
                 // cast along the surface to find all collision surfaces on the concave mesh
                 for (numCasts = 0; numCasts < k_MaxCasts; numCasts++) {
-                    didHit = CollideCapsule(
+                    castRes = CollideCapsule(
                         capsule,
                         castSrc,
                         castDir,
                         castMax,
+                        castLen: castMax,
                         ref hit,
                         ref collisionOffset,
                         ref nextWall,
                         ref nextGround
                     );
 
-                    if (!didHit) {
+                    if (castRes == CastResult.Miss) {
                         if (numCasts == 0) {
-                            Debug.LogWarning("[cntrlr] final collision cast missed!");
+                            Debug.LogWarning($"[cntrlr] final collision cast missed concave mesh {m}");
                         }
 
                         break;
@@ -416,11 +422,18 @@ public sealed class CharacterController {
         };
     }
 
-    bool CollideCapsule(
+    enum CastResult {
+        Hit,
+        Miss,
+        OutOfRange
+    }
+
+    CastResult CollideCapsule(
         Capsule capsule,
         Vector3 castSrc,
         Vector3 castDir,
         float castMax,
+        float castLen,
         ref RaycastHit hit,
         ref Vector3 offset,
         ref CharacterCollision nextWall,
@@ -430,7 +443,7 @@ public sealed class CharacterController {
         var cast = capsule.IntoCast(
             castSrc,
             castDir.normalized,
-            castMax
+            castLen
         );
 
         var didHit = Physics.CapsuleCast(
@@ -445,12 +458,12 @@ public sealed class CharacterController {
         );
 
         if (!didHit) {
-            return false;
+            return CastResult.Miss;
         }
 
         // ignore hits farther away than the offset but within search radius
         if (hit.distance > castMax) {
-            return false;
+            return CastResult.OutOfRange;
         }
 
         // accumulate the offset
@@ -469,7 +482,7 @@ public sealed class CharacterController {
             nextGround = collision;
         }
 
-        return true;
+        return CastResult.Hit;
     }
 
     // -- queries --
