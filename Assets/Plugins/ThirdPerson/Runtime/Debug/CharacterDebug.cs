@@ -58,6 +58,9 @@ public partial class Character {
         if (isRepeat) {
             Debug_OnKey();
         }
+
+        // run draw input
+        Debug_DrawInput();
     }
 
     void Debug_FixedUpdate() {
