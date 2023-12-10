@@ -141,8 +141,21 @@ public sealed partial class CharacterState {
         /// the collision for the last touched surface
         public CharacterCollision CurrSurface;
 
+        /// the collision for the previously touched surface
+        public CharacterCollision PrevSurface;
+
+        /// the collision for surface with most force opposing movement
+        public CharacterCollision StrongestSurface;
+
         /// the collision for the current perceived surface
         public CharacterCollision PerceivedSurface;
+
+        // TODO: wrap this up as a ReadonlyBuffer<CharacterCollision>
+        /// the collision surfaces
+        public CharacterCollision[] Surfaces;
+
+        /// the number of collision surfaces
+        public uint SurfaceCount;
 
         /// the frame in the jump squat
         public int JumpSquatFrame = -1;
@@ -153,7 +166,7 @@ public sealed partial class CharacterState {
         /// the drag for grounded movement
         public float Horizontal_Drag = 0.0f;
 
-        /// the kinectic friction for grounded movement
+        /// the kinetic friction for grounded movement
         public float Horizontal_KineticFriction = 0.0f;
 
         /// the static friction for grounded movement
@@ -232,6 +245,7 @@ public sealed partial class CharacterState {
             get => Ground.IsSome || CoyoteFrames > 0;
         }
 
+        // AAA: rewrite GroundSurface & WallSurface against the collision list
         /// the ground-like collision surface
         public CharacterCollision GroundSurface {
             get => Ground.IsSome ? Ground : Wall;

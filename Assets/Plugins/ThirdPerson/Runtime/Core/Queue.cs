@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace ThirdPerson {
 
@@ -40,6 +39,15 @@ public sealed class Queue<T>: IEnumerable<T> {
     /// move the head of the queue by the offset
     public void Move(int offset) {
         m_Head = GetIndex(offset);
+    }
+
+    /// clear the values in the buffer
+    public void Clear() {
+        m_Head = k_None;
+
+        for (var i = 0; i < m_Queue.Length; i++) {
+            m_Queue[i] = default;
+        }
     }
 
     // -- queries --

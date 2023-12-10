@@ -9,13 +9,30 @@ namespace  ThirdPerson {
 /// a debug utility for adding drawings
 public partial class DebugDraw: ImmediateModeShapeDrawer {
     // -- constants --
+    /// the default buffer length
     const uint k_BufferLen = 300;
+
+    /// the debug draw key
+    const KeyCode k_ToggleKey = KeyCode.Alpha0;
+
+    /// the debug draw key
+    const KeyCode k_ClearKey = KeyCode.Minus;
+
+    /// the debug draw key
+    const KeyCode k_PauseKey = KeyCode.Alpha9;
 
     // -- static --
     /// the singleton instance
     static DebugDraw s_Instance;
 
-    // -- props --
+    // -- fields --
+    [Header("fields")]
+    [Tooltip("if drawing is enabled")]
+    [SerializeField] bool m_IsEnabled;
+
+    [Tooltip("if value collection is paused")]
+    [SerializeField] bool m_IsPaused;
+
     // TODO: make this a keyable type
     [Tooltip("the map of values")]
     [SerializeField] List<Value> m_Values = new();
@@ -23,6 +40,25 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     // -- lifecycle --
     void Awake() {
         s_Instance = this;
+    }
+
+    void Update() {
+        // toggle drawing on press
+        if (Input.GetKeyDown(k_ToggleKey)) {
+            m_IsEnabled = !m_IsEnabled;
+        }
+
+        // toggle value collection on press
+        if (Input.GetKeyDown(k_PauseKey)) {
+            m_IsPaused = !m_IsPaused;
+        }
+
+        // clear on press
+        if (Input.GetKeyDown(k_ClearKey)) {
+            foreach (var value in m_Values) {
+                value.Clear();
+            }
+        }
     }
 
     // -- commands --
@@ -46,6 +82,11 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
     /// push the drawing's current value
     void PushNext(Value initialValue, Vector3 pos, Vector3 dir) {
+        // don't push when not enabled
+        if (!m_IsEnabled || m_IsPaused) {
+            return;
+        }
+
         // find or create the value
         // TODO: convert this to serializable dictionary-like storage
         var value = null as Value;
@@ -121,6 +162,11 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         /// .
         public void Push(Ray next) {
             m_Buffer.Add(next);
+        }
+
+        /// .
+        public void Clear() {
+            m_Buffer.Clear();
         }
 
         // -- queries --

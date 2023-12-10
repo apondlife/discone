@@ -8,7 +8,7 @@ namespace ThirdPerson {
 public struct CharacterCollision: IEquatable<CharacterCollision> {
     // -- constants --
     /// an empty collision
-    public static CharacterCollision None = new CharacterCollision(
+    public static readonly CharacterCollision None = new CharacterCollision(
         Vector3.zero,
         Vector3.zero,
         0f

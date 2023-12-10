@@ -1,5 +1,7 @@
 using System;
+using System.Numerics;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 namespace ThirdPerson {
 
@@ -50,17 +52,20 @@ sealed class CollisionSystem: CharacterSystem {
         // TODO: store a list of n collisions this frame
         next.Ground = frame.Ground;
         next.Wall = frame.Wall;
+        next.Surfaces = frame.Surfaces;
+        next.SurfaceCount = frame.SurfaceCount;
 
-        // find the last relevant touched surface
-        var surface = curr.CurrSurface;
+        // given next surface
+        var prevGround = curr.GroundSurface;
+        var nextGround = next.GroundSurface;
 
-        // if the newest surface is different, use that
-        var newSurface = next.GroundSurface;
-        if (newSurface.IsSome && surface.Normal != newSurface.Normal) {
-            surface = newSurface;
+        // find the last relevant touched surface; if the newest surface is different, use that
+        var currSurface = curr.CurrSurface;
+        if (nextGround.IsSome && currSurface.Normal != nextGround.Normal) {
+            currSurface = nextGround;
         }
 
-        next.CurrSurface = surface;
+        next.CurrSurface = currSurface;
 
         // move the perceived surface towards the current surface
         var perceivedNormal = curr.PerceivedSurface.Normal;
@@ -89,6 +94,59 @@ sealed class CollisionSystem: CharacterSystem {
         var inertia = v - frame.Velocity;
         var inertiaDir = inertia.normalized;
         var inertiaMag = inertia.magnitude;
+
+        // AAA
+        var strongestSurface = CharacterCollision.None;
+        var maxForce = -1f;
+        for (var i = 0; i < next.SurfaceCount; i++) {
+            var surface = next.Surfaces[i];
+            var force = Vector3.Dot(
+                surface.Normal,
+                -inertia
+            );
+
+            if (force > maxForce) {
+                strongestSurface = surface;
+                maxForce = force;
+            }
+        }
+
+        next.StrongestSurface = strongestSurface;
+
+        // find the surface we touched before the new surface, if any
+        var prevSurface = curr.PrevSurface;
+        var prevDotStrongest = Vector3.Dot(
+            curr.StrongestSurface.Normal,
+            strongestSurface.Normal
+        );
+        if (prevDotStrongest - 1f < -0.00001f) {
+            var normalDelta = Vector3.Dot(prevSurface.Normal, curr.StrongestSurface.Normal);
+
+            Debug.Log($"[chrctr] normal delta {normalDelta} {curr.StrongestSurface.Normal} {strongestSurface.Normal}");
+            if (Mathf.Abs(normalDelta - 1f) > 0.001f) {
+                prevSurface = curr.StrongestSurface;
+                DebugDraw.Push(
+                    "prevsurface",
+                    prevSurface.IsSome
+                        ? prevSurface.Point
+                        : c.State.Position,
+                    prevSurface.Normal
+                );
+            }
+        }
+
+        next.PrevSurface = prevSurface;
+        DebugDraw.Push(
+            "inertia+a",
+            c.State.Position,
+            inertia
+        );
+
+        DebugDraw.Push(
+            "mostnormal",
+            c.State.Position,
+            c.State.StrongestSurface.Normal
+        );
 
         // remove acceleration into surface (unrealized) from inertia & prevent
         // inversion of direction

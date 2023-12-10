@@ -21,6 +21,30 @@ public sealed class CharacterController {
 
         /// .
         public CharacterCollision Ground;
+
+        /// TODO: flatten this array and keep a single buffer in the controller
+        /// .
+        public CharacterCollision[] Surfaces;
+
+        ///  .
+        public uint SurfaceCount;
+
+        // -- lifetime --
+        public Frame(uint maxCollisions) {
+            Position = Vector3.zero;
+            Velocity = Vector3.zero;
+            Wall = CharacterCollision.None;
+            Ground = CharacterCollision.None;
+            Surfaces = new CharacterCollision[maxCollisions];
+            SurfaceCount = 0;
+        }
+
+        // -- commands --
+        /// add a new surface to the buffer
+        public void AddSurface(CharacterCollision surface) {
+            Surfaces[SurfaceCount] = surface;
+            SurfaceCount++;
+        }
     }
 
     // why are we not using rigidbodies? they are annoying to work around. since
@@ -101,7 +125,7 @@ public sealed class CharacterController {
     /// initialize the controller
     public void Init() {
         // set props
-        m_Colliders = new Collider[k_MaxCasts];
+        m_Colliders = new Collider[k_MaxCollisions];
         m_SqrMinMove = m_MinMove * m_MinMove;
         m_SqrMinSpeed = m_MinSpeed * m_MinSpeed;
 
@@ -158,9 +182,8 @@ public sealed class CharacterController {
         var hitDir = Vector3.zero;
         var hitDist = 0f;
 
-        // clear the collisions
-        var nextWall = new CharacterCollision();
-        var nextGround = new CharacterCollision();
+        // prepare a new frame
+        var nextFrame = new Frame(k_MaxCollisions);
 
         // DEBUG: reset state
         #if UNITY_EDITOR
@@ -323,11 +346,18 @@ public sealed class CharacterController {
             var castLen = m_ContactOffset + m_ContactSearch;
             var castRes = CastResult.Miss;
 
-            // if a convex collider, get cast dir using closest point
-            if (collider is not MeshCollider m || m.convex) {
+            // we can only call closest point on convex colliders
+            var colliderSupportsClosestPoint = (
+                (collider is not TerrainCollider) &&
+                (collider is not MeshCollider m || m.convex)
+            );
+
+            // if this is a convex collider
+            if (colliderSupportsClosestPoint) {
                 castDir = collider.ClosestPoint(moveDst) - castSrc;
 
                 castRes = CollideCapsule(
+                    collider,
                     capsule,
                     castSrc,
                     castDir,
@@ -335,8 +365,7 @@ public sealed class CharacterController {
                     castLen,
                     ref hit,
                     ref collisionOffset,
-                    ref nextWall,
-                    ref nextGround
+                    ref nextFrame
                 );
 
                 if (castRes == CastResult.Miss) {
@@ -358,7 +387,7 @@ public sealed class CharacterController {
                 );
 
                 if (!didHit) {
-                    Debug.LogWarning($"[cntrlr] depenetration missed for {m}");
+                    Debug.LogWarning($"[cntrlr] depenetration missed for {collider}");
                     continue;
                 }
 
@@ -371,6 +400,7 @@ public sealed class CharacterController {
                 // cast along the surface to find all collision surfaces on the concave mesh
                 for (numCasts = 0; numCasts < k_MaxCasts; numCasts++) {
                     castRes = CollideCapsule(
+                        collider,
                         capsule,
                         castSrc,
                         castDir,
@@ -378,13 +408,12 @@ public sealed class CharacterController {
                         castLen: castMax,
                         ref hit,
                         ref collisionOffset,
-                        ref nextWall,
-                        ref nextGround
+                        ref nextFrame
                     );
 
                     if (castRes == CastResult.Miss) {
                         if (numCasts == 0) {
-                            Debug.LogWarning($"[cntrlr] final collision cast missed concave mesh {m}");
+                            Debug.LogWarning($"[cntrlr] final collision cast missed concave mesh {collider}");
                         }
 
                         break;
@@ -414,12 +443,11 @@ public sealed class CharacterController {
             nextVelocity = Vector3.zero;
         }
 
-        return new Frame() {
-            Position = moveDst,
-            Velocity = nextVelocity,
-            Wall = nextWall,
-            Ground = nextGround,
-        };
+        // update remaining frame properties
+        nextFrame.Position = moveDst;
+        nextFrame.Velocity = nextVelocity;
+
+        return nextFrame;
     }
 
     enum CastResult {
@@ -429,6 +457,7 @@ public sealed class CharacterController {
     }
 
     CastResult CollideCapsule(
+        Collider collider,
         Capsule capsule,
         Vector3 castSrc,
         Vector3 castDir,
@@ -436,8 +465,7 @@ public sealed class CharacterController {
         float castLen,
         ref RaycastHit hit,
         ref Vector3 offset,
-        ref CharacterCollision nextWall,
-        ref CharacterCollision nextGround
+        ref Frame nextFrame
     ) {
         // find the contact point on the surface
         var cast = capsule.IntoCast(
@@ -457,7 +485,8 @@ public sealed class CharacterController {
             QueryTriggerInteraction.Ignore
         );
 
-        if (!didHit) {
+        // this has to hit the same collider
+        if (!didHit || hit.collider != collider) {
             return CastResult.Miss;
         }
 
@@ -477,10 +506,12 @@ public sealed class CharacterController {
 
         // track wall & ground collision separately for external querying
         if (collision.Angle >= m_WallAngle) {
-            nextWall = collision;
+            nextFrame.Wall = collision;
         } else {
-            nextGround = collision;
+            nextFrame.Ground = collision;
         }
+
+        nextFrame.AddSurface(collision);
 
         return CastResult.Hit;
     }

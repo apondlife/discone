@@ -17,6 +17,12 @@ public partial class DebugDraw {
     public override void DrawShapes(UnityEngine.Camera cam) {
         base.DrawShapes(cam);
 
+        // only draw when enabled
+        if (!m_IsEnabled) {
+            return;
+        }
+
+        // draw every debug value
         using (Draw.Command(cam)) {
             Draw.LineGeometry = LineGeometry.Volumetric3D;
             Draw.ThicknessSpace = ThicknessSpace.Pixels;

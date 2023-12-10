@@ -4,24 +4,9 @@ namespace ThirdPerson {
 
 /// debug extensions for the character
 public partial class Character {
-    // -- constants --
-    /// the debug draw key
-    const KeyCode k_Debug_Draw = KeyCode.Alpha0;
-
     // -- debug - drawing --
-    [Header("debug - drawing")]
-    [Tooltip("if this character is drawing")]
-    [SerializeField] bool m_IsDrawing;
-
-    void Debug_DrawInput() {
-        // toggle drawing on debug press
-        if (UnityEngine.Input.GetKeyDown(k_Debug_Draw)) {
-            m_IsDrawing = !m_IsDrawing;
-        }
-    }
-
     void Debug_Draw() {
-        if (!m_IsDrawing || m_IsPaused) {
+        if (m_IsPaused) {
             return;
         }
 
@@ -46,6 +31,7 @@ public partial class Character {
         name: "velocity",
         color: Color.magenta,
         count: 50,
+        lengthScale: 0.5f,
         minAlpha: 0.1f
     );
 
@@ -53,7 +39,7 @@ public partial class Character {
         name: "force",
         color: new Color(1f, 0f, 0f, 0.5f),
         count: 50,
-        lengthScale: 0.2f,
+        lengthScale: 0.05f,
         minAlpha: 0.1f
     );
 
