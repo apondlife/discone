@@ -150,12 +150,9 @@ public sealed partial class CharacterState {
         /// the collision for the current perceived surface
         public CharacterCollision PerceivedSurface;
 
-        // TODO: wrap this up as a ReadonlyBuffer<CharacterCollision>
         /// the collision surfaces
+        // TODO: should we sort this by normal mag?
         public CharacterCollision[] Surfaces;
-
-        /// the number of collision surfaces
-        public uint SurfaceCount;
 
         /// the frame in the jump squat
         public int JumpSquatFrame = -1;
@@ -254,6 +251,11 @@ public sealed partial class CharacterState {
         /// the wall-like collision surface
         public CharacterCollision WallSurface {
             get => Wall.IsSome ? Wall : Ground;
+        }
+
+        /// if this is colliding with anything
+        public bool IsColliding {
+            get => Surfaces != null && Surfaces.Length != 0;
         }
 
         /// if the character is on the wall

@@ -52,8 +52,7 @@ sealed class CollisionSystem: CharacterSystem {
         // TODO: store a list of n collisions this frame
         next.Ground = frame.Ground;
         next.Wall = frame.Wall;
-        next.Surfaces = frame.Surfaces;
-        next.SurfaceCount = frame.SurfaceCount;
+        next.Surfaces = frame.Surfaces.ToArrayOrNull();
 
         // given next surface
         var prevGround = curr.GroundSurface;
@@ -97,21 +96,17 @@ sealed class CollisionSystem: CharacterSystem {
 
         // AAA
         var strongestSurface = CharacterCollision.None;
-        var maxForce = -1f;
-        for (var i = 0; i < next.SurfaceCount; i++) {
-            var surface = next.Surfaces[i];
-            var force = Vector3.Dot(
-                surface.Normal,
-                -inertia
-            );
-
-            if (force > maxForce) {
-                strongestSurface = surface;
-                maxForce = force;
+        if (next.IsColliding) {
+            strongestSurface.NormalMag = -1f;
+            for (var i = 0; i < next.Surfaces.Length; i++) {
+                var surface = next.Surfaces[i];
+                if (surface.NormalMag > strongestSurface.NormalMag) {
+                    strongestSurface = surface;
+                }
             }
-        }
 
-        next.StrongestSurface = strongestSurface;
+            next.StrongestSurface = strongestSurface;
+        }
 
         // find the surface we touched before the new surface, if any
         var prevSurface = curr.PrevSurface;
@@ -119,6 +114,7 @@ sealed class CollisionSystem: CharacterSystem {
             curr.StrongestSurface.Normal,
             strongestSurface.Normal
         );
+
         if (prevDotStrongest - 1f < -0.00001f) {
             var normalDelta = Vector3.Dot(prevSurface.Normal, curr.StrongestSurface.Normal);
 

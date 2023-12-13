@@ -16,34 +16,32 @@ public sealed class CharacterController {
         /// .
         public Vector3 Velocity;
 
+        /// the difference between input velocity and the frame velocity
+        public Vector3 Inertia;
+
         /// .
         public CharacterCollision Wall;
 
         /// .
         public CharacterCollision Ground;
 
-        /// TODO: flatten this array and keep a single buffer in the controller
         /// .
-        public CharacterCollision[] Surfaces;
-
-        ///  .
-        public uint SurfaceCount;
+        public Buffer<CharacterCollision> Surfaces;
 
         // -- lifetime --
         public Frame(uint maxCollisions) {
             Position = Vector3.zero;
             Velocity = Vector3.zero;
+            Inertia = Vector3.zero;
             Wall = CharacterCollision.None;
             Ground = CharacterCollision.None;
-            Surfaces = new CharacterCollision[maxCollisions];
-            SurfaceCount = 0;
+            Surfaces = new Buffer<CharacterCollision>(maxCollisions);
         }
 
         // -- commands --
         /// add a new surface to the buffer
         public void AddSurface(CharacterCollision surface) {
-            Surfaces[SurfaceCount] = surface;
-            SurfaceCount++;
+            Surfaces.Add(surface);
         }
     }
 
@@ -321,6 +319,15 @@ public sealed class CharacterController {
             numCasts++;
         }
 
+        // zero out small speed
+        if (nextVelocity.sqrMagnitude <= m_SqrMinSpeed) {
+            nextVelocity = Vector3.zero;
+        }
+
+        // update frame velocity
+        nextFrame.Velocity = nextVelocity;
+        nextFrame.Inertia = velocity - nextVelocity;
+
         // find any colliders we're contact offset away from
         var capsulePts = capsule.Offset(moveDst).Points();
         var numOverlaps = Physics.OverlapCapsuleNonAlloc(
@@ -438,14 +445,8 @@ public sealed class CharacterController {
         // apply offset to depenetrate from colliders
         moveDst += collisionOffset;
 
-        // zero out small speed
-        if (nextVelocity.sqrMagnitude <= m_SqrMinSpeed) {
-            nextVelocity = Vector3.zero;
-        }
-
-        // update remaining frame properties
+        // update final frame position
         nextFrame.Position = moveDst;
-        nextFrame.Velocity = nextVelocity;
 
         return nextFrame;
     }
@@ -499,9 +500,13 @@ public sealed class CharacterController {
         offset += Mathf.Max(m_ContactOffset - hit.distance, 0f) * hit.normal;
 
         // track collisions
+        var collisionAngle = Vector3.Angle(hit.normal, Vector3.up);
+        var collisionNormalMag = Mathf.Max(Vector3.Dot(hit.normal, -nextFrame.Inertia), 0f);
         var collision = new CharacterCollision(
             hit.normal,
-            hit.point
+            hit.point,
+            collisionAngle,
+            collisionNormalMag
         );
 
         // track wall & ground collision separately for external querying

@@ -3,6 +3,11 @@ what is projected
 
 # inertia & movement
 
+- draw line and fold paper
+- should transfer be towards 
+  - move direction?
+  - inertia projected into surface (disambiguated by prev normal -> normal) 
+
 - wall gravity too strong ? (see negative walls)
 - inertia transfer really strong
 - lose inertia on wall transfer?

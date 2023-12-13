@@ -8,10 +8,11 @@ namespace ThirdPerson {
 public struct CharacterCollision: IEquatable<CharacterCollision> {
     // -- constants --
     /// an empty collision
-    public static readonly CharacterCollision None = new CharacterCollision(
-        Vector3.zero,
-        Vector3.zero,
-        0f
+    public static readonly CharacterCollision None = new(
+        normal: Vector3.zero,
+        point: Vector3.zero,
+        angle: 0f,
+        normalMag: 0f
     );
 
     // -- props --
@@ -24,26 +25,21 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
     /// the surface angle relative to up
     public float Angle;
 
+    /// the magnitude of the normal resistance/impulse
+    public float NormalMag;
+
     // -- lifetime --
     /// create a new collision
     public CharacterCollision(
         Vector3 normal,
-        Vector3 point
-    ) {
-        Normal = normal;
-        Point = point;
-        Angle = Vector3.Angle(normal, Vector3.up);
-    }
-
-    /// create a new collision
-    CharacterCollision(
-        Vector3 normal,
         Vector3 point,
-        float angle
+        float angle,
+        float normalMag
     ) {
         Normal = normal;
         Point = point;
         Angle = angle;
+        NormalMag = normalMag;
     }
 
     // -- command --

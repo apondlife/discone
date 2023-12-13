@@ -21,6 +21,9 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     /// the debug draw key
     const KeyCode k_PauseKey = KeyCode.Alpha9;
 
+    /// the debug disable all key
+    const KeyCode k_DisableAllKey = KeyCode.Equals;
+
     // -- static --
     /// the singleton instance
     static DebugDraw s_Instance;
@@ -57,6 +60,13 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         if (Input.GetKeyDown(k_ClearKey)) {
             foreach (var value in m_Values) {
                 value.Clear();
+            }
+        }
+
+        // disable all on press
+        if (Input.GetKeyDown(k_DisableAllKey)) {
+            foreach (var value in m_Values) {
+                value.IsEnabled = false;
             }
         }
     }
@@ -213,6 +223,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         ///  .
         public bool IsEnabled {
             get => m_IsEnabled;
+            set => m_IsEnabled = value;
         }
     }
 

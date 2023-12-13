@@ -52,7 +52,7 @@ sealed class SurfaceSystem: CharacterSystem {
 
     void SurfaceSlide_Update(float delta) {
         // if we left all surfaces, exit
-        if (c.State.SurfaceCount == 0) {
+        if (!c.State.Curr.IsColliding) {
             ChangeTo(NotOnSurface);
             return;
         }
@@ -61,15 +61,17 @@ sealed class SurfaceSystem: CharacterSystem {
         Vector3 addedAcceleration = Vector3.zero;
 
         var prevNormal = Vector3.zero;
-        for (var i = 0; i < c.State.Prev.SurfaceCount; i++) {
-            prevNormal += c.State.Prev.Surfaces[i].Normal;
+        if (c.State.Prev.IsColliding) {
+            for (var i = 0; i < c.State.Prev.Surfaces.Length; i++) {
+                prevNormal += c.State.Prev.Surfaces[i].Normal;
+            }
+
+            prevNormal = Vector3.Normalize(prevNormal);
         }
 
-        prevNormal = Vector3.Normalize(prevNormal);
-
         // update to new surface collision
-        for (var i = 0; i < c.State.Next.SurfaceCount; i++) {
-            var surface = c.State.Next.Surfaces[i];
+        for (var i = 0; i < c.State.Curr.Surfaces.Length; i++) {
+            var surface = c.State.Curr.Surfaces[i];
 
             var surfaceNormal = surface.Normal;
             var surfaceUp = Vector3.ProjectOnPlane(Vector3.up, surface.Normal).normalized;
@@ -83,6 +85,10 @@ sealed class SurfaceSystem: CharacterSystem {
             var surfacePrevTg = surfacePrev.IsSome
                 ? Vector3.ProjectOnPlane(surfacePrev.Normal, surface.Normal).normalized
                 : surfaceUp;
+            DebugDraw.Push($"surf-prevNormal{i}", c.State.Next.Position, surfacePrev.Normal);
+            DebugDraw.Push($"surf-currNormal{i}", c.State.Next.Position, surface.Normal);
+
+            DebugDraw.Push($"surfprev-tg{i}", c.State.Next.Position, surfacePrevTg);
 
             // // AAA: this is bad cause velocity keeps changing and thus projection keeps changing
             // surfacePrevTg = surfaceUp;
@@ -116,6 +122,7 @@ sealed class SurfaceSystem: CharacterSystem {
             var inertia = c.State.Curr.Inertia;
             var inertiaTg = Vector3.ProjectOnPlane(inertia, surfaceNormal);
             var inertiaNormal = inertia - inertiaTg;
+            // var inertiaNormal = surface.Normal * surface.NormalMag;
 
             // calculate the decay to hit 1% of the inertia over a fixed interval
             // TODO: can we optimize this pow by inverting this and showing the half-life as a debug query? -ty

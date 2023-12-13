@@ -63,6 +63,18 @@ public sealed class Buffer<T>: IEnumerable<T> {
         get => m_Count;
     }
 
+    /// get a readonly copy of this buffer or null if its empty
+    public T[] ToArrayOrNull() {
+        if (m_Count == 0) {
+            return null;
+        }
+
+        var result = new T[m_Count];
+        Array.Copy(m_Buffer, result, m_Count);
+
+        return result;
+    }
+
     // -- IEnumerable --
     IEnumerator IEnumerable.GetEnumerator() {
         return GetEnumerator();
