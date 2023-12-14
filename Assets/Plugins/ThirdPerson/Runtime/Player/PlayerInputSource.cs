@@ -22,6 +22,7 @@ public sealed class PlayerInputSource: MonoBehaviour, CharacterInputSource {
     // -- CharacterInputSource --
     public bool IsEnabled {
         get => enabled;
+        set => enabled = value;
     }
 
     public CharacterInput.Frame Read() {

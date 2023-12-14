@@ -46,17 +46,21 @@ public static class Vec2 {
 
     /// create a Vector3 with components (0, 0, y)
     public static Vector3 XNY(this Vector2 v) {
-        return new Vector3(v.x, 0.0f, v.y);
+        return new Vector3(v.x, 0f, v.y);
     }
 
     /// create a Vector3 with components (x, 0, 0)
     public static Vector3 XNN(this Vector2 v) {
-        return new Vector3(v.x, 0.0f, v.y);
+        return new Vector3(v.x, 0f, v.y);
     }
 
     /// create a Vector3 with components (0, 0, y)
     public static Vector3 NNY(this Vector2 v) {
-        return new Vector3(0, 0.0f, v.y);
+        return new Vector3(0, 0f, v.y);
+    }
+
+    public static Vector3 YXN(this Vector2 v) {
+        return new Vector3(v.y, v.x, 0f);
     }
 }
 

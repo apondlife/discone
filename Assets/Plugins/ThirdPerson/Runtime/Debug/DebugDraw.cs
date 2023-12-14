@@ -13,16 +13,16 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     /// the default buffer length
     const int k_BufferLen = 300;
 
-    /// the debug draw key
-    const KeyCode k_ToggleKey = KeyCode.Alpha0;
+    /// the toggle drawing key
+    const KeyCode k_ToggleKey = KeyCode.Alpha9;
 
-    /// the debug draw key
+    /// the pause drawing key
+    const KeyCode k_PauseKey = KeyCode.Alpha0;
+
+    /// the clear drawings key
     const KeyCode k_ClearKey = KeyCode.Minus;
 
-    /// the debug draw key
-    const KeyCode k_PauseKey = KeyCode.Alpha9;
-
-    /// the debug disable all key
+    /// the disable all values key
     const KeyCode k_DisableAllKey = KeyCode.Equals;
 
     // -- static --

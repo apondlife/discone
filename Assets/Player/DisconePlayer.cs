@@ -43,7 +43,7 @@ public sealed class DisconePlayer: MonoBehaviour {
     PlayerCheckpoint m_Checkpoint;
 
     /// a set of event subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Awake() {
@@ -127,6 +127,14 @@ public sealed class DisconePlayer: MonoBehaviour {
     void OnIsDialogueActiveChanged(bool isDialogueActive) {
         m_InputSource.enabled = !isDialogueActive;
     }
+
+    // -- props/hot --
+    /// if the input is enabled
+    public bool IsInputEnabled {
+        get => m_InputSource.IsEnabled;
+        set => m_InputSource.IsEnabled = value;
+    }
+
 }
 
 }
