@@ -57,7 +57,7 @@ public sealed class Queue<T>: IEnumerable<T> {
     }
 
     /// gets the snapshot nth-newest snapshot.
-    public T this[uint offset] {
+    public T this[int offset] {
         get {
             if (offset >= m_Queue.Length) {
                 throw new IndexOutOfRangeException();

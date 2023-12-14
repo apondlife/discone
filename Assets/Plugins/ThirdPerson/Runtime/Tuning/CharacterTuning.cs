@@ -124,10 +124,10 @@ public sealed class CharacterTuning: ScriptableObject {
     public float Gravity;
 
     [Tooltip("how many frames you can have pressed jump before landing to execute the jump")]
-    public uint JumpBuffer;
+    public int JumpBuffer;
 
     [Tooltip("max number of frames the character can be in the air and still jump")]
-    public uint MaxCoyoteFrames;
+    public int MaxCoyoteFrames;
 
     [Tooltip("the gravity while holding jump and moving up")]
     public float JumpGravity;
@@ -167,16 +167,16 @@ public sealed class CharacterTuning: ScriptableObject {
     [Serializable]
     public class JumpTuning {
         [Tooltip("the number of times this jump can be executed; 0 = infinite")]
-        public uint Count = 1;
+        public int Count = 1;
 
         [Tooltip("how long after this jump the character can jump again")]
-        public uint CooldownFrames;
+        public int CooldownFrames;
 
         [Tooltip("the min number of frames jump squat lasts")]
-        public uint MinJumpSquatFrames = 5;
+        public int MinJumpSquatFrames = 5;
 
         [Tooltip("the max number of frames jump squat lasts")]
-        public uint MaxJumpSquatFrames = 5;
+        public int MaxJumpSquatFrames = 5;
 
         // TODO: convert to map out curve & remember how to propely update all prefabs
         [Tooltip("the minimum jump speed (minimum length jump squat)")]

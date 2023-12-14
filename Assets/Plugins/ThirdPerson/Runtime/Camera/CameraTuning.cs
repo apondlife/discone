@@ -39,7 +39,7 @@ public sealed class CameraTuning: ScriptableObject {
     public float Tracking_PitchAcceleration;
 
     [Tooltip("the number of frames without input to move to idle")]
-    public uint Tracking_IdleFrames;
+    public int Tracking_IdleFrames;
 
     // -- target speed --
     [Header("target speed")]

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Shapes;
 
@@ -36,15 +37,16 @@ public partial class DebugDraw {
                 var color = value.Color;
                 var maxAlpha = color.a;
 
-                var n = value.Count;
-                for (var i = 0u; i < n; i++) {
+                var i0 = Math.Max(m_Range.Min, value.Range.Min);
+                var i1 = Math.Min(m_Range.Max, value.Range.Max);
+                for (var i = i0; i < i1; i++) {
                     var ray = value[i];
 
                     // interpolate alpha to fade out older values
                     color.a = Mathf.Lerp(
                         maxAlpha,
                         value.MinAlpha,
-                        (float)i / n
+                        Mathf.InverseLerp(i0, i1, i)
                     );
 
                     // draw line

@@ -63,8 +63,8 @@ public sealed class CharacterInput {
     }
 
     /// if jump was pressed in the past n frames
-    public bool IsJumpDown(uint past = 1) {
-        for (var i = 0u; i < past; i++) {
+    public bool IsJumpDown(int past = 1) {
+        for (var i = 0; i < past; i++) {
             if (m_Frames[i]?.IsJumpDown == true && !m_Frames[i + 1]?.IsJumpDown == true) {
                 return true;
             }
@@ -74,8 +74,8 @@ public sealed class CharacterInput {
     }
 
     /// if jump was pressed in the past n frames
-    public bool IsMoveIdle(uint past = 1) {
-        for (var i = 0u; i < past; i++) {
+    public bool IsMoveIdle(int past = 1) {
+        for (var i = 0; i < past; i++) {
             if (m_Frames[i]?.Move != Vector3.zero) {
                 return false;
             }

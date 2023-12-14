@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using Shapes;
+using Soil;
 using Random = UnityEngine.Random;
 
 namespace  ThirdPerson {
@@ -10,7 +11,7 @@ namespace  ThirdPerson {
 public partial class DebugDraw: ImmediateModeShapeDrawer {
     // -- constants --
     /// the default buffer length
-    const uint k_BufferLen = 300;
+    const int k_BufferLen = 300;
 
     /// the debug draw key
     const KeyCode k_ToggleKey = KeyCode.Alpha0;
@@ -35,6 +36,10 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
     [Tooltip("if value collection is paused")]
     [SerializeField] bool m_IsPaused;
+
+    [Tooltip("the index range of values to draw")]
+    [Soil.Range(0, k_BufferLen)]
+    [SerializeField] IntRange m_Range = new(0, k_BufferLen);
 
     // TODO: make this a keyable type
     [Tooltip("the map of values")]
@@ -107,9 +112,11 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             }
         }
 
+        // if new, add it in sorted order
         if (value == null) {
             value = initialValue;
             m_Values.Add(value);
+            m_Values.Sort((l, r) => string.CompareOrdinal(l.Name, r.Name));
         }
 
         // push the current value
@@ -128,9 +135,9 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         [Tooltip("the rendered color")]
         [SerializeField] Color m_Color;
 
-        [Tooltip("the n most recent values to draw")]
-        [Range(0, k_BufferLen)]
-        [SerializeField] uint m_Count;
+        [Tooltip("the index range of values to draw")]
+        [Soil.Range(0, k_BufferLen)]
+        [SerializeField] IntRange m_Range = new(0, k_BufferLen);
 
         [Tooltip("the line width")]
         [SerializeField] float m_Width;
@@ -139,7 +146,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         [SerializeField] float m_LengthScale;
 
         [Tooltip("the min alpha as the value fades out")]
-        [Range(0f, 1f)]
+        [UnityEngine.Range(0f, 1f)]
         [SerializeField] float m_MinAlpha;
 
         [Tooltip("if the value is visible")]
@@ -153,16 +160,16 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         public Value(
             string name,
             Color color,
-            uint count = k_BufferLen,
+            int count = k_BufferLen,
             float width = 1f,
             float lengthScale = 1f,
             float minAlpha = 1f
         ) {
             m_Name = name;
             m_Color = color;
+            m_Range = new IntRange(0, count);
             m_Width = width;
             m_LengthScale = lengthScale;
-            m_Count = count;
             m_MinAlpha = minAlpha;
             m_IsEnabled = true;
             m_Buffer = new Queue<Ray>(k_BufferLen);
@@ -181,7 +188,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
         // -- queries --
         /// gets the nth-newest value
-        public Ray this[uint offset] {
+        public Ray this[int offset] {
             get => m_Buffer[offset];
         }
 
@@ -211,8 +218,8 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         }
 
         ///  .
-        public uint Count {
-            get => m_Count;
+        public IntRange Range {
+            get => m_Range;
         }
 
         ///  .
