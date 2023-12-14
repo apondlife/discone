@@ -8,11 +8,11 @@ namespace  ThirdPerson {
 public partial class DebugDraw {
     // -- drawing --
     [Header("drawing")]
-    [Tooltip("the scaling factor for drawn rays")]
-    [SerializeField] float m_LengthScale;
-
     [Tooltip("the scaling factor for ray thickness")]
-    [SerializeField] float m_WidthScale;
+    [SerializeField] float m_Width = 1f;
+
+    [Tooltip("the scaling factor for ray length")]
+    [SerializeField] float m_Scale = 1f;
 
     // -- lifecycle --
     public override void DrawShapes(UnityEngine.Camera cam) {
@@ -34,26 +34,17 @@ public partial class DebugDraw {
                     continue;
                 }
 
-                var color = value.Color;
-                var maxAlpha = color.a;
-
                 var i0 = Math.Max(m_Range.Min, value.Range.Min);
                 var i1 = Math.Min(m_Range.Max, value.Range.Max);
                 for (var i = i0; i < i1; i++) {
                     var ray = value[i];
-
-                    // interpolate alpha to fade out older values
-                    color.a = Mathf.Lerp(
-                        maxAlpha,
-                        value.MinAlpha,
-                        Mathf.InverseLerp(i0, i1, i)
-                    );
+                    var color = value.Color.Evaluate(Mathf.InverseLerp(i0, i1, i));
 
                     // draw line
                     Draw.Line(
                         ray.Pos,
-                        ray.Pos + m_LengthScale * value.LengthScale * ray.Dir,
-                        value.Width * m_WidthScale,
+                        ray.Pos + m_Scale * value.Scale * ray.Dir,
+                        value.Width * m_Width,
                         color
                     );
                 }

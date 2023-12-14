@@ -25,7 +25,7 @@ public partial class Character {
         color: Color.yellow,
         count: 100,
         width: 3f,
-        lengthScale: 0.01f,
+        scale: 0.01f,
         minAlpha: 0.1f
     );
 
@@ -33,7 +33,7 @@ public partial class Character {
         name: "~velocity",
         color: Color.magenta,
         count: 50,
-        lengthScale: 0.1f,
+        scale: 0.1f,
         minAlpha: 0.1f
     );
 
@@ -41,7 +41,7 @@ public partial class Character {
         name: "~force",
         color: new Color(1f, 0f, 0f, 0.5f),
         count: 50,
-        lengthScale: 0.05f,
+        scale: 0.05f,
         minAlpha: 0.1f
     );
 

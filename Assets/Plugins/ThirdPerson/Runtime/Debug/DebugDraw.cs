@@ -83,7 +83,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             name,
             color: Random.ColorHSV(0f, 1f, 1f, 1f, 1f, 1f),
             width: 1f,
-            lengthScale: 1f,
+            scale: 1f,
             minAlpha: 1f
         );
 
@@ -133,7 +133,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
         // -- fields --
         [Tooltip("the rendered color")]
-        [SerializeField] Color m_Color;
+        [SerializeField] Gradient m_Color;
 
         [Tooltip("the index range of values to draw")]
         [Soil.Range(0, k_BufferLen)]
@@ -143,11 +143,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         [SerializeField] float m_Width;
 
         [Tooltip("the length scale")]
-        [SerializeField] float m_LengthScale;
-
-        [Tooltip("the min alpha as the value fades out")]
-        [UnityEngine.Range(0f, 1f)]
-        [SerializeField] float m_MinAlpha;
+        [SerializeField] float m_Scale;
 
         [Tooltip("if the value is visible")]
         [SerializeField] bool m_IsEnabled;
@@ -162,15 +158,18 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             Color color,
             int count = k_BufferLen,
             float width = 1f,
-            float lengthScale = 1f,
+            float scale = 1f,
             float minAlpha = 1f
         ) {
+            var gradient = new Gradient();
+            gradient.colorKeys = new GradientColorKey[] { new(color, 0f) };
+            gradient.alphaKeys = new GradientAlphaKey[] { new(minAlpha, 0f), new (1f, 1f) };
+
             m_Name = name;
-            m_Color = color;
+            m_Color = gradient;
             m_Range = new IntRange(0, count);
             m_Width = width;
-            m_LengthScale = lengthScale;
-            m_MinAlpha = minAlpha;
+            m_Scale = scale;
             m_IsEnabled = true;
             m_Buffer = new Queue<Ray>(k_BufferLen);
         }
@@ -203,7 +202,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         }
 
         ///  .
-        public Color Color {
+        public Gradient Color {
             get => m_Color;
         }
 
@@ -213,18 +212,13 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         }
 
         ///  .
-        public float LengthScale {
-            get => m_LengthScale;
+        public float Scale {
+            get => m_Scale;
         }
 
         ///  .
         public IntRange Range {
             get => m_Range;
-        }
-
-        ///  .
-        public float MinAlpha {
-            get => m_MinAlpha;
         }
 
         ///  .
