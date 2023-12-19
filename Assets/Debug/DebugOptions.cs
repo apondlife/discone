@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityAtoms;
 using UnityEngine.InputSystem;
 using System.Reflection;
+using UnityEngine.Serialization;
 
 namespace Discone {
 
@@ -24,14 +25,15 @@ public class DebugOptions: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the entity repos")]
-    [SerializeField] EntitiesVariable m_Entites;
+    [FormerlySerializedAs("m_Entites")]
+    [SerializeField] EntitiesVariable m_Entities;
 
     // -- props --
     /// the menu input
     DebugInput m_Input;
 
     /// the subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Awake() {
@@ -47,9 +49,6 @@ public class DebugOptions: MonoBehaviour {
 
         // bind events
         m_Subscriptions.Add(m_Input.Reset, OnResetPressed);
-        #if UNITY_EDITOR
-        m_Subscriptions.Add(m_Input.SpawnCharacter, OnSpawnCharacterPressed);
-        #endif
     }
 
     // -- commands --
@@ -84,28 +83,10 @@ public class DebugOptions: MonoBehaviour {
     }
 
     #if UNITY_EDITOR
-    /// spawn the character at the scene camera's position
-    void SpawnCharacterAtSceneView() {
-        // get the editor camera
-        var scene = UnityEditor.SceneView.lastActiveSceneView;
-        if (scene == null) {
-            return;
-        }
-
-        var camera = scene.camera;
-        if (camera == null) {
-            return;
-        }
-
-        var t = camera.transform;
-
-        SpawnCharacterAtTransform(t);
-    }
-
     /// spawn a character at the transform position
     void SpawnCharacterAtTransform(Transform t) {
         // find the current player
-        var player = m_Entites.Value
+        var player = m_Entities.Value
             .Players
             .Current;
 
@@ -123,13 +104,6 @@ public class DebugOptions: MonoBehaviour {
     void OnResetPressed(InputAction.CallbackContext _) {
         Reset();
     }
-
-    #if UNITY_EDITOR
-    /// .
-    void OnSpawnCharacterPressed(InputAction.CallbackContext _) {
-        SpawnCharacterAtSceneView();
-    }
-    #endif
 }
 
 }

@@ -7,8 +7,9 @@ using UnityEngine.InputSystem;
 
 namespace Discone {
 
+/// the debug flying camera
 [RequireComponent(typeof(CinemachineVirtualCamera))]
-sealed class DebugCamera : MonoBehaviour {
+sealed class DebugCamera: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the base move speed")]
@@ -39,13 +40,32 @@ sealed class DebugCamera : MonoBehaviour {
     [Tooltip("the current character")]
     [SerializeField] DisconePlayerVariable m_Player;
 
+    // -- props --
+    /// the input
+    DebugInput m_Input;
+
+    /// the debug flying camera
     CinemachineVirtualCamera m_Camera;
 
+    /// the subscriptions
+    DisposeBag m_Subscriptions = new();
+
+    // -- lifecycle --
     void Awake() {
+        // get dependencies
+        m_Input = GetComponentInParent<DebugInput>();
         m_Camera = GetComponent<CinemachineVirtualCamera>();
+
+        // bind events
+        m_Subscriptions.Add(m_Input.SpawnCharacter, OnSpawnCharacterPressed);
+    }
+
+    void OnDestroy() {
+        m_Subscriptions.Dispose();
     }
 
     void Update() {
+        var delta = Time.deltaTime;
         var ct = transform;
 
         if (m_Toggle.action.WasPerformedThisFrame()) {
@@ -68,14 +88,38 @@ sealed class DebugCamera : MonoBehaviour {
             return;
         }
 
+        // move the camera
         var move = m_Move.action.ReadValue<Vector3>();
         var speed = m_Run.action.IsPressed() ? m_RunSpeed : m_MoveSpeed;
-        ct.position += transform.TransformDirection(speed * Time.deltaTime * move);
+        ct.position += transform.TransformDirection(speed * delta * move);
 
-        var look = m_Look.action.ReadValue<Vector2>();
-        var vLook = m_LookSpeed * Time.deltaTime * look;
-        var rotation = Quaternion.AngleAxis(vLook.x, Vector3.up) * Quaternion.AngleAxis(vLook.y, Vector3.right);
-        ct.rotation *= rotation;
+        // rotate the camera
+        var look = m_Look.action.ReadValue<Vector2>().YXN();
+        var lookVelocity = m_LookSpeed * delta * look;
+        lookVelocity.x = -lookVelocity.x;
+        var lookRotation = ct.localRotation.eulerAngles + lookVelocity;
+        ct.localRotation = Quaternion.Euler(lookRotation);
+    }
+
+    // -- queries --
+    bool IsEnabled {
+        get => m_Camera.enabled;
+    }
+
+    // -- events --
+    void OnSpawnCharacterPressed(InputAction.CallbackContext _) {
+        if (!IsEnabled) {
+            return;
+        }
+
+        var character = m_Player.Value.Character.Character;
+
+        // build frame at camera position
+        var nextFrame = character.State.Curr.Copy();
+        nextFrame.Position = m_Camera.transform.position;
+
+        // force to new position
+        character.ForceState(nextFrame);
     }
 }
 

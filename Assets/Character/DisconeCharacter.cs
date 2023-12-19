@@ -348,7 +348,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     /// the third person character
-    public ThirdPerson.Character Character {
+    public Character Character {
         get => m_Character;
     }
 
@@ -357,7 +357,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         get => m_Musics;
     }
 
-    /// the character dialgue
+    /// the character dialogue
     public CharacterDialogue Dialogue {
         get => m_Dialogue;
     }

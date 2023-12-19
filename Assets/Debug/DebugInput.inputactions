@@ -140,6 +140,17 @@
                 },
                 {
                     "name": "",
+                    "id": "c293db3f-6489-4b2f-9344-8db81c915574",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SpawnCharacter",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "a9a0f90c-4e27-4a61-ad01-b25fc8300dc0",
                     "path": "<Keyboard>/tab",
                     "interactions": "",
@@ -238,7 +249,7 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "2D Vector",
+                    "name": "IJKL",
                     "id": "e0da6e71-eea7-4729-a257-e7227c060aa0",
                     "path": "2DVector",
                     "interactions": "",
@@ -287,6 +298,39 @@
                     "path": "<Keyboard>/l",
                     "interactions": "",
                     "processors": "",
+                    "groups": "",
+                    "action": "NoClip_Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Mouse",
+                    "id": "0576db35-0695-4549-a269-d9e8cb8206bd",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NoClip_Look",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "d181f461-b794-408b-beb3-aea55af630cc",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NoClip_Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "c7332b81-979a-44b6-8d83-e0c5a58a5b7e",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "ScaleVector2",
                     "groups": "",
                     "action": "NoClip_Look",
                     "isComposite": false,
