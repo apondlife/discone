@@ -1,4 +1,3 @@
-using System;
 using Cinemachine;
 using ThirdPerson;
 using UnityAtoms;
@@ -47,8 +46,11 @@ sealed class DebugCamera: MonoBehaviour {
     /// the debug flying camera
     CinemachineVirtualCamera m_Camera;
 
+    /// the current rotation in euler angles (to avoid flip-flopping)
+    Vector3 m_RotationEuler;
+
     /// the subscriptions
-    DisposeBag m_Subscriptions = new();
+    readonly DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Awake() {
@@ -57,6 +59,7 @@ sealed class DebugCamera: MonoBehaviour {
         m_Camera = GetComponent<CinemachineVirtualCamera>();
 
         // bind events
+        m_Subscriptions.Add(m_Toggle, OnTogglePressed);
         m_Subscriptions.Add(m_Input.SpawnCharacter, OnSpawnCharacterPressed);
     }
 
@@ -65,28 +68,12 @@ sealed class DebugCamera: MonoBehaviour {
     }
 
     void Update() {
-        var delta = Time.deltaTime;
-        var ct = transform;
-
-        if (m_Toggle.action.WasPerformedThisFrame()) {
-            var nextEnabled = !m_Camera.enabled;
-            if (nextEnabled) {
-                var targetCamera = m_Player.Value.GetComponentInChildren<UnityEngine.Camera>();
-
-                var ot = targetCamera.transform;
-                ct.position = ot.position;
-                ct.rotation = ot.rotation;
-
-                m_Camera.m_Lens.FieldOfView = targetCamera.fieldOfView;
-            }
-
-            m_Player.Value.IsInputEnabled = !nextEnabled;
-            m_Camera.enabled = nextEnabled;
-        }
-
-        if (!m_Camera.enabled) {
+        if (!IsEnabled) {
             return;
         }
+
+        var delta = Time.deltaTime;
+        var ct = transform;
 
         // move the camera
         var move = m_Move.action.ReadValue<Vector3>();
@@ -97,8 +84,41 @@ sealed class DebugCamera: MonoBehaviour {
         var look = m_Look.action.ReadValue<Vector2>().YXN();
         var lookVelocity = m_LookSpeed * delta * look;
         lookVelocity.x = -lookVelocity.x;
-        var lookRotation = ct.localRotation.eulerAngles + lookVelocity;
-        ct.localRotation = Quaternion.Euler(lookRotation);
+        m_RotationEuler += lookVelocity;
+        ct.rotation = Quaternion.Euler(m_RotationEuler);
+    }
+
+    // -- commands --
+    /// toggle between the debug & character cameras
+    void ToggleDebugCamera() {
+        var ct = transform;
+
+        var nextEnabled = !m_Camera.enabled;
+        if (nextEnabled) {
+            var targetCamera = m_Player.Value.GetComponentInChildren<UnityEngine.Camera>();
+            var ot = targetCamera.transform;
+            ct.position = ot.position;
+            ct.rotation = ot.rotation;
+            m_Camera.m_Lens.FieldOfView = targetCamera.fieldOfView;
+
+            m_RotationEuler = ct.rotation.eulerAngles;
+        }
+
+        m_Player.Value.IsInputEnabled = !nextEnabled;
+        m_Camera.enabled = nextEnabled;
+    }
+
+    /// move the current character the camera position
+    void MoveToDebugCamera() {
+        var character = m_Player.Value.Character.Character;
+
+        // build frame at camera position
+        var nextFrame = character.State.Curr.Copy();
+        nextFrame.Position = m_Camera.transform.position;
+        nextFrame.Velocity = Vector3.zero;
+
+        // force to new position
+        character.ForceState(nextFrame);
     }
 
     // -- queries --
@@ -107,19 +127,14 @@ sealed class DebugCamera: MonoBehaviour {
     }
 
     // -- events --
+    void OnTogglePressed(InputAction.CallbackContext _) {
+        ToggleDebugCamera();
+    }
+
     void OnSpawnCharacterPressed(InputAction.CallbackContext _) {
-        if (!IsEnabled) {
-            return;
+        if (IsEnabled) {
+            MoveToDebugCamera();
         }
-
-        var character = m_Player.Value.Character.Character;
-
-        // build frame at camera position
-        var nextFrame = character.State.Curr.Copy();
-        nextFrame.Position = m_Camera.transform.position;
-
-        // force to new position
-        character.ForceState(nextFrame);
     }
 }
 
