@@ -58,6 +58,9 @@ sealed class DebugCamera: MonoBehaviour {
         m_Input = GetComponentInParent<DebugInput>();
         m_Camera = GetComponent<CinemachineVirtualCamera>();
 
+        // set initial state
+        m_Camera.enabled = false;
+
         // bind events
         m_Subscriptions.Add(m_Toggle, OnTogglePressed);
         m_Subscriptions.Add(m_Input.SpawnCharacter, OnSpawnCharacterPressed);

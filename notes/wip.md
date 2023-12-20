@@ -3,6 +3,8 @@ what is projected
 
 # inertia & movement
 
+- investigate inertia when transferring ground -> wall1 -> wall2
+- consider inertia over time applying towards velocity + di (vertical wall to wall scenario)
 - draw line and fold paper
 - should transfer be towards 
   - move direction?

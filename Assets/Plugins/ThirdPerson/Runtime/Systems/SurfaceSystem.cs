@@ -2,6 +2,8 @@ using System;
 using System.Numerics;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
+using Matrix4x4 = UnityEngine.Matrix4x4;
 using Quaternion = UnityEngine.Quaternion;
 using Random = UnityEngine.Random;
 using Vector3 = UnityEngine.Vector3;
@@ -70,8 +72,9 @@ sealed class SurfaceSystem: CharacterSystem {
         }
 
         // update to new surface collision
-        for (var i = 0; i < c.State.Curr.Surfaces.Length; i++) {
-            var surface = c.State.Curr.Surfaces[i];
+        // for (var i = 0; i < c.State.Curr.Surfaces.Length; i++) {
+            // var surface = c.State.Curr.Surfaces[i];
+            var surface = c.State.Curr.WallSurface;
 
             var surfaceNormal = surface.Normal;
             var surfaceUp = Vector3.ProjectOnPlane(Vector3.up, surface.Normal).normalized;
@@ -85,10 +88,21 @@ sealed class SurfaceSystem: CharacterSystem {
             var surfacePrevTg = surfacePrev.IsSome
                 ? Vector3.ProjectOnPlane(surfacePrev.Normal, surface.Normal).normalized
                 : surfaceUp;
-            DebugDraw.Push($"surf-prevNormal{i}", c.State.Next.Position, surfacePrev.Normal);
-            DebugDraw.Push($"surf-currNormal{i}", c.State.Next.Position, surface.Normal);
+            // DebugDraw.Push($"surf-prevNormal{i}", c.State.Next.Position, surfacePrev.Normal);
+            // DebugDraw.Push($"surf-currNormal{i}", c.State.Next.Position, surface.Normal);
+            // DebugDraw.Push($"surfprev-tg{i}", c.State.Next.Position, surfacePrevTg);
 
-            DebugDraw.Push($"surfprev-tg{i}", c.State.Next.Position, surfacePrevTg);
+            // AAA: try new transfer calc
+            // Quaternion.LookRotation()
+            var rotate = Quaternion.FromToRotation(
+                c.State.Prev.StrongestSurface.Normal,
+                c.State.Curr.StrongestSurface.Normal
+            );
+
+            var newSurfaceTg = Vector3.ProjectOnPlane(
+                rotate * c.State.Curr.Inertia.normalized,
+                c.State.Curr.StrongestSurface.Normal
+            );
 
             // // AAA: this is bad cause velocity keeps changing and thus projection keeps changing
             // surfacePrevTg = surfaceUp;
@@ -115,6 +129,7 @@ sealed class SurfaceSystem: CharacterSystem {
 
             var transferDiRot = c.Tuning.Surface_TransferDiAngle.Evaluate(transferDiAngleMag) * transferDiAngleSign * c.Input.MoveMagnitude;
             var transferTg = Quaternion.AngleAxis(transferDiRot, surfaceNormal) * surfacePrevTg;
+            var newTransferTg = newSurfaceTg;
 
             // transfer inertia up new surface w/ di
             // TODO: should we consume tangent inertia as well? there's an issue when you hit wall & ground where
@@ -128,6 +143,7 @@ sealed class SurfaceSystem: CharacterSystem {
             // TODO: can we optimize this pow by inverting this and showing the half-life as a debug query? -ty
             var inertiaDecayTime = c.Tuning.Surface_InertiaDecayTime.Evaluate(surface.Angle);
             var inertiaDecayScale = 1f - Mathf.Pow(0.01f, delta / inertiaDecayTime);
+            inertiaDecayScale = 1f;
             var inertiaDecay = inertiaNormal * inertiaDecayScale;
 
             // clamp decay so it doesn't bounce
@@ -137,15 +153,16 @@ sealed class SurfaceSystem: CharacterSystem {
             // tune transfer
             var transferDiScale = 1f;
             var transferAttack = 1f;
-            var transferScale = c.Tuning.Surface_TransferScale.Evaluate(surface.Angle);
+            var transferScale = c.Tuning.Surface_TransferScale.Evaluate(surface.Angle) / delta;
+            transferScale = 1;
             // var transferDiScale = c.Tuning.Surface_TransferDiScale.Evaluate(transferDiAngleMag);
             // var transferAttack = c.Tuning.Surface_TransferAttack.Evaluate(surfacePerceivedScale);
 
             // and transfer it along the surface tangent
             var transferMag = inertiaDecayMag * transferScale * transferDiScale * transferAttack;
-            var transferAcceleration = transferMag * transferTg;
-            acceleration += transferAcceleration;
-            DebugDraw.Push($"transf-tg{i}", c.State.Next.Position, transferTg);
+            var transferImpulse = transferMag * newTransferTg;
+            acceleration += transferImpulse / delta;
+            DebugDraw.Push($"transf-tg{0}", c.State.Next.Position, newTransferTg);
 
             // add surface gravity
             // var surfaceGravity = c.Input.IsSurfaceHoldPressed ? c.Tuning.Surface_HoldGravity : c.Tuning.Surface_Gravity;;
@@ -159,7 +176,7 @@ sealed class SurfaceSystem: CharacterSystem {
             c.State.Next.Inertia -= inertiaDecay;
             c.State.Next.Force += acceleration;
             addedAcceleration += acceleration;
-        }
+        // }
 
         DebugDraw.Push("inertia-post", c.State.Next.Position, c.State.Next.Inertia);
         Vector3 r = Random.insideUnitCircle.normalized;
