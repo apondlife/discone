@@ -11,8 +11,7 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
     public static readonly CharacterCollision None = new(
         normal: Vector3.zero,
         point: Vector3.zero,
-        angle: 0f,
-        normalMag: 0f
+        angle: 0f
     );
 
     // -- props --
@@ -33,20 +32,22 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
     public CharacterCollision(
         Vector3 normal,
         Vector3 point,
-        float angle,
-        float normalMag
+        float angle
     ) {
         Normal = normal;
         Point = point;
         Angle = angle;
-        NormalMag = normalMag;
+        NormalMag = -1f;
     }
 
-    // -- command --
+    // -- commands --
     /// .
     public void SetNormal(Vector3 normal) {
         Normal = normal;
         Angle = Vector3.Angle(normal, Vector3.up);
+
+        // TODO: can we do anything about this?
+        NormalMag = -1f;
     }
 
     // -- queries --

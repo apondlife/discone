@@ -25,6 +25,12 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     /// the disable all values key
     const KeyCode k_DisableAllKey = KeyCode.Equals;
 
+    /// the frame advance key
+    const KeyCode k_Advance = KeyCode.RightBracket;
+
+    /// the frame rewind key
+    const KeyCode k_Rewind = KeyCode.LeftBracket;
+
     // -- static --
     /// the singleton instance
     static DebugDraw s_Instance;
@@ -68,6 +74,18 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             }
         }
 
+        // advance on press
+        if (Input.GetKeyDown(k_Advance)) {
+            m_Range.Min -= 1;
+            m_Range.Max -= 1;
+        }
+
+        // rewind on press
+        if (Input.GetKeyDown(k_Rewind)) {
+            m_Range.Min += 1;
+            m_Range.Max += 1;
+        }
+
         // disable all on press
         if (Input.GetKeyDown(k_DisableAllKey)) {
             foreach (var value in m_Values) {
@@ -79,9 +97,14 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     // -- commands --
     /// push the drawing's next value
     public static void Push(string name, Vector3 pos, Vector3 dir) {
+        Push(name, pos, dir, Random.ColorHSV(0f, 1f, 1f, 1f, 1f, 1f));
+    }
+
+    /// push the drawing's next value
+    public static void Push(string name, Vector3 pos, Vector3 dir, Color color) {
         var initialValue = new Value(
             name,
-            color: Random.ColorHSV(0f, 1f, 1f, 1f, 1f, 1f),
+            color: color,
             width: 1f,
             scale: 1f,
             minAlpha: 1f

@@ -233,7 +233,7 @@ public sealed class CharacterController {
             // move delta is however far we can move in the time slice
             var moveDelta = nextVelocity * timeRemaining;
 
-            // if move remaining is less than min move, stop & add it to pending delta
+            // if move remaining is less than min move, stop
             if (moveDelta.sqrMagnitude <= m_SqrMinMove) {
                 // TODO: what to do about any remaining time/velocity/&c
                 break;
@@ -314,6 +314,12 @@ public sealed class CharacterController {
             // assuming velocity is constant during this period of time:
             timeRemaining = moveRemaining.magnitude / nextVelocity.magnitude;
             nextVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);
+            DebugDraw.Push(
+                $"move-hit{numCasts}",
+                hit.point,
+                hit.normal,
+                Color.red
+            );
 
             // update state
             numCasts++;
@@ -326,7 +332,6 @@ public sealed class CharacterController {
 
         // update frame velocity
         nextFrame.Velocity = nextVelocity;
-        nextFrame.Inertia = velocity - nextVelocity;
 
         // find any colliders we're contact offset away from
         var capsulePts = capsule.Offset(moveDst).Points();
@@ -442,6 +447,22 @@ public sealed class CharacterController {
             }
         }
 
+        // update inertia after collision has fixed velocity
+        nextFrame.Inertia = velocity - nextFrame.Velocity;
+
+        // calculate the impact of each surface on this collision
+        for (var i = 0; i < nextFrame.Surfaces.Count; i++) {
+            var surface = nextFrame.Surfaces[i];
+            surface.NormalMag = Mathf.Max(Vector3.Dot(surface.Normal, -nextFrame.Inertia), 0f);
+            nextFrame.Surfaces[i] = surface;
+        }
+
+        DebugDraw.Push(
+            "velocity-y",
+            pos,
+            nextFrame.Velocity.y * Vector3.up
+        );
+
         // apply offset to depenetrate from colliders
         moveDst += collisionOffset;
 
@@ -499,14 +520,19 @@ public sealed class CharacterController {
         // accumulate the offset
         offset += Mathf.Max(m_ContactOffset - hit.distance, 0f) * hit.normal;
 
+        // if moving into the surface, cancel any remaining velocity into it
+        var normalSpeed = Vector3.Dot(nextFrame.Velocity, hit.normal);
+        if (normalSpeed < 0f) {
+            // nextFrame.Velocity = Vector3.ProjectOnPlane(nextFrame.Velocity, hit.normal);
+            nextFrame.Velocity += normalSpeed * hit.normal;
+        }
+
         // track collisions
         var collisionAngle = Vector3.Angle(hit.normal, Vector3.up);
-        var collisionNormalMag = Mathf.Max(Vector3.Dot(hit.normal, -nextFrame.Inertia), 0f);
         var collision = new CharacterCollision(
             hit.normal,
             hit.point,
-            collisionAngle,
-            collisionNormalMag
+            collisionAngle
         );
 
         // track wall & ground collision separately for external querying

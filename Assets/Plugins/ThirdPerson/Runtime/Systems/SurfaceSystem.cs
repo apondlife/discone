@@ -84,7 +84,7 @@ sealed class SurfaceSystem: CharacterSystem {
             // var moveDir = 0.99999f * c.State.Next.Velocity + 0.00001f * Vector3.up;
             // var surfacePrevTg = Vector3.ProjectOnPlane(moveDir, surface.Normal).normalized;
 
-            var surfacePrev = c.State.Next.PrevSurface;
+            var surfacePrev = c.State.Curr.PrevSurface;
             var surfacePrevTg = surfacePrev.IsSome
                 ? Vector3.ProjectOnPlane(surfacePrev.Normal, surface.Normal).normalized
                 : surfaceUp;
@@ -99,10 +99,10 @@ sealed class SurfaceSystem: CharacterSystem {
                 c.State.Curr.StrongestSurface.Normal
             );
 
-            var newSurfaceTg = Vector3.ProjectOnPlane(
+            var NEW_surfaceTg = Vector3.ProjectOnPlane(
                 rotate * c.State.Curr.Inertia.normalized,
                 c.State.Curr.StrongestSurface.Normal
-            );
+            ).normalized;
 
             // // AAA: this is bad cause velocity keeps changing and thus projection keeps changing
             // surfacePrevTg = surfaceUp;
@@ -129,25 +129,26 @@ sealed class SurfaceSystem: CharacterSystem {
 
             var transferDiRot = c.Tuning.Surface_TransferDiAngle.Evaluate(transferDiAngleMag) * transferDiAngleSign * c.Input.MoveMagnitude;
             var transferTg = Quaternion.AngleAxis(transferDiRot, surfaceNormal) * surfacePrevTg;
-            var newTransferTg = newSurfaceTg;
+            var NEW_transferTg = NEW_surfaceTg;
 
             // transfer inertia up new surface w/ di
             // TODO: should we consume tangent inertia as well? there's an issue when you hit wall & ground where
             // inertia is tangent due to our collision ordering prioritizing the most recent surface (fix collision ordering)
             var inertia = c.State.Curr.Inertia;
-            var inertiaTg = Vector3.ProjectOnPlane(inertia, surfaceNormal);
-            var inertiaNormal = inertia - inertiaTg;
-            // var inertiaNormal = surface.Normal * surface.NormalMag;
+            // var inertiaTg = Vector3.ProjectOnPlane(inertia, surfaceNormal);
+            // var inertiaNormal = inertia - inertiaTg;
+            var NEW_inertiaTg = Vector3.ProjectOnPlane(inertia, c.State.Curr.StrongestSurface.Normal);
+            var NEW_inertiaNormal = inertia - NEW_inertiaTg;
 
             // calculate the decay to hit 1% of the inertia over a fixed interval
             // TODO: can we optimize this pow by inverting this and showing the half-life as a debug query? -ty
             var inertiaDecayTime = c.Tuning.Surface_InertiaDecayTime.Evaluate(surface.Angle);
             var inertiaDecayScale = 1f - Mathf.Pow(0.01f, delta / inertiaDecayTime);
             inertiaDecayScale = 1f;
-            var inertiaDecay = inertiaNormal * inertiaDecayScale;
+            var inertiaDecay = NEW_inertiaNormal * inertiaDecayScale;
 
             // clamp decay so it doesn't bounce
-            var inertiaDecayMag = Math.Min(inertiaDecay.magnitude, inertiaNormal.magnitude);
+            var inertiaDecayMag = Math.Min(inertiaDecay.magnitude, NEW_inertiaNormal.magnitude);
             inertiaDecay = Vector3.ClampMagnitude(inertiaDecay, inertiaDecayMag);
 
             // tune transfer
@@ -160,9 +161,9 @@ sealed class SurfaceSystem: CharacterSystem {
 
             // and transfer it along the surface tangent
             var transferMag = inertiaDecayMag * transferScale * transferDiScale * transferAttack;
-            var transferImpulse = transferMag * newTransferTg;
+            var transferImpulse = transferMag * NEW_transferTg;
             acceleration += transferImpulse / delta;
-            DebugDraw.Push($"transf-tg{0}", c.State.Next.Position, newTransferTg);
+            DebugDraw.Push($"transf-tg{0}", c.State.Next.Position, NEW_transferTg);
 
             // add surface gravity
             // var surfaceGravity = c.Input.IsSurfaceHoldPressed ? c.Tuning.Surface_HoldGravity : c.Tuning.Surface_Gravity;;

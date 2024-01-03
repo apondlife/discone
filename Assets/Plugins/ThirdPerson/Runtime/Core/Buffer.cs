@@ -36,17 +36,6 @@ public sealed class Buffer<T>: IEnumerable<T> {
     }
 
     // -- queries --
-    /// gets the nth item
-    public T this[int index] {
-        get {
-            if (index >= m_Count) {
-                throw new IndexOutOfRangeException();
-            }
-
-            return m_Buffer[index];
-        }
-    }
-
     /// gets the last item
     public T Last {
         get {
@@ -73,6 +62,26 @@ public sealed class Buffer<T>: IEnumerable<T> {
         Array.Copy(m_Buffer, result, m_Count);
 
         return result;
+    }
+
+    // -- operators --
+    /// access an item by index
+    public T this[int index] {
+        get {
+            if (index >= m_Count) {
+                throw new IndexOutOfRangeException();
+            }
+
+            return m_Buffer[index];
+        }
+
+        set {
+            if (index >= m_Count) {
+                throw new IndexOutOfRangeException();
+            }
+
+            m_Buffer[index] = value;
+        }
     }
 
     // -- IEnumerable --

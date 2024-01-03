@@ -90,7 +90,7 @@ sealed class CollisionSystem: CharacterSystem {
 
         // calculate inertia, momentum lost after collision; the frame velocity is the
         // velocity projected into each collision surface (if hitting a wall, it's 0)
-        var inertia = v - frame.Velocity;
+        var inertia = frame.Inertia;
         var inertiaDir = inertia.normalized;
         var inertiaMag = inertia.magnitude;
 
@@ -121,28 +121,30 @@ sealed class CollisionSystem: CharacterSystem {
             Debug.Log($"[chrctr] normal delta {normalDelta} {curr.StrongestSurface.Normal} {strongestSurface.Normal}");
             if (Mathf.Abs(normalDelta - 1f) > 0.001f) {
                 prevSurface = curr.StrongestSurface;
-                DebugDraw.Push(
-                    "prevsurface",
-                    prevSurface.IsSome
-                        ? prevSurface.Point
-                        : c.State.Position,
-                    prevSurface.Normal
-                );
             }
         }
 
         next.PrevSurface = prevSurface;
-        DebugDraw.Push(
-            "inertia+a",
-            c.State.Position,
-            inertia
-        );
 
         DebugDraw.Push(
-            "mostnormal",
-            c.State.Position,
-            c.State.StrongestSurface.Normal
+            "surface-strongest",
+            next.StrongestSurface.IsSome ? next.StrongestSurface.Point : next.Position,
+            next.StrongestSurface.Normal,
+            Color.blue
         );
+
+        for (var i = 0; i < 4; i++) {
+            var surface = i < (next.Surfaces?.Length ?? 0)
+                ? next.Surfaces[i]
+                : CharacterCollision.None;
+
+            DebugDraw.Push(
+                $"surface-{i}",
+                surface.Point,
+                surface.Normal * surface.NormalMag,
+                Color.cyan
+            );
+        }
 
         // remove acceleration into surface (unrealized) from inertia & prevent
         // inversion of direction
