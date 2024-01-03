@@ -144,10 +144,10 @@ public sealed partial class CharacterState {
         /// the collision for the previously touched surface
         public CharacterCollision PrevSurface;
 
-        /// the collision for surface with most force opposing movement
-        public CharacterCollision StrongestSurface;
+        /// the surface w/ the most normal force
+        public CharacterCollision MainSurface;
 
-        /// the collision for the current perceived surface
+        /// the currently perceived surface
         public CharacterCollision PerceivedSurface;
 
         /// the collision surfaces

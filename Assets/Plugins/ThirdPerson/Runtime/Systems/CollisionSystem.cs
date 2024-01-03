@@ -55,7 +55,6 @@ sealed class CollisionSystem: CharacterSystem {
         next.Surfaces = frame.Surfaces.ToArrayOrNull();
 
         // given next surface
-        var prevGround = curr.GroundSurface;
         var nextGround = next.GroundSurface;
 
         // find the last relevant touched surface; if the newest surface is different, use that
@@ -95,47 +94,53 @@ sealed class CollisionSystem: CharacterSystem {
         var inertiaMag = inertia.magnitude;
 
         // AAA
-        var strongestSurface = CharacterCollision.None;
+        var nextMainSurface = CharacterCollision.None;
         if (next.IsColliding) {
-            strongestSurface.NormalMag = -1f;
+            nextMainSurface.NormalMag = -1f;
             for (var i = 0; i < next.Surfaces.Length; i++) {
                 var surface = next.Surfaces[i];
-                if (surface.NormalMag > strongestSurface.NormalMag) {
-                    strongestSurface = surface;
+                if (surface.NormalMag > nextMainSurface.NormalMag) {
+                    nextMainSurface = surface;
                 }
             }
-
-            next.StrongestSurface = strongestSurface;
         }
+
+        next.MainSurface = nextMainSurface;
 
         // find the surface we touched before the new surface, if any
         var prevSurface = curr.PrevSurface;
-        var prevDotStrongest = Vector3.Dot(
-            curr.StrongestSurface.Normal,
-            strongestSurface.Normal
+        var prevDotMain = Vector3.Dot(
+            curr.MainSurface.Normal,
+            next.MainSurface.Normal
         );
 
-        if (prevDotStrongest - 1f < -0.00001f) {
-            var normalDelta = Vector3.Dot(prevSurface.Normal, curr.StrongestSurface.Normal);
+        if (prevDotMain - 1f < -0.00001f) {
+            var normalDelta = Vector3.Dot(prevSurface.Normal, curr.MainSurface.Normal);
 
-            Debug.Log($"[chrctr] normal delta {normalDelta} {curr.StrongestSurface.Normal} {strongestSurface.Normal}");
             if (Mathf.Abs(normalDelta - 1f) > 0.001f) {
-                prevSurface = curr.StrongestSurface;
+                prevSurface = curr.MainSurface;
             }
         }
 
         next.PrevSurface = prevSurface;
 
+        // remove acceleration into surface (unrealized) from inertia & prevent
+        // inversion of direction
+        inertia -= inertiaDir * Mathf.Clamp(Vector3.Dot(a, inertiaDir), 0f, inertiaMag);
+
+        next.Inertia = inertia;
+
+        // debug curr surfaces (the ones relevant to the surface system)
         DebugDraw.Push(
-            "surface-strongest",
-            next.StrongestSurface.IsSome ? next.StrongestSurface.Point : next.Position,
-            next.StrongestSurface.Normal,
+            "surface-main",
+            curr.MainSurface.IsSome ? curr.MainSurface.Point : curr.Position,
+            curr.MainSurface.Normal,
             Color.blue
         );
 
         for (var i = 0; i < 4; i++) {
-            var surface = i < (next.Surfaces?.Length ?? 0)
-                ? next.Surfaces[i]
+            var surface = i < (curr.Surfaces?.Length ?? 0)
+                ? curr.Surfaces[i]
                 : CharacterCollision.None;
 
             DebugDraw.Push(
@@ -145,12 +150,6 @@ sealed class CollisionSystem: CharacterSystem {
                 Color.cyan
             );
         }
-
-        // remove acceleration into surface (unrealized) from inertia & prevent
-        // inversion of direction
-        inertia -= inertiaDir * Mathf.Clamp(Vector3.Dot(a, inertiaDir), 0f, inertiaMag);
-
-        next.Inertia = inertia;
     }
 }
 
