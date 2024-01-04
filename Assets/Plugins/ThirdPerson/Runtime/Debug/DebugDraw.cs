@@ -13,6 +13,9 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     /// the default buffer length
     const int k_BufferLen = 300;
 
+    /// the maximum frame window length on resize
+    const int k_WindowMax = 2;
+
     /// the toggle drawing key
     const KeyCode k_ToggleKey = KeyCode.Alpha9;
 
@@ -31,7 +34,10 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     /// the frame rewind key
     const KeyCode k_Rewind = KeyCode.LeftBracket;
 
-    // -- static --
+    /// the key to resize the frame window
+    const KeyCode k_ResizeWindow = KeyCode.Backslash;
+
+    // -- statics --
     /// the singleton instance
     static DebugDraw s_Instance;
 
@@ -74,6 +80,13 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             }
         }
 
+        // disable all on press
+        if (Input.GetKeyDown(k_DisableAllKey)) {
+            foreach (var value in m_Values) {
+                value.IsEnabled = false;
+            }
+        }
+
         // advance on press
         if (Input.GetKeyDown(k_Advance)) {
             m_Range.Min -= 1;
@@ -86,10 +99,19 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             m_Range.Max += 1;
         }
 
-        // disable all on press
-        if (Input.GetKeyDown(k_DisableAllKey)) {
+        // resize frame window on press
+        if (Input.GetKeyDown(k_ResizeWindow)) {
+            var currLen = m_Range.Max - m_Range.Min;
+            var nextLen = currLen >= k_WindowMax ? 1 : currLen + 1;
+            m_Range.Max = m_Range.Min + nextLen;
+        }
+    }
+
+    void FixedUpdate() {
+        // push an empty frame for each existing value
+        if (!m_IsPaused) {
             foreach (var value in m_Values) {
-                value.IsEnabled = false;
+                value.Push(new Ray());
             }
         }
     }
@@ -97,19 +119,13 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     // -- commands --
     /// push the drawing's next value
     public static void Push(string name, Vector3 pos, Vector3 dir) {
-        Push(name, pos, dir, Random.ColorHSV(0f, 1f, 1f, 1f, 1f, 1f));
+        var cfg = new Config(color: Random.ColorHSV(0f, 1f, 1f, 1f, 1f, 1f));
+        Push(name, pos, dir, cfg);
     }
 
     /// push the drawing's next value
-    public static void Push(string name, Vector3 pos, Vector3 dir, Color color) {
-        var initialValue = new Value(
-            name,
-            color: color,
-            width: 1f,
-            scale: 1f,
-            minAlpha: 1f
-        );
-
+    public static void Push(string name, Vector3 pos, Vector3 dir, Config cfg) {
+        var initialValue = new Value(name, cfg);
         Push(initialValue, pos, dir);
     }
 
@@ -135,15 +151,22 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             }
         }
 
+        // the ray to add
+        var ray = new Ray(pos, dir);
+
+        // if it exists, update value pushed at the beginning of the frame
+        if (value != null) {
+            value.Set(ray);
+        }
         // if new, add it in sorted order
-        if (value == null) {
+        else {
             value = initialValue;
             m_Values.Add(value);
             m_Values.Sort((l, r) => string.CompareOrdinal(l.Name, r.Name));
-        }
 
-        // push the current value
-        value.Push(new Ray(pos, dir));
+            // and push the initial value
+            value.Push(ray);
+        }
     }
 
     // -- data --
@@ -178,32 +201,33 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         // -- lifetime --
         public Value(
             string name,
-            Color color,
-            int count = k_BufferLen,
-            float width = 1f,
-            float scale = 1f,
-            float minAlpha = 1f
+            Config cfg
         ) {
             var gradient = new Gradient();
-            gradient.colorKeys = new GradientColorKey[] { new(color, 0f) };
-            gradient.alphaKeys = new GradientAlphaKey[] { new(minAlpha, 0f), new (1f, 1f) };
+            gradient.colorKeys = new GradientColorKey[] { new(cfg.Color, 0f) };
+            gradient.alphaKeys = new GradientAlphaKey[] { new(cfg.MinAlpha, 0f), new (1f, 1f) };
 
             m_Name = name;
             m_Color = gradient;
-            m_Range = new IntRange(0, count);
-            m_Width = width;
-            m_Scale = scale;
+            m_Range = new IntRange(0, cfg.Count);
+            m_Width = cfg.Width;
+            m_Scale = cfg.Scale;
             m_IsEnabled = true;
             m_Buffer = new Queue<Ray>(k_BufferLen);
         }
 
         // -- commands --
-        /// .
+        /// push a new frame
         public void Push(Ray next) {
             m_Buffer.Add(next);
         }
 
-        /// .
+        /// set ray for the current frame
+        public void Set(Ray next) {
+            m_Buffer[0] = next;
+        }
+
+        /// clear the value
         public void Clear() {
             m_Buffer.Clear();
         }
@@ -248,6 +272,40 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         public bool IsEnabled {
             get => m_IsEnabled;
             set => m_IsEnabled = value;
+        }
+    }
+
+    /// the cosmetic config for a value
+    public readonly struct Config {
+        // -- props --
+        /// the rendered color
+        public readonly Color Color;
+
+        /// the index range of values to draw
+        public readonly int Count;
+
+        /// the line width
+        public readonly float Width;
+
+        /// the length scale
+        public readonly float Scale;
+
+        /// the min alpha
+        public readonly float MinAlpha;
+
+        // -- lifetime --
+        public Config(
+            Color color,
+            int count = k_BufferLen,
+            float width = 1f,
+            float scale = 1f,
+            float minAlpha = 1f
+        ) {
+            Color = color;
+            Count = count;
+            Width = width;
+            Scale = scale;
+            MinAlpha = minAlpha;
         }
     }
 

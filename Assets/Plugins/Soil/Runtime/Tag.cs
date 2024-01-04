@@ -12,7 +12,7 @@ public record Tag {
     string m_Color;
 
     // -- lifetime --
-    Tag(string name, string color) {
+    public Tag(string name, string color) {
         m_Name = name;
         m_Color = color;
     }

@@ -63,11 +63,11 @@ public sealed class Queue<T>: IEnumerable<T> {
                 throw new IndexOutOfRangeException();
             }
 
-            return m_Queue[GetIndex((int)offset)];
+            return m_Queue[GetIndex(offset)];
         }
 
         set {
-            m_Queue[GetIndex((int)offset)] = value;
+            m_Queue[GetIndex(offset)] = value;
         }
     }
 

@@ -1,11 +1,7 @@
 using System;
-using System.Numerics;
 using UnityEngine;
 using UnityEngine.Serialization;
-using UnityEngine.UI;
-using Matrix4x4 = UnityEngine.Matrix4x4;
 using Quaternion = UnityEngine.Quaternion;
-using Random = UnityEngine.Random;
 using Vector3 = UnityEngine.Vector3;
 
 namespace ThirdPerson {
@@ -44,30 +40,6 @@ sealed class SurfaceSystem: CharacterSystem {
         if (surface.IsSome) {
             ChangeToImmediate(SurfaceSlide, delta);
         }
-
-        DebugDraw.Push(
-            "inertia-pre",
-            Vector3.zero,
-            Vector3.zero
-        );
-
-        DebugDraw.Push(
-            "inertia-post",
-            Vector3.zero,
-            Vector3.zero
-        );
-
-        DebugDraw.Push(
-            "transf-tg",
-            Vector3.zero,
-            Vector3.zero
-        );
-
-        DebugDraw.Push(
-            "acceleration-surf",
-            Vector3.zero,
-            Vector3.zero
-        );
     }
 
     // -- SurfaceSlide --
@@ -82,8 +54,6 @@ sealed class SurfaceSystem: CharacterSystem {
             ChangeTo(NotOnSurface);
             return;
         }
-
-        DebugDraw.Push("inertia-pre", c.State.Next.Position, c.State.Next.Inertia);
 
         // update to new surface collision
         // ???: could this work w/ a loop over every surface? how would we know prev surface per-iteration?
@@ -183,7 +153,12 @@ sealed class SurfaceSystem: CharacterSystem {
         var transferMag = inertiaDecayMag * transferScale * transferDiScale * transferAttack;
         var transferImpulse = transferMag * transferTg;
         acceleration += transferImpulse / delta;
-        DebugDraw.Push($"transf-tg{0}", c.State.Next.Position, transferTg);
+        DebugDraw.Push(
+            $"transf-tg{0}",
+            c.State.Next.Position,
+            transferTg,
+            new DebugDraw.Config(new Color(1f, 0.8f, 0f))
+        );
 
         // add surface gravity
         // var surfaceGravity = c.Input.IsSurfaceHoldPressed ? c.Tuning.Surface_HoldGravity : c.Tuning.Surface_Gravity;;
@@ -206,7 +181,8 @@ sealed class SurfaceSystem: CharacterSystem {
         DebugDraw.Push(
             "acceleration-surf",
             c.State.Next.Position,
-            acceleration
+            acceleration,
+            new DebugDraw.Config(new Color(1f, 1f, 0f))
         );
     }
 }

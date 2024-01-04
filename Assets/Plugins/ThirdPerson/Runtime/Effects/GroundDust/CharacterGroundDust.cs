@@ -32,7 +32,7 @@ sealed class CharacterGroundDust: MonoBehaviour {
         // set deps
         this.c = GetComponentInParent<Character>();
 
-        // play the particles foreer
+        // play the particles forever
         m_Particles.Play();
     }
 

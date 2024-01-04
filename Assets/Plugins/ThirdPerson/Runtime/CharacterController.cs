@@ -244,7 +244,7 @@ public sealed class CharacterController {
             if (numCasts > k_MaxCasts) {
                 // TODO: what to do about any remaining time
                 moveDst = moveOrigin;
-                Debug.LogWarning($"[cntrlr] cast more than {k_MaxCasts + 1} times in a single frame!");
+                Log.Cntrlr.W($"cast more than {k_MaxCasts + 1} times in a single frame!");
                 break;
             }
 
@@ -318,7 +318,7 @@ public sealed class CharacterController {
                 $"move-hit{numCasts}",
                 hit.point,
                 hit.normal,
-                Color.red
+                new DebugDraw.Config(Color.red)
             );
 
             // update state
@@ -332,6 +332,12 @@ public sealed class CharacterController {
 
         // update frame velocity
         nextFrame.Velocity = nextVelocity;
+
+        DebugDraw.Push(
+             "frame-velocity-pre",
+             moveDst,
+             nextFrame.Velocity
+         );
 
         // find any colliders we're contact offset away from
         var capsulePts = capsule.Offset(moveDst).Points();
@@ -352,7 +358,7 @@ public sealed class CharacterController {
             var collider = m_Colliders[i];
 
             // get next capsule cast towards collided surface
-            var castSrc = moveDst;
+            var castSrc = moveDst + collisionOffset;
             var castDir = Vector3.zero;
             var castMax = m_ContactOffset + m_ContactEpsilon;
             var castLen = m_ContactOffset + m_ContactSearch;
@@ -381,7 +387,7 @@ public sealed class CharacterController {
                 );
 
                 if (castRes == CastResult.Miss) {
-                    Debug.LogWarning($"[cntrlr] final collision cast missed convex mesh {collider}");
+                    Log.Cntrlr.W($"final collision cast missed convex mesh {collider}");
                 }
             }
             // otherwise, depenetrate from concave mesh to find dir
@@ -399,7 +405,7 @@ public sealed class CharacterController {
                 );
 
                 if (!didHit) {
-                    Debug.LogWarning($"[cntrlr] depenetration missed for {collider}");
+                    Log.Cntrlr.W($"depenetration missed for {collider}");
                     continue;
                 }
 
@@ -425,7 +431,7 @@ public sealed class CharacterController {
 
                     if (castRes == CastResult.Miss) {
                         if (numCasts == 0) {
-                            Debug.LogWarning($"[cntrlr] final collision cast missed concave mesh {collider}");
+                            Log.Cntrlr.W($"final collision cast missed concave mesh {collider}");
                         }
 
                         break;
@@ -457,12 +463,6 @@ public sealed class CharacterController {
             nextFrame.Surfaces[i] = surface;
         }
 
-        DebugDraw.Push(
-            "velocity-y",
-            pos,
-            nextFrame.Velocity.y * Vector3.up
-        );
-
         // apply offset to depenetrate from colliders
         moveDst += collisionOffset;
 
@@ -475,6 +475,7 @@ public sealed class CharacterController {
     enum CastResult {
         Hit,
         Miss,
+        Blocked,
         OutOfRange
     }
 
@@ -507,9 +508,14 @@ public sealed class CharacterController {
             QueryTriggerInteraction.Ignore
         );
 
-        // this has to hit the same collider
-        if (!didHit || hit.collider != collider) {
+        // it has to hit
+        if (!didHit) {
             return CastResult.Miss;
+        }
+
+        // ...the same collider
+        if (hit.collider != collider) {
+            return CastResult.Blocked;
         }
 
         // ignore hits farther away than the offset but within search radius
@@ -524,7 +530,7 @@ public sealed class CharacterController {
         var normalSpeed = Vector3.Dot(nextFrame.Velocity, hit.normal);
         if (normalSpeed < 0f) {
             // nextFrame.Velocity = Vector3.ProjectOnPlane(nextFrame.Velocity, hit.normal);
-            nextFrame.Velocity += normalSpeed * hit.normal;
+            nextFrame.Velocity -= normalSpeed * hit.normal;
         }
 
         // track collisions

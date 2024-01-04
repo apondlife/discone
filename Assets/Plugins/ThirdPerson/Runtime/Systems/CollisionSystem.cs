@@ -135,7 +135,7 @@ sealed class CollisionSystem: CharacterSystem {
             "surface-main",
             curr.MainSurface.IsSome ? curr.MainSurface.Point : curr.Position,
             curr.MainSurface.Normal,
-            Color.blue
+            new DebugDraw.Config(Color.blue)
         );
 
         for (var i = 0; i < 4; i++) {
@@ -147,7 +147,7 @@ sealed class CollisionSystem: CharacterSystem {
                 $"surface-{i}",
                 surface.Point,
                 surface.Normal * surface.NormalMag,
-                Color.cyan
+                new DebugDraw.Config(Color.cyan, width: 3f)
             );
         }
     }
