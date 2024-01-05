@@ -31,7 +31,7 @@ sealed class CharacterWallSkid: MonoBehaviour {
         }
 
         // spawn at collision
-        var s = c.State.Next.WallSurface;
+        var s = c.State.Next.MainSurface;
         var t = m_Particles.transform;
         t.position = s.Point;
 

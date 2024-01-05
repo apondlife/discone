@@ -93,36 +93,22 @@ sealed class CollisionSystem: CharacterSystem {
         var inertiaDir = inertia.normalized;
         var inertiaMag = inertia.magnitude;
 
-        // AAA
-        var nextMainSurface = CharacterCollision.None;
-        if (next.IsColliding) {
-            nextMainSurface.NormalMag = -1f;
-            for (var i = 0; i < next.Surfaces.Length; i++) {
-                var surface = next.Surfaces[i];
-                if (surface.NormalMag > nextMainSurface.NormalMag) {
-                    nextMainSurface = surface;
-                }
-            }
-        }
-
-        next.MainSurface = nextMainSurface;
-
         // find the surface we touched before the new surface, if any
-        var prevSurface = curr.PrevSurface;
-        var prevDotMain = Vector3.Dot(
-            curr.MainSurface.Normal,
-            next.MainSurface.Normal
-        );
-
-        if (prevDotMain - 1f < -0.00001f) {
-            var normalDelta = Vector3.Dot(prevSurface.Normal, curr.MainSurface.Normal);
-
-            if (Mathf.Abs(normalDelta - 1f) > 0.001f) {
-                prevSurface = curr.MainSurface;
-            }
-        }
-
-        next.PrevSurface = prevSurface;
+        // var prevSurface = curr.PrevSurface;
+        // var prevDotMain = Vector3.Dot(
+        //     curr.MainSurface.Normal,
+        //     next.MainSurface.Normal
+        // );
+        //
+        // if (prevDotMain - 1f < -0.00001f) {
+        //     var normalDelta = Vector3.Dot(prevSurface.Normal, curr.MainSurface.Normal);
+        //
+        //     if (Mathf.Abs(normalDelta - 1f) > 0.001f) {
+        //         prevSurface = curr.MainSurface;
+        //     }
+        // }
+        //
+        // next.PrevSurface = prevSurface;
 
         // remove acceleration into surface (unrealized) from inertia & prevent
         // inversion of direction
@@ -130,26 +116,35 @@ sealed class CollisionSystem: CharacterSystem {
 
         next.Inertia = inertia;
 
+        // build a virtual main surface
+        var nextMainSurface = CharacterCollision.None;
+        if (next.IsColliding) {
+            // by default, weight all the surfaces
+            var n = frame.Surfaces.Count;
+            foreach (var surface in frame.Surfaces) {
+                nextMainSurface.Point += surface.Point / n;
+                nextMainSurface.Normal += surface.Normal;
+            }
+
+            // if inertia is nonzero, use that as the surface normal
+            if (inertia != Vector3.zero) {
+                nextMainSurface.Normal = -inertia;
+            }
+
+            // use inertia w/ acceleration for normal force
+            nextMainSurface.Normal = nextMainSurface.Normal.normalized;
+            nextMainSurface.NormalMag = frame.Inertia.magnitude;
+        }
+
+        next.MainSurface = nextMainSurface;
+
         // debug curr surfaces (the ones relevant to the surface system)
         DebugDraw.Push(
             "surface-main",
-            curr.MainSurface.IsSome ? curr.MainSurface.Point : curr.Position,
-            curr.MainSurface.Normal,
+            next.MainSurface.IsSome ? next.MainSurface.Point : next.Position,
+            next.MainSurface.Normal,
             new DebugDraw.Config(Color.blue)
         );
-
-        for (var i = 0; i < 4; i++) {
-            var surface = i < (curr.Surfaces?.Length ?? 0)
-                ? curr.Surfaces[i]
-                : CharacterCollision.None;
-
-            DebugDraw.Push(
-                $"surface-{i}",
-                surface.Point,
-                surface.Normal * surface.NormalMag,
-                new DebugDraw.Config(Color.cyan, width: 3f)
-            );
-        }
     }
 }
 

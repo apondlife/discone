@@ -84,7 +84,7 @@ sealed class SurfaceSystem: CharacterSystem {
 
         // if previously on a surface, find surface rotation
         if (prevSurface.IsSome) {
-            transferTg = Quaternion.FromToRotation(prevNormal, currNormal) * -currNormal;
+            transferTg = Vector3.Cross(currNormal, Vector3.Cross(prevNormal, currNormal));
         }
         // if coming from air, use character velocity, if no velocity, use "up"
         else {

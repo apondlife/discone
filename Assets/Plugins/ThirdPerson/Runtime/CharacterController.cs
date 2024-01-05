@@ -53,10 +53,10 @@ public sealed class CharacterController {
 
     // -- constants --
     /// the max number of casts we do in a single frame
-    const int k_MaxCasts = 4;
+    const int k_MaxCasts = 8;
 
     /// the max number of collisions we check for at the end of the frame
-    const int k_MaxCollisions = 4;
+    const int k_MaxCollisions = 8;
 
     // -- fields --
     [Header("config")]
@@ -334,10 +334,10 @@ public sealed class CharacterController {
         nextFrame.Velocity = nextVelocity;
 
         DebugDraw.Push(
-             "frame-velocity-pre",
-             moveDst,
-             nextFrame.Velocity
-         );
+            "frame-velocity-pre",
+            moveDst,
+            nextFrame.Velocity
+        );
 
         // find any colliders we're contact offset away from
         var capsulePts = capsule.Offset(moveDst).Points();
@@ -373,7 +373,6 @@ public sealed class CharacterController {
             // if this is a convex collider
             if (colliderSupportsClosestPoint) {
                 castDir = collider.ClosestPoint(moveDst) - castSrc;
-
                 castRes = CollideCapsule(
                     collider,
                     capsule,
@@ -387,7 +386,7 @@ public sealed class CharacterController {
                 );
 
                 if (castRes == CastResult.Miss) {
-                    Log.Cntrlr.W($"final collision cast missed convex mesh {collider}");
+                    Log.Cntrlr.W($"final collision cast convex mesh {collider} missed");
                 }
             }
             // otherwise, depenetrate from concave mesh to find dir
@@ -558,93 +557,6 @@ public sealed class CharacterController {
     public float ContactOffset {
         get => m_ContactOffset;
     }
-
-    // -- gizmos --
-    #if UNITY_EDITOR
-    // -- gizmos --
-    [Header("gizmos")]
-    [Tooltip("if the initial position and direction gizmo is visible")]
-    [SerializeField] bool m_DrawInput = true;
-
-    [Tooltip("if we are drawing the top sphere of the capsule")]
-    [SerializeField] bool m_DrawTop = true;
-
-    [Tooltip("if we are drawing the the capsule as wireframe")]
-    [SerializeField] bool m_DrawWire = true;
-
-    [Tooltip("if the raycasts gizmos are visible")]
-    [SerializeField] bool m_DrawCasts = true;
-
-    [Tooltip("if the raycasts gizmos are visible")]
-    [SerializeField] bool m_DrawCastCapsule = true;
-
-    [Tooltip("if the cast hit gizmos are visible")]
-    [SerializeField] bool m_DrawHits = true;
-
-    [Tooltip("the radius of the gizmo spheres")]
-    [SerializeField] float m_DrawGizmoRadius;
-
-    /// draw gizmos for the controller`
-    public void OnDrawGizmos() {
-        // draw the desired ray (pos & delta)
-        if (m_DrawInput) {
-            Gizmos.color = Color.black;
-            Gizmos.DrawSphere(m_DebugMoveOrigin, m_DrawGizmoRadius);
-            Gizmos.DrawRay(m_DebugMoveOrigin, m_DebugMoveDelta);
-        }
-
-        // draw the cast lollipops
-        if (m_DrawCasts) {
-            Color.RGBToHSV(Color.blue, out var iH, out var iS, out var iV);
-            Color.RGBToHSV(Color.red, out var oH, out var oS, out var oV);
-
-            for (var i = m_DebugCasts.Count - 1; i >= 0; i--) {
-                var cast = m_DebugCasts[i];
-
-                var h = cast.Radius * Vector3.up;
-                var delta = cast.Direction * cast.Length;
-
-                Gizmos.color = Color.HSVToRGB(iH, iS, iV);
-                if (m_DrawCastCapsule) {
-                    var point = m_DrawTop ? cast.Point2 : cast.Point1;
-                    Action<Vector3, float> drawSphere = m_DrawWire ? Gizmos.DrawWireSphere : Gizmos.DrawSphere;
-                    drawSphere(point, cast.Radius);
-                    Gizmos.DrawLine(cast.Point1 - h, cast.Point2 + h);
-                }
-
-                Gizmos.color = Color.HSVToRGB(oH, oS, oV);
-                if (m_DrawCastCapsule) {
-                    var point = m_DrawTop ? cast.Point2 : cast.Point1;
-                    Action<Vector3, float> drawSphere = m_DrawWire ? Gizmos.DrawWireSphere : Gizmos.DrawSphere;
-                    drawSphere(point + delta, cast.Radius);
-                    Gizmos.DrawLine(cast.Point1 - h + delta, cast.Point2 + h + delta);
-                }
-
-                // draw the final line
-                Gizmos.DrawSphere(cast.Capsule.Center, m_DrawGizmoRadius);
-                Gizmos.DrawLine(cast.Capsule.Center, cast.Capsule.Center + delta);
-                iS *= 0.6f;
-                oS *= 0.6f;
-            }
-        }
-
-        // draw spheres where the casts hit
-        if (m_DrawHits) {
-            Color.RGBToHSV(Color.yellow, out var h, out var s, out var v);
-
-            foreach (var hit in m_DebugHits) {
-                Gizmos.color = Color.HSVToRGB(h, s, v);
-                Gizmos.DrawSphere(hit.point, m_DrawGizmoRadius);
-                Gizmos.DrawRay(hit.point, hit.normal * 0.5f);
-                s *= 0.6f;
-            }
-
-            if (m_DebugErrorHit != null) {
-                Gizmos.color = Color.red;
-                Gizmos.DrawSphere(m_DebugErrorHit.Value.point, 0.5f);
-            }
-        }
-    }
-    #endif
 }
+
 }
