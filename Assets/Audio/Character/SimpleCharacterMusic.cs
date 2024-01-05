@@ -219,7 +219,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     [ShowNativeProperty]
     float SurfaceSlope {
-        get => State.Curr.GroundSurface.Angle/180f; // 0 to 1? 
+        get => State.Curr.MainSurface.Angle/180f; // 0 to 1?
     }
 
     [ShowNativeProperty]

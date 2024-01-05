@@ -49,38 +49,25 @@ sealed class CollisionSystem: CharacterSystem {
         );
 
         // update collisions
-        // TODO: store a list of n collisions this frame
-        next.Ground = frame.Ground;
-        next.Wall = frame.Wall;
         next.Surfaces = frame.Surfaces.ToArrayOrNull();
-
-        // given next surface
-        var nextGround = next.GroundSurface;
-
-        // find the last relevant touched surface; if the newest surface is different, use that
-        var currSurface = curr.CurrSurface;
-        if (nextGround.IsSome && currSurface.Normal != nextGround.Normal) {
-            currSurface = nextGround;
-        }
-
-        next.CurrSurface = currSurface;
 
         // move the perceived surface towards the current surface
         var perceivedNormal = curr.PerceivedSurface.Normal;
         if (curr.PerceivedSurface.IsNone) {
-            perceivedNormal = next.CurrSurface.Normal;
+            perceivedNormal = next.MainSurface.Normal;
         }
 
         // TODO: maybe update the time since last touching the curr surface
         next.PerceivedSurface.SetNormal(Vector3.RotateTowards(
             perceivedNormal,
-            next.CurrSurface.Normal,
+            next.MainSurface.Normal,
             c.Tuning.Surface_PerceptionAngularSpeed * Mathf.Deg2Rad * delta,
             0f
         ));
 
-        // point for perceived surface is invalid
+        // TODO: can we do anything about this?
         next.PerceivedSurface.Point = Vector3.negativeInfinity;
+        next.PerceivedSurface.NormalMag = -1f;
 
         // sync controller state back to character state
         next.Velocity = frame.Velocity;
@@ -117,26 +104,26 @@ sealed class CollisionSystem: CharacterSystem {
         next.Inertia = inertia;
 
         // build a virtual main surface
-        var nextMainSurface = CharacterCollision.None;
+        var nextMain = CharacterCollision.None;
         if (next.IsColliding) {
             // by default, weight all the surfaces
             var n = frame.Surfaces.Count;
             foreach (var surface in frame.Surfaces) {
-                nextMainSurface.Point += surface.Point / n;
-                nextMainSurface.Normal += surface.Normal;
+                nextMain.Point += surface.Point / n;
+                nextMain.Normal += surface.Normal;
             }
 
             // if inertia is nonzero, use that as the surface normal
-            if (inertia != Vector3.zero) {
-                nextMainSurface.Normal = -inertia;
+            if (frame.Inertia != Vector3.zero) {
+                nextMain.Normal = -frame.Inertia;
+                nextMain.NormalMag = frame.Inertia.magnitude;
             }
 
             // use inertia w/ acceleration for normal force
-            nextMainSurface.Normal = nextMainSurface.Normal.normalized;
-            nextMainSurface.NormalMag = frame.Inertia.magnitude;
+            nextMain.SetNormal(nextMain.Normal.normalized);
         }
 
-        next.MainSurface = nextMainSurface;
+        next.MainSurface = nextMain;
 
         // debug curr surfaces (the ones relevant to the surface system)
         DebugDraw.Push(

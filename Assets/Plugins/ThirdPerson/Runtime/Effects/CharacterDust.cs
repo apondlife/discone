@@ -53,13 +53,13 @@ public class CharacterDust: MonoBehaviour {
 
         if (m_State.Next.IsOnGround) {
             // check for deceleration, used for both skid and pivot dust
-            var groundAcceleration = Vector3.ProjectOnPlane(m_State.Acceleration, m_State.Ground.Normal);
+            var groundAcceleration = Vector3.ProjectOnPlane(m_State.Acceleration, m_State.MainSurface.Normal);
             var isDecelerating = Vector3.Dot(m_State.Velocity.normalized, groundAcceleration) < m_SkidDeceleration;
 
             // check for character deceleration
             if (m_State.IsCrouching || isDecelerating) {
                 m_FloorSkid.Play();
-                var c = m_State.Ground;
+                var c = m_State.MainSurface;
                 var t = m_FloorSkid.transform;
                 t.position = c.Point;
                 t.forward = -c.Normal;
@@ -81,9 +81,9 @@ public class CharacterDust: MonoBehaviour {
 
         // if just landed
         if (m_State.Next.IsOnGround) {
-            m_LandingPuff.transform.up = m_State.Ground.Normal;
-            m_LandingPuff.transform.position = m_State.Ground.Point;
-            var groundForce = Vector3.Project(m_State.Acceleration, m_State.Ground.Normal).magnitude;
+            m_LandingPuff.transform.up = m_State.MainSurface.Normal;
+            m_LandingPuff.transform.position = m_State.MainSurface.Point;
+            var groundForce = Vector3.Project(m_State.Acceleration, m_State.MainSurface.Normal).magnitude;
             var particles = Mathf.FloorToInt(m_LandingAccelerationToDust * groundForce);
             m_LandingPuff.Emit(particles);
             m_LandingStamp.Emit(particles);

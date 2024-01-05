@@ -127,7 +127,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void JumpSquat_Update(float delta) {
         // apply fall acceleration if airborne
-        if (c.State.Curr.Ground.IsNone && c.State.Curr.Wall.IsNone) {
+        if (c.State.Curr.MainSurface.IsNone) {
             c.State.Next.Force += c.Tuning.FallAcceleration * Vector3.up;
         }
 
@@ -219,7 +219,7 @@ sealed class JumpSystem: CharacterSystem {
     /// reset the next surface to jump from
     void ResetJumpSurface() {
         c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
-        c.State.JumpSurface = c.State.Next.Ground;
+        c.State.JumpSurface = c.State.Next.MainSurface;
     }
 
     /// .
@@ -348,7 +348,7 @@ sealed class JumpSystem: CharacterSystem {
 
     /// if the character is on something ground like
     bool IsOnGround() {
-        var ground = c.State.Curr.GroundSurface;
+        var ground = c.State.Curr.MainSurface;
         if (ground.IsNone) {
             return false;
         }

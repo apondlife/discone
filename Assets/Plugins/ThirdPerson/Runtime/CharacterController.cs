@@ -20,12 +20,6 @@ public sealed class CharacterController {
         public Vector3 Inertia;
 
         /// .
-        public CharacterCollision Wall;
-
-        /// .
-        public CharacterCollision Ground;
-
-        /// .
         public Buffer<CharacterCollision> Surfaces;
 
         // -- lifetime --
@@ -33,8 +27,6 @@ public sealed class CharacterController {
             Position = Vector3.zero;
             Velocity = Vector3.zero;
             Inertia = Vector3.zero;
-            Wall = CharacterCollision.None;
-            Ground = CharacterCollision.None;
             Surfaces = new Buffer<CharacterCollision>(maxCollisions);
         }
 
@@ -539,13 +531,6 @@ public sealed class CharacterController {
             hit.point,
             collisionAngle
         );
-
-        // track wall & ground collision separately for external querying
-        if (collision.Angle >= m_WallAngle) {
-            nextFrame.Wall = collision;
-        } else {
-            nextFrame.Ground = collision;
-        }
 
         nextFrame.AddSurface(collision);
 

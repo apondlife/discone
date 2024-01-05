@@ -45,9 +45,6 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
     public void SetNormal(Vector3 normal) {
         Normal = normal;
         Angle = Vector3.Angle(normal, Vector3.up);
-
-        // TODO: can we do anything about this?
-        NormalMag = -1f;
     }
 
     // -- queries --

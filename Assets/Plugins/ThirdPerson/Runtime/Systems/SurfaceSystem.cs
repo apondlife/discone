@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Quaternion = UnityEngine.Quaternion;
-using Vector3 = UnityEngine.Vector3;
 
 namespace ThirdPerson {
 
@@ -36,7 +34,7 @@ sealed class SurfaceSystem: CharacterSystem {
 
     void NotOnSurface_Update(float delta) {
         // if we're on a surface, enter slide
-        var surface = c.State.Curr.WallSurface;
+        var surface = c.State.Curr.MainSurface;
         if (surface.IsSome) {
             ChangeToImmediate(SurfaceSlide, delta);
         }
@@ -92,10 +90,10 @@ sealed class SurfaceSystem: CharacterSystem {
         }
 
         // AAA: scale transfer based on the angle between currSurface.Normal and lastSurface.Normal
-        var surfacePrev = c.State.Curr.PrevSurface;
-        var surfacePrevTg = surfacePrev.IsSome
-            ? Vector3.ProjectOnPlane(surfacePrev.Normal, currSurface.Normal).normalized
-            : currUp;
+        // var surfacePrev = c.State.Curr.PrevSurface;
+        // var surfacePrevTg = surfacePrev.IsSome
+        //     ? Vector3.ProjectOnPlane(surfacePrev.Normal, currSurface.Normal).normalized
+        //     : currUp;
 
         // calculate added acceleration
         var acceleration = Vector3.zero;
@@ -112,8 +110,9 @@ sealed class SurfaceSystem: CharacterSystem {
         var inputRight = Vector3.Dot(c.Input.Move, currUpTg);
         var inputTg = (inputUp * currUp + inputRight * currUpTg).normalized;
 
-        // find surface-based transfer scale
-        var transferDiAngle = Vector3.SignedAngle(surfacePrevTg, inputTg, currNormal);
+        // AAA: find surface-based transfer scale
+        // var transferDiAngle = Vector3.SignedAngle(surfacePrevTg, inputTg, currNormal);
+        var transferDiAngle = 0f;
         var transferDiAngleMag = Mathf.Abs(transferDiAngle);
         var transferDiAngleSign = Mathf.Sign(transferDiAngle);
 

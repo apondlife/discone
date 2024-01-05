@@ -43,7 +43,7 @@ sealed class CharacterGroundDust: MonoBehaviour {
         // get ground acceleration state
         var a = Vector3.ProjectOnPlane(
             c.State.Curr.Acceleration,
-            c.State.Next.Ground.Normal
+            c.State.Next.MainSurface.Normal
         );
 
         var aDotV = Vector3.Dot(

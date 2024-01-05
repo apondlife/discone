@@ -308,7 +308,7 @@ sealed class MovementSystem: CharacterSystem {
         var v0SqrMag = v0.sqrMagnitude;
 
         // scale friction by surface
-        var frictionScale = c.Tuning.Surface_FrictionScale.Evaluate(c.State.Curr.GroundSurface.Angle);
+        var frictionScale = c.Tuning.Surface_FrictionScale.Evaluate(c.State.Curr.MainSurface.Angle);
         friction *= frictionScale;
 
         // get separate acceleration and deceleration

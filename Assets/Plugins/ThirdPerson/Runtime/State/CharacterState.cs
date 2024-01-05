@@ -132,18 +132,6 @@ public sealed partial class CharacterState {
         /// how much tilted the character is
         public Quaternion Tilt = Quaternion.identity;
 
-        /// the ground collision for the previous frame
-        public CharacterCollision Ground;
-
-        /// the wall collision for the previous frame
-        public CharacterCollision Wall;
-
-        /// the collision for the last touched surface
-        public CharacterCollision CurrSurface;
-
-        /// the collision for the previously touched surface
-        public CharacterCollision PrevSurface;
-
         /// the surface w/ the most normal force
         public CharacterCollision MainSurface;
 
@@ -234,23 +222,7 @@ public sealed partial class CharacterState {
 
         /// the normal in relation to the current surface
         public Vector3 Normal {
-            get => Ground.Normal;
-        }
-
-        /// if the character is touching the ground (or thinks they are)
-        public bool IsOnGround {
-            get => Ground.IsSome || CoyoteFrames > 0;
-        }
-
-        // AAA: rewrite GroundSurface & WallSurface against the collision list
-        /// the ground-like collision surface
-        public CharacterCollision GroundSurface {
-            get => Ground.IsSome ? Ground : Wall;
-        }
-
-        /// the wall-like collision surface
-        public CharacterCollision WallSurface {
-            get => Wall.IsSome ? Wall : Ground;
+            get => MainSurface.Normal;
         }
 
         /// if this is colliding with anything
@@ -258,9 +230,14 @@ public sealed partial class CharacterState {
             get => Surfaces != null && Surfaces.Length != 0;
         }
 
+        /// if the character is touching the ground (or thinks they are)
+        public bool IsOnGround {
+            get => CoyoteFrames > 0;
+        }
+
         /// if the character is on the wall
         public bool IsOnWall {
-            get => WallSurface.Angle > 0;
+            get => MainSurface.Angle > 0;
         }
 
         /// if currently idle
@@ -281,10 +258,10 @@ public sealed partial class CharacterState {
         /// the velocity in the ground plane, or planar velocity if not grounded
         public Vector3 GroundVelocity {
             get {
-                if (Ground.IsNone) {
+                if (MainSurface.IsNone) {
                     return PlanarVelocity;
                 } else {
-                    return Vector3.ProjectOnPlane(Velocity, Ground.Normal);
+                    return Vector3.ProjectOnPlane(Velocity, MainSurface.Normal);
                 }
             }
         }
