@@ -37,11 +37,11 @@ public sealed partial class CharacterState {
     // -- commands --
     /// create the next frame from the current frame
     public void Advance() {
+        // create a frame w/ no forces
         var next = m_Frames[0].Copy();
-
-        // every frame starts with no next acceleration (forces)
         next.Force = Vector3.zero;
 
+        // add the frame
         m_Frames.Add(next);
     }
 

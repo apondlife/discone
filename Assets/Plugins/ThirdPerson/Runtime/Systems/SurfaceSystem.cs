@@ -53,8 +53,7 @@ sealed class SurfaceSystem: CharacterSystem {
             return;
         }
 
-        // update to new surface collision
-        // ???: could this work w/ a loop over every surface? how would we know prev surface per-iteration?
+        // get current surface
         var currSurface = c.State.Curr.MainSurface;
         var currNormal = currSurface.Normal;
         var currVelocityDir = Vector3.ProjectOnPlane(c.State.Curr.Velocity + c.State.Curr.Inertia, currNormal).normalized;
@@ -111,13 +110,13 @@ sealed class SurfaceSystem: CharacterSystem {
         var inputTg = (inputUp * currUp + inputRight * currUpTg).normalized;
 
         // AAA: find surface-based transfer scale
-        // var transferDiAngle = Vector3.SignedAngle(surfacePrevTg, inputTg, currNormal);
-        var transferDiAngle = 0f;
-        var transferDiAngleMag = Mathf.Abs(transferDiAngle);
-        var transferDiAngleSign = Mathf.Sign(transferDiAngle);
+        // apply di rotation based on the input direction
+        var diAngle = Vector3.SignedAngle(transferTg, inputTg, currNormal);
+        var diAngleMag = Mathf.Abs(diAngle);
+        var diAngleSign = Mathf.Sign(diAngle);
+        var diRot = c.Tuning.Surface_TransferDiAngle.Evaluate(diAngleMag) * diAngleSign * c.Input.MoveMagnitude;
 
-        var transferDiRot = c.Tuning.Surface_TransferDiAngle.Evaluate(transferDiAngleMag) * transferDiAngleSign * c.Input.MoveMagnitude;
-        // transferTg = Quaternion.AngleAxis(transferDiRot, currNormal) * transferTg;
+        transferTg = Quaternion.AngleAxis(diRot, currNormal) * transferTg;
 
         // transfer inertia up new surface w/ di
         // TODO: should we consume tangent inertia as well? there's an issue when you hit wall & ground where
@@ -138,26 +137,19 @@ sealed class SurfaceSystem: CharacterSystem {
         var inertiaDecayMag = Math.Min(inertiaDecay.magnitude, inertiaNormal.magnitude);
         inertiaDecay = Vector3.ClampMagnitude(inertiaDecay, inertiaDecayMag);
 
-        // tune transfer
-        var transferScale = c.Tuning.Surface_TransferScale.Evaluate(currSurface.Angle) / delta;
-        var transferDiScale = c.Tuning.Surface_TransferDiScale.Evaluate(transferDiAngleMag);
+        // scale transfer based on surface & di
+        var surfaceScale = c.Tuning.Surface_TransferScale.Evaluate(currSurface.Angle) / delta;
+        var diScale = c.Tuning.Surface_TransferDiScale.Evaluate(diAngleMag);
         var transferAttack = c.Tuning.Surface_TransferAttack.Evaluate(surfacePerceivedScale);
 
         // AAA
-        transferDiScale = 1f;
+        surfaceScale = 1f;
         transferAttack = 1f;
-        transferScale = 1;
 
         // and transfer it along the surface tangent
-        var transferMag = inertiaDecayMag * transferScale * transferDiScale * transferAttack;
+        var transferMag = inertiaDecayMag * surfaceScale * diScale * transferAttack;
         var transferImpulse = transferMag * transferTg;
         acceleration += transferImpulse / delta;
-        DebugDraw.Push(
-            $"transf-tg{0}",
-            c.State.Next.Position,
-            transferTg,
-            new DebugDraw.Config(new Color(1f, 0.8f, 0f))
-        );
 
         // add surface gravity
         // var surfaceGravity = c.Input.IsSurfaceHoldPressed ? c.Tuning.Surface_HoldGravity : c.Tuning.Surface_Gravity;;
@@ -167,9 +159,18 @@ sealed class SurfaceSystem: CharacterSystem {
         // var surfaceAcceleration = c.Tuning.Surface_Acceleration(surfaceGravity);
         // acceleration += surfaceAcceleration * surfaceAngleScale * surfaceUp;
 
+        // add magnet/grip to push us towards the wall so we don't let go
+        acceleration -= c.Tuning.Surface_Grip.Evaluate(currSurface.Angle) * currNormal;
+
         // update state
         c.State.Next.Inertia -= inertiaDecay;
         c.State.Next.Force += acceleration;
+
+        DebugDraw.Push(
+            $"force-surface",
+            c.State.Next.Position,
+            acceleration
+        );
 
         DebugDraw.Push(
             "inertia-post",

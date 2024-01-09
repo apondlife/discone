@@ -65,7 +65,6 @@ sealed class CharacterDistortion: MonoBehaviour {
 
         // aggregate a list of materials
         var materials = new HashSet<Material>();
-
         var renderers = character.Model
             .GetComponentsInChildren<Renderer>(true);
 

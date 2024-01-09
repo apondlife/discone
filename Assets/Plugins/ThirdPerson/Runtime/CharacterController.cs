@@ -364,7 +364,7 @@ public sealed class CharacterController {
 
             // if this is a convex collider
             if (colliderSupportsClosestPoint) {
-                castDir = collider.ClosestPoint(moveDst) - castSrc;
+                castDir = collider.ClosestPoint(castSrc) - castSrc;
                 castRes = CollideCapsule(
                     collider,
                     capsule,
@@ -386,7 +386,7 @@ public sealed class CharacterController {
                 var colliderTransform = collider.transform;
                 didHit = Physics.ComputePenetration(
                     m_CapsuleWithSearch,
-                    moveDst,
+                    castSrc,
                     Quaternion.identity,
                     collider,
                     colliderTransform.position,
@@ -541,6 +541,16 @@ public sealed class CharacterController {
     /// the controller's contact offset
     public float ContactOffset {
         get => m_ContactOffset;
+    }
+
+    // -- debugging --
+    Color GetDebugColor(CastResult res) {
+        return res switch {
+            CastResult.Hit => Color.green,
+            CastResult.Blocked => Color.yellow,
+            CastResult.OutOfRange => Color.blue,
+            _ => Color.red
+        };
     }
 }
 

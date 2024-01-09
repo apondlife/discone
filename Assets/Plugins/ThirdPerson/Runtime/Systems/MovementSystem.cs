@@ -262,7 +262,6 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // add aerial drift
-        var v0 = c.State.Curr.PlanarVelocity;
         var a = c.Input.Move * c.Tuning.AerialDriftAcceleration;
         c.State.Next.Force += a;
     }
