@@ -49,11 +49,13 @@ public class PlayerEyelid: UIBehaviour {
     }
 
     void Update() {
+        var delta = Time.deltaTime;
+
         // open/close the eyes
         if (m_IsClosing.Value) {
-            UpdateElapsed(Time.deltaTime);
+            UpdateElapsed(delta);
         } else if (m_ClosingElapsed > 0.0f) {
-            UpdateElapsed(-Time.deltaTime);
+            UpdateElapsed(-delta);
         }
 
         UpdateVisibility();

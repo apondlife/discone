@@ -1,26 +1,27 @@
+using Mirror.SimpleWeb;
 using UnityEngine;
 using UnityAtoms;
 using UnityEngine.InputSystem;
 
 /// the discone checkpoint controller
 [RequireComponent(typeof(ThirdPerson.Player))]
-public sealed class PlayerCheckpoint: MonoBehaviour {
+public sealed class PlayerCheckpoint : MonoBehaviour {
     // -- atoms --
     [Header("atoms")]
-    [Tooltip("the progress of the checkpoint save")]
-    [SerializeField] DisconeCharacterVariable m_Character;
+    [Tooltip("the progress of the checkpoint save")] [SerializeField]
+    DisconeCharacterVariable m_Character;
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the load checkpoint input")]
-    [SerializeField] InputActionReference m_LoadCheckpointAction;
+    [Tooltip("the load checkpoint input")] [SerializeField]
+    InputActionReference m_LoadCheckpointAction;
 
     // -- props --
     /// if the checkpoint was saving previously
-    bool m_PrevIsSaving = false;
+    bool m_PrevIsSaving;
 
     /// if the saving value changed
-    bool m_IsSavingChanged = false;
+    bool m_IsSavingChanged;
 
     // -- lifecycle --
     void Update() {
@@ -34,7 +35,8 @@ public sealed class PlayerCheckpoint: MonoBehaviour {
         var load = m_LoadCheckpointAction.action;
         if (load.WasPressedThisFrame()) {
             checkpoint.StartLoad();
-        } else if (load.WasReleasedThisFrame()) {
+        }
+        else if (load.WasReleasedThisFrame()) {
             checkpoint.StopLoad();
         }
 
