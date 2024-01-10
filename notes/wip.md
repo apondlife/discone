@@ -3,25 +3,17 @@ what is projected
 
 # inertia & movement
 
-- investigate inertia when transferring ground -> wall1 -> wall2
-- consider inertia over time applying towards velocity + di (vertical wall to wall scenario)
-- draw line and fold paper
-- should transfer be towards 
-  - move direction?
-  - inertia projected into surface (disambiguated by prev normal -> normal) 
+- negative walls produce a better transfer than positive walls
+  - they don't cause repeat collisions (gravity pulls you away)
+- applying inertia over time
+  - storing transfer direction on initial collision
 
-- wall gravity too strong ? (see negative walls)
-- inertia transfer really strong
-- lose inertia on wall transfer?
-  - need half life on inertia decay
-  - investigate interaction w/ perceived transfer scale
 - unrealized motion (minmove) be converted into inertia? 
   - set velocity to zero on min_move?
-- negative walls feel like they have higher gravity
-
-- ground velocity vs. surface velocity (friction on walls? and jumping?)
-- wall slide as floating state in movement?
-- wall system preserves momentum into wall (decaying)
+- move friction into surface system?
+  - need to approach integration more holistically
+  - ground velocity vs. surface velocity (friction on walls? and jumping?)
+  - wall slide as floating state in movement?
 
 - maybe? move off wall on jump?
 

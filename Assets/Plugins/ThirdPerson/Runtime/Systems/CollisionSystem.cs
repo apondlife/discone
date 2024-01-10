@@ -36,6 +36,7 @@ sealed class CollisionSystem: CharacterSystem {
         var curr = c.State.Curr;
         var next = c.State.Next;
 
+        var i0 = next.Inertia;
         // integrate acceleration (forces)
         var a = next.Force * delta;
         var v = next.Velocity + next.Inertia + a;
@@ -121,6 +122,24 @@ sealed class CollisionSystem: CharacterSystem {
 
             // use inertia w/ acceleration for normal force
             nextMain.SetNormal(nextMain.Normal.normalized);
+
+            DebugDraw.Push(
+                "velocity-main",
+                nextMain.Point,
+                Vector3.Project(v - a - i0, nextMain.Normal)
+            );
+
+            DebugDraw.Push(
+                "acceleration-main",
+                nextMain.Point,
+                Vector3.Project(a, nextMain.Normal)
+            );
+
+            DebugDraw.Push(
+                "inertia-main",
+                nextMain.Point,
+                Vector3.Project(i0, nextMain.Normal)
+            );
         }
 
         next.MainSurface = nextMain;

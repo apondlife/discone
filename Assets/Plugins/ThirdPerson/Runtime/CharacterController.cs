@@ -306,12 +306,6 @@ public sealed class CharacterController {
             // assuming velocity is constant during this period of time:
             timeRemaining = moveRemaining.magnitude / nextVelocity.magnitude;
             nextVelocity = Vector3.ProjectOnPlane(nextVelocity, hit.normal);
-            DebugDraw.Push(
-                $"move-hit{numCasts}",
-                hit.point,
-                hit.normal,
-                new DebugDraw.Config(Color.red)
-            );
 
             // update state
             numCasts++;
@@ -380,6 +374,14 @@ public sealed class CharacterController {
                 if (castRes == CastResult.Miss) {
                     Log.Cntrlr.W($"final collision cast convex mesh {collider} missed");
                 }
+
+                // TODO: we should be able to parameterize a value w/ i, castRes, &c
+                DebugDraw.Push(
+                    $"collider-{i}-{castRes}",
+                    collider.ClosestPoint(castSrc),
+                    Vector3.zero,
+                    new DebugDraw.Config(GetDebugColor(castRes), width: 3f)
+                );
             }
             // otherwise, depenetrate from concave mesh to find dir
             else {

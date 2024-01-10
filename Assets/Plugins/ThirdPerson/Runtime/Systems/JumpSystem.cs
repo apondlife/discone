@@ -187,7 +187,7 @@ sealed class JumpSystem: CharacterSystem {
     void Falling_Update(float delta) {
         // apply fall acceleration while holding jump
         // TODO: this is a hack around not wanting to double up on fall & wall acceleration
-        if (c.Input.IsJumpPressed && !c.State.Next.IsOnWall) {
+        if (c.Input.IsJumpPressed) {
             var acceleration = c.State.Next.Velocity.y > 0.0f
                 ? c.Tuning.JumpAcceleration
                 : c.Tuning.FallAcceleration;
@@ -268,7 +268,7 @@ sealed class JumpSystem: CharacterSystem {
         c.State.Next.Inertia = Vector3.zero;
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteFrames = 0;
-        c.State.Next.CooldownFrames = (int)JumpTuning.CooldownFrames;
+        c.State.Next.CooldownFrames = JumpTuning.CooldownFrames;
 
         c.Events.Schedule(CharacterEvent.Jump);
     }

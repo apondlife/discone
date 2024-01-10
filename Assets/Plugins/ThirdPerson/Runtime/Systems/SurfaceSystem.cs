@@ -1,4 +1,5 @@
 using System;
+using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -120,6 +121,7 @@ sealed class SurfaceSystem: CharacterSystem {
 
         // transfer inertia up new surface w/ di
         // TODO: should we consume tangent inertia as well? there's an issue when you hit wall & ground where
+        // TODO: we should be able to write this using dot product rather than project & magnitude
         // inertia is tangent due to our collision ordering prioritizing the most recent surface (fix collision ordering)
         var inertia = c.State.Curr.Inertia;
         // var inertiaTg = Vector3.ProjectOnPlane(inertia, surfaceNormal);
@@ -138,7 +140,7 @@ sealed class SurfaceSystem: CharacterSystem {
         inertiaDecay = Vector3.ClampMagnitude(inertiaDecay, inertiaDecayMag);
 
         // scale transfer based on surface & di
-        var surfaceScale = c.Tuning.Surface_TransferScale.Evaluate(currSurface.Angle) / delta;
+        var surfaceScale = c.Tuning.Surface_TransferScale.Evaluate(currSurface.Angle);
         var diScale = c.Tuning.Surface_TransferDiScale.Evaluate(diAngleMag);
         var transferAttack = c.Tuning.Surface_TransferAttack.Evaluate(surfacePerceivedScale);
 
@@ -147,9 +149,9 @@ sealed class SurfaceSystem: CharacterSystem {
         transferAttack = 1f;
 
         // and transfer it along the surface tangent
-        var transferMag = inertiaDecayMag * surfaceScale * diScale * transferAttack;
+        var transferMag = inertiaDecayMag * surfaceScale * diScale * transferAttack / delta;
         var transferImpulse = transferMag * transferTg;
-        acceleration += transferImpulse / delta;
+        acceleration += transferImpulse;
 
         // add surface gravity
         // var surfaceGravity = c.Input.IsSurfaceHoldPressed ? c.Tuning.Surface_HoldGravity : c.Tuning.Surface_Gravity;;
@@ -167,19 +169,7 @@ sealed class SurfaceSystem: CharacterSystem {
         c.State.Next.Force += acceleration;
 
         DebugDraw.Push(
-            $"force-surface",
-            c.State.Next.Position,
-            acceleration
-        );
-
-        DebugDraw.Push(
-            "inertia-post",
-            c.State.Next.Position,
-            c.State.Next.Inertia
-        );
-
-        DebugDraw.Push(
-            "acceleration-surf",
+            "force-surface",
             c.State.Next.Position,
             acceleration,
             new DebugDraw.Config(new Color(1f, 1f, 0f))
