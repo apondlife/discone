@@ -19,12 +19,15 @@ public class PlayerButterflies: MonoBehaviour {
     [Tooltip("the current character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
 
+    [Tooltip("the ambient butterfly system")]
+    [SerializeField] ParticleSystem m_AmbientSystem;
+
+    [Tooltip("the butterfly release system")]
+    [SerializeField] ParticleSystem m_ReleaseSystem;
+
     // -- props --
     /// the current number of collected butterflies
-    int m_Collected;
-
-    /// the attached particle system
-    ParticleSystem m_ParticleSystem;
+    int m_Collected = 0;
 
     /// the current list of colliding particles
     List<ParticleSystem.Particle> m_Particles = new();
@@ -37,9 +40,6 @@ public class PlayerButterflies: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
-        // get refs
-        m_ParticleSystem = GetComponent<ParticleSystem>();
-
         // bind events
         m_Subscriptions
             .Add(m_CurrentCharacter.ChangedWithHistory, OnCharacterChanged);
@@ -56,7 +56,11 @@ public class PlayerButterflies: MonoBehaviour {
     }
 
     void Release() {
-        Debug.Log($"released {m_Collected} butterflies");
+        if (m_Collected == 0) {
+            return;
+        }
+
+        m_ReleaseSystem.Emit(m_Collected);
         m_Collected = 0;
     }
 
@@ -68,13 +72,13 @@ public class PlayerButterflies: MonoBehaviour {
 
         // clean up after the previous character
         if (prev) {
-            m_ParticleSystem.trigger.RemoveCollider(prev.Collider);
+            m_AmbientSystem.trigger.RemoveCollider(prev.Collider);
             m_OnLand?.Dispose();
         }
 
         // and add the next character's collider / land event subscription
         if (curr) {
-            m_ParticleSystem.trigger.AddCollider(curr.Collider);
+            m_AmbientSystem.trigger.AddCollider(curr.Collider);
             m_OnLand = curr.Character.Events.Subscribe(CharacterEvent.Land, OnCharacterLand);
         }
     }
@@ -82,7 +86,7 @@ public class PlayerButterflies: MonoBehaviour {
     /// when the butterflies hit the character
     void OnParticleTrigger() {
         // get the colliding butterflies
-        var n = m_ParticleSystem.GetTriggerParticles(ParticleSystemTriggerEventType.Enter, m_Particles);
+        var n = m_AmbientSystem.GetTriggerParticles(ParticleSystemTriggerEventType.Enter, m_Particles);
         if (n <= 0) {
             return;
         }
@@ -98,7 +102,7 @@ public class PlayerButterflies: MonoBehaviour {
         }
 
         // sync the butterflies back to the particle system
-        m_ParticleSystem.SetTriggerParticles(ParticleSystemTriggerEventType.Enter, m_Particles);
+        m_AmbientSystem.SetTriggerParticles(ParticleSystemTriggerEventType.Enter, m_Particles);
     }
 
     void OnCharacterLand() {
