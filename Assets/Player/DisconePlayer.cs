@@ -43,7 +43,7 @@ public sealed class DisconePlayer: MonoBehaviour {
     PlayerCheckpoint m_Checkpoint;
 
     /// a set of event subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Awake() {

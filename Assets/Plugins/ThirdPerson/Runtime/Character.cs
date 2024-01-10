@@ -184,7 +184,6 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         m_IsPaused = false;
     }
 
-
     // -- events --
     /// event for when the character pauses
     public event Action OnPause;

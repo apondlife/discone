@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1601815443370089029}
   - component: {fileID: 5138134667236006937}
   - component: {fileID: 8107430488093750217}
+  - component: {fileID: 5413019059838562052}
   m_Layer: 0
   m_Name: Butterflies
   m_TagString: Untagged
@@ -3718,8 +3719,8 @@ ParticleSystem:
     collisionMode: 0
     colliderForce: 0
     multiplyColliderForceByParticleSize: 0
-    multiplyColliderForceByParticleSpeed: 1
-    multiplyColliderForceByCollisionAngle: 1
+    multiplyColliderForceByParticleSpeed: 0
+    multiplyColliderForceByCollisionAngle: 0
     m_Planes: []
     m_Dampen:
       serializedVersion: 2
@@ -3885,19 +3886,19 @@ ParticleSystem:
     radiusScale: 1
     collidesWith:
       serializedVersion: 2
-      m_Bits: 16385
+      m_Bits: 64
     maxCollisionShapes: 256
     quality: 2
     voxelSize: 0.5
-    collisionMessages: 0
+    collisionMessages: 1
     collidesWithDynamic: 1
     interiorCollisions: 0
   TriggerModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 2
-    inside: 1
+    inside: 0
     outside: 0
-    enter: 0
+    enter: 2
     exit: 0
     colliderQueryMode: 0
     radiusScale: 1
@@ -4870,3 +4871,16 @@ MonoBehaviour:
     Path: event:/Environment/Butterfly
   listener: {fileID: 0}
   listenRadius: 20
+--- !u!114 &5413019059838562052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5631076753110872415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebbbe1f805a9480a88a963875819f0bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
