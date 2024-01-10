@@ -17,7 +17,7 @@ sealed class CameraZoomSystem: CameraSystem {
     }
 
     // -- Tracking --
-    Phase Zooming => new Phase(
+    Phase Zooming => new(
         name: "Zooming",
         update: Zooming_Update
     );

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using ThirdPerson;
 using UnityAtoms;
 using UnityEngine;
 
@@ -7,6 +9,11 @@ namespace Discone {
 /// the player's butterfly collection
 [RequireComponent(typeof(ParticleSystem))]
 public class PlayerButterflies: MonoBehaviour {
+    // -- tuning --
+    [Header("tuning")]
+    [Tooltip("the y-speed to release butterflies")]
+    [SerializeField] float m_ReleaseSpeed;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the current character")]
@@ -22,6 +29,9 @@ public class PlayerButterflies: MonoBehaviour {
     /// the current list of colliding particles
     List<ParticleSystem.Particle> m_Particles = new();
 
+    /// a subscription to the character's landing event
+    IDisposable m_OnLand;
+
     /// the list of event subscriptions
     DisposeBag m_Subscriptions = new();
 
@@ -32,23 +42,41 @@ public class PlayerButterflies: MonoBehaviour {
 
         // bind events
         m_Subscriptions
-            .Add(m_CurrentCharacter.Changed, OnCharacterChanged);
+            .Add(m_CurrentCharacter.ChangedWithHistory, OnCharacterChanged);
     }
 
     void OnDestroy() {
         m_Subscriptions.Dispose();
     }
 
+    // -- commands --
+    /// collect a butterfly
+    void Collect() {
+        m_Collected += 1;
+    }
+
+    void Release() {
+        Debug.Log($"released {m_Collected} butterflies");
+        m_Collected = 0;
+    }
+
     // -- events --
     /// when the current character changes
-    void OnCharacterChanged(DisconeCharacter character) {
-        // remove the previous collider
-        while (m_ParticleSystem.trigger.colliderCount > 0) {
-            m_ParticleSystem.trigger.RemoveCollider(0);
+    void OnCharacterChanged(DisconeCharacterPair characters) {
+        var curr = characters.Item1;
+        var prev = characters.Item2;
+
+        // clean up after the previous character
+        if (prev) {
+            m_ParticleSystem.trigger.RemoveCollider(prev.Collider);
+            m_OnLand?.Dispose();
         }
 
-        // add the collider for the new character
-        m_ParticleSystem.trigger.AddCollider(character.Collider);
+        // and add the next character's collider / land event subscription
+        if (curr) {
+            m_ParticleSystem.trigger.AddCollider(curr.Collider);
+            m_OnLand = curr.Character.Events.Subscribe(CharacterEvent.Land, OnCharacterLand);
+        }
     }
 
     /// when the butterflies hit the character
@@ -66,11 +94,29 @@ public class PlayerButterflies: MonoBehaviour {
             m_Particles[i] = p;
 
             // and add it to your collection
-            m_Collected += 1;
+            Collect();
         }
 
         // sync the butterflies back to the particle system
         m_ParticleSystem.SetTriggerParticles(ParticleSystemTriggerEventType.Enter, m_Particles);
+    }
+
+    void OnCharacterLand() {
+        var chr = m_CurrentCharacter.Value;
+        if (!chr) {
+            return;
+        }
+
+        // get state
+        var prev = chr.Character.State.Prev;
+        var curr = chr.Character.State.Curr;
+
+        // if the character is moving fast enough, release the butterflies
+        // IDEA: this could happen on any air -> surface transition, not just landing on a "ground"
+        var speed = Mathf.Abs(Vector3.Dot(prev.Velocity, curr.GroundSurface.Normal));
+        if (speed >= m_ReleaseSpeed) {
+            Release();
+        }
     }
 }
 

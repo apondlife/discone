@@ -70,7 +70,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         m_Container = GetComponentInParent<DisconeCharacter>();
 
         //  set events
-        m_Container.Character.Events.Bind(CharacterEvent.Jump, OnJump);
+        m_Container.Character.Events.Subscribe(CharacterEvent.Jump, OnJump);
 
         // add emitters
         m_StepEmitter = gameObject.AddComponent<StudioEventEmitter>();

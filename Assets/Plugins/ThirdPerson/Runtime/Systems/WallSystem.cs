@@ -25,7 +25,7 @@ sealed class WallSystem: CharacterSystem {
     }
 
     // -- NotOnWall --
-    Phase NotOnWall => new Phase(
+    Phase NotOnWall => new(
         "NotOnWall",
         update: NotOnWall_Update
     );
@@ -40,7 +40,7 @@ sealed class WallSystem: CharacterSystem {
     }
 
     // -- WallSlide --
-    Phase WallSlide => new Phase(
+    Phase WallSlide => new(
         name: "WallSlide",
         update: WallSlide_Update
     );

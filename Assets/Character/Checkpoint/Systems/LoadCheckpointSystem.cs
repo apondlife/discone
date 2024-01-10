@@ -64,7 +64,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     }
 
     // -- NotLoading --
-    Phase NotLoading => new Phase(
+    Phase NotLoading => new(
         name: "NotLoading",
         enter: NotLoading_Enter,
         update: NotLoading_Update
@@ -81,7 +81,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     }
 
     // -- Loading --
-    Phase Loading => new Phase(
+    Phase Loading => new(
         name: "Loading",
         enter: Loading_Enter,
         update: Loading_Update,
@@ -155,7 +155,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     }
 
     // -- Loaded --
-    Phase Loaded => new Phase(
+    Phase Loaded => new(
         name: "Loaded",
         enter: Loaded_Enter,
         update: Loaded_Update

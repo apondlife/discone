@@ -25,7 +25,7 @@ sealed class CollisionSystem: CharacterSystem {
     }
 
     // -- NotIdle --
-    Phase Active => new Phase(
+    Phase Active => new(
         name: "Active",
         update: Active_Update
     );

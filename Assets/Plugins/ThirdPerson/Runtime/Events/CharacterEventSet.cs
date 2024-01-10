@@ -6,7 +6,8 @@ namespace ThirdPerson {
 [Flags]
 public enum CharacterEvent {
     Jump = 1 << 0,
-    Idle = 2 << 0,
+    Land = 1 << 1,
+    Idle = 1 << 2,
 }
 
 // -- impl --
@@ -14,7 +15,7 @@ public enum CharacterEvent {
 public struct CharacterEventSet: IEquatable<CharacterEventSet> {
     // -- props --
     /// the events bitmask
-    public CharacterEvent m_Events;
+    CharacterEvent m_Events;
 
     // -- commands --
     /// add an event to the set
