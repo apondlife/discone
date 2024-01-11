@@ -333,9 +333,8 @@ public sealed class CharacterController {
 
                 // TODO: we should be able to parameterize a value w/ i, castRes, &c
                 DebugDraw.Push(
-                    $"collider-{i}-{castRes}",
-                    collider.ClosestPoint(castSrc),
-                    Vector3.zero,
+                    "collision",
+                    hit.point,
                     new DebugDraw.Config(GetDebugColor(castRes), width: 3f)
                 );
             }

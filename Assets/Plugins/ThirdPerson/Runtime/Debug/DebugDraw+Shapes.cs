@@ -30,7 +30,7 @@ public partial class DebugDraw {
 
             // draw lines
             foreach (var (_, value) in m_Values) {
-                if (!value.IsEnabled) {
+                if (!value.IsVisible(m_Tags)) {
                     continue;
                 }
 

@@ -11,7 +11,7 @@ public sealed class CharacterEvents {
     // -- props--
     CharacterState m_State;
 
-    Dictionary<CharacterEvent, Action> m_Subscribers = new Dictionary<CharacterEvent, Action>();
+    Dictionary<CharacterEvent, Action> m_Subscribers = new();
 
     // -- lifetime --
     public CharacterEvents(CharacterState state) {

@@ -53,18 +53,20 @@ public sealed class Map<TKey, TValue>: IDictionary<TKey, TValue>, ISerialization
     }
 
     public void OnAfterDeserialize() {
-        // reset dictionary
+        // reset state
         m_Map.Clear();
+        m_Indices.Clear();
 
         // and regenerate values
         for (var i = 0; i < m_Entries.Count; i++) {
             var key = m_Entries[i].Key;
-            if (key != null && !ContainsKey(key)) {
-                m_Map.Add(key, m_Entries[i].Val);
-                m_Indices.Add(key, i);
-            } else {
+            if (key == null || ContainsKey(key)) {
                 m_Warning = "duplicate keys will not be serialized!";
+                continue;
             }
+
+            m_Map.Add(key, m_Entries[i].Val);
+            m_Indices.Add(key, i);
         }
     }
 

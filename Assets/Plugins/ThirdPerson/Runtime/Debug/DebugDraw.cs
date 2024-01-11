@@ -1,14 +1,21 @@
 using System;
-using UnityEngine;
 using System.Collections.Generic;
 using Shapes;
 using Soil;
-using Random = UnityEngine.Random;
+using UnityEngine;
 
 namespace  ThirdPerson {
 
 /// a debug utility for adding drawings
 public partial class DebugDraw: ImmediateModeShapeDrawer {
+    // -- tags --
+    [Flags]
+    public enum Tag {
+        Default   = 1 << 0,
+        None      = 1 << 1,
+        Collision = 1 << 2,
+    }
+
     // -- constants --
     /// the default buffer length
     const int k_BufferLen = 300;
@@ -26,7 +33,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     const KeyCode k_ClearKey = KeyCode.Minus;
 
     /// the disable all values key
-    const KeyCode k_DisableAllKey = KeyCode.Equals;
+    const KeyCode k_CycleTagsKey = KeyCode.Equals;
 
     /// the frame advance key
     const KeyCode k_Advance = KeyCode.RightBracket;
@@ -41,8 +48,20 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     /// the singleton instance
     static DebugDraw s_Instance;
 
-    // -- fields --
-    [Header("fields")]
+    /// the last tag
+    static Tag s_LastTag;
+
+    /// initialize statics
+    static DebugDraw() {
+        var tags = Enum.GetValues(typeof(Tag));
+        s_LastTag = (Tag)tags.GetValue(tags.Length - 1);
+    }
+
+    // -- cfg --
+    [Header("cfg")]
+    [Tooltip("the set of tags to show")]
+    [SerializeField] Tag m_Tags = Tag.Default;
+
     [Tooltip("if drawing is enabled")]
     [SerializeField] bool m_IsEnabled;
 
@@ -55,6 +74,10 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
     [Tooltip("the map of values")]
     [SerializeField] Map<string, Value> m_Values = new();
+
+    // -- props --
+    /// the last color's hue
+    float m_Hue;
 
     // -- lifecycle --
     void Awake() {
@@ -79,11 +102,19 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             }
         }
 
-        // disable all on press
-        if (Input.GetKeyDown(k_DisableAllKey)) {
-            foreach (var (_, value) in m_Values) {
-                value.IsEnabled = false;
+        // cycle tags all on press
+        if (Input.GetKeyDown(k_CycleTagsKey)) {
+            var next = (int)m_Tags;
+            Debug.Log($"next {next}");
+            if (next == 0 || (next & (next - 1)) != 0) {
+                next = 1;
+            } else if ((Tag)next == s_LastTag) {
+                next = int.MaxValue;
+            } else {
+                next <<= 1;
             }
+
+            m_Tags = (Tag)next;
         }
 
         // advance on press
@@ -116,13 +147,23 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     }
 
     // -- commands --
-    /// push the drawing's next value
+    /// push the drawing's next point
+    public static void Push(string name, Vector3 pos) {
+        Push(name, pos, Vector3.zero);
+    }
+
+    /// push the drawing's next point
+    public static void Push(string name, Vector3 pos, Config cfg) {
+        Push(name, pos, Vector3.zero, cfg);
+    }
+
+    /// push the drawing's next ray
     public static void Push(string name, Vector3 pos, Vector3 dir) {
-        var cfg = new Config(color: Random.ColorHSV(0f, 1f, 1f, 1f, 1f, 1f));
+        var cfg = new Config(Color.clear);
         Push(name, pos, dir, cfg);
     }
 
-    /// push the drawing's next value
+    /// push the drawing's next ray
     public static void Push(string name, Vector3 pos, Vector3 dir, Config cfg) {
         s_Instance.PushNext(name, pos, dir, cfg);
     }
@@ -144,6 +185,13 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         }
         // if new, add it in sorted order
         else {
+            // pick a random color if default
+            if (cfg.Color == Color.clear) {
+                RotateColor();
+                cfg = cfg.WithColor(CurrColor());
+            }
+
+            // add the value
             value = new Value(cfg);
             m_Values.Add(name, value);
             m_Values.Sort((l, r) => string.CompareOrdinal(l.Key, r.Key));
@@ -153,11 +201,26 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         }
     }
 
+    // -- c/color
+    /// rotate to the next color
+    void RotateColor() {
+        m_Hue = (m_Hue + 0.12f) % 1f;
+    }
+
+    // -- queries --
+    /// get the current color
+    Color CurrColor() {
+        return Color.HSVToRGB(m_Hue, 1f, 1f);
+    }
+
     // -- data --
     /// a value that is buffered over n frames
     [Serializable]
     public record Value {
         // -- fields --
+        [Tooltip("this tags this value is associated to")]
+        [SerializeField] Tag m_Tags;
+
         [Tooltip("the rendered color")]
         [SerializeField] Gradient m_Color;
 
@@ -171,7 +234,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         [Tooltip("the length scale")]
         [SerializeField] float m_Scale;
 
-        [Tooltip("if the value is visible")]
+        [Tooltip("if the value is enabled")]
         [SerializeField] bool m_IsEnabled;
 
         // -- props --
@@ -184,6 +247,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             gradient.colorKeys = new GradientColorKey[] { new(cfg.Color, 0f) };
             gradient.alphaKeys = new GradientAlphaKey[] { new(cfg.MinAlpha, 0f), new (1f, 1f) };
 
+            m_Tags = cfg.Tags;
             m_Color = gradient;
             m_Range = new IntRange(0, cfg.Count);
             m_Width = cfg.Width;
@@ -209,6 +273,11 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         }
 
         // -- queries --
+        /// if the enabled and in the set of tags
+        public bool IsVisible(Tag tags) {
+            return m_IsEnabled && (m_Tags & tags) != 0;
+        }
+
         /// gets the nth-newest value
         public Ray this[int offset] {
             get => m_Buffer[offset];
@@ -249,6 +318,9 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     /// the cosmetic config for a value
     public readonly struct Config {
         // -- props --
+        /// the tag groups
+        public readonly Tag Tags;
+
         /// the rendered color
         public readonly Color Color;
 
@@ -267,16 +339,24 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         // -- lifetime --
         public Config(
             Color color,
+            Tag tags = Tag.None,
             int count = k_BufferLen,
             float width = 1f,
             float scale = 1f,
             float minAlpha = 1f
         ) {
+            Tags = tags;
             Color = color;
             Count = count;
             Width = width;
             Scale = scale;
             MinAlpha = minAlpha;
+        }
+
+        // -- operators --
+        /// create a copy of the config w/ the color
+        public Config WithColor(Color color) {
+            return new Config(color, Tags, Count, Width, Scale, MinAlpha);
         }
     }
 
