@@ -1,5 +1,4 @@
 using System;
-using System.Numerics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -36,15 +35,19 @@ sealed class CollisionSystem: CharacterSystem {
         var curr = c.State.Curr;
         var next = c.State.Next;
 
-        var i0 = next.Inertia;
         // integrate acceleration (forces)
-        var a = next.Force * delta;
-        var v = next.Velocity + next.Inertia + a;
+        var a0 = next.Force * delta;
+
+        // reapply any accumulated inertia
+        var i0 = next.Inertia * -curr.MainSurface.Normal;
+
+        // add inertia & acceleration to velocity
+        var v0 = next.Velocity + i0 + a0;
 
         // move character using controller if not idle
         var frame = c.Controller.Move(
             next.Position,
-            v,
+            v0,
             next.Up,
             delta
         );
@@ -68,18 +71,11 @@ sealed class CollisionSystem: CharacterSystem {
 
         // TODO: can we do anything about this?
         next.PerceivedSurface.Point = Vector3.negativeInfinity;
-        next.PerceivedSurface.NormalMag = -1f;
 
         // sync controller state back to character state
         next.Velocity = frame.Velocity;
         next.Acceleration = (frame.Velocity - curr.Velocity) / delta;
         next.Position = frame.Position;
-
-        // calculate inertia, momentum lost after collision; the frame velocity is the
-        // velocity projected into each collision surface (if hitting a wall, it's 0)
-        var inertia = frame.Inertia;
-        var inertiaDir = inertia.normalized;
-        var inertiaMag = inertia.magnitude;
 
         // find the surface we touched before the new surface, if any
         // var prevSurface = curr.PrevSurface;
@@ -98,41 +94,40 @@ sealed class CollisionSystem: CharacterSystem {
         //
         // next.PrevSurface = prevSurface;
 
-        // remove acceleration into surface (unrealized) from inertia & prevent
-        // inversion of direction
-        inertia -= inertiaDir * Mathf.Clamp(Vector3.Dot(a, inertiaDir), 0f, inertiaMag);
-
-        next.Inertia = inertia;
+        // the change in velocity, the resultant surface from the collision
+        var v1 = frame.Velocity;
+        var dv = v0 - v1;
 
         // build a virtual main surface
         var nextMain = CharacterCollision.None;
         if (next.IsColliding) {
+            var nextNormal = Vector3.zero;
+
             // by default, weight all the surfaces
             var n = frame.Surfaces.Count;
             foreach (var surface in frame.Surfaces) {
                 nextMain.Point += surface.Point / n;
-                nextMain.Normal += surface.Normal;
+                nextNormal += surface.Normal;
             }
 
-            // if inertia is nonzero, use that as the surface normal
-            if (frame.Inertia != Vector3.zero) {
-                nextMain.Normal = -frame.Inertia;
-                nextMain.NormalMag = frame.Inertia.magnitude;
+            // if dv is nonzero, use that as the surface normal
+            if (dv != Vector3.zero) {
+                nextNormal = -dv;
             }
 
-            // use inertia w/ acceleration for normal force
-            nextMain.SetNormal(nextMain.Normal.normalized);
+            // update the normal & angle
+            nextMain.SetNormal(nextNormal.normalized);
 
             DebugDraw.Push(
                 "velocity-main",
                 nextMain.Point,
-                Vector3.Project(v - a - i0, nextMain.Normal)
+                Vector3.Project(v0 - a0 - i0, nextMain.Normal)
             );
 
             DebugDraw.Push(
                 "acceleration-main",
                 nextMain.Point,
-                Vector3.Project(a, nextMain.Normal)
+                Vector3.Project(a0, nextMain.Normal)
             );
 
             DebugDraw.Push(
@@ -143,6 +138,23 @@ sealed class CollisionSystem: CharacterSystem {
         }
 
         next.MainSurface = nextMain;
+
+        // inertia, the momentum lost after collision, not including acceleration
+        var aNormal = Mathf.Max(Vector3.Dot(a0, -nextMain.Normal), 0f) * -nextMain.Normal;
+        var inertia = (v0 - aNormal).magnitude - v1.magnitude;
+        next.Inertia = Math.Max(inertia, 0f);
+
+        DebugDraw.Push(
+            "collision-v0",
+            next.Position,
+            v0 + Mathf.Max(Vector3.Dot(a0, -nextMain.Normal), 0f) * nextMain.Normal
+        );
+
+        DebugDraw.Push(
+            "collision-v1",
+            next.Position,
+            v1
+        );
 
         // debug curr surfaces (the ones relevant to the surface system)
         DebugDraw.Push(

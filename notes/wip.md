@@ -3,8 +3,6 @@ what is projected
 
 # inertia & movement
 
-- negative walls produce a better transfer than positive walls
-  - they don't cause repeat collisions (gravity pulls you away)
 - applying inertia over time
   - storing transfer direction on initial collision
 

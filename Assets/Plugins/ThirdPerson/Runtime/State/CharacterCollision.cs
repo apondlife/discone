@@ -24,9 +24,6 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
     /// the surface angle relative to up
     public float Angle;
 
-    /// the magnitude of the normal resistance/impulse
-    public float NormalMag;
-
     // -- lifetime --
     /// create a new collision
     public CharacterCollision(
@@ -37,7 +34,6 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
         Normal = normal;
         Point = point;
         Angle = angle;
-        NormalMag = -1f;
     }
 
     // -- commands --

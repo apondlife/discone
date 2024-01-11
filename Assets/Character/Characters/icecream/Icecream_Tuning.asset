@@ -410,7 +410,7 @@ MonoBehaviour:
       Max: 1
   Surface_Gravity: 12
   Surface_HoldGravity: 18
-  WallMagnet:
+  Surface_Grip:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -464,81 +464,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Dst:
       Min: 0
-      Max: 90
-  WallMagnetInputScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: -1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: -0.1
-        value: 0
-        inSlope: Infinity
-        outSlope: 0.9090909
-        tangentMode: 71
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0.9090909
-        outSlope: 0.9090909
-        tangentMode: 5
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 1
-  WallMagnetTransferScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 1.8219359
-        outSlope: 1.8219359
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.5790366
-        value: 1.0549675
-        inSlope: 0.49369252
-        outSlope: 0.49369252
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.1737
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: -0.13057554
-        outSlope: -0.13057554
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 1
-      Max: 2
+      Max: 5
   Surface_TransferAttack:
     m_Curve:
       serializedVersion: 2

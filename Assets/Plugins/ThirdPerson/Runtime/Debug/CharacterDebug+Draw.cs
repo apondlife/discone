@@ -14,7 +14,7 @@ public partial class Character {
         DebugDraw.Push(s_Position, pos, Vector3.down);
         DebugDraw.Push(s_Velocity, pos, m_State.Curr.Velocity);
         DebugDraw.Push(s_Force, pos, m_State.Curr.Force - m_Tuning.Gravity * Vector3.up);
-        DebugDraw.Push(s_Inertia, pos, m_State.Curr.Inertia);
+        DebugDraw.Push(s_Inertia, pos, m_State.Curr.Inertia * -m_State.Curr.MainSurface.Normal);
     }
 
     // -- config --

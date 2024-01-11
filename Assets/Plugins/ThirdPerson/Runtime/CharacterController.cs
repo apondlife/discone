@@ -16,9 +16,6 @@ public sealed class CharacterController {
         /// .
         public Vector3 Velocity;
 
-        /// the difference between input velocity and the frame velocity
-        public Vector3 Inertia;
-
         /// .
         public Buffer<CharacterCollision> Surfaces;
 
@@ -26,7 +23,6 @@ public sealed class CharacterController {
         public Frame(uint maxCollisions) {
             Position = Vector3.zero;
             Velocity = Vector3.zero;
-            Inertia = Vector3.zero;
             Surfaces = new Buffer<CharacterCollision>(maxCollisions);
         }
 
@@ -93,24 +89,6 @@ public sealed class CharacterController {
     /// the square min speed
     float m_SqrMinSpeed;
 
-    // -- debug --
-    #if UNITY_EDITOR
-    /// the start position
-    Vector3 m_DebugMoveOrigin;
-
-    /// the delta
-    Vector3 m_DebugMoveDelta;
-
-    /// the last collision hit
-    List<RaycastHit> m_DebugHits = new();
-
-    /// the list of casts this frame
-    List<Capsule.Cast> m_DebugCasts = new();
-
-    /// a bad hit, an error
-    RaycastHit? m_DebugErrorHit = null;
-    #endif
-
     // -- commands --
     /// initialize the controller
     public void Init() {
@@ -151,12 +129,6 @@ public sealed class CharacterController {
         var moveSrc = moveOrigin;
         var moveDst = moveSrc;
 
-        // store debug move
-        #if UNITY_EDITOR
-        m_DebugMoveDelta = velocity * delta;
-        m_DebugMoveOrigin = moveOrigin;
-        #endif
-
         // pre-calculate cast capsule
         var c = m_Capsule;
         var capsule = new Capsule(
@@ -174,12 +146,6 @@ public sealed class CharacterController {
 
         // prepare a new frame
         var nextFrame = new Frame(k_MaxCollisions);
-
-        // DEBUG: reset state
-        #if UNITY_EDITOR
-        m_DebugCasts.Clear();
-        m_DebugHits.Clear();
-        #endif
 
         // while there is any more to move, process what's left of the move
         // delta as a submove
@@ -257,11 +223,6 @@ public sealed class CharacterController {
                 castLen
             );
 
-            // DEBUG: track cast
-            #if UNITY_EDITOR
-            m_DebugCasts.Add(cast);
-            #endif
-
             // check for a collision
             didHit = Physics.CapsuleCast(
                 cast.Point1,
@@ -279,11 +240,6 @@ public sealed class CharacterController {
                 moveDst = castDst;
                 break;
             }
-
-            // DEBUG: track hit
-            #if UNITY_EDITOR
-            m_DebugHits.Add(hit);
-            #endif
 
             // move backwards along the move dir to the last point where we were
             // at least contact offset away from the hit surface
@@ -444,16 +400,6 @@ public sealed class CharacterController {
                     castDir = nextDir / nextMag;
                 }
             }
-        }
-
-        // update inertia after collision has fixed velocity
-        nextFrame.Inertia = velocity - nextFrame.Velocity;
-
-        // calculate the impact of each surface on this collision
-        for (var i = 0; i < nextFrame.Surfaces.Count; i++) {
-            var surface = nextFrame.Surfaces[i];
-            surface.NormalMag = Mathf.Max(Vector3.Dot(surface.Normal, -nextFrame.Inertia), 0f);
-            nextFrame.Surfaces[i] = surface;
         }
 
         // apply offset to depenetrate from colliders

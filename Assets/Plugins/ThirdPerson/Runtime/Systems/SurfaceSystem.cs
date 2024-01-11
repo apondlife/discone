@@ -55,9 +55,11 @@ sealed class SurfaceSystem: CharacterSystem {
         }
 
         // get current surface
+        // AAA: investigate if we need to project velocity on plane
         var currSurface = c.State.Curr.MainSurface;
         var currNormal = currSurface.Normal;
-        var currVelocityDir = Vector3.ProjectOnPlane(c.State.Curr.Velocity + c.State.Curr.Inertia, currNormal).normalized;
+        var currVelocityDir = c.State.Curr.Velocity.normalized;
+        // var currVelocityDir = Vector3.ProjectOnPlane(c.State.Curr.Velocity, currNormal).normalized;
 
         // find "up" direction; if none, fallback to velocity & then forward
         var currUp = Vector3.ProjectOnPlane(Vector3.up, currNormal).normalized;
@@ -120,24 +122,16 @@ sealed class SurfaceSystem: CharacterSystem {
         transferTg = Quaternion.AngleAxis(diRot, currNormal) * transferTg;
 
         // transfer inertia up new surface w/ di
-        // TODO: should we consume tangent inertia as well? there's an issue when you hit wall & ground where
-        // TODO: we should be able to write this using dot product rather than project & magnitude
-        // inertia is tangent due to our collision ordering prioritizing the most recent surface (fix collision ordering)
         var inertia = c.State.Curr.Inertia;
-        // var inertiaTg = Vector3.ProjectOnPlane(inertia, surfaceNormal);
-        // var inertiaNormal = inertia - inertiaTg;
-        var inertiaNormal = Vector3.Project(inertia, currNormal);
 
         // calculate the decay to hit 1% of the inertia over a fixed interval
         // TODO: can we optimize this pow by inverting this and showing the half-life as a debug query? -ty
         var inertiaDecayTime = c.Tuning.Surface_InertiaDecayTime.Evaluate(currSurface.Angle);
         var inertiaDecayScale = 1f - Mathf.Pow(0.01f, delta / inertiaDecayTime);
         inertiaDecayScale = 1f;
-        var inertiaDecay = inertiaNormal * inertiaDecayScale;
 
         // clamp decay so it doesn't bounce
-        var inertiaDecayMag = Math.Min(inertiaDecay.magnitude, inertiaNormal.magnitude);
-        inertiaDecay = Vector3.ClampMagnitude(inertiaDecay, inertiaDecayMag);
+        var inertiaDecayMag = Math.Min(inertia * inertiaDecayScale, inertia);
 
         // scale transfer based on surface & di
         var surfaceScale = c.Tuning.Surface_TransferScale.Evaluate(currSurface.Angle);
@@ -165,7 +159,7 @@ sealed class SurfaceSystem: CharacterSystem {
         acceleration -= c.Tuning.Surface_Grip.Evaluate(currSurface.Angle) * currNormal;
 
         // update state
-        c.State.Next.Inertia -= inertiaDecay;
+        c.State.Next.Inertia -= inertiaDecayMag;
         c.State.Next.Force += acceleration;
 
         DebugDraw.Push(
