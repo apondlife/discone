@@ -53,9 +53,8 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     [Soil.Range(0, k_BufferLen)]
     [SerializeField] IntRange m_Range = new(0, k_BufferLen);
 
-    // TODO: make this a keyable type
     [Tooltip("the map of values")]
-    [SerializeField] List<Value> m_Values = new();
+    [SerializeField] Map<string, Value> m_Values = new();
 
     // -- lifecycle --
     void Awake() {
@@ -75,14 +74,14 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
         // clear on press
         if (Input.GetKeyDown(k_ClearKey)) {
-            foreach (var value in m_Values) {
+            foreach (var (_, value) in m_Values) {
                 value.Clear();
             }
         }
 
         // disable all on press
         if (Input.GetKeyDown(k_DisableAllKey)) {
-            foreach (var value in m_Values) {
+            foreach (var (_, value) in m_Values) {
                 value.IsEnabled = false;
             }
         }
@@ -110,7 +109,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     void FixedUpdate() {
         // push an empty frame for each existing value
         if (!m_IsPaused) {
-            foreach (var value in m_Values) {
+            foreach (var (_, value) in m_Values) {
                 value.Push(new Ray());
             }
         }
@@ -125,46 +124,31 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
     /// push the drawing's next value
     public static void Push(string name, Vector3 pos, Vector3 dir, Config cfg) {
-        var initialValue = new Value(name, cfg);
-        Push(initialValue, pos, dir);
+        s_Instance.PushNext(name, pos, dir, cfg);
     }
 
     /// push the drawing's current value
-    public static void Push(Value initialValue, Vector3 pos, Vector3 dir) {
-        s_Instance.PushNext(initialValue, pos, dir);
-    }
-
-    /// push the drawing's current value
-    void PushNext(Value initialValue, Vector3 pos, Vector3 dir) {
+    void PushNext(string name, Vector3 pos, Vector3 dir, Config cfg) {
         // don't push when not enabled
         if (!m_IsEnabled || m_IsPaused) {
             return;
         }
 
-        // find or create the value
-        // TODO: convert this to serializable dictionary-like storage
-        var value = null as Value;
-        foreach (var other in m_Values) {
-            if (other.Name == initialValue.Name) {
-                value = other;
-                break;
-            }
-        }
-
         // the ray to add
         var ray = new Ray(pos, dir);
 
-        // if it exists, update value pushed at the beginning of the frame
+        // if the value exists, update the ray pushed at the beginning of the frame
+        m_Values.TryGetValue(name, out var value);
         if (value != null) {
             value.Set(ray);
         }
         // if new, add it in sorted order
         else {
-            value = initialValue;
-            m_Values.Add(value);
-            m_Values.Sort((l, r) => string.CompareOrdinal(l.Name, r.Name));
+            value = new Value(cfg);
+            m_Values.Add(name, value);
+            m_Values.Sort((l, r) => string.CompareOrdinal(l.Key, r.Key));
 
-            // and push the initial value
+            // and push the initial ray
             value.Push(ray);
         }
     }
@@ -173,10 +157,6 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     /// a value that is buffered over n frames
     [Serializable]
     public record Value {
-        /// the name of this value
-        [HideInInspector]
-        [SerializeField] string m_Name;
-
         // -- fields --
         [Tooltip("the rendered color")]
         [SerializeField] Gradient m_Color;
@@ -199,15 +179,11 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         Queue<Ray> m_Buffer;
 
         // -- lifetime --
-        public Value(
-            string name,
-            Config cfg
-        ) {
+        public Value(Config cfg) {
             var gradient = new Gradient();
             gradient.colorKeys = new GradientColorKey[] { new(cfg.Color, 0f) };
             gradient.alphaKeys = new GradientAlphaKey[] { new(cfg.MinAlpha, 0f), new (1f, 1f) };
 
-            m_Name = name;
             m_Color = gradient;
             m_Range = new IntRange(0, cfg.Count);
             m_Width = cfg.Width;
@@ -236,11 +212,6 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         /// gets the nth-newest value
         public Ray this[int offset] {
             get => m_Buffer[offset];
-        }
-
-        /// .
-        public string Name {
-            get => m_Name;
         }
 
         /// .

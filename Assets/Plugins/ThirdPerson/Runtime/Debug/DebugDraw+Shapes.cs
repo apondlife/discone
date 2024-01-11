@@ -29,7 +29,7 @@ public partial class DebugDraw {
             Draw.ThicknessSpace = ThicknessSpace.Pixels;
 
             // draw lines
-            foreach (var value in m_Values) {
+            foreach (var (_, value) in m_Values) {
                 if (!value.IsEnabled) {
                     continue;
                 }
