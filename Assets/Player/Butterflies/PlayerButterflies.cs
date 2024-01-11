@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using ThirdPerson;
 using UnityAtoms;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Discone {
 
 /// the player's butterfly collection
 [RequireComponent(typeof(ParticleSystem))]
-public class PlayerButterflies: MonoBehaviour {
+sealed class PlayerButterflies: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the y-speed to release butterflies")]
@@ -43,6 +44,13 @@ public class PlayerButterflies: MonoBehaviour {
         // bind events
         m_Subscriptions
             .Add(m_CurrentCharacter.ChangedWithHistory, OnCharacterChanged);
+    }
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.H)) {
+            m_Collected = 10;
+            Release();
+        }
     }
 
     void OnDestroy() {
