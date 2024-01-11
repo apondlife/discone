@@ -5,7 +5,7 @@ namespace ThirdPerson {
 
 /// debug extensions for the character
 public partial class Character {
-    // -- debug - drawing --
+    // -- debug/drawing --
     void Debug_Draw() {
         if (m_IsPaused) {
             return;

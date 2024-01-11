@@ -131,15 +131,18 @@ public sealed partial class CharacterState {
         /// how much tilted the character is
         public Quaternion Tilt = Quaternion.identity;
 
+        /// the collision surfaces
+        // TODO: should we sort this by normal mag?
+        public CharacterCollision[] Surfaces;
+
         /// the surface w/ the most normal force
         public CharacterCollision MainSurface;
 
         /// the currently perceived surface
         public CharacterCollision PerceivedSurface;
 
-        /// the collision surfaces
-        // TODO: should we sort this by normal mag?
-        public CharacterCollision[] Surfaces;
+        /// the current surface transfer tangent
+        public Vector3 SurfaceTangent;
 
         /// the frame in the jump squat
         public int JumpSquatFrame = -1;

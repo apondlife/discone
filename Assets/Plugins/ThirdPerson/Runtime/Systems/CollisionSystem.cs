@@ -141,8 +141,15 @@ sealed class CollisionSystem: CharacterSystem {
 
         // inertia, the momentum lost after collision, not including acceleration
         var aNormal = Mathf.Max(Vector3.Dot(a0, -nextMain.Normal), 0f) * -nextMain.Normal;
-        var inertia = (v0 - aNormal).magnitude - v1.magnitude;
-        next.Inertia = Math.Max(inertia, 0f);
+        // var iNormal = Mathf.Max(Vector3.Dot(i0, -nextMain.Normal), 0f) * -nextMain.Normal;
+        var iNormal = Vector3.zero;
+
+        // var aNormal = Vector3.zero;
+        var v0mag = (v0 - aNormal - iNormal).magnitude;
+        var v1mag = v1.magnitude;
+        var energy = v0mag * v0mag - v1mag * v1mag;
+        energy = Mathf.Max(energy, 0f);
+        next.Inertia = Mathf.Sqrt(energy);
 
         DebugDraw.Push(
             "collision-v0",

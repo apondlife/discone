@@ -1,5 +1,6 @@
 using System;
 using Cinemachine.Utility;
+using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -78,24 +79,23 @@ sealed class SurfaceSystem: CharacterSystem {
         var prevSurface = c.State.Prev.MainSurface;
         var prevNormal = prevSurface.Normal;
 
-        // find the transfer tangent between the surfaces
-        // AAA: store when surfaces change?
-        var transferTg = Vector3.zero;
+        // find the next surface tangent
+        var surfaceTg = Vector3.zero;
 
-        // if previously on a surface, find surface rotation
-        if (prevSurface.IsSome) {
-            transferTg = Vector3.Cross(currNormal, Vector3.Cross(prevNormal, currNormal));
-        }
         // if coming from air, use character velocity, if no velocity, use "up"
+        if (prevSurface.IsNone) {
+            surfaceTg = currVelocityDir != Vector3.zero ? currVelocityDir : currUp;
+        }
+        // if the surface changed, calculate a new transfer tangent
+        else if (currNormal != prevNormal) {
+            surfaceTg = Vector3.Cross(currNormal, Vector3.Cross(prevNormal, currNormal));
+        }
+        // otherwise, use stored tangent
         else {
-            transferTg = currVelocityDir != Vector3.zero ? currVelocityDir : currUp;
+            surfaceTg = c.State.Curr.SurfaceTangent;
         }
 
-        // AAA: scale transfer based on the angle between currSurface.Normal and lastSurface.Normal
-        // var surfacePrev = c.State.Curr.PrevSurface;
-        // var surfacePrevTg = surfacePrev.IsSome
-        //     ? Vector3.ProjectOnPlane(surfacePrev.Normal, currSurface.Normal).normalized
-        //     : currUp;
+        c.State.Next.SurfaceTangent = surfaceTg;
 
         // calculate added acceleration
         var acceleration = Vector3.zero;
@@ -107,34 +107,45 @@ sealed class SurfaceSystem: CharacterSystem {
         ));
         var surfacePerceivedScale = 1f - (surfacePerceivedAngle / 90f);
 
-        // get input in curr surface space
-        var inputUp = Vector3.Dot(c.Input.Move, currFwd);
-        var inputRight = Vector3.Dot(c.Input.Move, currUpTg);
-        var inputTg = (inputUp * currUp + inputRight * currUpTg).normalized;
-
-        // AAA: find surface-based transfer scale
-        // apply di rotation based on the input direction
-        var diAngle = Vector3.SignedAngle(transferTg, inputTg, currNormal);
-        var diAngleMag = Mathf.Abs(diAngle);
-        var diAngleSign = Mathf.Sign(diAngle);
-        var diRot = c.Tuning.Surface_TransferDiAngle.Evaluate(diAngleMag) * diAngleSign * c.Input.MoveMagnitude;
-
-        transferTg = Quaternion.AngleAxis(diRot, currNormal) * transferTg;
-
-        // transfer inertia up new surface w/ di
+        //
+        // 1. get transfer from inertia decay into curr surface
+        //
         var inertia = c.State.Curr.Inertia;
 
         // calculate the decay to hit 1% of the inertia over a fixed interval
         // TODO: can we optimize this pow by inverting this and showing the half-life as a debug query? -ty
         var inertiaDecayTime = c.Tuning.Surface_InertiaDecayTime.Evaluate(currSurface.Angle);
         var inertiaDecayScale = 1f - Mathf.Pow(0.01f, delta / inertiaDecayTime);
-        inertiaDecayScale = 1f;
+        // inertiaDecayScale = 1f;
 
         // clamp decay so it doesn't bounce
-        var inertiaDecayMag = Math.Min(inertia * inertiaDecayScale, inertia);
+        var inertiaDecayMag = inertia * Math.Min(inertiaDecayScale, 1f);
+
+        //
+        // 2. rotate transfer direction based input di
+        //
+
+        // get input in curr surface space
+        var inputUp = Vector3.Dot(c.Input.Move, currFwd);
+        var inputRight = Vector3.Dot(c.Input.Move, currUpTg);
+        var inputTg = (inputUp * currUp + inputRight * currUpTg).normalized;
+
+        // AAA: find surface-based transfer scale
+        var diAngle = Vector3.SignedAngle(surfaceTg, inputTg, currNormal);
+        var diAngleMag = Mathf.Abs(diAngle);
+        var diAngleSign = Mathf.Sign(diAngle);
+        var diRot = c.Tuning.Surface_TransferDiAngle.Evaluate(diAngleMag) * diAngleSign * c.Input.MoveMagnitude;
+
+        var transferTg = Quaternion.AngleAxis(diRot, currNormal) * surfaceTg;
+
+        // AAA: scale transfer based on the angle between currSurface.Normal and lastSurface.Normal
+        // var surfacePrev = c.State.Curr.PrevSurface;
+        // var surfacePrevTg = surfacePrev.IsSome
+        //     ? Vector3.ProjectOnPlane(surfacePrev.Normal, currSurface.Normal).normalized
+        //     : currUp;
 
         // scale transfer based on surface & di
-        var surfaceScale = c.Tuning.Surface_TransferScale.Evaluate(currSurface.Angle);
+        var surfaceScale = c.Tuning.Surface_AngleScale.Evaluate(currSurface.Angle);
         var diScale = c.Tuning.Surface_TransferDiScale.Evaluate(diAngleMag);
         var transferAttack = c.Tuning.Surface_TransferAttack.Evaluate(surfacePerceivedScale);
 
@@ -162,11 +173,33 @@ sealed class SurfaceSystem: CharacterSystem {
         c.State.Next.Inertia -= inertiaDecayMag;
         c.State.Next.Force += acceleration;
 
+        // debug drawing
         DebugDraw.Push(
-            "force-surface",
-            c.State.Next.Position,
-            acceleration,
-            new DebugDraw.Config(new Color(1f, 1f, 0f))
+            "surface-tangent",
+            c.State.Curr.Position,
+            surfaceTg,
+            new DebugDraw.Config(new Color(0.9f, 0.6f, 0.2f), tags: DebugDraw.Tag.Surface)
+        );
+
+        DebugDraw.Push(
+            "surface-transfer",
+            c.State.Curr.Position,
+            transferImpulse,
+            new DebugDraw.Config(new Color(1f, 1f, 0f), tags: DebugDraw.Tag.Surface)
+        );
+
+        DebugDraw.Push(
+            "surface-inertia-pre",
+            c.State.Curr.Position,
+            c.State.Curr.Inertia * -currNormal,
+            new DebugDraw.Config(new Color(0.1f, 0.8f, 0.5f), tags: DebugDraw.Tag.Surface, width: 2f)
+        );
+
+        DebugDraw.Push(
+            "surface-inertia-post",
+            c.State.Curr.Position,
+            c.State.Next.Inertia * -currNormal,
+            new DebugDraw.Config(new Color(0f, 1f, 0f), tags: DebugDraw.Tag.Surface)
         );
     }
 }

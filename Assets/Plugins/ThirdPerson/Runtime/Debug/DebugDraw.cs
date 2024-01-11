@@ -14,6 +14,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         Default   = 1 << 0,
         None      = 1 << 1,
         Collision = 1 << 2,
+        Surface   = 1 << 3,
     }
 
     // -- constants --
@@ -105,7 +106,6 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         // cycle tags all on press
         if (Input.GetKeyDown(k_CycleTagsKey)) {
             var next = (int)m_Tags;
-            Debug.Log($"next {next}");
             if (next == 0 || (next & (next - 1)) != 0) {
                 next = 1;
             } else if ((Tag)next == s_LastTag) {

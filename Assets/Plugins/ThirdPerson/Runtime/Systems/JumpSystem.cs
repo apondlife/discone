@@ -217,7 +217,7 @@ sealed class JumpSystem: CharacterSystem {
     // -- commands --
     /// reset the next surface to jump from
     void ResetJumpSurface() {
-        c.State.CoyoteFrames = (int)c.Tuning.MaxCoyoteFrames;
+        c.State.CoyoteFrames = c.Tuning.MaxCoyoteFrames;
         c.State.JumpSurface = c.State.Next.MainSurface;
     }
 
