@@ -9,9 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4123437840556324185}
-  - component: {fileID: 3448897458613120126}
-  - component: {fileID: 1459580529208111283}
   - component: {fileID: 8284604028218136895}
+  - component: {fileID: 2561048728734775742}
   - component: {fileID: 2561505375278964579}
   m_Layer: 0
   m_Name: Butterflies-ambient
@@ -36,43 +35,6 @@ Transform:
   m_Father: {fileID: 4131737717400848279}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3448897458613120126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3091584427249857061}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebbbe1f805a9480a88a963875819f0bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ReleaseSpeed: 160
-  m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
-  m_AmbientSystem: {fileID: 2561505375278964579}
-  m_ReleaseSystem: {fileID: 5085351369789652087}
---- !u!114 &1459580529208111283
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3091584427249857061}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba584601a12843fd9116b0e420e054e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fmodEvent:
-    Guid:
-      Data1: -900910437
-      Data2: 1200299000
-      Data3: 1496277922
-      Data4: 1538382374
-    Path: event:/Environment/Butterfly
-  listener: {fileID: 0}
-  listenRadius: 20
 --- !u!199 &8284604028218136895
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -145,6 +107,21 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &2561048728734775742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3091584427249857061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31e863d50b904800ad466d5d50a4032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnCollectTrigger:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!198 &2561505375278964579
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -5060,7 +5037,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3231441008526762996}
   serializedVersion: 8
-  lengthInSec: 5
+  lengthInSec: 100000
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -5886,7 +5863,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 300
+      scalar: 69
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -5939,7 +5916,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 20
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -5989,8 +5966,66 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    m_BurstCount: 0
-    m_Bursts: []
+    m_BurstCount: 1
+    m_Bursts:
+    - serializedVersion: 2
+      time: 0
+      countCurve:
+        serializedVersion: 2
+        minMaxState: 0
+        scalar: 1000
+        minScalar: 30
+        maxCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        minCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+      cycleCount: 1
+      repeatInterval: 0.01
+      probability: 1
   SizeModule:
     enabled: 0
     curve:
@@ -14710,6 +14745,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2263353659171895004}
+  - component: {fileID: 7599958127051218286}
   m_Layer: 0
   m_Name: Butterflies
   m_TagString: Untagged
@@ -14733,6 +14769,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7599958127051218286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5392538196774826962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebbbe1f805a9480a88a963875819f0bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ReleaseSpeed: 160
+  m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
+  m_AmbientSystem: {fileID: 2561505375278964579}
+  m_ReleaseSystem: {fileID: 5085351369789652087}
 --- !u!1 &6497205518402699975
 GameObject:
   m_ObjectHideFlags: 0

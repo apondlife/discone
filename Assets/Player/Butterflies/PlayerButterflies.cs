@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using ThirdPerson;
 using UnityAtoms;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Discone {
 
 /// the player's butterfly collection
-[RequireComponent(typeof(ParticleSystem))]
 sealed class PlayerButterflies: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
@@ -41,16 +39,13 @@ sealed class PlayerButterflies: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
+        // find children
+        var ambient = m_AmbientSystem.GetComponent<PlayerButterflies_Ambient>();
+
         // bind events
         m_Subscriptions
-            .Add(m_CurrentCharacter.ChangedWithHistory, OnCharacterChanged);
-    }
-
-    void Update() {
-        if (Input.GetKeyDown(KeyCode.H)) {
-            m_Collected = 10;
-            Release();
-        }
+            .Add(m_CurrentCharacter.ChangedWithHistory, OnCharacterChanged)
+            .Add(ambient.OnCollectTrigger, OnCollectTrigger);
     }
 
     void OnDestroy() {
@@ -61,6 +56,7 @@ sealed class PlayerButterflies: MonoBehaviour {
     /// collect a butterfly
     void Collect() {
         m_Collected += 1;
+        Debug.Log($"collected {m_Collected}");
     }
 
     void Release() {
@@ -91,8 +87,8 @@ sealed class PlayerButterflies: MonoBehaviour {
         }
     }
 
-    /// when the butterflies hit the character
-    void OnParticleTrigger() {
+    /// when ambient butterflies hit the character
+    void OnCollectTrigger() {
         // get the colliding butterflies
         var n = m_AmbientSystem.GetTriggerParticles(ParticleSystemTriggerEventType.Enter, m_Particles);
         if (n <= 0) {
@@ -113,6 +109,7 @@ sealed class PlayerButterflies: MonoBehaviour {
         m_AmbientSystem.SetTriggerParticles(ParticleSystemTriggerEventType.Enter, m_Particles);
     }
 
+    /// when the character lands
     void OnCharacterLand() {
         var chr = m_CurrentCharacter.Value;
         if (!chr) {
