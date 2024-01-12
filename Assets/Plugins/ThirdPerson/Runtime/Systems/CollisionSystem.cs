@@ -55,23 +55,6 @@ sealed class CollisionSystem: CharacterSystem {
         // update collisions
         next.Surfaces = frame.Surfaces.ToArrayOrNull();
 
-        // move the perceived surface towards the current surface
-        var perceivedNormal = curr.PerceivedSurface.Normal;
-        if (curr.PerceivedSurface.IsNone) {
-            perceivedNormal = next.MainSurface.Normal;
-        }
-
-        // TODO: maybe update the time since last touching the curr surface
-        next.PerceivedSurface.SetNormal(Vector3.RotateTowards(
-            perceivedNormal,
-            next.MainSurface.Normal,
-            c.Tuning.Surface_PerceptionAngularSpeed * Mathf.Deg2Rad * delta,
-            0f
-        ));
-
-        // TODO: can we do anything about this?
-        next.PerceivedSurface.Point = Vector3.negativeInfinity;
-
         // sync controller state back to character state
         next.Velocity = frame.Velocity;
         next.Acceleration = (frame.Velocity - curr.Velocity) / delta;
@@ -117,58 +100,23 @@ sealed class CollisionSystem: CharacterSystem {
 
             // update the normal & angle
             nextMain.SetNormal(nextNormal.normalized);
-
-            DebugDraw.Push(
-                "velocity-main",
-                nextMain.Point,
-                Vector3.Project(v0 - a0 - i0, nextMain.Normal)
-            );
-
-            DebugDraw.Push(
-                "acceleration-main",
-                nextMain.Point,
-                Vector3.Project(a0, nextMain.Normal)
-            );
-
-            DebugDraw.Push(
-                "inertia-main",
-                nextMain.Point,
-                Vector3.Project(i0, nextMain.Normal)
-            );
         }
 
         next.MainSurface = nextMain;
 
         // inertia, the momentum lost after collision, not including acceleration
-        var aNormal = Mathf.Max(Vector3.Dot(a0, -nextMain.Normal), 0f) * -nextMain.Normal;
-        // var iNormal = Mathf.Max(Vector3.Dot(i0, -nextMain.Normal), 0f) * -nextMain.Normal;
-        var iNormal = Vector3.zero;
-
-        // var aNormal = Vector3.zero;
-        var v0mag = (v0 - aNormal - iNormal).magnitude;
-        var v1mag = v1.magnitude;
-        var energy = v0mag * v0mag - v1mag * v1mag;
-        energy = Mathf.Max(energy, 0f);
+        var a0Nrm = Mathf.Max(Vector3.Dot(a0, -nextMain.Normal), 0f) * -nextMain.Normal;
+        var v0Mag = (v0 - a0Nrm).magnitude;
+        var v1Mag = (v1).magnitude;
+        var energy = Mathf.Max(v0Mag * v0Mag - v1Mag * v1Mag, 0f);
         next.Inertia = Mathf.Sqrt(energy);
 
-        DebugDraw.Push(
-            "collision-v0",
-            next.Position,
-            v0 + Mathf.Max(Vector3.Dot(a0, -nextMain.Normal), 0f) * nextMain.Normal
-        );
-
-        DebugDraw.Push(
-            "collision-v1",
-            next.Position,
-            v1
-        );
-
-        // debug curr surfaces (the ones relevant to the surface system)
+        // debug drawings
         DebugDraw.Push(
             "surface-main",
             next.MainSurface.IsSome ? next.MainSurface.Point : next.Position,
             next.MainSurface.Normal,
-            new DebugDraw.Config(Color.blue)
+            new DebugDraw.Config(Color.blue, tags: DebugDraw.Tag.Collision)
         );
     }
 }

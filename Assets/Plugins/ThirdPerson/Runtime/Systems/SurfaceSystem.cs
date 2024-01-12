@@ -1,6 +1,4 @@
 using System;
-using Cinemachine.Utility;
-using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -39,7 +37,11 @@ sealed class SurfaceSystem: CharacterSystem {
         var surface = c.State.Curr.MainSurface;
         if (surface.IsSome) {
             ChangeToImmediate(SurfaceSlide, delta);
+            return;
         }
+
+        // in the air, rotate perceived towards zero
+        RotatePerceptionTowards(Vector3.zero, c.State.Curr.Position, delta);
     }
 
     // -- SurfaceSlide --
@@ -55,12 +57,14 @@ sealed class SurfaceSystem: CharacterSystem {
             return;
         }
 
-        // get current surface
+        //
+        // get collision surfaces
+        //
+
         // AAA: investigate if we need to project velocity on plane
         var currSurface = c.State.Curr.MainSurface;
         var currNormal = currSurface.Normal;
         var currVelocityDir = c.State.Curr.Velocity.normalized;
-        // var currVelocityDir = Vector3.ProjectOnPlane(c.State.Curr.Velocity, currNormal).normalized;
 
         // find "up" direction; if none, fallback to velocity & then forward
         var currUp = Vector3.ProjectOnPlane(Vector3.up, currNormal).normalized;
@@ -79,7 +83,9 @@ sealed class SurfaceSystem: CharacterSystem {
         var prevSurface = c.State.Prev.MainSurface;
         var prevNormal = prevSurface.Normal;
 
+        //
         // find the next surface tangent
+        //
         var surfaceTg = Vector3.zero;
 
         // if coming from air, use character velocity, if no velocity, use "up"
@@ -97,18 +103,8 @@ sealed class SurfaceSystem: CharacterSystem {
 
         c.State.Next.SurfaceTangent = surfaceTg;
 
-        // calculate added acceleration
-        var acceleration = Vector3.zero;
-
-        // get angle between surface and perceived surface
-        var surfacePerceivedAngle = Mathf.Abs(90f - Vector3.Angle(
-            currSurface.Normal,
-            c.State.Curr.PerceivedSurface.Normal
-        ));
-        var surfacePerceivedScale = 1f - (surfacePerceivedAngle / 90f);
-
         //
-        // 1. get transfer from inertia decay into curr surface
+        // get transfer from inertia decay into curr surface
         //
         var inertia = c.State.Curr.Inertia;
 
@@ -116,13 +112,12 @@ sealed class SurfaceSystem: CharacterSystem {
         // TODO: can we optimize this pow by inverting this and showing the half-life as a debug query? -ty
         var inertiaDecayTime = c.Tuning.Surface_InertiaDecayTime.Evaluate(currSurface.Angle);
         var inertiaDecayScale = 1f - Mathf.Pow(0.01f, delta / inertiaDecayTime);
-        // inertiaDecayScale = 1f;
 
         // clamp decay so it doesn't bounce
         var inertiaDecayMag = inertia * Math.Min(inertiaDecayScale, 1f);
 
         //
-        // 2. rotate transfer direction based input di
+        // rotate transfer direction based input di
         //
 
         // get input in curr surface space
@@ -130,34 +125,44 @@ sealed class SurfaceSystem: CharacterSystem {
         var inputRight = Vector3.Dot(c.Input.Move, currUpTg);
         var inputTg = (inputUp * currUp + inputRight * currUpTg).normalized;
 
-        // AAA: find surface-based transfer scale
+        // rotate tangent by input di
         var diAngle = Vector3.SignedAngle(surfaceTg, inputTg, currNormal);
         var diAngleMag = Mathf.Abs(diAngle);
         var diAngleSign = Mathf.Sign(diAngle);
         var diRot = c.Tuning.Surface_TransferDiAngle.Evaluate(diAngleMag) * diAngleSign * c.Input.MoveMagnitude;
 
-        var transferTg = Quaternion.AngleAxis(diRot, currNormal) * surfaceTg;
-
-        // AAA: scale transfer based on the angle between currSurface.Normal and lastSurface.Normal
-        // var surfacePrev = c.State.Curr.PrevSurface;
-        // var surfacePrevTg = surfacePrev.IsSome
-        //     ? Vector3.ProjectOnPlane(surfacePrev.Normal, currSurface.Normal).normalized
-        //     : currUp;
-
-        // scale transfer based on surface & di
-        var surfaceScale = c.Tuning.Surface_AngleScale.Evaluate(currSurface.Angle);
+        // scale transfer by di
         var diScale = c.Tuning.Surface_TransferDiScale.Evaluate(diAngleMag);
-        var transferAttack = c.Tuning.Surface_TransferAttack.Evaluate(surfacePerceivedScale);
 
-        // AAA
-        surfaceScale = 1f;
-        transferAttack = 1f;
+        //
+        // scale based on angle between curr & perceived
+        //
+        var perceivedNormal = c.State.PerceivedSurface.Normal;
+        var deltaAngle = Vector3.Angle(currNormal, perceivedNormal);
+        var deltaScale = c.Tuning.Surface_DeltaScale.Evaluate(deltaAngle);
+        deltaScale *= perceivedNormal.magnitude;
 
-        // and transfer it along the surface tangent
-        var transferMag = inertiaDecayMag * surfaceScale * diScale * transferAttack / delta;
+        //
+        // scale based on surface angle
+        //
+        var surfaceScale = c.Tuning.Surface_AngleScale.Evaluate(currSurface.Angle);
+
+        //
+        // add impulse along transfer tangent
+        //
+        var transferTg = Quaternion.AngleAxis(diRot, currNormal) * surfaceTg;
+        var transferMag = inertiaDecayMag * surfaceScale * diScale * deltaScale / delta;
         var transferImpulse = transferMag * transferTg;
-        acceleration += transferImpulse;
 
+        //
+        // add forces
+        //
+        var force = transferImpulse;
+
+        // add magnet/grip towards the wall so we don't let go
+        force -= c.Tuning.Surface_Grip.Evaluate(currSurface.Angle) * currNormal;
+
+        // TODO: add friction
         // add surface gravity
         // var surfaceGravity = c.Input.IsSurfaceHoldPressed ? c.Tuning.Surface_HoldGravity : c.Tuning.Surface_Gravity;;
 
@@ -166,17 +171,23 @@ sealed class SurfaceSystem: CharacterSystem {
         // var surfaceAcceleration = c.Tuning.Surface_Acceleration(surfaceGravity);
         // acceleration += surfaceAcceleration * surfaceAngleScale * surfaceUp;
 
-        // add magnet/grip to push us towards the wall so we don't let go
-        acceleration -= c.Tuning.Surface_Grip.Evaluate(currSurface.Angle) * currNormal;
-
-        // update state
         c.State.Next.Inertia -= inertiaDecayMag;
-        c.State.Next.Force += acceleration;
+        c.State.Next.Force += force;
+
+        // rotate perceived towards the current surface
+        RotatePerceptionTowards(currNormal, currSurface.Point, delta);
 
         // debug drawing
         DebugDraw.Push(
+            "surface-normal",
+            currSurface.Point,
+            currNormal,
+            new DebugDraw.Config(new Color(0.0f, 0.4f, 1.0f), tags: DebugDraw.Tag.Surface)
+        );
+
+        DebugDraw.Push(
             "surface-tangent",
-            c.State.Curr.Position,
+            currSurface.Point,
             surfaceTg,
             new DebugDraw.Config(new Color(0.9f, 0.6f, 0.2f), tags: DebugDraw.Tag.Surface)
         );
@@ -201,6 +212,43 @@ sealed class SurfaceSystem: CharacterSystem {
             c.State.Next.Inertia * -currNormal,
             new DebugDraw.Config(new Color(0f, 1f, 0f), tags: DebugDraw.Tag.Surface)
         );
+    }
+
+    // -- commands --
+    /// rotate perceived normal towards the destination vector
+    void RotatePerceptionTowards(Vector3 dir, Vector3 pos, float delta) {
+        var nextSurface = c.State.Curr.PerceivedSurface;
+
+        // move the perceived surface towards the current surface
+        var normal = nextSurface.Normal;
+
+        // rotate towards current surface
+        var rotationSpeed = 0f;
+        var normalMag = normal.sqrMagnitude;
+        if (normalMag != 0f) {
+            rotationSpeed = c.Tuning.Surface_PerceptionAngularSpeed * Mathf.Deg2Rad / normalMag;
+        }
+
+        // rotate perception towards current surface
+        // TODO: maybe update the time since last touching the curr surface
+        normal = Vector3.RotateTowards(
+            normal,
+            dir,
+            rotationSpeed * delta,
+            delta / c.Tuning.Surface_PerceptionDuration
+        );
+
+        DebugDraw.Push(
+            "surface-perception",
+            c.State.Curr.MainSurface.Point,
+            normal,
+            new DebugDraw.Config(new Color(0.3f, 0.8f, 1f), tags: DebugDraw.Tag.Surface)
+        );
+
+        // update next surface
+        nextSurface.Point = pos;
+        nextSurface.SetNormal(normal);
+        c.State.Next.PerceivedSurface = nextSurface;
     }
 }
 

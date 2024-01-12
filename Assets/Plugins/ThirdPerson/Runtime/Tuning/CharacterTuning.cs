@@ -14,12 +14,6 @@ public sealed class CharacterTuning: ScriptableObject {
 
     // -- collision system --
     [Header("collision system")]
-    [Tooltip("the speed the perceived surface's normal moves towards a zero")]
-    public float Surface_PerceptionLengthSpeed;
-
-    [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
-    public float Surface_PerceptionAngularSpeed;
-
     [Tooltip("a geometric decay on the character's momentum into a surface")]
     public float Surface_MomentumDecay;
 
@@ -218,11 +212,10 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the force the surface pulls character in as a fn of surface angle")]
     public MapOutCurve Surface_Grip;
 
-    // TODO: these are currently mirrored around 90; they should curved over 180
-    // so that's not necessarily the case
     [FormerlySerializedAs("WallTransferScale")]
-    [Tooltip("the scaling factor of the wall transfer as a fn of surface change angle")]
-    public MapOutCurve Surface_TransferAttack;
+    [FormerlySerializedAs("Surface_TransferAttack")]
+    [Tooltip("the scaling factor of the surface transfer as a fn of surface angle change")]
+    public MapOutCurve Surface_DeltaScale;
 
     [FormerlySerializedAs("WallTransferDiAngle")]
     [Tooltip("the angle to rotate the transfer surface direction as a fn of signed input-surface angle")]
@@ -241,6 +234,12 @@ public sealed class CharacterTuning: ScriptableObject {
 
     [Tooltip("the scale on transferred inertia as a fn of surface angle")]
     public MapOutCurve Surface_TransferScale;
+
+    [Tooltip("the time it takes the perceived surface to scale between 0 & 1")]
+    public float Surface_PerceptionDuration;
+
+    [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
+    public float Surface_PerceptionAngularSpeed;
 
     public float Surface_Acceleration(float wallGravity) {
         return wallGravity - Gravity + FallGravity;
