@@ -94,7 +94,7 @@ sealed class SurfaceSystem: CharacterSystem {
         }
         // if the surface changed, calculate a new transfer tangent
         else if (currNormal != prevNormal) {
-            surfaceTg = Vector3.Cross(currNormal, Vector3.Cross(prevNormal, currNormal));
+            surfaceTg = Vector3.Cross(currNormal, Vector3.Cross(prevNormal, currNormal)).normalized;
         }
         // otherwise, use stored tangent
         else {
@@ -151,16 +151,16 @@ sealed class SurfaceSystem: CharacterSystem {
         // add impulse along transfer tangent
         //
         var transferTg = Quaternion.AngleAxis(diRot, currNormal) * surfaceTg;
-        var transferMag = inertiaDecayMag * surfaceScale * diScale * deltaScale / delta;
+        var transferMag = inertiaDecayMag * surfaceScale * diScale * deltaScale;
         var transferImpulse = transferMag * transferTg;
 
         //
-        // add forces
+        // update physics frame
         //
-        var force = transferImpulse;
 
         // add magnet/grip towards the wall so we don't let go
-        force -= c.Tuning.Surface_Grip.Evaluate(currSurface.Angle) * currNormal;
+        var force = -c.Tuning.Surface_Grip.Evaluate(currSurface.Angle) * currNormal;
+        var impulse = transferImpulse;
 
         // TODO: add friction
         // add surface gravity
@@ -171,8 +171,9 @@ sealed class SurfaceSystem: CharacterSystem {
         // var surfaceAcceleration = c.Tuning.Surface_Acceleration(surfaceGravity);
         // acceleration += surfaceAcceleration * surfaceAngleScale * surfaceUp;
 
-        c.State.Next.Inertia -= inertiaDecayMag;
         c.State.Next.Force += force;
+        c.State.Next.Velocity += impulse;
+        c.State.Next.Inertia -= inertiaDecayMag;
 
         // rotate perceived towards the current surface
         RotatePerceptionTowards(currNormal, currSurface.Point, delta);
