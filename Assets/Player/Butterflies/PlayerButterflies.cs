@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ThirdPerson;
 using UnityAtoms;
+using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
 namespace Discone {
@@ -12,6 +13,11 @@ sealed class PlayerButterflies: MonoBehaviour {
     [Header("tuning")]
     [Tooltip("the y-speed to release butterflies")]
     [SerializeField] float m_ReleaseSpeed;
+
+    // -- state --
+    [Header("state")]
+    [Tooltip("the number of butterflies the player is currently holding")]
+    [SerializeField] IntVariable m_Collected;
 
     // -- refs --
     [Header("refs")]
@@ -25,9 +31,6 @@ sealed class PlayerButterflies: MonoBehaviour {
     [SerializeField] ParticleSystem m_ReleaseSystem;
 
     // -- props --
-    /// the current number of collected butterflies
-    int m_Collected = 0;
-
     /// the current list of colliding particles
     List<ParticleSystem.Particle> m_Particles = new();
 
@@ -55,17 +58,17 @@ sealed class PlayerButterflies: MonoBehaviour {
     // -- commands --
     /// collect a butterfly
     void Collect() {
-        m_Collected += 1;
+        m_Collected.Value += 1;
         Debug.Log($"collected {m_Collected}");
     }
 
     void Release() {
-        if (m_Collected == 0) {
+        if (m_Collected.Value == 0) {
             return;
         }
 
-        m_ReleaseSystem.Emit(m_Collected);
-        m_Collected = 0;
+        m_ReleaseSystem.Emit(m_Collected.Value);
+        m_Collected.Value = 0;
     }
 
     // -- events --
