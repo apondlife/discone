@@ -14781,7 +14781,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebbbe1f805a9480a88a963875819f0bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ReleaseSpeed: 160
+  m_ReleaseSpeed:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Src:
+      Min: 100
+      Max: 180
   m_Collected: {fileID: 11400000, guid: 40627b2d0fd8b4a7b8a6444a3f97db71, type: 2}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
   m_AmbientSystem: {fileID: 2561505375278964579}

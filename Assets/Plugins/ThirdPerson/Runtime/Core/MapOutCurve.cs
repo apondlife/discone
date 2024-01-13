@@ -4,7 +4,6 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// a normalized curve with a min & max value
-/// TODO: rename to MapOutCurve
 [Serializable]
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "RangeCurve")]
 public struct MapOutCurve {

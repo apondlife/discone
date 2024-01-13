@@ -12,7 +12,7 @@ sealed class PlayerButterflies: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the y-speed to release butterflies")]
-    [SerializeField] float m_ReleaseSpeed;
+    [SerializeField] MapInCurve m_ReleaseSpeed;
 
     // -- state --
     [Header("state")]
@@ -62,13 +62,14 @@ sealed class PlayerButterflies: MonoBehaviour {
     }
 
     /// release the butterflies
-    void Release() {
+    void Release(float pct) {
         if (m_Collected.Value == 0) {
             return;
         }
 
-        m_ReleaseSystem.Emit(m_Collected.Value);
-        m_Collected.Value = 0;
+        var released = Mathf.FloorToInt(m_Collected.Value * pct);
+        m_ReleaseSystem.Emit(released);
+        m_Collected.Value = released;
     }
 
     // -- events --
@@ -124,10 +125,12 @@ sealed class PlayerButterflies: MonoBehaviour {
         var curr = chr.Character.State.Curr;
 
         // if the character is moving fast enough, release the butterflies
-        // IDEA: this could happen on any air -> surface transition, not just landing on a "ground"
+        // THOUGHT: this could happen on any air -> surface transition, not just landing on a "ground"
         var speed = Mathf.Abs(Vector3.Dot(prev.Velocity, curr.GroundSurface.Normal));
-        if (speed >= m_ReleaseSpeed) {
-            Release();
+
+        var pct = m_ReleaseSpeed.Evaluate(speed);
+        if (pct > 0f) {
+            Release(pct);
         }
     }
 }
