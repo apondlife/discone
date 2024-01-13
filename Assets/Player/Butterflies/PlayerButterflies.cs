@@ -59,7 +59,6 @@ sealed class PlayerButterflies: MonoBehaviour {
     /// collect a butterfly
     void Collect() {
         m_Collected.Value += 1;
-        Debug.Log($"collected {m_Collected}");
     }
 
     void Release() {
