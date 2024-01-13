@@ -32,13 +32,13 @@ sealed class PlayerButterflies: MonoBehaviour {
 
     // -- props --
     /// the current list of colliding particles
-    List<ParticleSystem.Particle> m_Particles = new();
+    readonly List<ParticleSystem.Particle> m_Particles = new();
 
     /// a subscription to the character's landing event
     IDisposable m_OnLand;
 
     /// the list of event subscriptions
-    DisposeBag m_Subscriptions = new();
+    readonly DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Awake() {
@@ -61,6 +61,7 @@ sealed class PlayerButterflies: MonoBehaviour {
         m_Collected.Value += 1;
     }
 
+    /// release the butterflies
     void Release() {
         if (m_Collected.Value == 0) {
             return;

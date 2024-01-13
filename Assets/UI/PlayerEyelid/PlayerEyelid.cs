@@ -1,3 +1,4 @@
+using ThirdPerson;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,12 @@ public class PlayerEyelid: UIBehaviour {
     [Tooltip("the duration of the animation")]
     [SerializeField] float m_Duration;
 
+    [Tooltip("the small pixel overlap to fully close")]
+    [SerializeField] float m_Overlap;
+
+    [Tooltip("the debounce to before stopping the particle system")]
+    [SerializeField] EaseTimer m_HideDelay;
+
     [Tooltip("the curve for the animation")]
     [SerializeField] AnimationCurve m_Curve;
 
@@ -29,10 +36,10 @@ public class PlayerEyelid: UIBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the image for the top eyelid")]
-    [SerializeField] Image m_TopEyelid;
+    [SerializeField] RectMask2D m_Top;
 
     [Tooltip("the image for the bottom eyelid")]
-    [SerializeField] Image m_BottomEyelid;
+    [SerializeField] RectMask2D m_Bottom;
 
     [Tooltip("the butterfly emitter")]
     [SerializeField] ParticleSystem m_Butterflies;
@@ -42,25 +49,14 @@ public class PlayerEyelid: UIBehaviour {
 
     // -- props --
     /// the elapsed time in the close animation
-    float m_ClosingElapsed;
-
-    /// the subscriptions
-    readonly DisposeBag m_Subscriptions = new();
+    float m_Elapsed;
 
     // -- lifecycle --
-    protected override void Awake() {
-        base.Awake();
-
-        m_Subscriptions
-            .Add(m_IsClosed.Changed, OnIsClosedChanged);
-    }
-
     protected override void Start() {
         base.Start();
 
         if (m_IsClosedOnStart) {
             UpdateElapsed(m_Duration);
-            UpdateVisibility();
         }
     }
 
@@ -70,61 +66,74 @@ public class PlayerEyelid: UIBehaviour {
         // open/close the eyes
         if (m_IsClosing.Value) {
             UpdateElapsed(delta);
-        } else if (m_ClosingElapsed > 0.0f) {
+        } else if (m_Elapsed > 0.0f) {
             UpdateElapsed(-delta);
         }
 
-        UpdateVisibility();
-    }
+        // hide the butterflies after a delay
+        if (m_HideDelay.IsActive) {
+            m_HideDelay.Tick();
 
-    protected override void OnDestroy() {
-        base.OnDestroy();
-
-        m_Subscriptions.Dispose();
+            if (m_HideDelay.IsComplete) {
+                HideButterflies();
+            }
+        }
     }
 
     // -- commands --
     /// add the delta to the elapsed time, clamped to its range
     void UpdateElapsed(float delta) {
         // get next elapsed duration
-        var curr = Mathf.Clamp(
-            m_ClosingElapsed + delta,
+        var elapsed = Mathf.Clamp(
+            m_Elapsed + delta,
             0.0f,
             m_Duration
         );
 
-        m_ClosingElapsed = curr;
+        m_Elapsed = elapsed;
 
         // if the eyes just closed or just opened, fire the event
-        m_IsClosed.Value = curr == m_Duration;
-    }
+        var nextClosed = elapsed == m_Duration;
+        m_IsClosed.Value = nextClosed;
 
-    /// update eyelid visibility
-    void UpdateVisibility() {
+        // if our eyes are at all closed
+        if (elapsed > 0f) {
+            // keep debouncing the hide
+            m_HideDelay.Start();
+
+            // and show the butterflies, if necessary
+            if (!m_Butterflies.isPlaying) {
+                ShowButterflies();
+            }
+        }
+
+        // update the eyelid visibility
         var pct = m_Curve.Evaluate(Mathf.InverseLerp(
             0.0f,
             m_Duration,
-            m_ClosingElapsed
+            m_Elapsed
         ));
 
-        m_TopEyelid.fillAmount = pct;
-        m_BottomEyelid.fillAmount = pct;
+        var height = m_Top.rectTransform.rect.height;
+        var offset = Mathf.Lerp(height, height * 0.5f - m_Overlap, pct);
+        m_Top.padding = new Vector4(0f, offset, 0f, 0f);
+        m_Bottom.padding = new Vector4(0f, 0f, 0f, offset);
     }
 
-    // -- events --
-    /// when the closed state changes
-    void OnIsClosedChanged(bool isClosed) {
-        if (!isClosed) {
-            m_Butterflies.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            return;
-        }
-
+    /// show the currently collected butterflies
+    void ShowButterflies() {
         // show the number of collected butterflies
         var main = m_Butterflies.main;
         main.maxParticles = m_ButterflyCount;
 
         // start the system
         m_Butterflies.Play();
+        m_Butterflies.Emit(m_ButterflyCount);
+    }
+
+    // hid the currently visible butterflies
+    void HideButterflies() {
+        m_Butterflies.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 }
 
