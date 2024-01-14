@@ -28,6 +28,9 @@ sealed class Mechanic: MonoBehaviour {
     [Tooltip("the fixed delay accumulated on eye close")]
     [SerializeField] float m_DelayBonus;
 
+    [Tooltip("the unscatter animation on eye close")]
+    [SerializeField] ThirdPerson.EaseTimer m_UnscatterAnim;
+
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the yarn project")]
@@ -41,6 +44,9 @@ sealed class Mechanic: MonoBehaviour {
     [Header("refs")]
     [Tooltip(".")]
     [SerializeField] DialogueRunner m_DialogueRunner;
+
+    [Tooltip("the pct through the eye close animation")]
+    [SerializeField] FloatReference m_ClosePct;
 
     // -- subscribed --
     [Header("subscribed")]
@@ -64,7 +70,7 @@ sealed class Mechanic: MonoBehaviour {
     Dictionary<string, MechanicNode> m_Nodes;
 
     /// a bag of event subscriptions
-    DisposeBag m_Subscriptions = new();
+    readonly DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Start() {
@@ -280,7 +286,7 @@ sealed class Mechanic: MonoBehaviour {
     }
 
     // -- queries --
-    /// if we're in a dialgoue tree
+    /// if we're in a dialogue tree
     bool IsInTree {
         get => m_TreeRoot != null;
     }

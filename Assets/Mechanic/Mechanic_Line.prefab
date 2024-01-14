@@ -264,6 +264,60 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  m_Offset:
+    m_Duration: 3
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_OffsetDist:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 3.03509
+        outSlope: 3.03509
+        tangentMode: 0
+        weightedMode: 2
+        inWeight: 0
+        outWeight: 0.14453582
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 6.349969
+        outSlope: 6.349969
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.13631028
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 256
   m_Component: {fileID: 4019307925387692298}
   m_Text: {fileID: 3877869803640705367}
 --- !u!114 &4019307925387692298 stripped
