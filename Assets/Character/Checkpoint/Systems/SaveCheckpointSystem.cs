@@ -157,8 +157,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     void Being_Update(float delta) {
-        // continue being
-
         if (!CanSave) {
             ChangeTo(NotSaving);
             return;

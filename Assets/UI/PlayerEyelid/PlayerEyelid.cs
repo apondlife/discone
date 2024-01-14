@@ -10,16 +10,20 @@ namespace Discone.Ui {
 public class PlayerEyelid: UIBehaviour {
     // -- state --
     [Header("state")]
-    [Tooltip("an event when the player is closing their eyes")]
-    [SerializeField] BoolVariable m_IsClosing;
+    [Tooltip("the percent through the eye close animation")]
+    [SerializeField] FloatVariable m_ClosePct;
 
     [Tooltip("an event when the eyelid just closes or starts to open")]
     [SerializeField] BoolVariable m_IsClosed;
 
     // -- config --
     [Header("config")]
+    // TODO: this is an ease timer?
     [Tooltip("the duration of the animation")]
     [SerializeField] float m_Duration;
+
+    [Tooltip("the curve for the animation")]
+    [SerializeField] AnimationCurve m_Curve;
 
     [Tooltip("the small pixel overlap to fully close")]
     [SerializeField] float m_Overlap;
@@ -27,19 +31,13 @@ public class PlayerEyelid: UIBehaviour {
     [Tooltip("the debounce to before stopping the particle system")]
     [SerializeField] EaseTimer m_HideDelay;
 
-    [Tooltip("the curve for the animation")]
-    [SerializeField] AnimationCurve m_Curve;
-
     [Tooltip("if the eyelids start closed")]
     [SerializeField] bool m_IsClosedOnStart;
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the image for the top eyelid")]
-    [SerializeField] RectMask2D m_Top;
-
-    [Tooltip("the image for the bottom eyelid")]
-    [SerializeField] RectMask2D m_Bottom;
+    [Tooltip("if the player is closing their eyes")]
+    [SerializeField] BoolVariable m_IsClosing;
 
     [Tooltip("the butterfly emitter")]
     [SerializeField] ParticleSystem m_Butterflies;
@@ -92,12 +90,18 @@ public class PlayerEyelid: UIBehaviour {
 
         m_Elapsed = elapsed;
 
-        // if the eyes just closed or just opened, fire the event
-        var nextClosed = elapsed == m_Duration;
-        m_IsClosed.Value = nextClosed;
+        // synchronize external state
+        var pct = Mathf.InverseLerp(
+            0.0f,
+            m_Duration,
+            m_Elapsed
+        );
+
+        m_ClosePct.Value = pct;
+        m_IsClosed.Value = pct == 1f;
 
         // if our eyes are at all closed
-        if (elapsed > 0f) {
+        if (pct > 0f) {
             // keep debouncing the hide
             m_HideDelay.Start();
 
@@ -106,18 +110,6 @@ public class PlayerEyelid: UIBehaviour {
                 ShowButterflies();
             }
         }
-
-        // update the eyelid visibility
-        var pct = m_Curve.Evaluate(Mathf.InverseLerp(
-            0.0f,
-            m_Duration,
-            m_Elapsed
-        ));
-
-        var height = m_Top.rectTransform.rect.height;
-        var offset = Mathf.Lerp(height, height * 0.5f - m_Overlap, pct);
-        m_Top.padding = new Vector4(0f, offset, 0f, 0f);
-        m_Bottom.padding = new Vector4(0f, 0f, 0f, offset);
     }
 
     /// show the currently collected butterflies
