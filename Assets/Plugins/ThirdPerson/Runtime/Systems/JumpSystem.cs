@@ -38,7 +38,7 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     // -- NotJumping --
-    Phase NotJumping => new Phase(
+    Phase NotJumping => new(
         name: "NotJumping",
         enter: NotJumping_Enter,
         update: NotJumping_Update
@@ -72,7 +72,7 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     // -- Landing --
-    Phase Landing => new Phase(
+    Phase Landing => new(
         name: "Landing",
         enter: Landing_Enter,
         update: Landing_Update
@@ -81,6 +81,7 @@ sealed class JumpSystem: CharacterSystem {
     void Landing_Enter() {
         ResetJumps();
         c.State.Next.IsLanding = true;
+        c.Events.Schedule(CharacterEvent.Land);
     }
 
     void Landing_Update(float _) {
@@ -113,7 +114,7 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     // -- JumpSquat --
-    Phase JumpSquat => new Phase(
+    Phase JumpSquat => new(
         name: "JumpSquat",
         enter: JumpSquat_Enter,
         update: JumpSquat_Update,
@@ -173,7 +174,7 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     // -- Falling --
-    Phase Falling => new Phase(
+    Phase Falling => new(
         name: "Falling",
         enter: Falling_Enter,
         update: Falling_Update
@@ -268,7 +269,6 @@ sealed class JumpSystem: CharacterSystem {
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteFrames = 0;
         c.State.Next.CooldownFrames = JumpTuning.CooldownFrames;
-
         c.Events.Schedule(CharacterEvent.Jump);
     }
 

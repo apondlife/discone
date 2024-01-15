@@ -19,7 +19,7 @@ public record DisposeBag: IDisposable {
     // -- c/subscriptions
     /// add a subscription for an event/action pair
     public DisposeBag Add(VoidEvent e, Action a) {
-        Add<UnityAtoms.Void>(e, (_) => a.Invoke());
+        Add(e, (_) => a.Invoke());
         return this;
     }
 

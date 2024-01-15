@@ -28,7 +28,7 @@ sealed class IdleSystem: CharacterSystem {
     }
 
     // -- NotIdle --
-    Phase NotIdle => new Phase(
+    Phase NotIdle => new(
         name: "NotIdle",
         enter: NotIdle_Enter,
         update: NotIdle_Update
@@ -45,7 +45,7 @@ sealed class IdleSystem: CharacterSystem {
     }
 
     // -- Idle --
-    Phase Idle => new Phase(
+    Phase Idle => new(
         name: "Idle",
         enter: Idle_Enter,
         update: Idle_Update

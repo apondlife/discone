@@ -1,3 +1,4 @@
+using ThirdPerson;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,34 +10,44 @@ namespace Discone.Ui {
 public class PlayerEyelid: UIBehaviour {
     // -- state --
     [Header("state")]
-    [Tooltip("an event when the player is closing their eyes")]
-    [SerializeField] BoolVariable m_IsClosing;
+    [Tooltip("the percent through the eye close animation")]
+    [SerializeField] FloatVariable m_ClosePct;
 
     [Tooltip("an event when the eyelid just closes or starts to open")]
     [SerializeField] BoolVariable m_IsClosed;
 
     // -- config --
     [Header("config")]
+    // TODO: this is an ease timer?
     [Tooltip("the duration of the animation")]
     [SerializeField] float m_Duration;
 
     [Tooltip("the curve for the animation")]
     [SerializeField] AnimationCurve m_Curve;
 
+    [Tooltip("the small pixel overlap to fully close")]
+    [SerializeField] float m_Overlap;
+
+    [Tooltip("the debounce to before stopping the particle system")]
+    [SerializeField] EaseTimer m_HideDelay;
+
     [Tooltip("if the eyelids start closed")]
     [SerializeField] bool m_IsClosedOnStart;
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the image for the top eyelid")]
-    [SerializeField] Image m_TopEyelid;
+    [Tooltip("if the player is closing their eyes")]
+    [SerializeField] BoolVariable m_IsClosing;
 
-    [Tooltip("the image for the bottom eyelid")]
-    [SerializeField] Image m_BottomEyelid;
+    [Tooltip("the butterfly emitter")]
+    [SerializeField] ParticleSystem m_Butterflies;
+
+    [Tooltip("the player's current number of butterflies")]
+    [SerializeField] IntReference m_ButterflyCount;
 
     // -- props --
     /// the elapsed time in the close animation
-    float m_ClosingElapsed;
+    float m_Elapsed;
 
     // -- lifecycle --
     protected override void Start() {
@@ -44,47 +55,77 @@ public class PlayerEyelid: UIBehaviour {
 
         if (m_IsClosedOnStart) {
             UpdateElapsed(m_Duration);
-            UpdateVisibility();
         }
     }
 
     void Update() {
+        var delta = Time.deltaTime;
+
         // open/close the eyes
         if (m_IsClosing.Value) {
-            UpdateElapsed(Time.deltaTime);
-        } else if (m_ClosingElapsed > 0.0f) {
-            UpdateElapsed(-Time.deltaTime);
+            UpdateElapsed(delta);
+        } else if (m_Elapsed > 0.0f) {
+            UpdateElapsed(-delta);
         }
 
-        UpdateVisibility();
+        // hide the butterflies after a delay
+        if (m_HideDelay.IsActive) {
+            m_HideDelay.Tick();
+
+            if (m_HideDelay.IsComplete) {
+                HideButterflies();
+            }
+        }
     }
 
     // -- commands --
     /// add the delta to the elapsed time, clamped to its range
     void UpdateElapsed(float delta) {
-        // caculate next elapsed duration
-        var curr = Mathf.Clamp(
-            m_ClosingElapsed + delta,
+        // get next elapsed duration
+        var elapsed = Mathf.Clamp(
+            m_Elapsed + delta,
             0.0f,
             m_Duration
         );
 
-        m_ClosingElapsed = curr;
+        m_Elapsed = elapsed;
 
-        // if the eyes just closed or just opened, fire the event
-        m_IsClosed.Value = curr == m_Duration;
-    }
-
-    /// update eyelid visibility
-    void UpdateVisibility() {
-        var pct = m_Curve.Evaluate(Mathf.InverseLerp(
+        // synchronize external state
+        var pct = Mathf.InverseLerp(
             0.0f,
             m_Duration,
-            m_ClosingElapsed
-        ));
+            m_Elapsed
+        );
 
-        m_TopEyelid.fillAmount = pct;
-        m_BottomEyelid.fillAmount = pct;
+        m_ClosePct.Value = pct;
+        m_IsClosed.Value = pct == 1f;
+
+        // if our eyes are at all closed
+        if (pct > 0f) {
+            // keep debouncing the hide
+            m_HideDelay.Start();
+
+            // and show the butterflies, if necessary
+            if (!m_Butterflies.isPlaying) {
+                ShowButterflies();
+            }
+        }
+    }
+
+    /// show the currently collected butterflies
+    void ShowButterflies() {
+        // show the number of collected butterflies
+        var main = m_Butterflies.main;
+        main.maxParticles = m_ButterflyCount;
+
+        // start the system
+        m_Butterflies.Play();
+        m_Butterflies.Emit(m_ButterflyCount);
+    }
+
+    // hid the currently visible butterflies
+    void HideButterflies() {
+        m_Butterflies.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 }
 

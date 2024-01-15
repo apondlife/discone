@@ -38,7 +38,7 @@ public class CharacterFlower: NetworkBehaviour {
     static LayerMask s_CharacterMask;
 
     /// the wobble audio line
-    static Musicker.Line s_Line = new Musicker.Line(Musicker.Tone.I, Musicker.Quality.Maj7);
+    static Musicker.Line s_Line = new(Musicker.Tone.I, Musicker.Quality.Maj7);
 
     // -- cfg --
     [Header("cfg")]

@@ -205,7 +205,7 @@ public sealed class CharacterModel: MonoBehaviour {
         anim.SetBool(
             k_PropIsAirborne,
             // has to actually be grounded/airborne
-            !state.IsOnGround
+            state.MainSurface.IsNone
         );
 
         anim.SetBool(
@@ -235,7 +235,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // blend yoshiing
         // TODO: lerp
-        var yoshiing = !state.IsOnGround && m_Input.IsJumpPressed ? 1.0f : 0.0f;
+        var yoshiing = state.MainSurface.IsNone && m_Input.IsJumpPressed ? 1.0f : 0.0f;
         anim.SetLayerWeight(
             m_LayerLegs,
             yoshiing

@@ -13,9 +13,6 @@ MonoBehaviour:
   m_Name: Icecream_Tuning
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: iced cream
-  Surface_PerceptionLengthSpeed: 1
-  Surface_PerceptionAngularSpeed: 270
-  Surface_MomentumDecay: 1
   Horizontal_MinSpeed: 0.85
   Horizontal_Acceleration: 35
   Horizontal_Drag: 0.1
@@ -323,9 +320,6 @@ MonoBehaviour:
       m_RotationOrder: 0
     Upwards_MomentumLoss: 0
     Horizontal_MomentumLoss: 0
-  SurfaceLayer:
-    serializedVersion: 2
-    m_Bits: 4294967295
   Surface_AngleScale:
     m_Curve:
       serializedVersion: 2
@@ -385,8 +379,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 113.14576
-        value: 0.01903948
+        time: 131.35114
+        value: 0.016323416
         inSlope: -0.0013137084
         outSlope: -0.0013137084
         tangentMode: 0
@@ -408,63 +402,9 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 1
-  Surface_Gravity: 12
-  Surface_HoldGravity: 18
-  Surface_Grip:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: -0.00026356935
-        outSlope: -0.00026356935
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.18337023
-      - serializedVersion: 3
-        time: 10
-        value: 0
-        inSlope: Infinity
-        outSlope: 0.00012417053
-        tangentMode: 7
-        weightedMode: 2
-        inWeight: 0.33333334
-        outWeight: 0.7415267
-      - serializedVersion: 3
-        time: 100
-        value: 1
-        inSlope: -0.0003018096
-        outSlope: -0.0003018096
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.17888328
-        outWeight: 0.4921016
-      - serializedVersion: 3
-        time: 135
-        value: 0
-        inSlope: -0.0001248162
-        outSlope: Infinity
-        tangentMode: 97
-        weightedMode: 0
-        inWeight: 0.39529464
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 180
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 5
+  Surface_UpwardsVelocityBias: 20
+  Surface_UpwardsGrip: 10
+  Surface_Grip: 0
   Surface_DeltaScale:
     m_Curve:
       serializedVersion: 2
@@ -474,7 +414,7 @@ MonoBehaviour:
         value: 0
         inSlope: 0.0055555557
         outSlope: 0.0055555557
-        tangentMode: 34
+        tangentMode: 65
         weightedMode: 0
         inWeight: 0
         outWeight: 0.33333334
@@ -482,10 +422,10 @@ MonoBehaviour:
         time: 180
         value: 1
         inSlope: 0.0055555557
-        outSlope: 0.0055555557
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
+        outSlope: 0.005665452
+        tangentMode: 5
+        weightedMode: 3
+        inWeight: 0.39574686
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -576,43 +516,6 @@ MonoBehaviour:
     m_Dst:
       Min: 0.5
       Max: 1
-  Surface_GravityAmplitudeScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 2.2197819
-        outSlope: 2.2197819
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.9009894
-        value: 2
-        inSlope: 0.008254274
-        outSlope: 0.008254274
-        tangentMode: 0
-        weightedMode: 3
-        inWeight: 0.33333334
-        outWeight: 0.21819292
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: -97.44338
-        outSlope: -97.44338
-        tangentMode: 0
-        weightedMode: 1
-        inWeight: 0.0313079
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 1
   Surface_InertiaDecayTime:
     m_Curve:
       serializedVersion: 2
@@ -649,44 +552,9 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Dst:
       Min: 0.001
-      Max: 0.5
-  Surface_TransferScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0.011111111
-        outSlope: 0.011111111
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 90
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 180
-        value: 0
-        inSlope: -0.011111111
-        outSlope: -0.011111111
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 5
-      Max: 100
+      Max: 0.15
+  Surface_PerceptionDuration: 0
+  Surface_PerceptionAngularSpeed: 270
   TiltForBaseAcceleration: 30
   MaxTilt: 69
   TiltSmoothing: 0.1

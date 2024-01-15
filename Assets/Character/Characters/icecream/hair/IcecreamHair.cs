@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityAtoms;
 using UnityEngine;
 
@@ -8,6 +9,12 @@ public class IcecreamHair : MonoBehaviour
     [Header("config")]
     [Tooltip("if this hair is being simulated or not")]
     [SerializeField] bool m_HasPhysics;
+
+    [Tooltip("the max distance the colliders can be from their original position before disabling")]
+    [SerializeField] float m_DisableDistance;
+
+    [Tooltip("the distance the colliders can be from their original position before re enabling")]
+    [SerializeField] float m_ReenableDistance;
 
     [Header("refs")]
     [Tooltip("the current player's character (for toggling physics)")]
@@ -36,7 +43,7 @@ public class IcecreamHair : MonoBehaviour
     DisconeCharacter m_Container;
 
     // the colliders to disable when the character is paused
-    Collider[] m_Colliders;
+    HairCollider[] m_Colliders;
 
     /// a set of event subscriptions
     DisposeBag m_Subscriptions = new DisposeBag();
@@ -48,7 +55,13 @@ public class IcecreamHair : MonoBehaviour
         m_Container = GetComponentInParent<DisconeCharacter>(true);
 
         // cache colliders
-        m_Colliders = GetComponentsInChildren<Collider>();
+        var colliders = GetComponentsInChildren<Collider>(true);
+        m_Colliders = new HairCollider[colliders.Length];
+        for (int i = 0; i < colliders.Length; i++) {
+            var collider = colliders[i];
+            m_Colliders[i].Collider =  collider;
+            m_Colliders[i].InitialPosition =  collider.transform.localPosition;
+        }
 
         // instantiate prefabs
         //m_NoRig = Instantiate(m_NoRigPrefab, transform.position, transform.rotation, m_AttachedTo.transform);
@@ -75,13 +88,15 @@ public class IcecreamHair : MonoBehaviour
 
     void Start() {
         // bind events
-        m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Paused, OnCharacterPaused);
-        m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Unpaused, OnCharacterUnpaused);
-
+        m_Container.Character.OnPause += OnCharacterPaused;
+        m_Container.Character.OnUnpause += OnCharacterUnpaused;
     }
+
     void OnDestroy() {
         // unbind events
         m_Subscriptions.Dispose();
+        m_Container.Character.OnPause -= OnCharacterPaused;
+        m_Container.Character.OnUnpause -= OnCharacterUnpaused;
     }
 
     void OnEnable() {
@@ -93,6 +108,22 @@ public class IcecreamHair : MonoBehaviour
 
         // reset the rig
         // CopyTransformTree(m_RigPrefab.transform.GetChild(0), m_Rig.transform.GetChild(0));
+    }
+
+    void FixedUpdate() {
+        if (m_Container.Character.IsPaused) {
+            return;
+        }
+
+        foreach (var collider in m_Colliders) {
+            var sqrDist = (collider.Collider.transform.localPosition - collider.InitialPosition).sqrMagnitude;
+            if (collider.Collider.enabled && sqrDist > m_DisableDistance * m_DisableDistance) {
+                collider.Collider.enabled = false;
+            }
+            else if (!collider.Collider.enabled && sqrDist < m_ReenableDistance * m_ReenableDistance) {
+                collider.Collider.enabled = true;
+            }
+        }
     }
 
     /// -- events --
@@ -111,13 +142,13 @@ public class IcecreamHair : MonoBehaviour
 
     void OnCharacterPaused() {
         foreach(var collider in m_Colliders) {
-            collider.enabled = false;
+            collider.Collider.enabled = false;
         }
     }
 
     void OnCharacterUnpaused() {
         foreach(var collider in m_Colliders) {
-            collider.enabled = true;
+            collider.Collider.enabled = true;
         }
     }
 
@@ -172,4 +203,8 @@ public class IcecreamHair : MonoBehaviour
             CopyTransformTree(sourceRoot.GetChild(i), destRoot.GetChild(i));
     }
 
+    struct HairCollider {
+        public Collider Collider;
+        public Vector3 InitialPosition;
+    }
 }

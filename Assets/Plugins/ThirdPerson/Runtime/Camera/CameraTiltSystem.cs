@@ -15,7 +15,7 @@ sealed class CameraTiltSystem: CameraSystem {
     }
 
     // -- Tracking --
-    Phase Tilting => new Phase(
+    Phase Tilting => new(
         name: "Tilting",
         update: Tilting_Update
     );

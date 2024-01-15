@@ -28,7 +28,7 @@ sealed class CameraCollisionSystem: CameraSystem {
     }
 
     // -- Tracking --
-    Phase Tracking => new Phase(
+    Phase Tracking => new(
         name: "Tracking",
         update: Tracking_Update
     );
@@ -50,7 +50,7 @@ sealed class CameraCollisionSystem: CameraSystem {
     }
 
     // -- Tracking_Correcting --
-    Phase Tracking_Correcting => new Phase(
+    Phase Tracking_Correcting => new(
         name: "Tracking_Correcting",
         update: Tracking_Correcting_Update
     );
@@ -79,7 +79,7 @@ sealed class CameraCollisionSystem: CameraSystem {
     }
 
     // -- FreeLook --
-    Phase FreeLook => new Phase(
+    Phase FreeLook => new(
         name: "FreeLook",
         update: FreeLook_Update
     );
@@ -102,7 +102,7 @@ sealed class CameraCollisionSystem: CameraSystem {
     }
 
     // -- FreeLook_Colliding --
-    Phase FreeLook_Colliding => new Phase(
+    Phase FreeLook_Colliding => new(
         name: "FreeLook_Colliding",
         update: FreeLook_Colliding_Update
     );
@@ -140,7 +140,7 @@ sealed class CameraCollisionSystem: CameraSystem {
     }
 
     // -- FreeLook_Clipping--
-    Phase FreeLook_Clipping => new Phase(
+    Phase FreeLook_Clipping => new(
         name: "FreeLook_Clipping",
         enter: FreeLook_Clipping_Enter,
         update: FreeLook_Clipping_Update
@@ -168,7 +168,7 @@ sealed class CameraCollisionSystem: CameraSystem {
         }
     }
 
-    Phase FreeLook_ClippingCooldown => new Phase(
+    Phase FreeLook_ClippingCooldown => new(
         name: "FreeLook_ClippingCooldown",
         update: FreeLook_ClippingCooldown_Update
     );

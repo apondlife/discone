@@ -25,7 +25,7 @@ sealed class CameraFollowSystem: CameraSystem {
 
     // -- Idle --
     // player not moving and not controlling the camera
-    Phase Idle => new Phase(
+    Phase Idle => new(
         name: "Idle",
         update: Idle_Update
     );
@@ -46,7 +46,7 @@ sealed class CameraFollowSystem: CameraSystem {
 
     // -- Tracking --
     // camera following the player on its own
-    Phase Tracking => new Phase(
+    Phase Tracking => new(
         name: "Tracking",
         update: Tracking_Update
     );
@@ -70,7 +70,7 @@ sealed class CameraFollowSystem: CameraSystem {
 
     // -- FreeLook --
     // player controlling the camera
-    Phase FreeLook => new Phase(
+    Phase FreeLook => new(
         name: "FreeLook",
         enter: FreeLook_Enter,
         update: FreeLook_Update
@@ -93,7 +93,7 @@ sealed class CameraFollowSystem: CameraSystem {
     }
 
     // -- FreeLook_Intent --
-    Phase FreeLook_Intent => new Phase(
+    Phase FreeLook_Intent => new(
         name: "FreeLook_Intent",
         update: FreeLook_Intent_Update
     );
@@ -124,7 +124,7 @@ sealed class CameraFollowSystem: CameraSystem {
     }
 
     // -- FreeLook_MoveIntent --
-    Phase FreeLook_MoveIntent => new Phase(
+    Phase FreeLook_MoveIntent => new(
         name: "FreeLook_MoveIntent",
         update: FreeLook_MoveIntent_Update,
         exit: FreeLook_MoveIntent_Exit
@@ -153,7 +153,7 @@ sealed class CameraFollowSystem: CameraSystem {
     }
 
     // -- FreeLook_IdleIntent --
-    Phase FreeLook_IdleIntent => new Phase(
+    Phase FreeLook_IdleIntent => new(
         name: "FreeLook_IdleIntent",
         update: FreeLook_IdleIntent_Update,
         exit: FreeLook_IdleIntent_Exit

@@ -54,7 +54,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     // -- NotSaving --
-    Phase NotSaving => new Phase(
+    Phase NotSaving => new(
         name: "NotSaving",
         enter: NotSaving_Enter,
         update: NotSaving_Update,
@@ -76,7 +76,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     // -- Delaying --
-    Phase Delaying => new Phase(
+    Phase Delaying => new(
         name: "Delaying",
         enter: Delaying_Enter,
         update: Delaying_Update
@@ -99,7 +99,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     // -- Smelling --
-    Phase Smelling => new Phase(
+    Phase Smelling => new(
         name: "Smelling",
         enter: Smelling_Enter,
         update: Smelling_Update
@@ -123,7 +123,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     // -- Planting --
-    Phase Planting => new Phase(
+    Phase Planting => new(
         name: "Planting",
         enter: Planting_Enter,
         update: Planting_Update
@@ -146,7 +146,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     // -- Being --
-    Phase Being => new Phase(
+    Phase Being => new(
         name: "Being",
         enter: Being_Enter,
         update: Being_Update
@@ -157,8 +157,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     void Being_Update(float delta) {
-        // continue being
-
         if (!CanSave) {
             ChangeTo(NotSaving);
             return;

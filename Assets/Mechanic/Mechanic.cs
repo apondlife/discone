@@ -64,7 +64,7 @@ sealed class Mechanic: MonoBehaviour {
     Dictionary<string, MechanicNode> m_Nodes;
 
     /// a bag of event subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Start() {

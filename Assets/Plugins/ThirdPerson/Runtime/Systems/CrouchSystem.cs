@@ -25,7 +25,7 @@ sealed class CrouchSystem: CharacterSystem {
     }
 
     // -- NotCrouching --
-    Phase NotCrouching => new Phase(
+    Phase NotCrouching => new(
         name: "NotCrouching",
         enter: NotCrouching_Enter,
         update: NotCrouching_Update
@@ -58,7 +58,7 @@ sealed class CrouchSystem: CharacterSystem {
     }
 
     // -- Crouching --
-    Phase Crouching => new Phase(
+    Phase Crouching => new(
         name: "Crouching",
         enter: Crouching_Enter,
         update: Crouching_Update

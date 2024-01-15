@@ -25,7 +25,7 @@ sealed class TiltSystem : CharacterSystem {
     }
 
     // -- NotTilting --
-    Phase NotTilting => new Phase(
+    Phase NotTilting => new(
         "NotTilting",
         update: NotTilting_Update
     );
@@ -41,7 +41,7 @@ sealed class TiltSystem : CharacterSystem {
     }
 
     // -- Tilting --
-    Phase Tilting => new Phase(
+    Phase Tilting => new(
         "Tilting",
         update: Tilting_Update
     );

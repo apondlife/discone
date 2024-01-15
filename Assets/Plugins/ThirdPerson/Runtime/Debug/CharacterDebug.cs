@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// debug extensions for the character
-public partial class Character {
+partial class Character {
     // -- constants --
     /// no frame
     const int k_Debug_FrameNone = -1;

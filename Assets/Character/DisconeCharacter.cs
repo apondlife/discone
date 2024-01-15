@@ -74,6 +74,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the checkpoint spawner
     CharacterCheckpoint m_Checkpoint;
 
+    /// the trigger collider
+    Collider m_Collider;
+
     /// the list of simulated children
     GameObject[] m_Simulated;
 
@@ -91,6 +94,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         m_Musics = GetComponentInChildren<CharacterMusicBase>(true);
         m_Dialogue = GetComponentInChildren<CharacterDialogue>(true);
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
+        m_Collider = GetComponent<Collider>();
 
         // cache list of simulated children -- anything that's active in the prefab
         // TODO: this is for the camera, it's hacky right now
@@ -370,6 +374,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the character's flower
     public CharacterFlower Flower {
         get => m_Checkpoint.Flower;
+    }
+
+    /// the character's trigger collider
+    public Collider Collider {
+        get => m_Collider;
     }
 
     // -- q/debug

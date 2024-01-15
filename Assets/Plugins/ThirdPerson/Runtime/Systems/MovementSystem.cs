@@ -25,7 +25,7 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- NotMoving --
-    Phase NotMoving => new Phase(
+    Phase NotMoving => new(
         name: "NotMoving",
         update: NotMoving_Update
     );
@@ -64,7 +64,7 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- Moving --
-    Phase Moving => new Phase(
+    Phase Moving => new(
         name: "Moving",
         update: Moving_Update
     );
@@ -129,7 +129,7 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- Sliding --
-    Phase Sliding => new Phase(
+    Phase Sliding => new(
         name: "Sliding",
         update: Sliding_Update
     );
@@ -192,7 +192,7 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- Pivot --
-    Phase Pivot => new Phase(
+    Phase Pivot => new(
         "Pivot",
         enter: Pivot_Enter,
         update: Pivot_Update,
@@ -238,7 +238,7 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     // -- Floating --
-    Phase Floating => new Phase(
+    Phase Floating => new(
         name: "Floating",
         update: Floating_Update
     );
