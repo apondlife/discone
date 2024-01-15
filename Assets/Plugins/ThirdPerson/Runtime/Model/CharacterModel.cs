@@ -162,7 +162,7 @@ public sealed class CharacterModel: MonoBehaviour {
         m_LastFixedUpdate = Time.time;
     }
 
-    private void Update() {
+    void Update() {
         // interpolate frame based on time since last update
         var end = m_State.Next;
         var delta = Time.time - m_LastFixedUpdate;
@@ -202,10 +202,10 @@ public sealed class CharacterModel: MonoBehaviour {
             state.IsLanding
         );
 
+        var isAirborne = state.MainSurface.IsNone || state.MainSurface.Angle > m_Tuning.Jump_GroundAngle;
         anim.SetBool(
             k_PropIsAirborne,
-            // has to actually be grounded/airborne
-            state.MainSurface.IsNone
+            isAirborne
         );
 
         anim.SetBool(
