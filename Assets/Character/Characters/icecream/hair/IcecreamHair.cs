@@ -60,7 +60,7 @@ public class IcecreamHair : MonoBehaviour
         // attach rigs to character
         AttachToCharacter(m_Rig);
         AttachToCharacter(m_RightRoot);
-        AttachToCharacter(m_LeftRoot); 
+        AttachToCharacter(m_LeftRoot);
 
         if (m_HasPhysics) {
             EnablePhysics();
@@ -77,7 +77,7 @@ public class IcecreamHair : MonoBehaviour
         // bind events
         m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Paused, OnCharacterPaused);
         m_Container.Character.Events.Bind(ThirdPerson.CharacterEvent.Unpaused, OnCharacterUnpaused);
-        
+
     }
     void OnDestroy() {
         // unbind events
@@ -130,8 +130,7 @@ public class IcecreamHair : MonoBehaviour
     void EnablePhysics() {
         m_HasPhysics = true;
 
-
-        // AAA: sync position?
+        // TODO: sync position?
         // to get all possible motion from the attached rigidbody on the character,
         // we need the two rigidbody chains to be completely disconnected
         // this is the only way we get the actual inertia from the character into the hair

@@ -134,19 +134,15 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         transform.position = m_State.Position;
 
         // set shader uniforms
-        // AAA: choose an angle for this / standardize it?
-        var ground = m_State.Next.MainSurface;
-        if (ground.Angle < 10f) {
-            ground = CharacterCollision.None;
-        }
-
+        // TODO: re-evaluate this when using it
+        var surface = m_State.Next.MainSurface;
         var plane = new Plane(
-            ground.IsSome ? ground.Normal : m_State.Next.Up,
-            ground.Point
+            surface.IsSome ? surface.Normal : m_State.Next.Up,
+            surface.Point
         );
 
         Shader.SetGlobalVector(
-            ShaderProps.CharacterGroundPlane,
+            ShaderProps.CharacterSurfacePlane,
             plane.AsVector4()
         );
 

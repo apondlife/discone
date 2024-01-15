@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -29,6 +28,21 @@ public sealed class CharacterController {
         // -- commands --
         /// add a new surface to the buffer
         public void AddSurface(CharacterCollision surface) {
+            // search for an existing collision by normal
+            for (var i = 0; i < Surfaces.Count; i++) {
+                var other = Surfaces[i];
+
+                // if found, combine this as a second source
+                if (other.Normal == surface.Normal) {
+                    other.AddSource(surface.Source, surface.Point);
+                    Surfaces[i] = other;
+
+                    // and exit
+                    return;
+                }
+            }
+
+            // if nothing is found, add the new surface
             Surfaces.Add(surface);
         }
     }
@@ -241,6 +255,14 @@ public sealed class CharacterController {
                 break;
             }
 
+            var surface = new CharacterCollision(
+                hit.normal,
+                hit.point,
+                CollisionSource.Move
+            );
+
+            nextFrame.AddSurface(surface);
+
             // move backwards along the move dir to the last point where we were
             // at least contact offset away from the hit surface
             // TODO: is the max right? we can end up < contact offset away now mid move
@@ -276,9 +298,10 @@ public sealed class CharacterController {
         nextFrame.Velocity = nextVelocity;
 
         DebugDraw.Push(
-            "frame-velocity-pre",
+            "collision-velocity-post-move",
             moveDst,
-            nextFrame.Velocity
+            nextFrame.Velocity,
+            new DebugDraw.Config(tags: DebugDraw.Tag.Collision)
         );
 
         // find any colliders we're contact offset away from
@@ -331,12 +354,14 @@ public sealed class CharacterController {
                     Log.Cntrlr.W($"final collision cast convex mesh {collider} missed");
                 }
 
-                // TODO: we should be able to parameterize a value w/ i, castRes, &c
-                DebugDraw.Push(
-                    "collision",
-                    hit.point,
-                    new DebugDraw.Config(GetDebugColor(castRes), width: 3f)
-                );
+                if (castRes != CastResult.Hit) {
+                    // TODO: we should be able to parameterize a value w/ i, castRes, &c
+                    DebugDraw.Push(
+                        $"collision-overlap/{i}/{castRes}",
+                        hit.point,
+                        new DebugDraw.Config(GetDebugColor(castRes, CollisionSource.Overlap), width: 3f, tags: DebugDraw.Tag.Collision)
+                    );
+                }
             }
             // otherwise, depenetrate from concave mesh to find dir
             else {
@@ -400,6 +425,18 @@ public sealed class CharacterController {
                 }
             }
         }
+
+
+        for (var i = 0; i < nextFrame.Surfaces.Count; i++) {
+            var surface = nextFrame.Surfaces[i];
+            DebugDraw.Push(
+                $"collision-surface/{numCasts}/{surface.Source}",
+                surface.Point,
+                surface.Normal,
+                new DebugDraw.Config(GetDebugColor(CastResult.Hit, surface.Source), width: 3f, tags: DebugDraw.Tag.Collision)
+            );
+        }
+
 
         // apply offset to depenetrate from colliders
         moveDst += collisionOffset;
@@ -472,14 +509,13 @@ public sealed class CharacterController {
         }
 
         // track collisions
-        var collisionAngle = Vector3.Angle(hit.normal, Vector3.up);
-        var collision = new CharacterCollision(
+        var surface = new CharacterCollision(
             hit.normal,
             hit.point,
-            collisionAngle
+            CollisionSource.Overlap
         );
 
-        nextFrame.AddSurface(collision);
+        nextFrame.AddSurface(surface);
 
         return CastResult.Hit;
     }
@@ -491,11 +527,16 @@ public sealed class CharacterController {
     }
 
     // -- debugging --
-    Color GetDebugColor(CastResult res) {
-        return res switch {
-            CastResult.Hit => Color.green,
-            CastResult.Blocked => Color.yellow,
-            CastResult.OutOfRange => Color.blue,
+    Color GetDebugColor(
+        CastResult res,
+        CollisionSource src
+    ) {
+        return (res, src) switch {
+            (CastResult.Blocked, _) => Color.yellow,
+            (CastResult.OutOfRange, _) => Color.blue,
+            (CastResult.Hit, CollisionSource.Move) => new Color(0.0f, 1f, 0.7f),
+            (CastResult.Hit, CollisionSource.Overlap) => new Color(0.7f, 1f, 0.0f),
+            (CastResult.Hit, _) => Color.green,
             _ => Color.red
         };
     }

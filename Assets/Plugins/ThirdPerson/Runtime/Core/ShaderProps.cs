@@ -28,7 +28,7 @@ static class ShaderProps {
     public static readonly int CameraClipPlane = Shader.PropertyToID("_CameraClipPlane");
 
     /// the character's ground plane
-    public static readonly int CharacterGroundPlane = Shader.PropertyToID("_CharacterGroundPlane");
+    public static readonly int CharacterSurfacePlane = Shader.PropertyToID("_CharacterSurfacePlane");
 }
 
 }

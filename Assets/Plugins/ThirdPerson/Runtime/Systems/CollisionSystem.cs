@@ -60,23 +60,6 @@ sealed class CollisionSystem: CharacterSystem {
         next.Acceleration = (frame.Velocity - curr.Velocity) / delta;
         next.Position = frame.Position;
 
-        // find the surface we touched before the new surface, if any
-        // var prevSurface = curr.PrevSurface;
-        // var prevDotMain = Vector3.Dot(
-        //     curr.MainSurface.Normal,
-        //     next.MainSurface.Normal
-        // );
-        //
-        // if (prevDotMain - 1f < -0.00001f) {
-        //     var normalDelta = Vector3.Dot(prevSurface.Normal, curr.MainSurface.Normal);
-        //
-        //     if (Mathf.Abs(normalDelta - 1f) > 0.001f) {
-        //         prevSurface = curr.MainSurface;
-        //     }
-        // }
-        //
-        // next.PrevSurface = prevSurface;
-
         // the change in velocity, the resultant surface from the collision
         var v1 = frame.Velocity;
         var dv = v0 - v1;
@@ -117,6 +100,20 @@ sealed class CollisionSystem: CharacterSystem {
             next.MainSurface.IsSome ? next.MainSurface.Point : next.Position,
             next.MainSurface.Normal,
             new DebugDraw.Config(Color.blue, tags: DebugDraw.Tag.Collision)
+        );
+
+        DebugDraw.Push(
+            "collision-v0",
+            curr.Position,
+            v0,
+            new DebugDraw.Config(tags: DebugDraw.Tag.Collision)
+        );
+
+        DebugDraw.Push(
+            "collision-i0",
+            curr.Position,
+            i0,
+            new DebugDraw.Config(tags: DebugDraw.Tag.Collision)
         );
     }
 }

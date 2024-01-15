@@ -294,7 +294,7 @@ Shader "Custom/Incline" {
             float4 _CameraClipPlane;
 
             // the character's current ground surface plane
-            float4 _CharacterGroundPlane;
+            float4 _CharacterSurfacePlane;
 
             // see: https://docs.unity3d.com/Manual/GPUInstancing.html for more
             UNITY_INSTANCING_BUFFER_START(Props)
@@ -381,7 +381,7 @@ Shader "Custom/Incline" {
                 // float3 viewNormal = mul(UNITY_MATRIX_V, float4(IN.normal, 0.0f)).xyz;
                 // float1 viewDotNormal = dot(float3(0, 0, 1), viewNormal);
                 // float1 clipDotNormal = dot(IN.worldNormal, _CameraClipPlane.xyz);
-                // float1 groundDistance = dot(IN.worldPos, _CharacterGroundPlane.xyz) + _CharacterGroundPlane.w;
+                // float1 groundDistance = dot(IN.worldPos, _CharacterSurfacePlane.xyz) + _CharacterSurfacePlane.w;
 
                 // // float1 viewDotNormal = 1.0f - abs(dot(float3(0, 0, 1), viewNormal));
                 // // if (groundDistance < -2) {

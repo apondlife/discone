@@ -12,11 +12,6 @@ public sealed class CharacterTuning: ScriptableObject {
     [TextArea(3, 6)]
     [SerializeField] string m_Description;
 
-    // -- collision system --
-    [Header("collision system")]
-    [Tooltip("a geometric decay on the character's momentum into a surface")]
-    public float Surface_MomentumDecay;
-
     // -- movement system --
     [Header("movement system")]
     [Tooltip("the horizontal speed at which the character stops")]
@@ -41,16 +36,6 @@ public sealed class CharacterTuning: ScriptableObject {
 
     [Tooltip("the friction scale as a fn of the surface angle")]
     public MapOutCurve Surface_FrictionScale;
-
-    /// the time to to reach max speed from zero.
-    public float TimeToMaxSpeed => TimeToPercentMaxSpeed(
-        (Horizontal_MaxSpeed - Horizontal_MinSpeed) / Horizontal_MaxSpeed
-    );
-
-    /// the time to stop from max speed
-    public float TimeToStop => TimeToPercentMaxSpeed(
-        Horizontal_MinSpeed / Horizontal_MaxSpeed
-    );
 
     [Tooltip("the turn speed in radians")]
     public float TurnSpeed;
@@ -191,26 +176,22 @@ public sealed class CharacterTuning: ScriptableObject {
 
     // -- surface --
     [Header("surface")]
-    [FormerlySerializedAs("WallLayer")]
-    [Tooltip("the collision layer of what counts as surfaces for surface sliding")]
-    public LayerMask SurfaceLayer;
-
     [FormerlySerializedAs("WallAngleScale")]
     [FormerlySerializedAs("WallAngleScale_New")]
     [Tooltip("the scaling factor of the surface slide as a fn of surface angle")]
     public MapOutCurve Surface_AngleScale;
 
-    [FormerlySerializedAs("WallGravity")]
-    [Tooltip("the gravity while on the surface & holding jump")]
-    public float Surface_Gravity;
+    [Tooltip("how much upwards velocity we add to our velocity projection tangent")]
+    public float Surface_UpwardsVelocityBias;
 
-    [FormerlySerializedAs("WallHoldGravity")]
-    [Tooltip("the gravity while on the surface & not holding jump")]
-    public float Surface_HoldGravity;
+    [FormerlySerializedAs("Surface_Gravity")]
+    [FormerlySerializedAs("WallGravity")]
+    [Tooltip("the maximum upwards pull while on the surface")]
+    public float Surface_UpwardsGrip;
 
     [FormerlySerializedAs("WallMagnet")]
-    [Tooltip("the force the surface pulls character in as a fn of surface angle")]
-    public MapOutCurve Surface_Grip;
+    [Tooltip("the maximum force the surface pulls character in")]
+    public float Surface_Grip;
 
     [FormerlySerializedAs("WallTransferScale")]
     [FormerlySerializedAs("Surface_TransferAttack")]
@@ -225,25 +206,14 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the scaling factor of the wall transfer as a fn of signed input-surface angle")]
     public MapOutCurve Surface_TransferDiScale;
 
-    [FormerlySerializedAs("WallGravityAmplitudeScale")]
-    [Tooltip("the scaling factor of the wall gravity amplitude as a fn of surface change angle")]
-    public MapOutCurve Surface_GravityAmplitudeScale;
-
     [Tooltip("the time for inertia to decay 99% as a fn of surface angle")]
     public MapOutCurve Surface_InertiaDecayTime;
-
-    [Tooltip("the scale on transferred inertia as a fn of surface angle")]
-    public MapOutCurve Surface_TransferScale;
 
     [Tooltip("the time it takes the perceived surface to scale between 0 & 1")]
     public float Surface_PerceptionDuration;
 
     [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
     public float Surface_PerceptionAngularSpeed;
-
-    public float Surface_Acceleration(float wallGravity) {
-        return wallGravity - Gravity + FallGravity;
-    }
 
     // -- model/animation --
     [Header("model / animation")]
@@ -263,11 +233,6 @@ public sealed class CharacterTuning: ScriptableObject {
         } else {
             MaxCoyoteFrames = Math.Max(MaxCoyoteFrames, Jumps[0].MinJumpSquatFrames);
         }
-    }
-
-    // -- queries --
-    public float TimeToPercentMaxSpeed(float pct) {
-        return -Mathf.Log(1.0f - pct, (float)Math.E) / Horizontal_Drag;
     }
 }
 

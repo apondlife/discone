@@ -338,6 +338,21 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
         // -- lifetime --
         public Config(
+            Tag tags = Tag.None,
+            int count = k_BufferLen,
+            float width = 1f,
+            float scale = 1f,
+            float minAlpha = 1f
+        ) {
+            Tags = tags;
+            Color = Color.clear;
+            Count = count;
+            Width = width;
+            Scale = scale;
+            MinAlpha = minAlpha;
+        }
+
+        public Config(
             Color color,
             Tag tags = Tag.None,
             int count = k_BufferLen,
