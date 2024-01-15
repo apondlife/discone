@@ -3,10 +3,7 @@ what is projected
 
 # inertia & movement
 
-- applying inertia over time
-  - storing transfer direction on initial collision
-
-- unrealized motion (minmove) be converted into inertia? 
+- unrealized motion (minmove) be converted into inertia?
   - set velocity to zero on min_move?
 - move friction into surface system?
   - need to approach integration more holistically
@@ -15,7 +12,7 @@ what is projected
 
 - maybe? move off wall on jump?
 
-# particles 
+# particles
 
 - wall particle proportional to wall influence
 - wall particle indicates state (attack, hold button)
