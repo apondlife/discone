@@ -37,15 +37,8 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // intergrate forces
-        IntegrateForces(
-            c.State.Next.GroundVelocity,
-            Vector3.zero,
-            c.State.WasStopped ? 0.0f : c.State.Next.Horizontal_Drag,
-            c.State.WasStopped ? c.State.Next.Horizontal_StaticFriction : c.State.Next.Horizontal_KineticFriction,
-            delta
-        );
-
+        // integrate forces
+        AddDragAndFriction(delta);
 
         // we're moving if the character is not stopped or if there's input
         var shouldStartMoving = !c.State.IsStopped || HasMoveInput;
@@ -92,7 +85,7 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // the current ground velocity
-        var v = c.State.Next.GroundVelocity;
+        var v = c.State.Next.SurfaceVelocity;
 
         // the current forward & input direction
         var fwd = c.State.Curr.Forward;
@@ -117,15 +110,10 @@ sealed class MovementSystem: CharacterSystem {
             delta
         );
 
-        // intergrate forces
+        // integrate forces
         // 22.10.26: removed static friction when in moving
-        IntegrateForces(
-            v,
-            c.Tuning.Horizontal_Acceleration * Vector3.Project(inputDir, c.State.Next.Forward),
-            c.State.WasStopped ? 0.0f : c.State.Horizontal_Drag,
-            c.State.Horizontal_KineticFriction,
-            delta
-        );
+        c.State.Next.Force += c.Tuning.Horizontal_Acceleration * Vector3.Project(inputDir, c.State.Next.Forward);
+        AddDragAndFriction(delta);
     }
 
     // -- Sliding --
@@ -151,7 +139,7 @@ sealed class MovementSystem: CharacterSystem {
         var inputSlideLateral = inputDir - inputSlide;
 
         // make lateral thrust proportional to speed in slide direction
-        var moveVel = c.State.Next.GroundVelocity;
+        var moveVel = c.State.Next.SurfaceVelocity;
         var moveDir = moveVel.normalized;
         var moveMag = moveVel.magnitude;
         var scaleLateral = moveMag * (1.0f - Mathf.Abs(Vector3.Angle(moveDir, slideDir) / 90.0f));
@@ -160,13 +148,8 @@ sealed class MovementSystem: CharacterSystem {
         var thrustLateral = scaleLateral * c.Tuning.Crouch_LateralMaxSpeed * inputSlideLateral;
 
         // integrate forces
-        IntegrateForces(
-            c.State.Next.GroundVelocity,
-            c.Tuning.Horizontal_Acceleration * thrustLateral,
-            c.State.WasStopped ? 0.0f : c.State.Horizontal_Drag,
-            c.State.WasStopped ? c.State.Horizontal_StaticFriction : c.State.Horizontal_KineticFriction,
-            delta
-        );
+        c.State.Next.Force += c.Tuning.Horizontal_Acceleration * thrustLateral;
+        AddDragAndFriction(delta);
 
         // turn towards input direction
         TurnTowards(
@@ -220,7 +203,7 @@ sealed class MovementSystem: CharacterSystem {
         );
 
         // calculate next velocity, decelerating towards zero to finish pivot
-        var v0 = c.State.Curr.GroundVelocity;
+        var v0 = c.State.Curr.SurfaceVelocity;
         var a = Mathf.Min(v0.magnitude / delta, c.Tuning.PivotDeceleration) * v0.normalized;
 
         // update velocity
@@ -295,39 +278,67 @@ sealed class MovementSystem: CharacterSystem {
     // -- integrate --
     // TODO: consider if this should be integrated somewhere more fundamental (e.g. on state v & a)
     /// integrate velocity delta from all movement forces
-    void IntegrateForces(
-        Vector3 v0,
-        Vector3 thrust,
-        float drag,
-        float friction,
-        float delta
-    ) {
-        // get curr velocity dir & mag
-        var v0Dir = v0.normalized;
-        var v0SqrMag = v0.sqrMagnitude;
+    void AddDragAndFriction(float delta) {
+        // TODO: aerial drag
+        var drag = 0f;
+        if (!c.State.IsStopped) {
+            drag = c.Tuning.Horizontal_Drag;
+        }
+
+        var friction = c.State.Horizontal_StaticFriction;
+        if (!c.State.IsStopped || c.Input.Move.sqrMagnitude > 0f) {
+            friction = c.State.Horizontal_KineticFriction;
+        }
+
+        // get curr surface
+        var surface = c.State.Curr.MainSurface;
+
+        // integrate accelerated velocity
+        var v0 = c.State.Next.SurfaceVelocity;
+        var a0 = Vector3.ProjectOnPlane(c.State.Next.Force, surface.Normal);
+        var va = v0 + a0 * delta;
 
         // scale friction by surface
-        var frictionScale = c.Tuning.Surface_FrictionScale.Evaluate(c.State.Curr.MainSurface.Angle);
+        var frictionScale = c.Tuning.Surface_FrictionScale.Evaluate(surface.Angle);
         friction *= frictionScale;
 
-        // get separate acceleration and deceleration
-        var acceleration = thrust;
-        var deceleration = v0Dir * (friction + drag * v0SqrMag);
-
-        // get velocity delta in each direction
-        var dva = acceleration * delta;
-        var dvd = deceleration * delta;
+        // integrated deceleration opposing va
+        var deceleration = va.normalized * (friction + drag * va.sqrMagnitude);
 
         // if deceleration would overcome our accelerated velocity, cancel
         // current velocity instead
-        var va = v0 + dva;
-        if (dvd.sqrMagnitude >= va.sqrMagnitude) {
-            c.State.Next.Force -= v0 / delta;
+        var dv = deceleration * delta;
+        if (dv.sqrMagnitude >= va.sqrMagnitude) {
+            c.State.Next.Force -= a0 + v0 / delta;
         }
         // otherwise, apply the movement acceleration
         else {
-            c.State.Next.Force += acceleration - deceleration;
+            c.State.Next.Force -= deceleration;
         }
+
+        // debug drawings
+        if (dv.sqrMagnitude >= va.sqrMagnitude) {
+            DebugDraw.Push(
+                "movement-stop",
+                c.State.Curr.Position,
+                a0 + v0 / delta,
+                new DebugDraw.Config(Color.black, DebugDraw.Tag.Movement, width: 3f)
+            );
+        }
+
+        DebugDraw.Push(
+            "movement-va",
+            c.State.Curr.Position,
+            va,
+            new DebugDraw.Config(Color.green, DebugDraw.Tag.Movement)
+        );
+
+        DebugDraw.Push(
+            "movement-dv",
+            c.State.Curr.Position,
+            -dv,
+            new DebugDraw.Config(Color.red, DebugDraw.Tag.Movement)
+        );
     }
 }
 

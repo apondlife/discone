@@ -191,6 +191,6 @@ public sealed class BubblegumCharacterMusic: CharacterMusicBase {
     // -- queries --
     /// the character's step (planar) velocity
     Vector3 StepVelocity {
-        get => State.Next.GroundVelocity;
+        get => State.Next.SurfaceVelocity;
     }
 }

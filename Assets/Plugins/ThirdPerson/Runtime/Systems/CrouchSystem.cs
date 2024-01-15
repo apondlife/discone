@@ -74,7 +74,7 @@ sealed class CrouchSystem: CharacterSystem {
         // and store the crouch direction, the character won't reface for the
         // duration of the crouch (this is implemented in (coupled to) the
         // movement system)
-        c.State.Next.CrouchDirection = c.State.WasStopped
+        c.State.Next.CrouchDirection = c.State.IsStopped
             ? c.State.Curr.Forward
             : c.State.Curr.PlanarVelocity.normalized;
     }
@@ -87,7 +87,7 @@ sealed class CrouchSystem: CharacterSystem {
         }
 
         // update crouch direction if it changes significantly (> 90°)
-        var moveDir = c.State.Curr.GroundVelocity.normalized;
+        var moveDir = c.State.Curr.SurfaceVelocity.normalized;
         var moveDotCrouch = Vector3.Dot(moveDir, c.State.Curr.CrouchDirection);
         if (moveDotCrouch < 0.0f) {
             c.State.Next.CrouchDirection = moveDir;

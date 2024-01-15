@@ -187,7 +187,7 @@ public sealed class CharacterModel: MonoBehaviour {
             Mathx.InverseLerpUnclamped(
                 0.0f,
                 m_Tuning.Horizontal_MaxSpeed,
-                state.GroundVelocity.magnitude
+                state.SurfaceVelocity.magnitude
             )
         );
 
@@ -230,7 +230,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         anim.SetFloat(
             k_PropMoveFacingDotVelocity,
-            Vector3.Dot(state.GroundVelocity.normalized, state.Forward)
+            Vector3.Dot(state.SurfaceVelocity.normalized, state.Forward)
         );
 
         // blend yoshiing

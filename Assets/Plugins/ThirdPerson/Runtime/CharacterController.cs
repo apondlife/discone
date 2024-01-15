@@ -161,6 +161,10 @@ public sealed class CharacterController {
         // prepare a new frame
         var nextFrame = new Frame(k_MaxCollisions);
 
+        //
+        // move pass
+        //
+
         // while there is any more to move, process what's left of the move
         // delta as a submove
         //
@@ -289,12 +293,7 @@ public sealed class CharacterController {
             numCasts++;
         }
 
-        // zero out small speed
-        if (nextVelocity.sqrMagnitude <= m_SqrMinSpeed) {
-            nextVelocity = Vector3.zero;
-        }
-
-        // update frame velocity
+        // update frame velocity for overlap pass
         nextFrame.Velocity = nextVelocity;
 
         DebugDraw.Push(
@@ -303,6 +302,10 @@ public sealed class CharacterController {
             nextFrame.Velocity,
             new DebugDraw.Config(tags: DebugDraw.Tag.Collision)
         );
+
+        //
+        // overlap pass
+        //
 
         // find any colliders we're contact offset away from
         var capsulePts = capsule.Offset(moveDst).Points();
@@ -426,7 +429,18 @@ public sealed class CharacterController {
             }
         }
 
+        // apply offset to depenetrate from colliders
+        moveDst += collisionOffset;
 
+        // update final frame position
+        nextFrame.Position = moveDst;
+
+        // zero out small speed
+        if (nextFrame.Velocity.sqrMagnitude <= m_SqrMinSpeed) {
+            nextFrame.Velocity = Vector3.zero;
+        }
+
+        // debug drawings
         for (var i = 0; i < nextFrame.Surfaces.Count; i++) {
             var surface = nextFrame.Surfaces[i];
             DebugDraw.Push(
@@ -436,13 +450,6 @@ public sealed class CharacterController {
                 new DebugDraw.Config(GetDebugColor(CastResult.Hit, surface.Source), width: 3f, tags: DebugDraw.Tag.Collision)
             );
         }
-
-
-        // apply offset to depenetrate from colliders
-        moveDst += collisionOffset;
-
-        // update final frame position
-        nextFrame.Position = moveDst;
 
         return nextFrame;
     }
@@ -504,7 +511,6 @@ public sealed class CharacterController {
         // if moving into the surface, cancel any remaining velocity into it
         var normalSpeed = Vector3.Dot(nextFrame.Velocity, hit.normal);
         if (normalSpeed < 0f) {
-            // nextFrame.Velocity = Vector3.ProjectOnPlane(nextFrame.Velocity, hit.normal);
             nextFrame.Velocity -= normalSpeed * hit.normal;
         }
 

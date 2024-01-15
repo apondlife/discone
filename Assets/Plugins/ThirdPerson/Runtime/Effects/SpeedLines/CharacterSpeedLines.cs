@@ -49,7 +49,7 @@ sealed class CharacterSpeedLines: MonoBehaviour {
             transform.position = m_Anchor.position;
         }
 
-        var v = c.State.Next.GroundVelocity;
+        var v = c.State.Next.SurfaceVelocity;
         var dir = v.normalized;
 
         // scale speed line based on ground speed

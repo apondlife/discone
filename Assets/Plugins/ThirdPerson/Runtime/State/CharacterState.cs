@@ -83,12 +83,7 @@ public sealed partial class CharacterState {
 
     /// if the ground speed this frame is below the movement threshold
     public bool IsStopped {
-        get => Next.GroundVelocity.magnitude < m_Tuning.Horizontal_MinSpeed;
-    }
-
-    /// if the ground speed last frame was below the movement threshold
-    public bool WasStopped {
-        get => Curr.GroundVelocity.magnitude < m_Tuning.Horizontal_MinSpeed;
+        get => Curr.SurfaceVelocity.magnitude < m_Tuning.Horizontal_MinSpeed;
     }
 
     /// the buffer size
@@ -257,8 +252,8 @@ public sealed partial class CharacterState {
             get => Velocity.XNZ();
         }
 
-        /// the velocity in the ground plane, or planar velocity if not grounded
-        public Vector3 GroundVelocity {
+        /// the velocity in the main surface plane, or planar velocity if none
+        public Vector3 SurfaceVelocity {
             get {
                 if (MainSurface.IsNone) {
                     return PlanarVelocity;
