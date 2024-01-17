@@ -246,8 +246,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 3
-      Max: 10
+      Min: 10
+      Max: 13
   Jump_Normal_SurfaceAngleScale:
     m_Curve:
       serializedVersion: 2
@@ -265,19 +265,19 @@ MonoBehaviour:
         time: 60
         value: 0
         inSlope: Infinity
-        outSlope: 0.0010377245
+        outSlope: 0.01988233
         tangentMode: 7
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.14117192
+        outWeight: 0.22614098
       - serializedVersion: 3
         time: 80
         value: 1
-        inSlope: 0.1521349
-        outSlope: 0.1521349
+        inSlope: 0.067428134
+        outSlope: 0.067428134
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.03875656
+        inWeight: 0.0943985
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -337,28 +337,28 @@ MonoBehaviour:
         time: 9.813202
         value: 0
         inSlope: 0
-        outSlope: -0.00022537526
+        outSlope: -0.000038850667
         tangentMode: 1
-        weightedMode: 0
+        weightedMode: 2
         inWeight: 0.33333334
-        outWeight: 0.31804374
+        outWeight: 0.6603102
       - serializedVersion: 3
-        time: 66.85428
-        value: 0.021755543
-        inSlope: 0.0009839579
-        outSlope: 0.0009839579
-        tangentMode: 0
+        time: 70.22812
+        value: 0.44298092
+        inSlope: 0.027740464
+        outSlope: 0.030828688
+        tangentMode: 1
         weightedMode: 3
-        inWeight: 0.33333334
-        outWeight: 1
+        inWeight: 0.15713759
+        outWeight: 0.74310285
       - serializedVersion: 3
         time: 80
         value: 1
-        inSlope: 0.009953401
+        inSlope: 0.0038095554
         outSlope: 0
         tangentMode: 65
         weightedMode: 3
-        inWeight: 0.37334633
+        inWeight: 0.5376048
         outWeight: 0.4433403
       - serializedVersion: 3
         time: 90
@@ -379,13 +379,13 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 131.35114
-        value: 0.016323416
-        inSlope: -0.0013137084
-        outSlope: -0.0013137084
+        time: 143.25465
+        value: 0.21699458
+        inSlope: -0.010318362
+        outSlope: -0.010318362
         tangentMode: 0
         weightedMode: 3
-        inWeight: 0.910857
+        inWeight: 0.3386889
         outWeight: 0.2623559
       - serializedVersion: 3
         time: 180
@@ -402,9 +402,46 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 1
-  Surface_UpwardsVelocityBias: 20
-  Surface_UpwardsGrip: 10
-  Surface_Grip: 0
+  Surface_UpwardsVelocityBias: 30
+  Surface_UpwardsGrip:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: -0.00012833194
+        outSlope: -0.00012833194
+        tangentMode: 0
+        weightedMode: 2
+        inWeight: 0.33333334
+        outWeight: 0.52138746
+      - serializedVersion: 3
+        time: 90
+        value: 1
+        inSlope: -0
+        outSlope: 0.0001411758
+        tangentMode: 1
+        weightedMode: 3
+        inWeight: 0.39834023
+        outWeight: 0.42634854
+      - serializedVersion: 3
+        time: 180
+        value: 0
+        inSlope: 0.00002242215
+        outSlope: 0.00002242215
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.48825055
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 10
+  Surface_UpwardsGrip_HoldScale: 3.8
+  Surface_Grip: 5
   Surface_DeltaScale:
     m_Curve:
       serializedVersion: 2
@@ -441,7 +478,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Dst:
       Min: 1
-      Max: 1.1
+      Max: 1.15
   Surface_TransferDiAngle:
     m_Curve:
       serializedVersion: 2
@@ -561,7 +598,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Dst:
       Min: 0.001
-      Max: 0.15
+      Max: 0.18
   Surface_PerceptionDuration: 0.2
   Surface_PerceptionAngularSpeed: 270
   TiltForBaseAcceleration: 30

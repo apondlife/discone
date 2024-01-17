@@ -64,7 +64,8 @@ namespace ThirdPerson {
 
             var currSurface = c.State.Curr.MainSurface;
             var currNormal = currSurface.Normal;
-            var currSurfaceScale = c.Tuning.Surface_AngleScale.Evaluate(currSurface.Angle);
+            var currAngle = currSurface.Angle;
+            var currSurfaceScale = c.Tuning.Surface_AngleScale.Evaluate(currAngle);
             var currBias = c.Tuning.Surface_UpwardsVelocityBias * currSurfaceScale * Vector3.up;
             var currVelocityDir = Vector3.ProjectOnPlane(c.State.Curr.Velocity + currBias, currNormal).normalized;
 
@@ -79,7 +80,7 @@ namespace ThirdPerson {
             }
 
             var currUpTg = Vector3.Cross(currNormal, currUp);
-            var currFwd = -Vector3.ProjectOnPlane(currSurface.Normal, Vector3.up).normalized;
+            var currFwd = -Vector3.ProjectOnPlane(currNormal, Vector3.up).normalized;
 
             // find the previous surface
             var prevSurface = c.State.Prev.MainSurface;
@@ -112,7 +113,7 @@ namespace ThirdPerson {
 
             // calculate the decay to hit 1% of the inertia over a fixed interval
             // TODO: can we optimize this pow by inverting this and showing the half-life as a debug query? -ty
-            var inertiaDecayTime = c.Tuning.Surface_InertiaDecayTime.Evaluate(currSurface.Angle);
+            var inertiaDecayTime = c.Tuning.Surface_InertiaDecayTime.Evaluate(currAngle);
             var inertiaDecayScale = 1f - Mathf.Pow(0.01f, delta / inertiaDecayTime);
 
             // clamp decay so it doesn't bounce
@@ -159,7 +160,13 @@ namespace ThirdPerson {
 
             // TODO: add friction (is this friction?)
             // add upwards pull / surface gravity
-            force += c.Tuning.Surface_UpwardsGrip * currSurfaceScale * currUp;
+            var upGrip = c.Tuning.Surface_UpwardsGrip.Evaluate(currAngle);
+            if (c.Input.IsJumpPressed) {
+                upGrip *= c.Tuning.Surface_UpwardsGrip_HoldScale;
+            }
+
+            // project grip into surface
+            force += upGrip * Vector3.ProjectOnPlane(Vector3.up, currNormal);
 
             // add transfer impulse
             var impulse = transferImpulse;

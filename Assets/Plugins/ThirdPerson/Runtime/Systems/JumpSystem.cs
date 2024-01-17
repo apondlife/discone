@@ -186,10 +186,10 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void Falling_Update(float delta) {
-        // apply fall acceleration while holding jump
-        if (c.Input.IsJumpPressed) {
+        // apply fall acceleration while holding jump in the air
+        if (c.Input.IsJumpPressed && c.State.Curr.MainSurface.IsNone) {
             var acceleration = c.State.Curr.Velocity.y > 0.0f
-                ? c.Tuning.JumpAcceleration
+                ? c.Tuning.JumpAcceleration // TODO: what if you are going up but not from a jump?
                 : c.Tuning.FallAcceleration;
 
             c.State.Next.Force += acceleration * Vector3.up;

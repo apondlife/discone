@@ -186,8 +186,11 @@ public sealed class CharacterTuning: ScriptableObject {
 
     [FormerlySerializedAs("Surface_Gravity")]
     [FormerlySerializedAs("WallGravity")]
-    [Tooltip("the maximum upwards pull while on the surface")]
-    public float Surface_UpwardsGrip;
+    [Tooltip("the maximum upwards pull while on the surface as a fn of surface angle")]
+    public MapOutCurve Surface_UpwardsGrip;
+
+    [Tooltip("the upwards pull multiplier while on the surface and holding jump")]
+    public float Surface_UpwardsGrip_HoldScale;
 
     [FormerlySerializedAs("WallMagnet")]
     [Tooltip("the maximum force the surface pulls character in")]
