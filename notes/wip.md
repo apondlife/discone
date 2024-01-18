@@ -1,16 +1,32 @@
 what is projected
 ---
 
-# inertia & movement
+# bugs/problems
+- character jumps twice on short steps with single input (probably because of the buffer)
+- grip pulls you over corners weirdly (on the frame collision misses) (should it pull you towards the hit point?)
+- cant let go of all when pulling back
 
-- unrealized motion (minmove) be converted into inertia?
-  - set velocity to zero on min_move?
+# surface
 - move friction into surface system?
   - need to approach integration more holistically
   - ground velocity vs. surface velocity (friction on walls? and jumping?)
   - wall slide as floating state in movement?
 
+- upwards/downwards upgrip?
+
+- unrealized motion (minmove) be converted into inertia?
+  - set velocity to zero on min_move?
+
 - maybe? move off wall on jump?
+
+# jump
+
+- air jump charging
+- some kind of tiny bad air jump
+- real jump charge (small jump -> tangent, big charge -> normal, or maybe the other way around)
+- jump di?
+
+# crouch
 
 # particles
 

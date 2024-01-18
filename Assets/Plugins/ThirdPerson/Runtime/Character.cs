@@ -93,10 +93,12 @@ public partial class Character: MonoBehaviour, CharacterContainer {
             // runs last/first since it depends on real velocity after collision
             m_Idle,
             // these run first, they don't have dependencies
+            // TODO: jump actually *does* affect surface, since it cancels inertia; however, running it first would make
+            // a frame 1 rejump substantially worse than a frame 2 jump
             m_Surface,
             m_Jump,
             m_Crouch,
-            // movement system depends on gravity to calculate friciton,
+            // movement system depends on gravity to calculate friction,
             // so it runs after jump
             m_Movement,
             m_Tilt,

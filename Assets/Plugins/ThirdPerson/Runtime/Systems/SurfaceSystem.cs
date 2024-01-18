@@ -46,7 +46,7 @@ namespace ThirdPerson {
         }
 
         // -- SurfaceSlide --
-        Phase SurfaceSlide => new Phase(
+        Phase SurfaceSlide => new(
             name: "SurfaceSlide",
             update: SurfaceSlide_Update
         );
@@ -59,15 +59,22 @@ namespace ThirdPerson {
             }
 
             //
+            // get perceived surface
+            //
+            var percSurface = c.State.Curr.PerceivedSurface;
+            var percNormal = percSurface.Normal;
+            var percScale = percNormal.magnitude;
+
+            //
             // get collision surfaces
             //
-
             var currSurface = c.State.Curr.MainSurface;
             var currNormal = currSurface.Normal;
             var currAngle = currSurface.Angle;
-            var currSurfaceScale = c.Tuning.Surface_AngleScale.Evaluate(currAngle);
-            var currBias = c.Tuning.Surface_UpwardsVelocityBias * currSurfaceScale * Vector3.up;
-            var currVelocityDir = Vector3.ProjectOnPlane(c.State.Curr.Velocity + currBias, currNormal).normalized;
+
+            // HACK: scaling by perception here is a workaround for jumping into the ground adding transfer the character around
+            var currVelocityBias = c.Tuning.Surface_UpwardsVelocityBias.Evaluate(currAngle) * Vector3.up;
+            var currVelocityDir = Vector3.ProjectOnPlane(percScale * c.State.Curr.Velocity + currVelocityBias, currNormal).normalized;
 
             // find "up" direction; if none, fallback to velocity & then forward
             var currUp = Vector3.ProjectOnPlane(Vector3.up, currNormal).normalized;
@@ -76,7 +83,8 @@ namespace ThirdPerson {
             }
 
             if (currUp == Vector3.zero) {
-                currUp = Vector3.ProjectOnPlane(c.State.Curr.Forward, currNormal).normalized;
+                // HACK: scaling by perception here is a workaround for jumping into the ground adding transfer the character around
+                currUp = Vector3.ProjectOnPlane(percScale * c.State.Curr.Forward, currNormal).normalized;
             }
 
             var currUpTg = Vector3.Cross(currNormal, currUp);
@@ -132,23 +140,27 @@ namespace ThirdPerson {
             var diAngle = Vector3.SignedAngle(surfaceTg, inputTg, currNormal);
             var diAngleMag = Mathf.Abs(diAngle);
             var diAngleSign = Mathf.Sign(diAngle);
-            var diRot = c.Tuning.Surface_TransferDiAngle.Evaluate(diAngleMag) * diAngleSign * c.Input.MoveMagnitude;
+            var diRot = c.Tuning.Surface_DiRotation.Evaluate(diAngleMag) * diAngleSign * c.Input.MoveMagnitude;
 
             // scale transfer by di
-            var diScale = c.Tuning.Surface_TransferDiScale.Evaluate(diAngleMag);
+            var diScale = c.Tuning.Surface_DiScale.Evaluate(diAngleMag);
 
             //
             // scale based on angle between curr & perceived
             //
-            var perceivedNormal = c.State.PerceivedSurface.Normal;
-            var deltaAngle = Vector3.Angle(currNormal, perceivedNormal);
-            var deltaScale = 1f + (c.Tuning.Surface_DeltaScale.Evaluate(deltaAngle) - 1f) * perceivedNormal.magnitude;
+            var deltaAngle = Vector3.Angle(currNormal, percNormal);
+            var deltaScale = 1f + (c.Tuning.Surface_DeltaScale.Evaluate(deltaAngle) - 1f) * percScale;
+
+            //
+            // scale based surface angle
+            //
+            var angleScale = c.Tuning.Surface_AngleScale.Evaluate(currAngle);
 
             //
             // add impulse along transfer tangent
             //
             var transferTg = Quaternion.AngleAxis(diRot, currNormal) * surfaceTg;
-            var transferScale = currSurfaceScale * diScale * deltaScale;
+            var transferScale = angleScale * diScale * deltaScale;
             var transferImpulse = transferScale * inertiaDecayMag * transferTg;
 
             //
@@ -156,7 +168,7 @@ namespace ThirdPerson {
             //
 
             // add magnet/grip towards the wall so we don't let go
-            var force = -c.Tuning.Surface_Grip * currSurfaceScale * currNormal;
+            var force = -c.Tuning.Surface_Grip.Evaluate(currAngle) * currNormal;
 
             // TODO: add friction (is this friction?)
             // add upwards pull / surface gravity
