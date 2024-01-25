@@ -12,6 +12,10 @@ what is projected
 
 - maybe? move off wall on jump?
 
+# jump
+
+- canceling some proportion of momentum in input opposing velocity
+
 # particles
 
 - wall particle proportional to wall influence

@@ -37,9 +37,6 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // integrate forces
-        AddDragAndFriction(delta);
-
         // we're moving if the character is not stopped or if there's input
         var shouldStartMoving = !c.State.IsStopped || HasMoveInput;
 
@@ -110,10 +107,8 @@ sealed class MovementSystem: CharacterSystem {
             delta
         );
 
-        // integrate forces
-        // 22.10.26: removed static friction when in moving
+        // add movement force
         c.State.Next.Force += c.Tuning.Horizontal_Acceleration * Vector3.Project(inputDir, c.State.Next.Forward);
-        AddDragAndFriction(delta);
     }
 
     // -- Sliding --
@@ -144,12 +139,9 @@ sealed class MovementSystem: CharacterSystem {
         var moveMag = moveVel.magnitude;
         var scaleLateral = moveMag * (1.0f - Mathf.Abs(Vector3.Angle(moveDir, slideDir) / 90.0f));
 
-        // calculate lateral thrust
-        var thrustLateral = scaleLateral * c.Tuning.Crouch_LateralMaxSpeed * inputSlideLateral;
-
-        // integrate forces
-        c.State.Next.Force += c.Tuning.Horizontal_Acceleration * thrustLateral;
-        AddDragAndFriction(delta);
+        // add lateral movement
+        var moveLateral = scaleLateral * c.Tuning.Crouch_LateralMaxSpeed * inputSlideLateral;
+        c.State.Next.Force += c.Tuning.Horizontal_Acceleration * moveLateral;
 
         // turn towards input direction
         TurnTowards(
@@ -273,72 +265,6 @@ sealed class MovementSystem: CharacterSystem {
     /// if there is any user input
     bool HasMoveInput {
         get => c.Input.Move.sqrMagnitude > 0.0f;
-    }
-
-    // -- integrate --
-    // TODO: consider if this should be integrated somewhere more fundamental (e.g. on state v & a)
-    /// integrate velocity delta from all movement forces
-    void AddDragAndFriction(float delta) {
-        // TODO: aerial drag
-        var drag = 0f;
-        if (!c.State.IsStopped) {
-            drag = c.Tuning.Horizontal_Drag;
-        }
-
-        var friction = c.State.Horizontal_StaticFriction;
-        if (!c.State.IsStopped || c.Input.Move.sqrMagnitude > 0f) {
-            friction = c.State.Horizontal_KineticFriction;
-        }
-
-        // get curr surface
-        var surface = c.State.Curr.MainSurface;
-
-        // integrate accelerated velocity
-        var v0 = c.State.Next.SurfaceVelocity;
-        var a0 = Vector3.ProjectOnPlane(c.State.Next.Force, surface.Normal);
-        var va = v0 + a0 * delta;
-
-        // scale friction by surface
-        var frictionScale = c.Tuning.Surface_FrictionScale.Evaluate(surface.Angle);
-        friction *= frictionScale;
-
-        // integrated deceleration opposing va
-        var deceleration = va.normalized * (friction + drag * va.sqrMagnitude);
-
-        // if deceleration would overcome our accelerated velocity, cancel
-        // current velocity instead
-        var dv = deceleration * delta;
-        if (dv.sqrMagnitude >= va.sqrMagnitude) {
-            c.State.Next.Force -= a0 + v0 / delta;
-        }
-        // otherwise, apply the movement acceleration
-        else {
-            c.State.Next.Force -= deceleration;
-        }
-
-        // debug drawings
-        if (dv.sqrMagnitude >= va.sqrMagnitude) {
-            DebugDraw.Push(
-                "movement-stop",
-                c.State.Curr.Position,
-                a0 + v0 / delta,
-                new DebugDraw.Config(Color.black, DebugDraw.Tag.Movement, width: 3f)
-            );
-        }
-
-        DebugDraw.Push(
-            "movement-va",
-            c.State.Curr.Position,
-            va,
-            new DebugDraw.Config(Color.green, DebugDraw.Tag.Movement)
-        );
-
-        DebugDraw.Push(
-            "movement-dv",
-            c.State.Curr.Position,
-            -dv,
-            new DebugDraw.Config(Color.red, DebugDraw.Tag.Movement)
-        );
     }
 }
 

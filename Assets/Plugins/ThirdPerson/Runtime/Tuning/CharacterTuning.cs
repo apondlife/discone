@@ -19,23 +19,11 @@ public sealed class CharacterTuning: ScriptableObject {
 
     /// the character's theoretical max horizontal speed
     public float Horizontal_MaxSpeed {
-        get => Mathf.Sqrt(Mathf.Max(0.0f, Horizontal_Acceleration - Horizontal_KineticFriction) / Horizontal_Drag);
+        get => Mathf.Sqrt(Mathf.Max(0.0f, Horizontal_Acceleration - Friction_Kinetic) / Friction_SurfaceDrag);
     }
 
     [Tooltip("the acceleration from 0 to max speed in units")]
     public float Horizontal_Acceleration;
-
-    [Tooltip("the time to stop from max speed")]
-    public float Horizontal_Drag;
-
-    [Tooltip("the coefficient of friction when not moving")]
-    public float Horizontal_StaticFriction;
-
-    [Tooltip("the coefficient of friction when moving")]
-    public float Horizontal_KineticFriction;
-
-    [Tooltip("the friction scale as a fn of the surface angle")]
-    public MapOutCurve Surface_FrictionScale;
 
     [Tooltip("the turn speed in radians")]
     public float TurnSpeed;
@@ -217,6 +205,31 @@ public sealed class CharacterTuning: ScriptableObject {
 
     [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
     public float Surface_PerceptionAngularSpeed;
+
+    // -- friction system --
+    [Header("Friction System")]
+    [Tooltip("the quadratic drag in the air")]
+    public float Friction_AerialDrag;
+
+    [FormerlySerializedAs("Horizontal_Drag")]
+    [Tooltip("the quadratic drag on a surface")]
+    public float Friction_SurfaceDrag;
+
+    [Tooltip("the friction scale as a fn of the surface angle")]
+    public MapOutCurve Friction_SurfaceDragScale;
+
+    [FormerlySerializedAs("Horizontal_StaticFriction")]
+    [Tooltip("the coefficient of friction when not moving")]
+    public float Friction_Static;
+
+    [FormerlySerializedAs("Horizontal_KineticFriction")]
+    [Tooltip("the coefficient of friction when moving")]
+    public float Friction_Kinetic;
+
+    [FormerlySerializedAs("Friction_SurfaceScale")]
+    [FormerlySerializedAs("Surface_FrictionScale")]
+    [Tooltip("the friction scale as a fn of the surface angle")]
+    public MapOutCurve Friction_SurfaceFrictionScale;
 
     // -- model/animation --
     [Header("model / animation")]

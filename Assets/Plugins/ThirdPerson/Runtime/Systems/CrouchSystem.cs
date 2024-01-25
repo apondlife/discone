@@ -36,9 +36,9 @@ sealed class CrouchSystem: CharacterSystem {
         c.State.IsCrouching = false;
 
         // reset friction
-        c.State.Horizontal_Drag = c.Tuning.Horizontal_Drag;
-        c.State.Horizontal_KineticFriction = c.Tuning.Horizontal_KineticFriction;
-        c.State.Horizontal_StaticFriction = c.Tuning.Horizontal_StaticFriction;
+        c.State.Next.Surface_Drag = c.Tuning.Friction_SurfaceDrag;
+        c.State.Next.Surface_KineticFriction = c.Tuning.Friction_Kinetic;
+        c.State.Next.Surface_StaticFriction = c.Tuning.Friction_Static;
     }
 
     void NotCrouching_Update(float delta) {
@@ -46,9 +46,9 @@ sealed class CrouchSystem: CharacterSystem {
         // TODO: doing this every frame in the build right now bc we don't have
         // a good way to initialize frames from tuning and/or split up network
         // state from client state
-        c.State.Horizontal_Drag = c.Tuning.Horizontal_Drag;
-        c.State.Horizontal_KineticFriction = c.Tuning.Horizontal_KineticFriction;
-        c.State.Horizontal_StaticFriction = c.Tuning.Horizontal_StaticFriction;
+        c.State.Next.Surface_Drag = c.Tuning.Friction_SurfaceDrag;
+        c.State.Next.Surface_KineticFriction = c.Tuning.Friction_Kinetic;
+        c.State.Next.Surface_StaticFriction = c.Tuning.Friction_Static;
 
         // switch to crouching on input
         if (c.State.Next.IsOnGround && c.Input.IsCrouchPressed) {
@@ -69,7 +69,7 @@ sealed class CrouchSystem: CharacterSystem {
         c.State.IsCrouching = true;
 
         // increase static friction on crouch
-        c.State.Horizontal_StaticFriction = c.Tuning.Crouch_StaticFriction;
+        c.State.Next.Surface_StaticFriction = c.Tuning.Crouch_StaticFriction;
 
         // and store the crouch direction, the character won't reface for the
         // duration of the crouch (this is implemented in (coupled to) the
@@ -109,13 +109,13 @@ sealed class CrouchSystem: CharacterSystem {
             ? c.Tuning.Crouch_NegativeDrag
             : c.Tuning.Crouch_PositiveDrag;
 
-        c.State.Next.Horizontal_Drag = drag.Evaluate(Mathf.Abs(inputDotCrouch));
+        c.State.Next.Surface_Drag = drag.Evaluate(Mathf.Abs(inputDotCrouch));
 
         var kineticFriction = inputDotCrouch <= 0.0f
             ? c.Tuning.Crouch_NegativeKineticFriction
             : c.Tuning.Crouch_PositiveKineticFriction;
 
-        c.State.Next.Horizontal_KineticFriction = kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch));
+        c.State.Next.Surface_KineticFriction = kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch));
 
         // apply crouch gravity
         c.State.Next.Force += c.Tuning.Crouch_Acceleration * Vector3.up;

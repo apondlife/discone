@@ -64,7 +64,7 @@ sealed class CharacterSpeedLines: MonoBehaviour {
 
         main.startSpeed = nextSpeed;
 
-        // rotate speed line emitter opposite planar movement
+        // rotate speed line emitter opposite movement
         if (v != Vector3.zero) {
             transform.forward = Vector3.RotateTowards(
                 transform.forward,

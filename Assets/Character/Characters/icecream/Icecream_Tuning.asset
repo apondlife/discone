@@ -15,37 +15,6 @@ MonoBehaviour:
   m_Description: iced cream
   Horizontal_MinSpeed: 0.85
   Horizontal_Acceleration: 35
-  Horizontal_Drag: 0.1
-  Horizontal_StaticFriction: 30
-  Horizontal_KineticFriction: 10
-  Surface_FrictionScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: -0.011111111
-        outSlope: -0.011111111
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 90
-        value: 0
-        inSlope: -0.011111111
-        outSlope: -0.011111111
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 1
   TurnSpeed: 360
   PivotSpeed: 1080
   TimeToPivot: 0.6
@@ -601,6 +570,84 @@ MonoBehaviour:
       Max: 0.18
   Surface_PerceptionDuration: 0.2
   Surface_PerceptionAngularSpeed: 270
+  Friction_AerialDrag: 0.001
+  Friction_SurfaceDrag: 0.04
+  Friction_SurfaceDragScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -0.000000005958321
+        outSlope: -0.000000005958321
+        tangentMode: 0
+        weightedMode: 2
+        inWeight: 0
+        outWeight: 0.44460434
+      - serializedVersion: 3
+        time: 90
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 180
+        value: 1
+        inSlope: 0.0000000059391
+        outSlope: 0.0000000059391
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.44604322
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0.1
+      Max: 1
+  Friction_Static: 30
+  Friction_Kinetic: 10
+  Friction_SurfaceFrictionScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -0.000000005958321
+        outSlope: -0.000000005958321
+        tangentMode: 0
+        weightedMode: 2
+        inWeight: 0
+        outWeight: 0.44460434
+      - serializedVersion: 3
+        time: 90
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 180
+        value: 1
+        inSlope: 0.0000000059391
+        outSlope: 0.0000000059391
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.44604322
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0.1
+      Max: 1
   TiltForBaseAcceleration: 30
   MaxTilt: 69
   TiltSmoothing: 0.1

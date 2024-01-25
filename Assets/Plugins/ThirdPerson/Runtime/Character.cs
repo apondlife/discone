@@ -38,6 +38,9 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     [Tooltip("the tilt system")]
     [SerializeField] TiltSystem m_Tilt;
 
+    [Tooltip("the friction system")]
+    [SerializeField] FrictionSystem m_Friction;
+
     [Tooltip("the collision system")]
     [SerializeField] CollisionSystem m_Collision;
 
@@ -96,9 +99,9 @@ public partial class Character: MonoBehaviour, CharacterContainer {
             m_Surface,
             m_Jump,
             m_Crouch,
-            // movement system depends on gravity to calculate friciton,
-            // so it runs after jump
             m_Movement,
+            // friction system depends on the next frame of forces
+            m_Friction,
             m_Tilt,
             // resolves state against the world, runs after all other systems
             m_Collision,

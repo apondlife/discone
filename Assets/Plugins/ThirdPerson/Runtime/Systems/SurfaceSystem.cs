@@ -37,7 +37,7 @@ namespace ThirdPerson {
             // if we're on a surface, enter slide
             var surface = c.State.Curr.MainSurface;
             if (surface.IsSome) {
-                ChangeToImmediate(SurfaceSlide, delta);
+                ChangeToImmediate(OnSurface, delta);
                 return;
             }
 
@@ -45,13 +45,13 @@ namespace ThirdPerson {
             RotatePerceptionTowards(Vector3.zero, c.State.Curr.Position, delta);
         }
 
-        // -- SurfaceSlide --
-        Phase SurfaceSlide => new Phase(
-            name: "SurfaceSlide",
-            update: SurfaceSlide_Update
+        // -- OnSurface --
+        Phase OnSurface => new(
+            name: "OnSurface",
+            update: OnSurface_Update
         );
 
-        void SurfaceSlide_Update(float delta) {
+        void OnSurface_Update(float delta) {
             // if we left all surfaces, exit
             if (!c.State.Curr.IsColliding) {
                 ChangeTo(NotOnSurface);

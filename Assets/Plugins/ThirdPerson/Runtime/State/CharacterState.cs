@@ -145,14 +145,14 @@ public sealed partial class CharacterState {
         /// the time the character hasn't moved
         public float IdleTime = 0.0f;
 
-        /// the drag for grounded movement
-        public float Horizontal_Drag = 0.0f;
+        /// the drag for surface movement
+        public float Surface_Drag = 0.0f;
 
-        /// the kinetic friction for grounded movement
-        public float Horizontal_KineticFriction = 0.0f;
+        /// the kinetic friction for surface movement
+        public float Surface_KineticFriction = 0.0f;
 
-        /// the static friction for grounded movement
-        public float Horizontal_StaticFriction = 0.0f;
+        /// the static friction for surface movement
+        public float Surface_StaticFriction = 0.0f;
 
         /// the frame in pivot animation
         public int PivotFrame = -1;
@@ -252,13 +252,24 @@ public sealed partial class CharacterState {
             get => Velocity.XNZ();
         }
 
-        /// the velocity in the main surface plane, or planar velocity if none
+        /// the velocity in the main surface plane, or raw velocity if none
         public Vector3 SurfaceVelocity {
             get {
                 if (MainSurface.IsNone) {
-                    return PlanarVelocity;
+                    return Velocity;
                 } else {
                     return Vector3.ProjectOnPlane(Velocity, MainSurface.Normal);
+                }
+            }
+        }
+
+        /// the force in the main surface plane, or raw force if none
+        public Vector3 SurfaceForce {
+            get {
+                if (MainSurface.IsNone) {
+                    return Force;
+                } else {
+                    return Vector3.ProjectOnPlane(Force, MainSurface.Normal);
                 }
             }
         }
