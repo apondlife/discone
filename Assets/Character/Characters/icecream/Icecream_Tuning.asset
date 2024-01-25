@@ -215,7 +215,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 10
+      Min: 8
       Max: 13
   Jump_Normal_SurfaceAngleScale:
     m_Curve:
@@ -287,8 +287,45 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-    Upwards_MomentumLoss: 0
+    Upwards_MomentumLoss: 0.11
     Horizontal_MomentumLoss: 0
+  Surface_InertiaDecayTime:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.011111111
+        outSlope: 0.011111111
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 90
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 180
+        value: 0
+        inSlope: -0.011111111
+        outSlope: -0.011111111
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0.001
+      Max: 0.19
   Surface_AngleScale:
     m_Curve:
       serializedVersion: 2
@@ -369,48 +406,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 0
+      Min: 0.18
       Max: 1
-  Surface_UpwardsVelocityBias: 30
-  Surface_UpwardsGrip:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: -0.00012833194
-        outSlope: -0.00012833194
-        tangentMode: 0
-        weightedMode: 2
-        inWeight: 0.33333334
-        outWeight: 0.52138746
-      - serializedVersion: 3
-        time: 90
-        value: 1
-        inSlope: -0
-        outSlope: 0.0001411758
-        tangentMode: 1
-        weightedMode: 3
-        inWeight: 0.39834023
-        outWeight: 0.42634854
-      - serializedVersion: 3
-        time: 180
-        value: 0
-        inSlope: 0.00002242215
-        outSlope: 0.00002242215
-        tangentMode: 0
-        weightedMode: 1
-        inWeight: 0.48825055
-        outWeight: 0.33333334
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 10
-  Surface_UpwardsGrip_HoldScale: 3.8
-  Surface_Grip: 5
   Surface_DeltaScale:
     m_Curve:
       serializedVersion: 2
@@ -447,8 +444,45 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Dst:
       Min: 1
-      Max: 1.15
-  Surface_TransferDiAngle:
+      Max: 1.18
+  Surface_DiScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 82.870605
+        value: 1
+        inSlope: 0
+        outSlope: -0.00016320341
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.08500745
+      - serializedVersion: 3
+        time: 180
+        value: 0
+        inSlope: -0.00025481873
+        outSlope: Infinity
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.10888896
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0.5
+      Max: 1
+  Surface_DiRotation:
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -494,13 +528,97 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 70
-  Surface_TransferDiScale:
+  Surface_Grip:
     m_Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 10
+        value: 0
+        inSlope: -0.00016879263
+        outSlope: -0.00016879263
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.14263485
+      - serializedVersion: 3
+        time: 90
         value: 1
+        inSlope: 0.00022233023
+        outSlope: 0
+        tangentMode: 65
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.13589215
+      - serializedVersion: 3
+        time: 180
+        value: 1
+        inSlope: -0
+        outSlope: 0.000000005190506
+        tangentMode: 5
+        weightedMode: 0
+        inWeight: 0.12759331
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 6.97
+  Surface_UpwardsGrip:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: -0.00012833194
+        outSlope: -0.00012833194
+        tangentMode: 0
+        weightedMode: 2
+        inWeight: 0.33333334
+        outWeight: 0.52138746
+      - serializedVersion: 3
+        time: 90
+        value: 1
+        inSlope: -0
+        outSlope: 0.0001411758
+        tangentMode: 1
+        weightedMode: 3
+        inWeight: 0.39834023
+        outWeight: 0.42634854
+      - serializedVersion: 3
+        time: 180
+        value: 0
+        inSlope: 0.00002242215
+        outSlope: 0.00002242215
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.48825055
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 12
+  Surface_UpwardsGrip_HoldScale: 3.8
+  Surface_UpwardsVelocityBias:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -508,39 +626,11 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 82.870605
-        value: 1
+        time: 69
+        value: 0.0054246234
         inSlope: 0
-        outSlope: -0.00016320341
-        tangentMode: 1
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.08500745
-      - serializedVersion: 3
-        time: 180
-        value: 0
-        inSlope: -0.00025481873
-        outSlope: Infinity
-        tangentMode: 1
-        weightedMode: 0
-        inWeight: 0.10888896
-        outWeight: 0.33333334
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0.5
-      Max: 1
-  Surface_InertiaDecayTime:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0.011111111
-        outSlope: 0.011111111
-        tangentMode: 34
+        outSlope: 0
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
@@ -549,26 +639,35 @@ MonoBehaviour:
         value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 34
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 111
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 180
         value: 0
-        inSlope: -0.011111111
-        outSlope: -0.011111111
-        tangentMode: 34
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
+        inWeight: 0
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 0.001
-      Max: 0.18
-  Surface_PerceptionDuration: 0.2
+      Min: 0
+      Max: 80
+  Surface_PerceptionDuration: 0
   Surface_PerceptionAngularSpeed: 270
   Friction_AerialDrag: 0.001
   Friction_SurfaceDrag: 0.04

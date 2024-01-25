@@ -164,13 +164,32 @@ public sealed class CharacterTuning: ScriptableObject {
 
     // -- surface --
     [Header("surface")]
+    [Tooltip("the time for inertia to decay 99% as a fn of surface angle")]
+    public MapOutCurve Surface_InertiaDecayTime;
+
     [FormerlySerializedAs("WallAngleScale")]
     [FormerlySerializedAs("WallAngleScale_New")]
     [Tooltip("the scaling factor of the surface slide as a fn of surface angle")]
     public MapOutCurve Surface_AngleScale;
 
-    [Tooltip("how much upwards velocity we add to our velocity projection tangent")]
-    public float Surface_UpwardsVelocityBias;
+    [FormerlySerializedAs("WallTransferScale")]
+    [FormerlySerializedAs("Surface_TransferAttack")]
+    [Tooltip("the scaling factor of the surface transfer as a fn of surface angle change")]
+    public MapOutCurve Surface_DeltaScale;
+
+    [FormerlySerializedAs("Surface_TransferDiScale")]
+    [FormerlySerializedAs("WallTransferDiScale")]
+    [Tooltip("the scaling factor of the wall transfer as a fn of signed input-surface angle")]
+    public MapOutCurve Surface_DiScale;
+
+    [FormerlySerializedAs("Surface_TransferDiAngle")]
+    [FormerlySerializedAs("WallTransferDiAngle")]
+    [Tooltip("the angle to rotate the transfer surface direction as a fn of signed input-surface angle")]
+    public MapOutCurve Surface_DiRotation;
+
+    [FormerlySerializedAs("WallMagnet")]
+    [Tooltip("the force the surface pulls character in as a fn of surface angle")]
+    public MapOutCurve Surface_Grip;
 
     [FormerlySerializedAs("Surface_Gravity")]
     [FormerlySerializedAs("WallGravity")]
@@ -180,25 +199,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the upwards pull multiplier while on the surface and holding jump")]
     public float Surface_UpwardsGrip_HoldScale;
 
-    [FormerlySerializedAs("WallMagnet")]
-    [Tooltip("the maximum force the surface pulls character in")]
-    public float Surface_Grip;
-
-    [FormerlySerializedAs("WallTransferScale")]
-    [FormerlySerializedAs("Surface_TransferAttack")]
-    [Tooltip("the scaling factor of the surface transfer as a fn of surface angle change")]
-    public MapOutCurve Surface_DeltaScale;
-
-    [FormerlySerializedAs("WallTransferDiAngle")]
-    [Tooltip("the angle to rotate the transfer surface direction as a fn of signed input-surface angle")]
-    public MapOutCurve Surface_TransferDiAngle;
-
-    [FormerlySerializedAs("WallTransferDiScale")]
-    [Tooltip("the scaling factor of the wall transfer as a fn of signed input-surface angle")]
-    public MapOutCurve Surface_TransferDiScale;
-
-    [Tooltip("the time for inertia to decay 99% as a fn of surface angle")]
-    public MapOutCurve Surface_InertiaDecayTime;
+    [Tooltip("how much upwards velocity we add to our velocity projection tangent as a fn of surface angle")]
+    public MapOutCurve Surface_UpwardsVelocityBias;
 
     [Tooltip("the time it takes the perceived surface to scale between 0 & 1")]
     public float Surface_PerceptionDuration;
