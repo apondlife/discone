@@ -15,22 +15,28 @@ public enum CharacterEvent {
 public struct CharacterEventSet: IEquatable<CharacterEventSet> {
     // -- props --
     /// the events bitmask
-    CharacterEvent m_Events;
+    public CharacterEvent Mask;
 
     // -- commands --
     /// add an event to the set
     public void Add(CharacterEvent evt) {
-        m_Events |= evt;
+        Mask |= evt;
     }
 
+    /// clear all events
     public void Clear() {
-        m_Events = 0;
+        Mask = 0;
     }
 
     // -- queries --
     /// if the event is on
     public bool Contains(CharacterEvent evt) {
-        return (m_Events & evt) != 0;
+        return (Mask & evt) != 0;
+    }
+
+    /// if the set is empty
+    public bool IsEmpty {
+        get => Mask == 0;
     }
 
     // -- IEquatable --
@@ -47,7 +53,7 @@ public struct CharacterEventSet: IEquatable<CharacterEventSet> {
     }
 
     public override int GetHashCode() {
-        return HashCode.Combine(m_Events);
+        return HashCode.Combine(Mask);
     }
 
     public static bool operator ==(
@@ -62,6 +68,11 @@ public struct CharacterEventSet: IEquatable<CharacterEventSet> {
         CharacterEventSet b
     ) {
         return !(a == b);
+    }
+
+    // -- Debug --
+    public override string ToString() {
+        return Mask.ToString();
     }
 }
 

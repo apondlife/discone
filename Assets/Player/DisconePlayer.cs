@@ -6,7 +6,7 @@ using UnityAtoms.BaseAtoms;
 namespace Discone {
 
 /// the discone (local) player; there is only one of these!
-[RequireComponent(typeof(ThirdPerson.Player))]
+[RequireComponent(typeof(Player))]
 public sealed class DisconePlayer: MonoBehaviour {
     // -- state --
     [Header("state")]

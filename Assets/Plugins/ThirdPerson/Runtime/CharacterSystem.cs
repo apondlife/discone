@@ -25,10 +25,10 @@ abstract class CharacterSystem: System {
     /// initialize this system with character data
     public void Init(CharacterContainer container) {
         // set props
-        this.c = container;
+        c = container;
 
         // run base init
-        this.Init();
+        Init();
     }
 
     #if UNITY_EDITOR

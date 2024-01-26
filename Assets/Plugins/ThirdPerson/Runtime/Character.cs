@@ -137,7 +137,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         }
 
         // update external state
-        transform.position = m_State.Position;
+        transform.position = m_State.Next.Position;
 
         // set shader uniforms
         // TODO: re-evaluate this when using it

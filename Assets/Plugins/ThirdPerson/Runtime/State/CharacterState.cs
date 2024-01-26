@@ -37,21 +37,26 @@ public sealed partial class CharacterState {
     // -- commands --
     /// create the next frame from the current frame
     public void Advance() {
-        // create a frame w/ no forces
+        if (!m_Frames[0].Events.IsEmpty) {
+            Debug.Log($"has events: {m_Frames[0].Events}");
+        }
+
+        // create a new frame w/ no forces or events
         var next = m_Frames[0].Copy();
         next.Force = Vector3.zero;
+        next.Events.Clear();
 
         // add the frame
         m_Frames.Add(next);
     }
 
     /// fill the queue with the frame
-    public void Fill(CharacterState.Frame frame) {
+    public void Fill(Frame frame) {
         m_Frames.Fill(frame);
     }
 
     /// override the current frame
-    public void Override(CharacterState.Frame frame) {
+    public void Override(Frame frame) {
         m_Frames[0] = frame;
     }
 
@@ -89,6 +94,11 @@ public sealed partial class CharacterState {
     /// the buffer size
     public uint BufferSize {
         get => k_BufferSize;
+    }
+
+    /// gets the frame at offset
+    public Frame this[int offset] {
+        get => m_Frames[offset];
     }
 
     // -- types --
@@ -277,9 +287,7 @@ public sealed partial class CharacterState {
         // -- factories --
         /// create a copy of this frame
         public Frame Copy() {
-            var copy = new Frame(this);
-            copy.Events.Clear();
-            return copy;
+            return new Frame(this);
         }
 
         // -- factories --

@@ -16,7 +16,7 @@ public sealed class CharacterInput {
     CharacterInputSource m_Source = null;
 
     /// the most recent input frames
-    Queue<Frame> m_Frames = new Queue<Frame>(k_BufferSize);
+    Queue<Frame> m_Frames = new(k_BufferSize);
 
     // -- commands --
     /// drive the input with a source
@@ -64,13 +64,18 @@ public sealed class CharacterInput {
 
     /// if jump was pressed in the past n frames
     public bool IsJumpDown(int past = 1) {
+        return GetJumpDown(past) != -1;
+    }
+
+    /// the most recent frame jump was pressed in the past n frames
+    public int GetJumpDown(int past = 1) {
         for (var i = 0; i < past; i++) {
             if (m_Frames[i]?.IsJumpDown == true && !m_Frames[i + 1]?.IsJumpDown == true) {
-                return true;
+                return i;
             }
         }
 
-        return false;
+        return -1;
     }
 
     /// if jump was pressed in the past n frames

@@ -275,9 +275,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             return;
         }
 
-        // the previous character, if any
-        var prev = m_LocalCharacter.Value;
-
         // drive the new character character
         m_LocalCharacter.Value = character;
         player.Drive(character.Character);

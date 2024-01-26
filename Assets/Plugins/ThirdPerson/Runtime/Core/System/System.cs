@@ -48,7 +48,7 @@ public abstract class System {
     }
 
     /// construct the initial phase
-    abstract protected Phase InitInitialPhase();
+    protected abstract Phase InitInitialPhase();
 
     // -- commands --
     /// update the system's current phase

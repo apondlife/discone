@@ -65,7 +65,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if you jump
-        if (CanJump() && c.Input.IsJumpDown(c.Tuning.JumpBuffer)) {
+        if (ShouldStartJump(c.Tuning.JumpBuffer)) {
             ChangeTo(JumpSquat);
             return;
         }
@@ -101,7 +101,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if you jump
-        if (CanJump() && c.Input.IsJumpDown(c.Tuning.JumpBuffer)) {
+        if (ShouldStartJump(c.Tuning.JumpBuffer)) {
             ChangeTo(JumpSquat);
             return;
         }
@@ -199,11 +199,8 @@ sealed class JumpSystem: CharacterSystem {
         c.State.CoyoteFrames -= 1;
         c.State.CooldownFrames -= 1;
 
-        // start jump if jump is pressed before coyote frames expire
-        // a few frames in jump squat before falling again
-        // NOTE: we could sorta fix this by skipping jump squat, requiring the whole
-        // jump finish here, and transitioning directly to jump
-        if (CanJump() && c.Input.IsJumpDown()) {
+        // start jump on a new press
+        if (ShouldStartJump()) {
             ChangeTo(JumpSquat);
             return;
         }
@@ -310,8 +307,29 @@ sealed class JumpSystem: CharacterSystem {
         get => c.State.JumpTuningIndex == 0 && c.State.JumpTuningJumpIndex == 0;
     }
 
+    /// if the character can jump within the last n frames
+    bool ShouldStartJump(int buffer = 0) {
+        if (!HasJump()) {
+            return false;
+        }
+
+        var frame = c.Input.GetJumpDown(buffer);
+        if (frame == -1) {
+            return false;
+        }
+
+        for (var i = 0; i < frame; i++) {
+            Debug.Log($"i: {i}/{frame} events: {c.State[i].Events}");
+            if (c.State[i].Events.Contains(CharacterEvent.Jump)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /// if the character has a jump available to execute
-    bool CanJump() {
+    bool HasJump() {
         // if the character can't ever jump
         if (c.Tuning.Jumps.Length == 0) {
             return false;
