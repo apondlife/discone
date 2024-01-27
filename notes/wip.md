@@ -2,7 +2,6 @@ what is projected
 ---
 
 # bugs/problems
-- character jumps twice on short steps with single input (probably because of the buffer)
 - grip pulls you over corners weirdly (on the frame collision misses) (should it pull you towards the hit point?)
 - cant let go of wall when pulling back
 

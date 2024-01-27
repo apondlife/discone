@@ -1,7 +1,5 @@
 using System;
-using System.Numerics;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
@@ -10,7 +8,7 @@ namespace ThirdPerson {
     partial class CharacterState {
         partial class Frame {
             /// .
-            [FormerlySerializedAs("WallState")] public SystemState SurfaceState;
+            public SystemState SurfaceState;
         }
     }
 
