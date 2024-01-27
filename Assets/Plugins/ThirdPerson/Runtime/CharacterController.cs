@@ -389,9 +389,11 @@ public sealed class CharacterController {
                 // for difference between capsule & search capsule radii
                 castSrc += hitDist * hitDir;
                 castDir = -hitDir;
-                castMax += hitDist + m_ContactSearch;
+                castMax += hitDist;
+                castLen += hitDist;
 
-                // cast along the surface to find all collision surfaces on the concave mesh
+                // cast towards the surface to find all collisions on the concave mesh
+                // from the same initial depenetrated point
                 for (numCasts = 0; numCasts < k_MaxCasts; numCasts++) {
                     castRes = CollideCapsule(
                         collider,
@@ -399,12 +401,14 @@ public sealed class CharacterController {
                         castSrc,
                         castDir,
                         castMax,
-                        castLen: castMax,
+                        castLen,
                         ref hit,
                         ref collisionOffset,
                         ref nextFrame
                     );
 
+                    // TODO: should this be worried about out of range cases?
+                    // since we are testing all the surface around the character, we should still try and collide with the new projected direction
                     if (castRes == CastResult.Miss) {
                         if (numCasts == 0) {
                             Log.Cntrlr.W($"final collision cast missed concave mesh {collider}");
@@ -423,7 +427,7 @@ public sealed class CharacterController {
                         break;
                     }
 
-                    // start next cast from the hit point
+                    // normalize cast dir for next loop
                     castDir = nextDir / nextMag;
                 }
             }

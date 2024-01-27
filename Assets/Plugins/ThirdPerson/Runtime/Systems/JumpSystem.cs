@@ -319,7 +319,6 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         for (var i = 0; i < frame; i++) {
-            Debug.Log($"i: {i}/{frame} events: {c.State[i].Events}");
             if (c.State[i].Events.Contains(CharacterEvent.Jump)) {
                 return false;
             }

@@ -37,10 +37,6 @@ public sealed partial class CharacterState {
     // -- commands --
     /// create the next frame from the current frame
     public void Advance() {
-        if (!m_Frames[0].Events.IsEmpty) {
-            Debug.Log($"has events: {m_Frames[0].Events}");
-        }
-
         // create a new frame w/ no forces or events
         var next = m_Frames[0].Copy();
         next.Force = Vector3.zero;
