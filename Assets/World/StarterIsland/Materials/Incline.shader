@@ -1,10 +1,11 @@
 Shader "Custom/Incline" {
     Properties {
-        [Header(Surface)]
+        [Header(Wobble)]
         [Space(5)]
-        _VertexWobbleRadius ("Vertex Wobble Radius", Float) = 0.0
-        _VertexWobbleSpeed ("Vertex Wobble Speed", Float) = 0.0
-        [ShowAsVector2] _VertexWobbleRange ("Vertex Wobble Range", Vector) = (0, 0, 0, 0)
+        _WobbleRadius ("Radius", Float) = 0.0
+        _WobbleSpeed ("Speed", Float) = 0.0
+        [ShowAsVector2] _WobbleWorldDist ("World Distance", Vector) = (0, 0, 0, 0)
+        [ShowAsVector2] _WobbleViewDist ("View Distance", Vector) = (0, 0, 0, 0)
 
         [Space]
         [Header(Texture)]
@@ -100,8 +101,85 @@ Shader "Custom/Incline" {
         [Header(Debug)]
         [Space(5)]
         _TestFloat ("Test", Float) = 1
-
     }
+
+    // -- wobble --
+    CGINCLUDE
+        // -- includes --
+        #include "UnityStandardUtils.cginc"
+        #include "Assets/Shaders/Core/Math.hlsl"
+        #include "Assets/Shaders/Core/Globals.hlsl"
+        #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
+
+        // -- props --
+        // the wobble radius
+        float _WobbleRadius;
+
+        // the wobble speed
+        float _WobbleSpeed;
+
+        // the wobble world distance scale
+        float2 _WobbleWorldDist;
+
+        // the wobble view distance scale
+        float2 _WobbleViewDist;
+
+        // -- queries --
+        /// get the wobbled object position in world space
+        float4 ObjectToWorld_Wobble(float4 vertex) {
+            float4 worldPos = mul(unity_ObjectToWorld, vertex);
+
+            // scale based on distance to character
+            const float worldScale = UnlerpSpan(
+                _WobbleWorldDist,
+                min(
+                    distance(_CharacterPos.y, worldPos.y),
+                    distance(_CharacterPos.xz, worldPos.xz)
+                )
+            );
+
+            // scale based on distance to view forward
+            const float3 viewPos = UnityWorldToViewPos(worldPos);
+            const float3 viewFwd = float3(0, 0, 1);
+            const float3 viewDir = viewPos - dot(viewPos, viewFwd) * viewFwd;
+            const float1 viewScale = UnlerpSpan(_WobbleViewDist, length(viewDir));
+
+            // apply noise
+            const float3 seed = worldPos + _Time.x * _WobbleSpeed * float3(1, 1, 1);
+            const float1 noise = (SimplexNoise(seed) + 1) * 0.5;
+
+            // add wobble
+            const float3 wobbleDir = normalize(UnityObjectToWorldDir(mul(unity_MatrixInvV, viewDir)));
+            worldPos.xyz += _WobbleRadius * worldScale * viewScale * noise * wobbleDir;
+
+            return worldPos;
+        }
+
+        void Wobble(inout float4 worldPos) {
+            // scale based on distance to character
+            const float worldScale = UnlerpSpan(
+                _WobbleWorldDist,
+                min(
+                    distance(_CharacterPos.y, worldPos.y),
+                    distance(_CharacterPos.xz, worldPos.xz)
+                )
+            );
+
+            // scale based on distance to view forward
+            const float3 viewPos = UnityWorldToViewPos(worldPos);
+            const float3 viewFwd = float3(0, 0, 1);
+            const float3 viewDir = viewPos - dot(viewPos, viewFwd) * viewFwd;
+            const float1 viewScale = UnlerpSpan(_WobbleViewDist, length(viewDir));
+
+            // apply noise
+            const float3 seed = worldPos + _Time.x * _WobbleSpeed * float3(1, 1, 1);
+            const float1 noise = (SimplexNoise(seed) + 1) * 0.5;
+
+            // add wobble
+            const float3 wobbleDir = normalize(UnityObjectToWorldDir(mul(unity_MatrixInvV, viewDir)));
+            worldPos.xyz += _WobbleRadius * worldScale * viewScale * noise * wobbleDir;
+        }
+    ENDCG
 
     SubShader {
         Pass {
@@ -137,9 +215,7 @@ Shader "Custom/Incline" {
             #include "AutoLight.cginc"
             #include "UnityLightingCommon.cginc"
             #include "Assets/Shaders/Core/Math.hlsl"
-            #include "Assets/Shaders/Core/Globals.hlsl"
             #include "Assets/Shaders/Core/Color.hlsl"
-            #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 
             // -- types --
             struct VertIn {
@@ -163,16 +239,6 @@ Shader "Custom/Incline" {
             };
 
             // -- props --
-            // -- p/surface
-            // the vertex position wobble radius
-            float _VertexWobbleRadius;
-
-            // the vertex position wobble speed
-            float _VertexWobbleSpeed;
-
-            // the min/max range for the vertex wobble
-            float2 _VertexWobbleRange;
-
             // -- p/lighting
             // the relative intensity of the reflected light
             float _ReflectedLightIntensity;
@@ -316,20 +382,7 @@ Shader "Custom/Incline" {
 
             // -- program --
             FragIn DrawVert(VertIn IN) {
-                float4 vertex = IN.vertex;
-                float4 worldPos = mul(unity_ObjectToWorld, vertex);
-
-                float wobbleRadius = _VertexWobbleRadius * UnlerpSpan(
-                    _VertexWobbleRange,
-                    min(
-                        distance(_CharacterPos.y, worldPos.y),
-                        distance(_CharacterPos.xz, worldPos.xz)
-                    )
-                );
-
-                worldPos.y += wobbleRadius * SimplexNoise(
-                    worldPos + _Time.x * _VertexWobbleSpeed * float3(1, 1, 1)
-                );
+                float4 worldPos = ObjectToWorld_Wobble(IN.vertex);
 
                 FragIn o;
                 o.pos = UnityWorldToClipPos(worldPos);
@@ -584,6 +637,7 @@ Shader "Custom/Incline" {
         }
 
         // shadow casting
+        // TODO: figure out how to get wobble to work w/ shadows
         Pass {
             // -- options --
             Tags {
@@ -637,6 +691,7 @@ Shader "Custom/Incline" {
             #include "UnityCG.cginc"
             #include "Assets/Shaders/Core/Math.hlsl"
             #include "Assets/Shaders/Core/Color.hlsl"
+            #include "Assets/Shaders/Core/Globals.hlsl"
             #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 
             // -- types --
@@ -647,7 +702,7 @@ Shader "Custom/Incline" {
             };
 
             struct FragIn {
-                float4 vertex : SV_POSITION;
+                float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float3 worldPos : TEXCOORD1;
                 float3 worldNormal : TEXCOORD2;
@@ -723,11 +778,14 @@ Shader "Custom/Incline" {
 
             // -- program --
             FragIn DrawVert(VertIn IN) {
+                float4 worldPos = ObjectToWorld_Wobble(IN.vertex);
+
                 FragIn o;
-                o.vertex = UnityObjectToClipPos(IN.vertex);
-                o.uv = IN.uv;//TRANSFORM_TEX(IN.uv, _BackfaceVineTex);
-                o.worldPos = mul(unity_ObjectToWorld, IN.vertex);
+                o.pos = UnityWorldToClipPos(worldPos);
+                o.uv = IN.uv;
+                o.worldPos = worldPos;
                 o.worldNormal = UnityObjectToWorldNormal(IN.normal);
+
                 return o;
             }
 
