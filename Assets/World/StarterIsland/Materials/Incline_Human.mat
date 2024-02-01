@@ -154,11 +154,13 @@ Material:
     - _UVSec: 0
     - _UnderTexBlend: 0
     - _VertexColorBlend: 1
-    - _VertexWobbleRadius: 0
-    - _VertexWobbleSpeed: 1.6
+    - _VertexWobbleRadius: 3
+    - _VertexWobbleSpeed: 0.8
     - _WallAngle: 80
     - _WallCurve: 1
     - _WallTexAlpha: 1
+    - _WobbleRadius: 3
+    - _WobbleSpeed: 0.4
     - _ZWrite: 1
     m_Colors:
     - _BackfaceFlowerSize: {r: 0.6, g: 1.2, b: 0, a: 0}
@@ -180,7 +182,9 @@ Material:
     - _MainColor1: {r: 0.8867924, g: 0.7721163, b: 0.7236226, a: 1}
     - _RampColor: {r: 0.7830189, g: 0.69806874, b: 0.7286508, a: 1}
     - _RampColor1: {r: 0.81960785, g: 0.4261961, b: 0.569145, a: 1}
-    - _VertexWobbleRange: {r: 20, g: 1000, b: 0, a: 0}
+    - _VertexWobbleRange: {r: 50, g: 200, b: 0, a: 0}
     - _WallColor: {r: 0.9245283, g: 0.6497864, b: 0.77447927, a: 1}
     - _WallColor1: {r: 0.57254905, g: 0.55529416, b: 0.22745098, a: 1}
+    - _WobbleViewDist: {r: 0, g: 100, b: 0, a: 0}
+    - _WobbleWorldDist: {r: 50, g: 200, b: 0, a: 0}
   m_BuildTextureStacks: []
