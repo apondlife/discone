@@ -6,6 +6,11 @@ namespace Discone {
 
 /// the current skybox region
 public class Atmosphere: MonoBehaviour {
+    // -- state --
+    [Header("state")]
+    [Tooltip("the interpolated region")]
+    [SerializeField] Region m_CurrRegion;
+
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the transition timer between region colors")]
@@ -26,9 +31,6 @@ public class Atmosphere: MonoBehaviour {
     /// the region we are interpolating ambience to
     Region m_DstRegion;
 
-    /// the interpolated region
-    public Region m_CurrRegion;
-
     /// a list of event subscriptions
     DisposeBag m_Subscriptions = new();
 
@@ -38,7 +40,7 @@ public class Atmosphere: MonoBehaviour {
         RenderSettings.skybox = m_Material;
 
         // set props
-        m_CurrRegion = new Region();
+        m_CurrRegion = new Region(useHeightColor: true);
     }
 
     void Start() {
@@ -86,6 +88,9 @@ public class Atmosphere: MonoBehaviour {
         RenderSettings.fogColor = fog.Color;
         RenderSettings.fogEndDistance = fog.EndDistance;
         RenderSettings.fogStartDistance = fog.StartDistance;
+
+        Shader.SetGlobalColor(ShaderProps.HeightFog_Color, fog.HeightColor);
+        Shader.SetGlobalFloat(ShaderProps.HeightFog_Density, fog.HeightDensity);
     }
 
     // -- events --

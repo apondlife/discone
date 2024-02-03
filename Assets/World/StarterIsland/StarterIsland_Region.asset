@@ -23,6 +23,9 @@ MonoBehaviour:
       Background: {r: 0.078431375, g: 0.08235294, b: 0.09411765, a: 1}
       BackgroundExposure: 2.04
     Fog:
-      Color: {r: 0.31622037, g: 0.22312212, b: 0.4339623, a: 0}
+      Color: {r: 0.31622037, g: 0.22312212, b: 0.4339623, a: 1}
       StartDistance: 100
       EndDistance: 1400
+      UseHeightColor: 1
+      m_HeightColor: {r: 0.31764707, g: 0.22352941, b: 0.43529412, a: 0.49803922}
+      HeightDensity: 0.01

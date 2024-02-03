@@ -362,6 +362,12 @@ Shader "Custom/Incline" {
             // the character's current ground surface plane
             float4 _CharacterSurfacePlane;
 
+            // .
+            fixed4 _HeightFog_Color;
+
+            // .
+            float1 _HeightFog_Density;
+
             // see: https://docs.unity3d.com/Manual/GPUInstancing.html for more
             UNITY_INSTANCING_BUFFER_START(Props)
             UNITY_INSTANCING_BUFFER_END(Props)
@@ -568,6 +574,11 @@ Shader "Custom/Incline" {
 
                 // add fog
                 UNITY_APPLY_FOG(IN.fogCoord, c);
+
+                // add fog
+                const float1 heightDist = abs(IN.worldPos.y - _WorldSpaceCameraPos.y);
+                const float1 heightFogScale = 1 - pow(2, -heightDist * _HeightFog_Density);
+                c.rgb = lerp(c.rgb, _HeightFog_Color.rgb, heightFogScale * _HeightFog_Color.a);
 
                 // output color
                 return c;

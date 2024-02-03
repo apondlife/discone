@@ -157,15 +157,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e123972a837714f66a549f2071460e50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Timer:
-    m_Duration: 6.9
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  m_RegionEntered: {fileID: 11400000, guid: 2e7aa35edf29f6c418f1cf45dd2488c9, type: 2}
   m_CurrRegion:
     DisplayName: 
     MusicString: 
@@ -178,6 +169,18 @@ MonoBehaviour:
       Color: {r: 0, g: 0, b: 0, a: 0}
       StartDistance: 0
       EndDistance: 0
+      UseHeightColor: 0
+      m_HeightColor: {r: 0, g: 0, b: 0, a: 0}
+      HeightDensity: 0
+  m_Timer:
+    m_Duration: 6.9
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_RegionEntered: {fileID: 11400000, guid: 2e7aa35edf29f6c418f1cf45dd2488c9, type: 2}
 --- !u!1001 &4638094457940914361
 PrefabInstance:
   m_ObjectHideFlags: 0

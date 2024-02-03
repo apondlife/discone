@@ -1,4 +1,5 @@
 using System;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace Discone {
@@ -10,11 +11,26 @@ public record RegionFog {
     [Tooltip("the fog color")]
     public Color Color;
 
-    [Tooltip("the fog start distance")]
+    [Tooltip("the min distance for the distance fog")]
     public float StartDistance;
 
-    [Tooltip("the fog end distance")]
+    [Tooltip("the max distance for the distance fog")]
     public float EndDistance;
+
+    [Tooltip("the height fog color")]
+    public bool UseHeightColor;
+
+    [ShowIf("UseHeightColor")]
+    [Tooltip("the height fog color")]
+    [SerializeField] Color m_HeightColor;
+
+    [Tooltip("the height fog exponential density factor")]
+    public float HeightDensity;
+
+    // -- lifetime --
+    public RegionFog(bool useHeightColor) {
+        UseHeightColor = useHeightColor;
+    }
 
     // -- commands --
     /// lerp between two fogs
@@ -41,9 +57,26 @@ public record RegionFog {
             dst.StartDistance,
             t
         );
+
+        cur.m_HeightColor = Color.Lerp(
+            src.HeightColor,
+            dst.HeightColor,
+            t
+        );
+
+        cur.HeightDensity = Mathf.Lerp(
+            src.HeightDensity,
+            dst.HeightDensity,
+            t
+        );
     }
 
     // -- queries --
+    /// the active height color
+    public Color HeightColor {
+        get => UseHeightColor ? m_HeightColor : Color;
+    }
+
     /// create a copy of the region fog
     public RegionFog Copy() {
         return this with {};

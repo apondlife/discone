@@ -33,6 +33,12 @@ static class ShaderProps {
     /// the background color exposure
     public static readonly int BackgroundExposure = Shader.PropertyToID("_ExposureBackground");
 
+    /// the height fog color
+    public static readonly int HeightFog_Color = Shader.PropertyToID("_HeightFog_Color");
+
+    /// the height fog density
+    public static readonly int HeightFog_Density = Shader.PropertyToID("_HeightFog_Density");
+
     /// the region dissolve pct
     public static readonly int DissolveAmount = Shader.PropertyToID("_DissolveAmount");
 

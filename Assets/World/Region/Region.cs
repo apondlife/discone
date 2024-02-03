@@ -20,7 +20,7 @@ public record Region {
     public RegionFog Fog;
 
     // -- lifetime --
-    public Region() {
+    public Region(bool useHeightColor) {
         SkyColor = new RegionSkyColor(
             Color.black,
             0.0f,
@@ -28,7 +28,7 @@ public record Region {
             0.0f
         );
 
-        Fog = new RegionFog();
+        Fog = new RegionFog(useHeightColor);
     }
 
     // -- commands --
