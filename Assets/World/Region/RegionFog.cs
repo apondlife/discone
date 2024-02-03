@@ -17,10 +17,11 @@ public record RegionFog {
     [Tooltip("the max distance for the distance fog")]
     public float EndDistance;
 
-    [Tooltip("the height fog color")]
+    [Label("Height Color?")] [AllowNesting]
+    [Tooltip("if this should use height color")]
     public bool UseHeightColor;
 
-    [ShowIf("UseHeightColor")]
+    [ShowIf(nameof(UseHeightColor))] [AllowNesting]
     [Tooltip("the height fog color")]
     [SerializeField] Color m_HeightColor;
 

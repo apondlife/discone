@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Discone {
 
@@ -7,21 +8,22 @@ namespace Discone {
 public record Region {
     // -- config --
     [Header("config")]
-    [Tooltip("the text that displays on the screen for this region")]
+    [Tooltip("the title that displays on the region sign")]
     public string DisplayName;
 
-    [Tooltip("the event string sent to fmod to change audio for this region")]
+    [Tooltip("the event string sent to fmod to change ambient music")]
     public string MusicString;
 
-    [Tooltip("the sky color for this region")]
-    public RegionSkyColor SkyColor;
+    [FormerlySerializedAs("SkyColor")]
+    [Tooltip("the sky properties")]
+    public RegionSky Sky;
 
-    [Tooltip("the fog for this region")]
+    [Tooltip("the fog properties")]
     public RegionFog Fog;
 
     // -- lifetime --
     public Region(bool useHeightColor) {
-        SkyColor = new RegionSkyColor(
+        Sky = new RegionSky(
             Color.black,
             0.0f,
             Color.black,
@@ -39,10 +41,10 @@ public record Region {
         Region dst,
         float t
     ) {
-        RegionSkyColor.Lerp(
-            ref cur.SkyColor,
-            src.SkyColor,
-            dst.SkyColor,
+        RegionSky.Lerp(
+            ref cur.Sky,
+            src.Sky,
+            dst.Sky,
             t
         );
 
@@ -58,7 +60,7 @@ public record Region {
     /// create a copy of the region
     public Region Copy() {
         return this with {
-            SkyColor = SkyColor.Copy(),
+            Sky = Sky.Copy(),
             Fog = Fog.Copy()
         };
     }

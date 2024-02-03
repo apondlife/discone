@@ -5,7 +5,7 @@ namespace Discone {
 
 /// the skybox color for a region
 [Serializable]
-public record RegionSkyColor {
+public record RegionSky {
     // -- props --
     [Tooltip("the foreground color")]
     public Color Foreground;
@@ -23,7 +23,7 @@ public record RegionSkyColor {
 
     // -- lifetime --
     /// create a new region sky color
-    public RegionSkyColor(
+    public RegionSky(
         Color foreground,
         float foregroundExposure,
         Color background,
@@ -38,9 +38,9 @@ public record RegionSkyColor {
     // -- commands --
     /// lerp between two sky colors
     public static void Lerp(
-        ref RegionSkyColor cur,
-        RegionSkyColor src,
-        RegionSkyColor dst,
+        ref RegionSky cur,
+        RegionSky src,
+        RegionSky dst,
         float t
     ) {
         cur.Foreground = Color.Lerp(
@@ -70,7 +70,7 @@ public record RegionSkyColor {
 
     // -- queries --
     /// create a copy of this sky color
-    public RegionSkyColor Copy() {
+    public RegionSky Copy() {
         return this with {};
     }
 }

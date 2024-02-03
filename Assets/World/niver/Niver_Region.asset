@@ -17,12 +17,15 @@ MonoBehaviour:
   _value:
     DisplayName: niver
     MusicString: 
-    SkyColor:
+    Sky:
       Foreground: {r: 0.6698113, g: 0.32522467, b: 0.0979441, a: 1}
       ForegroundExposure: 4.45
       Background: {r: 0.29089534, g: 0.2226771, b: 0.33962262, a: 1}
       BackgroundExposure: 0.63
     Fog:
       Color: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
-      EndDistance: 2000
       StartDistance: 500
+      EndDistance: 2000
+      UseHeightColor: 0
+      m_HeightColor: {r: 0, g: 0, b: 0, a: 0}
+      HeightDensity: 0.1

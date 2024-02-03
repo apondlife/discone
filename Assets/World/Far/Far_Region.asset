@@ -17,12 +17,15 @@ MonoBehaviour:
   _value:
     DisplayName: far
     MusicString: far
-    SkyColor:
+    Sky:
       Foreground: {r: 0.9528302, g: 0.022472408, b: 0.114770785, a: 1}
       ForegroundExposure: 1.98
       Background: {r: 1, g: 0.922728, b: 0, a: 1}
       BackgroundExposure: 1.98
     Fog:
       Color: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
-      EndDistance: 2000
       StartDistance: 500
+      EndDistance: 2000
+      UseHeightColor: 0
+      m_HeightColor: {r: 0, g: 0, b: 0, a: 0}
+      HeightDensity: 0.1

@@ -77,7 +77,7 @@ public class Atmosphere: MonoBehaviour {
         var region = m_CurrRegion;
 
         // update sky material color
-        var color = region.SkyColor;
+        var color = region.Sky;
         m_Material.SetColor(ShaderProps.Foreground, color.Foreground);
         m_Material.SetFloat(ShaderProps.ForegroundExposure, color.ForegroundExposure);
         m_Material.SetColor(ShaderProps.Background, color.Background);

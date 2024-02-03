@@ -17,12 +17,15 @@ MonoBehaviour:
   _value:
     DisplayName: mass
     MusicString: 
-    SkyColor:
+    Sky:
       Foreground: {r: 0.5703241, g: 0.8113208, b: 0.3023318, a: 1}
       ForegroundExposure: 1.2
       Background: {r: 0.8396226, g: 0.6605922, b: 0.34456214, a: 1}
       BackgroundExposure: 1.2
     Fog:
       Color: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
-      EndDistance: 2000
       StartDistance: 500
+      EndDistance: 2000
+      UseHeightColor: 0
+      m_HeightColor: {r: 0, g: 0, b: 0, a: 0}
+      HeightDensity: 0.1

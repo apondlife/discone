@@ -17,7 +17,7 @@ MonoBehaviour:
   _value:
     DisplayName: discone
     MusicString: discone
-    SkyColor:
+    Sky:
       Foreground: {r: 0.94509804, g: 0.725673, b: 0.5647059, a: 1}
       ForegroundExposure: 0.67
       Background: {r: 0.51472056, g: 0.764151, b: 0.735928, a: 1}
@@ -26,3 +26,6 @@ MonoBehaviour:
       Color: {r: 0.5330188, g: 1, b: 0.9671794, a: 0}
       StartDistance: 3000
       EndDistance: 10000
+      UseHeightColor: 0
+      m_HeightColor: {r: 0, g: 0, b: 0, a: 0}
+      HeightDensity: 0.1

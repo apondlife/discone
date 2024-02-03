@@ -17,10 +17,10 @@ public class RegionCreator: MonoBehaviour {
         if(Region == null) return;
         text.text = Region.Value.DisplayName;
         var mat = RenderSettings.skybox;
-        mat.SetFloat(ShaderProps.ForegroundExposure, Region.Value.SkyColor.ForegroundExposure);
-        mat.SetFloat(ShaderProps.BackgroundExposure, Region.Value.SkyColor.BackgroundExposure);
-        mat.SetColor(ShaderProps.Background, Region.Value.SkyColor.Background);
-        mat.SetColor(ShaderProps.Foreground, Region.Value.SkyColor.Foreground);
+        mat.SetFloat(ShaderProps.ForegroundExposure, Region.Value.Sky.ForegroundExposure);
+        mat.SetFloat(ShaderProps.BackgroundExposure, Region.Value.Sky.BackgroundExposure);
+        mat.SetColor(ShaderProps.Background, Region.Value.Sky.Background);
+        mat.SetColor(ShaderProps.Foreground, Region.Value.Sky.Foreground);
     }
 }
 }

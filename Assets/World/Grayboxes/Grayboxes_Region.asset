@@ -17,12 +17,15 @@ MonoBehaviour:
   _value:
     DisplayName: grayboxes
     MusicString: grayboxes
-    SkyColor:
+    Sky:
       Foreground: {r: 1, g: 0.9065167, b: 0.7311321, a: 1}
       ForegroundExposure: 1.83
       Background: {r: 0.5566038, g: 0.118147045, b: 0.15082738, a: 1}
       BackgroundExposure: 1.83
     Fog:
       Color: {r: 0.90588236, g: 0.5882353, b: 0.46666667, a: 0}
-      EndDistance: 2000
       StartDistance: 500
+      EndDistance: 2000
+      UseHeightColor: 0
+      m_HeightColor: {r: 0, g: 0, b: 0, a: 0}
+      HeightDensity: 0.1
