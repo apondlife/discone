@@ -1,5 +1,3 @@
-using NaughtyAttributes;
-using Soil;
 using UnityEngine;
 using UnityAtoms.Discone;
 using ThirdPerson;
@@ -7,7 +5,7 @@ using ThirdPerson;
 namespace Discone {
 
 /// the current skybox region
-public class Atmosphere: MonoBehaviour {
+public partial class Atmosphere: MonoBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("the interpolated region")]
@@ -42,7 +40,7 @@ public class Atmosphere: MonoBehaviour {
         RenderSettings.skybox = m_Material;
 
         // set props
-        m_CurrRegion = new Region(useHeightColor: true);
+        m_CurrRegion = new Region();
     }
 
     void Start() {
@@ -75,7 +73,6 @@ public class Atmosphere: MonoBehaviour {
 
     // -- commands --
     /// render the current region
-    [Button("Render")]
     void Render() {
         var region = m_CurrRegion;
 
@@ -94,7 +91,7 @@ public class Atmosphere: MonoBehaviour {
 
         ShaderProps.HeightFog_Color.Set(fog.HeightColor);
         ShaderProps.HeightFog_Density.Set(fog.HeightDensity);
-        ShaderProps.HeightFog_MinHeight.Set(fog.HeightMin);
+        ShaderProps.HeightFog_MinDist.Set(fog.HeightMin);
     }
 
     // -- events --
@@ -105,7 +102,7 @@ public class Atmosphere: MonoBehaviour {
             m_SrcRegion = region;
             m_DstRegion = region;
 
-            Region.Lerp(ref m_CurrRegion, region, region, 1.0f);
+            m_CurrRegion.Set(region);
             Render();
         }
         // otherwise, interpolate from current region tonew region

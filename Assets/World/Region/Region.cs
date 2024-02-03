@@ -22,7 +22,7 @@ public record Region {
     public RegionFog Fog;
 
     // -- lifetime --
-    public Region(bool useHeightColor) {
+    public Region() {
         Sky = new RegionSky(
             Color.black,
             0.0f,
@@ -30,11 +30,17 @@ public record Region {
             0.0f
         );
 
-        Fog = new RegionFog(useHeightColor);
+        Fog = new RegionFog();
     }
 
     // -- commands --
-    /// lerp between two regions
+    /// update to the region sky/fog
+    public void Set(Region dst) {
+        var storage = this;
+        Lerp(ref storage, this, dst, 1f);
+    }
+
+    /// lerp the sky/fog between two regions
     public static void Lerp(
         ref Region cur,
         Region src,

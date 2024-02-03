@@ -15,7 +15,7 @@ mono_crash*
 /[Aa]ssets/[Pp]lugins/[Ee]xternal/**/*
 
 # thrashing settings
-/[Pp]rojectSettings/[Pp]ackages/com.unity.probuilder/[Ss]ettings.json 
+/[Pp]rojectSettings/[Pp]ackages/com.unity.probuilder/[Ss]ettings.json
 
 # vscode
 /.vscode
@@ -43,6 +43,9 @@ Audio/Metadata/ProfilerSession
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
+
+# ignore temp files
+/[Aa]ssets/[Ww]orld/[Ee]ditor/TempRegion.*
 
 # unity crash files
 mono_crash*.blob

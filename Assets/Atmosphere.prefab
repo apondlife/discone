@@ -169,8 +169,7 @@ MonoBehaviour:
       Color: {r: 0, g: 0, b: 0, a: 0}
       StartDistance: 0
       EndDistance: 0
-      UseHeightColor: 0
-      m_HeightColor: {r: 0, g: 0, b: 0, a: 0}
+      HeightColor: {r: 0, g: 0, b: 0, a: 0}
       HeightMin: 0
       HeightDensity: 0
   m_Timer:
@@ -182,6 +181,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   m_RegionEntered: {fileID: 11400000, guid: 2e7aa35edf29f6c418f1cf45dd2488c9, type: 2}
+  m_Editing: {fileID: 0}
+  m_IsEditing: 0
 --- !u!1001 &4638094457940914361
 PrefabInstance:
   m_ObjectHideFlags: 0

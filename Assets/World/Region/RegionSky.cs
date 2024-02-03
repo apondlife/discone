@@ -62,8 +62,8 @@ public record RegionSky {
         );
 
         cur.BackgroundExposure = Mathf.Lerp(
-            src.ForegroundExposure,
-            dst.ForegroundExposure,
+            src.BackgroundExposure,
+            dst.BackgroundExposure,
             t
         );
     }

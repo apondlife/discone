@@ -568,11 +568,6 @@ Shader "Custom/Incline" {
                 UNITY_APPLY_FOG(IN.fogCoord, c);
 
                 // add fog
-                // c.rgb = lerp(
-                //     c.rgb,
-                //     _HeightFog_Color.rgb,
-                //     GetHeightFog(abs(IN.worldPos.y - _WorldSpaceCameraPos.y)) * _HeightFog_Color.a
-                // );
                 ADD_HEIGHT_FOG(abs(IN.worldPos.y - _WorldSpaceCameraPos.y), c);
 
                 // output color

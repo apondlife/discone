@@ -17,24 +17,14 @@ public record RegionFog {
     [Tooltip("the max distance for the distance fog")]
     public float EndDistance;
 
-    [Label("Height Color?")] [AllowNesting]
-    [Tooltip("if this should use height color")]
-    public bool UseHeightColor;
-
-    [ShowIf(nameof(UseHeightColor))] [AllowNesting]
     [Tooltip("the height fog color")]
-    [SerializeField] Color m_HeightColor;
+    public Color HeightColor;
 
     [Tooltip("the height fog minimum distance")]
     public float HeightMin;
 
     [Tooltip("the height fog exponential density factor")]
     public float HeightDensity;
-
-    // -- lifetime --
-    public RegionFog(bool useHeightColor) {
-        UseHeightColor = useHeightColor;
-    }
 
     // -- commands --
     /// lerp between two fogs
@@ -62,7 +52,7 @@ public record RegionFog {
             t
         );
 
-        cur.m_HeightColor = Color.Lerp(
+        cur.HeightColor = Color.Lerp(
             src.HeightColor,
             dst.HeightColor,
             t
@@ -76,11 +66,6 @@ public record RegionFog {
     }
 
     // -- queries --
-    /// the active height color
-    public Color HeightColor {
-        get => UseHeightColor ? m_HeightColor : Color;
-    }
-
     /// create a copy of the region fog
     public RegionFog Copy() {
         return this with {};

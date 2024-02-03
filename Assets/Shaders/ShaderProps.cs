@@ -41,7 +41,7 @@ static class ShaderProps {
     public static readonly ShaderProp HeightFog_Density = ShaderProp.Named("_HeightFog_Density");
 
     /// the height fog minimum height
-    public static readonly ShaderProp HeightFog_MinHeight = ShaderProp.Named("_HeightFog_MinDistance");
+    public static readonly ShaderProp HeightFog_MinDist = ShaderProp.Named("_HeightFog_MinDist");
 
     /// the region dissolve pct
     public static readonly int DissolveAmount = Shader.PropertyToID("_DissolveAmount");
