@@ -173,7 +173,7 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
             return;
         }
 
-        // ignore terrain since getting closes point for terrains will be very unlikely
+        // ignore terrain since getting closest point for terrains will be very unlikely
         if (other is TerrainCollider) {
             return;
         }

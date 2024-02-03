@@ -1,3 +1,6 @@
+using Soil;
+using UnityEditor.Experimental.GraphView;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -18,6 +21,12 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
 
     [Tooltip("the anchor transform for collision checks")]
     [SerializeField] Transform m_Anchor;
+
+    [Tooltip("a lock layer for performing point tests")]
+    [SerializeField] Layer m_LockLayer;
+
+    [Tooltip("the trigger collider")]
+    [SerializeField] CapsuleCollider m_Trigger;
 
     // -- tuning --
     [Header("tuning")]
@@ -113,8 +122,8 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
 
         // cache the bone; we can't really do anything if we don't find a bone
         m_AnimatedBone = m_Animator.GetBoneTransform(m_Goal switch {
-            AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
-            _ /*AvatarIKGoal.LeftHand*/ => HumanBodyBones.LeftHand,
+            AvatarIKGoal.RightHand  => HumanBodyBones.RightHand,
+            _ /*        .LeftHand*/ => HumanBodyBones.LeftHand,
         });
 
         // error on misconfiguration
@@ -167,18 +176,124 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
         return Vector3.SqrMagnitude(pos - m_DestPosition) >= m_SqrStrideLength;
     }
 
+    enum CastResult {
+        Hit,
+        Miss,
+        NoOverlap,
+    }
+
+    /// find the closest point the collider
+    bool FindClosestPoint(
+        Collider other,
+        Vector3 castSrc,
+        out Vector3 hitPoint
+    ) {
+        hitPoint = Vector3.zero;
+
+        // we can only call closest point on convex colliders
+        var colliderSupportsClosestPoint = (
+            (other is not TerrainCollider) &&
+            (other is not MeshCollider m || m.convex)
+        );
+
+        // if this is a convex collider
+        if (colliderSupportsClosestPoint) {
+            hitPoint = other.ClosestPoint(castSrc);
+            return true;
+        }
+
+        // otherwise, depenetrate from concave mesh to find dir
+        var tt = m_Trigger.transform;
+        var ot = other.transform;
+
+        var didHit = Physics.ComputePenetration(
+            m_Trigger,
+            tt.position,
+            tt.rotation,
+            other,
+            ot.position,
+            ot.rotation,
+            out var hitDir,
+            out var hitDist
+        );
+
+        if (!didHit) {
+            Log.Effcts.W($"CharacterArm - depen missed for {other}");
+            return false;
+        }
+
+        // and then cast towards the object exclusively
+        var otherObj = other.gameObject;
+        var otherLayer = otherObj.layer;
+
+        // switch to the lock layer
+        otherObj.layer = m_LockLayer;
+
+        // capsule cast towards the collider
+        var capsule = Capsule.FromCollider(
+            m_Trigger,
+            transform
+        );
+
+        var cast = capsule.IntoCast(
+            transform.position,
+            hitDir,
+            hitDist
+        );
+
+        didHit = Physics.CapsuleCast(
+            cast.Point1,
+            cast.Point2,
+            cast.Radius,
+            cast.Direction,
+            out var hit,
+            cast.Length,
+            1 << m_LockLayer,
+            QueryTriggerInteraction.Ignore
+        );
+
+        // reset the object layer
+        otherObj.layer = otherLayer;
+
+        var color = name == "LeftArm" ? Color.red : Color.blue;
+        color.g = didHit ? 0f : 1f;
+
+        DebugDraw.Push(
+            $"{name}-pt1-cast-{didHit}",
+            cast.Point1,
+            cast.Direction * (cast.Radius * cast.Length),
+            new DebugDraw.Config(color, DebugDraw.Tag.Effects, width: 1f)
+        );
+
+        DebugDraw.Push(
+            $"{name}-pt2-cast-{didHit}",
+            cast.Point2,
+            cast.Direction * (cast.Radius * cast.Length),
+            new DebugDraw.Config(color, DebugDraw.Tag.Effects, width: 1f)
+        );
+
+        if (!didHit) {
+            Log.Effcts.W($"CharacterArm - cast missed for {other}");
+            return false;
+        }
+
+        hitPoint = hit.point;
+
+        return true;
+    }
+
     // -- events --
     void OnTriggerEnter(Collider other) {
         if (!m_IsActive || !IsValid) {
             return;
         }
 
-        // can't use closest point on concave meshes
-        if (other is MeshCollider m && !m.convex) {
+        // find the closest point on the target
+        var didHit = FindClosestPoint(other, m_Anchor.position, out var pos);
+        if (!didHit) {
             return;
         }
 
-        var pos = other.ClosestPoint(m_Anchor.position);
         if (!m_HasTarget || HasCompletedStrideAt(pos)) {
             // start tracking the target
             m_HasTarget = true;
@@ -196,15 +311,16 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
             return;
         }
 
-        // can't use closest point on concave meshes
-        // TODO: consider trying a raycast here
-        if (other is MeshCollider m && !m.convex) {
+        // find closest point on the collider
+        var didHit = FindClosestPoint(other, m_Anchor.position, out var pos);
+        if (!didHit) {
             return;
         }
 
+        // continue tracking the target
         m_HasTarget = true;
 
-        var pos = other.ClosestPoint(m_Anchor.position);
+        // and finish a stride if possible
         if (HasCompletedStrideAt(pos)) {
             m_DestPosition = pos;
         }

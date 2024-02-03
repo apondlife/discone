@@ -46,10 +46,26 @@ readonly struct Capsule {
     /// create a capsule ray from this capsule
     public Cast IntoCast(
         Vector3 pos,
-        Vector3 direction,
-        float length
+        Vector3 dir,
+        float len
     ) {
-        return new Cast(Offset(pos), direction, length);
+        return new Cast(Offset(pos), dir, len);
+    }
+
+    /// create a capsule from a capsule collider
+    public static Capsule FromCollider(CapsuleCollider collider, Transform transform) {
+        var up = collider.direction switch {
+            0 => transform.right,
+            1 => transform.up,
+            _ => transform.forward
+        };
+
+        return new Capsule(
+            collider.center,
+            collider.radius,
+            collider.height,
+            up
+        );
     }
 
     // -- cast --
