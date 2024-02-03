@@ -50,9 +50,6 @@ sealed class CharacterSpeedLines: MonoBehaviour {
         m_Particles = new ParticleSystem.Particle[m_System.main.maxParticles];
     }
 
-    void LateUpdate() {
-    }
-
     void FixedUpdate() {
         // attach to the anchor
         if (m_Anchor != null) {

@@ -325,7 +325,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Dst:
       Min: 0.001
-      Max: 0.19
+      Max: 0.72
   Surface_AngleScale:
     m_Curve:
       serializedVersion: 2
@@ -407,7 +407,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Dst:
       Min: 0.18
-      Max: 1
+      Max: 1.45
   Surface_DeltaScale:
     m_Curve:
       serializedVersion: 2
@@ -619,8 +619,8 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Dst:
       Min: 0
-      Max: 12
-  Surface_UpwardsGrip_HoldScale: 3.8
+      Max: 24
+  Surface_UpwardsGrip_HoldScale: 1.8
   Surface_UpwardsVelocityBias:
     m_Curve:
       serializedVersion: 2
@@ -678,8 +678,8 @@ MonoBehaviour:
       Max: 80
   Surface_PerceptionDuration: 0
   Surface_PerceptionAngularSpeed: 270
-  Friction_AerialDrag: 0.001
-  Friction_SurfaceDrag: 0.04
+  Friction_AerialDrag: 0.004
+  Friction_SurfaceDrag: 0.066
   Friction_SurfaceDragScale:
     m_Curve:
       serializedVersion: 2
@@ -715,10 +715,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 0.1
+      Min: 0.35
       Max: 1
   Friction_Static: 30
-  Friction_Kinetic: 10
+  Friction_Kinetic: 13
   Friction_SurfaceFrictionScale:
     m_Curve:
       serializedVersion: 2
@@ -754,7 +754,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
-      Min: 0.1
+      Min: 0.05
       Max: 1
   TiltForBaseAcceleration: 30
   MaxTilt: 69

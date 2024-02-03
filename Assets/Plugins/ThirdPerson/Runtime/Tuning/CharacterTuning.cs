@@ -209,7 +209,7 @@ public sealed class CharacterTuning: ScriptableObject {
     public float Surface_PerceptionAngularSpeed;
 
     // -- friction system --
-    [Header("Friction System")]
+    [Header("friction system")]
     [Tooltip("the quadratic drag in the air")]
     public float Friction_AerialDrag;
 

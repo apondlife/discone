@@ -52,7 +52,6 @@ sealed class FrictionSystem: CharacterSystem {
             return;
         }
 
-        // TODO: aerial drag
         var drag = 0f;
         if (!c.State.IsStopped) {
             drag = c.State.Next.Surface_Drag;
@@ -63,8 +62,9 @@ sealed class FrictionSystem: CharacterSystem {
             friction = c.State.Next.Surface_KineticFriction;
         }
 
-        // scale friction by surface
+        // scale by surface
         var currSurface = c.State.Curr.MainSurface;
+        drag *= c.Tuning.Friction_SurfaceDragScale.Evaluate(currSurface.Angle);
         friction *= c.Tuning.Friction_SurfaceFrictionScale.Evaluate(currSurface.Angle);;
 
         AddDragAndFriction(drag, friction, delta);
