@@ -1,3 +1,4 @@
+using Soil;
 using UnityEngine;
 
 namespace Discone {
@@ -34,10 +35,13 @@ static class ShaderProps {
     public static readonly int BackgroundExposure = Shader.PropertyToID("_ExposureBackground");
 
     /// the height fog color
-    public static readonly int HeightFog_Color = Shader.PropertyToID("_HeightFog_Color");
+    public static readonly ShaderProp HeightFog_Color = ShaderProp.Named("_HeightFog_Color");
 
     /// the height fog density
-    public static readonly int HeightFog_Density = Shader.PropertyToID("_HeightFog_Density");
+    public static readonly ShaderProp HeightFog_Density = ShaderProp.Named("_HeightFog_Density");
+
+    /// the height fog minimum height
+    public static readonly ShaderProp HeightFog_MinHeight = ShaderProp.Named("_HeightFog_MinDistance");
 
     /// the region dissolve pct
     public static readonly int DissolveAmount = Shader.PropertyToID("_DissolveAmount");

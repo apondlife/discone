@@ -2,7 +2,6 @@
 #define CORE_MATH_HLSL
 
 // -- defines --
-
 // https://docs.unity3d.com/Manual/SL-DataTypesAndPrecision.html
 // unity transforms fixed into half if not OpenGl ES 2
 #ifndef fixed
@@ -27,6 +26,10 @@
 #ifndef K_PI2
 #define K_PI2 1.57079632679
 #endif
+
+// -- props --
+// a near-zero value
+float _Epsilon;
 
 // -- vectors --
 /// create a fixed3 from a repeated value

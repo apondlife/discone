@@ -1,3 +1,5 @@
+using NaughtyAttributes;
+using Soil;
 using UnityEngine;
 using UnityAtoms.Discone;
 using ThirdPerson;
@@ -73,6 +75,7 @@ public class Atmosphere: MonoBehaviour {
 
     // -- commands --
     /// render the current region
+    [Button("Render")]
     void Render() {
         var region = m_CurrRegion;
 
@@ -89,8 +92,9 @@ public class Atmosphere: MonoBehaviour {
         RenderSettings.fogEndDistance = fog.EndDistance;
         RenderSettings.fogStartDistance = fog.StartDistance;
 
-        Shader.SetGlobalColor(ShaderProps.HeightFog_Color, fog.HeightColor);
-        Shader.SetGlobalFloat(ShaderProps.HeightFog_Density, fog.HeightDensity);
+        ShaderProps.HeightFog_Color.Set(fog.HeightColor);
+        ShaderProps.HeightFog_Density.Set(fog.HeightDensity);
+        ShaderProps.HeightFog_MinHeight.Set(fog.HeightMin);
     }
 
     // -- events --

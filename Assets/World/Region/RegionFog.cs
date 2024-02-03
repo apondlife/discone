@@ -25,6 +25,9 @@ public record RegionFog {
     [Tooltip("the height fog color")]
     [SerializeField] Color m_HeightColor;
 
+    [Tooltip("the height fog minimum distance")]
+    public float HeightMin;
+
     [Tooltip("the height fog exponential density factor")]
     public float HeightDensity;
 

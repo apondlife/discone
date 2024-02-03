@@ -216,6 +216,7 @@ Shader "Custom/Incline" {
             #include "UnityLightingCommon.cginc"
             #include "Assets/Shaders/Core/Math.hlsl"
             #include "Assets/Shaders/Core/Color.hlsl"
+            #include "Assets/Shaders/Fog.hlsl"
 
             // -- types --
             struct VertIn {
@@ -255,9 +256,6 @@ Shader "Custom/Incline" {
             float _VertexColorBlend;
 
             // -- p/angles
-            // a near-zero value
-            float _Epsilon;
-
             // the angle walls start at
             float _WallAngle;
 
@@ -361,12 +359,6 @@ Shader "Custom/Incline" {
 
             // the character's current ground surface plane
             float4 _CharacterSurfacePlane;
-
-            // .
-            fixed4 _HeightFog_Color;
-
-            // .
-            float1 _HeightFog_Density;
 
             // see: https://docs.unity3d.com/Manual/GPUInstancing.html for more
             UNITY_INSTANCING_BUFFER_START(Props)
@@ -576,9 +568,12 @@ Shader "Custom/Incline" {
                 UNITY_APPLY_FOG(IN.fogCoord, c);
 
                 // add fog
-                const float1 heightDist = abs(IN.worldPos.y - _WorldSpaceCameraPos.y);
-                const float1 heightFogScale = 1 - pow(2, -heightDist * _HeightFog_Density);
-                c.rgb = lerp(c.rgb, _HeightFog_Color.rgb, heightFogScale * _HeightFog_Color.a);
+                // c.rgb = lerp(
+                //     c.rgb,
+                //     _HeightFog_Color.rgb,
+                //     GetHeightFog(abs(IN.worldPos.y - _WorldSpaceCameraPos.y)) * _HeightFog_Color.a
+                // );
+                ADD_HEIGHT_FOG(abs(IN.worldPos.y - _WorldSpaceCameraPos.y), c);
 
                 // output color
                 return c;
@@ -781,9 +776,6 @@ Shader "Custom/Incline" {
 
             // -- props/debug
             float1 _TestFloat;
-
-            // -- globals --
-            float1 _Epsilon;
 
             // -- declarations --
             fixed4 SampleTrellis(float2 uv);

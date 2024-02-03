@@ -32,9 +32,7 @@ Shader "ThirdPerson/Character" {
             // -- includes --
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
-            #include "UnityStandardUtils.cginc"
             #include "UnityLightingCommon.cginc"
-
             #include "Assets/Shaders/Core/Color.hlsl"
 
             // -- types --
@@ -58,7 +56,6 @@ Shader "ThirdPerson/Character" {
 
             sampler2D _MainTex;
             fixed4 _MainTex_ST;
-            float1 _Epsilon;
 
             // -- props --
             float1 _Distortion_PositiveScale;
