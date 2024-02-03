@@ -400,6 +400,7 @@ Shader "Custom/Incline" {
 
                 // fog
                 UNITY_TRANSFER_FOG(o, o.pos);
+
                 return o;
             }
 
@@ -565,6 +566,9 @@ Shader "Custom/Incline" {
                 fixed3 lighting = diffuse * SHADOW_ATTENUATION(IN) + ambient;
                 c.rgb *= lighting;
 
+                // add fog
+                UNITY_APPLY_FOG(IN.fogCoord, c);
+
                 // output color
                 return c;
             }
@@ -691,7 +695,6 @@ Shader "Custom/Incline" {
             #include "UnityCG.cginc"
             #include "Assets/Shaders/Core/Math.hlsl"
             #include "Assets/Shaders/Core/Color.hlsl"
-            #include "Assets/Shaders/Core/Globals.hlsl"
             #include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
 
             // -- types --

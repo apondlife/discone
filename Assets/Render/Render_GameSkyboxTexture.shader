@@ -23,7 +23,6 @@ SubShader {
 
         // -- includes --
         #include "UnityCG.cginc"
-        #include "Assets/Shaders/Core/Math.cginc"
 
         // -- props --
         /// the texture

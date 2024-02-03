@@ -30,7 +30,7 @@ public class Atmosphere: MonoBehaviour {
     public Region m_CurrRegion;
 
     /// a list of event subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Awake() {
