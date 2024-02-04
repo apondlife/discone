@@ -130,7 +130,7 @@ Shader "Custom/Incline" {
             float4 worldPos = mul(unity_ObjectToWorld, vertex);
 
             // scale based on distance to character
-            const float worldScale = UnlerpSpan(
+            float worldScale = UnlerpSpan(
                 _WobbleWorldDist,
                 min(
                     distance(_CharacterPos.y, worldPos.y),
@@ -139,17 +139,17 @@ Shader "Custom/Incline" {
             );
 
             // scale based on distance to view forward
-            const float3 viewPos = UnityWorldToViewPos(worldPos);
-            const float3 viewFwd = float3(0, 0, 1);
-            const float3 viewDir = viewPos - dot(viewPos, viewFwd) * viewFwd;
-            const float1 viewScale = UnlerpSpan(_WobbleViewDist, length(viewDir));
+            float3 viewPos = UnityWorldToViewPos(worldPos);
+            float3 viewFwd = float3(0, 0, 1);
+            float3 viewDir = viewPos - dot(viewPos, viewFwd) * viewFwd;
+            float1 viewScale = UnlerpSpan(_WobbleViewDist, length(viewDir));
 
             // apply noise
-            const float3 seed = worldPos + _Time.x * _WobbleSpeed * float3(1, 1, 1);
-            const float1 noise = (SimplexNoise(seed) + 1) * 0.5;
+            float3 seed = worldPos + _Time.x * _WobbleSpeed * float3(1, 1, 1);
+            float1 noise = (SimplexNoise(seed) + 1) * 0.5;
 
             // add wobble
-            const float3 wobbleDir = normalize(UnityObjectToWorldDir(mul(unity_MatrixInvV, viewDir)));
+            float3 wobbleDir = normalize(UnityObjectToWorldDir(mul(unity_MatrixInvV, viewDir)));
             worldPos.xyz += _WobbleRadius * worldScale * viewScale * noise * wobbleDir;
 
             return worldPos;
@@ -157,7 +157,7 @@ Shader "Custom/Incline" {
 
         void Wobble(inout float4 worldPos) {
             // scale based on distance to character
-            const float worldScale = UnlerpSpan(
+            float worldScale = UnlerpSpan(
                 _WobbleWorldDist,
                 min(
                     distance(_CharacterPos.y, worldPos.y),
@@ -166,17 +166,17 @@ Shader "Custom/Incline" {
             );
 
             // scale based on distance to view forward
-            const float3 viewPos = UnityWorldToViewPos(worldPos);
-            const float3 viewFwd = float3(0, 0, 1);
-            const float3 viewDir = viewPos - dot(viewPos, viewFwd) * viewFwd;
-            const float1 viewScale = UnlerpSpan(_WobbleViewDist, length(viewDir));
+            float3 viewPos = UnityWorldToViewPos(worldPos);
+            float3 viewFwd = float3(0, 0, 1);
+            float3 viewDir = viewPos - dot(viewPos, viewFwd) * viewFwd;
+            float1 viewScale = UnlerpSpan(_WobbleViewDist, length(viewDir));
 
             // apply noise
-            const float3 seed = worldPos + _Time.x * _WobbleSpeed * float3(1, 1, 1);
-            const float1 noise = (SimplexNoise(seed) + 1) * 0.5;
+            float3 seed = worldPos + _Time.x * _WobbleSpeed * float3(1, 1, 1);
+            float1 noise = (SimplexNoise(seed) + 1) * 0.5;
 
             // add wobble
-            const float3 wobbleDir = normalize(UnityObjectToWorldDir(mul(unity_MatrixInvV, viewDir)));
+            float3 wobbleDir = normalize(UnityObjectToWorldDir(mul(unity_MatrixInvV, viewDir)));
             worldPos.xyz += _WobbleRadius * worldScale * viewScale * noise * wobbleDir;
         }
     ENDCG
