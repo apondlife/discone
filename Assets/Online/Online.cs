@@ -1,4 +1,3 @@
-using System.Web.Services.Description;
 using kcp2k;
 using Mirror;
 using UnityEngine;
@@ -263,10 +262,10 @@ public class Online: NetworkManager {
         m_IsServer.Value = true;
 
         if (IsStandalone) {
-            Log.Online.I($"starting standalone server");
+            Log.Online.I($"switch to server (standalone) @ port {Port}");
             StartServer();
         } else {
-            Log.Online.I($"starting host");
+            Log.Online.I($"switch to server (host) @ port {Port}");
             StartHost();
         }
     }
@@ -280,7 +279,7 @@ public class Online: NetworkManager {
         }
 
         // try to start the client
-        Log.Online.I($"switching to client, connecting to {networkAddress}");
+        Log.Online.I($"switch to client @ ip {networkAddress}:{Port}");
 
         m_State = State.Connecting;
         m_IsServer.Value = false;
@@ -317,6 +316,17 @@ public class Online: NetworkManager {
             #else
             return m_IsStandalone;
             #endif
+        }
+    }
+
+    /// the current port, if available
+    int Port {
+        get {
+            if (transport is KcpTransport kcp) {
+                return kcp.port;
+            }
+
+            return -1;
         }
     }
 

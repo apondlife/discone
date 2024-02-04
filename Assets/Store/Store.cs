@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,19 +38,24 @@ public sealed class Store: ScriptableObject {
     // -- commands --
     /// load data from disk
     public async void Load() {
-        Debug.Log(Tag.Store.F($"start load"));
+        Log.Store.I($"start load");
 
         // ensure we have a directory to read from
         Directory.CreateDirectory(RootPath);
 
-        // load the records
+        // try and load the records
         var w = LoadRecord<WorldRec>(WorldPath);
         var p = LoadRecord<PlayerRec>(PlayerPath);
-        await Task.WhenAll(w, p);
+
+        try {
+            await Task.WhenAll(w, p);
+        } catch (Exception e) {
+            Log.Store.E($"unhandled error during load: {e}");
+        }
 
         // store the records
-        m_World = w.Result ?? new WorldRec();
-        m_Player = p.Result ?? new PlayerRec();
+        m_World = ResultFrom(w) ?? new WorldRec();
+        m_Player = ResultFrom(p) ?? new PlayerRec();
 
         // dispatch completion
         m_LoadFinished.Raise();
@@ -91,13 +97,13 @@ public sealed class Store: ScriptableObject {
         // find the player's current character
         var character = FindPlayerCharacter();
         if (character == null) {
-            Debug.LogError(Tag.Store.F($"found no player character to sync!"));
+            Log.Store.E($"found no player character to sync!");
             return;
         }
 
         // and update the record
         m_Player.Character = character.IntoRecord();
-        Debug.Log(Tag.Store.F($"updated player record {m_Player}"));
+        Log.Store.I($"updated player record {m_Player}");
     }
 
     /// save the current state to file
@@ -112,8 +118,8 @@ public sealed class Store: ScriptableObject {
 
         // write the records to disk
         await Task.WhenAll(
-            SaveRecord<WorldRec>(WorldPath, m_World),
-            SaveRecord<PlayerRec>(PlayerPath, m_Player)
+            SaveRecord(WorldPath, m_World),
+            SaveRecord(PlayerPath, m_Player)
         );
     }
 
@@ -158,6 +164,11 @@ public sealed class Store: ScriptableObject {
     /// resolve a relative path to an absolute one
     string ResolvePath(string path) {
        return Path.Combine(RootPath, path);
+    }
+
+    /// get a nullable result from the task
+    T ResultFrom<T>(Task<T> task) {
+        return task.Status == TaskStatus.RanToCompletion ? task.Result : default;
     }
 
     /// find a reference to the current player
@@ -211,31 +222,34 @@ public sealed class Store: ScriptableObject {
         #endif
 
         // write the data to disk, truncating whatever is there
-        byte[] data;
-        using (var stream = new FileStream(path, FileMode.Create)) {
-            data = Encoding.UTF8.GetBytes(json);
+        using (
+            var stream = new FileStream(path, FileMode.Create)
+        ) {
+            var data = Encoding.UTF8.GetBytes(json);
             await stream.WriteAsync(data, 0, data.Length);
         }
 
-        Debug.Log(Tag.Store.F($"saved file @ {RenderPath(path)} => {json}"));
+        Log.Store.I($"saved file @ {RenderPath(path)} => {json}");
     }
 
     /// load the record from disk at path
     async Task<F> LoadRecord<F>(string path) where F: StoreFile {
         // check for file
         if (!File.Exists(path)) {
-            Debug.Log(Tag.Store.F($"no file found @ {RenderPath(path)}"));
+            Log.Store.I($"no file found @ {RenderPath(path)}");
             return default;
         }
 
         // read data from file
         byte[] data;
-        using (var stream = new FileStream(path, FileMode.Open)) {
+        using (
+            var stream = new FileStream(path, FileMode.Open)
+        ) {
             data = new byte[stream.Length];
             var read = await stream.ReadAsync(data, 0, (int)stream.Length);
 
             if (read != stream.Length) {
-                Debug.LogError(Tag.Store.F($"only read {read} of {stream.Length} bytes from file @ {RenderPath(path)}"));
+                Log.Store.E($"only read {read} of {stream.Length} bytes from file @ {RenderPath(path)}");
                 throw new System.Exception("couldn't read the entire file!");
             }
         }
@@ -243,12 +257,12 @@ public sealed class Store: ScriptableObject {
         // decode record from json
         var json = Encoding.UTF8.GetString(data);
         var record = JsonUtility.FromJson<F>(json);
-        Debug.Log(Tag.Store.F($"loaded file @ {RenderPath(path)} => {json}"));
+        Log.Store.I($"loaded file @ {RenderPath(path)} => {json}");
 
         // check the file version
         var version = record.CurrentVersion();
         if (record.Version != version) {
-            Debug.LogWarning(Tag.Store.F($"read file w/ obsolete version: {record.Version} < {version}"));
+            Log.Store.W($"read file w/ obsolete version: {record.Version} < {version}");
             return default;
         }
 

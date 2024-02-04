@@ -62,12 +62,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     bool _jumpThisFrame = false;
 
     // -- lifecycle --
-#if !UNITY_SERVER
+    #if !UNITY_SERVER
     protected override void Start() {
         base.Start();
-
-        // set deps
-        m_Container = GetComponentInParent<DisconeCharacter>();
 
         //  set events
         m_Container.Character.Events.Subscribe(CharacterEvent.Jump, OnJump);
@@ -134,7 +131,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         UpdateFmodParams();
         m_ContinuousEmitter.SetParameters(_fmodParams);
     }
-#endif
+    #endif
 
     void PlayJump() {
         UpdatePositionHash();
@@ -254,7 +251,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         get => State.Curr.IsOnGround && !State.Next.IsOnGround;
     }
 }
-
 
 // Force redraw of exposed native properties in inspector every frame
 #if UNITY_EDITOR
