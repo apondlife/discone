@@ -15,12 +15,18 @@ float1 _HeightFog_Density;
 float1 _HeightFog_MinDist;
 
 // -- commands --
+#define HEIGHT_FOG_COORDS(idx) \
+    float1 heightFogCoord : TEXCOORD##idx;
+
+#define TRANSFER_HEIGHT_FOG(o, worldPos); \
+    o.heightFogCoord = abs(worldPos.y - _WorldSpaceCameraPos.y);
+
 /// add height fog to the color based on distance
-#define ADD_HEIGHT_FOG(dist, col) \
+#define APPLY_HEIGHT_FOG(coord, col) \
     col##.rgb = lerp(\
         col##.rgb, \
         _HeightFog_Color, \
-        (1 - GetHeightFog(dist)) * _HeightFog_Color.a \
+        (1 - GetHeightFog(coord)) * _HeightFog_Color.a \
     );
 
 // -- queries --

@@ -237,6 +237,7 @@ Shader "Custom/Incline" {
                 float4 vertexColor : COLOR2;
                 SHADOW_COORDS(4)
                 UNITY_FOG_COORDS(5)
+                HEIGHT_FOG_COORDS(6)
             };
 
             // -- props --
@@ -380,12 +381,12 @@ Shader "Custom/Incline" {
 
             // -- program --
             FragIn DrawVert(VertIn IN) {
-                float4 worldPos = ObjectToWorld_Wobble(IN.vertex);
+                float4 wpos = ObjectToWorld_Wobble(IN.vertex);
 
                 FragIn o;
-                o.pos = UnityWorldToClipPos(worldPos);
+                o.pos = UnityWorldToClipPos(wpos);
                 o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
-                o.worldPos = worldPos;
+                o.worldPos = wpos;
                 o.worldNormal = UnityObjectToWorldNormal(IN.normal);
                 o.normal = IN.normal;
                 o.vertexColor = IN.vertexColor;
@@ -393,11 +394,10 @@ Shader "Custom/Incline" {
                 // ambient light (and light probes)
                 o.ambient = ShadeSH9(half4(o.worldNormal, 1));
 
-                // shadows
-                TRANSFER_SHADOW(o);
-
-                // fog
+                // add shadow and fog
+                TRANSFER_SHADOW_WPOS(o, worldPos);
                 UNITY_TRANSFER_FOG(o, o.pos);
+                TRANSFER_HEIGHT_FOG(o, wpos);
 
                 return o;
             }
@@ -566,9 +566,7 @@ Shader "Custom/Incline" {
 
                 // add fog
                 UNITY_APPLY_FOG(IN.fogCoord, c);
-
-                // add fog
-                ADD_HEIGHT_FOG(abs(IN.worldPos.y - _WorldSpaceCameraPos.y), c);
+                APPLY_HEIGHT_FOG(IN.heightFogCoord, c);
 
                 // output color
                 return c;

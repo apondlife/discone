@@ -41,7 +41,8 @@ Shader "Sprite/Billboard" {
 
             // -- includes --
             #include "UnityCG.cginc"
-            #include "Assets/Shaders/Core/Color.cginc"
+            #include "AutoLight.cginc"
+            #include "./Fog.hlsl"
 
             // -- types --
             struct VertIn {
@@ -52,6 +53,9 @@ Shader "Sprite/Billboard" {
             struct FragIn {
                 float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                SHADOW_COORDS(1)
+                UNITY_FOG_COORDS(2)
+                HEIGHT_FOG_COORDS(3)
             };
 
             // -- props --
@@ -68,9 +72,9 @@ Shader "Sprite/Billboard" {
             float1 _Cutoff;
 
             // -- program --
-            FragIn DrawVert(VertIn i) {
+            FragIn DrawVert(VertIn IN) {
                 FragIn o;
-                o.uv = TRANSFORM_TEX(i.uv, _MainTex);
+                o.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 
                 // grab the view rotation
                 float4x4 v = UNITY_MATRIX_V;
@@ -88,10 +92,18 @@ Shader "Sprite/Billboard" {
                 ));
 
                 // prerotate the object and then convert
-                float4 pos = i.vertex;
+                float4 pos = IN.vertex;
                 pos = mul(rot, pos);
-                pos = UnityObjectToClipPos(pos);
+
+                float4 wpos = mul(unity_ObjectToWorld, pos);
+                pos = UnityWorldToClipPos(wpos);
+
                 o.pos = pos;
+
+                // add shadow & fog
+                TRANSFER_SHADOW_WPOS(o, wpos);
+                UNITY_TRANSFER_FOG(o, o.pos);
+                TRANSFER_HEIGHT_FOG(o, wpos);
 
                 return o;
             }
@@ -100,6 +112,14 @@ Shader "Sprite/Billboard" {
                 fixed4 c = tex2D(_MainTex, IN.uv);
                 c = fixed4(c.rgb * _Saturation, c.a);
                 clip(c.a - _Cutoff);
+
+                // add shadow
+                c.rgb *= SHADOW_ATTENUATION(IN);
+
+                // add fog
+                UNITY_APPLY_FOG(IN.fogCoord, c);
+                APPLY_HEIGHT_FOG(IN.heightFogCoord, c);
+
                 return c;
             }
 
@@ -137,10 +157,10 @@ Shader "Sprite/Billboard" {
             };
 
             // -- program --
-            FragIn DrawVert(VertIn i) {
+            FragIn DrawVert(VertIn IN) {
                 FragIn o;
-                o.pos = UnityObjectToClipPos(i.vertex);
-                o.uv = i.uv;
+                o.pos = UnityObjectToClipPos(IN.vertex);
+                o.uv = IN.uv;
                 return o;
             }
 
