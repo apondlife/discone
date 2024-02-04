@@ -50,7 +50,7 @@ Shader "Sprite/Billboard" {
             };
 
             struct FragIn {
-                float4 vertex : SV_POSITION;
+                float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
             };
 
@@ -72,35 +72,26 @@ Shader "Sprite/Billboard" {
                 FragIn o;
                 o.uv = TRANSFORM_TEX(i.uv, _MainTex);
 
-                //copy them so we can change them (demonstration purpos only)
-                float4x4 m = UNITY_MATRIX_M;
+                // grab the view rotation
                 float4x4 v = UNITY_MATRIX_V;
-                float4x4 p = UNITY_MATRIX_P;
-
-                //break out the axis
-                float3 right = normalize(v._m00_m01_m02);
-                float3 up = float3(0, 1, 0);
                 float3 forward = normalize(v._m20_m21_m22);
+                float3 up = float3(0, 1, 0);
+                float3 right = normalize(v._m00_m01_m02);
 
                 // TODO: this doesn't work for rotated objects
-                //get the rotation parts of the matrix
-                float4x4 rotationMatrix = float4x4(
-                    right, 0,
-                    up, 0,
+                // and create an inverse rotation so that the objects end up facing the camera
+                float4x4 rot = transpose(float4x4(
+                    right,   0,
+                    up,      0,
                     forward, 0,
                     0, 0, 0, 1
-                );
+                ));
 
-                //the inverse of a rotation matrix happens to always be the transpose
-                float4x4 rotationMatrixInverse = transpose(rotationMatrix);
-
-                //apply the rotationMatrixInverse, model, view and projection matrix
+                // prerotate the object and then convert
                 float4 pos = i.vertex;
-                pos = mul(rotationMatrixInverse, pos);
-                pos = mul(m, pos);
-                pos = mul(v, pos);
-                pos = mul(p, pos);
-                o.vertex = pos;
+                pos = mul(rot, pos);
+                pos = UnityObjectToClipPos(pos);
+                o.pos = pos;
 
                 return o;
             }
@@ -141,14 +132,14 @@ Shader "Sprite/Billboard" {
             };
 
             struct FragIn {
-                float4 vertex : SV_POSITION;
+                float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
             };
 
             // -- program --
             FragIn DrawVert(VertIn i) {
                 FragIn o;
-                o.vertex = UnityObjectToClipPos(i.vertex);
+                o.pos = UnityObjectToClipPos(i.vertex);
                 o.uv = i.uv;
                 return o;
             }
