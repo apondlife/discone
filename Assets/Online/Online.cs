@@ -1,7 +1,9 @@
+using System.Web.Services.Description;
+using kcp2k;
 using Mirror;
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
-using System;
+using UnityEngine.Serialization;
 
 namespace Discone {
 
@@ -19,20 +21,24 @@ public class Online: NetworkManager {
     // -- state --
     [Header("state")]
     [Tooltip("the server address to connect to")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_HostAddress")]
-    [SerializeField] StringReference m_ServerAddres;
+    [FormerlySerializedAs("m_ServerAddres")]
+    [FormerlySerializedAs("m_HostAddress")]
+    [SerializeField] StringReference m_ServerAddress;
 
     [Tooltip("if this is running as server")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_IsHost")]
+    [FormerlySerializedAs("m_IsHost")]
     [SerializeField] BoolVariable m_IsServer;
 
-    // -- fields --
+    // -- config --
     [Header("config")]
     [Tooltip("if the client should try connecting to the server on start")]
     [SerializeField] bool m_ConnectToServerOnStart;
 
     [Tooltip("if the client should restart as host disconnect")]
     [SerializeField] bool m_RestartHostOnDisconnect;
+
+    [Tooltip("the maximum number of times to retry on port conflicts")]
+    [SerializeField] int m_MaxPortConflicts;
 
     // -- subscribed --
     [Header("subscribed")]
@@ -68,8 +74,11 @@ public class Online: NetworkManager {
     /// the current server/client state
     State m_State = State.Server;
 
+    /// the number of port conflicts we've hit attempting to start a host
+    int m_PortConflicts = 0;
+
     /// .
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     public override void Awake() {
@@ -82,7 +91,7 @@ public class Online: NetworkManager {
 
         // feedback when you do things you don't want to
         #if UNITY_EDITOR && UNITY_SERVER
-        Debug.LogError(Tag.Online.F($"you probably don't want to run server mode in the editor!"));
+        Log.Online.E($"you probably don't want to run server mode in the editor!");
         #endif
     }
 
@@ -110,7 +119,7 @@ public class Online: NetworkManager {
     public override void OnClientError(TransportError error, string reason) {
         base.OnClientError(error, reason);
 
-        Debug.Log(Tag.Online.F($"client error: {error}@{reason}"));
+        Log.Online.I($"client error: {error}@{reason}");
         m_ShowError?.Raise(Tag.Online.F($"client error: {error}@{reason}"));
     }
 
@@ -121,10 +130,10 @@ public class Online: NetworkManager {
         // finish connection flow
         if (m_State == State.Connecting) {
             m_State = State.Client;
-            Debug.Log(Tag.Online.F($"connected as client"));
+            Log.Online.I($"connected as client");
         }
         else if (m_State == State.Server) {
-            Debug.Log(Tag.Online.F($"connected as host client"));
+            Log.Online.I($"connected as host client");
         }
 
         // create player
@@ -136,18 +145,18 @@ public class Online: NetworkManager {
     public override void OnClientNotReady() {
         base.OnClientNotReady();
 
-        Debug.Log(Tag.Online.F($"client not ready..."));
+        Log.Online.I($"client not ready...");
     }
 
     /// [Client]
     public override void OnClientDisconnect() {
         base.OnClientDisconnect();
 
-        Debug.Log(Tag.Online.F($"client disconnected..."));
+        Log.Online.I($"client disconnected...");
 
         // if we are a host, we don't do anything
         if (IsServerActive) {
-            Debug.Log(Tag.Online.F($"host client disconnected"));
+            Log.Online.I($"host client disconnected");
             return;
         }
 
@@ -170,7 +179,7 @@ public class Online: NetworkManager {
     /// [Server]
     public override void OnStartClient() {
         base.OnStartClient();
-        Debug.Log(Tag.Online.F($"started as client"));
+        Log.Online.I($"started as client");
 
         // broadcast event
         m_ClientStarted.Raise();
@@ -179,8 +188,7 @@ public class Online: NetworkManager {
     /// [Server]
     public override void OnStartServer() {
         base.OnStartServer();
-        // Debug.Log(Tag.Online.F($"started as server"));
-        Debug.Log(Tag.Online.F($"started as server"));
+        Log.Online.I($"started as server");
 
         // bind message handlers
         NetworkServer.RegisterHandler<CreatePlayerMessage>(Server_OnCreatePlayer);
@@ -192,22 +200,22 @@ public class Online: NetworkManager {
     /// [Server]
     public override void OnServerConnect(NetworkConnectionToClient conn) {
         base.OnServerConnect(conn);
-        Debug.Log(Tag.Online.F($"connect <id={conn.connectionId} addr={conn.address}>"));
+        Log.Online.I($"connect <id={conn.connectionId} addr={conn.address}>");
     }
 
     /// [Server]
     public override void OnServerDisconnect(NetworkConnectionToClient conn) {
-        Debug.Log(Tag.Online.F($"disconnect <id={conn.connectionId} addr={conn.address}>"));
+        Log.Online.I($"disconnect <id={conn.connectionId} addr={conn.address}>");
 
         // give player a chance to clean up before being destroyed
         var identity = conn.identity;
         if (identity == null) {
-            Debug.LogError(Tag.Online.F($"diconnected player did not have an identity"));
+            Log.Online.E($"disconnected player did not have an identity");
         }
 
         var player = identity?.gameObject.GetComponent<OnlinePlayer>();
         if (player == null) {
-            Debug.LogError(Tag.Online.F($"diconnected player is not an OnlinePlayer!"));
+            Log.Online.E($"disconnected player is not an OnlinePlayer!");
         } else {
             player.Server_OnDisconnect();
         }
@@ -224,21 +232,28 @@ public class Online: NetworkManager {
 
     /// start the game as a host (server & client)
     void StartAsHost() {
-        // set the initial address
-        var addr = m_ServerAddres?.Value;
-        if (addr != null && addr != "") {
-            networkAddress = addr;
-        }
-
         // start a host for every player, immediately
         // TODO: is this a good idea? for now at least
         try {
             SwitchToServer();
         } catch (System.Net.Sockets.SocketException err) {
-            var code = err.ErrorCode;
-            if (code == 10048 && (addr == "localhost" || addr == "127.0.0.1")) {
-                SwitchToClient();
+            // if we have a port conflict, try to start on a new port
+            if (err.ErrorCode == 10048 && transport is KcpTransport kcp) {
+                // abandon retry if we reach our maximum attempts
+                m_PortConflicts += 1;
+                if (m_PortConflicts > m_MaxPortConflicts) {
+                    Log.Online.E($"tried to start host {m_PortConflicts} times, but all were occupied");
+                    throw;
+                }
+
+                // otherwise, try the next port
+                Log.Online.W($"tried to start host but port {kcp.port} is occupied");
+                kcp.port += 1;
+                StartAsHost();
+                return;
             }
+
+            throw;
         }
     }
 
@@ -248,17 +263,24 @@ public class Online: NetworkManager {
         m_IsServer.Value = true;
 
         if (IsStandalone) {
-            Debug.Log(Tag.Online.F($"starting standalone server"));
+            Log.Online.I($"starting standalone server");
             StartServer();
         } else {
-            Debug.Log(Tag.Online.F($"starting host"));
+            Log.Online.I($"starting host");
             StartHost();
         }
     }
 
     /// start game as client
     void SwitchToClient() {
-        Debug.Log(Tag.Online.F($"switching to client"));
+        // set the initial address
+        var addr = m_ServerAddress?.Value;
+        if (addr != null && addr != "") {
+            networkAddress = addr;
+        }
+
+        // try to start the client
+        Log.Online.I($"switching to client, connecting to {networkAddress}");
 
         m_State = State.Connecting;
         m_IsServer.Value = false;
@@ -306,7 +328,7 @@ public class Online: NetworkManager {
         int channelId
     ) {
         var t = GetStartPosition();
-        Debug.Log(Tag.Online.F($"on create player @ {t.name} <id={conn.connectionId} addr={conn.address} ch={channelId}>"));
+        Log.Online.I($"on create player @ {t.name} <id={conn.connectionId} addr={conn.address} ch={channelId}>");
 
         var player = Instantiate(playerPrefab, t.position, t.rotation);
         NetworkServer.AddPlayerForConnection(conn, player);
@@ -334,12 +356,7 @@ public class Online: NetworkManager {
             StopHost();
         }
 
-        this.DoNextFrame(() => {
-            // start the client
-            networkAddress = m_ServerAddres.Value;
-            SwitchToClient();
-            Debug.Log(Tag.Online.F($"connecting client: {networkAddress}"));
-        });
+        this.DoNextFrame(SwitchToClient);
     }
 
     /// when the host/client disconnect

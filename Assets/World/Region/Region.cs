@@ -37,7 +37,7 @@ public record Region {
     /// update to the region sky/fog
     public void Set(Region dst) {
         var storage = this;
-        Lerp(ref storage, this, dst, 1f);
+        Lerp(ref storage, dst, dst, 1f);
     }
 
     /// lerp the sky/fog between two regions

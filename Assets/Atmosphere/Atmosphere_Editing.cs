@@ -70,8 +70,7 @@ public partial class Atmosphere {
         }
 
         // update the region
-        asset.Value.Sky = m_CurrRegion.Sky;
-        asset.Value.Fog = m_CurrRegion.Fog;
+        asset.Value.Set(m_CurrRegion);
 
         // and save the asset
         EditorUtility.SetDirty(asset);

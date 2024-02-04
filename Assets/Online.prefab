@@ -46,20 +46,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Port: 6969
+  port: 6969
   DualMode: 1
   NoDelay: 1
   Interval: 10
   Timeout: 10000
+  RecvBufferSize: 7361536
+  SendBufferSize: 7361536
   FastResend: 2
-  CongestionWindow: 0
-  SendWindowSize: 4096
   ReceiveWindowSize: 4096
+  SendWindowSize: 4096
   MaxRetransmit: 40
-  NonAlloc: 1
-  MaximizeSendReceiveBuffersToOSLimit: 1
-  ReliableMaxMessageSize: 298449
-  UnreliableMaxMessageSize: 1199
+  MaximizeSocketBuffers: 1
+  ReliableMaxMessageSize: 297433
+  UnreliableMaxMessageSize: 1195
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
@@ -78,7 +78,8 @@ MonoBehaviour:
   dontDestroyOnLoad: 1
   runInBackground: 1
   autoStartServerBuild: 0
-  serverTickRate: 30
+  autoConnectClientBuild: 0
+  sendRate: 30
   offlineScene: Assets/Main_Offline.unity
   onlineScene: Assets/Main.unity
   transport: {fileID: 1244464915308659202}
@@ -97,7 +98,18 @@ MonoBehaviour:
   - {fileID: 1759957223998774543, guid: 79fd96ee4619948bd95ee8b710b963af, type: 3}
   - {fileID: 2960029541259181288, guid: d3c90f4064219c34d92fa16228c6f295, type: 3}
   - {fileID: 1759957223998774543, guid: 37bb2736011fd4e4f80ace3fb099e7ca, type: 3}
-  m_ServerAddres:
+  snapshotSettings:
+    bufferTimeMultiplier: 2
+    catchupNegativeThreshold: -1
+    catchupPositiveThreshold: 1
+    catchupSpeed: 0.019999999552965164
+    slowdownSpeed: 0.03999999910593033
+    driftEmaDuration: 1
+    dynamicAdjustment: 1
+    dynamicAdjustmentTolerance: 1
+    deliveryTimeEmaDuration: 2
+  timeInterpolationGui: 0
+  m_ServerAddress:
     _usage: 2
     _value: 
     _constant: {fileID: 0}
@@ -106,6 +118,7 @@ MonoBehaviour:
   m_IsServer: {fileID: 11400000, guid: 562ea9c4c723d4ba2a26fc6eb3e9c7c9, type: 2}
   m_ConnectToServerOnStart: 0
   m_RestartHostOnDisconnect: 1
+  m_MaxPortConflicts: 3
   m_StartClient: {fileID: 11400000, guid: 4317195ff7eed3b459aaacbfbb45ea67, type: 2}
   m_DisconnectClient: {fileID: 11400000, guid: dd783e5802f7a45bcb8bcd0772fc0c3c, type: 2}
   m_ShowError: {fileID: 11400000, guid: e9711abafc73c0746b74246738baaff4, type: 2}

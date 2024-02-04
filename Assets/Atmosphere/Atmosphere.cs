@@ -4,6 +4,7 @@ using ThirdPerson;
 
 namespace Discone {
 
+// BUG: if you start in no region, there's no atmosphere
 /// the current skybox region
 public partial class Atmosphere: MonoBehaviour {
     // -- state --
