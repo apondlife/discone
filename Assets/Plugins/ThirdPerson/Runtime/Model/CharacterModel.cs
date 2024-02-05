@@ -202,10 +202,9 @@ public sealed class CharacterModel: MonoBehaviour {
             state.IsLanding
         );
 
-        var isAirborne = state.MainSurface.IsNone || state.MainSurface.Angle > m_Tuning.Jump_GroundAngle;
         anim.SetBool(
             k_PropIsAirborne,
-            isAirborne
+            state.MainSurface.IsNone
         );
 
         anim.SetBool(
@@ -217,7 +216,6 @@ public sealed class CharacterModel: MonoBehaviour {
             k_PropVerticalSpeed,
             state.Velocity.y
         );
-
 
         if (!state.IsOnGround) {
             m_LandingSpeed = state.Velocity.y;
@@ -235,7 +233,11 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // blend yoshiing
         // TODO: lerp
-        var yoshiing = state.MainSurface.IsNone && m_Input.IsJumpPressed ? 1.0f : 0.0f;
+        var yoshiing = (m_Input.IsJumpPressed ? 1.0f : 0.0f);
+        if (state.MainSurface.IsSome) {
+            yoshiing *= Mathf.Abs(state.MainSurface.Angle / 90.0f);
+        }
+
         anim.SetLayerWeight(
             m_LayerLegs,
             yoshiing
