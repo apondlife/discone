@@ -202,7 +202,7 @@ public sealed class CharacterModel: MonoBehaviour {
             state.IsLanding
         );
 
-        var isAirborne = state.MainSurface.IsNone || state.MainSurface.Angle > m_Tuning.Jump_GroundAngle;
+        var isAirborne = state.MainSurface.IsNone;
         anim.SetBool(
             k_PropIsAirborne,
             isAirborne

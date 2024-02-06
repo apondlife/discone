@@ -148,10 +148,10 @@ MonoBehaviour:
       Min: 0.1
       Max: 0.1
   Gravity: -70
+  JumpGravity: -30
+  FallGravity: -40
   JumpBuffer: 10
   MaxCoyoteFrames: 12
-  JumpGravity: -30
-  Jump_GroundAngle: 80
   Jump_SurfaceAngleScale:
     m_Curve:
       serializedVersion: 2
@@ -169,20 +169,29 @@ MonoBehaviour:
         time: 10
         value: 1
         inSlope: 0
-        outSlope: -0.00009184288
+        outSlope: -0.0012877694
         tangentMode: 1
         weightedMode: 2
         inWeight: 0.33333334
-        outWeight: 0.12721032
+        outWeight: 0.12897366
       - serializedVersion: 3
         time: 80
-        value: 0
+        value: 0.0012817383
         inSlope: -0.046644054
         outSlope: Infinity
         tangentMode: 1
         weightedMode: 0
         inWeight: 0.02025321
         outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 90
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -254,7 +263,6 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 1
-  FallGravity: -40
   Landing_Duration: 0.3
   Jumps:
   - Count: 1
@@ -288,6 +296,38 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
     Upwards_MomentumLoss: 0.11
+    Horizontal_MomentumLoss: 0
+  - Count: 1
+    CooldownFrames: 0
+    MinJumpSquatFrames: 0
+    MaxJumpSquatFrames: 20
+    Vertical_MinSpeed: 0
+    Vertical_MaxSpeed: 0.5
+    Vertical_SpeedCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.09988901
+        outSlope: 0.09988901
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.2125
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0.5817613
+        outSlope: 0.5817613
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.14999998
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    Upwards_MomentumLoss: 0
     Horizontal_MomentumLoss: 0
   Surface_InertiaDecayTime:
     m_Curve:

@@ -90,22 +90,17 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the acceleration due to gravity")]
     public float Gravity;
 
+    [Tooltip("the gravity while holding jump and moving up")]
+    public float JumpGravity;
+
+    [Tooltip("the gravity while holding jump and falling")]
+    public float FallGravity;
+
     [Tooltip("how many frames you can have pressed jump before landing to execute the jump")]
     public int JumpBuffer;
 
     [Tooltip("max number of frames the character can be in the air and still jump")]
     public int MaxCoyoteFrames;
-
-    [Tooltip("the gravity while holding jump and moving up")]
-    public float JumpGravity;
-
-    /// the vertical acceleration while holding jump and moving up
-    public float JumpAcceleration {
-        get => JumpGravity - Gravity;
-    }
-
-    [Tooltip("the maximum ground angle for jumping")]
-    public float Jump_GroundAngle;
 
     [FormerlySerializedAs("Jump_GroundAngleScale")]
     [Tooltip("the jump scale as a fn of surface angle")]
@@ -116,14 +111,6 @@ public sealed class CharacterTuning: ScriptableObject {
 
     [Tooltip("the jump scale opposed to the surface normal as a fn of surface angle")]
     public MapOutCurve Jump_Normal_SurfaceAngleScale;
-
-    [Tooltip("the gravity while holding jump and falling")]
-    public float FallGravity;
-
-    /// the vertical acceleration while holding jump and falling
-    public float FallAcceleration {
-        get => FallGravity - Gravity;
-    }
 
     [Tooltip("how long the landing state lasts when falling")]
     public float Landing_Duration;

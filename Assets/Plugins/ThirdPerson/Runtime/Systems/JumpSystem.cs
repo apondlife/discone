@@ -50,7 +50,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void NotJumping_Update(float _) {
         // reset jump surface whenever grounded
-        if (IsOnGround()) {
+        if (IsOnSurface()) {
             ResetJumpSurface();
         }
         // but if not, subtract a frame
@@ -86,7 +86,7 @@ sealed class JumpSystem: CharacterSystem {
 
     void Landing_Update(float _) {
         // reset jump surface whenever grounded
-        if (IsOnGround()) {
+        if (IsOnSurface()) {
             ResetJumpSurface();
         }
         // but if not, subtract a frame
@@ -127,10 +127,7 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void JumpSquat_Update(float delta) {
-        // apply fall acceleration if airborne
-        if (c.State.Curr.MainSurface.IsNone) {
-            c.State.Next.Force += c.Tuning.FallAcceleration * Vector3.up;
-        }
+        AddJumpGravity();
 
         // jump if jump was released or jump squat ended
         var shouldJump = (
@@ -146,21 +143,30 @@ sealed class JumpSystem: CharacterSystem {
             return;
         }
 
+        // reset back to initial jump & jump surface whenever grounded
+        // TODO: support a mario-like triple jump?
+        var isOnSurface = IsOnSurface();
+        if (isOnSurface) {
+            ResetJumps();
+            ResetJumpSurface();
+        }
+
         // if this is the first jump, you might be in coyote time
-        if (c.State.JumpTuningJumpIndex == 0) {
-            // reset jump surface whenever grounded
-            if (IsOnGround()) {
-                ResetJumpSurface();
-            }
-            // but if not, subtract a frame
-            else {
+        if (IsFirstJump) {
+            // if airborne, reduce coyote time
+            if (!isOnSurface) {
                 c.State.CoyoteFrames -= 1;
             }
 
-            // fall once coyote time expires
+            // when coyote time expires, consume this jump
             if (c.State.CoyoteFrames <= 0) {
-                ChangeTo(Falling);
-                return;
+                IncrementJumps();
+
+                // if we're out of jumps, fall instead
+                if (!HasJump()) {
+                    ChangeTo(Falling);
+                    return;
+                }
             }
         }
 
@@ -186,14 +192,7 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     void Falling_Update(float delta) {
-        // apply fall acceleration while holding jump in the air
-        if (c.Input.IsJumpPressed && c.State.Curr.MainSurface.IsNone) {
-            var acceleration = c.State.Curr.Velocity.y > 0.0f
-                ? c.Tuning.JumpAcceleration // TODO: what if you are going up but not from a jump?
-                : c.Tuning.FallAcceleration;
-
-            c.State.Next.Force += acceleration * Vector3.up;
-        }
+        AddJumpGravity();
 
         // count coyote frames
         c.State.CoyoteFrames -= 1;
@@ -206,7 +205,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // transition out of jump
-        if (IsOnGround()) {
+        if (IsOnSurface()) {
             ChangeTo(Landing);
             return;
         }
@@ -215,24 +214,30 @@ sealed class JumpSystem: CharacterSystem {
     // -- commands --
     /// reset the next surface to jump from
     void ResetJumpSurface() {
-        c.State.CoyoteFrames = c.Tuning.MaxCoyoteFrames;
-        c.State.JumpSurface = c.State.Next.MainSurface;
+        c.State.Next.CoyoteFrames = c.Tuning.MaxCoyoteFrames;
+        c.State.Next.JumpSurface = c.State.Next.MainSurface;
     }
 
-    /// .
+    /// add jump anti-gravity when holding the button
+    void AddJumpGravity() {
+        if (!c.Input.IsJumpPressed || c.State.Curr.MainSurface.IsSome) {
+            return;
+        }
+
+        var acceleration = c.State.Curr.Velocity.y > 0.0f
+            ? c.Tuning.JumpGravity // TODO: what if you are going up but not from a jump?
+            : c.Tuning.FallGravity;
+
+        acceleration -= c.Tuning.Gravity;
+
+        c.State.Next.Force += acceleration * Vector3.up;
+    }
+
+    /// add the jump impulse for this jump index
     void Jump() {
         // accumulate jump delta dv
         var v0 = c.State.Curr.Velocity;
         var dv = Vector3.zero;
-
-        // cancel vertical momentum if falling.
-        // according to tuning if going up
-        // (we don't want to lose upwards speed in general, but not jumping if too fast is too weird)
-        var verticalLoss = v0.y > 0 ? JumpTuning.Upwards_MomentumLoss : 1;
-        dv -= v0.y * verticalLoss * Vector3.up;
-
-        // cancel horizontal momentum
-        dv -= c.State.Curr.PlanarVelocity * JumpTuning.Horizontal_MomentumLoss;
 
         // get curved percent complete through jump squat
         var pct = Mathf.InverseLerp(
@@ -240,6 +245,19 @@ sealed class JumpSystem: CharacterSystem {
             JumpTuning.MaxJumpSquatFrames,
             c.State.Next.JumpSquatFrame
         );
+
+        // AAA: should this work like this for air jumps?
+        var surfaceScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(c.State.Next.JumpSurface.Angle);
+
+        // cancel vertical momentum if falling.
+        // according to tuning if going up
+        // (we don't want to lose upwards speed in general, but not jumping if too fast is too weird)
+        var verticalLoss = v0.y > 0 ? JumpTuning.Upwards_MomentumLoss : 1;
+        dv -= surfaceScale * v0.y * verticalLoss * Vector3.up;
+
+        // cancel horizontal momentum
+        var horizontalLoss = JumpTuning.Horizontal_MomentumLoss;
+        dv -= surfaceScale * horizontalLoss * c.State.Curr.PlanarVelocity;
 
         // add directional jump velocity
         // TODO: change Vector3.up to JumpTuning.Direction
@@ -249,16 +267,15 @@ sealed class JumpSystem: CharacterSystem {
             JumpTuning.Vertical_SpeedCurve.Evaluate(pct)
         );
 
-        var jumpSurface = c.State.JumpSurface;
-        var jumpAngleScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(jumpSurface.Angle);
-        dv += jumpSpeed * jumpAngleScale * Vector3.up;
+        dv += jumpSpeed * surfaceScale * Vector3.up;
 
         // add surface normal jump velocity
-        if (c.State.PerceivedSurface.IsSome) {
+        if (c.State.Next.PerceivedSurface.IsSome) {
             var normalSpeed = c.Tuning.Jump_Normal_Speed.Evaluate(pct);
-            var normalSurface = c.State.Curr.PerceivedSurface;
-            var normalAngleScale = c.Tuning.Jump_Normal_SurfaceAngleScale.Evaluate(normalSurface.Angle);
-            dv += normalSpeed * normalAngleScale * normalSurface.Normal;
+            var normalSurface = c.State.Next.PerceivedSurface;
+            var normalScale = c.Tuning.Jump_Normal_SurfaceAngleScale.Evaluate(normalSurface.Angle);
+            dv += normalSpeed * normalScale * normalSurface.Normal;
+
         }
 
         // update state
@@ -272,28 +289,28 @@ sealed class JumpSystem: CharacterSystem {
     /// track jump and switch to the correct jump if necessary
     void IncrementJumps() {
         c.State.Next.Jumps += 1;
-        c.State.JumpTuningJumpIndex += 1;
+        c.State.Next.JumpTuningJumpIndex += 1;
 
         if (JumpTuning.Count == 0) {
             return;
         }
 
         var shouldAdvanceJump = (
-            c.State.JumpTuningJumpIndex >= JumpTuning.Count &&
-            c.State.JumpTuningIndex < c.Tuning.Jumps.Length - 1
+            c.State.Next.JumpTuningJumpIndex >= JumpTuning.Count &&
+            c.State.Next.JumpTuningIndex < c.Tuning.Jumps.Length - 1
         );
 
         if (shouldAdvanceJump) {
-            c.State.JumpTuningJumpIndex = 0;
-            c.State.JumpTuningIndex += 1;
+            c.State.Next.JumpTuningJumpIndex = 0;
+            c.State.Next.JumpTuningIndex += 1;
         }
     }
 
     /// reset the jump count to its initial state
     void ResetJumps() {
         c.State.Next.Jumps = 0;
-        c.State.JumpTuningJumpIndex = 0;
-        c.State.JumpTuningIndex = 0;
+        c.State.Next.JumpTuningJumpIndex = 0;
+        c.State.Next.JumpTuningIndex = 0;
     }
 
     // -- queries --
@@ -307,24 +324,9 @@ sealed class JumpSystem: CharacterSystem {
         get => c.State.JumpTuningIndex == 0 && c.State.JumpTuningJumpIndex == 0;
     }
 
-    /// if the character can jump within the last n frames
-    bool ShouldStartJump(int buffer = 0) {
-        if (!HasJump()) {
-            return false;
-        }
-
-        var frame = c.Input.GetJumpDown(buffer);
-        if (frame == -1) {
-            return false;
-        }
-
-        for (var i = 0; i < frame; i++) {
-            if (c.State[i].Events.Contains(CharacterEvent.Jump)) {
-                return false;
-            }
-        }
-
-        return true;
+    /// if the character should jump within the last n frames
+    bool ShouldStartJump(int buffer = 1) {
+        return HasJump() && HasJumpInput(buffer);
     }
 
     /// if the character has a jump available to execute
@@ -340,11 +342,11 @@ sealed class JumpSystem: CharacterSystem {
         // jump finish here, and transitioning directly to jump
 
         // if it's your first jump, account for coyote time
-        if (IsFirstJump && c.State.CoyoteFrames >= 0) {
+        if (IsFirstJump && c.State.Next.CoyoteFrames >= 0) {
             return true;
         }
 
-        if (c.State.CooldownFrames > 0) {
+        if (c.State.Next.CooldownFrames > 0) {
             return false;
         }
 
@@ -355,21 +357,32 @@ sealed class JumpSystem: CharacterSystem {
 
         // start an air jump if available
         // if there's still jumps available in the current jump definition
-        if (c.State.JumpTuningJumpIndex < JumpTuning.Count) {
+        if (c.State.Next.JumpTuningJumpIndex < JumpTuning.Count) {
             return true;
         }
 
         return false;
     }
 
-    /// if the character is on something ground like
-    bool IsOnGround() {
-        var ground = c.State.Curr.MainSurface;
-        if (ground.IsNone) {
+    /// if the player had a new jump input within the last n frames
+    bool HasJumpInput(int buffer = 1) {
+        var frame = c.Input.GetJumpDown(buffer);
+        if (frame == -1) {
             return false;
         }
 
-        return ground.Angle <= c.Tuning.Jump_GroundAngle;
+        for (var i = 0; i < frame; i++) {
+            if (c.State[i].Events.Contains(CharacterEvent.Jump)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// if the character is on something ground like
+    bool IsOnSurface() {
+        return c.State.Curr.MainSurface.IsSome;
     }
 }
 
