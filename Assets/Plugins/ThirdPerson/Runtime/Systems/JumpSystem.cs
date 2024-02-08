@@ -107,7 +107,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // once landing completes
-        if (PhaseElapsed > c.Tuning.Landing_Duration) {
+        if (PhaseElapsed > c.Tuning.LandingDuration) {
             ChangeTo(NotJumping);
             return;
         }
@@ -131,9 +131,9 @@ sealed class JumpSystem: CharacterSystem {
         // jump if jump was released or jump squat ended
         var shouldJump = (
             // if the jump squat finished
-            PhaseElapsed >= JumpTuning.MaxJumpSquatTime ||
+            PhaseElapsed >= JumpTuning.JumpSquatDuration.Max ||
             // or jump was released after the minimum
-            (!c.Input.IsJumpPressed && PhaseElapsed >= JumpTuning.MinJumpSquatTime)
+            (!c.Input.IsJumpPressed && PhaseElapsed >= JumpTuning.JumpSquatDuration.Min)
         );
 
         if (shouldJump) {
@@ -210,7 +210,7 @@ sealed class JumpSystem: CharacterSystem {
     // -- commands --
     /// reset the next surface to jump from
     void ResetJumpSurface() {
-        c.State.Next.CoyoteTime = c.Tuning.MaxCoyoteTime;
+        c.State.Next.CoyoteTime = c.Tuning.CoyoteDuration;
         c.State.Next.JumpSurface = c.State.Next.MainSurface;
     }
 
@@ -236,11 +236,7 @@ sealed class JumpSystem: CharacterSystem {
         var dv = Vector3.zero;
 
         // get curved percent complete through jump squat
-        var pct = Mathf.InverseLerp(
-            JumpTuning.MinJumpSquatTime,
-            JumpTuning.MaxJumpSquatTime,
-            elapsed
-        );
+        var pct = JumpTuning.JumpSquatDuration.InverseLerp(elapsed);
 
         // AAA: should this work like this for air jumps?
         var surfaceScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(c.State.Next.JumpSurface.Angle);
@@ -257,12 +253,7 @@ sealed class JumpSystem: CharacterSystem {
 
         // add directional jump velocity
         // TODO: change Vector3.up to JumpTuning.Direction
-        var jumpSpeed = Mathf.Lerp(
-            JumpTuning.Vertical_MinSpeed,
-            JumpTuning.Vertical_MaxSpeed,
-            JumpTuning.Vertical_SpeedCurve.Evaluate(pct)
-        );
-
+        var jumpSpeed = JumpTuning.Vertical_Speed.Evaluate(pct);
         dv += jumpSpeed * surfaceScale * Vector3.up;
 
         // add surface normal jump velocity
@@ -278,7 +269,8 @@ sealed class JumpSystem: CharacterSystem {
         c.State.Next.Inertia = 0f;
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteTime = 0f;
-        c.State.Next.CooldownTime = JumpTuning.CooldownTime;
+        c.State.Next.CooldownTime = JumpTuning.CooldownDuration.Evaluate(pct);
+
         c.Events.Schedule(CharacterEvent.Jump);
     }
 

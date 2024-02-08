@@ -106,8 +106,8 @@ sealed class CharacterDistortion: MonoBehaviour {
             var jumpSquatPct = 1f;
 
             var jumpTuning = m_Tuning.Jumps[m_State.JumpTuningIndex];
-            if (jumpTuning.MaxJumpSquatTime > 0f) {
-                jumpSquatPct = m_State.JumpState.PhaseElapsed / jumpTuning.MaxJumpSquatTime;
+            if (jumpTuning.JumpSquatDuration.Max > 0f) {
+                jumpSquatPct = m_State.JumpState.PhaseElapsed / jumpTuning.JumpSquatDuration.Max;
             }
 
             destIntensity = m_JumpSquat_Intensity.Evaluate(jumpSquatPct);

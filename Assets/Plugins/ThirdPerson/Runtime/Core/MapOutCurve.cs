@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -8,16 +9,18 @@ namespace ThirdPerson {
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "RangeCurve")]
 public struct MapOutCurve {
     // -- fields --
+    [FormerlySerializedAs("m_Curve")]
     [Tooltip("the curve")]
-    [SerializeField] AnimationCurve m_Curve;
+    public AnimationCurve Curve;
 
+    [FormerlySerializedAs("m_Dst")]
     [Tooltip("the destination range")]
-    [SerializeField] FloatRange m_Dst;
+    public FloatRange Dst;
 
     // -- queries --
     /// evaluate the curve in the range
     public float Evaluate(float input) {
-        return Evaluate(m_Curve, m_Dst, input);
+        return Evaluate(Curve, Dst, input);
     }
 
     /// evaluate the curve in the range
@@ -36,7 +39,7 @@ public struct MapOutCurve {
 
     // -- debug --
     public override string ToString() {
-        return $"<MapOutCurve dst={m_Dst}>";
+        return $"<MapOutCurve dst={Dst}>";
     }
 }
 

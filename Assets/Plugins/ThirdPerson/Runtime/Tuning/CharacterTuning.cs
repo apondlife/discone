@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -99,8 +100,13 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("how many frames you can have pressed jump before landing to execute the jump")]
     public int JumpBuffer;
 
+    [FormerlySerializedAs("MaxCoyoteTime")]
     [Tooltip("the max time the character can be in the air and still jump")]
-    public float MaxCoyoteTime;
+    public float CoyoteDuration;
+
+    [FormerlySerializedAs("Landing_Duration")]
+    [Tooltip("how long the landing state lasts when falling")]
+    public float LandingDuration;
 
     [FormerlySerializedAs("Jump_GroundAngleScale")]
     [Tooltip("the jump scale as a fn of surface angle")]
@@ -112,9 +118,6 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the jump scale opposed to the surface normal as a fn of surface angle")]
     public MapOutCurve Jump_Normal_SurfaceAngleScale;
 
-    [Tooltip("how long the landing state lasts when falling")]
-    public float Landing_Duration;
-
     [Tooltip("the tuning for each jump, sequentially")]
     public JumpTuning[] Jumps;
 
@@ -123,24 +126,14 @@ public sealed class CharacterTuning: ScriptableObject {
         [Tooltip("the number of times this jump can be used; 0 = infinite, -1 = none")]
         public int Count = 1;
 
-        [Tooltip("the min time jump squat lasts")]
-        public float MinJumpSquatTime;
+        [Tooltip("the jump squat duration range")]
+        public FloatRange JumpSquatDuration;
 
-        [Tooltip("the max time jump squat lasts")]
-        public float MaxJumpSquatTime;
+        [Tooltip("how long after jump until the character can jump again as a fn of charge percent")]
+        public MapOutCurve CooldownDuration;
 
-        [Tooltip("how long after this jump the character can jump again")]
-        public float CooldownTime;
-
-        // TODO: convert to map out curve & remember how to propely update all prefabs
-        [Tooltip("the minimum jump speed (minimum length jump squat)")]
-        public float Vertical_MinSpeed;
-
-        [Tooltip("the maximum jump speed (maximum length jump squat)")]
-        public float Vertical_MaxSpeed;
-
-        [Tooltip("jump speed as a fn of squat duration")]
-        public AnimationCurve Vertical_SpeedCurve;
+        [Tooltip("the jump speed a as a fn of charge percent")]
+        public MapOutCurve Vertical_Speed;
 
         [Tooltip("how much upwards speed is cancelled on jump")]
         public float Upwards_MomentumLoss;
@@ -241,10 +234,10 @@ public sealed class CharacterTuning: ScriptableObject {
     // -- lifecycle --
     void OnValidate() {
         if (Jumps == null || Jumps.Length == 0) {
-            MaxCoyoteTime = 0f;
+            CoyoteDuration = 0f;
         } else {
             // make sure coyote time is not greater than jumpsquat duration
-            MaxCoyoteTime = Math.Max(MaxCoyoteTime, Jumps[0].MinJumpSquatTime);
+            CoyoteDuration = Math.Max(CoyoteDuration, Jumps[0].JumpSquatDuration.Min);
         }
     }
 }
