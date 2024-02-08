@@ -63,11 +63,14 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     CharacterEvents m_Events;
 
     /// the input wrapper
-    CharacterInput m_Input = new();
+    CharacterInput m_Input;
 
     // -- lifecycle --
     void Awake() {
         var t = transform;
+
+        // init input (can't access Time from field initializer)
+        m_Input = new CharacterInput();
 
         // init state
         m_State = new CharacterState(
@@ -127,6 +130,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
             m_State.Advance();
 
             // read input
+            // TODO: read input in update
             m_Input.Read();
 
             // step systems

@@ -97,8 +97,9 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the gravity while holding jump and falling")]
     public float FallGravity;
 
-    [Tooltip("how many frames you can have pressed jump before landing to execute the jump")]
-    public int JumpBuffer;
+    // TODO: make buffer for release edge as well
+    [Tooltip("the duration of the jump buffer")]
+    public float Jump_BufferDuration;
 
     [FormerlySerializedAs("MaxCoyoteTime")]
     [Tooltip("the max time the character can be in the air and still jump")]

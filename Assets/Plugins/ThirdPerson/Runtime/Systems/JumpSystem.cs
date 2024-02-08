@@ -31,10 +31,13 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     public override void Update(float delta) {
-        base.Update(delta);
+        // advance the cooldown timer
+        Cooldown(delta);
 
         // always add gravity
         c.State.Next.Force += c.Tuning.Gravity * Vector3.up;
+
+        base.Update(delta);
     }
 
     // -- NotJumping --
@@ -65,7 +68,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if you jump
-        if (ShouldStartJump(c.Tuning.JumpBuffer)) {
+        if (ShouldStartJump(c.Tuning.Jump_BufferDuration)) {
             ChangeTo(JumpSquat);
             return;
         }
@@ -101,7 +104,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if you jump
-        if (ShouldStartJump(c.Tuning.JumpBuffer)) {
+        if (ShouldStartJump(c.Tuning.Jump_BufferDuration)) {
             ChangeTo(JumpSquat);
             return;
         }
@@ -133,6 +136,7 @@ sealed class JumpSystem: CharacterSystem {
             // if the jump squat finished
             PhaseElapsed >= JumpTuning.JumpSquatDuration.Max ||
             // or jump was released after the minimum
+            // TODO: should we buffer jump released?
             (!c.Input.IsJumpPressed && PhaseElapsed >= JumpTuning.JumpSquatDuration.Min)
         );
 
@@ -159,7 +163,7 @@ sealed class JumpSystem: CharacterSystem {
 
             // when coyote time expires, consume this jump
             if (c.State.CoyoteTime <= 0) {
-                IncrementJumps();
+                AdvanceJumps();
 
                 // if we're out of jumps, fall instead
                 if (!HasJump()) {
@@ -183,7 +187,7 @@ sealed class JumpSystem: CharacterSystem {
     );
 
     void Falling_Enter() {
-        IncrementJumps();
+        AdvanceJumps();
         c.State.Next.IsLanding = false;
     }
 
@@ -192,7 +196,6 @@ sealed class JumpSystem: CharacterSystem {
 
         // update timers
         c.State.CoyoteTime -= delta;
-        c.State.CooldownTime -= delta;
 
         // start jump on a new press
         if (ShouldStartJump()) {
@@ -262,20 +265,47 @@ sealed class JumpSystem: CharacterSystem {
             var normalSurface = c.State.Next.PerceivedSurface;
             var normalScale = c.Tuning.Jump_Normal_SurfaceAngleScale.Evaluate(normalSurface.Angle);
             dv += normalSpeed * normalScale * normalSurface.Normal;
-
         }
 
         // update state
         c.State.Next.Inertia = 0f;
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteTime = 0f;
-        c.State.Next.CooldownTime = JumpTuning.CooldownDuration.Evaluate(pct);
+        c.State.Next.Jump_CooldownDuration = JumpTuning.CooldownDuration.Evaluate(pct);
+        c.State.Next.Jump_CooldownElapsed = 0f;
 
         c.Events.Schedule(CharacterEvent.Jump);
     }
 
+    /// add jump cooldown, if any
+    void Cooldown(float delta) {
+        // update jump cooldown
+        var nextElapsed = c.State.Curr.Jump_CooldownElapsed;;
+        var nextDuration = c.State.Curr.Jump_CooldownDuration;
+
+        // if we are in cooldown
+        if (nextElapsed < nextDuration) {
+            nextElapsed += delta;
+
+            // if we are overflowing, this frame ends cooldown, and
+            // we want to check for a buffered jump
+            if (nextElapsed >= nextDuration) {
+                // TODO: a cooldown elapsed event?
+                nextElapsed = nextDuration;
+            }
+        }
+        // otherwise, there's no cooldown, so reset
+        else {
+            nextElapsed = 0f;
+            nextDuration = 0f;
+        }
+
+        c.State.Next.Jump_CooldownElapsed = nextElapsed;
+        c.State.Next.Jump_CooldownDuration = nextDuration;
+    }
+
     /// track jump and switch to the correct jump if necessary
-    void IncrementJumps() {
+    void AdvanceJumps() {
         c.State.Next.Jumps += 1;
         c.State.Next.JumpTuningJumpIndex += 1;
 
@@ -313,14 +343,19 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     /// if the character should jump within the last n frames
-    bool ShouldStartJump(int buffer = 1) {
-        return HasJump() && HasJumpInput(buffer);
+    bool ShouldStartJump(float buffer = 0) {
+        return HasJump() && HasJumpInput(Mathf.Max(buffer, c.State.Next.Jump_CooldownElapsed));
     }
 
     /// if the character has a jump available to execute
     bool HasJump() {
         // if the character can't ever jump
         if (c.Tuning.Jumps.Length == 0) {
+            return false;
+        }
+
+        // can't jump while in cooldown
+        if (c.State.Next.Jump_CooldownElapsed < c.State.Next.Jump_CooldownDuration) {
             return false;
         }
 
@@ -332,11 +367,6 @@ sealed class JumpSystem: CharacterSystem {
         // if it's your first jump, account for coyote time
         if (IsFirstJump && c.State.Next.CoyoteTime >= 0f) {
             return true;
-        }
-
-        // can't jump while in cooldown
-        if (c.State.Next.CooldownTime > 0f) {
-            return false;
         }
 
         // zero count means infinite jumps
@@ -354,19 +384,8 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     /// if the player had a new jump input within the last n frames
-    bool HasJumpInput(int buffer = 1) {
-        var frame = c.Input.GetJumpDown(buffer);
-        if (frame == -1) {
-            return false;
-        }
-
-        for (var i = 0; i < frame; i++) {
-            if (c.State[i].Events.Contains(CharacterEvent.Jump)) {
-                return false;
-            }
-        }
-
-        return true;
+    bool HasJumpInput(float buffer) {
+        return c.Input.IsJumpDown(buffer);
     }
 
     /// if the character is on something ground like

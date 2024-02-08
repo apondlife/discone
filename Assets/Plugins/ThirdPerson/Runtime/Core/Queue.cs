@@ -56,11 +56,16 @@ public sealed class Queue<T>: IEnumerable<T> {
         get => m_Head == k_None;
     }
 
+    /// the length of the queue
+    public int Length {
+        get => m_Queue.Length;
+    }
+
     /// gets the snapshot nth-newest snapshot.
     public T this[int offset] {
         get {
             if (offset >= m_Queue.Length) {
-                throw new IndexOutOfRangeException();
+                throw new IndexOutOfRangeException($"offset: {offset} > {m_Queue.Length}");
             }
 
             return m_Queue[GetIndex(offset)];

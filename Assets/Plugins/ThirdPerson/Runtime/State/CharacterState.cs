@@ -176,7 +176,10 @@ public sealed partial class CharacterState {
         public float CoyoteTime = 0;
 
         /// the cooldown time remaining
-        public float CooldownTime = 0;
+        public float Jump_CooldownElapsed = 0f;
+
+        /// the cooldown time duration
+        public float Jump_CooldownDuration = 0f;
 
         /// the index of the current jump tuning
         public uint JumpTuningIndex = 0;

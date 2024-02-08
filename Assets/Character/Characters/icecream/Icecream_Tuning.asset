@@ -150,7 +150,7 @@ MonoBehaviour:
   Gravity: -70
   JumpGravity: -30
   FallGravity: -40
-  JumpBuffer: 10
+  Jump_BufferDuration: 0
   CoyoteDuration: 0.24
   LandingDuration: 0.3
   Jump_SurfaceAngleScale:
@@ -177,12 +177,12 @@ MonoBehaviour:
         outWeight: 0.12897366
       - serializedVersion: 3
         time: 80
-        value: 0.0012817383
-        inSlope: -0.046644054
-        outSlope: Infinity
-        tangentMode: 1
+        value: 0.69
+        inSlope: -0.014443206
+        outSlope: -0.014443206
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0.02025321
+        inWeight: 0.03251735
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 90
@@ -197,7 +197,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     Dst:
-      Min: 0.69
+      Min: 0.3
       Max: 1
   Jump_Normal_Speed:
     Curve:
@@ -252,11 +252,20 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 80
         value: 1
-        inSlope: 0.067428134
-        outSlope: 0.067428134
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.0943985
+        outWeight: 0
+      - serializedVersion: 3
+        time: 90
+        value: 0.21832275
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -277,8 +286,8 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       Dst:
-        Min: 0
-        Max: 0
+        Min: 0.4
+        Max: 0.4
     Vertical_Speed:
       Curve:
         serializedVersion: 2

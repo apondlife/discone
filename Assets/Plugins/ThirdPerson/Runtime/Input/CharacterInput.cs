@@ -6,17 +6,23 @@ namespace ThirdPerson {
 public sealed class CharacterInput {
     // -- constants --
     #if UNITY_EDITOR
-    const uint k_BufferSize = 60 * 5;
+    const float k_BufferDuration = 5f;
     #else
-    const uint k_BufferSize = 30;
+    const float k_BufferDuration = 1f;
     #endif
 
     // -- props --
     /// the source of input frames
     CharacterInputSource m_Source = null;
 
-    /// the most recent input frames
-    Queue<Frame> m_Frames = new(k_BufferSize);
+    /// a queue of the most recent input frames
+    readonly Queue<Frame> m_Frames = new((uint)(k_BufferDuration / Time.fixedDeltaTime));
+
+    /// the last time we read input
+    float m_Time;
+
+    // the time the last jump down input happened
+    float m_JumpDownTime;
 
     // -- commands --
     /// drive the input with a source
@@ -33,7 +39,17 @@ public sealed class CharacterInput {
             return;
         }
 
-        m_Frames.Add(m_Source.Read());
+        // add a new input frame
+        var curr = m_Frames[0];
+        var next = m_Source.Read();
+        m_Frames.Add(next);
+
+        // track input times
+        m_Time = Time.time;
+
+        if (next.IsJumpPressed && !curr.IsJumpPressed) {
+            m_JumpDownTime = m_Time;
+        }
     }
 
     // -- queries --
@@ -47,38 +63,22 @@ public sealed class CharacterInput {
         get => Move.magnitude;
     }
 
-    /// if jump is down this frame
+    /// if jump is pressed this frame
     public bool IsJumpPressed {
-        get => m_Frames[0]?.IsJumpDown ?? false;
+        get => m_Frames[0]?.IsJumpPressed ?? false;
     }
 
-    /// if surface hold is down this frame
-    public bool IsSurfaceHoldPressed {
-        get => m_Frames[0]?.IsJumpDown ?? false;
-    }
-
-    /// if crouch is down this frame
+    /// if crouch is pressed this frame
     public bool IsCrouchPressed {
-        get => m_Frames[0]?.IsCrouchDown ?? false;
+        get => m_Frames[0]?.IsCrouchPressed ?? false;
     }
 
-    /// if jump was pressed in the past n frames
-    public bool IsJumpDown(int past = 1) {
-        return GetJumpDown(past) != -1;
+    /// if jump was pressed within the buffer window
+    public bool IsJumpDown(float buffer) {
+        return IsJumpPressed && (m_Time - m_JumpDownTime) <= buffer;
     }
 
-    /// the most recent frame jump was pressed in the past n frames
-    public int GetJumpDown(int past = 1) {
-        for (var i = 0; i < past; i++) {
-            if (m_Frames[i]?.IsJumpDown == true && !m_Frames[i + 1]?.IsJumpDown == true) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    /// if jump was pressed in the past n frames
+    /// if move was pressed in the past n frames
     public bool IsMoveIdle(int past = 1) {
         for (var i = 0; i < past; i++) {
             if (m_Frames[i]?.Move != Vector3.zero) {
@@ -90,21 +90,21 @@ public sealed class CharacterInput {
     }
 
     /// the buffer size
-    public uint BufferSize {
-        get => k_BufferSize;
+    public int BufferSize {
+        get => m_Frames.Length;
     }
 
     // -- types --
-    /// the minimial frame of input for third person to work
+    /// the minimal frame of input for third person to work
     public interface Frame {
         /// the projected position of the move analog stick
         Vector3 Move { get; }
 
         /// if jump is down
-        bool IsJumpDown { get; }
+        bool IsJumpPressed { get; }
 
         /// if crouch is down
-        bool IsCrouchDown { get; }
+        bool IsCrouchPressed { get; }
     }
 
     /// a default frame structure
@@ -136,11 +136,11 @@ public sealed class CharacterInput {
             get => m_Move;
         }
 
-        public bool IsJumpDown {
+        public bool IsJumpPressed {
             get => m_IsJumpDown;
         }
 
-        public bool IsCrouchDown {
+        public bool IsCrouchPressed {
             get => m_IsCrouchDown;
         }
     }
