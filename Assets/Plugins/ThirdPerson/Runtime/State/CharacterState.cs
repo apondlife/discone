@@ -145,9 +145,6 @@ public sealed partial class CharacterState {
         /// the current surface transfer tangent
         public Vector3 SurfaceTangent;
 
-        /// the frame in the jump squat
-        public int JumpSquatFrame = -1;
-
         /// the time the character hasn't moved
         public float IdleTime = 0.0f;
 
@@ -175,11 +172,11 @@ public sealed partial class CharacterState {
         /// the buffered surface to jump from;
         public CharacterCollision JumpSurface;
 
-        /// the number of coyote frames the available
-        public int CoyoteFrames = 0;
+        /// the coyote time remaining
+        public float CoyoteTime = 0;
 
-        /// the number of cooldown frames available
-        public int CooldownFrames = 0;
+        /// the cooldown time remaining
+        public float CooldownTime = 0;
 
         /// the index of the current jump tuning
         public uint JumpTuningIndex = 0;
@@ -235,7 +232,7 @@ public sealed partial class CharacterState {
 
         /// if the character is touching the ground (or thinks they are)
         public bool IsOnGround {
-            get => CoyoteFrames > 0;
+            get => CoyoteTime > 0f;
         }
 
         /// if the character is on the wall

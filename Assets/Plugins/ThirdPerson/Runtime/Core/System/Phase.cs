@@ -10,13 +10,13 @@ public struct Phase: IEquatable<Phase> {
     public string Name;
 
     /// the action to call the phase the frame starts
-    readonly public Action Enter;
+    public readonly Action Enter;
 
     /// the action to call every frame the phase is active
-    readonly public Action<float> Update;
+    public readonly Action<float> Update;
 
     /// the action to call the frame the phase ends
-    readonly public Action Exit;
+    public readonly Action Exit;
 
     // -- lifetime --
     public Phase(
@@ -33,11 +33,11 @@ public struct Phase: IEquatable<Phase> {
 
     // -- commands --
     /// does nothing
-    private static void NoOp() {
+    static void NoOp() {
     }
 
     /// does nothing
-    private static void NoOp(float _) {
+    static void NoOp(float _) {
     }
 
     // -- IEquatable --
@@ -45,7 +45,7 @@ public struct Phase: IEquatable<Phase> {
         return Name == phase.Name;
     }
 
-    override public bool Equals(Object obj) {
+    public override bool Equals(Object obj) {
         if (obj is Phase phase) {
             return Equals(phase);
         } else {
@@ -53,7 +53,7 @@ public struct Phase: IEquatable<Phase> {
         }
     }
 
-    override public int GetHashCode() {
+    public override int GetHashCode() {
         return Name.GetHashCode();
     }
 }

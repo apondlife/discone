@@ -104,8 +104,10 @@ sealed class CharacterDistortion: MonoBehaviour {
         // if in jump squat, add jump squash
         if (m_State.IsInJumpSquat) {
             var jumpSquatPct = 1f;
-            if (m_Tuning.Jumps[0].MaxJumpSquatFrames > 0) {
-                jumpSquatPct = (float)m_State.JumpSquatFrame / m_Tuning.Jumps[0].MaxJumpSquatFrames;
+
+            var jumpTuning = m_Tuning.Jumps[m_State.JumpTuningIndex];
+            if (jumpTuning.MaxJumpSquatTime > 0f) {
+                jumpSquatPct = m_State.JumpState.PhaseElapsed / jumpTuning.MaxJumpSquatTime;
             }
 
             destIntensity = m_JumpSquat_Intensity.Evaluate(jumpSquatPct);
@@ -137,7 +139,6 @@ sealed class CharacterDistortion: MonoBehaviour {
         m_Intensity += m_IntensitySpeed * Time.deltaTime;
         m_IntensitySpeed *= m_VerticalAcceleration_IntensityDamp;
     }
-
 
     // -- commands --
     void Distort() {

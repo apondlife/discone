@@ -99,8 +99,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("how many frames you can have pressed jump before landing to execute the jump")]
     public int JumpBuffer;
 
-    [Tooltip("max number of frames the character can be in the air and still jump")]
-    public int MaxCoyoteFrames;
+    [Tooltip("the max time the character can be in the air and still jump")]
+    public float MaxCoyoteTime;
 
     [FormerlySerializedAs("Jump_GroundAngleScale")]
     [Tooltip("the jump scale as a fn of surface angle")]
@@ -120,17 +120,17 @@ public sealed class CharacterTuning: ScriptableObject {
 
     [Serializable]
     public class JumpTuning {
-        [Tooltip("the number of times this jump can be executed; 0 = infinite")]
+        [Tooltip("the number of times this jump can be used; 0 = infinite, -1 = none")]
         public int Count = 1;
 
+        [Tooltip("the min time jump squat lasts")]
+        public float MinJumpSquatTime;
+
+        [Tooltip("the max time jump squat lasts")]
+        public float MaxJumpSquatTime;
+
         [Tooltip("how long after this jump the character can jump again")]
-        public int CooldownFrames;
-
-        [Tooltip("the min number of frames jump squat lasts")]
-        public int MinJumpSquatFrames = 5;
-
-        [Tooltip("the max number of frames jump squat lasts")]
-        public int MaxJumpSquatFrames = 5;
+        public float CooldownTime;
 
         // TODO: convert to map out curve & remember how to propely update all prefabs
         [Tooltip("the minimum jump speed (minimum length jump squat)")]
@@ -241,9 +241,10 @@ public sealed class CharacterTuning: ScriptableObject {
     // -- lifecycle --
     void OnValidate() {
         if (Jumps == null || Jumps.Length == 0) {
-            MaxCoyoteFrames = 0;
+            MaxCoyoteTime = 0f;
         } else {
-            MaxCoyoteFrames = Math.Max(MaxCoyoteFrames, Jumps[0].MinJumpSquatFrames);
+            // make sure coyote time is not greater than jumpsquat duration
+            MaxCoyoteTime = Math.Max(MaxCoyoteTime, Jumps[0].MinJumpSquatTime);
         }
     }
 }

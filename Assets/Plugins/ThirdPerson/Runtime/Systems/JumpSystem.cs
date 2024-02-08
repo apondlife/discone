@@ -48,18 +48,18 @@ sealed class JumpSystem: CharacterSystem {
         c.State.Next.IsLanding = false;
     }
 
-    void NotJumping_Update(float _) {
+    void NotJumping_Update(float delta) {
         // reset jump surface whenever grounded
         if (IsOnSurface()) {
             ResetJumpSurface();
         }
-        // but if not, subtract a frame
+        // but if not, subtract delta
         else {
-            c.State.CoyoteFrames -= 1;
+            c.State.CoyoteTime -= delta;
         }
 
         // fall once coyote time expires
-        if (c.State.CoyoteFrames <= 0) {
+        if (c.State.CoyoteTime <= 0f) {
             ChangeTo(Falling);
             return;
         }
@@ -84,18 +84,18 @@ sealed class JumpSystem: CharacterSystem {
         c.Events.Schedule(CharacterEvent.Land);
     }
 
-    void Landing_Update(float _) {
+    void Landing_Update(float delta) {
         // reset jump surface whenever grounded
         if (IsOnSurface()) {
             ResetJumpSurface();
         }
-        // but if not, subtract a frame
+        // but if not, subtract a delta
         else {
-            c.State.CoyoteFrames -= 1;
+            c.State.CoyoteTime -= delta;
         }
 
         // fall once coyote time expires
-        if (c.State.CoyoteFrames <= 0) {
+        if (c.State.CoyoteTime <= 0f) {
             ChangeTo(Falling);
             return;
         }
@@ -123,7 +123,6 @@ sealed class JumpSystem: CharacterSystem {
 
     void JumpSquat_Enter() {
         c.State.Next.IsInJumpSquat = true;
-        c.State.Next.JumpSquatFrame = 0;
     }
 
     void JumpSquat_Update(float delta) {
@@ -132,13 +131,13 @@ sealed class JumpSystem: CharacterSystem {
         // jump if jump was released or jump squat ended
         var shouldJump = (
             // if the jump squat finished
-            c.State.Next.JumpSquatFrame >= JumpTuning.MaxJumpSquatFrames ||
+            PhaseElapsed >= JumpTuning.MaxJumpSquatTime ||
             // or jump was released after the minimum
-            (!c.Input.IsJumpPressed && c.State.Next.JumpSquatFrame >= JumpTuning.MinJumpSquatFrames)
+            (!c.Input.IsJumpPressed && PhaseElapsed >= JumpTuning.MinJumpSquatTime)
         );
 
         if (shouldJump) {
-            Jump();
+            Jump(PhaseElapsed);
             ChangeTo(Falling);
             return;
         }
@@ -155,11 +154,11 @@ sealed class JumpSystem: CharacterSystem {
         if (IsFirstJump) {
             // if airborne, reduce coyote time
             if (!isOnSurface) {
-                c.State.CoyoteFrames -= 1;
+                c.State.CoyoteTime -= delta;
             }
 
             // when coyote time expires, consume this jump
-            if (c.State.CoyoteFrames <= 0) {
+            if (c.State.CoyoteTime <= 0) {
                 IncrementJumps();
 
                 // if we're out of jumps, fall instead
@@ -169,9 +168,6 @@ sealed class JumpSystem: CharacterSystem {
                 }
             }
         }
-
-        // count jump squat frames
-        c.State.Next.JumpSquatFrame += 1;
     }
 
     void JumpSquat_Exit() {
@@ -194,9 +190,9 @@ sealed class JumpSystem: CharacterSystem {
     void Falling_Update(float delta) {
         AddJumpGravity();
 
-        // count coyote frames
-        c.State.CoyoteFrames -= 1;
-        c.State.CooldownFrames -= 1;
+        // update timers
+        c.State.CoyoteTime -= delta;
+        c.State.CooldownTime -= delta;
 
         // start jump on a new press
         if (ShouldStartJump()) {
@@ -214,7 +210,7 @@ sealed class JumpSystem: CharacterSystem {
     // -- commands --
     /// reset the next surface to jump from
     void ResetJumpSurface() {
-        c.State.Next.CoyoteFrames = c.Tuning.MaxCoyoteFrames;
+        c.State.Next.CoyoteTime = c.Tuning.MaxCoyoteTime;
         c.State.Next.JumpSurface = c.State.Next.MainSurface;
     }
 
@@ -234,16 +230,16 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     /// add the jump impulse for this jump index
-    void Jump() {
+    void Jump(float elapsed) {
         // accumulate jump delta dv
         var v0 = c.State.Curr.Velocity;
         var dv = Vector3.zero;
 
         // get curved percent complete through jump squat
         var pct = Mathf.InverseLerp(
-            JumpTuning.MinJumpSquatFrames,
-            JumpTuning.MaxJumpSquatFrames,
-            c.State.Next.JumpSquatFrame
+            JumpTuning.MinJumpSquatTime,
+            JumpTuning.MaxJumpSquatTime,
+            elapsed
         );
 
         // AAA: should this work like this for air jumps?
@@ -281,8 +277,8 @@ sealed class JumpSystem: CharacterSystem {
         // update state
         c.State.Next.Inertia = 0f;
         c.State.Next.Velocity += dv;
-        c.State.Next.CoyoteFrames = 0;
-        c.State.Next.CooldownFrames = JumpTuning.CooldownFrames;
+        c.State.Next.CoyoteTime = 0f;
+        c.State.Next.CooldownTime = JumpTuning.CooldownTime;
         c.Events.Schedule(CharacterEvent.Jump);
     }
 
@@ -342,11 +338,12 @@ sealed class JumpSystem: CharacterSystem {
         // jump finish here, and transitioning directly to jump
 
         // if it's your first jump, account for coyote time
-        if (IsFirstJump && c.State.Next.CoyoteFrames >= 0) {
+        if (IsFirstJump && c.State.Next.CoyoteTime >= 0f) {
             return true;
         }
 
-        if (c.State.Next.CooldownFrames > 0) {
+        // can't jump while in cooldown
+        if (c.State.Next.CooldownTime > 0f) {
             return false;
         }
 

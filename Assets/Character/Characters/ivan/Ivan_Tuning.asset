@@ -13,41 +13,8 @@ MonoBehaviour:
   m_Name: Ivan_Tuning
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
-  Surface_PerceptionLengthSpeed: 0
-  Surface_PerceptionAngularSpeed: 0
   Horizontal_MinSpeed: 0.85
   Horizontal_Acceleration: 100
-  Horizontal_Drag: 0.004
-  Horizontal_StaticFriction: 30
-  Horizontal_KineticFriction: 6
-  Surface_FrictionScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: -0.011111111
-        outSlope: -0.011111111
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 90
-        value: 0
-        inSlope: -0.011111111
-        outSlope: -0.011111111
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 1
   TurnSpeed: 200
   PivotSpeed: 1080
   TimeToPivot: 0.6
@@ -100,10 +67,11 @@ MonoBehaviour:
       Min: 0
       Max: 0
   Gravity: -130
-  JumpBuffer: 10
-  MaxCoyoteFrames: 8
   JumpGravity: -30
-  Jump_GroundAngle: 80
+  FallGravity: -60
+  JumpBuffer: 10
+  MaxCoyoteTime: 0.16
+  MaxCoyoteFrames: 8
   Jump_SurfaceAngleScale:
     m_Curve:
       serializedVersion: 2
@@ -134,13 +102,15 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 0
-  FallGravity: -60
   Landing_Duration: 0
   Jumps:
   - Count: 1
-    CooldownFrames: 0
+    MinJumpSquatTime: 0
+    MaxJumpSquatTime: 0.4
     MinJumpSquatFrames: 0
     MaxJumpSquatFrames: 20
+    CooldownTime: 0
+    CooldownFrames: 0
     Vertical_MinSpeed: 20
     Vertical_MaxSpeed: 20
     Vertical_SpeedCurve:
@@ -169,10 +139,85 @@ MonoBehaviour:
       m_RotationOrder: 0
     Upwards_MomentumLoss: 0
     Horizontal_MomentumLoss: 0
-  WallLayer:
+  Surface_InertiaDecayTime:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Surface_AngleScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Surface_DeltaScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Surface_DiScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Surface_DiRotation:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Surface_Grip:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Surface_VerticalGrip_Scale:
     serializedVersion: 2
-    m_Bits: 4294967295
-  WallAngleScale:
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  Surface_VerticalGrip_Up:
+    Min: 0
+    Max: 0
+  Surface_VerticalGrip_Down:
+    Min: 0
+    Max: 0
+  Surface_VerticalGrip_UpHold:
+    Min: 0
+    Max: 0
+  Surface_VerticalGrip_DownHold:
+    Min: 0
+    Max: 0
+  Surface_UpwardsVelocityBias:
     m_Curve:
       serializedVersion: 2
       m_Curve: []
@@ -182,130 +227,50 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 0
-  WallGravity:
-    m_Sustain: 0
-    m_MaxScale: 0
-    m_Attack:
+  Surface_PerceptionDuration: 0
+  Surface_PerceptionAngularSpeed: 0
+  Friction_AerialDrag: 0
+  Friction_SurfaceDrag: 0.004
+  Friction_SurfaceDragScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Dst:
+      Min: 0
+      Max: 0
+  Friction_Static: 30
+  Friction_Kinetic: 6
+  Friction_SurfaceFrictionScale:
+    m_Curve:
+      serializedVersion: 2
       m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_Duration: 0
-    m_Decay:
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_Duration: 0
-    m_Release:
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_Duration: 0
-  WallHoldGravity:
-    m_Sustain: 0
-    m_MaxScale: 0
-    m_Attack:
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_Duration: 0
-    m_Decay:
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_Duration: 0
-    m_Release:
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_Duration: 0
-  WallMagnet:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -0.011111111
+        outSlope: -0.011111111
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 90
+        value: 0
+        inSlope: -0.011111111
+        outSlope: -0.011111111
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Dst:
       Min: 0
-      Max: 0
-  WallMagnetInputScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 0
-  WallMagnetTransferScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 0
-  WallTransferScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 0
-  WallTransferDiAngle:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 0
-  WallTransferDiScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 0
-  WallGravityAmplitudeScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 0
+      Max: 1
   TiltForBaseAcceleration: 30
   MaxTilt: 69
   TiltSmoothing: 0.1

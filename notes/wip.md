@@ -2,24 +2,22 @@ what is projected
 ---
 
 # bugs/problems
+- landing transfer on vertical jump regression
 - grip pulls you over corners weirdly (on the frame collision misses) (should it pull you towards the hit point?)
-- cant let go of wall when pulling back
 
 # surface
-- upwards/downwards upgrip?
-
 - unrealized motion (minmove) be converted into inertia?
   - set velocity to zero on min_move?
 
 - maybe? move off wall on jump?
 
 # jump
-
+- cooldown on surfaces
+- tuning proportional to charge time
+- jump di? (input direction)
+- uncharged jump is a cute hop
 - canceling some proportion of momentum in input opposing velocity
-- air jump charging
-- some kind of tiny bad air jump
 - real jump charge (small jump -> tangent, big charge -> normal, or maybe the other way around)
-- jump di?
 
 # crouch
 
