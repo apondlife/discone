@@ -152,7 +152,6 @@ MonoBehaviour:
   FallGravity: -40
   JumpBuffer: 10
   MaxCoyoteTime: 0.24
-  MaxCoyoteFrames: 12
   Jump_SurfaceAngleScale:
     m_Curve:
       serializedVersion: 2
@@ -269,10 +268,7 @@ MonoBehaviour:
   - Count: 1
     MinJumpSquatTime: 0
     MaxJumpSquatTime: 0.4
-    MinJumpSquatFrames: 0
-    MaxJumpSquatFrames: 20
     CooldownTime: 0
-    CooldownFrames: 0
     Vertical_MinSpeed: 20
     Vertical_MaxSpeed: 20
     Vertical_SpeedCurve:
@@ -303,11 +299,8 @@ MonoBehaviour:
     Horizontal_MomentumLoss: 0
   - Count: 1
     MinJumpSquatTime: 0
-    MaxJumpSquatTime: 0
-    MinJumpSquatFrames: 0
-    MaxJumpSquatFrames: 20
+    MaxJumpSquatTime: 0.4
     CooldownTime: 0
-    CooldownFrames: 0
     Vertical_MinSpeed: 0
     Vertical_MaxSpeed: 0.5
     Vertical_SpeedCurve:
