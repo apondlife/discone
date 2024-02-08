@@ -191,13 +191,20 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the force the surface pulls character in as a fn of surface angle")]
     public MapOutCurve Surface_Grip;
 
-    [FormerlySerializedAs("Surface_Gravity")]
-    [FormerlySerializedAs("WallGravity")]
-    [Tooltip("the maximum upwards pull while on the surface as a fn of surface angle")]
-    public MapOutCurve Surface_UpwardsGrip;
+    [Tooltip("the vertical grip scale as a fn of surface angle")]
+    public AnimationCurve Surface_VerticalGrip_Scale;
 
-    [Tooltip("the upwards pull multiplier while on the surface and holding jump")]
-    public float Surface_UpwardsGrip_HoldScale;
+    [Tooltip("the vertical grip on the surface while moving up")]
+    public FloatRange Surface_VerticalGrip_Up;
+
+    [Tooltip("the vertical grip on the surface while moving down")]
+    public FloatRange Surface_VerticalGrip_Down;
+
+    [Tooltip("the vertical grip on the surface while moving up & holding")]
+    public FloatRange Surface_VerticalGrip_UpHold;
+
+    [Tooltip("the vertical grip on the surface while moving down & holding")]
+    public FloatRange Surface_VerticalGrip_DownHold;
 
     [Tooltip("how much upwards velocity we add to our velocity projection tangent as a fn of surface angle")]
     public MapOutCurve Surface_UpwardsVelocityBias;

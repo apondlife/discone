@@ -17,12 +17,21 @@ public struct MapOutCurve {
     // -- queries --
     /// evaluate the curve in the range
     public float Evaluate(float input) {
+        return Evaluate(m_Curve, m_Dst, input);
+    }
+
+    /// evaluate the curve in the range
+    public static float Evaluate(
+        AnimationCurve curve,
+        FloatRange range,
+        float input
+    ) {
         var k = input;
-        if (m_Curve != null && m_Curve.length != 0) {
-            k = m_Curve.Evaluate(input);
+        if (curve != null && curve.length != 0) {
+            k = curve.Evaluate(input);
         }
 
-        return m_Dst.Lerp(k);
+        return range.Lerp(k);
     }
 
     // -- debug --

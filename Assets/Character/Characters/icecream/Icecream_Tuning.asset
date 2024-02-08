@@ -407,7 +407,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_Dst:
       Min: 0.18
-      Max: 1.45
+      Max: 1.1
   Surface_DeltaScale:
     m_Curve:
       serializedVersion: 2
@@ -583,44 +583,51 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 0.0000697
-  Surface_UpwardsGrip:
+  Surface_VerticalGrip_Scale:
+    serializedVersion: 2
     m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: -0.00012833194
-        outSlope: -0.00012833194
-        tangentMode: 0
-        weightedMode: 2
-        inWeight: 0.33333334
-        outWeight: 0.52138746
-      - serializedVersion: 3
-        time: 90
-        value: 1
-        inSlope: -0
-        outSlope: 0.0001411758
-        tangentMode: 1
-        weightedMode: 3
-        inWeight: 0.39834023
-        outWeight: 0.42634854
-      - serializedVersion: 3
-        time: 180
-        value: 0
-        inSlope: 0.00002242215
-        outSlope: 0.00002242215
-        tangentMode: 0
-        weightedMode: 1
-        inWeight: 0.48825055
-        outWeight: 0.33333334
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 24
-  Surface_UpwardsGrip_HoldScale: 1.8
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 90
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 180
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  Surface_VerticalGrip_Up:
+    Min: 0
+    Max: 24
+  Surface_VerticalGrip_Down:
+    Min: 0
+    Max: 12
+  Surface_VerticalGrip_UpHold:
+    Min: 0
+    Max: 47
+  Surface_VerticalGrip_DownHold:
+    Min: 0
+    Max: 40
   Surface_UpwardsVelocityBias:
     m_Curve:
       serializedVersion: 2
