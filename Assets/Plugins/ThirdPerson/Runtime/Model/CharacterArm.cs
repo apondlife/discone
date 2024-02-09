@@ -21,22 +21,26 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
 
     // -- tuning --
     [Header("tuning")]
-    [Tooltip("the move speed of the ik position")]
-    [SerializeField] float m_MoveSpeed;
-
     [Tooltip("the turn speed of the ik rotation")]
     [SerializeField] float m_TurnSpeed;
 
-    [Tooltip("the duration of the ik blend when dropping target")]
+    [Tooltip("the duration of the ik blend when searching for target")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_BlendDuration")]
     [SerializeField] float m_BlendInDuration;
 
     [Tooltip("the duration of the ik blend when dropping target")]
     [SerializeField] float m_BlendOutDuration;
 
+    [Header("tuning - stride")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_MaxDistance")]
     [Tooltip("the max distance before searching for a new dest")]
     [SerializeField] float m_StrideLength;
+
+    [Tooltip("the move speed of the ik position, when striding")]
+    [SerializeField] float m_StrideSpeed;
+
+    [Tooltip("the distance the hand can be from the target when striding when close enough")]
+    [SerializeField] float m_StrideEpsilon;
 
     // -- props --
     /// if the limb is moving towards something
@@ -64,7 +68,18 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
     Quaternion m_DestRotation;
 
     /// the square stride length
+    #if UNITY_EDITOR
+    float m_SqrStrideLength => m_StrideLength * m_StrideLength;
+    #else
     float m_SqrStrideLength;
+    #endif
+
+    /// the square stride length
+    #if UNITY_EDITOR
+    float m_SqrStrideEpsilon => m_StrideEpsilon * m_StrideEpsilon;
+    #else
+    float m_SqrStrideEpsilon;
+    #endif
 
     // -- lifecycle --
     void Awake() {
@@ -72,7 +87,10 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
         m_Container = GetComponentInParent<Character>();
 
         // cache stride length
+        #if !UNITY_EDITOR
         m_SqrStrideLength = m_StrideLength * m_StrideLength;
+        m_SqrStrideEpsilon = m_StrideEpsilon * m_StrideEpsilon;
+        #endif
     }
 
     void FixedUpdate() {
@@ -87,6 +105,25 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
 
         var delta = Time.deltaTime;
 
+
+        // lerp the ik position towards destination
+        if (m_IsActive) {
+            // if we are fully blended in, we are striding
+            var dest = transform.InverseTransformPoint(m_DestPosition);
+            // TODO: this could be better kept as a state, striding => not striding
+            var hasCompletedStride = Vector3.SqrMagnitude(m_CurrPosition - dest) >= m_SqrStrideEpsilon;
+            var isStriding = m_Weight >= 1.0f && hasCompletedStride;
+            if (isStriding) {
+                m_CurrPosition = Vector3.MoveTowards(
+                    m_CurrPosition,
+                    dest,
+                    m_StrideSpeed * Time.deltaTime
+                );
+            } else {
+                m_CurrPosition = dest;
+            }
+        }
+
         // lerp the weight
         var isBlendingIn = m_IsActive && m_HasTarget;
         m_Weight = Mathf.MoveTowards(
@@ -94,15 +131,6 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
             isBlendingIn ? 1.0f : 0.0f,
             delta / (isBlendingIn ? m_BlendInDuration : m_BlendOutDuration)
         );
-
-        // lerp the ik position towards destination
-        if (m_IsActive) {
-            m_CurrPosition = Vector3.MoveTowards(
-                m_CurrPosition,
-                transform.InverseTransformPoint(m_DestPosition),
-                m_MoveSpeed * Time.deltaTime
-            );
-        }
     }
 
     // -- commands --
@@ -162,8 +190,9 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
         get => m_Goal;
     }
 
-    /// if moving to this position completes a stride
-    bool HasCompletedStrideAt(Vector3 pos) {
+    /// if this position exceeds the stride length
+    bool HasExceededStrideLength(Vector3 pos) {
+        // so that we can tune the values
         return Vector3.SqrMagnitude(pos - m_DestPosition) >= m_SqrStrideLength;
     }
 
@@ -178,8 +207,13 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
             return;
         }
 
+
+        // TODO: move anchor forward based on speed?
         var pos = other.ClosestPoint(m_Anchor.position);
-        if (!m_HasTarget || HasCompletedStrideAt(pos)) {
+        if (!m_HasTarget || HasExceededStrideLength(pos)) {
+            if (HasExceededStrideLength(pos)) {
+               Debug.Log("Completed stride");
+            }
             // start tracking the target
             m_HasTarget = true;
 
@@ -205,7 +239,7 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
         m_HasTarget = true;
 
         var pos = other.ClosestPoint(m_Anchor.position);
-        if (HasCompletedStrideAt(pos)) {
+        if (HasExceededStrideLength(pos)) {
             m_DestPosition = pos;
         }
     }
