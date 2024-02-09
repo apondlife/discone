@@ -36,13 +36,11 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the dot product of move facing and velocity prop
     const string k_PropMoveFacingDotVelocity = "MoveFacingDotVelocity";
 
-    // -- fields --
-    [Header("parameters")]
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] bool AnimateScale;
+    /// the move input animator prop
+    const string k_PropSurfaceScale = "SurfaceScale";
 
-    // -- rotation --
-    [Header("rotation")]
+    // -- fields --
+    [Header("config")]
     [Tooltip("the rotation speed in degrees towards look direction")]
     [FormerlySerializedAs("m_RotationSpeed")]
     [SerializeField] float m_RotationSpeed_Look = 0.0f;
@@ -56,6 +54,9 @@ public sealed class CharacterModel: MonoBehaviour {
     [Tooltip("the rotation away from the wall in degrees")]
     [FormerlySerializedAs("m_WallRotation")]
     [SerializeField] float m_MaxWallRotation = 30.0f;
+
+    [Tooltip("surface scaling factor as a function of surface angle (degrees)")]
+    [SerializeField] AnimationCurve m_SurfaceScale;
 
     // -- refs --
     [Header("refs")]
@@ -83,9 +84,6 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// the list of ik limbs
     CharacterLimb[] m_Limbs;
-
-    /// the initial scale of the character
-    Vector3 m_InitialScale;
 
     /// the legs layer index
     int m_LayerLegs;
@@ -115,7 +113,6 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // set props
         m_Limbs = GetComponentsInChildren<CharacterLimb>();
-        m_InitialScale = transform.localScale;
 
         // init animator
         m_Animator = GetComponentInChildren<Animator>();
@@ -196,6 +193,7 @@ public sealed class CharacterModel: MonoBehaviour {
             m_Input.Move.magnitude
         );
 
+
         // set jump animation params
         anim.SetBool(
             k_PropIsLanding,
@@ -233,11 +231,19 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // blend yoshiing
         // TODO: lerp
+        var surface = state.MainSurface;
         var yoshiing = (m_Input.IsJumpPressed ? 1.0f : 0.0f);
-        if (state.MainSurface.IsSome) {
-            yoshiing *= Mathf.Abs(state.MainSurface.Angle / 90.0f);
+
+        if (surface.IsSome) {
+            yoshiing *= Mathf.Abs(surface.Angle / 90.0f);
+
+            anim.SetFloat(
+                k_PropSurfaceScale,
+                m_SurfaceScale.Evaluate(surface.Angle)
+            );
         }
 
+        // layers
         anim.SetLayerWeight(
             m_LayerLegs,
             yoshiing
