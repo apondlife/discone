@@ -27,6 +27,9 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
     [Tooltip("the turn speed of the ik rotation")]
     [SerializeField] float m_TurnSpeed;
 
+    [Tooltip("the surface angle for which the leg ik is active")]
+    [SerializeField] float m_SurfaceAngle;
+
     [Tooltip("the duration of the ik blend when dropping target")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_BlendDuration")]
     [SerializeField] float m_BlendInDuration;
@@ -77,7 +80,8 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
 
     void FixedUpdate() {
         // feets are active when we're airborne
-        SetIsActive(!m_Container.State.Next.IsOnGround);
+        var surface = m_Container.State.Next.MainSurface;
+        SetIsActive(surface.IsNone || surface.Angle > m_SurfaceAngle);
     }
 
     void Update() {

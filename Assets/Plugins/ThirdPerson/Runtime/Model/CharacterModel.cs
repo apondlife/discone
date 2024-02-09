@@ -264,11 +264,8 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// tilt the model as a fn of character acceleration
     void Tilt(CharacterState.Frame state) {
-        var destWallRotation = Quaternion.identity;
-        if (state.IsOnWall && !state.IsOnGround) {
-            var tangent = Vector3.Cross(Vector3.up, state.MainSurface.Normal);
-            destWallRotation = Quaternion.AngleAxis(m_MaxWallRotation, tangent);
-        }
+        var tangent = Vector3.Cross(Vector3.up, state.MainSurface.Normal);
+        var destWallRotation = Quaternion.AngleAxis(m_MaxWallRotation, tangent);
 
         m_WallRotation = Quaternion.RotateTowards(
             m_WallRotation,
