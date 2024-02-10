@@ -51,7 +51,7 @@ sealed class CrouchSystem: CharacterSystem {
         c.State.Next.Surface_StaticFriction = c.Tuning.Friction_Static;
 
         // switch to crouching on input
-        if (c.State.Next.IsOnGround && c.Input.IsCrouchPressed) {
+        if (c.State.Next.IsColliding && c.Input.IsCrouchPressed) {
             ChangeTo(Crouching);
             return;
         }
@@ -81,7 +81,7 @@ sealed class CrouchSystem: CharacterSystem {
 
     void Crouching_Update(float delta) {
         // if airborne or if crouch is released, end crouch
-        if (!c.State.Next.IsOnGround || !c.Input.IsCrouchPressed) {
+        if (!c.State.Next.IsColliding || !c.Input.IsCrouchPressed) {
             ChangeTo(NotCrouching);
             return;
         }
