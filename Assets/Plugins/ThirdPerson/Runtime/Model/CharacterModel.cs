@@ -42,18 +42,21 @@ public sealed class CharacterModel: MonoBehaviour {
     // -- fields --
     [Header("config")]
     [Tooltip("the rotation speed in degrees towards look direction")]
+    [FormerlySerializedAs("m_RotationSpeed_Look")]
     [FormerlySerializedAs("m_RotationSpeed")]
-    [SerializeField] float m_RotationSpeed_Look = 0.0f;
+    [SerializeField] float m_LookRotation_Speed = 0.0f;
 
-    [Tooltip("the rotation speed in degrees away from the wall")]
-    [SerializeField] float m_RotationSpeed_Wall = 0.0f;
-
+    [FormerlySerializedAs("m_RotationSpeed_Tilt")]
     [Tooltip("the rotation speed in degrees away for tilting")]
-    [SerializeField] float m_RotationSpeed_Tilt = 100.0f;
+    [SerializeField] float m_MoveTilt_Speed = 100.0f;
 
-    [Tooltip("the rotation away from the wall in degrees")]
-    [FormerlySerializedAs("m_WallRotation")]
-    [SerializeField] float m_MaxWallRotation = 30.0f;
+    [FormerlySerializedAs("m_SurfaceRotation_Speed")]
+    [FormerlySerializedAs("m_RotationSpeed_Wall")]
+    [Tooltip("the rotation speed in degrees away from the wall")]
+    [SerializeField] float m_SurfaceTilt_Speed = 0.0f;
+
+    [Tooltip("the rotation away from the wall in degrees as a fn of surface angle")]
+    [SerializeField] MapOutCurve m_SurfaceTilt_Range;
 
     [Tooltip("surface scaling factor as a function of surface angle (degrees)")]
     [SerializeField] AnimationCurve m_SurfaceScale;
@@ -95,10 +98,10 @@ public sealed class CharacterModel: MonoBehaviour {
     Quaternion m_LookRotation = Quaternion.identity;
 
     /// the stored wall rotation
-    Quaternion m_WallRotation = Quaternion.identity;
+    Quaternion m_SurfaceTilt = Quaternion.identity;
 
     /// the stored tilt rotation
-    Quaternion m_TiltRotation = Quaternion.identity;
+    Quaternion m_MoveTilt = Quaternion.identity;
 
     /// the stored speed when landing
     float m_LandingSpeed = 0.0f;
@@ -161,13 +164,16 @@ public sealed class CharacterModel: MonoBehaviour {
 
     void Update() {
         // interpolate frame based on time since last update
-        var end = m_State.Next;
         var delta = Time.time - m_LastFixedUpdate;
-        var state = CharacterState.Frame.Interpolate(m_State.Curr, end,  delta / Time.fixedDeltaTime);
+        var state = CharacterState.Frame.Interpolate(
+            m_State.Curr,
+            m_State.Next,
+            delta / Time.fixedDeltaTime
+        );
 
         // update animator & model
         SyncAnimator(state);
-        Tilt(state);
+        Tilt(state, Time.deltaTime);
     }
 
     // -- commands --
@@ -263,29 +269,37 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     /// tilt the model as a fn of character acceleration
-    void Tilt(CharacterState.Frame state) {
-        var tangent = Vector3.Cross(Vector3.up, state.MainSurface.Normal);
-        var destWallRotation = Quaternion.AngleAxis(m_MaxWallRotation, tangent);
-
-        m_WallRotation = Quaternion.RotateTowards(
-            m_WallRotation,
-            destWallRotation,
-            m_RotationSpeed_Wall * Time.deltaTime
+    void Tilt(CharacterState.Frame state, float delta) {
+        var surface = state.MainSurface;
+        var surfaceTiltTangent = Vector3.Cross(
+            Vector3.up,
+            surface.Normal
         );
 
-        m_TiltRotation = Quaternion.RotateTowards(
-            m_TiltRotation,
+        var destSurfaceTilt = Quaternion.AngleAxis(
+            m_SurfaceTilt_Range.Evaluate(surface.Angle),
+            surfaceTiltTangent
+        );
+
+        m_SurfaceTilt = Quaternion.RotateTowards(
+            m_SurfaceTilt,
+            destSurfaceTilt,
+            m_SurfaceTilt_Speed * delta
+        );
+
+        m_MoveTilt = Quaternion.RotateTowards(
+            m_MoveTilt,
             state.Tilt,
-            m_RotationSpeed_Tilt * Time.deltaTime
+            m_MoveTilt_Speed * delta
         );
 
         m_LookRotation = Quaternion.RotateTowards(
             m_LookRotation,
             state.LookRotation,
-            m_RotationSpeed_Look * Time.deltaTime
+            m_LookRotation_Speed * delta
         );
 
-        transform.localRotation = m_WallRotation * m_TiltRotation * m_LookRotation;
+        transform.localRotation = m_SurfaceTilt * m_MoveTilt * m_LookRotation;
     }
 
     static void SetDefaultLayersRecursively(GameObject parent, int layer) {

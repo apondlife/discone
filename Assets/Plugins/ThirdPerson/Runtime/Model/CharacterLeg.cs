@@ -19,6 +19,10 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
     [Tooltip("the anchor transform for collision checks")]
     [SerializeField] Transform m_Anchor;
 
+    // TODO: convert this into some kind of curve (controls weight?)
+    [Tooltip("the surface angle for which the leg ik is active")]
+    [SerializeField] float m_SurfaceAngle;
+
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the move speed of the ik position")]
@@ -26,9 +30,6 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
 
     [Tooltip("the turn speed of the ik rotation")]
     [SerializeField] float m_TurnSpeed;
-
-    [Tooltip("the surface angle for which the leg ik is active")]
-    [SerializeField] float m_SurfaceAngle;
 
     [Tooltip("the duration of the ik blend when dropping target")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_BlendDuration")]
