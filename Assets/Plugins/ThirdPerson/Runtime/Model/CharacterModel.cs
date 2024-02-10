@@ -221,10 +221,8 @@ public sealed class CharacterModel: MonoBehaviour {
             state.Velocity.y
         );
 
-        if (!state.IsOnGround) {
-            m_LandingSpeed = state.Velocity.y;
-        }
-
+        // TODO: fix rolling
+        m_LandingSpeed = state.IsColliding ? state.Inertia : 0f;
         anim.SetFloat(
             k_PropLandingSpeed,
             m_LandingSpeed
