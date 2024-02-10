@@ -28,6 +28,9 @@ public class DebugOptions: MonoBehaviour {
     [FormerlySerializedAs("m_Entites")]
     [SerializeField] EntitiesVariable m_Entities;
 
+    [Tooltip("the save store")]
+    [SerializeField] Store m_Store;
+
     // -- props --
     /// the menu input
     DebugInput m_Input;
@@ -76,6 +79,9 @@ public class DebugOptions: MonoBehaviour {
             var replayBufferClear = replayBufferType.GetMethod("Clear");
             replayBufferClear.Invoke(replayBuffer, new object[]{});
         }
+
+        // clear player save data
+        m_Store.ResetPlayer();
 
         // restart online, which will restart the game
         var online = GameObject.FindObjectOfType<Online>();

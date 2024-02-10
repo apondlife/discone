@@ -52,6 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CharacterKey: 0
   m_Entities: {fileID: 11400000, guid: 8ad8e32d8125540e8b5040f0b6c0d78c, type: 2}
+  m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
 --- !u!114 &1942248847958021238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94,12 +95,15 @@ MonoBehaviour:
   useCullingMasks: 0
   m_Width: 3
   m_Scale: 1
+  m_Tags: 1
   m_IsEnabled: 0
   m_IsPaused: 0
   m_Range:
     Min: 0
     Max: 300
-  m_Values: []
+  m_Values:
+    m_Entries: []
+    m_Warning: 
 --- !u!1 &3480099051977534007
 GameObject:
   m_ObjectHideFlags: 0

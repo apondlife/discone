@@ -84,6 +84,10 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
 
     public override void OnStep(int foot, bool isRunning) {
+        if (State == null) {
+            return;
+        }
+
         if (Speed < 0.01f) {
             // we get ghostly step events from the animator even when idle
             // since the walk animation is blended in at some epsilon amount
@@ -101,6 +105,10 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     // Must run in fixed update for state checks to make sense!
     void FixedUpdate() {
+        if (State == null) {
+            return;
+        }
+
         if (!m_ContinuousEmitter.IsPlaying()) {
             // [idk why this doesn't seem to work when called in Start()]
             m_ContinuousEmitter.Play();

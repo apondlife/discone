@@ -135,9 +135,21 @@ public sealed class Store: ScriptableObject {
 
     /// reset all state
     [ContextMenu("Reset Store")]
-    void Reset() {
-        File.Delete(WorldPath);
+    public void Reset() {
+        ResetPlayer();
+        ResetWorld();
+    }
+
+    /// reset player state
+    public void ResetPlayer() {
+        Log.Store.I($"resetting player path @ {PlayerPath}");
         File.Delete(PlayerPath);
+    }
+
+    /// reset player state
+    public void ResetWorld() {
+        Log.Store.I($"resetting world path @ {WorldPath}");
+        File.Delete(WorldPath);
     }
 
     // -- queries --

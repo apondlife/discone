@@ -28,7 +28,15 @@ public abstract class CharacterMusicBase: MonoBehaviour {
         }
     }
 
-    protected virtual FMODParams CurrentFmodParams => new FMODParams {};
+    protected virtual FMODParams CurrentFmodParams {
+        get => new FMODParams { };
+    }
 
-    protected ThirdPerson.CharacterState State => m_Container.Character.State;
+    protected ThirdPerson.CharacterState State {
+        get => m_Container?.Character?.State;
+    }
+
+    public bool HasCharacter {
+        get => State != null;
+    }
 }
