@@ -151,13 +151,16 @@ public sealed class CharacterTuning: ScriptableObject {
 
     [FormerlySerializedAs("WallAngleScale")]
     [FormerlySerializedAs("WallAngleScale_New")]
-    [Tooltip("the scaling factor of the surface slide as a fn of surface angle")]
+    [Tooltip("the scaling factor of the transfer as a fn of surface angle")]
     public MapOutCurve Surface_AngleScale;
 
     [FormerlySerializedAs("WallTransferScale")]
     [FormerlySerializedAs("Surface_TransferAttack")]
-    [Tooltip("the scaling factor of the surface transfer as a fn of surface angle change")]
+    [Tooltip("the scaling factor of the transfer as a fn of surface angle change")]
     public MapOutCurve Surface_DeltaScale;
+
+    [Tooltip("the scaling factor of the transfer as a fn of surface angle (when landing)")]
+    public MapOutCurve Surface_LandingScale;
 
     [FormerlySerializedAs("Surface_TransferDiScale")]
     [FormerlySerializedAs("WallTransferDiScale")]

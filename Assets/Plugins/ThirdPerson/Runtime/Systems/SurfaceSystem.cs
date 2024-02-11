@@ -155,10 +155,18 @@ namespace ThirdPerson {
             var angleScale = c.Tuning.Surface_AngleScale.Evaluate(currAngle);
 
             //
+            // scale when landing (from air)
+            //
+            var landingScale = 1f;
+            if (percSurface.IsNone) {
+                landingScale = c.Tuning.Surface_LandingScale.Evaluate(currAngle);
+            }
+
+            //
             // add impulse along transfer tangent
             //
             var transferTg = Quaternion.AngleAxis(diRot, currNormal) * surfaceTg;
-            var transferScale = angleScale * diScale * deltaScale;
+            var transferScale = angleScale * diScale * deltaScale * landingScale;
             var transferImpulse = transferScale * inertiaDecayMag * transferTg;
 
             //

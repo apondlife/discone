@@ -563,6 +563,34 @@ MonoBehaviour:
     Dst:
       Min: 1
       Max: 1.18
+  Surface_LandingScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2.4881399
+        outSlope: 2.4881399
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.052630637
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0.052549157
+        outSlope: 0.052549157
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.15103072
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 1
   Surface_DiScale:
     Curve:
       serializedVersion: 2
