@@ -170,6 +170,11 @@ public sealed class CharacterModel: MonoBehaviour {
 
     void FixedUpdate() {
         m_LastFixedUpdate = Time.time;
+
+        // alternate legs
+        if (m_State.Next.Events.Contains(CharacterEvent.Jump)) {
+            m_JumpLeg = (m_JumpLeg + 1) % 2;
+        }
     }
 
     void Update() {
@@ -237,12 +242,6 @@ public sealed class CharacterModel: MonoBehaviour {
                 k_PropJumpCharge,
                 jumpSquatPct
             );
-        }
-
-        // alternate legs
-        if (state.Events.Contains(CharacterEvent.Jump)) {
-            // BUG: this is not updating every time it happens (and its not the interpolation)
-            m_JumpLeg = (m_JumpLeg + 1) % 2;
         }
 
         anim.SetBool(
