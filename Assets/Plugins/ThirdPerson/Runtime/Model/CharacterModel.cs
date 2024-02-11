@@ -12,8 +12,12 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the arms animator layer (for yoshiing animation)
     const string k_LayerArms = "Arms";
 
+    // TODO: Prop.SetXXX(x)
     /// the airborne animator prop
     const string k_PropIsAirborne = "IsAirborne";
+
+    /// the jump charge animator prop
+    const string k_PropJumpCharge = "JumpCharge";
 
     /// the is landing animator prop
     const string k_PropIsLanding = "IsLanding";
@@ -38,6 +42,9 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// the move input animator prop
     const string k_PropSurfaceScale = "SurfaceScale";
+
+    /// the random value animator prop
+    const string k_PropJumpLeg = "JumpLeg";
 
     // -- fields --
     [Header("config")]
@@ -108,6 +115,9 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// the stored last time of fixedUpdate (for interpolation)
     float m_LastFixedUpdate = 0.0f;
+
+    /// the current jumping leg (0-left, 1-right)
+    int m_JumpLeg = 0;
 
     // -- lifecycle --
     void Start() {
@@ -199,7 +209,6 @@ public sealed class CharacterModel: MonoBehaviour {
             m_Input.Move.magnitude
         );
 
-
         // set jump animation params
         anim.SetBool(
             k_PropIsLanding,
@@ -210,6 +219,31 @@ public sealed class CharacterModel: MonoBehaviour {
             k_PropIsAirborne,
             state.MainSurface.IsNone
         );
+
+
+        if (state.IsInJumpSquat) {
+            var jumpSquatPct = 1f;
+            var jumpTuning = m_Tuning.Jumps[m_State.JumpTuningIndex];
+            if (jumpTuning.JumpSquatDuration.Max > 0f) {
+                jumpSquatPct = state.JumpState.PhaseElapsed / jumpTuning.JumpSquatDuration.Max;
+            }
+
+            anim.SetFloat(
+                k_PropJumpLeg,
+                m_JumpLeg
+            );
+
+            anim.SetFloat(
+                k_PropJumpCharge,
+                jumpSquatPct
+            );
+        }
+
+        // alternate legs
+        if (state.Events.Contains(CharacterEvent.Jump)) {
+            // BUG: this is not updating every time it happens (and its not the interpolation)
+            m_JumpLeg = (m_JumpLeg + 1) % 2;
+        }
 
         anim.SetBool(
             k_PropIsCrouching,
