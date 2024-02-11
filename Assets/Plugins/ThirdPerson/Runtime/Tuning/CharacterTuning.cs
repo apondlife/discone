@@ -15,16 +15,17 @@ public sealed class CharacterTuning: ScriptableObject {
 
     // -- movement system --
     [Header("movement system")]
+    [FormerlySerializedAs("Horizontal_MinSpeed")]
     [Tooltip("the horizontal speed at which the character stops")]
-    public float Horizontal_MinSpeed;
+    public float Surface_MinSpeed;
 
-    /// the character's theoretical max horizontal speed
-    public float Horizontal_MaxSpeed {
-        get => Mathf.Sqrt(Mathf.Max(0.0f, Horizontal_Acceleration - Friction_Kinetic) / Friction_SurfaceDrag);
+    /// the character's theoretical max surface speed
+    public float Surface_MaxSpeed {
+        get => Mathf.Sqrt(Mathf.Max(0.0f, Surface_Acceleration.Evaluate(0f) - Friction_Kinetic) / Friction_SurfaceDrag);
     }
 
-    [Tooltip("the acceleration from 0 to max speed in units")]
-    public float Horizontal_Acceleration;
+    [Tooltip("the movement acceleration as a fn of surface angle")]
+    public MapOutCurve Surface_Acceleration;
 
     [Tooltip("the turn speed in radians")]
     public float TurnSpeed;
@@ -43,7 +44,7 @@ public sealed class CharacterTuning: ScriptableObject {
 
     /// the deceleration of the character while pivoting
     public float PivotDeceleration {
-        get => TimeToPivot > 0 ? Horizontal_MaxSpeed / TimeToPivot : float.PositiveInfinity;
+        get => TimeToPivot > 0 ? Surface_MaxSpeed / TimeToPivot : float.PositiveInfinity;
     }
 
     public float PivotSqrSpeedThreshold {

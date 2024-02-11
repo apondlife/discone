@@ -199,7 +199,7 @@ public sealed class CharacterModel: MonoBehaviour {
             k_PropMoveSpeed,
             Mathx.InverseLerpUnclamped(
                 0.0f,
-                m_Tuning.Horizontal_MaxSpeed,
+                m_Tuning.Surface_MaxSpeed,
                 state.SurfaceVelocity.magnitude
             )
         );

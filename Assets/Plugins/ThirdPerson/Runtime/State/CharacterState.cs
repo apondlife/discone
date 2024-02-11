@@ -84,7 +84,7 @@ public sealed partial class CharacterState {
 
     /// if the ground speed this frame is below the movement threshold
     public bool IsStopped {
-        get => Curr.SurfaceVelocity.magnitude < m_Tuning.Horizontal_MinSpeed;
+        get => Curr.SurfaceVelocity.magnitude < m_Tuning.Surface_MinSpeed;
     }
 
     /// the buffer size

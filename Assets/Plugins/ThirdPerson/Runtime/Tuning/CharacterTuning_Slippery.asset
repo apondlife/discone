@@ -13,8 +13,18 @@ MonoBehaviour:
   m_Name: CharacterTuning_Slippery
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: not sure, todo
-  Horizontal_MinSpeed: 0
+  Surface_MinSpeed: 0
   Horizontal_Acceleration: 0
+  Surface_Acceleration:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
   TurnSpeed: 0
   PivotSpeed: 0
   TimeToPivot: 0
@@ -69,7 +79,7 @@ MonoBehaviour:
   Gravity: 0
   JumpGravity: 0
   FallGravity: 0
-  JumpBuffer: 0
+  Jump_BufferDuration: 0
   CoyoteDuration: 0
   LandingDuration: 0
   Jump_SurfaceAngleScale:

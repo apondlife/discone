@@ -13,8 +13,18 @@ MonoBehaviour:
   m_Name: CharacterTuning
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
-  Horizontal_MinSpeed: 0.85
+  Surface_MinSpeed: 0.85
   Horizontal_Acceleration: 30
+  Surface_Acceleration:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 30
+      Max: 30
   TurnSpeed: 360
   PivotSpeed: 1080
   TimeToPivot: 0.6
@@ -69,7 +79,7 @@ MonoBehaviour:
   Gravity: -80
   JumpGravity: -30
   FallGravity: -60
-  JumpBuffer: 5
+  Jump_BufferDuration: 0
   CoyoteDuration: 0
   LandingDuration: 0
   Jump_SurfaceAngleScale:
