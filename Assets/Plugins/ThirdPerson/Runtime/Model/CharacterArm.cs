@@ -211,9 +211,6 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
         // TODO: move anchor forward based on speed?
         var pos = other.ClosestPoint(m_Anchor.position);
         if (!m_HasTarget || HasExceededStrideLength(pos)) {
-            if (HasExceededStrideLength(pos)) {
-               Debug.Log("Completed stride");
-            }
             // start tracking the target
             m_HasTarget = true;
 

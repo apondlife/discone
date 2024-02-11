@@ -228,6 +228,7 @@ public sealed partial class CharacterState {
             get => MainSurface.Normal;
         }
 
+        // TODO: IsOnSurface? checking main surface vs checking collisions?
         /// if this is colliding with anything
         public bool IsColliding {
             get => Surfaces != null && Surfaces.Length != 0;

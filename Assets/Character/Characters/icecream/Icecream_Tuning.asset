@@ -314,11 +314,11 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 0
       Dst:
-        Min: 20
+        Min: 15
         Max: 20
     Upwards_MomentumLoss: 0.11
     Horizontal_MomentumLoss: 0
-  - Count: 1
+  - Count: 0
     JumpSquatDuration:
       Min: 0
       Max: 0.4
@@ -330,8 +330,8 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       Dst:
-        Min: 0
-        Max: 0
+        Min: 0.4
+        Max: 0.4
     Vertical_Speed:
       Curve:
         serializedVersion: 2

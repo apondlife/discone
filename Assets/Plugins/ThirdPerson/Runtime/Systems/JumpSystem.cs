@@ -214,7 +214,7 @@ sealed class JumpSystem: CharacterSystem {
     /// reset the next surface to jump from
     void ResetJumpSurface() {
         c.State.Next.CoyoteTime = c.Tuning.CoyoteDuration;
-        c.State.Next.JumpSurface = c.State.Next.MainSurface;
+        c.State.Next.JumpSurface = c.State.Curr.PerceivedSurface;
     }
 
     /// add jump anti-gravity when holding the button
@@ -241,13 +241,19 @@ sealed class JumpSystem: CharacterSystem {
         // get curved percent complete through jump squat
         var pct = JumpTuning.JumpSquatDuration.InverseLerp(elapsed);
 
-        // AAA: should this work like this for air jumps?
-        var surfaceScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(c.State.Next.JumpSurface.Angle);
+        // the cached surface we're jumping off of
+        var surface = c.State.Next.JumpSurface;
 
-        // cancel vertical momentum if falling.
-        // according to tuning if going up
-        // (we don't want to lose upwards speed in general, but not jumping if too fast is too weird)
-        var verticalLoss = v0.y > 0 ? JumpTuning.Upwards_MomentumLoss : 1;
+        // scale jumps based on surface, if any
+        var surfaceScale = 1f;
+        if (surface.IsSome) {
+            surfaceScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(c.State.Next.JumpSurface.Angle);
+        }
+
+        // cancel vertical momentum if falling. according to tuning if going up (we don't want to lose
+        // upwards speed in general, but not jumping if too fast is too weird)
+        // TODO: add downwards momentum loss so that air jumps can be very bad
+        var verticalLoss = v0.y > 0f ? JumpTuning.Upwards_MomentumLoss : 1f;
         dv -= surfaceScale * v0.y * verticalLoss * Vector3.up;
 
         // cancel horizontal momentum
@@ -260,19 +266,18 @@ sealed class JumpSystem: CharacterSystem {
         dv += jumpSpeed * surfaceScale * Vector3.up;
 
         // add surface normal jump velocity
-        if (c.State.Next.PerceivedSurface.IsSome) {
+        if (surface.IsSome) {
             var normalSpeed = c.Tuning.Jump_Normal_Speed.Evaluate(pct);
-            var normalSurface = c.State.Next.PerceivedSurface;
-            var normalScale = c.Tuning.Jump_Normal_SurfaceAngleScale.Evaluate(normalSurface.Angle);
-            dv += normalSpeed * normalScale * normalSurface.Normal;
+            var normalScale = c.Tuning.Jump_Normal_SurfaceAngleScale.Evaluate(surface.Angle);
+            dv += normalSpeed * normalScale * surface.Normal;
         }
 
         // update state
         c.State.Next.Inertia = 0f;
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteTime = 0f;
-        c.State.Next.Jump_CooldownDuration = JumpTuning.CooldownDuration.Evaluate(pct);
         c.State.Next.Jump_CooldownElapsed = 0f;
+        c.State.Next.Jump_CooldownDuration = JumpTuning.CooldownDuration.Evaluate(pct);
 
         c.Events.Schedule(CharacterEvent.Jump);
     }
