@@ -44,7 +44,6 @@ public class JumpPlume: MonoBehaviour {
             // TODO: get actual jump speed
             var count = m_SqrSpeedToEmission.Evaluate(sqrSpeed);
 
-            Debug.Log($"burst: {sqrSpeed} => {count}");
             m_Burst.count = count;
             var main = m_Particles.main;
             main.startLifetimeMultiplier = m_SqrSpeedToLifetime.Evaluate(sqrSpeed);

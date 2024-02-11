@@ -16,9 +16,10 @@ what is projected
 # jump
 - cooldown on surfaces
 - tuning proportional to charge time
-- jump di? (input direction)
 - uncharged jump is a cute hop
+
 - canceling some proportion of momentum in input opposing velocity
+- jump di? (input direction)
 - real jump charge (small jump -> tangent, big charge -> normal, or maybe the other way around)
 
 # crouch
