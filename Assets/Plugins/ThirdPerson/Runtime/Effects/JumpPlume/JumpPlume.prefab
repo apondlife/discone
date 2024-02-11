@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8325800054078236285}
+  - component: {fileID: 3449069787016760385}
   - component: {fileID: 2617727799574329463}
   - component: {fileID: 6202410583152854561}
   m_Layer: 6
@@ -33,6 +34,57 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3449069787016760385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9217667694199591758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82b8d2fbb83b445ea48ab0b8f3a2ad35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SqrSpeedToEmission:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Src:
+      Min: 180
+      Max: 300
+    m_Dst:
+      Min: 4
+      Max: 20
+  m_SqrSpeedToSize:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Src:
+      Min: 180
+      Max: 300
+    m_Dst:
+      Min: 0.3
+      Max: 1
+  m_SqrSpeedToLifetime:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Src:
+      Min: 180
+      Max: 300
+    m_Dst:
+      Min: 0.3
+      Max: 1
 --- !u!198 &2617727799574329463
 ParticleSystem:
   m_ObjectHideFlags: 0
