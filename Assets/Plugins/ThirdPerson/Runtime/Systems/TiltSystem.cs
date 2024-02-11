@@ -54,7 +54,7 @@ sealed class TiltSystem : CharacterSystem {
         }
 
         var tiltAngle = Mathf.Clamp(
-            acceleration.magnitude / c.Tuning.Horizontal_Acceleration * c.Tuning.TiltForBaseAcceleration,
+            acceleration.magnitude / c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle) * c.Tuning.TiltForBaseAcceleration,
             0,
             c.Tuning.MaxTilt
         );

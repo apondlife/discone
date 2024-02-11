@@ -13,65 +13,220 @@ MonoBehaviour:
   m_Name: CharacterTuning_Slippery
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: not sure, todo
-  m_Acceleration: 30
-  m_Deceleration: 2
-  m_MinPlanarSpeed: 0
-  m_TurnSpeed: 360
-  m_PivotSpeed: 1080
-  m_TimeToPivot: 0.2
-  m_PivotStartThreshold: -0.5
-  m_TurningFriction: 0
-  m_AerialDriftAcceleration: 10
-  m_Gravity: -60
-  m_JumpBuffer: 0
-  m_MinJumpSquatFrames: 5
-  m_MaxJumpSquatFrames: 5
-  m_MaxCoyoteFrames: 5
-  m_JumpSpeedCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0.029391985
-      outSlope: 0.029391985
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.13501143
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2.9582162
-      outSlope: 2.9582162
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.11670482
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  m_MinJumpSpeed: 15
-  m_MaxJumpSpeed: 15
-  m_JumpGravity: -30
-  m_FallGravity: -20
-  m_JumpSpeedCurve_Horizontal:
+  Surface_MinSpeed: 0
+  Horizontal_Acceleration: 0
+  Surface_Acceleration:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  TurnSpeed: 0
+  PivotSpeed: 0
+  TimeToPivot: 0
+  PivotStartThreshold: 0
+  PivotSpeedThreshold: 0
+  Air_TurnSpeed: 0
+  AerialDriftAcceleration: 0
+  Crouch_StaticFriction: 0
+  Crouch_TurnSpeed: 0
+  Crouch_LateralMaxSpeed: 0
+  Crouch_Gravity: 0
+  Crouch_PositiveKineticFriction:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Crouch_NegativeKineticFriction:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Crouch_PositiveDrag:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Crouch_NegativeDrag:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Gravity: 0
+  JumpGravity: 0
+  FallGravity: 0
+  Jump_BufferDuration: 0
+  CoyoteDuration: 0
+  LandingDuration: 0
+  Jump_SurfaceAngleScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Jump_Normal_Speed:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Jump_Normal_SurfaceAngleScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Jumps: []
+  Surface_InertiaDecayTime:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Surface_AngleScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Surface_DeltaScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Surface_DiScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Surface_DiRotation:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Surface_Grip:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Surface_VerticalGrip_Scale:
     serializedVersion: 2
     m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_MinJumpSpeed_Horizontal: 0
-  m_MaxJumpSpeed_Horizontal: 0
-  m_WallLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  m_WallGravity: 0
-  m_WallMagnet: 0.5
-  m_TiltForBaseAcceleration: 30
-  m_MaxTilt: 69
-  m_TiltSmoothing: 0.1
-  m_DutchScale: 0.2
-  m_DutchSmoothing: 0.2
-  m_Damping: 0
-  m_FastDamping: 0
+  Surface_VerticalGrip_Up:
+    Min: 0
+    Max: 0
+  Surface_VerticalGrip_Down:
+    Min: 0
+    Max: 0
+  Surface_VerticalGrip_UpHold:
+    Min: 0
+    Max: 0
+  Surface_VerticalGrip_DownHold:
+    Min: 0
+    Max: 0
+  Surface_UpwardsVelocityBias:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Surface_PerceptionDuration: 0
+  Surface_PerceptionAngularSpeed: 0
+  Friction_AerialDrag: 0
+  Friction_SurfaceDrag: 0
+  Friction_SurfaceDragScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Friction_Static: 0
+  Friction_Kinetic: 0
+  Friction_SurfaceFrictionScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  TiltForBaseAcceleration: 0
+  MaxTilt: 0
+  TiltSmoothing: 0

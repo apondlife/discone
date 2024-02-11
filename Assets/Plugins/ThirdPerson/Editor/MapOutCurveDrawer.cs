@@ -23,8 +23,8 @@ sealed class MapOutCurveDrawer: PropertyDrawer {
         E.BeginProperty(r, label, prop);
 
         // get attrs
-        var curve = prop.FindPropertyRelative("m_Curve");
-        var range = prop.FindPropertyRelative("m_Dst");
+        var curve = prop.FindPropertyRelative(nameof(MapOutCurve.Curve));
+        var range = prop.FindPropertyRelative(nameof(MapOutCurve.Dst));
 
         // draw label w/ indent
         E.LabelField(r, label);

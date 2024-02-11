@@ -3,6 +3,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
 
+using E = UnityEditor.EditorGUILayout;
+using G = UnityEngine.GUILayout;
+
 namespace ThirdPerson.Editor {
 
 [CustomEditor(typeof(CharacterTuning))]
@@ -27,6 +30,11 @@ sealed class CharacterTuningEditor: UnityEditor.Editor {
     }
 
     public override void OnInspectorGUI() {
+        // show buttons
+        if (G.Button("sync all")) {
+            SyncAll();
+        }
+
         // show developer description
         Field(serializedObject.FindProperty("m_Description"));
 
@@ -58,14 +66,26 @@ sealed class CharacterTuningEditor: UnityEditor.Editor {
 
     // -- commands --
     void Field(SerializedProperty prop) {
-        EditorGUILayout.PropertyField(prop);
+        E.PropertyField(prop);
     }
 
     void Row(string label, object value) {
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.PrefixLabel(label);
-        EditorGUILayout.LabelField(value.ToString());
-        EditorGUILayout.EndHorizontal();
+        E.BeginHorizontal();
+        E.PrefixLabel(label);
+        E.LabelField(value.ToString());
+        E.EndHorizontal();
+    }
+
+    static void SyncAll() {
+        var guids = AssetDatabase.FindAssets($"t:{nameof(CharacterTuning)}");
+        foreach (var guid in guids) {
+            var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+            var asset = AssetDatabase.LoadAssetAtPath<CharacterTuning>(assetPath);
+            EditorUtility.SetDirty(asset);
+            AssetDatabase.SaveAssetIfDirty(asset);
+        }
+
+        AssetDatabase.Refresh();
     }
 }
 

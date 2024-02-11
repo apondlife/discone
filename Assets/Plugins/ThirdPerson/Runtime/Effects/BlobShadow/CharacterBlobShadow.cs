@@ -68,7 +68,7 @@ public class CharacterBlobShadow: MonoBehaviour {
         transform.position = position;
     }
 
-    private void Start() {
+    void Start() {
         m_Projector = GetComponent<Projector>();
         m_BaseSize = m_Projector.orthographicSize;
         m_State = GetComponentInParent<Character>().State;
@@ -80,7 +80,7 @@ public class CharacterBlobShadow: MonoBehaviour {
         m_ProjectorColor = m_Projector.material.color;
     }
 
-    private void Update() {
+    void Update() {
         var dist = m_MaxResizeDistance;
         var didHit = Physics.Raycast(transform.position, Vector3.down, out var hit, m_MaxResizeDistance + m_FeetDistance, m_GroundLayers);
         if (didHit) {

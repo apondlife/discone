@@ -108,7 +108,9 @@ sealed class MovementSystem: CharacterSystem {
         );
 
         // add movement force
-        c.State.Next.Force += c.Tuning.Horizontal_Acceleration * Vector3.Project(inputDir, c.State.Next.Forward);
+        var direction = Vector3.Project(inputDir, c.State.Next.Forward);
+        var acceleration = c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle);
+        c.State.Next.Force += acceleration * direction;
     }
 
     // -- Sliding --
@@ -141,7 +143,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // add lateral movement
         var moveLateral = scaleLateral * c.Tuning.Crouch_LateralMaxSpeed * inputSlideLateral;
-        c.State.Next.Force += c.Tuning.Horizontal_Acceleration * moveLateral;
+        c.State.Next.Force += c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle) * moveLateral;
 
         // turn towards input direction
         TurnTowards(

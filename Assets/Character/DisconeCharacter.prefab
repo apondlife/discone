@@ -101,7 +101,7 @@ MonoBehaviour:
   m_NegativeScale: 1
   m_PositiveScale: 1
   m_JumpSquat_Intensity:
-    m_Curve:
+    Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -125,7 +125,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Dst:
+    Dst:
       Min: 1
       Max: 0.1
   m_VerticalAcceleration_StretchIntensity: 0.0069
@@ -165,7 +165,7 @@ Transform:
   m_Children:
   - {fileID: 676918594969115258}
   m_Father: {fileID: 3345656352466467715}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5285072794697494767
 MonoBehaviour:
@@ -456,11 +456,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 608918589759718208, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1061133086809451152, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1114928914988804812, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_IsActive
@@ -468,7 +468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1233429247980680919, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2505435118483560403, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
@@ -490,6 +490,10 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5289908576633361908, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_SurfaceAngle
+      value: 80
+      objectReference: {fileID: 0}
     - target: {fileID: 5851062847133453444, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -500,11 +504,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6883150959805328182, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7238456180043096080, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_LocalPosition.y
       value: 1.8769989
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238456180043201584, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7250430580801210356, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_Limbs.Array.size
@@ -791,33 +799,30 @@ MonoBehaviour:
   m_RemoteState:
     Position: {x: 0, y: 0, z: 0}
     Velocity: {x: 0, y: 0, z: 0}
+    Inertia: 0
+    Force: {x: 0, y: 0, z: 0}
     Acceleration: {x: 0, y: 0, z: 0}
     Forward: {x: 0, y: 0, z: 0}
     IsLanding: 0
     IsInJumpSquat: 0
     IsCrouching: 0
     Tilt: {x: 0, y: 0, z: 0, w: 1}
-    Ground:
+    Surfaces: []
+    MainSurface:
       Normal: {x: 0, y: 0, z: 0}
       Point: {x: 0, y: 0, z: 0}
-      Angle: 0
-    Wall:
-      Normal: {x: 0, y: 0, z: 0}
-      Point: {x: 0, y: 0, z: 0}
-      Angle: 0
-    CurrSurface:
-      Normal: {x: 0, y: 0, z: 0}
-      Point: {x: 0, y: 0, z: 0}
+      Source: 0
       Angle: 0
     PerceivedSurface:
       Normal: {x: 0, y: 0, z: 0}
       Point: {x: 0, y: 0, z: 0}
+      Source: 0
       Angle: 0
-    JumpSquatFrame: -1
+    SurfaceTangent: {x: 0, y: 0, z: 0}
     IdleTime: 0
-    Horizontal_Drag: 0
-    Horizontal_KineticFriction: 0
-    Horizontal_StaticFriction: 0
+    Surface_Drag: 0
+    Surface_KineticFriction: 0
+    Surface_StaticFriction: 0
     PivotFrame: -1
     PivotDirection: {x: 0, y: 0, z: 0}
     CrouchDirection: {x: 0, y: 0, z: 0}
@@ -825,18 +830,24 @@ MonoBehaviour:
     JumpSurface:
       Normal: {x: 0, y: 0, z: 0}
       Point: {x: 0, y: 0, z: 0}
+      Source: 0
       Angle: 0
-    CoyoteFrames: 0
-    CooldownFrames: 0
+    CoyoteTime: 0
+    Jump_CooldownElapsed: 0
+    Jump_CooldownDuration: 0
     JumpTuningIndex: 0
     JumpTuningJumpIndex: 0
     Events:
-      m_Events: 0
+      Mask: 0
     CollisionState:
       PhaseName: 
       PhaseStart: 0
       PhaseElapsed: 0
     CrouchState:
+      PhaseName: 
+      PhaseStart: 0
+      PhaseElapsed: 0
+    FrictionState:
       PhaseName: 
       PhaseStart: 0
       PhaseElapsed: 0
@@ -852,11 +863,11 @@ MonoBehaviour:
       PhaseName: 
       PhaseStart: 0
       PhaseElapsed: 0
-    TiltState:
+    SurfaceState:
       PhaseName: 
       PhaseStart: 0
       PhaseElapsed: 0
-    WallState:
+    TiltState:
       PhaseName: 
       PhaseStart: 0
       PhaseElapsed: 0
@@ -996,7 +1007,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3865053424001678558, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3865053424001678558, guid: 77fadbd782d543b419b4d910ec821a0c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1081,7 +1092,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7530634531407672995, guid: e8b3f908432164718981db564420553e, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7530634531407672995, guid: e8b3f908432164718981db564420553e, type: 3}
       propertyPath: m_LocalPosition.x

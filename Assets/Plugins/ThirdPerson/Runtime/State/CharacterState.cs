@@ -84,7 +84,7 @@ public sealed partial class CharacterState {
 
     /// if the ground speed this frame is below the movement threshold
     public bool IsStopped {
-        get => Curr.SurfaceVelocity.magnitude < m_Tuning.Horizontal_MinSpeed;
+        get => Curr.SurfaceVelocity.magnitude < m_Tuning.Surface_MinSpeed;
     }
 
     /// the buffer size
@@ -145,9 +145,6 @@ public sealed partial class CharacterState {
         /// the current surface transfer tangent
         public Vector3 SurfaceTangent;
 
-        /// the frame in the jump squat
-        public int JumpSquatFrame = -1;
-
         /// the time the character hasn't moved
         public float IdleTime = 0.0f;
 
@@ -175,11 +172,14 @@ public sealed partial class CharacterState {
         /// the buffered surface to jump from;
         public CharacterCollision JumpSurface;
 
-        /// the number of coyote frames the available
-        public int CoyoteFrames = 0;
+        /// the coyote time remaining
+        public float CoyoteTime = 0;
 
-        /// the number of cooldown frames available
-        public int CooldownFrames = 0;
+        /// the cooldown time remaining
+        public float Jump_CooldownElapsed = 0f;
+
+        /// the cooldown time duration
+        public float Jump_CooldownDuration = 0f;
 
         /// the index of the current jump tuning
         public uint JumpTuningIndex = 0;
@@ -228,6 +228,7 @@ public sealed partial class CharacterState {
             get => MainSurface.Normal;
         }
 
+        // TODO: IsOnSurface? checking main surface vs checking collisions?
         /// if this is colliding with anything
         public bool IsColliding {
             get => Surfaces != null && Surfaces.Length != 0;
@@ -235,7 +236,7 @@ public sealed partial class CharacterState {
 
         /// if the character is touching the ground (or thinks they are)
         public bool IsOnGround {
-            get => CoyoteFrames > 0;
+            get => CoyoteTime > 0f;
         }
 
         /// if the character is on the wall

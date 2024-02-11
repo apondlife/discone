@@ -19,6 +19,10 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
     [Tooltip("the anchor transform for collision checks")]
     [SerializeField] Transform m_Anchor;
 
+    // TODO: convert this into some kind of curve (controls weight?)
+    [Tooltip("the surface angle for which the leg ik is active")]
+    [SerializeField] float m_SurfaceAngle;
+
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the move speed of the ik position")]
@@ -77,7 +81,8 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
 
     void FixedUpdate() {
         // feets are active when we're airborne
-        SetIsActive(!m_Container.State.Next.IsOnGround);
+        var surface = m_Container.State.Next.MainSurface;
+        SetIsActive(surface.IsNone || surface.Angle > m_SurfaceAngle);
     }
 
     void Update() {

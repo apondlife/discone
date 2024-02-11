@@ -12,8 +12,12 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the arms animator layer (for yoshiing animation)
     const string k_LayerArms = "Arms";
 
+    // TODO: Prop.SetXXX(x)
     /// the airborne animator prop
     const string k_PropIsAirborne = "IsAirborne";
+
+    /// the jump charge animator prop
+    const string k_PropJumpCharge = "JumpCharge";
 
     /// the is landing animator prop
     const string k_PropIsLanding = "IsLanding";
@@ -39,21 +43,27 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the move input animator prop
     const string k_PropSurfaceScale = "SurfaceScale";
 
+    /// the random value animator prop
+    const string k_PropJumpLeg = "JumpLeg";
+
     // -- fields --
     [Header("config")]
     [Tooltip("the rotation speed in degrees towards look direction")]
+    [FormerlySerializedAs("m_RotationSpeed_Look")]
     [FormerlySerializedAs("m_RotationSpeed")]
-    [SerializeField] float m_RotationSpeed_Look = 0.0f;
+    [SerializeField] float m_LookRotation_Speed = 0.0f;
 
-    [Tooltip("the rotation speed in degrees away from the wall")]
-    [SerializeField] float m_RotationSpeed_Wall = 0.0f;
-
+    [FormerlySerializedAs("m_RotationSpeed_Tilt")]
     [Tooltip("the rotation speed in degrees away for tilting")]
-    [SerializeField] float m_RotationSpeed_Tilt = 100.0f;
+    [SerializeField] float m_MoveTilt_Speed = 100.0f;
 
-    [Tooltip("the rotation away from the wall in degrees")]
-    [FormerlySerializedAs("m_WallRotation")]
-    [SerializeField] float m_MaxWallRotation = 30.0f;
+    [FormerlySerializedAs("m_SurfaceRotation_Speed")]
+    [FormerlySerializedAs("m_RotationSpeed_Wall")]
+    [Tooltip("the rotation speed in degrees away from the wall")]
+    [SerializeField] float m_SurfaceTilt_Speed = 0.0f;
+
+    [Tooltip("the rotation away from the wall in degrees as a fn of surface angle")]
+    [SerializeField] MapOutCurve m_SurfaceTilt_Range;
 
     [Tooltip("surface scaling factor as a function of surface angle (degrees)")]
     [SerializeField] AnimationCurve m_SurfaceScale;
@@ -95,16 +105,19 @@ public sealed class CharacterModel: MonoBehaviour {
     Quaternion m_LookRotation = Quaternion.identity;
 
     /// the stored wall rotation
-    Quaternion m_WallRotation = Quaternion.identity;
+    Quaternion m_SurfaceTilt = Quaternion.identity;
 
     /// the stored tilt rotation
-    Quaternion m_TiltRotation = Quaternion.identity;
+    Quaternion m_MoveTilt = Quaternion.identity;
 
     /// the stored speed when landing
     float m_LandingSpeed = 0.0f;
 
     /// the stored last time of fixedUpdate (for interpolation)
     float m_LastFixedUpdate = 0.0f;
+
+    /// the current jumping leg (0-left, 1-right)
+    int m_JumpLeg = 0;
 
     // -- lifecycle --
     void Start() {
@@ -161,13 +174,16 @@ public sealed class CharacterModel: MonoBehaviour {
 
     void Update() {
         // interpolate frame based on time since last update
-        var end = m_State.Next;
         var delta = Time.time - m_LastFixedUpdate;
-        var state = CharacterState.Frame.Interpolate(m_State.Curr, end,  delta / Time.fixedDeltaTime);
+        var state = CharacterState.Frame.Interpolate(
+            m_State.Curr,
+            m_State.Next,
+            delta / Time.fixedDeltaTime
+        );
 
         // update animator & model
         SyncAnimator(state);
-        Tilt(state);
+        Tilt(state, Time.deltaTime);
     }
 
     // -- commands --
@@ -183,7 +199,7 @@ public sealed class CharacterModel: MonoBehaviour {
             k_PropMoveSpeed,
             Mathx.InverseLerpUnclamped(
                 0.0f,
-                m_Tuning.Horizontal_MaxSpeed,
+                m_Tuning.Surface_MaxSpeed,
                 state.SurfaceVelocity.magnitude
             )
         );
@@ -192,7 +208,6 @@ public sealed class CharacterModel: MonoBehaviour {
             k_PropMoveInputMag,
             m_Input.Move.magnitude
         );
-
 
         // set jump animation params
         anim.SetBool(
@@ -205,6 +220,31 @@ public sealed class CharacterModel: MonoBehaviour {
             state.MainSurface.IsNone
         );
 
+
+        if (state.IsInJumpSquat) {
+            var jumpSquatPct = 1f;
+            var jumpTuning = m_Tuning.Jumps[m_State.JumpTuningIndex];
+            if (jumpTuning.JumpSquatDuration.Max > 0f) {
+                jumpSquatPct = state.JumpState.PhaseElapsed / jumpTuning.JumpSquatDuration.Max;
+            }
+
+            anim.SetFloat(
+                k_PropJumpLeg,
+                m_JumpLeg
+            );
+
+            anim.SetFloat(
+                k_PropJumpCharge,
+                jumpSquatPct
+            );
+        }
+
+        // alternate legs
+        if (state.Events.Contains(CharacterEvent.Jump)) {
+            // BUG: this is not updating every time it happens (and its not the interpolation)
+            m_JumpLeg = (m_JumpLeg + 1) % 2;
+        }
+
         anim.SetBool(
             k_PropIsCrouching,
             state.IsInJumpSquat || state.IsCrouching
@@ -215,10 +255,8 @@ public sealed class CharacterModel: MonoBehaviour {
             state.Velocity.y
         );
 
-        if (!state.IsOnGround) {
-            m_LandingSpeed = state.Velocity.y;
-        }
-
+        // TODO: fix rolling
+        m_LandingSpeed = state.IsColliding ? state.Inertia : 0f;
         anim.SetFloat(
             k_PropLandingSpeed,
             m_LandingSpeed
@@ -263,32 +301,37 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     /// tilt the model as a fn of character acceleration
-    void Tilt(CharacterState.Frame state) {
-        var destWallRotation = Quaternion.identity;
-        if (state.IsOnWall && !state.IsOnGround) {
-            var tangent = Vector3.Cross(Vector3.up, state.MainSurface.Normal);
-            destWallRotation = Quaternion.AngleAxis(m_MaxWallRotation, tangent);
-        }
-
-        m_WallRotation = Quaternion.RotateTowards(
-            m_WallRotation,
-            destWallRotation,
-            m_RotationSpeed_Wall * Time.deltaTime
+    void Tilt(CharacterState.Frame state, float delta) {
+        var surface = state.MainSurface;
+        var surfaceTiltTangent = Vector3.Cross(
+            Vector3.up,
+            surface.Normal
         );
 
-        m_TiltRotation = Quaternion.RotateTowards(
-            m_TiltRotation,
+        var destSurfaceTilt = Quaternion.AngleAxis(
+            m_SurfaceTilt_Range.Evaluate(surface.Angle),
+            surfaceTiltTangent
+        );
+
+        m_SurfaceTilt = Quaternion.RotateTowards(
+            m_SurfaceTilt,
+            destSurfaceTilt,
+            m_SurfaceTilt_Speed * delta
+        );
+
+        m_MoveTilt = Quaternion.RotateTowards(
+            m_MoveTilt,
             state.Tilt,
-            m_RotationSpeed_Tilt * Time.deltaTime
+            m_MoveTilt_Speed * delta
         );
 
         m_LookRotation = Quaternion.RotateTowards(
             m_LookRotation,
             state.LookRotation,
-            m_RotationSpeed_Look * Time.deltaTime
+            m_LookRotation_Speed * delta
         );
 
-        transform.localRotation = m_WallRotation * m_TiltRotation * m_LookRotation;
+        transform.localRotation = m_SurfaceTilt * m_MoveTilt * m_LookRotation;
     }
 
     static void SetDefaultLayersRecursively(GameObject parent, int layer) {
