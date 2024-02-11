@@ -58,7 +58,7 @@ MonoBehaviour:
       Max: 300
     m_Dst:
       Min: 4
-      Max: 20
+      Max: 10
   m_SqrSpeedToSize:
     m_Curve:
       serializedVersion: 2
@@ -70,7 +70,7 @@ MonoBehaviour:
       Min: 180
       Max: 300
     m_Dst:
-      Min: 0.3
+      Min: 0.5
       Max: 1
   m_SqrSpeedToLifetime:
     m_Curve:
@@ -85,6 +85,19 @@ MonoBehaviour:
     m_Dst:
       Min: 0.3
       Max: 1
+  m_SqrSpeedToStartSpeedScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Src:
+      Min: 180
+      Max: 300
+    m_Dst:
+      Min: 0.5
+      Max: 0.9
 --- !u!198 &2617727799574329463
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -168,7 +181,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.2
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -221,14 +234,14 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 4.2
-      minScalar: 3.3
+      scalar: 8
+      minScalar: 5.4
       maxCurve:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 1
+          value: 0.675
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -275,7 +288,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.54881614, g: 0.8490566, b: 0.49181202, a: 0.5372549}
+      maxColor: {r: 1, g: 1, b: 1, a: 0.3137255}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -337,7 +350,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.8
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -805,7 +818,7 @@ ParticleSystem:
     m_TextureColorAffectsParticles: 1
     m_TextureAlphaAffectsParticles: 1
     m_TextureBilinearFiltering: 0
-    randomDirectionAmount: 0
+    randomDirectionAmount: 0.2
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
@@ -867,7 +880,7 @@ ParticleSystem:
           m_RotationOrder: 4
     arc:
       value: 360
-      mode: 0
+      mode: 3
       spread: 0
       speed:
         serializedVersion: 2
@@ -1038,7 +1051,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 20
+        scalar: 9.952641
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -1425,7 +1438,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
+        key1: {r: 1, g: 1, b: 1, a: 0}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -1440,17 +1453,17 @@ ParticleSystem:
         ctime5: 0
         ctime6: 0
         ctime7: 0
-        atime0: 0
-        atime1: 38357
+        atime0: 30647
+        atime1: 65535
         atime2: 65535
-        atime3: 0
+        atime3: 65535
         atime4: 0
         atime5: 0
         atime6: 0
         atime7: 0
         m_Mode: 0
         m_NumColorKeys: 2
-        m_NumAlphaKeys: 3
+        m_NumAlphaKeys: 2
       minGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -2744,11 +2757,11 @@ ParticleSystem:
     inWorldSpace: 0
     multiplyDragByParticleSize: 0
     multiplyDragByParticleVelocity: 1
-    dampen: 0.65
+    dampen: 0.14
     drag:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.24
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -3182,7 +3195,7 @@ ParticleSystem:
     positionAmount:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 2
       minScalar: 1
       maxCurve:
         serializedVersion: 2

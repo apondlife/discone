@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 [RequireComponent(typeof(ParticleSystem))]
@@ -13,6 +14,10 @@ public class JumpPlume: MonoBehaviour {
     [Tooltip("lifetime as a fn o sqr speed delta")]
     [SerializeField] MapCurve m_SqrSpeedToLifetime;
 
+    [FormerlySerializedAs("m_SqrSpeedToStartSpeed")]
+    [Tooltip("start speed as a fn o sqr speed delta")]
+    [SerializeField] MapCurve m_SqrSpeedToStartSpeedScale;
+
     // -- props --
     /// the character container
     CharacterContainer c;
@@ -20,8 +25,8 @@ public class JumpPlume: MonoBehaviour {
     /// the particle system
     ParticleSystem m_Particles;
 
-    /// the character container
-    ParticleSystem.Burst m_Burst;
+    /// the particle system start speed range
+    ParticleSystem.MinMaxCurve m_StartSpeed;
 
     // -- lifecycle --
     void Start() {
@@ -29,8 +34,7 @@ public class JumpPlume: MonoBehaviour {
         c = GetComponentInParent<Character>();
 
         m_Particles = GetComponent<ParticleSystem>();
-
-        m_Burst = new ParticleSystem.Burst(0, 0);
+        m_StartSpeed = m_Particles.main.startSpeed;
     }
 
     void FixedUpdate() {
@@ -40,18 +44,21 @@ public class JumpPlume: MonoBehaviour {
             var dv = next.Velocity - c.State.Curr.Velocity;
             m_Particles.transform.up = c.State.PerceivedSurface.Normal;
 
-            var sqrSpeed = Vector3.SqrMagnitude(dv);
             // TODO: get actual jump speed
-            var count = m_SqrSpeedToEmission.Evaluate(sqrSpeed);
+            var sqrSpeed = Vector3.SqrMagnitude(dv);
+            var count = (int)m_SqrSpeedToEmission.Evaluate(sqrSpeed);
 
-            m_Burst.count = count;
             var main = m_Particles.main;
-            main.startLifetimeMultiplier = m_SqrSpeedToLifetime.Evaluate(sqrSpeed);
-            main.startSizeMultiplier = m_SqrSpeedToSize.Evaluate(sqrSpeed);
+            main.startLifetime = m_SqrSpeedToLifetime.Evaluate(sqrSpeed);
+            main.startSize = m_SqrSpeedToSize.Evaluate(sqrSpeed);
 
-            m_Particles.emission.SetBurst(0, m_Burst);
+            var startSpeedScale = m_SqrSpeedToStartSpeedScale.Evaluate(sqrSpeed);
+            var startSpeed = m_StartSpeed;
+            startSpeed.constantMin *= startSpeedScale;
+            startSpeed.constantMax *= startSpeedScale;
+            main.startSpeed = startSpeed;
 
-            m_Particles.Play();
+            m_Particles.Emit(count);
         }
     }
 }
