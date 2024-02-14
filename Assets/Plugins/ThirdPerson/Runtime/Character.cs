@@ -9,7 +9,6 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     // -- data --
     [Header("data")]
     [Tooltip("the tuning; for tweaking the player's attributes")]
-    [FormerlySerializedAs("m_Tunables")]
     [SerializeField] CharacterTuning m_Tuning;
 
     // -- state --
@@ -65,9 +64,16 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     /// the input wrapper
     CharacterInput m_Input;
 
+    // TODO: extract the camera out of the character, maybe?
+    /// the character's virtual camera
+    GameObject m_Camera;
+
     // -- lifecycle --
     void Awake() {
         var t = transform;
+
+        // get children
+        m_Camera = GetComponentInChildren<Camera>(true).gameObject;
 
         // init input (can't access Time from field initializer)
         m_Input = new CharacterInput();
@@ -179,6 +185,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     /// drive the character with a new input source
     public void Drive(CharacterInputSource source) {
         m_Input.Drive(source);
+        m_Camera.SetActive(source != null);
     }
 
     /// force the current frame's state

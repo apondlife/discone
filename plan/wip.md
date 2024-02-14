@@ -1,11 +1,6 @@
 what is projected
 ---
 
-# bugs/problems
-- landing transfer on vertical jump regression
-- grip pulls you over corners weirdly (on the frame collision misses) (should it pull you towards the hit point?)
-- can't get into jumpsquat after first aerial jump (if there's not infinite air jumps)
-
 # surface
 - unrealized motion (minmove) be converted into inertia?
   - set velocity to zero on min_move?
