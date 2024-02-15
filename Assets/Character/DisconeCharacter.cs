@@ -193,6 +193,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     // -- commands --
+    /// manually plant a flower at a checkpoint
+    public void PlantFlower(Checkpoint checkpoint) {
+        m_Checkpoint.CreateCheckpoint(checkpoint);
+    }
+
     /// send state from client -> server, if necessary
     void SendState() {
         // if we don't have authority, do nothing

@@ -32,6 +32,14 @@ public record Checkpoint {
         );
     }
 
+    /// create checkpoint from a transform
+    public static Checkpoint FromTransform(Transform transform) {
+        return new Checkpoint(
+            transform.position,
+            transform.forward
+        );
+    }
+
     /// create a state frame from this checkpoint
     public CharacterState.Frame IntoState() {
         return new CharacterState.Frame(

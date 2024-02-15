@@ -38,7 +38,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
 
     // -- deps --
     [Tooltip("the tuning")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Tunables")]
     [SerializeField] public Tuning m_Tuning;
 
     // -- props --

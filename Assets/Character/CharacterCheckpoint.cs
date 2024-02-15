@@ -118,7 +118,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         Server_CreateCheckpoint(pos, fwd);
     }
 
-    /// spawn a flower on the ground underneath the character
+    /// grab a flower on the ground underneath the character
     [Command]
     void Command_GrabCheckpoint(Vector3 pos) {
         // find the nearest flower, if any
@@ -160,7 +160,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         Server_GrabCheckpoint(flower);
     }
 
-    /// spawn a flower at the checkpoint
+    /// grab a nearby flower
     [Server]
     void Server_GrabCheckpoint(CharacterFlower flower) {
         // if we had a flower, let it go
