@@ -17,15 +17,15 @@ MonoBehaviour:
   _inspectorRaiseValue:
     DisplayName: dadsa
     MusicString: w
-    SkyColor:
+    Sky:
       Foreground: {r: 0.15619436, g: 0.53457373, b: 0.7075472, a: 1}
       ForegroundExposure: 0.43
       Background: {r: 0.85582376, g: 0.8679245, b: 0.46180135, a: 1}
       BackgroundExposure: 0.89
     Fog:
-      Color: {r: 0.9056604, g: 0.5758633, b: 0.5758633, a: 0}
-      StartDistance: 10000
-      EndDistance: 100000
-      UseHeightColor: 1
-      m_HeightColor: {r: 0.16970137, g: 0.14177643, b: 0.16981131, a: 0}
-      HeightDensity: 0.008
+      Color: {r: 0, g: 0, b: 0, a: 0}
+      StartDistance: 0
+      EndDistance: 0
+      HeightColor: {r: 0, g: 0, b: 0, a: 0}
+      HeightMin: 0
+      HeightDensity: 0
