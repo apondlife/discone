@@ -9,6 +9,8 @@ mired in debt
 - transfer in a vpipe doesn't work nicely
 - recover broken overworld terrain (git history)
 - movement system uses coyote time
+- interaction between eyes closed dialogue and dream dialogue
+    - closing eyed before finishing dream tutorial, breaks sequence (see Intro_Skip)
 
 # debt
 - need to manually enable input actions

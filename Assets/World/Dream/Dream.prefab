@@ -587,7 +587,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 855
+  m_VersionIndex: 867
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -732,11 +732,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Steps:
   - Trigger: {fileID: 8125843447588610638}
-    Mechanic_StartNode: Intro
+    Mechanic_StartNode: Intro_Flower
   - Trigger: {fileID: 6228485139396232857}
-    Mechanic_StartNode: Intro_Eyes
+    Mechanic_StartNode: Intro_Jump
   - Trigger: {fileID: 6228485137353741176}
-    Mechanic_StartNode: Intro_End
+    Mechanic_StartNode: Intro_Close
   m_InitialFlowerPos: {fileID: 1823493061}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
   m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
@@ -990,7 +990,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 647
+  m_VersionIndex: 659
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1207,7 +1207,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6228485137428107709, guid: 4574fc9fab1289a4eb814f00c3719ce7, type: 3}
       propertyPath: m_StayDuration
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8759114446855735561, guid: 4574fc9fab1289a4eb814f00c3719ce7, type: 3}
       propertyPath: m_RootOrder
@@ -1405,7 +1405,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4186969339845628571, guid: 4574fc9fab1289a4eb814f00c3719ce7, type: 3}
       propertyPath: m_Size.y
-      value: 69
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 4186969339845628571, guid: 4574fc9fab1289a4eb814f00c3719ce7, type: 3}
       propertyPath: m_Size.z

@@ -131,14 +131,14 @@ sealed class Mechanic: MonoBehaviour {
         StartDialogue(isContinue: true);
     }
 
-    /// .
+    /// switch to a new node and start dialogue immediately
     void JumpToNode(string node, bool isContinue = false) {
         Debug.Log(Tag.Mechanic.F($"jump: {node}"));
         SwitchNode(node);
         StartDialogue(isContinue);
     }
 
-    /// .
+    /// show the dialogue ui from the current node
     void StartDialogue(bool isContinue = false) {
         var nodeName = m_Node;
 
