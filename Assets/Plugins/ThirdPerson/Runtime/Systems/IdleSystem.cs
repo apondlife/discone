@@ -52,6 +52,7 @@ sealed class IdleSystem: CharacterSystem {
     );
 
     void Idle_Enter() {
+        // TODO: make into PhaseElapsed
         c.State.Next.IdleTime = Time.deltaTime;
         c.Events.Schedule(CharacterEvent.Idle);
     }

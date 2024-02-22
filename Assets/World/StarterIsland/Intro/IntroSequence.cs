@@ -3,7 +3,9 @@ using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using Yarn.Unity;
+using CharacterController = ThirdPerson.CharacterController;
 
 namespace Discone {
 
@@ -12,9 +14,6 @@ public class IntroSequence: MonoBehaviour {
     [Header("config")]
     [Tooltip("the delay before starting the intro")]
     [SerializeField] EaseTimer m_StartDelay;
-
-    [Tooltip("the delay before setting character facing")]
-    [SerializeField] EaseTimer m_CharacterDelay;
 
     [Tooltip("the delay before showing the first line of dialogue (hack)")]
     [SerializeField] EaseTimer m_DialogueDelay;
@@ -61,12 +60,18 @@ public class IntroSequence: MonoBehaviour {
     [Tooltip("the intro retrigger camera")]
     [SerializeField] GameObject m_IntroCameraRetrigger;
 
+    [FormerlySerializedAs("m_InitialRotation")]
     [Tooltip("the character's rotation reference for the inital shot")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_CharacterRotationReference")]
-    [SerializeField] Transform m_InitialRotation;
+    [SerializeField] Transform m_InitialTransform;
 
     [Tooltip("the shared data store")]
     [SerializeField] Store m_Store;
+
+    // -- dispatched --
+    [Header("subscribed")]
+    [Tooltip("when the dream is over")]
+    [SerializeField] VoidEvent m_DreamEnded;
 
     // -- dispatched --
     [Header("dispatched")]
@@ -81,10 +86,24 @@ public class IntroSequence: MonoBehaviour {
     bool m_WasPerformed;
 
     /// the set of event subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    readonly DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
-    void Awake() {
+    void Start() {
+        // bind events
+        m_Subscriptions
+            .Add(m_Store.LoadFinished, OnLoadFinished)
+            .Add(m_DreamEnded, OnDreamEnded);
+    }
+
+    // AAA
+    void OnDreamEnded() {
+        // start intro dialogue
+        m_DialogueDelay.Start();
+
+        // switch to the intro camera
+        m_IntroCamera.SetActive(true);
+
         // start with your eyes closed
         m_IsClosingEyes.Value = true;
 
@@ -94,30 +113,26 @@ public class IntroSequence: MonoBehaviour {
         }
 
         m_IntroInput.action.actionMap.Enable();
-    }
 
-    void Start() {
+        // AAA: old start
         m_StartDelay.Start();
 
-        // bind events
-        m_Subscriptions
-            .Add(m_Store.LoadFinished, OnLoadFinished)
-            .Add(m_CurrentCharacter.ChangedWithHistory, OnCurrentCharacterChanged);
+        // HACK: do this better later this is so that the follow camera points
+        // towards a different direction then ice creams orientation
+        // set initial character state
+        var initialState = m_CurrentCharacter.Value.Character.State.Curr.Copy();
+        initialState.Position = m_InitialTransform.position;
+        initialState.Forward = m_InitialTransform.forward;
+        m_CurrentCharacter.Value.Character.ForceState(initialState);
+
+       // create checkpoint
+
     }
 
     void Update() {
         // show start dialogue
         if (m_DialogueDelay.TryComplete()) {
             m_Mechanic_JumpToNode.Raise(m_Mechanic_StartNode);
-        }
-
-        // set the character facing
-        if (m_CharacterDelay.TryComplete()) {
-            // HACK: do this better later this is so that the follow camera points
-            // towards a different direction then ice creams orientation
-            var initialState = m_CurrentCharacter.Value.Character.State.Curr.Copy();
-            initialState.Forward = m_InitialRotation.forward;
-            m_CurrentCharacter.Value.Character.ForceState(initialState);
         }
 
         // delay intro to ignore the input being pressed when the game starts
@@ -153,15 +168,6 @@ public class IntroSequence: MonoBehaviour {
     }
 
     // -- commands --
-    /// begin the intro sequence
-    void Init() {
-        // start intro dialogue
-        m_DialogueDelay.Start();
-
-        // switch to the intro camera
-        m_IntroCamera.SetActive(true);
-    }
-
     /// open the player's eyes
     void OpenEyes() {
         // enable all input maps except the intro
@@ -179,7 +185,7 @@ public class IntroSequence: MonoBehaviour {
         m_IsClosingEyes.Value = false;
     }
 
-    /// finish the sequnce and destroy it
+    /// finish the sequence and destroy it
     void Finish() {
         // blend to the game camera
         m_IntroCamera.SetActive(false);
@@ -196,16 +202,10 @@ public class IntroSequence: MonoBehaviour {
 
     // -- events --
     void OnLoadFinished() {
-        if (!m_Store.Player.HasData) {
-            Init();
-        } else {
+        if (m_Store.Player.HasData) {
             OpenEyes();
             Finish();
         }
-    }
-
-    void OnCurrentCharacterChanged(DisconeCharacterPair _) {
-        m_CharacterDelay.Start();
     }
 }
 

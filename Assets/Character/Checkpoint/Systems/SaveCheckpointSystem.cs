@@ -1,4 +1,6 @@
 using System;
+using Discone;
+using Mirror.SimpleWeb;
 using ThirdPerson;
 using UnityEngine;
 
@@ -157,6 +159,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
 
     void Being_Update(float delta) {
         if (!CanSave) {
+            Debug.Log(Tag.Player.F($"crouch: {m_State.Curr.IsCrouching} idle time {m_State.Curr.IdleTime}"));
             ChangeTo(NotSaving);
             return;
         }
@@ -170,6 +173,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
 
     /// if the character can currently save
     bool CanSave {
-        get => m_State.IsCrouching && m_State.IsIdle;
+        get => m_State.Curr.IsCrouching && m_State.Curr.IsIdle;
     }
 }

@@ -1,7 +1,9 @@
+using System;
 using Mirror;
 using UnityEngine;
 using UnityAtoms;
 using ThirdPerson;
+using UnityEngine.Events;
 
 /// the character's ability to save and reload to a particular state in
 /// the world, like planting a flag.
@@ -26,7 +28,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
     [SerializeField] EntitiesVariable m_Entities;
 
     // -- props --
-    // the character
+    /// the character
     DisconeCharacter m_Container;
 
     /// the flower at the current checkpoint, if any
@@ -36,8 +38,14 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// if the checkpoint is saving
     bool m_IsSaving;
 
+    // if this can create checkpoints
+    bool m_CanCreate;
+
     /// checkpoint-specific character systems
     CheckpointSystem[] m_Systems;
+
+    /// an event when the checkpoint is created
+    UnityEvent<Checkpoint> m_OnCreate = new();
 
     // -- lifecycle --
     void Awake() {
@@ -104,11 +112,16 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// create the checkpoint
     public void CreateCheckpoint(Checkpoint checkpoint) {
-        // spawn a new flower
-        Command_CreateCheckpoint(
-            checkpoint.Position,
-            checkpoint.Forward
-        );
+        if (m_CanCreate) {
+            // spawn a new flower
+            Command_CreateCheckpoint(
+                checkpoint.Position,
+                checkpoint.Forward
+            );
+        }
+
+        // fire event for create checkpoint
+        m_OnCreate?.Invoke(m_CanCreate ? checkpoint : null);
     }
 
     // -- c/s/server
@@ -228,8 +241,20 @@ public class CharacterCheckpoint: NetworkBehaviour {
     }
 
     /// a reference to the character
-    public ThirdPerson.Character Character {
+    public Character Character {
         get => m_Container.Character;
+    }
+
+    /// an event when the checkpoint is created
+    public UnityEvent<Checkpoint> OnCreate {
+        get => m_OnCreate;
+    }
+
+    // -- props/hot --
+    /// if this can create checkpoints
+    public bool CanCreate {
+        get => m_CanCreate;
+        set => m_CanCreate = value;
     }
 
     // -- factories --

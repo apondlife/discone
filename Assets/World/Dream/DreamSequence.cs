@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Security.Cryptography;
+using ThirdPerson;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
@@ -43,6 +45,9 @@ sealed class DreamSequence: MonoBehaviour {
     [Tooltip("when the mechanic should jump to a node")]
     [SerializeField] StringEvent m_Mechanic_JumpToNode;
 
+    [Tooltip("when the dream ends")]
+    [SerializeField] VoidEvent m_DreamEnded;
+
     /// -- props --
     /// the current step in the sequence
     int m_StepIndex;
@@ -53,31 +58,47 @@ sealed class DreamSequence: MonoBehaviour {
     /// -- lifecycle --
     void Start() {
         m_Subscriptions
-            .Add(m_Store.LoadFinished, OnLoadFinished)
             .Add(m_CurrentCharacter.ChangedWithHistory, OnCurrentCharacterChanged);
+    }
 
+    void OnDestroy() {
+        m_CurrentCharacter.Value.Checkpoint.CanCreate = true;
+
+        foreach (var step in m_Steps) {
+            Destroy(step.Trigger.gameObject);
+        }
+    }
+
+    // -- commands --
+    void Init() {
+        var character = m_CurrentCharacter.Value;
+        character.PlantFlower(Checkpoint.FromTransform(m_InitialFlowerPos));
+
+        var checkpoint = character.Checkpoint;
+        character.Checkpoint.CanCreate = false;
+
+        // init steps
         var i = 0;
         foreach (var step in m_Steps) {
             step.Trigger.OnFire(OnStep);
             step.Trigger.gameObject.SetActive(i == 0);
             i += 1;
         }
+
+        // bind events
+        m_Subscriptions
+            .Add(checkpoint.OnCreate, OnCreateCheckpoint);
     }
 
-    /// -- events --
-    void OnLoadFinished() {
-        Debug.Log($"[dream] OnLoadFinished {m_Store.Player.HasData}");
-    }
-
+    // -- events --
     void OnCurrentCharacterChanged(DisconeCharacterPair _) {
         Debug.Log("[dream] OnCharacterChanged");
-        if(m_Store.Player.HasData) {
-            DestroyImmediate(this);
+        if (m_Store.Player.HasData) {
+            Destroy(this);
             return;
         }
 
-        // TODO: DisconeCharacterReference
-        m_CurrentCharacter.Value.PlantFlower(Checkpoint.FromTransform(m_InitialFlowerPos));
+        Init();
     }
 
     void OnStep() {
@@ -89,6 +110,12 @@ sealed class DreamSequence: MonoBehaviour {
 
         var next = m_Steps[m_StepIndex];
         next.Trigger.gameObject.SetActive(true);
+    }
+
+    void OnCreateCheckpoint(Checkpoint _) {
+        m_CurrentCharacter.Value.Checkpoint.CanCreate = true;
+        m_DreamEnded.Raise();
+        Destroy(this);
     }
 }
 
