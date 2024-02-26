@@ -9,6 +9,8 @@ using Yarn.Unity;
 
 namespace Discone {
 
+// TODO: timer for move step
+// TODO: optional step when falling from platform
 sealed class DreamSequence: MonoBehaviour {
     [Serializable]
     record Step {
@@ -62,10 +64,12 @@ sealed class DreamSequence: MonoBehaviour {
     }
 
     void OnDestroy() {
-        m_CurrentCharacter.Value.Checkpoint.CanCreate = true;
+        m_CurrentCharacter.Value.Checkpoint.IsBlocked = false;
 
         foreach (var step in m_Steps) {
-            Destroy(step.Trigger.gameObject);
+            if (step.Trigger) {
+                Destroy(step.Trigger.gameObject);
+            }
         }
     }
 
@@ -75,7 +79,7 @@ sealed class DreamSequence: MonoBehaviour {
         character.PlantFlower(Checkpoint.FromTransform(m_InitialFlowerPos));
 
         var checkpoint = character.Checkpoint;
-        character.Checkpoint.CanCreate = false;
+        character.Checkpoint.IsBlocked = true;
 
         // init steps
         var i = 0;
@@ -108,12 +112,14 @@ sealed class DreamSequence: MonoBehaviour {
         m_Mechanic_JumpToNode.Raise(curr.Mechanic_StartNode);
         m_StepIndex += 1;
 
-        var next = m_Steps[m_StepIndex];
-        next.Trigger.gameObject.SetActive(true);
+        if (m_StepIndex < m_Steps.Length) {
+            var next = m_Steps[m_StepIndex];
+            next.Trigger.gameObject.SetActive(true);
+        }
     }
 
     void OnCreateCheckpoint(Checkpoint _) {
-        m_CurrentCharacter.Value.Checkpoint.CanCreate = true;
+        m_CurrentCharacter.Value.Checkpoint.IsBlocked = false;
         m_DreamEnded.Raise();
         Destroy(this);
     }

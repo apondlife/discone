@@ -21,6 +21,9 @@ what is projected
 
 - wip
 
+# flower
+- flower disabling zones
+
 # particles
 
 - wall particle proportional to wall influence

@@ -15,7 +15,7 @@ public class RegionCreator: MonoBehaviour {
     void Update()
     {
         if(Region == null) return;
-        text.text = Region.Value.DisplayName;
+        text.text = Region.Value.Name;
         var mat = RenderSettings.skybox;
         mat.SetFloat(ShaderProps.ForegroundExposure, Region.Value.Sky.ForegroundExposure);
         mat.SetFloat(ShaderProps.BackgroundExposure, Region.Value.Sky.BackgroundExposure);

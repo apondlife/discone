@@ -8,8 +8,12 @@ namespace Discone {
 public record Region {
     // -- config --
     [Header("config")]
+    [FormerlySerializedAs("DisplayName")]
     [Tooltip("the title that displays on the region sign")]
-    public string DisplayName;
+    public string Name;
+
+    [Tooltip("if the region sign only shows after the first entry")]
+    public bool IsSignSkippedOnFirstEnter;
 
     [Tooltip("the event string sent to fmod to change ambient music")]
     public string MusicString;

@@ -5,16 +5,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using Yarn.Unity;
-using CharacterController = ThirdPerson.CharacterController;
 
 namespace Discone {
 
-public class IntroSequence: MonoBehaviour {
+sealed class IntroSequence: MonoBehaviour {
     // -- config --
     [Header("config")]
-    [Tooltip("the delay before starting the intro")]
-    [SerializeField] EaseTimer m_StartDelay;
-
     [Tooltip("the delay before showing the first line of dialogue (hack)")]
     [SerializeField] EaseTimer m_DialogueDelay;
 
@@ -42,9 +38,6 @@ public class IntroSequence: MonoBehaviour {
     [Header("inputs")]
     [Tooltip("the input action asset")]
     [SerializeField] InputActionAsset m_Inputs;
-
-    [Tooltip("the input action for the intro")]
-    [SerializeField] InputActionReference m_IntroInput;
 
     // -- refs --
     [Header("refs")]
@@ -96,68 +89,16 @@ public class IntroSequence: MonoBehaviour {
             .Add(m_DreamEnded, OnDreamEnded);
     }
 
-    // AAA
-    void OnDreamEnded() {
-        // start intro dialogue
-        m_DialogueDelay.Start();
-
-        // switch to the intro camera
-        m_IntroCamera.SetActive(true);
-
-        // start with your eyes closed
-        m_IsClosingEyes.Value = true;
-
-        // disable all input maps except the intro
-        foreach (var map in m_Inputs.actionMaps) {
-            map.Disable();
-        }
-
-        m_IntroInput.action.actionMap.Enable();
-
-        // AAA: old start
-        m_StartDelay.Start();
-
-        // HACK: do this better later this is so that the follow camera points
-        // towards a different direction then ice creams orientation
-        // set initial character state
-        var initialState = m_CurrentCharacter.Value.Character.State.Curr.Copy();
-        initialState.Position = m_InitialTransform.position;
-        initialState.Forward = m_InitialTransform.forward;
-        m_CurrentCharacter.Value.Character.ForceState(initialState);
-
-       // create checkpoint
-
-    }
-
     void Update() {
         // show start dialogue
         if (m_DialogueDelay.TryComplete()) {
             m_Mechanic_JumpToNode.Raise(m_Mechanic_StartNode);
         }
 
-        // delay intro to ignore the input being pressed when the game starts
-        if (m_StartDelay.IsActive && m_StartDelay.TryComplete()) {
-            return;
-        }
-
-        var input = m_IntroInput.action;
-
-        // play input dialogue
-        if (input.WasPressedThisFrame()) {
-            m_Mechanic_JumpToNode.Raise(m_Mechanic_InputNode);
-        }
-
-        // when the hold is performed
-        if (!m_WasPerformed) {
-            m_WasPerformed = input.phase == InputActionPhase.Performed;
-        }
-
-        if (input.WasReleasedThisFrame() && m_WasPerformed) {
-            OpenEyes();
-        }
-
         // finish the intro once the character moves
         m_FinishDelay.Tick();
+
+        // we want the character to be able to move after the timer is complete
         if (m_FinishDelay.IsComplete && !m_CurrentCharacter.Value.Character.State.IsIdle) {
             Finish();
         }
@@ -169,20 +110,18 @@ public class IntroSequence: MonoBehaviour {
 
     // -- commands --
     /// open the player's eyes
-    void OpenEyes() {
-        // enable all input maps except the intro
-        foreach (var map in m_Inputs.actionMaps) {
-            map.Enable();
+    void OnIsClosingEyesChanged(bool isClosingEyes) {
+        if (isClosingEyes) {
+            return;
         }
 
-        m_IntroInput.action.actionMap.Disable();
+        // m_IntroInput.action.actionMap.Disable();
 
         // jump to the end node
         m_Mechanic_JumpToNode.Raise(m_Mechanic_EndNode);
 
         // open the eyes
         m_FinishDelay.Start();
-        m_IsClosingEyes.Value = false;
     }
 
     /// finish the sequence and destroy it
@@ -203,9 +142,33 @@ public class IntroSequence: MonoBehaviour {
     // -- events --
     void OnLoadFinished() {
         if (m_Store.Player.HasData) {
-            OpenEyes();
             Finish();
         }
+    }
+
+    void OnDreamEnded() {
+        // add open eyes subscription
+        m_Subscriptions
+            .Add(m_IsClosingEyes.Changed, OnIsClosingEyesChanged);
+
+        // start intro dialogue
+        m_DialogueDelay.Start();
+
+        // switch to the intro camera
+        m_IntroCamera.SetActive(true);
+
+        var character = m_CurrentCharacter.Value;
+
+        // HACK: do this better later this is so that the follow camera points
+        // towards a different direction then ice creams orientation
+        // set initial character state
+        var initialState = character.Character.State.Curr.Copy();
+        initialState.Position = m_InitialTransform.position;
+        initialState.Forward = m_InitialTransform.forward;
+        character.Character.ForceState(initialState);
+
+        // TODO: plant flower somewhere in the initial shot
+        character.PlantFlower(Checkpoint.FromState(initialState));
     }
 }
 

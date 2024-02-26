@@ -122,13 +122,13 @@ sealed class RegionSign: MonoBehaviour {
         m_IsVisible = false;
     }
 
-    public void OnRegionEntered(Region next) {
+    void OnRegionEntered(Region next) {
         var time = Time.time;
         var prev = m_CurrentRegion;
 
         var showsRegionSign = (
-            // don't show first region sign
-            prev != null &&
+            // don't show region sign on first enter
+            !next.IsSignSkippedOnFirstEnter &&
             // don't show if still in cooldown for current region
             (prev != next || time - m_CurrentRegionEnterTime < m_RepeatCooldown)
         );
@@ -142,10 +142,10 @@ sealed class RegionSign: MonoBehaviour {
             return;
         }
 
-        Debug.Log(Tag.Region.F($"show sign {prev?.DisplayName} -> {next?.DisplayName}"));
+        Debug.Log(Tag.Region.F($"show sign {prev?.Name} -> {next?.Name}"));
 
         m_CanvasGroup.alpha = 1f;
-        m_Text.SetText(next.DisplayName);
+        m_Text.SetText(next.Name);
 
         // only start a new animation if the current one is over
         if (m_IsVisible) {

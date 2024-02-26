@@ -13,7 +13,7 @@ title: Intro_Flower
 tags: #last #hide
 ---
 <<then Mechanic Intro_Skip>>
-hold the <> button, by default, to return to your flower
+hold the "triangle" button, by default, to return to your flower
 <<wait 6>>
 ===
 
@@ -22,7 +22,7 @@ tags: #last #hide
 ---
 <<then Mechanic Intro_Skip>>
 <<wait 1>>
-hold the <> button, by default, to jump
+hold the "x" button, by default, to jump
 <<wait 4>>
 ===
 
@@ -30,7 +30,7 @@ title: Intro_Close
 tags: #last #hide
 ---
 <<then Mechanic Intro_Breath>>
-hold the <> button, by default, to close your eyes
+hold the "left or right trigger" button, by default, to close your eyes
 <<wait 4>>
 ===
 
@@ -38,6 +38,7 @@ title: Intro_Breath
 tags: #last
 ---
 and take a deep breath with your body, by default, to plant a flower
+
 // wait for a breath
 <<wait 6>>
 ===
@@ -45,16 +46,14 @@ and take a deep breath with your body, by default, to plant a flower
 title: Intro
 tags: #last
 ---
-hello? wow. how did you already know to hold "right or left trigger" to,
-===
+<<wait 6>>
+hello? wow. how did you already know to hold "left or right trigger" to,
 
-title: Intro_Eyes
-tags: #last
----
+<<wait 4>>
 close your eyes?
 
-<<wait 6>>
-and then release "right or left trigger" to open them?
+<<wait 4>>
+and then release "left or right trigger" to open them?
 ===
 
 title: Intro_End
@@ -75,7 +74,7 @@ tags: #last #hide
 if you want to talk to me again
 <<wait 3>>
 
-you can hold "right or left trigger"
+you can hold "left or right trigger"
 <<wait 3>>
 
 & close your eyes for a little.

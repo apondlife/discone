@@ -38,8 +38,8 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// if the checkpoint is saving
     bool m_IsSaving;
 
-    // if this can create checkpoints
-    bool m_CanCreate;
+    // if this can't create checkpoints
+    bool m_IsBlocked;
 
     /// checkpoint-specific character systems
     CheckpointSystem[] m_Systems;
@@ -112,7 +112,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// create the checkpoint
     public void CreateCheckpoint(Checkpoint checkpoint) {
-        if (m_CanCreate) {
+        if (!m_IsBlocked) {
             // spawn a new flower
             Command_CreateCheckpoint(
                 checkpoint.Position,
@@ -121,7 +121,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         }
 
         // fire event for create checkpoint
-        m_OnCreate?.Invoke(m_CanCreate ? checkpoint : null);
+        m_OnCreate?.Invoke(m_IsBlocked ? checkpoint : null);
     }
 
     // -- c/s/server
@@ -252,9 +252,9 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     // -- props/hot --
     /// if this can create checkpoints
-    public bool CanCreate {
-        get => m_CanCreate;
-        set => m_CanCreate = value;
+    public bool IsBlocked {
+        get => m_IsBlocked;
+        set => m_IsBlocked = value;
     }
 
     // -- factories --

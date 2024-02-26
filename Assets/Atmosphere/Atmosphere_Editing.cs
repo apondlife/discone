@@ -34,11 +34,11 @@ public partial class Atmosphere {
         // if changed, show the temp or editing region
         if (m_IsEditing != m_WasEditing) {
             if (m_IsEditing) {
-                m_CurrRegion.DisplayName = "Temp";
+                m_CurrRegion.Name = "Temp";
                 m_CurrRegion.Set(m_TempRegion);
             } else if (m_Editing.Value != null) {
                 var region = m_Editing.Value;
-                m_CurrRegion.DisplayName = region.DisplayName;
+                m_CurrRegion.Name = region.Name;
                 m_CurrRegion.Set(region);
             }
         }
