@@ -64,6 +64,7 @@ sealed class DreamSequence: MonoBehaviour {
     }
 
     void OnDestroy() {
+        m_Subscriptions.Dispose();
         m_CurrentCharacter.Value.Checkpoint.IsBlocked = false;
 
         foreach (var step in m_Steps) {
@@ -120,8 +121,10 @@ sealed class DreamSequence: MonoBehaviour {
 
     void OnCreateCheckpoint(Checkpoint _) {
         m_CurrentCharacter.Value.Checkpoint.IsBlocked = false;
+        // destroy immediate so that nothing else can trigger OnCreateCheckpoint
+        DestroyImmediate(this);
+
         m_DreamEnded.Raise();
-        Destroy(this);
     }
 }
 
