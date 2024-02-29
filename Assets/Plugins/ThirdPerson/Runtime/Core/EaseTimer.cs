@@ -83,6 +83,11 @@ public record EaseTimer {
     }
 
     // -- queries --
+    /// if the timer is zero-duration
+    public bool IsZero {
+        get => m_Duration == 0f;
+    }
+
     /// if the timer is active
     public bool IsActive {
         get => m_Elapsed != k_Inactive;
@@ -95,7 +100,7 @@ public record EaseTimer {
 
     /// if the timer is complete
     public bool IsComplete {
-        get => m_IsReversed ? m_RawPct == 0f : m_RawPct == 1f;
+        get => m_RawPct == (m_IsReversed ? 0f : 1f);
     }
 
     /// the curved progress

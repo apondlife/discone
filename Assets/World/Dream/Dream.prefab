@@ -732,10 +732,52 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Steps:
   - Trigger: {fileID: 8125843447588610638}
+    Timeout:
+      m_Duration: 10
+      m_Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
     Mechanic_StartNode: Intro_Flower
   - Trigger: {fileID: 6228485139396232857}
+    Timeout:
+      m_Duration: 0
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
     Mechanic_StartNode: Intro_Jump
   - Trigger: {fileID: 6228485137353741176}
+    Timeout:
+      m_Duration: 0
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
     Mechanic_StartNode: Intro_Close
   m_InitialFlowerPos: {fileID: 1823493061}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}

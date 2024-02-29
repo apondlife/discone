@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
 using ThirdPerson;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
@@ -9,13 +8,15 @@ using Yarn.Unity;
 
 namespace Discone {
 
-// TODO: timer for move step
 // TODO: optional step when falling from platform
 sealed class DreamSequence: MonoBehaviour {
     [Serializable]
     record Step {
         [Tooltip("the step's trigger")]
         public DreamSequenceTrigger Trigger;
+
+        [Tooltip("an optional timeout to fire the step")]
+        public EaseTimer Timeout;
 
         [Tooltip("the mechanic node to play on start")]
         [YarnNode(nameof(m_Mechanic))]
@@ -63,13 +64,20 @@ sealed class DreamSequence: MonoBehaviour {
             .Add(m_CurrentCharacter.ChangedWithHistory, OnCurrentCharacterChanged);
     }
 
+    void Update() {
+        var step = m_Steps[m_StepIndex];
+        if (step.Timeout.TryComplete()) {
+            FinishStep();
+        }
+    }
+
     void OnDestroy() {
         m_Subscriptions.Dispose();
         m_CurrentCharacter.Value.Checkpoint.IsBlocked = false;
 
         foreach (var step in m_Steps) {
             if (step.Trigger) {
-                Destroy(step.Trigger.gameObject);
+                step.Trigger.Finish();
             }
         }
     }
@@ -85,19 +93,44 @@ sealed class DreamSequence: MonoBehaviour {
         // init steps
         var i = 0;
         foreach (var step in m_Steps) {
-            step.Trigger.OnFire(OnStep);
-            step.Trigger.gameObject.SetActive(i == 0);
+            step.Trigger.OnFire(OnStepTriggerFired);
+            step.Trigger.Toggle(i == 0);
             i += 1;
         }
 
         // bind events
         m_Subscriptions
             .Add(checkpoint.OnCreate, OnCreateCheckpoint);
+
+        character.Character.Events
+            .Once(CharacterEvent.Move, OnCharacterMove);
+    }
+
+    /// starts the step's timer/trigger behavior
+    public void StartTimeout() {
+        var curr = m_Steps[m_StepIndex];
+        if (!curr.Timeout.IsZero) {
+            curr.Timeout.Start();
+        }
+    }
+
+    public void FinishStep() {
+        var curr = m_Steps[m_StepIndex];
+        curr.Trigger.Finish();
+
+        m_Mechanic_JumpToNode.Raise(curr.Mechanic_StartNode);
+        m_StepIndex += 1;
+
+        if (m_StepIndex < m_Steps.Length) {
+            var next = m_Steps[m_StepIndex];
+            next.Trigger.Toggle(true);
+            StartTimeout();
+        }
     }
 
     // -- events --
+    /// when the initial character loads
     void OnCurrentCharacterChanged(DisconeCharacterPair _) {
-        Debug.Log("[dream] OnCharacterChanged");
         if (m_Store.Player.HasData) {
             Destroy(this);
             return;
@@ -106,19 +139,17 @@ sealed class DreamSequence: MonoBehaviour {
         Init();
     }
 
-    void OnStep() {
-        var curr = m_Steps[m_StepIndex];
-        Destroy(curr.Trigger.gameObject);
-
-        m_Mechanic_JumpToNode.Raise(curr.Mechanic_StartNode);
-        m_StepIndex += 1;
-
-        if (m_StepIndex < m_Steps.Length) {
-            var next = m_Steps[m_StepIndex];
-            next.Trigger.gameObject.SetActive(true);
-        }
+    /// when the character initially moves
+    void OnCharacterMove() {
+        StartTimeout();
     }
 
+    /// when the step trigger fires
+    void OnStepTriggerFired() {
+        FinishStep();
+    }
+
+    /// when the final checkpoint is created
     void OnCreateCheckpoint(Checkpoint _) {
         m_CurrentCharacter.Value.Checkpoint.IsBlocked = false;
         // destroy immediate so that nothing else can trigger OnCreateCheckpoint

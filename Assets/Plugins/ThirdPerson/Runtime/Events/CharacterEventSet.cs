@@ -8,6 +8,7 @@ public enum CharacterEvent {
     Jump = 1 << 0,
     Land = 1 << 1,
     Idle = 1 << 2,
+    Move = 1 << 3,
 }
 
 // -- impl --

@@ -36,6 +36,7 @@ sealed class IdleSystem: CharacterSystem {
 
     void NotIdle_Enter() {
         c.State.Next.IdleTime = 0.0f;
+        c.Events.Schedule(CharacterEvent.Move);
     }
 
     void NotIdle_Update(float _) {

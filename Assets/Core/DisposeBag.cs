@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using UnityAtoms.BaseAtoms;
 using System;
 
+// TODO: add once subscriptions
 /// a collection of event subscriptions
 public record DisposeBag: IDisposable {
     // -- props --

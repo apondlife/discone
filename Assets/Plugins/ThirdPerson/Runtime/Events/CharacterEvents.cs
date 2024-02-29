@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace ThirdPerson {
 
+/// TODO: make this compatible with `DisposeBag`
 public sealed class CharacterEvents {
     // -- constants --
     static readonly CharacterEvent s_First;

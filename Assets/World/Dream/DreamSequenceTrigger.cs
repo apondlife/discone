@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Remoting.Services;
 using NaughtyAttributes;
+using ThirdPerson;
 using UnityEngine;
 
 namespace Discone {
@@ -30,13 +31,24 @@ sealed class DreamSequenceTrigger: MonoBehaviour {
     float m_StayElapsed;
 
     // -- commands --
+    /// enables/disables the step
+    public void Toggle(bool isEnabled) {
+        gameObject.SetActive(isEnabled);
+    }
+
+    /// finish the step associated with this trigger
+    public void Finish() {
+        Destroy(gameObject);
+    }
+
+    /// fires the trigger's action
+    void Fire() {
+        m_OnFire?.Invoke();
+    }
+
     /// add a listener to the trigger's enter event
     public void OnFire(Action action) {
         m_OnFire += action;
-    }
-
-    void Fire() {
-        m_OnFire?.Invoke();
     }
 
     // -- queries --
