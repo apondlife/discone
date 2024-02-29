@@ -260,7 +260,7 @@ sealed class CameraCollisionSystem: CameraSystem {
 
     /// correct camera position in attempt to preserve line of sight
     /// see: https://miro.com/app/board/uXjVOWfpI6I=/?moveToWidget=3458764535240497690&cot=14
-    private Vector3 GetTrackingPos(Vector3 candidate) {
+    Vector3 GetTrackingPos(Vector3 candidate) {
         // the final position
         var destPos = candidate;
 

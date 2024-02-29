@@ -253,9 +253,6 @@ sealed class CameraFollowSystem: CameraSystem {
         next.Spherical.Azimuth = nextYaw;
         next.Spherical.Zenith = nextPitch;
 
-        next.DestSpherical.Azimuth = destYaw;
-        next.DestSpherical.Zenith = destPitch;
-
         next.Velocity.Azimuth = nextYawSpeed;
         next.Velocity.Zenith = nextPitchSpeed;
 
@@ -310,9 +307,6 @@ sealed class CameraFollowSystem: CameraSystem {
         next.Spherical.Azimuth = nextYaw;
         next.Spherical.Zenith = nextPitch;
 
-        next.DestSpherical.Azimuth = nextYaw;
-        next.DestSpherical.Zenith = nextPitch;
-
         next.Velocity.Azimuth = nextYawSpeed;
         next.Velocity.Zenith = nextPitchSpeed;
     }
@@ -347,7 +341,6 @@ sealed class CameraFollowSystem: CameraSystem {
         // update radius
         var next = m_State.Next;
         next.Spherical.Radius = nextRadius;
-        next.DestSpherical.Radius = destRadius;
     }
 }
 

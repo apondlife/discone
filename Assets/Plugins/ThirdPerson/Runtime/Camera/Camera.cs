@@ -11,6 +11,20 @@ public class Camera: MonoBehaviour {
     [Tooltip("the tuning parameters for the camera")]
     [SerializeField] CameraTuning m_Tuning;
 
+    // -- systems --
+    [Header("systems")]
+    [Tooltip("the camera following system")]
+    [SerializeField] CameraFollowSystem m_FollowSystem;
+
+    [Tooltip("the camera collision system")]
+    [SerializeField] CameraCollisionSystem m_CollisionSystem;
+
+    [Tooltip("the camera zooming system")]
+    [SerializeField] CameraZoomSystem m_ZoomSystem;
+
+    [Tooltip("the camera tilting system")]
+    [SerializeField] CameraTiltSystem m_TiltSystem;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the cinemachine camera")]
@@ -41,18 +55,6 @@ public class Camera: MonoBehaviour {
 
     /// the list of systems acting on this camera
     CameraSystem[] m_Systems;
-
-    /// the camera following sytem (state machine)
-    [SerializeField] CameraFollowSystem m_FollowSystem;
-
-    /// the camera following sytem (state machine)
-    [SerializeField] CameraCollisionSystem m_CollisionSystem;
-
-    /// the camera zooming sytem (state machine)
-    [SerializeField] CameraZoomSystem m_ZoomSystem;
-
-    /// the camera tilting sytem (state machine)
-    [SerializeField] CameraTiltSystem m_TiltSystem;
 
     // -- lifecycle --
     void Start() {
@@ -104,12 +106,13 @@ public class Camera: MonoBehaviour {
         var delta = Time.deltaTime;
 
         // synchronize state
-        m_State.Next.Forward = m_Camera.transform.forward;
-        m_State.Next.Up = m_Camera.transform.up;
+        var camera = m_Camera.transform;
+        m_State.Next.Forward = camera.forward;
+        m_State.Next.Up = camera.up;
 
         // snapshot state w/ current world position (given character movement)
         m_State.Next.Pos = m_Destination.position;
-        m_State.Snapshot();
+        m_State.Advance();
 
         // run systems
         foreach (var system in m_Systems) {
@@ -133,6 +136,14 @@ public class Camera: MonoBehaviour {
             ShaderProps.CameraClipPlane,
             new Plane(m_CollisionSystem.ClipNormal, m_CollisionSystem.ClipPos).AsVector4()
         );
+    }
+
+    // -- commands --
+    /// move the camera into a new external position
+    public void MoveTo(Vector3 pos) {
+        var frame = m_State.Curr.Copy();
+        frame.Spherical = m_State.WorldIntoSpherical(pos);
+        m_State.Override(frame);
     }
 
     // -- queries --
@@ -167,15 +178,19 @@ public class Camera: MonoBehaviour {
         get => m_State.IsFreeLook;
     }
 
+    public CameraState.Frame State {
+        get => m_State.Curr;
+    }
+
+    public CinemachineVirtualCamera Virtual {
+        get => m_Camera;
+    }
+
     // -- debug --
     void OnDrawGizmos() {
         var ideal = m_State.IntoIdealPosition();
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(ideal, 0.3f);
-
-        var idealDest = m_State.IntoIdealDestPosition();
-        Gizmos.color = Color.green + Color.yellow * 0.5f;
-        Gizmos.DrawWireSphere(idealDest, 0.3f);
 
         var actual = m_State.Pos;
         Gizmos.color = Color.green;

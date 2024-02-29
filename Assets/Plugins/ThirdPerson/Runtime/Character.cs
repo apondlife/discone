@@ -66,14 +66,14 @@ public partial class Character: MonoBehaviour, CharacterContainer {
 
     // TODO: extract the camera out of the character, maybe?
     /// the character's virtual camera
-    GameObject m_Camera;
+    Camera m_Camera;
 
     // -- lifecycle --
     void Awake() {
         var t = transform;
 
         // get children
-        m_Camera = GetComponentInChildren<Camera>(true).gameObject;
+        m_Camera = GetComponentInChildren<Camera>(true);
 
         // init input (can't access Time from field initializer)
         m_Input = new CharacterInput();
@@ -185,17 +185,13 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     /// drive the character with a new input source
     public void Drive(CharacterInputSource source) {
         m_Input.Drive(source);
-        m_Camera.SetActive(source != null);
+        m_Camera.gameObject.SetActive(source != null);
     }
 
     /// force the current frame's state
     public void ForceState(CharacterState.Frame frame) {
         // HACK: we should sync the full list of frames on connect
-        if (m_State.IsEmpty) {
-            m_State.Fill(frame);
-        } else {
-            m_State.Override(frame);
-        }
+        m_State.Override(frame);
     }
 
     /// pause the character
@@ -227,6 +223,11 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     /// the character's current state
     public CharacterState.Frame CurrentState {
         get => m_State.Next;
+    }
+
+    /// the character's camera
+    public Camera Camera {
+        get => m_Camera;
     }
 
     // -- CharacterContainer --

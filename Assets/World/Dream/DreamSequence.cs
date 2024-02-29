@@ -43,6 +43,9 @@ sealed class DreamSequence: MonoBehaviour {
     [Tooltip("the mechanic yarn project")]
     [SerializeField] YarnProject m_Mechanic;
 
+    [Tooltip("the initial camera")]
+    [SerializeField] GameObject m_Camera;
+
     // -- dispatched --
     [Header("dispatched")]
     [Tooltip("when the mechanic should jump to a node")]
@@ -114,9 +117,11 @@ sealed class DreamSequence: MonoBehaviour {
             .Once(CharacterEvent.Move, OnCharacterMove);
     }
 
-    /// starts the step's timer/trigger behavior
-    public void StartTimeout() {
+    /// starts the current step
+    public void StartStep() {
         var curr = m_Steps[m_StepIndex];
+
+        // start the timeout, if any
         if (!curr.Timeout.IsZero) {
             curr.Timeout.Start();
         }
@@ -133,7 +138,7 @@ sealed class DreamSequence: MonoBehaviour {
         if (m_StepIndex < m_Steps.Length) {
             var next = m_Steps[m_StepIndex];
             next.Trigger.Toggle(true);
-            StartTimeout();
+            StartStep();
         }
     }
 
@@ -150,7 +155,8 @@ sealed class DreamSequence: MonoBehaviour {
 
     /// when the character initially moves
     void OnCharacterMove() {
-        StartTimeout();
+        m_Camera.SetActive(false);
+        StartStep();
     }
 
     /// when the step trigger fires

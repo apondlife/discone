@@ -18,7 +18,7 @@ public sealed partial class CameraState {
 
     // -- props --
     /// the queue of frames
-    Queue<Frame> m_Frames = new Queue<Frame>(k_BufferSize);
+    Queue<Frame> m_Frames = new(k_BufferSize);
 
     /// an offset from the character pos to follow
     Vector3 m_FollowOffset;
@@ -46,18 +46,23 @@ public sealed partial class CameraState {
 
     // -- commands --
     /// snapshot the current state
-    public void Snapshot() {
-        m_Frames.Add(m_Frames[0].Copy());
+    public void Advance() {
+        var next = m_Frames[0].Copy();
+        m_Frames.Add(next);
+    }
+
+    /// override the current frame
+    public void Override(Frame frame) {
+        if (m_Frames.IsEmpty) {
+            Fill(frame);
+        } else {
+            m_Frames[0] = frame;
+        }
     }
 
     /// fill the queue with the frame
-    public void Fill(CameraState.Frame frame) {
+    public void Fill(Frame frame) {
         m_Frames.Fill(frame);
-    }
-
-    /// force the current frame
-    public void Force(CameraState.Frame frame) {
-        m_Frames[0] = frame;
     }
 
     // -- queries --
@@ -86,34 +91,34 @@ public sealed partial class CameraState {
         return SphericalIntoWorld(Next.Spherical);
     }
 
-    /// the destination position on the camera sphere in world coords
-    public Vector3 IntoIdealDestPosition() {
-        return SphericalIntoWorld(Next.DestSpherical);
-    }
-
     /// converts current position into spherical coordinates
     public Spherical IntoCurrSpherical() {
-        var currDir = Curr.Pos - FollowPosition;
-        var currFwd = Vector3.ProjectOnPlane(currDir, Vector3.up);
+        return WorldIntoSpherical(Curr.Pos);
+    }
 
-        var radius = currDir.magnitude;
+    /// converts a world position into a local spherical position
+    public Spherical WorldIntoSpherical(Vector3 pos) {
+        var delta = pos - FollowPosition;
+        var forward = Vector3.ProjectOnPlane(delta, Vector3.up);
+
+        var radius = delta.magnitude;
 
         var yaw = Vector3.SignedAngle(
             m_FollowYawZeroDir,
-            currFwd,
+            forward,
             Vector3.up
         );
 
         var pitch = Mathf.Rad2Deg * Mathf.Atan2(
-            currDir.y,
-            currFwd.magnitude
+            delta.y,
+            forward.magnitude
         );
 
         return new Spherical(radius, yaw, pitch);
     }
 
     /// converts a local spherical position into a world position
-    Vector3 SphericalIntoWorld(Spherical spherical) {
+    public Vector3 SphericalIntoWorld(Spherical spherical) {
         // calc dest forward from yaw
         var yawRot = Quaternion.AngleAxis(
             spherical.Azimuth,
@@ -170,29 +175,23 @@ public sealed partial class CameraState {
         /// the actual world position post-collision
         public Vector3 Pos;
 
-        /// the destination world position post-collision
-        public Vector3 DestPos;
-
         /// the ideal spherical local position
         public Spherical Spherical;
 
-        /// the ideal destination spherical local position
-        public Spherical DestSpherical;
-
-        /// the sphecial velocity
+        /// the spherical velocity
         public Spherical Velocity;
-
-        /// if the camera is in free look mode
-        public bool IsFreeLook;
-
-        /// if the camera is colliding with something
-        public bool IsColliding;
 
         /// the camera's field of view
         public float Fov;
 
         /// the camera's dutch angle
         public float Dutch;
+
+        /// if the camera is in free look mode
+        public bool IsFreeLook;
+
+        /// if the camera is colliding with something
+        public bool IsColliding;
 
         // -- lifetime --
         /// create an empty frame

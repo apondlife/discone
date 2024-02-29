@@ -6,7 +6,7 @@ namespace ThirdPerson {
 public sealed class AnyDisposable: IDisposable {
     // -- props --
     /// a generic dispose action
-    private Action m_Dispose;
+    Action m_Dispose;
 
     // -- lifetime --
     /// create a disposable from this action

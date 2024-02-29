@@ -1,14 +1,15 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
 /// the player
-public class Player: MonoBehaviour {
+public class Player: MonoBehaviour, PlayerContainer {
     // -- state --
     [Header("state")]
     [Tooltip("the currently controlled character")]
-    [SerializeField] Character m_CurrentCharacter;
+    [SerializeField] Character m_Character;
 
     // -- refs --
     [Header("refs")]
@@ -25,13 +26,13 @@ public class Player: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        if (m_CurrentCharacter != null) {
-            Drive(m_CurrentCharacter);
+        if (m_Character) {
+            Drive(m_Character);
         }
     }
 
     void Update() {
-        if (m_CurrentCharacter != null) {
+        if (m_Character) {
             SyncCharacter();
         }
     }
@@ -47,7 +48,7 @@ public class Player: MonoBehaviour {
 
     /// drive a particular character
     public void Drive(Character character) {
-        var src = m_CurrentCharacter;
+        var src = m_Character;
         if (src) {
             src.Drive(null);
             m_OnDriveStop?.Invoke(src);
@@ -60,19 +61,19 @@ public class Player: MonoBehaviour {
         }
 
         // set current character and ensure initial state is correct
-        m_CurrentCharacter = dst;
+        m_Character = dst;
         SyncCharacter();
     }
 
     /// sync state with character
     public void SyncCharacter() {
-        transform.position = m_CurrentCharacter.transform.position;
+        transform.position = m_Character.transform.position;
     }
 
     // -- queries --
     /// the character the player is currently driving
-    public Character CurrentCharacter {
-        get => m_CurrentCharacter;
+    public Character Character {
+        get => m_Character;
     }
 }
 

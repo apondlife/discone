@@ -46,14 +46,18 @@ public sealed partial class CharacterState {
         m_Frames.Add(next);
     }
 
+    /// override the current frame
+    public void Override(Frame frame) {
+        if (m_Frames.IsEmpty) {
+            Fill(frame);
+        } else {
+            m_Frames[0] = frame;
+        }
+    }
+
     /// fill the queue with the frame
     public void Fill(Frame frame) {
         m_Frames.Fill(frame);
-    }
-
-    /// override the current frame
-    public void Override(Frame frame) {
-        m_Frames[0] = frame;
     }
 
     // -- queries --

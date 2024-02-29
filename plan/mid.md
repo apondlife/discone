@@ -11,6 +11,7 @@ mired in debt
 - movement system uses coyote time
 - interaction between eyes closed dialogue and dream dialogue
     - closing eyed before finishing dream tutorial, breaks sequence (see Intro_Skip)
+- transition from fixed cameras to character camera has bad rotation in in-between state
 
 # debt
 - need to manually enable input actions
