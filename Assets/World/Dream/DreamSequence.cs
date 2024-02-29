@@ -73,12 +73,20 @@ sealed class DreamSequence: MonoBehaviour {
 
     void OnDestroy() {
         m_Subscriptions.Dispose();
+
+        // re-enable flowers
         m_CurrentCharacter.Value.Checkpoint.IsBlocked = false;
 
+        // clean up any triggers
         foreach (var step in m_Steps) {
             if (step.Trigger) {
                 step.Trigger.Finish();
             }
+        }
+
+        // on first session, finish the dream
+        if (!m_Store.Player.HasData) {
+            m_DreamEnded.Raise();
         }
     }
 
@@ -114,6 +122,7 @@ sealed class DreamSequence: MonoBehaviour {
         }
     }
 
+    /// finish the current step and start the next one, if any
     public void FinishStep() {
         var curr = m_Steps[m_StepIndex];
         curr.Trigger.Finish();
@@ -152,10 +161,7 @@ sealed class DreamSequence: MonoBehaviour {
     /// when the final checkpoint is created
     void OnCreateCheckpoint(Checkpoint _) {
         m_CurrentCharacter.Value.Checkpoint.IsBlocked = false;
-        // destroy immediate so that nothing else can trigger OnCreateCheckpoint
-        DestroyImmediate(this);
-
-        m_DreamEnded.Raise();
+        Destroy(this);
     }
 }
 
