@@ -139,7 +139,7 @@ sealed class Mechanic: MonoBehaviour {
 
     /// switch to a new node and start dialogue immediately
     void JumpToNode(string node, bool isContinue = false) {
-        Debug.Log(Tag.Mechanic.F($"jump: {node}"));
+        Log.Mechnk.I($"jump: {node}");
         SwitchNode(node);
         StartDialogue(isContinue);
     }
@@ -158,12 +158,12 @@ sealed class Mechanic: MonoBehaviour {
 
         // and start the new dialogue
         if (nodeName == null) {
-            Debug.LogWarning(Tag.Mechanic.F($"tried to start dialogue w/ no node set"));
+            Log.Mechnk.W($"tried to start dialogue w/ no node set");
             return;
         }
 
         if (!isContinue) {
-            Debug.Log(Tag.Mechanic.F($"strt: {nodeName}"));
+            Log.Mechnk.I($"strt: {nodeName}");
         }
 
         m_DialogueRunner.StartDialogue(nodeName);
@@ -191,7 +191,7 @@ sealed class Mechanic: MonoBehaviour {
 
     /// .
     void SetVariable(string key, string value) {
-        Debug.Log(Tag.Mechanic.F($"set var {key} => {value}"));
+        Log.Mechnk.I($"set var {key} => {value}");
         m_DialogueRunner.VariableStorage.SetValue(key, value);
     }
 
@@ -230,7 +230,7 @@ sealed class Mechanic: MonoBehaviour {
 
             var hasNext = m_Nodes.TryGetValue(nextName, out nextNode);
             if (!hasNext) {
-                Debug.LogError(Tag.Mechanic.F($"found branch w/ broken connection and/or last node"));
+                Log.Mechnk.E($"found branch w/ broken connection and/or last node");
             }
         }
 
@@ -255,7 +255,7 @@ sealed class Mechanic: MonoBehaviour {
 
         // if this is not the current node, ignore it
         if (nodeName != m_Node) {
-            Debug.LogError(Tag.Mechanic.F($"not current node {nodeName} vs {m_Node}"));
+            Log.Mechnk.E($"not current node {nodeName} vs {m_Node}");
             return;
         }
 
@@ -266,7 +266,7 @@ sealed class Mechanic: MonoBehaviour {
     /// set the next node
     [YarnCommand("then")]
     public void Then(string nodeName) {
-        Debug.Log(Tag.Mechanic.F($"then: {nodeName}"));
+        Log.Mechnk.I($"then: {nodeName}");
         SwitchNode(nodeName);
     }
 
@@ -398,9 +398,9 @@ sealed class Mechanic: MonoBehaviour {
             #if UNITY_EDITOR
             if (!hasNext && !node.IsTreeLike) {
                 if (!node.IsLast) {
-                    Debug.LogError(Tag.Mechanic.F($"{currName} - node has no next, but is not last"));
+                    Log.Mechnk.E($"{currName} - node has no next, but is not last");
                 } else if (currScope.DistanceTo(nextScope) <= 2) {
-                    Debug.LogError(Tag.Mechanic.F($"{currName} - the scopes '{currScope}' and '{nextScope}' are very similar; is there a typo?"));
+                    Log.Mechnk.E($"{currName} - the scopes '{currScope}' and '{nextScope}' are very similar; is there a typo?");
                 }
             }
             #endif

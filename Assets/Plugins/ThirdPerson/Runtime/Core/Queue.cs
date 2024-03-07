@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ThirdPerson {
 
+// TODO: rename to Ring, move to Soil
 /// a circular buffer of n data elements
 public sealed class Queue<T>: IEnumerable<T> {
     // -- constants --
@@ -18,8 +20,14 @@ public sealed class Queue<T>: IEnumerable<T> {
     readonly T[] m_Queue;
 
     // -- lifetime --
+    /// create a queue with a fixed size
     public Queue(uint size) {
         m_Queue = new T[size];
+    }
+
+    /// create a queue from a list of items
+    public Queue(T[] items) {
+        m_Queue = items;
     }
 
     // -- commands --
@@ -61,7 +69,7 @@ public sealed class Queue<T>: IEnumerable<T> {
         get => m_Queue.Length;
     }
 
-    /// gets the snapshot nth-newest snapshot.
+    /// gets the snapshot nth-newest item.
     public T this[int offset] {
         get {
             if (offset >= m_Queue.Length) {

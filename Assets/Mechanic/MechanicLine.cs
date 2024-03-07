@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
@@ -12,12 +13,17 @@ sealed class MechanicLine: UIBehaviour {
     [Tooltip("the fade-in animation")]
     [SerializeField] ThirdPerson.EaseTimer m_Fade;
 
-    [Tooltip("the offset animation")]
-    [SerializeField] ThirdPerson.EaseTimer m_Offset;
+    [Tooltip("the move animation")]
+    [SerializeField] ThirdPerson.EaseTimer m_Move;
 
+    [FormerlySerializedAs("m_Offset")]
+    [Tooltip("the scatter animation")]
+    [SerializeField] ThirdPerson.EaseTimer m_Scatter;
+
+    [FormerlySerializedAs("m_OffsetDist")]
     [FormerlySerializedAs("m_OffsetRange")]
     [Tooltip("the character offset range")]
-    [SerializeField] ThirdPerson.MapOutCurve m_OffsetDist;
+    [SerializeField] ThirdPerson.MapOutCurve m_ScatterDist;
 
     // -- refs --
     [Header("refs")]
@@ -28,6 +34,12 @@ sealed class MechanicLine: UIBehaviour {
     [SerializeField] TMP_Text m_Text;
 
     // -- props --
+    /// the move source position
+    Vector2 m_MoveSrc;
+
+    /// the move destination position
+    Vector2 m_MoveDst;
+
     /// the current character offsets
     ThirdPerson.Buffer<Vector2> m_Offsets = new(256);
 
@@ -54,8 +66,16 @@ sealed class MechanicLine: UIBehaviour {
             m_Component.Show(m_Fade.Pct);
         }
 
-        if (m_Offset.IsActive) {
-            m_Offset.Tick();
+        // offset the label into a new position
+        if (m_Move.IsActive) {
+            m_Move.Tick();
+            var rect = (RectTransform)transform;
+            rect.anchoredPosition = Vector2.Lerp(m_MoveSrc, m_MoveDst, m_Move.Pct);
+        }
+
+        // scatter the text
+        if (m_Scatter.IsActive) {
+            m_Scatter.Tick();
             m_Text.ForceMeshUpdate();
         }
     }
@@ -74,14 +94,23 @@ sealed class MechanicLine: UIBehaviour {
         // rebuild the initial text offsets
         m_Offsets.Clear();
         for (var i = 0; i < text.Length; i++) {
-            var len = m_OffsetDist.Evaluate(Random.value);
+            var len = m_ScatterDist.Evaluate(Random.value);
             var dir = Random.insideUnitCircle.normalized;
             m_Offsets.Add(len * dir);
         }
 
         // start the animations
         m_Fade.Start();
-        m_Offset.Start();
+        m_Scatter.Start();
+    }
+
+    /// offset the line from center
+    public void Move(Vector2 offset) {
+        var rect = (RectTransform)transform;
+        m_MoveSrc = rect.anchoredPosition;
+        m_MoveDst = offset;
+
+        m_Move.Start();
     }
 
     /// hide the dialogue line
@@ -92,6 +121,12 @@ sealed class MechanicLine: UIBehaviour {
         }
 
         m_Fade.Start(isReversed: true);
+    }
+
+    // -- queries --
+    /// the height of the text
+    public float Height {
+        get => m_Text.preferredHeight;
     }
 
     // -- events --
@@ -107,17 +142,11 @@ sealed class MechanicLine: UIBehaviour {
             var vertIdx = charInfo.vertexIndex;
             var vertices = meshInfo.vertices;
 
-            var offset = (Vector3)m_Offsets[i] * (1f - m_Offset.Pct);
+            var offset = (Vector3)m_Offsets[i] * (1f - m_Scatter.Pct);
             vertices[vertIdx + 0] += offset;
             vertices[vertIdx + 1] += offset;
             vertices[vertIdx + 2] += offset;
             vertices[vertIdx + 3] += offset;
-
-            // var color = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1.0f);
-            // info.meshInfo[meshIdx].colors32[vertIdx + 0] = color;
-            // info.meshInfo[meshIdx].colors32[vertIdx + 1] = color;
-            // info.meshInfo[meshIdx].colors32[vertIdx + 2] = color;
-            // info.meshInfo[meshIdx].colors32[vertIdx + 3] = color;
         }
     }
 }

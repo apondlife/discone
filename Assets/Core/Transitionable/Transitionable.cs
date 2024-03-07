@@ -69,7 +69,7 @@ sealed class Transitionable: UIBehaviour {
         var k = enter ? 1.0f - pct : pct;
         t.anchoredPosition = m_InitialPos + m_Translation * k;
 
-        // once we reach an edge, pick a new translation (ptential bug if we
+        // once we reach an edge, pick a new translation (potential bug if we
         // can hit the edge and still continue the transition, e.g. a reverse)
         if (pct == 0.0f || pct == 1.0f) {
             ChangeTranslation();

@@ -23,7 +23,7 @@ public sealed class Buffer<T>: IEnumerable<T> {
     /// adds a new element to the buffer, removing the oldest one.
     public void Add(T item) {
         if (m_Count >= m_Buffer.Length) {
-            throw new IndexOutOfRangeException();
+            throw new IndexOutOfRangeException($"{m_Count} >= {m_Buffer.Length}");
         }
 
         m_Buffer[m_Count] = item;
@@ -52,6 +52,11 @@ public sealed class Buffer<T>: IEnumerable<T> {
         get => m_Count;
     }
 
+    /// the length of the buffer
+    public int Length {
+        get => m_Buffer.Length;
+    }
+
     /// get a readonly copy of this buffer or null if its empty
     public T[] ToArrayOrNull() {
         if (m_Count == 0) {
@@ -69,7 +74,7 @@ public sealed class Buffer<T>: IEnumerable<T> {
     public T this[int index] {
         get {
             if (index >= m_Count) {
-                throw new IndexOutOfRangeException();
+                throw new IndexOutOfRangeException($"{index} >= {m_Count} [{m_Buffer.Length}]");
             }
 
             return m_Buffer[index];
@@ -77,7 +82,7 @@ public sealed class Buffer<T>: IEnumerable<T> {
 
         set {
             if (index >= m_Count) {
-                throw new IndexOutOfRangeException();
+                throw new IndexOutOfRangeException($"{index} >= {m_Count} [{m_Buffer.Length}]");
             }
 
             m_Buffer[index] = value;

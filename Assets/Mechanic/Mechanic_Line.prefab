@@ -207,12 +207,60 @@ PrefabInstance:
       value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
-      propertyPath: m_TranslationDist.m_Max
-      value: 30
+      propertyPath: m_TranslationDist.Dst.Max
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
-      propertyPath: m_TranslationDist.m_Min
-      value: 10
+      propertyPath: m_TranslationDist.Dst.Min
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_JitterDist.Curve.m_Curve.Array.data[0].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_JitterDist.Curve.m_Curve.Array.data[1].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_JitterDist.Curve.m_Curve.Array.data[0].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_JitterDist.Curve.m_Curve.Array.data[1].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_JitterDist.Curve.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_JitterDist.Curve.m_Curve.Array.data[1].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_TranslationDist.Curve.m_Curve.Array.data[0].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_TranslationDist.Curve.m_Curve.Array.data[1].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_TranslationDist.Curve.m_Curve.Array.data[0].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_TranslationDist.Curve.m_Curve.Array.data[1].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_TranslationDist.Curve.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193199580743443533, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
+      propertyPath: m_TranslationDist.Curve.m_Curve.Array.data[1].tangentMode
+      value: 34
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d8b05c6b47254ac1b7f9afc92318d60, type: 3}
@@ -239,7 +287,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Fade:
-    m_Duration: 0.8
+    m_Duration: 2
     m_Curve:
       serializedVersion: 2
       m_Curve:
@@ -264,7 +312,33 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  m_Offset:
+  m_Move:
+    m_Duration: 1
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_Scatter:
     m_Duration: 3
     m_Curve:
       serializedVersion: 2
@@ -281,17 +355,17 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 0
-        outSlope: 0
+        inSlope: 0.005732087
+        outSlope: 0.005732087
         tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
+        weightedMode: 1
+        inWeight: 0.912191
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  m_OffsetDist:
-    m_Curve:
+  m_ScatterDist:
+    Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -315,9 +389,9 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Dst:
-      Min: 0
-      Max: 256
+    Dst:
+      Min: 300
+      Max: 350
   m_Component: {fileID: 4019307925387692298}
   m_Text: {fileID: 3877869803640705367}
 --- !u!114 &4019307925387692298 stripped
