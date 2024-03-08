@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b46c0f62c93543f88d3eb693740d091, type: 3}
-  m_Name: PlayerEyelid_ClosePct
+  m_Script: {fileID: 11500000, guid: 593b70f10d7bb41c78d42c7e8b6609da, type: 3}
+  m_Name: Mechanic_IsAlwaysVisible
   m_EditorClassIdentifier: 
-  _developerDescription: the current percent through the eye close animation
+  _developerDescription: if the mechanic is always visible, even when the player's
+    eyes are open
   _id: 
   _value: 0
-  _changed: {fileID: 11400000, guid: b2490f11a0a6c4db8ab196dd5e3be6c4, type: 2}
+  _changed: {fileID: 11400000, guid: 750446555b0434262b714bae2607f426, type: 2}
   _changedWithHistory: {fileID: 0}
   _triggerChangedOnOnEnable: 0
   _triggerChangedWithHistoryOnOnEnable: 0

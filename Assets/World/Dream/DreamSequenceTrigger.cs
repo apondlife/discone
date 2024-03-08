@@ -31,7 +31,7 @@ sealed class DreamSequenceTrigger: MonoBehaviour {
     float m_StayElapsed;
 
     // -- commands --
-    /// enables/disables the step
+    /// enables/disables the trigger
     public void Toggle(bool isEnabled) {
         gameObject.SetActive(isEnabled);
     }

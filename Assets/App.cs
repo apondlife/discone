@@ -26,7 +26,7 @@ sealed class App: MonoBehaviour {
 
     // -- props --
     /// the subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Awake() {

@@ -1,14 +1,11 @@
 using System;
-using NaughtyAttributes;
 using UnityEngine;
-using Yarn.Markup;
 using Yarn.Unity;
-using Random = UnityEngine.Random;
 
 namespace Discone.Ui {
 
 /// the mechanic's eyelid dialogue view
-sealed class MechanicDialogueView: DialogueViewBase {
+sealed partial class MechanicDialogueView: DialogueViewBase {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the spacing between lines")]
@@ -37,21 +34,6 @@ sealed class MechanicDialogueView: DialogueViewBase {
         get => m_Lines.Length - 1;
     }
 
-    [Button("Test")]
-    void Test() {
-        var line = new LocalizedLine();
-        var text = new MarkupParseResult();
-        text.Text = "";
-
-        var n = Random.Range(2, 10);
-        for (var i = 0; i < n; i++) {
-            text.Text += "asdf ";
-        }
-
-        line.Text = text;
-        RunLine(line, null);
-    }
-
     // -- DialogueViewBase --
     public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished) {
         var max = m_Lines.Length - 2;
@@ -64,11 +46,13 @@ sealed class MechanicDialogueView: DialogueViewBase {
         nextLine.Show(dialogueLine.Text.Text);
 
         // offset all the lines
-        var offset = Vector2.zero;
-        for (var i = 0; i < max + 1; i++) {
-            var line = m_Lines[i];
-            line.Move(offset);
-            offset.y += line.Height + m_Spacing;
+        if (max > 1) {
+            var offset = Vector2.zero;
+            for (var i = 0; i < max + 1; i++) {
+                var line = m_Lines[i];
+                line.Move(offset);
+                offset.y += line.Height + m_Spacing;
+            }
         }
 
         // hide the old line

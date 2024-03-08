@@ -58,15 +58,8 @@ MonoBehaviour:
   m_Node: 
   m_TreeRoot: 
   m_Delay: 0
+  m_IsAlwaysVisible: {fileID: 11400000, guid: 5ad34582719e74669a03690746801b57, type: 2}
   m_DelayBonus: 0.5
-  m_UnscatterAnim:
-    m_Duration: 0
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
   m_Project: {fileID: 7545569452688597077, guid: b2916276469f3434fbfd12489a5d0307, type: 3}
   m_StartNode: Start
   m_DialogueRunner: {fileID: 5037302081254551675}
@@ -224,7 +217,6 @@ RectTransform:
   - {fileID: 4435495419596670300}
   - {fileID: 5680888894628940818}
   - {fileID: 2718143409462286964}
-  - {fileID: 1807448281147090119}
   m_Father: {fileID: 3186835176685506654}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -245,6 +237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 935cb1580c0be450890e529f55502534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Spacing: 0
 --- !u!222 &1662909582214248502
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -253,68 +246,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9220504663791482911}
   m_CullTransparentMesh: 1
---- !u!1001 &610177948062111979
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 7442405977357291822}
-    m_Modifications:
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2676837206221308500, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-      propertyPath: m_Name
-      value: Mechanic-line.4
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
---- !u!224 &1807448281147090119 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1252723345320672300, guid: 6c055df313c3f4d7c8dc5a2932ba23a0, type: 3}
-  m_PrefabInstance: {fileID: 610177948062111979}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3237132294494091632
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -534,6 +465,10 @@ PrefabInstance:
       propertyPath: m_ShowMaskGraphic
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4586176998300275995, guid: f495af066de7a8a489f12cbabdac76c3, type: 3}
+      propertyPath: m_IsAlwaysOpen
+      value: 
+      objectReference: {fileID: 11400000, guid: 5ad34582719e74669a03690746801b57, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f495af066de7a8a489f12cbabdac76c3, type: 3}
 --- !u!224 &3186835176685506654 stripped

@@ -20,19 +20,32 @@ public record DisposeBag: IDisposable {
     // -- c/subscriptions
     /// add a subscription for an event/action pair
     public DisposeBag Add(VoidEvent e, Action a) {
+        if (e == null) {
+            return this;
+        }
+
         Add(e, (_) => a.Invoke());
         return this;
     }
 
     /// add a subscription for an event/action pair
     public DisposeBag Add<T>(AtomEvent<T> e, Action<T> a) {
+        if (e == null) {
+            return this;
+        }
+
         e.Register(a);
         Add(() => e.Unregister(a));
+
         return this;
     }
 
     /// add a subscription for an event/action pair
     public DisposeBag Add(UnityEvent e, UnityAction a) {
+        if (e == null) {
+            return this;
+        }
+
         e.AddListener(a);
         Add(() => e.RemoveListener(a));
         return this;
@@ -40,6 +53,10 @@ public record DisposeBag: IDisposable {
 
     /// add a subscription for an event/action pair
     public DisposeBag Add<T>(UnityEvent<T> e, UnityAction<T> a) {
+        if (e == null) {
+            return this;
+        }
+
         e.AddListener(a);
         Add(() => e.RemoveListener(a));
         return this;
@@ -47,6 +64,10 @@ public record DisposeBag: IDisposable {
 
     /// add a subscription for an input action/action pair
     public DisposeBag Add(InputAction e, Action<InputAction.CallbackContext> a) {
+        if (e == null) {
+            return this;
+        }
+
         e.performed += a;
         Add(() => e.performed -= a);
         return this;

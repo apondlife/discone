@@ -11,11 +11,35 @@ public class PlayerEyelid_Mask: MaskableGraphic {
     [Tooltip("the current eyelid close pct")]
     [SerializeField] FloatVariable m_ClosePct;
 
+    [Tooltip("if the eyelid is always open")]
+    [SerializeField] BoolVariable m_IsAlwaysOpen;
+
+    // -- props --
+    /// the list of subscriptions
+    DisposeBag m_Subscriptions = new();
+
     // -- lifecycle --
-    void Update() {
-        if (m_ClosePct.Value != m_ClosePct.OldValue) {
-            SetVerticesDirty();
-        }
+    protected override void Start() {
+        base.Start();
+
+        // bind events
+        m_Subscriptions
+            .Add(m_ClosePct.Changed, OnClosePctChanged)
+            .Add(m_IsAlwaysOpen.Changed, OnIsAlwaysOpenChanged);
+    }
+
+    protected override void OnDestroy() {
+        m_Subscriptions.Dispose();
+        base.OnDestroy();
+    }
+
+    // -- events --
+    void OnClosePctChanged(float _) {
+        SetVerticesDirty();
+    }
+
+    void OnIsAlwaysOpenChanged(bool _) {
+        SetVerticesDirty();
     }
 
     // -- MaskableGraphic --
@@ -29,8 +53,14 @@ public class PlayerEyelid_Mask: MaskableGraphic {
         var h = r.height;
         var h2 = h * 0.5f;
 
+        // get close percent
+        var pct = 1f;
+        if (m_IsAlwaysOpen == null || !m_IsAlwaysOpen.Value) {
+            pct = m_ClosePct.Value;
+        }
+
         // get lid height
-        var hLid = h2 * m_ClosePct.Value;
+        var hLid = h2 * pct;
 
         // draw top eyelid
         var y0 = h2;

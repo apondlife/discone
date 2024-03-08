@@ -23,13 +23,13 @@ sealed class Mechanic: MonoBehaviour {
     [ReadOnly]
     [SerializeField] float m_Delay;
 
+    [Tooltip("if the dialogue is visible when the player's eyes are closed")]
+    [SerializeField] BoolVariable m_IsAlwaysVisible;
+
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the fixed delay accumulated on eye close")]
     [SerializeField] float m_DelayBonus;
-
-    [Tooltip("the unscatter animation on eye close")]
-    [SerializeField] ThirdPerson.EaseTimer m_UnscatterAnim;
 
     // -- cfg --
     [Header("cfg")]
@@ -44,9 +44,6 @@ sealed class Mechanic: MonoBehaviour {
     [Header("refs")]
     [Tooltip(".")]
     [SerializeField] DialogueRunner m_DialogueRunner;
-
-    [Tooltip("the pct through the eye close animation")]
-    [SerializeField] FloatReference m_ClosePct;
 
     // -- subscribed --
     [Header("subscribed")]
@@ -123,7 +120,7 @@ sealed class Mechanic: MonoBehaviour {
         }
 
         // if this node auto hides on complete, hide now
-        if (node.isHiding) {
+        if (node.IsHiding) {
             HideDialogue();
         }
     }
@@ -296,6 +293,10 @@ sealed class Mechanic: MonoBehaviour {
     void OnNodeWillStart(string nodeName) {
         var node = m_Nodes.Get(nodeName);
 
+        // if this node should show even when the player's eyes are
+        // closed, set state
+        m_IsAlwaysVisible.Value = node.IsLoud;
+
         // clear tree root if we start a node w/ a different scope
         if (IsInTree && !m_TreeRoot.StartsWith(node.Scope)) {
             SwitchTreeRoot(null);
@@ -374,6 +375,7 @@ sealed class Mechanic: MonoBehaviour {
             var tags = (MechanicNode.Tag)0;
             foreach (var tag in m_DialogueRunner.GetTagsForNode(currName)) {
                 tags |= tag switch {
+                    "#loud" => MechanicNode.Tag.Loud,
                     "#last" => MechanicNode.Tag.Last,
                     "#hide" => MechanicNode.Tag.Hide,
                     "#tree" => MechanicNode.Tag.Tree,

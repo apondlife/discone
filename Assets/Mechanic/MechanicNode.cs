@@ -2,16 +2,16 @@ using System;
 
 namespace Discone {
 
-// -- impls --
 readonly struct MechanicNode {
     // -- types --
     [Flags]
     public enum Tag {
-        Last = 1 << 0,
-        Hide = 1 << 1,
-        Tree = 1 << 2,
-        Fork = 1 << 3,
-        Leaf = 1 << 4,
+        Loud = 1 << 0,
+        Last = 1 << 1,
+        Hide = 1 << 2,
+        Tree = 1 << 3,
+        Fork = 1 << 4,
+        Leaf = 1 << 5,
     }
 
     // -- constants --
@@ -33,19 +33,24 @@ readonly struct MechanicNode {
 
     // -- lifetime --
     public MechanicNode(string next, Tag tags, string scope) {
-        this.Next = next;
-        this.Tags = tags;
-        this.Scope = scope;
+        Next = next;
+        Tags = tags;
+        Scope = scope;
     }
 
     // -- queries --
+    /// if this node is always visible
+    public bool IsLoud {
+        get => (Tags & Tag.Loud) != 0;
+    }
+
     /// if this node is the last in a sequence
     public bool IsLast {
         get => (Tags & Tag.Last) != 0;
     }
 
     // if this node auto hides
-    public bool isHiding {
+    public bool IsHiding {
         get => (Tags & Tag.Hide) != 0;
     }
 

@@ -68,9 +68,11 @@ sealed class DreamSequence: MonoBehaviour {
     }
 
     void Update() {
-        var step = m_Steps[m_StepIndex];
-        if (step.Timeout.TryComplete()) {
-            FinishStep();
+        if (m_StepIndex < m_Steps.Length) {
+            var step = m_Steps[m_StepIndex];
+            if (step.Timeout.TryComplete()) {
+                FinishStep();
+            }
         }
     }
 
@@ -121,6 +123,9 @@ sealed class DreamSequence: MonoBehaviour {
     public void StartStep() {
         var curr = m_Steps[m_StepIndex];
 
+        // enable the trigger
+        curr.Trigger.Toggle(true);
+
         // start the timeout, if any
         if (!curr.Timeout.IsZero) {
             curr.Timeout.Start();
@@ -129,17 +134,27 @@ sealed class DreamSequence: MonoBehaviour {
 
     /// finish the current step and start the next one, if any
     public void FinishStep() {
-        var curr = m_Steps[m_StepIndex];
+        // complete this step
+        var curr = FindCurrStep();
         curr.Trigger.Finish();
 
+        // show the dialogue
         m_Mechanic_JumpToNode.Raise(curr.Mechanic_StartNode);
+
+        // advance to the next step
         m_StepIndex += 1;
 
-        if (m_StepIndex < m_Steps.Length) {
-            var next = m_Steps[m_StepIndex];
-            next.Trigger.Toggle(true);
+        // and start it, if any
+        var next = FindCurrStep();
+        if (next != null) {
             StartStep();
         }
+    }
+
+    // -- queries --
+    /// get the current step, if any
+    Step FindCurrStep() {
+        return m_StepIndex < m_Steps.Length ? m_Steps[m_StepIndex] : null;
     }
 
     // -- events --
