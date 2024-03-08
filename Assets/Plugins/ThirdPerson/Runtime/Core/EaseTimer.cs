@@ -72,7 +72,17 @@ public record EaseTimer {
         m_RawPct = m_IsReversed ? 1f - k : k;
     }
 
-    /// try to complete this timer if it's active; calls #Tick
+    /// try to tick this timer forward if it's active
+    public bool TryTick() {
+        if (!IsActive) {
+            return false;
+        }
+
+        Tick();
+        return true;
+    }
+
+    /// try to complete this timer if it's active
     public bool TryComplete() {
         if (!IsActive) {
             return false;
@@ -83,6 +93,30 @@ public record EaseTimer {
     }
 
     // -- queries --
+    /// the curved progress
+    public float Pct {
+        get => PctFrom(m_RawPct);
+    }
+
+    /// curve an arbitrary progress pct
+    public float PctFrom(float value) {
+        if (m_Curve == null || m_Curve.length == 0) {
+             return value;
+        }
+
+        return m_Curve.Evaluate(value);
+    }
+
+    /// the uncurved progress
+    public float Raw {
+        get => m_RawPct;
+    }
+
+    /// the total duration
+    public float Duration {
+        get => m_Duration;
+    }
+
     /// if the timer is zero-duration
     public bool IsZero {
         get => m_Duration == 0f;
@@ -103,24 +137,6 @@ public record EaseTimer {
         get => m_RawPct == (m_IsReversed ? 0f : 1f);
     }
 
-    /// the curved progress
-    public float Pct {
-        get => PctFrom(m_RawPct);
-    }
-
-    /// curve an arbitrary progress pct
-    public float PctFrom(float value) {
-        if (m_Curve == null || m_Curve.length == 0) {
-             return value;
-        }
-
-        return m_Curve.Evaluate(value);
-    }
-
-    /// the uncurved progress
-    public float Raw {
-        get => m_RawPct;
-    }
 }
 
 }

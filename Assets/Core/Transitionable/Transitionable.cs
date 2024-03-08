@@ -52,7 +52,7 @@ sealed class Transitionable: UIBehaviour {
     protected override void Start() {
         base.Start();
 
-        // set intial state
+        // set initial state
         ChangeJitter();
         ChangeTranslation();
     }
@@ -65,7 +65,7 @@ sealed class Transitionable: UIBehaviour {
         m_Group.alpha = alpha;
 
         // update pos
-        var t = m_Content.transform as RectTransform;
+        var t = (RectTransform)m_Content.transform;
         var k = enter ? 1.0f - pct : pct;
         t.anchoredPosition = m_InitialPos + m_Translation * k;
 
@@ -118,12 +118,12 @@ sealed class Transitionable: UIBehaviour {
         var t = transform;
         var n = t.childCount;
         if (n != 1) {
-            Debug.LogError($"[menuuu] element `{name}' must have exactly one content element");
+            Log.Menuuu.E($"element `{name}' must have exactly one content element");
         }
 
         var content = t.GetChild(0) as RectTransform;
         if (content == null) {
-            Debug.LogError($"[menuuu] element `{name}` must have a rect transform as content");
+            Log.Menuuu.E($" element `{name}` must have a rect transform as content");
         }
 
         return content;

@@ -2,11 +2,17 @@ using NaughtyAttributes;
 using Yarn.Markup;
 using Yarn.Unity;
 
-namespace Discone.Ui {
+namespace Discone {
 
-partial class MechanicDialogueView {
+sealed partial class Mechanic {
+    #if UNITY_EDITOR
     [Button("Show Test Line")]
     void ShowTestLine() {
+        var view = FindDialogueView();
+        if (!view) {
+            return;
+        }
+
         var line = new LocalizedLine();
         var text = new MarkupParseResult();
         text.Text = "";
@@ -17,8 +23,9 @@ partial class MechanicDialogueView {
         }
 
         line.Text = text;
-        RunLine(line, null);
+        view.RunLine(line, null);
     }
+    #endif
 }
 
 }

@@ -7,7 +7,7 @@ using Yarn.Unity;
 namespace Discone {
 
 /// the mechanic that speaks to the player
-sealed class Mechanic: MonoBehaviour {
+sealed partial class Mechanic: MonoBehaviour {
     // -- state --
     // TODO: save this to disk
     [Header("state")]
@@ -179,10 +179,9 @@ sealed class Mechanic: MonoBehaviour {
     void HideDialogue() {
         StopDialogue();
 
-        foreach (var dialogueView in m_DialogueRunner.dialogueViews) {
-            if (dialogueView is Ui.MechanicDialogueView m) {
-                m.Hide();
-            }
+        var view = FindDialogueView();
+        if (view) {
+            view.Hide();
         }
     }
 
@@ -267,15 +266,22 @@ sealed class Mechanic: MonoBehaviour {
         SwitchNode(nodeName);
     }
 
-    /// wait for an aggregated number of seconds
+    /// wait for a fixed number of seconds (adjusted for animation)
+    [YarnCommand("hold")]
+    public IEnumerator Hold(float duration) {
+        var wait = duration + LineEnterDuration;
+        yield return new WaitForSeconds(wait);
+    }
+
+    /// wait for an aggregated number of seconds (adjusted for animation)
     [YarnCommand("idle")]
     public IEnumerator Idle(float duration) {
         // start accumulating delay
         m_IsDelayAccumulating = true;
 
         // wait however much longer we need to
-        var remaining = Mathf.Max(duration - m_Delay, 0f);
-        yield return new WaitForSeconds(remaining);
+        var wait = Mathf.Max(duration + LineEnterDuration - m_Delay, 0f);
+        yield return new WaitForSeconds(wait);
 
         // reset delay if we finish
         m_Delay = 0f;
@@ -286,6 +292,31 @@ sealed class Mechanic: MonoBehaviour {
     /// if we're in a dialogue tree
     bool IsInTree {
         get => m_TreeRoot != null;
+    }
+
+    /// the time it takes for a line to physically appear on node start
+    float LineEnterDuration {
+        get {
+            // TODO: this would be cleaner & easier if we extracted a tuning for the mechanic. however,
+            // it's tricky bc we need to figure out how to deal w/ timers on a scriptable object; they
+            // are stateful.
+            var view = FindDialogueView();
+            if (!view) {
+                return 0f;
+            }
+            return view.LineEnterDuration;
+        }
+    }
+
+    /// find the active mechanic dialogue view
+    Ui.MechanicDialogueView FindDialogueView() {
+        var views = m_DialogueRunner.dialogueViews;
+        if (views.Length != 0 && views[0] is Ui.MechanicDialogueView m) {
+            return m;
+        }
+
+        Log.Mechnk.E($"the dialogue view was missing from {views}");
+        return null;
     }
 
     // -- events --

@@ -1,4 +1,3 @@
-using NaughtyAttributes;
 using Soil;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,8 +8,8 @@ namespace Discone.Ui {
 
 /// a line label for the mechanic dialogue view
 sealed class MechanicLine: UIBehaviour {
-    // -- cfg --
-    [Header("cfg")]
+    // -- tuning --
+    [Header("tuning")]
     [Tooltip("the fade-in animation")]
     [SerializeField] ThirdPerson.EaseTimer m_Fade;
 
@@ -42,7 +41,7 @@ sealed class MechanicLine: UIBehaviour {
     Vector2 m_MoveDst;
 
     /// the current character offsets
-    Buffer<Vector2> m_Offsets = new(256);
+    readonly Buffer<Vector2> m_Offsets = new(256);
 
     // -- lifecycle --
     protected override void Start() {
@@ -62,21 +61,22 @@ sealed class MechanicLine: UIBehaviour {
 
     void Update() {
         // transition the label in / out
-        if (m_Fade.IsActive) {
-            m_Fade.Tick();
+        if (m_Fade.TryTick()) {
             m_Component.Show(m_Fade.Pct);
+
+            if (m_Fade.IsComplete && m_Fade.IsReversed) {
+                FinishHide();
+            }
         }
 
         // offset the label into a new position
-        if (m_Move.IsActive) {
-            m_Move.Tick();
+        if (m_Move.TryTick()) {
             var rect = (RectTransform)transform;
-            rect.anchoredPosition = Vector2.Lerp(m_MoveSrc, m_MoveDst, m_Move.Pct);
+            rect.anchoredPosition = Vector2.LerpUnclamped(m_MoveSrc, m_MoveDst, m_Move.Pct);
         }
 
         // scatter the text
-        if (m_Scatter.IsActive) {
-            m_Scatter.Tick();
+        if (m_Scatter.TryTick()) {
             m_Text.ForceMeshUpdate();
         }
     }
@@ -92,6 +92,10 @@ sealed class MechanicLine: UIBehaviour {
         // update the text
         m_Text.text = text;
 
+        // reset the position
+        var rect = (RectTransform)transform;
+        rect.anchoredPosition = Vector3.zero;
+
         // rebuild the initial text offsets
         m_Offsets.Clear();
         for (var i = 0; i < text.Length; i++) {
@@ -100,13 +104,17 @@ sealed class MechanicLine: UIBehaviour {
             m_Offsets.Add(len * dir);
         }
 
-        // start the animations
+        // start animations
         m_Fade.Start();
         m_Scatter.Start();
     }
 
     /// offset the line from center
     public void Move(Vector2 offset) {
+        if (IsHidden) {
+            return;
+        }
+
         var rect = (RectTransform)transform;
         m_MoveSrc = rect.anchoredPosition;
         m_MoveDst = offset;
@@ -116,12 +124,16 @@ sealed class MechanicLine: UIBehaviour {
 
     /// hide the dialogue line
     public void Hide() {
-        // ignore if already hidden
-        if (!m_Fade.IsActive && m_Fade.Raw == 0) {
+        if (IsHidden) {
             return;
         }
 
         m_Fade.Start(isReversed: true);
+    }
+
+    /// finish hiding the line
+    void FinishHide() {
+        m_Text.text = null;
     }
 
     // -- queries --
@@ -130,7 +142,18 @@ sealed class MechanicLine: UIBehaviour {
         get => m_Text.preferredHeight;
     }
 
+    /// the time in seconds to appear
+    public float EnterDuration {
+        get => m_Scatter.Duration;
+    }
+
+    /// if the line is currently hidden
+    bool IsHidden {
+        get => string.IsNullOrEmpty(m_Text.text);
+    }
+
     // -- events --
+    /// when the text is about to be draw
     void OnPreRenderText(TMP_TextInfo info) {
         var n = info.characterCount;
 

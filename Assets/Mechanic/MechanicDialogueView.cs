@@ -1,16 +1,21 @@
 using System;
 using Soil;
+using ThirdPerson;
 using UnityEngine;
 using Yarn.Unity;
+using Random = UnityEngine.Random;
 
 namespace Discone.Ui {
 
 /// the mechanic's eyelid dialogue view
-sealed partial class MechanicDialogueView: DialogueViewBase {
-    // -- cfg --
-    [Header("cfg")]
-    [Tooltip("the spacing between lines")]
+sealed class MechanicDialogueView: DialogueViewBase {
+    // -- tuning --
+    [Header("tuning")]
+    [Tooltip("the spacing between fading lines")]
     [SerializeField] float m_Spacing;
+
+    [Tooltip("the horizontal offset for fading lines")]
+    [SerializeField] MapOutCurve m_HorizontalOffset;
 
     // -- props --
     // the mechanic's line fields
@@ -24,15 +29,15 @@ sealed partial class MechanicDialogueView: DialogueViewBase {
     // -- commands --
     /// hide any visible lines
     public void Hide() {
-        for (var i = 0; i < MaxVisibleLines; i++) {
-            var line = m_Lines[-i];
+        foreach (var line in m_Lines) {
             line.Hide();
         }
     }
 
     // -- queries --
-    int MaxVisibleLines {
-        get => m_Lines.Length - 1;
+    /// the time in seconds for a line to appear
+    public float LineEnterDuration {
+        get => !m_Lines.IsEmpty ? m_Lines[0].EnterDuration : 0f;
     }
 
     // -- DialogueViewBase --
@@ -51,12 +56,25 @@ sealed partial class MechanicDialogueView: DialogueViewBase {
             var offset = Vector2.zero;
             for (var i = 0; i < max + 1; i++) {
                 var line = m_Lines[i];
+                var lineHeight = line.Height * 0.5f;
+
+                // for older lines, update offset so that our text clears the line below
+                if (i != 0) {
+                    offset.y += lineHeight;
+
+                    // and offset horizontally
+                    offset.x = m_HorizontalOffset.Evaluate(Random.value);
+                }
+
+                // move to this position
                 line.Move(offset);
-                offset.y += line.Height + m_Spacing;
+
+                // and update offset to the top edge of this line
+                offset.y += lineHeight + m_Spacing;
             }
         }
 
-        // hide the old line
+        // hide the oldest line
         var prevLine = m_Lines[max];
         prevLine.Hide();
 
