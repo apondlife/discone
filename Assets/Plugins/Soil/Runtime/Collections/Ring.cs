@@ -1,13 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
-// TODO: rename to Ring, move to Soil
 /// a circular buffer of n data elements
-public sealed class Queue<T>: IEnumerable<T> {
+public sealed class Ring<T>: IEnumerable<T> {
     // -- constants --
     /// a null index
     const int k_None = -1;
@@ -21,12 +19,12 @@ public sealed class Queue<T>: IEnumerable<T> {
 
     // -- lifetime --
     /// create a queue with a fixed size
-    public Queue(uint size) {
+    public Ring(uint size) {
         m_Queue = new T[size];
     }
 
     /// create a queue from a list of items
-    public Queue(T[] items) {
+    public Ring(T[] items) {
         m_Queue = items;
     }
 

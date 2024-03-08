@@ -24,8 +24,8 @@ public class PlayerEyelid_Mask: MaskableGraphic {
 
         // bind events
         m_Subscriptions
-            .Add(m_ClosePct.Changed, OnClosePctChanged)
-            .Add(m_IsAlwaysOpen.Changed, OnIsAlwaysOpenChanged);
+            .Add(m_ClosePct, OnClosePctChanged)
+            .Add(m_IsAlwaysOpen, OnIsAlwaysOpenChanged);
     }
 
     protected override void OnDestroy() {

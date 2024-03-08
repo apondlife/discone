@@ -1,4 +1,5 @@
 using System;
+using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -19,7 +20,7 @@ public sealed partial class CharacterState {
 
     // -- props --
     /// the queue of frames
-    Queue<Frame> m_Frames = new(k_BufferSize);
+    Ring<Frame> m_Frames = new(k_BufferSize);
 
     // -- lifetime --
     /// create state from intial frame and dependencies

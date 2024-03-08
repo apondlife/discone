@@ -1,3 +1,4 @@
+using Soil;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -16,7 +17,7 @@ public sealed class CharacterInput {
     CharacterInputSource m_Source = null;
 
     /// a queue of the most recent input frames
-    readonly Queue<Frame> m_Frames = new((uint)(k_BufferDuration / Time.fixedDeltaTime));
+    readonly Ring<Frame> m_Frames = new((uint)(k_BufferDuration / Time.fixedDeltaTime));
 
     /// the last time we read input
     float m_Time;

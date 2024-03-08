@@ -51,6 +51,17 @@ public record DisposeBag: IDisposable {
         return this;
     }
 
+    // TODO: code generation
+    /// add a subscription for a float changed event
+    public DisposeBag Add(FloatVariable variable, Action<float> a) {
+        return variable != null ? Add(variable.Changed, a) : null;
+    }
+
+    /// add a subscription for a bool changed event
+    public DisposeBag Add(BoolVariable variable, Action<bool> a) {
+        return variable != null ? Add(variable.Changed, a) : null;
+    }
+
     /// add a subscription for an event/action pair
     public DisposeBag Add<T>(UnityEvent<T> e, UnityAction<T> a) {
         if (e == null) {

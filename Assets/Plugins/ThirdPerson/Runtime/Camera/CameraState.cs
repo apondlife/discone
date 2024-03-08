@@ -1,4 +1,5 @@
 using System;
+using Soil;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -18,7 +19,7 @@ public sealed partial class CameraState {
 
     // -- props --
     /// the queue of frames
-    Queue<Frame> m_Frames = new(k_BufferSize);
+    Ring<Frame> m_Frames = new(k_BufferSize);
 
     /// an offset from the character pos to follow
     Vector3 m_FollowOffset;

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a fixed-width buffer of n data elements
 public sealed class Buffer<T>: IEnumerable<T> {

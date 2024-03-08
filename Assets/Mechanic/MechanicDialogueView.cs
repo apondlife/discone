@@ -1,4 +1,5 @@
 using System;
+using Soil;
 using UnityEngine;
 using Yarn.Unity;
 
@@ -13,11 +14,11 @@ sealed partial class MechanicDialogueView: DialogueViewBase {
 
     // -- props --
     // the mechanic's line fields
-    ThirdPerson.Queue<MechanicLine> m_Lines;
+    Ring<MechanicLine> m_Lines;
 
     // -- lifecycle --
     void Awake() {
-        m_Lines = new ThirdPerson.Queue<MechanicLine>(GetComponentsInChildren<MechanicLine>());
+        m_Lines = new Ring<MechanicLine>(GetComponentsInChildren<MechanicLine>());
     }
 
     // -- commands --

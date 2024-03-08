@@ -1,4 +1,5 @@
 using NaughtyAttributes;
+using Soil;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
@@ -41,7 +42,7 @@ sealed class MechanicLine: UIBehaviour {
     Vector2 m_MoveDst;
 
     /// the current character offsets
-    ThirdPerson.Buffer<Vector2> m_Offsets = new(256);
+    Buffer<Vector2> m_Offsets = new(256);
 
     // -- lifecycle --
     protected override void Start() {

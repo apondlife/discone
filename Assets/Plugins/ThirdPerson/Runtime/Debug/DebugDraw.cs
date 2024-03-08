@@ -245,7 +245,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
         // -- props --
         /// the buffer of values
-        Queue<Ray> m_Buffer;
+        Ring<Ray> m_Buffer;
 
         // -- lifetime --
         public Value(Config cfg) {
@@ -259,7 +259,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
             m_Width = cfg.Width;
             m_Scale = cfg.Scale;
             m_IsEnabled = true;
-            m_Buffer = new Queue<Ray>(k_BufferLen);
+            m_Buffer = new Ring<Ray>(k_BufferLen);
         }
 
         // -- commands --
