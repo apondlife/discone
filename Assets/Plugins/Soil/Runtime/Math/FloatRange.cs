@@ -1,9 +1,10 @@
 using System;
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a float value range
+[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "FloatRange")]
 [Serializable]
 public struct FloatRange {
     // -- fields --

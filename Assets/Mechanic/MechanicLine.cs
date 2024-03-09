@@ -12,7 +12,7 @@ sealed class MechanicLine: UIBehaviour {
     [Header("tuning")]
     [FormerlySerializedAs("m_Rotation")]
     [Tooltip("the initial angle range")]
-    [SerializeField] ThirdPerson.MapOutCurve m_Angle;
+    [SerializeField] MapOutCurve m_Angle;
 
     [Tooltip("the fade-in/out animation")]
     [SerializeField] ThirdPerson.EaseTimer m_Fade;
@@ -21,7 +21,7 @@ sealed class MechanicLine: UIBehaviour {
     [SerializeField] ThirdPerson.EaseTimer m_Move;
 
     [Tooltip("the angle range for moving lines")]
-    [SerializeField] ThirdPerson.MapOutCurve m_Move_Angle;
+    [SerializeField] MapOutCurve m_Move_Angle;
 
     [FormerlySerializedAs("m_Offset")]
     [Tooltip("the scatter animation")]
@@ -31,7 +31,7 @@ sealed class MechanicLine: UIBehaviour {
     [FormerlySerializedAs("m_OffsetDist")]
     [FormerlySerializedAs("m_OffsetRange")]
     [Tooltip("the character offset range")]
-    [SerializeField] ThirdPerson.MapOutCurve m_Scatter_Dist;
+    [SerializeField] MapOutCurve m_Scatter_Dist;
 
     // -- refs --
     [Header("refs")]
@@ -46,13 +46,13 @@ sealed class MechanicLine: UIBehaviour {
     RectTransform m_Rect;
 
     /// the fade alpha range
-    ThirdPerson.FloatRange m_Fade_Alpha;
+    FloatRange m_Fade_Alpha;
 
     /// the move pos range
     Vector2Range m_Move_Pos;
 
     /// the move rotation range
-    ThirdPerson.FloatRange m_Move_Rotation;
+    FloatRange m_Move_Rotation;
 
     /// the per-character scatter offsets
     readonly Buffer<Vector2> m_Scatter_Offsets = new(256);

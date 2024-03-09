@@ -1,3 +1,4 @@
+using Soil;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,7 +15,7 @@ sealed class Slider: UIBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the value range")]
-    [SerializeField] ThirdPerson.MapOutCurve m_Range;
+    [SerializeField] MapOutCurve m_Range;
 
     // -- refs --
     [Header("refs")]

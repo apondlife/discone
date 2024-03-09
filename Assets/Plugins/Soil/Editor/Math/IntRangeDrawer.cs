@@ -8,7 +8,7 @@ using U = UnityEditor.EditorGUIUtility;
 namespace Soil.Editor {
 
 [CustomPropertyDrawer(typeof(IntRange))]
-sealed class IntRangeDrawer: PropertyDrawer {
+public sealed class IntRangeDrawer: PropertyDrawer {
     // -- constants --
     /// the gap between elements
     const float k_Gap = 2f;

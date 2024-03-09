@@ -4,10 +4,10 @@ using UnityEditor;
 using E = UnityEditor.EditorGUI;
 using U = UnityEditor.EditorGUIUtility;
 
-namespace ThirdPerson.Editor {
+namespace Soil.Editor {
 
 [CustomPropertyDrawer(typeof(FloatRange))]
-sealed class FloatRangeDrawer: PropertyDrawer {
+public sealed class FloatRangeDrawer: PropertyDrawer {
     // -- constants --
     /// the gap between elements
     const float k_Gap = 2f;

@@ -2,11 +2,11 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a normalized curve with a min & max value
+[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "MapOutCurve")]
 [Serializable]
-[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "RangeCurve")]
 public struct MapOutCurve {
     // -- fields --
     [FormerlySerializedAs("m_Curve")]

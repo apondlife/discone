@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: high friction, pretty good
   Surface_MinSpeed: 0.85
-  Horizontal_Acceleration: 30
   Surface_Acceleration:
     Curve:
       serializedVersion: 2
@@ -134,6 +133,16 @@ MonoBehaviour:
       Min: 0
       Max: 0
   Surface_DeltaScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Surface_LandingScale:
     Curve:
       serializedVersion: 2
       m_Curve: []

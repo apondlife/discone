@@ -4,10 +4,10 @@ using UnityEditor;
 using E = UnityEditor.EditorGUI;
 using U = UnityEditor.EditorGUIUtility;
 
-namespace ThirdPerson.Editor {
+namespace Soil.Editor {
 
 [CustomPropertyDrawer(typeof(MapOutCurve))]
-sealed class MapOutCurveDrawer: PropertyDrawer {
+public sealed class MapOutCurveDrawer: PropertyDrawer {
     // -- constants --
     /// the gap between elements
     const float k_Gap1 = 2f;

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Soil;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -23,7 +24,7 @@ sealed class PageButton: UIBehaviour {
     [SerializeField] Orientation m_Orientations;
 
     [Tooltip("the set of orientations this button picks from")]
-    [SerializeField] ThirdPerson.MapOutCurve m_CrossAxisRange;
+    [SerializeField] MapOutCurve m_CrossAxisRange;
 
     // -- commands --
     /// change the button's orientation
