@@ -3,6 +3,8 @@ using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+namespace Discone {
+
 /// talking to the character
 public sealed class CharacterDialogue: MonoBehaviour {
     // -- config --
@@ -94,4 +96,6 @@ public sealed class CharacterDialogue: MonoBehaviour {
         /// TODO: raise DisconeCharacter event?
         m_StartDialogue.Raise(gameObject);
     }
+}
+
 }

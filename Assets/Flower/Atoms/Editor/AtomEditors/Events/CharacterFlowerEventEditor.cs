@@ -1,7 +1,6 @@
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor;
-using UnityEngine.UIElements;
-using UnityAtoms.Editor;
+using Discone;
 
 namespace UnityAtoms.Editor
 {

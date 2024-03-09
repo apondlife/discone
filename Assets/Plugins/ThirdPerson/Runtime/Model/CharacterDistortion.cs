@@ -60,13 +60,13 @@ sealed class CharacterDistortion: MonoBehaviour {
 
     void Start() {
         // set deps
-        var character = GetComponentInParent<Character>();
-        m_State = character.State;
-        m_Tuning = character.Tuning;
+        var c = GetComponentInParent<CharacterContainer>();
+        m_State = c.State;
+        m_Tuning = c.Tuning;
 
         // aggregate a list of materials
         var materials = new HashSet<Material>();
-        var renderers = character.Model
+        var renderers = c.Model
             .GetComponentsInChildren<Renderer>(true);
 
         foreach (var renderer in renderers) {

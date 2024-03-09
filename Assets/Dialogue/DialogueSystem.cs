@@ -4,6 +4,8 @@ using Yarn.Unity;
 using UnityAtoms.BaseAtoms;
 using UnityEngine.Serialization;
 
+namespace Discone {
+
 /// the dialogue system
 public class DialogueSystem: MonoBehaviour {
     // -- name --
@@ -154,4 +156,6 @@ public class DialogueSystem: MonoBehaviour {
     void OnDialogueComplete() {
         CompleteDialogue();
     }
+}
+
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 using Musicker;
 
+namespace Discone {
+
 /// the character's music ("m***** mousing")
 public sealed class BubblegumCharacterMusic: CharacterMusicBase {
     // -- tuning --
@@ -193,4 +195,6 @@ public sealed class BubblegumCharacterMusic: CharacterMusicBase {
     Vector3 StepVelocity {
         get => State.Next.SurfaceVelocity;
     }
+}
+
 }

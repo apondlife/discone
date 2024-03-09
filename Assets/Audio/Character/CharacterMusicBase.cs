@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+namespace Discone {
+
 public abstract class CharacterMusicBase: MonoBehaviour {
     // -- props --
     /// the containing DisconeCharacter
@@ -39,4 +41,6 @@ public abstract class CharacterMusicBase: MonoBehaviour {
     public bool HasCharacter {
         get => State != null;
     }
+}
+
 }

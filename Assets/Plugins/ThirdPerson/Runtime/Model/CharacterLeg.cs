@@ -6,7 +6,7 @@ namespace ThirdPerson {
 public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
     // -- deps --
     /// the containing character
-    Character m_Container;
+    CharacterContainer c;
 
     /// the animator for this limb
     Animator m_Animator;
@@ -73,7 +73,7 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
     // -- lifecycle --
     void Awake() {
         // set deps
-        m_Container = GetComponentInParent<Character>();
+        c = GetComponentInParent<CharacterContainer>();
 
         // cache stride length
         m_SqrStrideLength = m_StrideLength * m_StrideLength;
@@ -81,7 +81,7 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
 
     void FixedUpdate() {
         // feets are active when we're airborne
-        var surface = m_Container.State.Next.MainSurface;
+        var surface = c.State.Next.MainSurface;
         SetIsActive(surface.IsNone || surface.Angle > m_SurfaceAngle);
     }
 
@@ -124,7 +124,7 @@ public sealed class CharacterLeg: MonoBehaviour, CharacterLimb {
 
         // error on misconfiguration
         if (!IsValid) {
-            Debug.LogError($"[chrctr] {m_Container.name} - has a limb w/ no matching bone: {Goal}");
+            Debug.LogError($"[chrctr] {c.Name} - has a limb w/ no matching bone: {Goal}");
         }
     }
 

@@ -4,6 +4,8 @@ using System.Linq;
 using UnityAtoms;
 using UnityEngine;
 
+namespace Discone {
+
 /// a repository of characters
 public sealed class Characters: MonoBehaviour {
     // -- subscribed --
@@ -106,4 +108,6 @@ public sealed class Characters: MonoBehaviour {
             m_Driven.Add(curr.GetHashCode());
         }
     }
+}
+
 }

@@ -1,9 +1,8 @@
 using System;
-using Mirror.SimpleWeb;
 using Soil;
-using ThirdPerson;
 using UnityEngine;
-using Tag = Discone.Tag;
+
+namespace Discone {
 
 /// a character's ability to save new checkpoints
 /// not => smelling => (grab) planting => (plant) done
@@ -176,4 +175,6 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     bool CanSave {
         get => m_State.Curr.IsCrouching && m_State.Curr.IsIdle;
     }
+}
+
 }

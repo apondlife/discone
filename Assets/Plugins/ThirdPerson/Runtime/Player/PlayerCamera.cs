@@ -27,7 +27,7 @@ sealed class PlayerCamera: MonoBehaviour {
         }
 
         // if this is another camera
-        var cam = c.Character.Camera;
+        var cam = c.Camera;
         if (dst.VirtualCameraGameObject != cam.Virtual.VirtualCameraGameObject) {
             return;
         }

@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace Discone {
+
 /// the definition for a character
 [CreateAssetMenu(menuName = "Character/Def", fileName = "Character")]
 sealed class CharacterDef: ScriptableObject {
@@ -21,4 +23,6 @@ sealed class CharacterDef: ScriptableObject {
     public CharacterFlower Flower {
         get => m_Flower;
     }
+}
+
 }

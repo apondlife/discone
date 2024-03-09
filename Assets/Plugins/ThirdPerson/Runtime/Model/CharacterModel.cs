@@ -79,7 +79,7 @@ public sealed class CharacterModel: MonoBehaviour {
     Animator m_Animator;
 
     /// the containing character
-    Character m_Container;
+    CharacterContainer m_Container;
 
     // TODO: CharacterContainer, CharacterContainerConvertible
     /// the character's state
@@ -91,7 +91,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
     // TODO: CharacterContainer, CharacterContainerConvertible
     /// the character's tuning
-    CharacterInput m_Input => m_Container.Input;
+    CharacterInputQuery m_Input => m_Container.InputQuery;
 
     /// the list of ik limbs
     CharacterLimb[] m_Limbs;
@@ -123,7 +123,7 @@ public sealed class CharacterModel: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         // set dependencies
-        m_Container = GetComponentInParent<Character>();
+        m_Container = GetComponentInParent<CharacterContainer>();
 
         // set props
         m_Limbs = GetComponentsInChildren<CharacterLimb>();

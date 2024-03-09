@@ -5,25 +5,28 @@ namespace ThirdPerson {
 interface CharacterContainer {
     // -- queries --
     /// the name of the character
-    public string Name { get; }
+    string Name { get; }
+
+    /// if the character is paused
+    bool IsPaused { get; }
 
     /// the tuning
-    public CharacterTuning Tuning { get; }
-
-    /// the input
-    public CharacterInput Input { get; }
+    CharacterTuning Tuning { get; }
 
     /// the state
-    public CharacterState State { get; }
+    CharacterState State { get; }
+
+    /// the input state
+    CharacterInputQuery InputQuery { get; }
 
     /// the events
-    public CharacterEvents Events { get; }
+    CharacterEvents Events { get; }
 
     /// the controller
-    public CharacterController Controller { get; }
+    CharacterController Controller { get; }
 
     /// the model
-    public CharacterModel Model { get; }
+    CharacterModel Model { get; }
 }
 
 }

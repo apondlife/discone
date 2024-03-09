@@ -5,6 +5,8 @@ using UnityAtoms.BaseAtoms;
 using UnityAtoms.Discone;
 using Yarn.Unity;
 
+namespace Discone {
+
 public class FranTest : MonoBehaviour
 {
     [Tooltip("when to switch character")]
@@ -51,4 +53,6 @@ public class FranTest : MonoBehaviour
     {
 
     }
+}
+
 }

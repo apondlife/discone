@@ -51,7 +51,7 @@ public class CameraLookAtTarget: MonoBehaviour {
 
     // -- props --
     /// a reference to the character
-    Character m_Character;
+    CharacterContainer c;
 
     /// the stored position of where we want to look at towards the ground
     Vector3 m_GroundTarget;
@@ -62,7 +62,7 @@ public class CameraLookAtTarget: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         // set deps
-        m_Character = GetComponentInParent<Character>();
+        c = GetComponentInParent<CharacterContainer>();
         m_GroundTarget = transform.localPosition;
     }
 
@@ -112,7 +112,7 @@ public class CameraLookAtTarget: MonoBehaviour {
         var footPos = transform.localPosition;
 
         // if grounded, just use that
-        if (m_Character.IsPaused || m_Character.State.Next.IsOnGround) {
+        if (c.IsPaused || c.State.Next.IsOnGround) {
             return footPos;
         }
 
@@ -137,7 +137,7 @@ public class CameraLookAtTarget: MonoBehaviour {
         delta *= Mathf.InverseLerp(
             m_MinFallingSpeed,
             m_MaxFallingSpeed,
-            -m_Character.State.Velocity.y
+            -c.State.Velocity.y
         );
 
         return footPos + delta * Vector3.down;

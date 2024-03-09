@@ -6,6 +6,8 @@ using UnityAtoms;
 using FMODUnity;
 using Soil;
 
+namespace Discone {
+
 // TODO: rename to flower
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
@@ -370,4 +372,6 @@ public class CharacterFlower: NetworkBehaviour {
             m_Checkpoint.Forward
         );
     }
+}
+
 }

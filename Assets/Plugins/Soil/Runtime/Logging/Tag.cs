@@ -33,6 +33,11 @@ public record Tag {
         Debug.LogError(F(message));
     }
 
+    /// assert a condition
+    public void Assert(bool test, string message) {
+        Debug.Assert(test, F(message));
+    }
+
     // -- queries --
     public string F(string message) {
         return $"<color={m_Color}>[{m_Name}]</color> {message}";

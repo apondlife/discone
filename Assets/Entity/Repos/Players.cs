@@ -4,6 +4,8 @@ using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
+namespace Discone {
+
 /// a repository of players
 public sealed class Players: MonoBehaviour {
     // -- state --
@@ -95,4 +97,6 @@ public sealed class Players: MonoBehaviour {
     uint Id(OnlinePlayer player) {
         return player.netIdentity.netId;
     }
+}
+
 }

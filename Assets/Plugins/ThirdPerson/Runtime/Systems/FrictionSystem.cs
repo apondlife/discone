@@ -59,7 +59,7 @@ sealed class FrictionSystem: CharacterSystem {
         }
 
         var friction = c.State.Next.Surface_StaticFriction;
-        if (!c.State.IsStopped || c.Input.Move.sqrMagnitude > 0f) {
+        if (!c.State.IsStopped || c.InputQuery.Move.sqrMagnitude > 0f) {
             friction = c.State.Next.Surface_KineticFriction;
         }
 

@@ -3,8 +3,12 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+/// the character's default input facade
+public class CharacterInput: CharacterInput<CharacterInputFrame.Default> {
+}
+
 /// the character's input facade
-public sealed class CharacterInput {
+public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame {
     // -- constants --
     #if UNITY_EDITOR
     const float k_BufferDuration = 5f;
@@ -14,10 +18,10 @@ public sealed class CharacterInput {
 
     // -- props --
     /// the source of input frames
-    CharacterInputSource m_Source = null;
+    CharacterInputSource<F> m_Source = null;
 
     /// a queue of the most recent input frames
-    readonly Ring<Frame> m_Frames = new((uint)(k_BufferDuration / Time.fixedDeltaTime));
+    readonly Ring<F> m_Frames = new((uint)(k_BufferDuration / Time.fixedDeltaTime));
 
     /// the last time we read input
     float m_Time;
@@ -27,11 +31,8 @@ public sealed class CharacterInput {
 
     // -- commands --
     /// drive the input with a source
-    public void Drive(CharacterInputSource source) {
+    public void Drive(CharacterInputSource<F> source) {
         m_Source = source;
-
-        // // TODO: maybe fill the entire queue with frames?
-        // Read();
     }
 
     /// read the next frame of input
@@ -55,7 +56,7 @@ public sealed class CharacterInput {
 
     // -- queries --
     /// the current input frame
-    public Frame Curr {
+    public F Curr {
         get => m_Frames[0];
     }
 
@@ -76,7 +77,7 @@ public sealed class CharacterInput {
 
     /// if crouch is pressed this frame
     public bool IsCrouchPressed {
-        get => m_Frames[0]?.IsCrouchPressed ?? false;
+        get => m_Frames[0]?.IsJumpPressed ?? false;
     }
 
     /// if jump was pressed within the buffer window
@@ -100,57 +101,6 @@ public sealed class CharacterInput {
         get => m_Frames.Length;
     }
 
-    // -- types --
-    /// the minimal frame of input for third person to work
-    public interface Frame {
-        /// the projected position of the move analog stick
-        Vector3 Move { get; }
-
-        /// if jump is down
-        bool IsJumpPressed { get; }
-
-        /// if crouch is down
-        bool IsCrouchPressed { get; }
-    }
-
-    /// a default frame structure
-    public readonly struct DefaultFrame: Frame {
-        // -- props --
-        /// the projected position of the move analog stick
-        public readonly Vector3 m_Move;
-
-        /// if jump is pressed
-        public readonly bool m_IsJumpDown;
-
-        /// if crouch is pressed
-        public readonly bool m_IsCrouchDown;
-
-        // -- lifetime --
-        /// create a new frame
-        public DefaultFrame(
-            Vector3 moveAxis,
-            bool isJumpDown,
-            bool isCrouchDown
-        ) {
-            m_Move = moveAxis;
-            m_IsJumpDown = isJumpDown;
-            m_IsCrouchDown = isCrouchDown;
-        }
-
-        /// -- Frame --
-        public Vector3 Move {
-            get => m_Move;
-        }
-
-        public bool IsJumpPressed {
-            get => m_IsJumpDown;
-        }
-
-        public bool IsCrouchPressed {
-            get => m_IsCrouchDown;
-        }
-    }
-
     // -- debug --
     #if UNITY_EDITOR
     /// set the current frame offset
@@ -158,6 +108,30 @@ public sealed class CharacterInput {
         m_Frames.Move(offset);
     }
     #endif
+}
+
+public interface CharacterInputQuery {
+    // -- queries --
+    /// the move axis this frame
+    public Vector3 Move { get; }
+
+    /// the magnitude of the move input this frame
+    public float MoveMagnitude { get; }
+
+    /// if jump is pressed this frame
+    public bool IsJumpPressed { get; }
+
+    /// if crouch is pressed this frame
+    public bool IsCrouchPressed { get; }
+
+    /// if jump was pressed within the buffer window
+    public bool IsJumpDown(float buffer);
+
+    /// if move was pressed in the past n frames
+    public bool IsMoveIdle(int past = 1);
+
+    /// the buffer size
+    public int BufferSize { get; }
 }
 
 }

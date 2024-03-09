@@ -6,6 +6,8 @@ using NaughtyAttributes;
 using NaughtyAttributes.Editor;
 #endif
 
+namespace Discone {
+
 public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // -- refs --
     [Header("refs")]
@@ -267,3 +269,5 @@ sealed class Editor: NaughtyInspector {
     public override bool RequiresConstantRepaint() => true;
 }
 #endif
+
+}

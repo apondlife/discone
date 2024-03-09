@@ -4,24 +4,30 @@ using UnityEngine.Events;
 namespace ThirdPerson {
 
 /// the player
-public class Player: MonoBehaviour, PlayerContainer {
+public class Player: Player<CharacterInputFrame.Default> {
+}
+
+/// the player
+public class Player<InputFrame>: MonoBehaviour, PlayerContainer
+    where InputFrame: CharacterInputFrame {
+
     // -- state --
     [Header("state")]
     [Tooltip("the currently controlled character")]
-    [SerializeField] Character m_Character;
+    [SerializeField] Character<InputFrame> m_Character;
 
     // -- refs --
     [Header("refs")]
     [Tooltip("the player input source")]
-    [SerializeField] PlayerInputSource m_InputSource;
+    [SerializeField] PlayerInputSource<InputFrame> m_InputSource;
 
     // -- events --
     [Header("events")]
     [Tooltip("when the player starts driving a character")]
-    [SerializeField] UnityEvent<Character> m_OnDriveStart;
+    [SerializeField] UnityEvent<Character<InputFrame>> m_OnDriveStart;
 
     [Tooltip("when the player stops driving a character")]
-    [SerializeField] UnityEvent<Character> m_OnDriveStop;
+    [SerializeField] UnityEvent<Character<InputFrame>> m_OnDriveStop;
 
     // -- lifecycle --
     void Start() {
@@ -39,14 +45,14 @@ public class Player: MonoBehaviour, PlayerContainer {
     // -- commands --
     /// drive a particular character
     public void Drive(GameObject target) {
-        var character = target.GetComponent<Character>();
+        var character = target.GetComponent<Character<InputFrame>>();
         if (character) {
             Drive(character);
         }
     }
 
     /// drive a particular character
-    public void Drive(Character character) {
+    public void Drive(Character<InputFrame> character) {
         var src = m_Character;
         if (src) {
             src.Drive(null);
@@ -71,13 +77,18 @@ public class Player: MonoBehaviour, PlayerContainer {
 
     // -- queries --
     /// the character the player is currently driving
-    public Character Character {
+    public Character<InputFrame> Character {
         get => m_Character;
     }
 
     /// the character the player is currently driving
-    public PlayerInputSource InputSource {
+    public PlayerInputSource<InputFrame> InputSource {
         get => m_InputSource;
+    }
+
+    // -- PlayerContainer --
+    public Camera Camera {
+        get => m_Character.Camera;
     }
 }
 

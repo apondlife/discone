@@ -1,6 +1,8 @@
 using ThirdPerson;
 using Soil;
 
+namespace Discone {
+
 /// a checkpoint system
 abstract class CheckpointSystem: Soil.System {
     // -- deps --
@@ -11,7 +13,7 @@ abstract class CheckpointSystem: Soil.System {
     protected CharacterCheckpoint m_Checkpoint;
 
     // -- ThirdPerson.System --
-    protected override SystemState State { get; set; } = new SystemState();
+    protected override SystemState State { get; set; } = new();
 
     // -- lifetime --
     /// initialize the system
@@ -24,4 +26,6 @@ abstract class CheckpointSystem: Soil.System {
         m_State = state;
         m_Checkpoint = checkpoint;
     }
+}
+
 }

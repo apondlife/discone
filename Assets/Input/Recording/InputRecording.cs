@@ -4,9 +4,9 @@ using ThirdPerson;
 namespace Discone {
 
 /// an input source for controlling characters via sequence of inputs over time
-sealed class InputRecording: CharacterInputSource {
+sealed class InputRecording: PlayerInputSource<InputFrame> {
     /// the recorded sequence of input frames
-    List<CharacterInput.Frame> m_Frames = new();
+    List<InputFrame> m_Frames = new();
 
     /// the position in the frame sequence
     int m_Head;
@@ -26,7 +26,7 @@ sealed class InputRecording: CharacterInputSource {
         m_Head = 0;
     }
 
-    public void Record(CharacterInput.Frame frame) {
+    public void Record(InputFrame frame) {
         m_Frames.Add(frame);
     }
 
@@ -40,14 +40,20 @@ sealed class InputRecording: CharacterInputSource {
         m_IsPlaying = false;
     }
 
-    // -- CharacterInputSource --
-    public bool IsEnabled {
-        get => m_IsPlaying;
+    // -- queries --
+    /// if the recording has finished playback
+    public bool IsFinished {
+        get => m_Head >= m_Frames.Count;
     }
 
-    public CharacterInput.Frame Read() {
-        if (m_Head >= m_Frames.Count) {
-            return new CharacterInput.DefaultFrame();
+    // -- CharacterInputSource --
+    public override bool IsEnabled {
+        get => m_IsPlaying && base.IsEnabled;
+    }
+
+    public override InputFrame Read() {
+        if (IsFinished) {
+            return new InputFrame();
         }
 
         var frame = m_Frames[m_Head];

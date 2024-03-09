@@ -31,7 +31,7 @@ public abstract class System {
     // -- p/debug
     #if UNITY_EDITOR
     /// the set of phases we've changed to this frame
-    List<string> m_Debug_Phases = new List<string>();
+    List<string> m_Debug_Phases = new();
     #endif
 
     // -- lifetime --

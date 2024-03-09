@@ -31,7 +31,7 @@ sealed class CharacterGroundDust: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         // set deps
-        c = GetComponentInParent<Character>();
+        c = GetComponentInParent<CharacterContainer>();
 
         // play the particles forever
         m_Particles.Play();

@@ -6,7 +6,7 @@ namespace ThirdPerson {
 public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
     // -- deps --
     /// the containing character
-    Character m_Container;
+    CharacterContainer c;
 
     /// the animator for this limb
     Animator m_Animator;
@@ -84,7 +84,7 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
     // -- lifecycle --
     void Awake() {
         // set deps
-        m_Container = GetComponentInParent<Character>();
+        c = GetComponentInParent<CharacterContainer>();
 
         // cache stride length
         #if !UNITY_EDITOR
@@ -147,7 +147,7 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
 
         // error on misconfiguration
         if (!IsValid) {
-            Debug.LogError($"[chrctr] {m_Container.name} - has a limb w/ no matching bone: {Goal}");
+            Debug.LogError($"[chrctr] {c.Name} - has a limb w/ no matching bone: {Goal}");
         }
     }
 

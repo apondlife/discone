@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace Discone {
+
 [CreateAssetMenu(menuName = "Character/Defs", fileName = "Characters")]
 sealed class CharacterDefs: ScriptableObject {
     // -- module --
@@ -27,7 +29,7 @@ sealed class CharacterDefs: ScriptableObject {
 
     // -- lifecycle --
     void OnEnable() {
-        Debug.Assert(s_Instance == null, "there was already an instnace of CharacterDefs!");
+        Log.Charss.Assert(s_Instance == null, "already an instance of `CharacterDefs`");
         s_Instance = this;
     }
 
@@ -43,9 +45,11 @@ sealed class CharacterDefs: ScriptableObject {
         };
 
         if (def == null) {
-            Debug.LogError($"[Character] no definition found for character {key}!");
+            Log.Charss.E($"no definition found for character {key}");
         }
 
         return def;
     }
+}
+
 }

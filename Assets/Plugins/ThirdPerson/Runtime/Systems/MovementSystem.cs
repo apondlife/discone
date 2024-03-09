@@ -87,7 +87,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // the current forward & input direction
         var fwd = c.State.Curr.Forward;
-        var inputDir = c.Input.Move;
+        var inputDir = c.InputQuery.Move;
         var inputDotFwd = Vector3.Dot(inputDir, fwd);
 
         // pivot if direction change was significant
@@ -103,7 +103,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // turn towards input direction
         TurnTowards(
-            c.Input.Move,
+            c.InputQuery.Move,
             c.Tuning.TurnSpeed,
             delta
         );
@@ -129,7 +129,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // get current forward & input direction
         var slideDir = c.State.Next.CrouchDirection;
-        var inputDir = c.Input.Move;
+        var inputDir = c.InputQuery.Move;
 
         // split the input axis
         var inputDotSlide = Vector3.Dot(inputDir, slideDir);
@@ -148,7 +148,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // turn towards input direction
         TurnTowards(
-            c.Input.Move,
+            c.InputQuery.Move,
             c.Tuning.Crouch_TurnSpeed,
             delta
         );
@@ -178,7 +178,7 @@ sealed class MovementSystem: CharacterSystem {
     );
 
     void Pivot_Enter() {
-        c.State.Next.PivotDirection = c.Input.Move;
+        c.State.Next.PivotDirection = c.InputQuery.Move;
         c.State.Next.PivotFrame = 0;
     }
 
@@ -231,16 +231,16 @@ sealed class MovementSystem: CharacterSystem {
         // rotate towards input direction
         // TODO: this should be a discone feature, not a third person one
         // the ability to modify tuning at run time
-        if (c.Input.IsCrouchPressed) {
+        if (c.InputQuery.IsCrouchPressed) {
             TurnTowards(
-                c.Input.Move,
+                c.InputQuery.Move,
                 c.Tuning.Air_TurnSpeed,
                 delta
             );
         }
 
         // add aerial drift
-        var a = c.Input.Move * c.Tuning.AerialDriftAcceleration;
+        var a = c.InputQuery.Move * c.Tuning.AerialDriftAcceleration;
         c.State.Next.Force += a;
     }
 
@@ -255,7 +255,7 @@ sealed class MovementSystem: CharacterSystem {
         // rotate towards input
         var fwd = Vector3.RotateTowards(
             c.State.Curr.Forward,
-            c.Input.Move,
+            c.InputQuery.Move,
             turnSpeed * Mathf.Deg2Rad * delta,
             Mathf.Infinity
         );
@@ -267,7 +267,7 @@ sealed class MovementSystem: CharacterSystem {
     // -- queries --
     /// if there is any user input
     bool HasMoveInput {
-        get => c.Input.Move.sqrMagnitude > 0.0f;
+        get => c.InputQuery.Move.sqrMagnitude > 0.0f;
     }
 }
 

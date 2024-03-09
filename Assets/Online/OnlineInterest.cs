@@ -4,6 +4,8 @@ using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
+namespace Discone {
+
 /// calculates the players interested in an object
 public class OnlineInterest: InterestManagement {
     // -- config --
@@ -393,4 +395,6 @@ public class OnlineInterest: InterestManagement {
         }
     }
 #endif
+}
+
 }

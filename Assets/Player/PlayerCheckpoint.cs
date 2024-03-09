@@ -1,11 +1,11 @@
-using Mirror.SimpleWeb;
 using UnityEngine;
 using UnityAtoms;
 using UnityEngine.InputSystem;
 
+namespace Discone {
+
 /// the discone checkpoint controller
-[RequireComponent(typeof(ThirdPerson.Player))]
-public sealed class PlayerCheckpoint : MonoBehaviour {
+public sealed class PlayerCheckpoint: MonoBehaviour {
     // -- atoms --
     [Header("atoms")]
     [Tooltip("the progress of the checkpoint save")] [SerializeField]
@@ -55,4 +55,6 @@ public sealed class PlayerCheckpoint : MonoBehaviour {
     public bool IsSavingChanged {
         get => m_IsSavingChanged;
     }
+}
+
 }

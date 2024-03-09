@@ -90,10 +90,12 @@ public class Demo: MonoBehaviour {
         var isRecording = nextState == State.Recording;
         if (isRecording) {
             m_Recording.Clear();
+            // place flower
         }
 
         var character = m_Player.Value.Character.Character;
         if (nextState == State.Playing) {
+            // reset to flower
             m_Recording.Play();
             character.Drive(m_Recording);
         }

@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityAtoms;
+﻿using UnityAtoms;
 using UnityEngine;
 
-public class IcecreamHair : MonoBehaviour
-{
+namespace Discone {
+
+public class IcecreamHair: MonoBehaviour {
     [Header("config")]
     [Tooltip("if this hair is being simulated or not")]
     [SerializeField] bool m_HasPhysics;
@@ -207,4 +205,6 @@ public class IcecreamHair : MonoBehaviour
         public Collider Collider;
         public Vector3 InitialPosition;
     }
+}
+
 }

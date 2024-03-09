@@ -5,7 +5,8 @@ using UnityAtoms;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-/// an online character
+namespace Discone {
+    /// an online character
 [RequireComponent(typeof(Character))]
 [RequireComponent(typeof(CharacterCheckpoint))]
 [RequireComponent(typeof(CharacterWrap))]
@@ -90,7 +91,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     // -- lifecycle --
     void Awake() {
         // set props
-        m_Character = GetComponent<Character>();
+        m_Character = GetComponent<Discone.Character>();
         m_Musics = GetComponentInChildren<CharacterMusicBase>(true);
         m_Dialogue = GetComponentInChildren<CharacterDialogue>(true);
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
@@ -356,6 +357,7 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         get => m_Simulation != Simulation.None;
     }
 
+    // AAA: merge this with DisconeCharacter
     /// the third person character
     public Character Character {
         get => m_Character;
@@ -414,4 +416,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
             m_Checkpoint.IntoRecord()
         );
     }
+}
+
 }

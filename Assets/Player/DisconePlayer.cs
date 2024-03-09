@@ -1,4 +1,3 @@
-using ThirdPerson;
 using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;

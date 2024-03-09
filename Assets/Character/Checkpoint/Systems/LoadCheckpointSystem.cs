@@ -3,10 +3,13 @@ using Soil;
 using ThirdPerson;
 using UnityEngine;
 
+namespace Discone {
+
 /// a character's ability to load to their saved checkpoint
 [Serializable]
 sealed class LoadCheckpointSystem: CheckpointSystem {
     const float k_Inactive = -1.0f;
+
     // -- types --
     /// tuning for the load checkpoint system
     [Serializable]
@@ -24,7 +27,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
         public float LoadCancelMultiplier;
     }
 
-    [System.Obsolete]
+    [Obsolete]
     public sealed class LoadInput {
         public bool IsLoading;
     }
@@ -36,7 +39,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
 
     // -- props --
     /// the input state
-    LoadInput m_Input = new LoadInput();
+    LoadInput m_Input = new();
 
     /// the elapsed time
     float m_Elapsed = k_Inactive;
@@ -181,4 +184,6 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     public bool IsLoading {
         get => m_Elapsed >= 0;
     }
+}
+
 }

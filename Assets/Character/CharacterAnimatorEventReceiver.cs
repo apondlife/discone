@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+
+namespace Discone {
 
 // For passing step events to the character music generator
 // (This maybe should be merged with CharacterAnimatorProxy, but seems like that is unused right now so idk)
@@ -21,4 +21,6 @@ public class CharacterAnimatorEventReceiver : MonoBehaviour
             m_CharacterMusic.OnStep(foot, true);
         }
     }
+}
+
 }

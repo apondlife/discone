@@ -71,7 +71,7 @@ public class CharacterBlobShadow: MonoBehaviour {
     void Start() {
         m_Projector = GetComponent<Projector>();
         m_BaseSize = m_Projector.orthographicSize;
-        m_State = GetComponentInParent<Character>().State;
+        m_State = GetComponentInParent<CharacterContainer>().State;
         m_FeetDistance = Mathf.Abs(transform.position.y - m_CharacterFeet.position.y);
 
         m_ProjectorMaterial = Instantiate(m_Projector.material);

@@ -5,6 +5,8 @@ using UnityAtoms.BaseAtoms;
 using ThirdPerson;
 using Discone;
 
+namespace Discone {
+
 // TODO: swap (drive) characters by setting m_LocalCharacter
 // TODO: what to do for multiple players? variable instancer?
 // TODO: rename to something like player sync?
@@ -65,7 +67,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     // -- props --
     /// a set of event subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     /// the world coordinate
     WorldCoord m_Coord;
@@ -353,4 +355,6 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             m_Character.Server_RemoveClientAuthority();
         }
     }
+}
+
 }

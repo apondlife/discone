@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+namespace Discone {
+
 /// toggles perceivability of entities sound effects, dialogue, etc.
 sealed class EntityPerception: MonoBehaviour {
     // -- config --
@@ -133,5 +135,7 @@ sealed class EntityPerception: MonoBehaviour {
 
         m_PrevTalkable = talkable;
     }
+
+}
 
 }

@@ -38,7 +38,7 @@ public class CharacterDust: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        var character = GetComponentInParent<Character>();
+        var character = GetComponentInParent<CharacterContainer>();
         m_State = character.State;
     }
 

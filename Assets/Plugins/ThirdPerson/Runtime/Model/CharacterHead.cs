@@ -6,7 +6,7 @@ namespace ThirdPerson {
 public sealed class CharacterHead: MonoBehaviour, CharacterLimb {
     // -- deps --
     /// the containing character
-    Character m_Container;
+    CharacterContainer c;
 
     /// the animator for this limb
     Animator m_Animator;
@@ -47,16 +47,16 @@ public sealed class CharacterHead: MonoBehaviour, CharacterLimb {
     // -- lifecycle --
     void Awake() {
         // set deps
-        m_Container = GetComponentInParent<Character>();
+        c = GetComponentInParent<CharacterContainer>();
     }
 
     void Update() {
         var delta = Time.deltaTime;
 
-        m_IsActive = m_Container.State.Next.IsOnGround;
+        m_IsActive = c.State.Next.IsOnGround;
 
         // destination rotation follows input
-        var destFwd = m_Container.Input.Move;
+        var destFwd = c.InputQuery.Move;
         if (destFwd == Vector3.zero) {
             destFwd = m_NeckBone.forward;
         }

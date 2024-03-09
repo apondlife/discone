@@ -32,7 +32,7 @@ public class JumpPlume: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         // set deps
-        c = GetComponentInParent<Character>();
+        c = GetComponentInParent<CharacterContainer>();
 
         m_Particles = GetComponent<ParticleSystem>();
         m_StartSpeed = m_Particles.main.startSpeed;

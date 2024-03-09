@@ -15,7 +15,7 @@ abstract class CameraSystem: Soil.System {
     protected InputAction m_Input;
 
     /// the character's input
-    protected CharacterInput m_CharacterInput;
+    protected CharacterInputQuery m_CharacterInput;
 
     // -- props --
     /// the state-machine's state
@@ -31,7 +31,7 @@ abstract class CameraSystem: Soil.System {
         CameraState state,
         CameraTuning tuning,
         InputAction input,
-        CharacterInput characterInput
+        CharacterInputQuery characterInput
     ) {
         // set deps
         m_State = state;

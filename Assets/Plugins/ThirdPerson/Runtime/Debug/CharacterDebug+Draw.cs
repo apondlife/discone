@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// debug extensions for the character
-public partial class Character {
+public partial class Character<InputFrame> {
     // -- debug/drawing --
     void Debug_Draw() {
         if (m_IsPaused) {

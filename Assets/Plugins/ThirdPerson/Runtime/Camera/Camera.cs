@@ -60,11 +60,11 @@ public class Camera: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         // set deps
-        var character = GetComponentInParent<Character>();
+        var c = GetComponentInParent<CharacterContainer>();
         m_State = new CameraState(
             new CameraState.Frame(),
             m_Follow.localPosition,
-            character.State
+            c.State
         );
 
         // synchronize state
@@ -79,7 +79,7 @@ public class Camera: MonoBehaviour {
             m_TiltSystem,
         };
 
-        var characterInput = character.Input;
+        var characterInput = c.InputQuery;
         foreach (var system in m_Systems) {
             system.Init(
                 m_State,

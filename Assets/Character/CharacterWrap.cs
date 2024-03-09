@@ -2,8 +2,10 @@ using UnityEngine;
 using Mirror;
 using ThirdPerson;
 
+namespace Discone {
+
 /// wrap the character from the bottom -> top of the world, if necessary
-public class CharacterWrap : NetworkBehaviour {
+public class CharacterWrap: NetworkBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("the min y-position the character wraps from")]
@@ -44,4 +46,6 @@ public class CharacterWrap : NetworkBehaviour {
         state.Position.y = m_WrapMaxY;
         m_Character.ForceState(state);
     }
+}
+
 }

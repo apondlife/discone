@@ -2,11 +2,18 @@ using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System;
+using Object = UnityEngine.Object;
 
 namespace ThirdPerson {
 
 /// the main third person controller
-public partial class Character: MonoBehaviour, CharacterContainer {
+public class Character: Character<CharacterInputFrame.Default> {
+}
+
+/// the main third person controller
+public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
+    where InputFrame: CharacterInputFrame {
+
     // -- data --
     [Header("data")]
     [Tooltip("the tuning; for tweaking the player's attributes")]
@@ -63,7 +70,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
     CharacterEvents m_Events;
 
     /// the input wrapper
-    CharacterInput m_Input;
+    CharacterInput<InputFrame> m_Input;
 
     // TODO: extract the camera out of the character, maybe?
     /// the character's virtual camera
@@ -77,7 +84,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         m_Camera = GetComponentInChildren<Camera>(true);
 
         // init input (can't access Time from field initializer)
-        m_Input = new CharacterInput();
+        m_Input = new CharacterInput<InputFrame>();
 
         // init state
         m_State = new CharacterState(
@@ -184,7 +191,7 @@ public partial class Character: MonoBehaviour, CharacterContainer {
 
     // -- commands --
     /// drive the character with a new input source
-    public void Drive(CharacterInputSource source) {
+    public void Drive(CharacterInputSource<InputFrame> source) {
         m_Input.Drive(source);
         m_Camera.gameObject.SetActive(source != null);
     }
@@ -231,6 +238,11 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         get => m_Camera;
     }
 
+    /// .
+    public CharacterInput<InputFrame> Input {
+        get => m_Input;
+    }
+
     // -- CharacterContainer --
     /// .
     public string Name {
@@ -242,15 +254,15 @@ public partial class Character: MonoBehaviour, CharacterContainer {
         get => m_Tuning;
     }
 
-    /// .
-    public CharacterInput Input {
-        get => m_Input;
-    }
-
     // TODO: how should we make state immutable outside the class
     /// .
     public CharacterState State {
         get => m_State;
+    }
+
+    /// .
+    public CharacterInputQuery InputQuery {
+        get => m_Input;
     }
 
     /// .

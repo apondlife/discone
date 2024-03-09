@@ -5,6 +5,8 @@ using UnityAtoms;
 using ThirdPerson;
 using UnityEngine.Events;
 
+namespace Discone {
+
 /// the character's ability to save and reload to a particular state in
 /// the world, like planting a flag.
 [RequireComponent(typeof(DisconeCharacter))]
@@ -34,9 +36,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
     /// the flower at the current checkpoint, if any
     [SyncVar]
     CharacterFlower m_Flower;
-
-    /// if the checkpoint is saving
-    bool m_IsSaving;
 
     // if this can't create checkpoints
     bool m_IsBlocked;
@@ -188,13 +187,13 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// -- c/load
     /// restore to the current checkpoint, if any
-    [System.Obsolete]
+    [Obsolete]
     public void StartLoad() {
         m_Load.Input.IsLoading = true;
     }
 
     /// cancel a load if active
-    [System.Obsolete]
+    [Obsolete]
     public void StopLoad() {
         m_Load.Input.IsLoading = false;
     }
@@ -262,4 +261,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
     public FlowerRec IntoRecord() {
         return m_Flower?.IntoRecord();
     }
+}
+
 }
