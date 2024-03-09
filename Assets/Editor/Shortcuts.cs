@@ -1,3 +1,4 @@
+using Soil;
 using UnityEngine;
 using UnityEditor;
 using UnityAtoms;
@@ -28,7 +29,7 @@ public sealed class Shortcuts: EditorWindow {
     DisconeCharacter m_Character;
 
     /// the repaint timer
-    ThirdPerson.EaseTimer m_Repaint = new ThirdPerson.EaseTimer(1f / 60f);
+    EaseTimer m_Repaint = new EaseTimer(1f / 60f);
 
     // -- lifecycle --
     /// show the window

@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 #endif
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a character system; may be a state machine
 [Serializable]

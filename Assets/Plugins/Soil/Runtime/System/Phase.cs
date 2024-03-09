@@ -1,6 +1,6 @@
 using System;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a character phase, a composition of an enter, update, and exit action
 [Serializable]

@@ -1,6 +1,6 @@
 using System;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a generic, type-erased disposable
 public sealed class AnyDisposable: IDisposable {

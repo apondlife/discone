@@ -1,7 +1,8 @@
 using ThirdPerson;
+using Soil;
 
 /// a checkpoint system
-abstract class CheckpointSystem: ThirdPerson.System {
+abstract class CheckpointSystem: Soil.System {
     // -- deps --
     /// the character
     protected CharacterState m_State;

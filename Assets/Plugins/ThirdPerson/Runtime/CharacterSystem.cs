@@ -1,4 +1,5 @@
 using System;
+using Soil;
 
 #if UNITY_EDITOR
 using System.Reflection;
@@ -9,7 +10,7 @@ namespace ThirdPerson {
 
 /// a character system; may be a state machine
 [Serializable]
-abstract class CharacterSystem: System {
+abstract class CharacterSystem: Soil.System {
     // -- props --
     /// the character container
     protected CharacterContainer c;

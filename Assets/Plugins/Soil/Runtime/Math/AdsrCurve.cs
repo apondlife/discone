@@ -1,9 +1,10 @@
 using System;
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a normalized curve with a min & max value
+[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "AdsrCurve")]
 [Serializable]
 public struct AdsrCurve {
     // -- fields --

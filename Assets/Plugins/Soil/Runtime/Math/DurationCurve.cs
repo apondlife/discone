@@ -1,9 +1,10 @@
 using System;
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
-/// a normalized curve with a min & max value
+/// a normalized curve with a duration
+[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "DurationCurve")]
 [Serializable]
 public struct DurationCurve {
     // -- fields --

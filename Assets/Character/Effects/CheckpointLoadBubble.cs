@@ -1,3 +1,4 @@
+using Soil;
 using UnityEngine;
 
 namespace Discone {
@@ -16,10 +17,10 @@ public class CheckpointLoadBubble: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("bubble growth ease in curve")]
-    [SerializeField] ThirdPerson.EaseTimer m_EaseIn;
+    [SerializeField] EaseTimer m_EaseIn;
 
     [Tooltip("bubble growth ease out curve")]
-    [SerializeField] ThirdPerson.EaseTimer m_EaseOut;
+    [SerializeField] EaseTimer m_EaseOut;
 
     [Tooltip("the emission texture animation speed")]
     [SerializeField] Vector2 m_EmissionOffsetSpeed;

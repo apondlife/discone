@@ -1,8 +1,9 @@
+using Soil;
 using UnityEngine.InputSystem;
 
 namespace ThirdPerson {
 
-abstract class CameraSystem: System {
+abstract class CameraSystem: Soil.System {
     // -- deps --
     /// the current camera state
     protected CameraState m_State;

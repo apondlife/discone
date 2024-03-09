@@ -1,8 +1,9 @@
 using System;
-using Discone;
 using Mirror.SimpleWeb;
+using Soil;
 using ThirdPerson;
 using UnityEngine;
+using Tag = Discone.Tag;
 
 /// a character's ability to save new checkpoints
 /// not => smelling => (grab) planting => (plant) done

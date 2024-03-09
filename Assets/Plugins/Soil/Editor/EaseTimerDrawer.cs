@@ -1,14 +1,14 @@
-﻿using Soil.Editor;
 using UnityEngine;
 using UnityEditor;
 
 using E = UnityEditor.EditorGUI;
 using U = UnityEditor.EditorGUIUtility;
 
-namespace ThirdPerson.Editor {
+namespace Soil.Editor {
 
-[CustomPropertyDrawer(typeof(MapInCurve))]
-sealed class MapInCurveDrawer: PropertyDrawer {
+// TODO: show the current time when the game is playing
+[CustomPropertyDrawer(typeof(EaseTimer))]
+sealed class EaseTimerDrawer: PropertyDrawer {
     // -- constants --
     /// the gap between elements
     const float k_Gap1 = 2f;
@@ -25,7 +25,7 @@ sealed class MapInCurveDrawer: PropertyDrawer {
 
         // get attrs
         var curve = prop.FindPropertyRelative("m_Curve");
-        var range = prop.FindPropertyRelative("m_Src");
+        var value = prop.FindPropertyRelative("m_Duration");
 
         // draw label w/ indent
         E.LabelField(r, label);
@@ -46,11 +46,11 @@ sealed class MapInCurveDrawer: PropertyDrawer {
         rc.height += 1;
         curve.animationCurveValue = E.CurveField(rc, curve.animationCurveValue);
 
-        // draw the range
+        // draw the duration
         var delta = rc.width + k_Gap2;
         r.x += delta;
         r.width -= delta;
-        FloatRangeDrawer.DrawInput(r, range);
+        value.floatValue = E.FloatField(r, value.floatValue);
 
         // reset indent level
         E.indentLevel = indent;

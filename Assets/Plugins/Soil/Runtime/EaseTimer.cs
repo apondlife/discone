@@ -1,12 +1,14 @@
 using System;
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
+/// a timer that curves its progress
+[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "EaseTimer")]
 [Serializable]
 public record EaseTimer {
     // -- constants --
-    // the sentinel time for an inacitve timer
+    // the sentinel time for an inactive timer
     const float k_Inactive = -1.0f;
 
     // -- cfg --

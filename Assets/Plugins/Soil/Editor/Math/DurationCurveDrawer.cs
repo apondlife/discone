@@ -4,7 +4,7 @@ using UnityEditor;
 using E = UnityEditor.EditorGUI;
 using U = UnityEditor.EditorGUIUtility;
 
-namespace ThirdPerson.Editor {
+namespace Soil.Editor {
 
 [CustomPropertyDrawer(typeof(DurationCurve))]
 sealed class DurationCurveDrawer: PropertyDrawer {

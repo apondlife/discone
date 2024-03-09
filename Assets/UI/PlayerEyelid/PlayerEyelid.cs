@@ -1,7 +1,6 @@
-using ThirdPerson;
+using Soil;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 namespace Discone.Ui {

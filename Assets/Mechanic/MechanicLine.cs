@@ -15,17 +15,17 @@ sealed class MechanicLine: UIBehaviour {
     [SerializeField] MapOutCurve m_Angle;
 
     [Tooltip("the fade-in/out animation")]
-    [SerializeField] ThirdPerson.EaseTimer m_Fade;
+    [SerializeField] EaseTimer m_Fade;
 
     [Tooltip("the move animation")]
-    [SerializeField] ThirdPerson.EaseTimer m_Move;
+    [SerializeField] EaseTimer m_Move;
 
     [Tooltip("the angle range for moving lines")]
     [SerializeField] MapOutCurve m_Move_Angle;
 
     [FormerlySerializedAs("m_Offset")]
     [Tooltip("the scatter animation")]
-    [SerializeField] ThirdPerson.EaseTimer m_Scatter;
+    [SerializeField] EaseTimer m_Scatter;
 
     [FormerlySerializedAs("m_ScatterDist")]
     [FormerlySerializedAs("m_OffsetDist")]

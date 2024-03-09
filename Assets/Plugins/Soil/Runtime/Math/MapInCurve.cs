@@ -1,10 +1,10 @@
 ﻿using System;
-using Soil;
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a normalized curve with a source range
+[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "MapInCurve")]
 [Serializable]
 public struct MapInCurve {
     // -- fields --
