@@ -1,38 +1,33 @@
 using System;
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a float value range
 [Serializable]
-public struct FloatRange {
+public struct Vector2Range {
     // -- fields --
     [Tooltip("the min value")]
-    public float Min;
+    public Vector2 Min;
 
     [Tooltip("the max value")]
-    public float Max;
+    public Vector2 Max;
 
     // -- queries --
     /// interpolate between the min & max
-    public float Lerp(float k) {
-        return Mathf.LerpUnclamped(Min, Max, k);
-    }
-
-    /// normalize the value between min & max
-    public float InverseLerp(float val) {
-        return Mathf.InverseLerp(Min, Max, val);
+    public Vector2 Lerp(float k) {
+        return Vector2.LerpUnclamped(Min, Max, k);
     }
 
     // -- aliases --
     /// the source value
-    public float Src {
+    public Vector2 Src {
         get => Min;
         set => Min = value;
     }
 
     /// the destination value
-    public float Dst {
+    public Vector2 Dst {
         get => Max;
         set => Max = value;
     }

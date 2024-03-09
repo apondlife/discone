@@ -33,7 +33,7 @@ sealed class TargetSizeFitter: UIBehaviour {
     DisposeBag m_Subscriptions;
 
     // -- lifecycle --
-    override protected void Start() {
+    protected override void Start() {
         base.Start();
 
         // if missing, infer a target from the lone content element
@@ -57,7 +57,7 @@ sealed class TargetSizeFitter: UIBehaviour {
     }
     #endif
 
-    override protected void OnDestroy() {
+    protected override void OnDestroy() {
         // unsubscribe
         if (m_TargetRect != null) {
             m_TargetRect.Changed -= Resize;

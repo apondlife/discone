@@ -30,9 +30,22 @@ public struct IntRange {
         return Mathf.InverseLerp(Min, Max, val);
     }
 
+    // -- aliases --
+    /// the source value
+    public int Src {
+        get => Min;
+        set => Min = value;
+    }
+
+    /// the destination value
+    public int Dst {
+        get => Max;
+        set => Max = value;
+    }
+
     // -- debug --
     public override string ToString() {
-        return $"[${Min}...{Max}]";
+        return $"[{Min}...{Max}]";
     }
 }
 

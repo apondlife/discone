@@ -2,6 +2,7 @@ using System;
 using Soil;
 using ThirdPerson;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Yarn.Unity;
 using Random = UnityEngine.Random;
 
@@ -14,8 +15,11 @@ sealed class MechanicDialogueView: DialogueViewBase {
     [Tooltip("the spacing between fading lines")]
     [SerializeField] float m_Spacing;
 
+    [Tooltip("the exponential alpha base")]
+    [SerializeField] float m_Alpha_Base;
+
     [Tooltip("the horizontal offset for fading lines")]
-    [SerializeField] MapOutCurve m_HorizontalOffset;
+    [SerializeField] MapOutCurve m_Offset_Horizontal;
 
     // -- props --
     // the mechanic's line fields
@@ -53,21 +57,25 @@ sealed class MechanicDialogueView: DialogueViewBase {
 
         // offset all the lines
         if (max > 1) {
-            var offset = Vector2.zero;
-            for (var i = 0; i < max + 1; i++) {
+            var offset = new Vector2(0f, nextLine.Height * 0.5f + m_Spacing);
+            var alpha = 1f;
+
+            for (var i = 1; i < max + 1; i++) {
                 var line = m_Lines[i];
                 var lineHeight = line.Height * 0.5f;
 
                 // for older lines, update offset so that our text clears the line below
-                if (i != 0) {
-                    offset.y += lineHeight;
+                offset.y += lineHeight;
 
-                    // and offset horizontally
-                    offset.x = m_HorizontalOffset.Evaluate(Random.value);
-                }
+                // and offset horizontally
+                offset.x = m_Offset_Horizontal.Evaluate(Random.value);
+
+                // exponentiate the alpha
+                alpha *= m_Alpha_Base;
 
                 // move to this position
                 line.Move(offset);
+                line.Fade(alpha);
 
                 // and update offset to the top edge of this line
                 offset.y += lineHeight + m_Spacing;
