@@ -172,7 +172,7 @@ sealed class MechanicLine: UIBehaviour {
     }
 
     /// if the line is currently hidden
-    bool IsHidden {
+    public bool IsHidden {
         get => m_Group.alpha == 0f;
     }
 

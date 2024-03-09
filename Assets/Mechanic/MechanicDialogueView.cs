@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Soil;
 using ThirdPerson;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Yarn.Unity;
 using Random = UnityEngine.Random;
 
@@ -86,6 +86,7 @@ sealed class MechanicDialogueView: DialogueViewBase {
         var prevLine = m_Lines[max];
         prevLine.Hide();
 
+        // TODO: consider if we should call this after the scatter animation finishes
         onDialogueLineFinished?.Invoke();
     }
 }
