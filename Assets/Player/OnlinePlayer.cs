@@ -5,17 +5,13 @@ using UnityAtoms.BaseAtoms;
 using ThirdPerson;
 using Discone;
 
+// TODO: swap (drive) characters by setting m_LocalCharacter
+// TODO: what to do for multiple players? variable instancer?
+// TODO: rename to something like player sync?
 /// an online player
-/// TODO: swap (drive) characters by setting m_LocalCharacter
-/// TODO: what to do for multiple players? variable instancer?
-/// TODO: rename to something like player sync?
 [RequireComponent(typeof(WorldCoord))]
 public sealed class OnlinePlayer: NetworkBehaviour {
-    // -- constants --
-    /// the character's vertical spawn offset
-    /// TODO: don't do this???
-    const float k_SpawnOffset = 1.0f;
-
+    // -- refs --
     [Header("refs")]
     [Tooltip("the character to spawn when first joining")]
     [SerializeField] CharacterKey m_InitialCharacterKey;

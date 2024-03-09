@@ -2,8 +2,8 @@ using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
+// TODO: code generation
 /// extensions for atoms
-/// TODO: code generation
 public static class AtomExt {
     // -- queries --
     /// get a component in this game object atom

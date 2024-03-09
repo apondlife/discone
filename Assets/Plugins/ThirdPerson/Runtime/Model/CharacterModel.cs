@@ -80,16 +80,16 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the containing character
     Character m_Container;
 
+    // TODO: CharacterContainer, CharacterContainerConvertible
     /// the character's state
-    /// TODO: CharacterContainer, CharacterContainerConvertible
     CharacterState m_State => m_Container.State;
 
+    // TODO: CharacterContainer, CharacterContainerConvertible
     /// the character's tuning
-    /// TODO: CharacterContainer, CharacterContainerConvertible
     CharacterTuning m_Tuning => m_Container.Tuning;
 
+    // TODO: CharacterContainer, CharacterContainerConvertible
     /// the character's tuning
-    /// TODO: CharacterContainer, CharacterContainerConvertible
     CharacterInput m_Input => m_Container.Input;
 
     /// the list of ik limbs

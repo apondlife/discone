@@ -5,8 +5,8 @@ using ThirdPerson;
 using UnityAtoms;
 using FMODUnity;
 
+// TODO: rename to flower
 /// a flower that a character leaves behind as its checkpoint
-/// TODO: rename to flower
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(StudioEventEmitter))]
 public class CharacterFlower: NetworkBehaviour {

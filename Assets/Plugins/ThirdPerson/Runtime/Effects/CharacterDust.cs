@@ -3,8 +3,8 @@ using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
+// TODO: rename me to CharacterEffects & break me up into multiple prefabs & scripts
 /// the character's dust effect
-/// TODO: rename me to CharacterEffects & break me up into multiple prefabs & scripts
 public class CharacterDust: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
