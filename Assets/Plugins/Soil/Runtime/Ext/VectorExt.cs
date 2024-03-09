@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// static extensions for Vector3
-static class Vec3 {
+public static class Vec3 {
     // -- queries --
     /// create a Vector3 with components (x, y, 0)
     public static Vector3 XYN(this Vector3 v) {

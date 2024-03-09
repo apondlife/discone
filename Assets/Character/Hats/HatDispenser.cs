@@ -1,5 +1,5 @@
+using Soil;
 using UnityEngine;
-using ThirdPerson;
 using UnityAtoms.BaseAtoms;
 
 public class HatDispenser : MonoBehaviour

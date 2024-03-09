@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ThirdPerson;
 using UnityAtoms;
 using FMODUnity;
+using Soil;
 
 // TODO: rename to flower
 /// a flower that a character leaves behind as its checkpoint

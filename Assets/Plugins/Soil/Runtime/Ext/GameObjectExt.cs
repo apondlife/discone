@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
 public static class GameObjectExt {
     public static void SetLayerRecursively(this GameObject obj, int layer) {

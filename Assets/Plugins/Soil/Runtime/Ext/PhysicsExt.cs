@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// static helpers for raycasts
 public static class Physiics {
@@ -12,7 +12,7 @@ public static class Physiics {
         int layerMask,
         QueryTriggerInteraction queryTriggerInteraction
     ) {
-        // to get the last point from origin to destination, we cast from destination to 
+        // to get the last point from origin to destination, we cast from destination to
         var disp = origin - destination;
 
         return BounceCast(

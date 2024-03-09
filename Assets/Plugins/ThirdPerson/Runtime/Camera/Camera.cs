@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.InputSystem;
 using Cinemachine;
+using Soil;
 
 namespace ThirdPerson {
 

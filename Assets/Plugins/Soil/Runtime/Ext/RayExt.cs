@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
-static class RayExt {
+public static class RayExt {
     /// find the intersection of two lines
     /// see: https://stackoverflow.com/questions/59449628/check-when-two-vector3-lines-intersect-unity3d
     public static bool TryIntersect(this Ray a, Ray b, out Vector3 intersection){

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
 public static class LayerMaskExt {
     public static bool Contains(this LayerMask mask, int layer) {
