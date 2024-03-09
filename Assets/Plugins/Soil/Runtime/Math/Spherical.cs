@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ThirdPerson {
+namespace Soil {
 
 /// a spherical coordinate
 [Serializable]

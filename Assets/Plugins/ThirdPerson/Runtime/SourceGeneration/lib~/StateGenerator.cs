@@ -9,7 +9,7 @@ using System;
 namespace ThirdPerson.SourceGeneration {
     /// generates state code from the nodes discovered by `FrameSyntaxReceiver`
     [Generator]
-    public class CharacterStateGenerator: ISourceGenerator {
+    public class StateGenerator: ISourceGenerator {
         public void Initialize(GeneratorInitializationContext context) {
             context.RegisterForSyntaxNotifications(() => new FrameClassReceiver());
         }
@@ -63,6 +63,7 @@ namespace ThirdPerson.SourceGeneration {
 
                 // the state impl
                 var stateImpl = $@"
+                    using Soil;
                     using UnityEngine;
 
                     namespace ThirdPerson {{
