@@ -8,6 +8,7 @@ static class Log {
     public static readonly Soil.Tag Region = new("region", "#112211");
     public static readonly Soil.Tag Store  = new("storee", "#00aabb");
     public static readonly Soil.Tag Temppp = new("temppp", "#ff0000");
+    public static readonly Soil.Tag Debugg = new("debugg", "#046920");
 }
 
 }

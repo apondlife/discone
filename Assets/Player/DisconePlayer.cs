@@ -29,8 +29,8 @@ public sealed class DisconePlayer: MonoBehaviour {
     [Tooltip("the persistence store")]
     [SerializeField] Store m_Store;
 
-    [Tooltip("the input source")]
-    [SerializeField] PlayerInputSource m_InputSource;
+    [Tooltip("the third-person player")]
+    [SerializeField] Player m_Player;
 
     [Tooltip("the distance to the far clip plane")]
     [SerializeField] FloatReference m_FarClipPlane;
@@ -84,6 +84,11 @@ public sealed class DisconePlayer: MonoBehaviour {
     }
 
     // -- queries --
+    /// the third-person character
+    public Player Player {
+        get => m_Player;
+    }
+
     /// the character
     public DisconeCharacter Character {
         get => m_Character.Value;
@@ -125,14 +130,14 @@ public sealed class DisconePlayer: MonoBehaviour {
 
     /// when the dialog becomes in/active
     void OnIsDialogueActiveChanged(bool isDialogueActive) {
-        m_InputSource.enabled = !isDialogueActive;
+        m_Player.InputSource.enabled = !isDialogueActive;
     }
 
     // -- props/hot --
     /// if the input is enabled
     public bool IsInputEnabled {
-        get => m_InputSource.IsEnabled;
-        set => m_InputSource.IsEnabled = value;
+        get => m_Player.InputSource.IsEnabled;
+        set => m_Player.InputSource.IsEnabled = value;
     }
 
 }

@@ -54,6 +54,11 @@ public sealed class CharacterInput {
     }
 
     // -- queries --
+    /// the current input frame
+    public Frame Curr {
+        get => m_Frames[0];
+    }
+
     /// the move axis this frame
     public Vector3 Move {
         get => m_Frames[0]?.Move ?? Vector3.zero;

@@ -6,6 +6,7 @@ namespace Soil {
 /// mathf "static" methods
 public static class Mathx {
     // -- constants --
+    public const float TAU = Mathf.PI * 2f;
     public const float PI_2 = Mathf.PI / 2f;
     public const float TINY = 1e-6f;
 
@@ -45,6 +46,15 @@ public static class Mathx {
         v1 = v0 + a0 * dt;
 
         return v1;
+    }
+
+    /// remap a value from one range to another
+    public static float Remap(
+        float min0, float max0,
+        float min1, float max1,
+        float value
+    ) {
+        return Mathf.Lerp(min1, max1, Mathf.InverseLerp(min0, max0, value));
     }
 }
 }

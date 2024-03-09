@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -74,6 +73,11 @@ public class Player: MonoBehaviour, PlayerContainer {
     /// the character the player is currently driving
     public Character Character {
         get => m_Character;
+    }
+
+    /// the character the player is currently driving
+    public PlayerInputSource InputSource {
+        get => m_InputSource;
     }
 }
 
