@@ -8,16 +8,16 @@ namespace UnityAtoms
     /// IPair of type `&lt;DisconeCharacter&gt;`. Inherits from `IPair&lt;DisconeCharacter&gt;`.
     /// </summary>
     [Serializable]
-    public struct DisconeCharacterPair : IPair<DisconeCharacter>
+    public struct DisconeCharacterPair : IPair<Character>
     {
-        public DisconeCharacter Item1 { get => _item1; set => _item1 = value; }
-        public DisconeCharacter Item2 { get => _item2; set => _item2 = value; }
+        public Character Item1 { get => _item1; set => _item1 = value; }
+        public Character Item2 { get => _item2; set => _item2 = value; }
 
         [SerializeField]
-        private DisconeCharacter _item1;
+        private Character _item1;
         [SerializeField]
-        private DisconeCharacter _item2;
+        private Character _item2;
 
-        public void Deconstruct(out DisconeCharacter item1, out DisconeCharacter item2) { item1 = Item1; item2 = Item2; }
+        public void Deconstruct(out Character item1, out Character item2) { item1 = Item1; item2 = Item2; }
     }
 }

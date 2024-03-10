@@ -8,14 +8,14 @@ sealed class CharacterDef: ScriptableObject {
     // -- fields --
     [Header("fields")]
     [Tooltip("the character prefab")]
-    [SerializeField] DisconeCharacter m_Character;
+    [SerializeField] Character m_Character;
 
     [Tooltip("the character flower prefab")]
     [SerializeField] CharacterFlower m_Flower;
 
     // -- queries --
     // the character prefab
-    public DisconeCharacter Character {
+    public Character Character {
         get => m_Character;
     }
 

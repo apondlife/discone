@@ -38,7 +38,7 @@ public class IcecreamHair: MonoBehaviour {
     [SerializeField] Rigidbody m_Rig;
 
     // the character that owns this hair
-    DisconeCharacter m_Container;
+    Character m_Container;
 
     // the colliders to disable when the character is paused
     HairCollider[] m_Colliders;
@@ -50,7 +50,7 @@ public class IcecreamHair: MonoBehaviour {
     void Awake()
     {
         // get the container
-        m_Container = GetComponentInParent<DisconeCharacter>(true);
+        m_Container = GetComponentInParent<Character>(true);
 
         // cache colliders
         var colliders = GetComponentsInChildren<Collider>(true);
@@ -86,15 +86,15 @@ public class IcecreamHair: MonoBehaviour {
 
     void Start() {
         // bind events
-        m_Container.Character.OnPause += OnCharacterPaused;
-        m_Container.Character.OnUnpause += OnCharacterUnpaused;
+        m_Container.OnPause += OnCharacterPaused;
+        m_Container.OnUnpause += OnCharacterUnpaused;
     }
 
     void OnDestroy() {
         // unbind events
         m_Subscriptions.Dispose();
-        m_Container.Character.OnPause -= OnCharacterPaused;
-        m_Container.Character.OnUnpause -= OnCharacterUnpaused;
+        m_Container.OnPause -= OnCharacterPaused;
+        m_Container.OnUnpause -= OnCharacterUnpaused;
     }
 
     void OnEnable() {
@@ -109,7 +109,7 @@ public class IcecreamHair: MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (m_Container.Character.IsPaused) {
+        if (m_Container.IsPaused) {
             return;
         }
 

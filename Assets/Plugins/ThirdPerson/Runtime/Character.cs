@@ -2,7 +2,6 @@ using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System;
-using Object = UnityEngine.Object;
 
 namespace ThirdPerson {
 
@@ -77,7 +76,7 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     Camera m_Camera;
 
     // -- lifecycle --
-    void Awake() {
+    protected virtual void Awake() {
         var t = transform;
 
         // get children
@@ -131,13 +130,16 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         }
     }
 
-    void Update() {
+    protected virtual void Start() {
+    }
+
+    protected virtual void Update() {
         #if UNITY_EDITOR
         Debug_Update();
         #endif
     }
 
-    void FixedUpdate() {
+    protected virtual void FixedUpdate() {
         // run simulation
         if (!m_IsPaused) {
             // store the previous frame
@@ -175,18 +177,15 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         #endif
     }
 
+    protected virtual void OnDestroy() {
+    }
+
     /// run the character systems
     void Step() {
         var delta = Time.deltaTime;
         foreach (var system in m_Systems) {
             system.Update(delta);
         }
-    }
-
-    // -- props/hot --
-    /// if the character simulation is paused
-    public bool IsPaused {
-        get => m_IsPaused;
     }
 
     // -- commands --
@@ -218,6 +217,12 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         }
 
         m_IsPaused = false;
+    }
+
+    // -- queries --
+    /// if the character simulation is paused
+    public bool IsPaused {
+        get => m_IsPaused;
     }
 
     // -- events --

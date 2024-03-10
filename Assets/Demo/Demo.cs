@@ -51,7 +51,7 @@ public class Demo: MonoBehaviour {
         switch (m_State) {
             case State.Recording:
                 // record input
-                var frame = m_Player.Value.Character.Character.Input.Curr;
+                var frame = m_Player.Value.Character.Input.Curr;
                 m_Recording.Record(frame);
                 break;
             case State.Playing:
@@ -93,7 +93,7 @@ public class Demo: MonoBehaviour {
             // place flower
         }
 
-        var character = m_Player.Value.Character.Character;
+        var character = m_Player.Value.Character;
         if (nextState == State.Playing) {
             // reset to flower
             m_Recording.Play();

@@ -88,7 +88,7 @@ sealed class PlayerButterflies: MonoBehaviour {
         // and add the next character's collider / land event subscription
         if (curr) {
             m_AmbientSystem.trigger.AddCollider(curr.Collider);
-            m_OnLand = curr.Character.Events.Subscribe(CharacterEvent.Land, OnCharacterLand);
+            m_OnLand = curr.Events.Subscribe(CharacterEvent.Land, OnCharacterLand);
         }
     }
 
@@ -122,8 +122,8 @@ sealed class PlayerButterflies: MonoBehaviour {
         }
 
         // get state
-        var prev = chr.Character.State.Prev;
-        var curr = chr.Character.State.Curr;
+        var prev = chr.State.Prev;
+        var curr = chr.State.Curr;
 
         // if the character is moving fast enough, release the butterflies
         // THOUGHT: this could happen on any air -> surface transition, not just landing on a "ground"

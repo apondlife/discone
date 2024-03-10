@@ -82,7 +82,8 @@ public class OnlineInterest: InterestManagement {
         // characters that some player is interested in.
         if (m_SimulatedChanged) {
             foreach (var character in m_Entities.Value.Characters.All) {
-                character.SyncSimulation(m_SimulatedCharacters.Contains(character.netId));
+                var online = character.Online;
+                online.SyncSimulation(m_SimulatedCharacters.Contains(online.netId));
             }
 
             m_SimulatedChanged = false;
@@ -192,7 +193,7 @@ public class OnlineInterest: InterestManagement {
         CharacterInterest interest,
         PlayerInterest player
     ) {
-        var character = interest.Object;
+        var character = interest.Object.Character;
 
         // track is interesting so we can run add the character to a set as a
         // side effect
@@ -210,7 +211,8 @@ public class OnlineInterest: InterestManagement {
         }
         // if the player has no character, it might be looking for an initial one
         else if (player.Object.Character == null) {
-            isInteresting = character.IsInitial;
+            // AAA: stale?
+            isInteresting = character.Online.IsInitial;
         }
         // if the character is visible
         else {
@@ -303,7 +305,7 @@ public class OnlineInterest: InterestManagement {
             // create the interest
             if (identity.GetComponent<OnlinePlayer>() is OnlinePlayer p) {
                 interest = new PlayerInterest(p);
-            } else if (identity.GetComponent<DisconeCharacter>() is DisconeCharacter c) {
+            } else if (identity.GetComponent<Character_Online>() is Character_Online c) {
                 interest = new CharacterInterest(c);
             } else if (identity.GetComponent<CharacterFlower>() is CharacterFlower f) {
                 interest = new FlowerInterest(f);
@@ -368,10 +370,10 @@ public class OnlineInterest: InterestManagement {
     }
 
     /// a character of interest
-    sealed class CharacterInterest: Interest<DisconeCharacter> {
+    sealed class CharacterInterest: Interest<Character_Online> {
         // -- Interest --
         public override bool IsStatic => false;
-        public CharacterInterest(DisconeCharacter c) : base(c) {}
+        public CharacterInterest(Character_Online c) : base(c) {}
     }
 
     /// a flower of interest

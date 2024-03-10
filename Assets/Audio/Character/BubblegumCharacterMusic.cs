@@ -70,7 +70,7 @@ public sealed class BubblegumCharacterMusic: CharacterMusicBase {
         base.Start();
 
         //  set events
-        m_Container.Character.Events.Subscribe(CharacterEvent.Jump, PlayJump);
+        m_Container.Events.Subscribe(CharacterEvent.Jump, PlayJump);
 
         // set props
         m_Key = new Key(m_Root);

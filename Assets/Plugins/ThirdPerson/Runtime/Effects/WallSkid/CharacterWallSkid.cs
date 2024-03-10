@@ -21,7 +21,7 @@ sealed class CharacterWallSkid: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         // set container
-        this.c = GetComponentInParent<CharacterContainer>();
+        c = GetComponentInParent<CharacterContainer>();
     }
 
     void FixedUpdate() {

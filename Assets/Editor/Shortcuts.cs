@@ -26,7 +26,7 @@ public sealed class Shortcuts: EditorWindow {
     string m_Query = "";
 
     /// the manually selected character
-    DisconeCharacter m_Character;
+    Character m_Character;
 
     /// the repaint timer
     EaseTimer m_Repaint = new EaseTimer(1f / 60f);
@@ -73,7 +73,7 @@ public sealed class Shortcuts: EditorWindow {
 
     // -- ui --
     /// draw the character shortcuts
-    void DrawView(DisconeCharacter character) {
+    void DrawView(Character character) {
         if (position.width >= (S.Margin + S.ColumnWidth) * 2 * S.Spacing) {
             DrawViewHorizontal(character);
         } else {
@@ -82,13 +82,13 @@ public sealed class Shortcuts: EditorWindow {
     }
 
     /// draw the vertical layout
-    void DrawViewVertical(DisconeCharacter character) {
+    void DrawViewVertical(Character character) {
         m_ScrollPos = L.BS(m_ScrollPos);
             L.BV(S.Margins, G.MaxWidth(S.ColumnWidth));
                 DrawCharacterSearch(character);
 
                 // show the state ui
-                if (m_Character != null) {
+                if (character) {
                     L.HR();
                     E.Space(S.Spacing, false);
 
@@ -99,14 +99,14 @@ public sealed class Shortcuts: EditorWindow {
     }
 
     /// draw the horizontal layout
-    void DrawViewHorizontal(DisconeCharacter character) {
+    void DrawViewHorizontal(Character character) {
         L.BH(S.Margins);
             L.BV(G.MaxWidth(S.ColumnWidth));
                 DrawCharacterSearch(character);
             L.EV();
 
             // show the state ui
-            if (m_Character != null) {
+            if (character) {
                 E.Space(S.Spacing, false);
 
                 m_ScrollPos = L.BS(m_ScrollPos);
@@ -119,17 +119,17 @@ public sealed class Shortcuts: EditorWindow {
     }
 
     /// draw the character input and child search
-    void DrawCharacterSearch(DisconeCharacter character) {
+    void DrawCharacterSearch(Character character) {
         // show current or selected character
         E.LabelField(
             "current character",
             EditorStyles.boldLabel
         );
 
-        m_Character = (DisconeCharacter)E.ObjectField(
+        m_Character = (Character)E.ObjectField(
             "character",
             character ?? m_Character,
-            typeof(DisconeCharacter),
+            typeof(Character),
             allowSceneObjects: true
         );
 
@@ -167,8 +167,8 @@ public sealed class Shortcuts: EditorWindow {
     }
 
     /// draw the character's current state
-    void DrawCharacterState(DisconeCharacter character) {
-        var state = new SerializedObject(m_Character)
+    void DrawCharacterState(Character character) {
+        var state = new SerializedObject(character.Online)
             .FindProperty("m_RemoteState");
 
         E.PropertyField(state);

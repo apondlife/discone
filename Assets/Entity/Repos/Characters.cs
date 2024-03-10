@@ -21,7 +21,7 @@ public sealed class Characters: MonoBehaviour {
 
     // -- props --
     /// the list of characters
-    HashSet<DisconeCharacter> m_All = new HashSet<DisconeCharacter>();
+    HashSet<Character> m_All = new HashSet<Character>();
 
     /// the set of driven characters (hash codes)
     HashSet<int> m_Driven = new HashSet<int>();
@@ -45,30 +45,29 @@ public sealed class Characters: MonoBehaviour {
 
     // -- queries -
     /// the list of all characters
-    public IEnumerable<DisconeCharacter> All {
+    public IEnumerable<Character> All {
         get => m_All;
     }
 
     /// the list of simulating characters
-    public IEnumerable<DisconeCharacter> Simulating {
-        get => m_All.Where((c) => c.IsSimulating);
+    public IEnumerable<Character> Simulating {
+        get => m_All.Where((c) => c.Online.IsSimulating);
     }
 
     /// find an available character to play
-    public DisconeCharacter FindInitialCharacter() {
+    public Character FindInitialCharacter() {
         var all = m_All;
 
         // use debug characters if available, otherwise the first initial character
         var sets = new[] {
             #if UNITY_EDITOR
-            all.Where(c => c.IsDebug),
+            all.Where(c => c.Online.IsDebug),
             #endif
-            all.Where(c => c.IsAvailable && c.IsInitial)
+            all.Where(c => c.Online.IsAvailable && c.Online.IsInitial)
         };
 
         var available = sets
-            .Where((cs) => cs.Any())
-            .First()
+            .First(cs => cs.Any())
             .ToArray();
 
         // pick a random character from the list
@@ -78,18 +77,18 @@ public sealed class Characters: MonoBehaviour {
     }
 
     /// if the character is driven
-    public bool IsDriven(DisconeCharacter character) {
+    public bool IsDriven(Character character) {
         return m_Driven.Contains(character.GetHashCode());
     }
 
     // -- events --
     /// when a character spawns
-    void OnSpawnedCharacter(DisconeCharacter character) {
+    void OnSpawnedCharacter(Character character) {
         m_All.Add(character);
     }
 
     /// when a character is destroyed
-    void OnDestroyedCharacter(DisconeCharacter character) {
+    void OnDestroyedCharacter(Character character) {
         m_All.Remove(character);
     }
 

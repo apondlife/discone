@@ -33,7 +33,7 @@ public sealed class CharacterDialogue: MonoBehaviour {
 
     // -- props --
     // the parent character
-    DisconeCharacter m_Character;
+    Character m_Character;
 
     /// if this character is currently talkable
     bool m_IsTalkable;
@@ -41,7 +41,7 @@ public sealed class CharacterDialogue: MonoBehaviour {
     // -- lifecycle --
     void Start() {
         // get parent
-        m_Character = GetComponentInParent<DisconeCharacter>();
+        m_Character = GetComponentInParent<Character>();
 
         // TODO: do in prefab
         if (m_TalkIndicator) {

@@ -185,7 +185,7 @@ public sealed class Store: ScriptableObject {
 
     /// find a reference to the current player
     /// TOOD: caching???
-    DisconeCharacter FindPlayerCharacter() {
+    Character FindPlayerCharacter() {
         return GameObject
             .FindObjectOfType<Player>()
             .Character;

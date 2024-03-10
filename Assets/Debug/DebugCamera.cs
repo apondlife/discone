@@ -113,7 +113,7 @@ sealed class DebugCamera: MonoBehaviour {
 
     /// move the current character the camera position
     void MoveToDebugCamera() {
-        var character = m_Player.Value.Character.Character;
+        var character = m_Player.Value.Character;
 
         // build frame at camera position
         var nextFrame = character.State.Curr.Copy();

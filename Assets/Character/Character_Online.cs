@@ -1,33 +1,20 @@
-﻿using Mirror;
+using System;
+using Mirror;
 using System.Linq;
 using ThirdPerson;
-using UnityAtoms;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Discone {
-    /// an online character
-[RequireComponent(typeof(Character))]
-[RequireComponent(typeof(CharacterCheckpoint))]
-[RequireComponent(typeof(CharacterWrap))]
-public sealed class DisconeCharacter: NetworkBehaviour {
-    // -- types --
-    /// how the character is simulated on the client
-    public enum Simulation {
-        None, // no simulation
-        Remote, // state is received from the server and extrapolated naively
-        Local // state is being simulated locally and sent to the server
-    }
 
-    // -- id --
-    [Header("id")]
-    [Tooltip("the character's key")]
-    [SerializeField] CharacterKey m_Key;
+/// an online character
+[RequireComponent(typeof(Character))]
+public sealed class Character_Online: NetworkBehaviour {
+    // -- types --
 
     // -- state --
     [Header("state")]
     [Tooltip("where the simulation for this character takes place")]
-    [SerializeField] Simulation m_Simulation = Simulation.None;
+    [SerializeField] CharacterSimulation m_Simulation = CharacterSimulation.None;
 
     [Tooltip("if the character is can be selected initially")]
     [SerializeField] bool m_IsInitial;
@@ -50,33 +37,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     [Tooltip("how long does the character take to interpolate to the current received state")]
     [SerializeField] float m_InterpolationTime = 0.2f;
 
-    [Header("published")]
-    [Tooltip("the character spawning event")]
-    [FormerlySerializedAs("m_Spawned")]
-    [SerializeField] DisconeCharacterEvent m_SpawnedCharacter;
-
-    [Tooltip("the character being destroyed event")]
-    [FormerlySerializedAs("m_Destroyed")]
-    [SerializeField] DisconeCharacterEvent m_DestroyedCharacter;
-
     // -- props --
-    /// if the character is simulating
-    bool m_IsPerceived;
-
     /// the underlying character
     Character m_Character;
-
-    /// the music
-    CharacterMusicBase m_Musics;
-
-    /// the dialogue
-    CharacterDialogue m_Dialogue;
-
-    /// the checkpoint spawner
-    CharacterCheckpoint m_Checkpoint;
-
-    /// the trigger collider
-    Collider m_Collider;
 
     /// the list of simulated children
     GameObject[] m_Simulated;
@@ -88,14 +51,12 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     /// the interpolated character state frame;
     CharacterState.Frame m_InterpolatedState;
 
+    public Action<CharacterSimulation> OnSimulationChanged;
+
     // -- lifecycle --
     void Awake() {
         // set props
-        m_Character = GetComponent<Discone.Character>();
-        m_Musics = GetComponentInChildren<CharacterMusicBase>(true);
-        m_Dialogue = GetComponentInChildren<CharacterDialogue>(true);
-        m_Checkpoint = GetComponent<CharacterCheckpoint>();
-        m_Collider = GetComponent<Collider>();
+        m_Character = GetComponent<Character>();
 
         // cache list of simulated children -- anything that's active in the prefab
         // TODO: this is for the camera, it's hacky right now
@@ -105,22 +66,12 @@ public sealed class DisconeCharacter: NetworkBehaviour {
             .ToArray();
 
         // default to not simulating (note, this relies on the above default values being)
-        SetSimulation(Simulation.None);
-
-        // debug
-        #if UNITY_EDITOR
-        Dbg.AddToParent("Characters", this);
-        #endif
-    }
-
-    void Start() {
-        // send spawned event
-        m_SpawnedCharacter.Raise(this);
+        SetSimulation(CharacterSimulation.None);
     }
 
     void FixedUpdate() {
         // if we simulate this character, send its state to all clients
-        if (m_Simulation == Simulation.Local) {
+        if (m_Simulation == CharacterSimulation.Local) {
             SendState();
         }
         // otherwise, if the simulation is remote and we're a client, interpolate
@@ -152,13 +103,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
 
     void OnDisable() {
         SyncSimulation(false);
-    }
-
-    void OnDestroy() {
-        OnSimulationChanged = null;
-
-        // send destroyed event
-        m_DestroyedCharacter.Raise(this);
     }
 
     // -- l/mirror
@@ -194,11 +138,6 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     // -- commands --
-    /// manually plant a flower at a checkpoint
-    public void PlantFlower(Checkpoint checkpoint) {
-        m_Checkpoint.CreateCheckpoint(checkpoint);
-    }
-
     /// send state from client -> server, if necessary
     void SendState() {
         // if we don't have authority, do nothing
@@ -227,9 +166,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         // simulate locally if owner, remotely otherwise
         var active = simulate && netIdentity.netId != 0;
         var simulation = (active, netIdentity.IsOwner()) switch {
-            (false, _) => Simulation.None,
-            (_, true) => Simulation.Local,
-            (_, false) => Simulation.Remote,
+            (false, _) => CharacterSimulation.None,
+            (_, true) => CharacterSimulation.Local,
+            (_, false) => CharacterSimulation.Remote,
         };
 
         // only set if changed
@@ -239,12 +178,12 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     /// force the simulation state; this has a bunch of side-effects, call it cautiously
-    void SetSimulation(Simulation simulation) {
+    void SetSimulation(CharacterSimulation simulation) {
         // update state
         m_Simulation = simulation;
 
         // if the character is simulated at all
-        var isSimulated = simulation != Simulation.None;
+        var isSimulated = simulation != CharacterSimulation.None;
 
         // pause when not simulated at all
         // TODO: if extrapolating might not need to simulate locally at all
@@ -260,11 +199,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         }
 
         // if not remote any more, clear interpolated state
-        if (simulation != Simulation.Remote) {
+        if (simulation != CharacterSimulation.Remote) {
             m_InterpolatedState = null;
         }
 
-        OnSimulationChanged?.Invoke(m_Simulation);
+        OnSimulationChanged?.Invoke(simulation);
     }
 
     // -- c/server
@@ -299,16 +238,11 @@ public sealed class DisconeCharacter: NetworkBehaviour {
     }
 
     // -- events --
-    /// when the perceived state changes
-    public delegate void SimulationChangedEvent(Simulation sim);
-
-    public SimulationChangedEvent OnSimulationChanged;
-
     // -- e/client
     /// when the client receives new state from the server
     [Client]
     void Client_OnStateReceived(CharacterState.Frame prev, CharacterState.Frame next) {
-        if (m_Simulation != Simulation.Remote) {
+        if (m_Simulation != CharacterSimulation.Remote) {
             return;
         }
 
@@ -322,19 +256,10 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         }
     }
 
-    // -- e/drive
-    /// start driving this character
-    public void OnDrive() {
-    }
-
-    /// release this character
-    public void OnRelease() {
-    }
-
     // -- queries --
-    /// the character's key
-    public CharacterKey Key {
-        get => m_Key;
+    /// the Character
+    public Character Character {
+        get => m_Character;
     }
 
     /// if this character is available
@@ -347,45 +272,9 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         get => m_IsInitial;
     }
 
-    /// the character's current position
-    public Vector3 Position {
-        get => m_RemoteState.Position;
-    }
-
     /// if the character is simulating
     public bool IsSimulating {
-        get => m_Simulation != Simulation.None;
-    }
-
-    // AAA: merge this with DisconeCharacter
-    /// the third person character
-    public Character Character {
-        get => m_Character;
-    }
-
-    /// the music
-    public CharacterMusicBase Music {
-        get => m_Musics;
-    }
-
-    /// the character dialogue
-    public CharacterDialogue Dialogue {
-        get => m_Dialogue;
-    }
-
-    /// the checkpoint spawner
-    public CharacterCheckpoint Checkpoint {
-        get => m_Checkpoint;
-    }
-
-    /// the character's flower
-    public CharacterFlower Flower {
-        get => m_Checkpoint.Flower;
-    }
-
-    /// the character's trigger collider
-    public Collider Collider {
-        get => m_Collider;
+        get => m_Simulation != CharacterSimulation.None;
     }
 
     // -- q/debug
@@ -395,27 +284,5 @@ public sealed class DisconeCharacter: NetworkBehaviour {
         get => m_IsDebug;
     }
     #endif
-
-    // -- factories --
-    /// instantiate a rec from a character
-    public CharacterRec IntoRecord() {
-        // if the position is zero, don't save this record
-        // HACK: bit of a hack. not sure why the remote state get set to zero in
-        // some situations, like when shutting down immediately after disconnect.
-        // mirror zero-ing out sync vars for some reason?
-        var pos = m_RemoteState.Position;
-        if (pos == Vector3.zero) {
-            Debug.LogWarning($"[chrctr] {name} - tried to save character w/ a zero-position");
-            return null;
-        }
-
-        return new CharacterRec(
-            Key,
-            pos,
-            m_RemoteState.LookRotation,
-            m_Checkpoint.IntoRecord()
-        );
-    }
 }
-
 }

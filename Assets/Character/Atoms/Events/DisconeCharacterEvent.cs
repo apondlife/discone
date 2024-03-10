@@ -8,7 +8,7 @@ namespace UnityAtoms
     /// </summary>
     [EditorIcon("atom-icon-cherry")]
     [CreateAssetMenu(menuName = "Unity Atoms/Events/DisconeCharacter", fileName = "DisconeCharacterEvent")]
-    public sealed class DisconeCharacterEvent : AtomEvent<DisconeCharacter>
+    public sealed class DisconeCharacterEvent : AtomEvent<Character>
     {
     }
 }

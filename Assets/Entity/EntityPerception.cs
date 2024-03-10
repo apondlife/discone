@@ -20,10 +20,10 @@ sealed class EntityPerception: MonoBehaviour {
     float m_MaxTalkingDist;
 
     /// the player's last character
-    DisconeCharacter m_PrevCharacter;
+    Character m_PrevCharacter;
 
     /// the last talkable character
-    DisconeCharacter m_PrevTalkable;
+    Character m_PrevTalkable;
 
     // -- lifecycle --
     void Awake() {
@@ -41,7 +41,7 @@ sealed class EntityPerception: MonoBehaviour {
 
         // if we don't have a player character, there's nothing to perceive
         var player = players.Current;
-        if (player == null) {
+        if (!player) {
             return;
         }
 
@@ -50,13 +50,13 @@ sealed class EntityPerception: MonoBehaviour {
         var playerCharacter = player.Character;
 
         // set initial prev character once
-        if (m_PrevCharacter == null) {
+        if (!m_PrevCharacter) {
             m_PrevCharacter = playerCharacter;
         }
 
         // we can only talk to one character at a time, not ourselves, and
         // whoever is closest
-        var talkable = (DisconeCharacter)null;
+        var talkable = (Character)null;
         var talkableDist = float.MaxValue;
 
         // if we just switched, don't try to talk to our old character
@@ -125,11 +125,11 @@ sealed class EntityPerception: MonoBehaviour {
         }
 
         // step 3: update talkability of nearest character (and previous, if changed)
-        if (talkable != null) {
+        if (talkable) {
             talkable.Dialogue.SetIsTalkable(true);
         }
 
-        if (m_PrevTalkable != null && talkable != m_PrevTalkable) {
+        if (m_PrevTalkable && talkable != m_PrevTalkable) {
             m_PrevTalkable.Dialogue.SetIsTalkable(false);
         }
 

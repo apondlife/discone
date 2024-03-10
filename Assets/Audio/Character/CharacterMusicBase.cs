@@ -6,7 +6,7 @@ public abstract class CharacterMusicBase: MonoBehaviour {
     // -- props --
     /// the containing DisconeCharacter
     // TODO: inject this better in the future (parent call these events)
-    protected DisconeCharacter m_Container;
+    protected Character m_Container;
 
     /// if the music is audible
     bool m_IsAudible = false;
@@ -15,7 +15,7 @@ public abstract class CharacterMusicBase: MonoBehaviour {
     #if !UNITY_SERVER
     protected virtual void Start() {
         // set deps
-        m_Container = GetComponentInParent<DisconeCharacter>();
+        m_Container = GetComponentInParent<Character>();
     }
     #endif
 
@@ -35,7 +35,7 @@ public abstract class CharacterMusicBase: MonoBehaviour {
     }
 
     protected ThirdPerson.CharacterState State {
-        get => m_Container?.Character?.State;
+        get => m_Container?.State;
     }
 
     public bool HasCharacter {

@@ -30,16 +30,22 @@ public class Player<InputFrame>: MonoBehaviour, PlayerContainer
     [SerializeField] UnityEvent<Character<InputFrame>> m_OnDriveStop;
 
     // -- lifecycle --
-    void Start() {
+    protected virtual void Awake() {
+    }
+
+    protected virtual void Start() {
         if (m_Character) {
             Drive(m_Character);
         }
     }
 
-    void Update() {
+    protected virtual void Update() {
         if (m_Character) {
             SyncCharacter();
         }
+    }
+
+    protected virtual void OnDestroy() {
     }
 
     // -- commands --

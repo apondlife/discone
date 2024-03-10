@@ -42,7 +42,9 @@ public sealed class Player: Player<InputFrame> {
     DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
+
         // this is the current player
         m_Current.Value = this;
 
@@ -56,13 +58,15 @@ public sealed class Player: Player<InputFrame> {
             .Add(m_Store.LoadFinished, OnStoreLoadFinished);
     }
 
-    void Update() {
+    protected override void Update() {
+        base.Update();
+
         // update global shader character pos
         var characterPos = Vector3.zero;
 
         // use the current character's position
         var character = m_CurrentCharacter.Value;
-        if (character != null) {
+        if (character) {
             characterPos = character.Position;
         }
 
@@ -74,14 +78,16 @@ public sealed class Player: Player<InputFrame> {
         }
     }
 
-    void OnDestroy() {
+    protected override void OnDestroy() {
+        base.OnDestroy();
+
         // unbind events
         m_Subscriptions.Dispose();
     }
 
     // -- queries --
     /// the character
-    public DisconeCharacter Character {
+    public Character Character {
         get => m_CurrentCharacter.Value;
     }
 
@@ -107,12 +113,6 @@ public sealed class Player: Player<InputFrame> {
 
     /// when the player starts driving a character
     void OnDriveCharacter(DisconeCharacterPair characters) {
-        var prev = characters.Item2;
-        prev?.OnRelease();
-
-        var curr = characters.Item1;
-        curr?.OnDrive();
-
         // set ready on first drive
         if (!m_IsReady.Value) {
             m_IsReady.Value = true;

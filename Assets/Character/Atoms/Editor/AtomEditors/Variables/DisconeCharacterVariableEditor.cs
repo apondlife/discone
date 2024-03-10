@@ -7,5 +7,5 @@ namespace UnityAtoms.Editor
     /// Variable Inspector of type `DisconeCharacter`. Inherits from `AtomVariableEditor`
     /// </summary>
     [CustomEditor(typeof(DisconeCharacterVariable))]
-    public sealed class DisconeCharacterVariableEditor : AtomVariableEditor<DisconeCharacter, DisconeCharacterPair> { }
+    public sealed class DisconeCharacterVariableEditor : AtomVariableEditor<Character, DisconeCharacterPair> { }
 }

@@ -116,7 +116,7 @@ sealed class DreamSequence: MonoBehaviour {
         m_Subscriptions
             .Add(checkpoint.OnCreate, OnCreateCheckpoint);
 
-        character.Character.Events
+        character.Events
             .Once(CharacterEvent.Move, OnCharacterMove);
     }
 

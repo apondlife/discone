@@ -8,9 +8,9 @@ namespace UnityAtoms
     /// </summary>
     [EditorIcon("atom-icon-lush")]
     [CreateAssetMenu(menuName = "Unity Atoms/Variables/DisconeCharacter", fileName = "DisconeCharacterVariable")]
-    public sealed class DisconeCharacterVariable : AtomVariable<DisconeCharacter, DisconeCharacterPair, DisconeCharacterEvent, DisconeCharacterPairEvent, DisconeCharacterDisconeCharacterFunction>
+    public sealed class DisconeCharacterVariable : AtomVariable<Character, DisconeCharacterPair, DisconeCharacterEvent, DisconeCharacterPairEvent, DisconeCharacterDisconeCharacterFunction>
     {
-        protected override bool ValueEquals(DisconeCharacter other)
+        protected override bool ValueEquals(Character other)
         {
             return Value == other;
         }

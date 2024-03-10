@@ -21,7 +21,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("this player's current character")]
-    [SerializeField] DisconeCharacter m_Character;
+    [SerializeField] Character m_Character;
 
     [Tooltip("the number of connected players")]
     [SerializeField] IntVariable m_PlayerCount;
@@ -86,7 +86,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     void Update() {
-        if (m_Character != null) {
+        if (m_Character) {
             transform.position = m_Character.transform.position;
         }
     }
@@ -154,12 +154,14 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
         // TODO: character spawns exactly in the ground, and because of chunk
         // delay it ends up falling through the ground
-        var offset = 1.0f;
-        var dstCharacter = Instantiate(
+        const float offset = 1.0f;
+        var newCharacter = Instantiate(
             prefab,
             character.Pos + Vector3.up * offset,
             character.Rot
         );
+
+        var dstCharacter = newCharacter.Online;
 
         // we need to set the character here before calling Spawn because Spawn
         // calls the interest management and that uses the player position
@@ -168,7 +170,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // Server_DriveCharacter instead of Server_SwitchCharacter and have
         // fewer code paths
         var src = m_Character?.gameObject;
-        m_Character = dstCharacter;
+        m_Character = newCharacter;
 
         #if UNITY_EDITOR
         dstCharacter.name = $"{character.Key.Name()} <spawned@{connectionToClient.connectionId}>";
@@ -183,7 +185,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
         // place the character's flower, if any
         if (character.Flower != null) {
-            dstCharacter.Checkpoint.Server_CreateCheckpoint(character.Flower);
+            // TODO: should this be event?
+            newCharacter.Checkpoint.Server_CreateCheckpoint(character.Flower);
         }
     }
 
@@ -193,7 +196,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // find any available character
         var character = m_Entities.Value
             .Characters
-            .FindInitialCharacter();
+            .FindInitialCharacter()
+            .Online;
 
         // drive the initial character
         Server_DriveCharacter(character);
@@ -201,13 +205,13 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     /// drive a new character
     [Command]
-    void Command_DriveCharacter(DisconeCharacter dstChar) {
+    void Command_DriveCharacter(Character_Online dstChar) {
         Server_DriveCharacter(dstChar);
     }
 
     /// drive a new character
     [Server]
-    void Server_DriveCharacter(DisconeCharacter dstChar) {
+    void Server_DriveCharacter(Character_Online dstChar) {
         // ensure we have a destination character
         if (dstChar == null) {
             Debug.LogError(Tag.Player.F($"cannot drive a null character"));
@@ -230,12 +234,13 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     /// request to switch the character
     [Server]
     void Server_SwitchCharacter(GameObject src, GameObject dst) {
-        var srcCharacter = src?.GetComponent<DisconeCharacter>();
-        var dstCharacter = dst.GetComponent<DisconeCharacter>();
+        var srcCharacter = src?.GetComponent<Character_Online>();
+        var dstCharacter = dst.GetComponent<Character_Online>();
 
         // if the server doesn't have authority over this character, another player
         // already does
         if (!dstCharacter.IsAvailable) {
+            /// AAA: stale?
             Target_RetrySwitchCharacter(connectionToClient, isInitial: src == null);
             return;
         }
@@ -252,7 +257,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         Target_SwitchCharacter(connectionToClient, dst);
 
         // notify all clients of ownership change
-        m_Character = dstCharacter;
+        m_Character = dstCharacter.Character;
         Client_ChangeOwnership(dstCharacter.gameObject);
     }
 
@@ -267,7 +272,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // and the character exists
-        var character = dst.GetComponent<DisconeCharacter>();
+        var character = dst.GetComponent<Character>();
         if (character == null || !character.enabled) {
             Debug.Assert(false, Tag.Player.F($"missing character"));
             return;
@@ -275,7 +280,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
         // drive the new character character
         m_LocalCharacter.Value = character;
-        player.Drive(character.Character);
+        player.Drive(character);
     }
 
     /// try to switch to a new character
@@ -292,7 +297,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     void Client_ChangeOwnership(GameObject character) {
         // change character
         var prev = m_Character;
-        var next = character.GetComponent<DisconeCharacter>();
+        var next = character.GetComponent<Character>();
         m_Character = next;
 
         // publish event
@@ -304,13 +309,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     // -- queries --
     /// the player's current character
-    public DisconeCharacter Character {
+    public Character Character {
         get => m_Character;
-    }
-
-    /// the player's current position
-    public Vector3 Position {
-        get => m_Character.Position;
     }
 
     /// the world coordinate
@@ -321,7 +321,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     // -- events --
     /// when the character should switch
     void OnSwitchCharacter(GameObject obj) {
-        var character = obj.GetComponent<DisconeCharacter>();
+        var character = obj.GetComponent<Character_Online>();
         Command_DriveCharacter(character);
     }
 
@@ -351,8 +351,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         }
 
         // release this player's character when they disconnect
-        if (m_Character != null) {
-            m_Character.Server_RemoveClientAuthority();
+        if (m_Character) {
+            m_Character.Online.Server_RemoveClientAuthority();
         }
     }
 }

@@ -32,7 +32,7 @@ public class CheckpointLoadBubble: MonoBehaviour {
 
     // -- props --
     /// the character
-    DisconeCharacter m_Character;
+    Character m_Character;
 
     /// the bubble renderer
     Renderer m_Renderer;
@@ -49,7 +49,7 @@ public class CheckpointLoadBubble: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         // set props
-        m_Character = GetComponentInParent<DisconeCharacter>();
+        m_Character = GetComponentInParent<Character>();
         m_Renderer = GetComponent<Renderer>();
         m_Material = m_Renderer.material;
         m_BaseScale = transform.localScale;

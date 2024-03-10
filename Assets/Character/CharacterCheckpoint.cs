@@ -9,7 +9,7 @@ namespace Discone {
 
 /// the character's ability to save and reload to a particular state in
 /// the world, like planting a flag.
-[RequireComponent(typeof(DisconeCharacter))]
+[RequireComponent(typeof(Character))]
 public class CharacterCheckpoint: NetworkBehaviour {
     // -- fields --
     [Header("tuning")]
@@ -31,7 +31,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     // -- props --
     /// the character
-    DisconeCharacter m_Container;
+    Character m_Container;
 
     /// the flower at the current checkpoint, if any
     [SyncVar]
@@ -49,7 +49,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
     // -- lifecycle --
     void Awake() {
         // set deps
-        m_Container = GetComponent<DisconeCharacter>();
+        m_Container = GetComponent<Character>();
     }
 
     void Start() {
@@ -61,7 +61,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
         foreach (var system in m_Systems) {
             system.Init(
-                m_Container.Character.State,
+                m_Container.State,
                 m_Container.Checkpoint
             );
         }
@@ -88,12 +88,12 @@ public class CharacterCheckpoint: NetworkBehaviour {
             return;
         }
 
-        if (m_Container == null) {
-            Debug.LogError($"[chrctr] {name} - started server w/ no container!");
+        if (!m_Container) {
+            Log.Charss.E($"{name} - started server w/ no container");
             return;
         }
 
-        m_Container.OnSimulationChanged += Server_OnSimulationChanged;
+        m_Container.Online.OnSimulationChanged += Server_OnSimulationChanged;
     }
 
     // -- commands --
@@ -200,8 +200,8 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     // -- events --
     [Server]
-    void Server_OnSimulationChanged(DisconeCharacter.Simulation sim) {
-        if (sim == DisconeCharacter.Simulation.None || m_Flower != null) {
+    void Server_OnSimulationChanged(CharacterSimulation sim) {
+        if (sim == CharacterSimulation.None || m_Flower != null) {
             return;
         }
 
@@ -210,7 +210,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         // TODO: "floating flowers" maybe this should happen when character is first looked at
 
         // maybe there's an AI
-        m_Container.Character.Events.Once(CharacterEvent.Idle, () => {
+        m_Container.Events.Once(CharacterEvent.Idle, () => {
             if (m_Flower != null) {
                 return;
             }
@@ -241,7 +241,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// a reference to the character
     public Character Character {
-        get => m_Container.Character;
+        get => m_Container;
     }
 
     /// an event when the checkpoint is created

@@ -99,7 +99,7 @@ sealed class IntroSequence: MonoBehaviour {
         m_FinishDelay.Tick();
 
         // we want the character to be able to move after the timer is complete
-        if (m_FinishDelay.IsComplete && !m_CurrentCharacter.Value.Character.State.IsIdle) {
+        if (m_FinishDelay.IsComplete && !m_CurrentCharacter.Value.State.IsIdle) {
             Finish();
         }
     }
@@ -162,10 +162,10 @@ sealed class IntroSequence: MonoBehaviour {
         // HACK: do this better later this is so that the follow camera points
         // towards a different direction then ice creams orientation
         // set initial character state
-        var initialState = character.Character.State.Curr.Copy();
+        var initialState = character.State.Curr.Copy();
         initialState.Position = m_InitialTransform.position;
         initialState.Forward = m_InitialTransform.forward;
-        character.Character.ForceState(initialState);
+        character.ForceState(initialState);
 
         // TODO: plant flower somewhere in the initial shot
         character.PlantFlower(Checkpoint.FromState(initialState));
