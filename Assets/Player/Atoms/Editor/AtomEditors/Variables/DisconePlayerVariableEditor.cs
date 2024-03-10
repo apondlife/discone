@@ -8,5 +8,5 @@ namespace UnityAtoms.Editor
     /// Variable Inspector of type `DisconePlayer`. Inherits from `AtomVariableEditor`
     /// </summary>
     [CustomEditor(typeof(DisconePlayerVariable))]
-    public sealed class DisconePlayerVariableEditor : AtomVariableEditor<DisconePlayer, DisconePlayerPair> { }
+    public sealed class DisconePlayerVariableEditor : AtomVariableEditor<Player, DisconePlayerPair> { }
 }

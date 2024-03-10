@@ -54,7 +54,7 @@ sealed class DreamSequenceTrigger: MonoBehaviour {
     // -- queries --
     /// if the collider is the current player
     static bool IsPlayer(Collider other) {
-        var player = other.GetComponentInParent<DisconePlayer>();
+        var player = other.GetComponentInParent<Player>();
         return player && player.Character;
     }
 

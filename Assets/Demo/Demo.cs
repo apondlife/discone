@@ -102,7 +102,7 @@ public class Demo: MonoBehaviour {
 
         if (nextState == State.Inactive) {
             m_Recording.Pause();
-            character.Drive(m_Player.Value.Player.InputSource);
+            character.Drive(m_Player.Value.InputSource);
         }
 
         m_State = nextState;

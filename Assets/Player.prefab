@@ -5451,26 +5451,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Character: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
   m_LoadCheckpointAction: {fileID: -5483817469226027952, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
---- !u!114 &2226416514684526417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2221735472310936065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a6b8741eb514f3893d97f1951077b76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Character: {fileID: 0}
-  m_InputSource: {fileID: 5521922659202349683}
-  m_OnDriveStart:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnDriveStop:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &3924706523105078006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5483,12 +5463,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2896fe1bec46646a68ead9d88066cbb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Character: {fileID: 0}
+  m_InputSource: {fileID: 5521922659202349683}
+  m_OnDriveStart:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnDriveStop:
+    m_PersistentCalls:
+      m_Calls: []
   m_Current: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
-  m_Character: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
+  m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
   m_IsReady: {fileID: 11400000, guid: 107b7f76817760b45bf4d4762e76b6a4, type: 2}
   m_IsDialogueActiveChanged: {fileID: 11400000, guid: e9934c9706c7948238d271c8498ab275, type: 2}
   m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
-  m_Player: {fileID: 2226416514684526417}
   m_FarClipPlane:
     _usage: 1
     _value: 0

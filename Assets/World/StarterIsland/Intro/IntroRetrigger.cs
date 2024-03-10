@@ -26,7 +26,7 @@ public class IntroRetrigger: MonoBehaviour {
     }
 
     void OnTriggerEnter(Collider other) {
-        var player = other.GetComponentInParent<DisconePlayer>();
+        var player = other.GetComponentInParent<Player>();
         if (player == null || player.Character == null) {
             return;
         }
@@ -41,7 +41,7 @@ public class IntroRetrigger: MonoBehaviour {
     }
 
     void OnTriggerExit(Collider other) {
-        var player = other.GetComponentInParent<DisconePlayer>();
+        var player = other.GetComponentInParent<Player>();
         if (player == null || player.Character == null) {
             return;
         }

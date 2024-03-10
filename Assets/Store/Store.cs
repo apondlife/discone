@@ -187,7 +187,7 @@ public sealed class Store: ScriptableObject {
     /// TOOD: caching???
     DisconeCharacter FindPlayerCharacter() {
         return GameObject
-            .FindObjectOfType<DisconePlayer>()
+            .FindObjectOfType<Player>()
             .Character;
     }
 
