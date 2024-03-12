@@ -95,7 +95,7 @@ public class OnlineInterest: InterestManagement {
     public override void Reset() {
         base.Reset();
 
-        Debug.Log($"[intrst] reset state");
+        Log.Interest.I($"reset state");
 
         m_Interests.Clear();
         m_SimulatedCharacters.Clear();
@@ -293,7 +293,7 @@ public class OnlineInterest: InterestManagement {
         var id = identity.netId;
         if (id == 0) {
             if (!m_HasLoggedNoIdWarning) {
-                Debug.LogWarning("[intrst] identity has not been initialized yet.");
+                Log.Interest.W($"identity has not been initialized yet.");
                 m_HasLoggedNoIdWarning = true;
             }
 
@@ -393,7 +393,7 @@ public class OnlineInterest: InterestManagement {
         var type = c.GetType();
         if (!m_UninterestingTypes.Contains(type)) {
             m_UninterestingTypes.Add(type);
-            Debug.LogWarning($"[intrst] interest in object of unknown type: {c.name}");
+            Log.Interest.W($"interest in object of unknown type: {c.name}");
         }
     }
 #endif

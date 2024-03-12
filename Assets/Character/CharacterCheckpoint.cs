@@ -89,7 +89,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         }
 
         if (!m_Container) {
-            Log.Charss.E($"{name} - started server w/ no container");
+            Log.Character.E($"{name} - started server w/ no container");
             return;
         }
 
@@ -140,7 +140,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
         // if we found one, grab it
         if (flower != null && Vector3.Distance(flower.Checkpoint.Position, pos) < m_GrabRadius) {
-            Debug.Log($"[chkpnt] found flower to grab {flower}");
+            Log.Character.I($"found flower to grab {flower}");
             Server_GrabCheckpoint(flower);
         }
     }

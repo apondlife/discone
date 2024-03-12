@@ -1,7 +1,6 @@
 #nullable enable
 
 using UnityEngine;
-using UnityAtoms.BaseAtoms;
 using System.Linq;
 using System.Collections.Generic;
 

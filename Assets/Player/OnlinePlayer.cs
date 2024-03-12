@@ -2,8 +2,6 @@ using UnityEngine;
 using Mirror;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
-using ThirdPerson;
-using Discone;
 
 namespace Discone {
 
@@ -102,7 +100,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     public override void OnStartLocalPlayer() {
         base.OnStartLocalPlayer();
 
-        Debug.Log(Tag.Player.F($"starting local player"));
+        Log.Player.I($"starting local player");
 
         // bind to local player events
         m_Subscriptions.Add(m_SwitchCharacter, OnSwitchCharacter);
@@ -214,7 +212,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     void Server_DriveCharacter(Character_Online dstChar) {
         // ensure we have a destination character
         if (dstChar == null) {
-            Debug.LogError(Tag.Player.F($"cannot drive a null character"));
+            Log.Player.E($"cannot drive a null character");
             return;
         }
 
@@ -245,7 +243,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             return;
         }
 
-        Debug.Log(Tag.Player.F($"switching from {src?.name ?? "<none>"} to {dst.name}"));
+        Log.Player.I($"switching from {src?.name ?? "<none>"} to {dst.name}");
 
         // give this client authority over the character
         dstCharacter.Server_AssignClientAuthority(connectionToClient);
@@ -267,14 +265,14 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // if the player exists
         var player = m_LocalPlayer.GetComponent<Player>();
         if (player == null || !player.enabled) {
-            Debug.Assert(false, Tag.Player.F($"missing player!"));
+            Log.Player.Fatal($"missing player!");
             return;
         }
 
         // and the character exists
         var character = dst.GetComponent<Character>();
         if (character == null || !character.enabled) {
-            Debug.Assert(false, Tag.Player.F($"missing character"));
+            Log.Player.Fatal($"missing character!");
             return;
         }
 
@@ -331,12 +329,12 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
         // spawn the character, if any
         if (character != null) {
-            Debug.Log(Tag.Player.F($"spawn character {character.Key.Name()} @ {character.Pos}"));
+            Log.Player.I($"spawn character {character.Key.Name()} @ {character.Pos}");
             Command_DriveSpawnedCharacter(character);
         }
         // if there's no record, drive an initial character
         else {
-            Debug.Log(Tag.Player.F($"drive random character"));
+            Log.Player.I($"drive random character");
             SpawnCharacterAtPoint(m_InitialCharacterKey, transform);
         }
     }

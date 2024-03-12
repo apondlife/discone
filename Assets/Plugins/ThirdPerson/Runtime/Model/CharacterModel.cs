@@ -137,7 +137,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
             // disable root motion
             if (m_Animator.applyRootMotion) {
-                Debug.LogWarning("[cmodel] disabled animator root motion, make sure to uncheck this in animator");
+                Log.Model.W($"disabled animator root motion, make sure to uncheck this in animator");
                 m_Animator.applyRootMotion = false;
             }
 
@@ -159,7 +159,7 @@ public sealed class CharacterModel: MonoBehaviour {
             proxy.Bind(OnAnimatorIK);
         } else {
             // destroy ik limbs
-            Debug.LogWarning($"[cmodel] character {m_Container.Name} has no animator, destroying limbs");
+            Log.Model.W($"character {m_Container.Name} has no animator, destroying limbs");
             foreach (Component limb in m_Limbs) {
                 Destroy(limb.gameObject);
             }

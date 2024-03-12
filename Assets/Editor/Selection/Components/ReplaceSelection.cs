@@ -45,7 +45,7 @@ public sealed class ReplaceSelection: EditSelection.Component {
     void Call() {
         // validate args
         if (m_Prefab == null) {
-            Debug.Log($"[editor] must have an object to replace");
+            Log.Editor.I($"must have an object to replace");
             return;
         }
 

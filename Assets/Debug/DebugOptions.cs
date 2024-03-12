@@ -57,7 +57,7 @@ public class DebugOptions: MonoBehaviour {
     // -- commands --
     /// reset the game to its initial state
     void Reset() {
-        Debug.Log("[de-bug] restarting game");
+        Log.Debug.I($"restarting game");
 
         // reset atom variables
         var variables = Resources.FindObjectsOfTypeAll(typeof(AtomBaseVariable));
@@ -97,7 +97,7 @@ public class DebugOptions: MonoBehaviour {
             .Current;
 
         if (player == null) {
-            Debug.LogError($"[de-bug] no player to spawn debug character");
+            Log.Debug.E($"no player to spawn debug character");
             return;
         }
 

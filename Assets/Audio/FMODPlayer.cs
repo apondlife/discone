@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
-
 using FMODUnity;
+
 public class FMODParams : Dictionary<string, float> {}
 
 public struct FMODEvent {
@@ -19,7 +17,7 @@ public static class FMODPlayer {
     public static void PlayEvent(FMODEvent e) {
         // play the event for this note
         if (!e.emitter) {
-            Debug.LogWarning("FMODPlayer.PlayEvent received FMODEvent with no emitter");
+            Discone.Log.Audio.W($"FMODPlayer.PlayEvent received event w/ no emitter");
             return;
         }
 

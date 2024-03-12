@@ -15,10 +15,7 @@ public class BackgroundScroll : MonoBehaviour
     void Start()
     {
         rend = GetComponent<CanvasRenderer>();
-
         img = GetComponent<RawImage>();
-        Debug.Log(rend);
-        
     }
 
     // Update is called once per frame
@@ -27,7 +24,7 @@ public class BackgroundScroll : MonoBehaviour
 
         // float offset = Time.time * scrollSpeed;
 
-        
+
 
         // var mat = rend.GetMaterial();
         // if (mat) {
@@ -38,6 +35,6 @@ public class BackgroundScroll : MonoBehaviour
         float newX = img.uvRect.x + scrollSpeed;
         float newY = img.uvRect.y + scrollSpeed;
         img.uvRect = new Rect(newX, newY, img.uvRect.width, img.uvRect.height);
-        
+
     }
 }

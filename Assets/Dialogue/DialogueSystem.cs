@@ -69,8 +69,8 @@ public class DialogueSystem: MonoBehaviour {
     // -- commands --
     /// start dialogue with a particular character
     void StartDialogue(CharacterDialogue dialogue) {
-        if (dialogue == null) {
-            Debug.LogError(Discone.Tag.Dialog.F($"tried to start dialogue w/ a character w/ no CharacterDialogue"));
+        if (!dialogue) {
+            Log.Dialog.E($"tried to start dialogue w/ a character w/ no CharacterDialogue");
             return;
         }
 
@@ -78,7 +78,7 @@ public class DialogueSystem: MonoBehaviour {
             return;
         }
 
-        Debug.Log(Discone.Tag.Dialog.F($"start dialgoue <{dialogue.NodeTitle}>"));
+        Log.Dialog.I($"start dialogue <{dialogue.NodeTitle}>");
 
         // prepare the dialogue view
         var textbox = ChooseTextbox(dialogue.NodeTitle);
@@ -96,18 +96,18 @@ public class DialogueSystem: MonoBehaviour {
 
     /// advance dialgoue to the next line
     void RunNextLine() {
-        Debug.Log(Discone.Tag.Dialog.F($"advance line <{m_ActiveDialogue.NodeTitle}>"));
+        Log.Dialog.I($"advance line <{m_ActiveDialogue.NodeTitle}>");
         yarnDialogueRunner.OnViewRequestedInterrupt();
     }
 
     /// complete dialgoue with the current character
     void CompleteDialogue() {
         if (m_ActiveDialogue == null) {
-            Debug.LogError(Discone.Tag.Dialog.F($"tried to complete dialogue w/ no active CharacterDialogue"));
+            Log.Dialog.E($"tried to complete dialogue w/ no active CharacterDialogue");
             return;
         }
 
-        Debug.Log(Discone.Tag.Dialog.F($"complete dialogue <{m_ActiveDialogue.NodeTitle}>"));
+        Log.Dialog.I($"complete dialogue <{m_ActiveDialogue.NodeTitle}>");
 
         // complete the active dialgoue
         m_SwitchCharacter.Raise(m_ActiveDialogue.Character);
@@ -134,8 +134,8 @@ public class DialogueSystem: MonoBehaviour {
     // -- events --
     /// when a dialogue node is started
     void OnStartDialogue(GameObject obj) {
-        if (obj == null) {
-            Debug.LogError($"attempting to start dialogue with a destroyed object");
+        if (!obj) {
+            Log.Dialog.E($"attempting to start dialogue with a destroyed object");
             return;
         }
 

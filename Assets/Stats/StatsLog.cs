@@ -1,6 +1,8 @@
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
+namespace Discone {
+
 /// periodically logs stats
 sealed class StatsLog: MonoBehaviour {
     // -- types --
@@ -76,7 +78,7 @@ sealed class StatsLog: MonoBehaviour {
             m_Last.PlayerCount = m_PlayerCount;
 
             // print the log
-            Debug.Log($"[sstats] <{(int)(Time.time % 100.0f)}> fps: {(int)m_Last.Fps} players: {m_Last.PlayerCount}");
+            Log.Online.I($"<{(int)(Time.time % 100.0f)}> fps: {(int)m_Last.Fps} players: {m_Last.PlayerCount}");
 
             // reset time since last lot
             m_MaxPeriod = 0.0f;
@@ -85,4 +87,6 @@ sealed class StatsLog: MonoBehaviour {
         // and reset period
         m_Period = 0.0f;
     }
+}
+
 }

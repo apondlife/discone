@@ -86,7 +86,7 @@ public sealed class Menu: UIBehaviour {
         // find the dialog page
         var dialogPage = m_Pages[m_Pages.Length - 1].GetComponent<DialogPage>();
         if (dialogPage == null) {
-            Debug.LogError("[menuuu] the dialog page was not the last page");
+            Log.Menu.E($"the dialog page was not the last page");
         }
 
         m_DialogPage = dialogPage;

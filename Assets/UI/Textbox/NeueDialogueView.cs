@@ -46,7 +46,6 @@ public class NeueDialogueView : DialogueViewBase
         // the dialogue UI will be laid out
         if (currentLine == null || currentLine.CharacterName != dialogueLine.CharacterName) {
             currentLine = dialogueLine;
-            Debug.Log(dialogueLine.CharacterName);
             //placement = placements[UnityEngine.Random.Range(0, placements.Length - 1)];
             placement = placements[0];
             lineText = placement.lineText;
@@ -79,12 +78,9 @@ public class NeueDialogueView : DialogueViewBase
         //         textColorer.ColorText(lineText, color, attr.Position, attr.Length);
         //     }
         //     // // TEST
-        //     // Debug.Log("TEST");
         //     // TMP_TextInfo textInfo = lineText.textInfo;
         //     // var charInfo = textInfo.characterInfo[attr.Position];
-        //     // Debug.Log(charInfo.character);
         //     // int materialIndex = charInfo.materialReferenceIndex;
-        //     // Debug.Log(textInfo.meshInfo[materialIndex].colors32[charInfo.vertexIndex]);
         // }
 
 
@@ -150,9 +146,6 @@ public class NeueDialogueView : DialogueViewBase
             //c0 = lineText.color;
             c0 = newVertexColors[vertexIndex];
             c0.a = 0;
-
-            Debug.Log(textInfo.characterInfo[i].character);
-            Debug.Log(c0);
 
             newVertexColors[vertexIndex + 0] = c0;
             newVertexColors[vertexIndex + 1] = c0;

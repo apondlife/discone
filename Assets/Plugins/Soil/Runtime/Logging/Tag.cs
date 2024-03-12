@@ -38,6 +38,11 @@ public record Tag {
         Debug.Assert(test, F(message));
     }
 
+    /// assert a failure
+    public void Fatal(string message) {
+        Assert(false, message);
+    }
+
     // -- queries --
     public string F(string message) {
         return $"<color={m_Color}>[{m_Name}]</color> {message}";

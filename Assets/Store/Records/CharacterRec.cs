@@ -1,6 +1,8 @@
 using UnityEngine;
 using System;
 
+namespace Discone {
+
 /// the serialized character state
 [Serializable]
 public record CharacterRec {
@@ -47,4 +49,6 @@ public record CharacterRec {
 
     /// the last flower
     public FlowerRec Flower => F;
+}
+
 }

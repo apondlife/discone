@@ -64,8 +64,6 @@ namespace TMPro.Examples
                     newVertexColors[vertexIndex + 2] = c0;
                     newVertexColors[vertexIndex + 3] = c0;
 
-                    Debug.Log("COLOR: " + textInfo.characterInfo[currentCharacter].character);
-
                     // textInfo.characterInfo[currentCharacter].isVisible = false;
 
                     // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.

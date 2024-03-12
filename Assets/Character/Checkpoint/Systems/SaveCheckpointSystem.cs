@@ -159,7 +159,7 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
 
     void Being_Update(float delta) {
         if (!CanSave) {
-            Debug.Log(Tag.Player.F($"crouch: {m_State.Curr.IsCrouching} idle time {m_State.Curr.IdleTime}"));
+            Log.Player.I($"crouch: {m_State.Curr.IsCrouching} idle time {m_State.Curr.IdleTime}");
             ChangeTo(NotSaving);
             return;
         }

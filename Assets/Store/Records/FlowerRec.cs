@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 
+namespace Discone {
+
 /// the serialized flower state
 [Serializable]
 public record FlowerRec {
@@ -28,7 +30,7 @@ public record FlowerRec {
         // get the forward vector in the xz-plane
         #if UNITY_EDITOR
         if (fwd != Vector3.ProjectOnPlane(fwd, Vector3.up)) {
-            Debug.LogWarning($"[flower] constructed a flower w/ a rotation not in the xz-plane!");
+            Log.Flower.W($"constructed a flower w/ a rotation not in the xz-plane!");
         }
         #endif
 
@@ -50,4 +52,6 @@ public record FlowerRec {
 
     /// the forward direction
     public Vector3 Fwd => Rot * Vector3.forward;
+}
+
 }

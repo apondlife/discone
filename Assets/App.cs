@@ -30,7 +30,7 @@ sealed class App: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
-        Debug.Log(Tag.App.F($"start"));
+        Log.App.I("start");
 
         // move to top-level
         transform.SetParent(null);

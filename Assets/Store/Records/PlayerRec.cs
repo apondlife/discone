@@ -1,5 +1,7 @@
 using System;
 
+namespace Discone {
+
 /// the serialized player state
 [Serializable]
 [StoreVersion(2)]
@@ -25,4 +27,6 @@ public record PlayerRec: StoreFile {
     public bool HasData {
         get => Character != null;
     }
+}
+
 }

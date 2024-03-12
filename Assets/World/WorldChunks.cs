@@ -137,7 +137,7 @@ public sealed class WorldChunks: MonoBehaviour {
 
         // if this is a new chunk, fire the event
         if (count == 1) {
-            Debug.Log(Tag.World.F($"entered {coord}"));
+            Log.World.I($"entered {coord}");
             m_EnteredChunk.Raise(coord);
         }
     }
@@ -154,7 +154,7 @@ public sealed class WorldChunks: MonoBehaviour {
 
         // if this is an empty chunk, fire the event
         if (count == 0) {
-            Debug.Log(Tag.World.F($"exited {coord}"));
+            Log.World.I($"exited {coord}");
             m_ExitedChunk.Raise(coord);
 
             // grab the debounced unload fn or create one
@@ -163,7 +163,7 @@ public sealed class WorldChunks: MonoBehaviour {
                 unload = Actions.Debounce(m_UnloadDelay, () => {
                     // if its still empty after the delay, unload it
                     if (m_Chunks[coord] == 0) {
-                        Debug.Log(Tag.World.F($"unloaded {coord}"));
+                        Log.World.I($"unloaded {coord}");
                         m_UnloadedChunk.Raise(coord);
                     }
 

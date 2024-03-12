@@ -99,7 +99,7 @@ static class Notation {
             case k_Octave:
                 steps += 12; break;
             default:
-                Debug.Assert(false, $"Notation: {marker} is not a quality marker"); break;
+                Debug.Assert(false, $"notation: {marker} is not a quality marker"); break;
             }
         }
 

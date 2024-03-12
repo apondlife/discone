@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 namespace Discone.Tools {
 
-public class Snapshot : MonoBehaviour {
+public class Snapshot: MonoBehaviour {
 
     [SerializeField] bool m_SnapshotOnStart = false;
 
@@ -47,7 +45,7 @@ public class Snapshot : MonoBehaviour {
 
     public void TakeSnapshot() {
         if (m_Camera == null) {
-            Debug.LogError("[snpsht] There is no camera set for the snapshot");
+            Log.Debug.E($"There is no camera set for the snapshot");
             return;
         }
 
@@ -81,7 +79,7 @@ public class Snapshot : MonoBehaviour {
         Directory.CreateDirectory(Path.GetDirectoryName(location));
         File.WriteAllBytes(location, bytes);
 
-        Debug.Log($"[snpsht] new image created at: {location}");
+        Log.Debug.I($"new image created at: {location}");
     }
 
     // -- queries --
@@ -92,7 +90,7 @@ public class Snapshot : MonoBehaviour {
 
         if (m_Camera?.targetTexture != null) {
             m_RenderTexture = m_Camera.targetTexture;
-            Debug.Log("[snpsht] snapshot is overriding render texture settings to use the camera's texture");
+            Log.Debug.I($"snapshot is overriding render texture settings to use the camera's texture");
         }
         else {
             m_RenderTexture = new RenderTexture(m_Width, m_Height, 16, RenderTextureFormat.Default);
@@ -103,5 +101,3 @@ public class Snapshot : MonoBehaviour {
     }
 }
 }
-
-

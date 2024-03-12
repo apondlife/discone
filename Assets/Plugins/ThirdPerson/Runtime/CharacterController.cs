@@ -221,7 +221,7 @@ public sealed class CharacterController {
             if (numCasts > k_MaxCasts) {
                 // TODO: what to do about any remaining time
                 moveDst = moveOrigin;
-                Log.Cntrlr.W($"cast more than {k_MaxCasts + 1} times in a single frame!");
+                Log.Controller.W($"cast more than {k_MaxCasts + 1} times in a single frame!");
                 break;
             }
 
@@ -355,7 +355,7 @@ public sealed class CharacterController {
                 );
 
                 if (castRes == CastResult.Miss) {
-                    Log.Cntrlr.W($"final collision cast convex mesh {collider} missed");
+                    Log.Controller.W($"final collision cast convex mesh {collider} missed");
                 }
 
                 if (castRes != CastResult.Hit) {
@@ -382,7 +382,7 @@ public sealed class CharacterController {
                 );
 
                 if (!didHit) {
-                    Log.Cntrlr.W($"depenetration missed for {collider}");
+                    Log.Controller.W($"depenetration missed for {collider}");
                     continue;
                 }
 
@@ -412,7 +412,7 @@ public sealed class CharacterController {
                     // since we are testing all the surface around the character, we should still try and collide with the new projected direction
                     if (castRes == CastResult.Miss) {
                         if (numCasts == 0) {
-                            Log.Cntrlr.W($"final collision cast missed concave mesh {collider}");
+                            Log.Controller.W($"final collision cast missed concave mesh {collider}");
                         }
 
                         break;

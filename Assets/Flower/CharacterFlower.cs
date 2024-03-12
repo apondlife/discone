@@ -328,8 +328,8 @@ public class CharacterFlower: NetworkBehaviour {
         Vector3 fwd
     ) {
         var prefab = CharacterDefs.Instance.Find(key)?.Flower;
-        if (prefab == null) {
-            Debug.LogError($"[flower] no prefab found for {key.Name()}");
+        if (!prefab) {
+            Log.Flower.E($"no prefab found for {key.Name()}");
             return null;
         }
 

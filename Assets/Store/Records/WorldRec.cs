@@ -1,5 +1,7 @@
 using System;
 
+namespace Discone {
+
 /// the serialized world state
 [Serializable]
 [StoreVersion(2)]
@@ -25,4 +27,6 @@ public record WorldRec: StoreFile {
     public bool HasData {
         get => Flowers != null;
     }
+}
+
 }

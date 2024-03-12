@@ -23,19 +23,12 @@ public class FranTest : MonoBehaviour
     [SerializeField] private RegionConstant m_Region;
 
     // Start is called before the first frame update
-    void Start()
-    {
-
-        //Debug.Log("going to raise the regiopn event");
-        //m_RegionEntered.Raise(m_Region.Value);
+    void Start() {
         StartCoroutine(RunDialogueNodeWhenItsLoaded());
-
-
     }
 
     void RaiseRegionEvent() {
         m_RegionEntered.Raise(m_Region.Value);
-
     }
 
     IEnumerator RunDialogueNodeWhenItsLoaded() {

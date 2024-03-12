@@ -29,7 +29,7 @@ sealed class CharacterDefs: ScriptableObject {
 
     // -- lifecycle --
     void OnEnable() {
-        Log.Charss.Assert(s_Instance == null, "already an instance of `CharacterDefs`");
+        Log.Character.Assert(s_Instance == null, "already an instance of `CharacterDefs`");
         s_Instance = this;
     }
 
@@ -45,7 +45,7 @@ sealed class CharacterDefs: ScriptableObject {
         };
 
         if (def == null) {
-            Log.Charss.E($"no definition found for character {key}");
+            Log.Character.E($"no definition found for character {key}");
         }
 
         return def;

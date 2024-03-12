@@ -50,13 +50,13 @@ public sealed class Field: MonoBehaviour {
 
     // -- props --
     /// the map of visible chunks
-    Dictionary<Vector2Int, FieldChunk> m_Chunks = new Dictionary<Vector2Int, FieldChunk>();
+    Dictionary<Vector2Int, FieldChunk> m_Chunks = new();
 
     /// a pool of free chunk instances
-    Queue<FieldChunk> m_ChunkPool = new Queue<FieldChunk>();
+    Queue<FieldChunk> m_ChunkPool = new();
 
     /// the set of event subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Init() {
@@ -65,10 +65,10 @@ public sealed class Field: MonoBehaviour {
         ClearEditorChunks();
         #endif
 
-        Debug.Log(Tag.World.F($"field init"));
+        Log.World.I($"field init");
 
         // capture chunk size
-        Debug.Assert(m_Chunk.Size.x == m_Chunk.Size.z, "field's terrain chunk was not square");
+        Log.World.Assert(m_Chunk.Size.x == m_Chunk.Size.z, "field's terrain chunk was not square");
         m_ChunkSize.Value = m_Chunk.Size.x;
 
         // dont persist changes to the editor
@@ -109,7 +109,7 @@ public sealed class Field: MonoBehaviour {
             return;
         }
 
-        Debug.Log(Tag.World.F($"create chunk {coord}"));
+        Log.World.I($"create chunk {coord}");
 
         // add the chunk to the map of active chunks
         var chunk = DequeueChunk();
@@ -138,7 +138,7 @@ public sealed class Field: MonoBehaviour {
             return;
         }
 
-        Debug.Log(Tag.World.F($"destroy chunk {coord}"));
+        Log.World.I($"destroy chunk {coord}");
 
         // turn off the chunk
         var chunk = m_Chunks[coord];

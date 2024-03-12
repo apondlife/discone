@@ -136,7 +136,7 @@ sealed partial class Mechanic: MonoBehaviour {
 
     /// switch to a new node and start dialogue immediately
     void JumpToNode(string node, bool isContinue = false) {
-        Log.Mechnk.I($"jump: {node}");
+        Log.Mechanic.I($"jump: {node}");
         SwitchNode(node);
         StartDialogue(isContinue);
     }
@@ -155,12 +155,12 @@ sealed partial class Mechanic: MonoBehaviour {
 
         // and start the new dialogue
         if (nodeName == null) {
-            Log.Mechnk.W($"tried to start dialogue w/ no node set");
+            Log.Mechanic.W($"tried to start dialogue w/ no node set");
             return;
         }
 
         if (!isContinue) {
-            Log.Mechnk.I($"strt: {nodeName}");
+            Log.Mechanic.I($"strt: {nodeName}");
         }
 
         m_DialogueRunner.StartDialogue(nodeName);
@@ -187,7 +187,7 @@ sealed partial class Mechanic: MonoBehaviour {
 
     /// .
     void SetVariable(string key, string value) {
-        Log.Mechnk.I($"set var {key} => {value}");
+        Log.Mechanic.I($"set var {key} => {value}");
         m_DialogueRunner.VariableStorage.SetValue(key, value);
     }
 
@@ -226,7 +226,7 @@ sealed partial class Mechanic: MonoBehaviour {
 
             var hasNext = m_Nodes.TryGetValue(nextName, out nextNode);
             if (!hasNext) {
-                Log.Mechnk.E($"found branch w/ broken connection and/or last node");
+                Log.Mechanic.E($"found branch w/ broken connection and/or last node");
             }
         }
 
@@ -251,7 +251,7 @@ sealed partial class Mechanic: MonoBehaviour {
 
         // if this is not the current node, ignore it
         if (nodeName != m_Node) {
-            Log.Mechnk.E($"not current node {nodeName} vs {m_Node}");
+            Log.Mechanic.E($"not current node {nodeName} vs {m_Node}");
             return;
         }
 
@@ -262,7 +262,7 @@ sealed partial class Mechanic: MonoBehaviour {
     /// set the next node
     [YarnCommand("then")]
     public void Then(string nodeName) {
-        Log.Mechnk.I($"then: {nodeName}");
+        Log.Mechanic.I($"then: {nodeName}");
         SwitchNode(nodeName);
     }
 
@@ -315,7 +315,7 @@ sealed partial class Mechanic: MonoBehaviour {
             return m;
         }
 
-        Log.Mechnk.E($"the dialogue view was missing from {views}");
+        Log.Mechanic.E($"the dialogue view was missing from {views}");
         return null;
     }
 
@@ -431,9 +431,9 @@ sealed partial class Mechanic: MonoBehaviour {
             #if UNITY_EDITOR
             if (!hasNext && !node.IsTreeLike) {
                 if (!node.IsLast) {
-                    Log.Mechnk.E($"{currName} - node has no next, but is not last");
+                    Log.Mechanic.E($"{currName} - node has no next, but is not last");
                 } else if (currScope.DistanceTo(nextScope) <= 2) {
-                    Log.Mechnk.E($"{currName} - the scopes '{currScope}' and '{nextScope}' are very similar; is there a typo?");
+                    Log.Mechanic.E($"{currName} - the scopes '{currScope}' and '{nextScope}' are very similar; is there a typo?");
                 }
             }
             #endif

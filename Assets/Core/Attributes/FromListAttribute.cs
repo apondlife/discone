@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 
+namespace Discone {
+
 /// an attribute that validates a field against a list of values. either pass
 /// values as varargs or as a type that has a static field for `string[] Values`
 ///
@@ -21,7 +23,7 @@ public class FromListAttribute: PropertyAttribute {
         if (values != null) {
             m_List = values.GetValue(null) as string[];
         } else {
-            Debug.LogError ($"FromList requires a type implement: static readonly string[] Values;");
+            Log.Editor.E($"FromList requires a type implement: static readonly string[] Values;");
         }
     }
 
@@ -30,4 +32,6 @@ public class FromListAttribute: PropertyAttribute {
     public string[] List {
         get => m_List;
     }
+}
+
 }

@@ -97,8 +97,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         }
 
         _stepThisFrame = true; // do it this way to avoid duplicating sounds for walk and run animations
-
-        // Debug.Log($"Walk step {foot}");
     }
 
     public void OnJump() {
@@ -124,7 +122,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         }
 
         if ((IsHittingWall || IsHittingGround) && !_jumpThisFrame) {
-            // Debug.Log("hitting ground");
             PlayStep(); // TODO should distinguish from step sound [maybe a muted or percussive pluck (or chord?)]
         }
 
@@ -146,7 +143,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     void PlayJump() {
         UpdatePositionHash();
 
-        // Debug.Log($"Jump speed: {Speed}");
         UpdateFmodParams();
         _fmodParams[k_ParamPitch] = 0f;
         _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, k_NJumpSamples);
@@ -160,7 +156,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         UpdateFmodParams();
         _fmodParams[k_ParamPitch] = SlopeToPitch(VelocitySlope);
         _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, k_NStepSamples);
-        // Debug.Log($"step index: {ps[k_ParamIndex]}");
         FMODPlayer.PlayEvent(new FMODEvent(m_StepEmitter, _fmodParams));
         stepIndex++;
     }
@@ -190,7 +185,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         if (sequenceMode == SequenceMode.Random) {
             // rather than a direct sequence (following fmod), play a random sequence determined by the position hash
             System.Random rand = new(subIndex);
-            // Debug.Log($"pre-twist subIndex: {subIndex}");
             subIndex = Mathf.Abs(rand.Next());
         }
 

@@ -205,7 +205,7 @@ public sealed partial class CharacterState {
             Position = position;
 
             if (forward.magnitude == 0) {
-                Debug.LogWarning("[character frame] can't set a zero forward vector, ignoring");
+                Log.Character.W($"can't set a zero forward vector, ignoring");
                 return;
             }
 

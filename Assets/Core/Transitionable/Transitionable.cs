@@ -119,12 +119,12 @@ sealed class Transitionable: UIBehaviour {
         var t = transform;
         var n = t.childCount;
         if (n != 1) {
-            Log.Menuuu.E($"element `{name}' must have exactly one content element");
+            Log.Menu.E($"element `{name}' must have exactly one content element");
         }
 
         var content = t.GetChild(0) as RectTransform;
         if (content == null) {
-            Log.Menuuu.E($" element `{name}` must have a rect transform as content");
+            Log.Menu.E($"element `{name}` must have a rect transform as content");
         }
 
         return content;

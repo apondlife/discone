@@ -58,7 +58,7 @@ public sealed class Flowers: MonoBehaviour {
         }
 
         // spawn all flowers
-        Debug.Log(Tag.World.F($"loaded {flowers.Length} flowers, spawning..."));
+        Log.Flower.I($"loaded {flowers.Length}, spawning...");
         foreach (var rec in flowers) {
             CharacterFlower.Server_Spawn(rec);
         }
@@ -79,7 +79,7 @@ public sealed class Flowers: MonoBehaviour {
                 dist = Vector3.Distance(f.transform.position, pos);
                 distCache.Add(f, dist);
             } else {
-                Debug.Log($"cache miss");
+                Log.Flower.I($"closest flower cache miss");
             }
 
             return dist;
@@ -106,7 +106,7 @@ public sealed class Flowers: MonoBehaviour {
     void OnFlowerPlanted(CharacterFlower flower) {
         var key = flower.Checkpoint.Position;
         if (!m_All.TryAdd(key, flower)) {
-            Debug.LogWarning("[flower] tried to add a plant at a duplicate position");
+            Log.Flower.W($"tried to plant at a duplicate position");
         }
     }
 

@@ -1,16 +1,15 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 
-public class AtomSettings : MonoBehaviour
-{
+namespace Discone {
+
+public class AtomSettings: MonoBehaviour {
     [Tooltip("list of (float/string/int/bool) atoms that will be saved and loaded from player prefs")]
     [SerializeField] List<AtomBaseVariable> m_Settings;
 
-    private void OnValidate() {
-        var toRemove = new List<AtomBaseVariable>();
+    void OnValidate() {
         m_Settings.RemoveAll(setting => {
             switch(setting) {
                 case BoolVariable _:
@@ -19,14 +18,13 @@ public class AtomSettings : MonoBehaviour
                 case IntVariable _:
                     return false;
                 default:
-                    Debug.LogError($"{setting.name} variable cannot be used in settings");
+                    Log.Unknown.E($"{setting.name} variable cannot be used in settings");
                     return true;
             }
         });
     }
 
-    void Start()
-    {
+    void Start() {
         foreach(AtomBaseVariable setting in m_Settings) {
             switch(setting) {
                 case BoolVariable b:
@@ -42,9 +40,11 @@ public class AtomSettings : MonoBehaviour
                     i.SetupPlayerPrefs();
                 break;
                 default:
-                    Debug.LogError($"{setting.name} variable cannot be used in settings");
+                    Log.Unknown.E($"{setting.name} variable cannot be used in settings");
                 break;
             }
         }
     }
+}
+
 }

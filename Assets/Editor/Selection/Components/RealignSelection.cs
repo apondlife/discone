@@ -83,7 +83,7 @@ public sealed class RealignSelection: EditSelection.Component {
     void Call() {
         // validate args
         if (m_Axis == Axis.N) {
-            Debug.Log($"[editor] must have an axis to align on");
+            Log.Editor.I($"must have an axis to align on");
             return;
         }
 
@@ -92,7 +92,7 @@ public sealed class RealignSelection: EditSelection.Component {
 
         // validate selection
         if (all.Length < 2) {
-            Debug.Log($"[editor] must have at least two objects selected to align");
+            Log.Editor.I($"must have at least two objects selected to align");
             return;
         }
 

@@ -52,7 +52,7 @@ public class Online: NetworkManager {
     // -- published --
     [Header("published")]
     [Tooltip("a message to show an error")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_ErrorEvent")]
+    [FormerlySerializedAs("m_ErrorEvent")]
     [SerializeField] StringEvent m_ShowError;
 
     [Tooltip("an event after the server starts")]
@@ -119,7 +119,7 @@ public class Online: NetworkManager {
         base.OnClientError(error, reason);
 
         Log.Online.I($"client error: {error}@{reason}");
-        m_ShowError?.Raise(Tag.Online.F($"client error: {error}@{reason}"));
+        m_ShowError?.Raise($"client error: {error}@{reason}");
     }
 
     /// [Client]
@@ -161,7 +161,7 @@ public class Online: NetworkManager {
 
         // if we're still attempting to connect, we timed out
         if (m_State == State.Connecting) {
-            m_ShowError?.Raise(Tag.Online.F($"failed to connect to server {networkAddress}"));
+            m_ShowError?.Raise($"failed to connect to server {networkAddress}");
         }
         // if we are non host client disconnect from a server, sync our player record
         else {

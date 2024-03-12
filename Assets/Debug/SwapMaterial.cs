@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+namespace Discone {
+
 /// swap materials for all children between two channels
 public class SwapMaterial: MonoBehaviour {
     // -- input --
@@ -44,7 +46,7 @@ public class SwapMaterial: MonoBehaviour {
 
                 var key = FindKeyFromName(path);
                 if (key == null) {
-                    Debug.LogError($"[swap materials] cannot find key from {name}");
+                    Log.Editor.E($"swap materials - can't find key from {name}");
                     continue;
                 }
 
@@ -84,5 +86,7 @@ public class SwapMaterial: MonoBehaviour {
             _ => null
         };
     }
+}
+
 }
 #endif

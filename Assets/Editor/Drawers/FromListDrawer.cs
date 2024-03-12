@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEditor;
 
+namespace Discone.Editor {
+
 /// shows string field as a dropdown from a list of values
 [CustomPropertyDrawer(typeof(FromListAttribute))]
 public sealed class FromListDrawer: PropertyDrawer {
@@ -17,4 +19,6 @@ public sealed class FromListDrawer: PropertyDrawer {
 
         prop.stringValue = list[index];
     }
+}
+
 }

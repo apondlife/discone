@@ -85,7 +85,7 @@ public class Demo: MonoBehaviour {
     }
 
     void SwitchTo(State nextState) {
-        Log.Debugg.I($"demo {m_State} -> {nextState}");
+        Log.Debug.I($"demo {m_State} -> {nextState}");
 
         var isRecording = nextState == State.Recording;
         if (isRecording) {

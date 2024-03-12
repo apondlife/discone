@@ -3,6 +3,8 @@ using UnityEngine;
 using FMODUnity;
 using System.Linq;
 
+namespace Discone {
+
 [RequireComponent(typeof(ParticleSystem))]
 public class ButterflySounds: MonoBehaviour {
     ParticleSystem _ps;
@@ -40,7 +42,8 @@ public class ButterflySounds: MonoBehaviour {
                 uint k = p.randomSeed;
                 _emitters[k] = emitter;
             }
-            Debug.Log($"Butterflies: {_emitters.Count}");
+
+            Log.Audio.I($"butterflies: {_emitters.Count}");
             _initialized = true;
         } else {
             // update positions
@@ -78,4 +81,6 @@ public class ButterflySounds: MonoBehaviour {
             }
         }
     }
+}
+
 }
