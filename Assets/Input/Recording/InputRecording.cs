@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using ThirdPerson;
 
@@ -15,6 +14,14 @@ sealed class InputRecording: CharacterInputSource<InputFrame> {
 
     /// if this is currently playing the recording
     bool m_IsPlaying;
+
+    /// if this is currently looping
+    readonly bool m_IsLooping;
+
+    // -- lifetime --
+    public InputRecording(bool isLooping = false) {
+        m_IsLooping = isLooping;
+    }
 
     // -- commands --
     /// clear the current recording
@@ -55,7 +62,11 @@ sealed class InputRecording: CharacterInputSource<InputFrame> {
 
     public InputFrame Read() {
         if (IsFinished) {
-            return new InputFrame();
+            if (!m_IsLooping) {
+                return new InputFrame();
+            }
+
+            m_Head = 0;
         }
 
         var frame = m_Frames[m_Head];

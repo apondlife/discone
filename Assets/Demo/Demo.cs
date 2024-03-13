@@ -38,7 +38,7 @@ public class Demo: MonoBehaviour {
     bool m_IsActive;
 
     /// the input recording
-    InputRecording m_Recording = new();
+    InputRecording m_Recording = new(isLooping: true);
 
     // -- lifecycle --
     void Start() {
