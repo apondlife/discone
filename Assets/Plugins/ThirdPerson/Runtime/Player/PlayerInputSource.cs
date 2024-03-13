@@ -1,9 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace ThirdPerson {
 
 /// a player's default input source for controlling characters
+[Serializable]
 public sealed class PlayerInputSource: PlayerInputSource<CharacterInputFrame.Default> {
     public override CharacterInputFrame.Default Read() {
         return new CharacterInputFrame.Default(
@@ -13,7 +15,12 @@ public sealed class PlayerInputSource: PlayerInputSource<CharacterInputFrame.Def
 }
 
 /// a player's input source for controlling characters
-public abstract class PlayerInputSource<F>: MonoBehaviour, CharacterInputSource<F> where F: CharacterInputFrame {
+public abstract class PlayerInputSource<F>: CharacterInputSource<F> where F: CharacterInputFrame {
+    // -- state --
+    [Header("state")]
+    [Tooltip("if this input source is enabled")]
+    [SerializeField] bool m_IsEnabled;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the transform for the player's look viewpoint")]
@@ -52,8 +59,8 @@ public abstract class PlayerInputSource<F>: MonoBehaviour, CharacterInputSource<
 
     // -- CharacterInputSource --
     public virtual bool IsEnabled {
-        get => enabled;
-        set => enabled = value;
+        get => m_IsEnabled;
+        set => m_IsEnabled = value;
     }
 
     public abstract F Read();

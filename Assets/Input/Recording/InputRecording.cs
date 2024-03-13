@@ -1,10 +1,12 @@
+using System;
 using System.Collections.Generic;
 using ThirdPerson;
 
 namespace Discone {
 
 /// an input source for controlling characters via sequence of inputs over time
-sealed class InputRecording: PlayerInputSource<InputFrame> {
+sealed class InputRecording: CharacterInputSource<InputFrame> {
+    // -- props --
     /// the recorded sequence of input frames
     List<InputFrame> m_Frames = new();
 
@@ -47,11 +49,11 @@ sealed class InputRecording: PlayerInputSource<InputFrame> {
     }
 
     // -- CharacterInputSource --
-    public override bool IsEnabled {
-        get => m_IsPlaying && base.IsEnabled;
+    public bool IsEnabled {
+        get => m_IsPlaying;
     }
 
-    public override InputFrame Read() {
+    public InputFrame Read() {
         if (IsFinished) {
             return new InputFrame();
         }

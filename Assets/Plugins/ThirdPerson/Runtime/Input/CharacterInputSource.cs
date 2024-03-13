@@ -1,9 +1,5 @@
 namespace ThirdPerson {
 
-/// a source for default character input
-public interface CharacterInputSource: CharacterInputSource<CharacterInputFrame.Default> {
-}
-
 /// a source for character input
 public interface CharacterInputSource<out F> where F: CharacterInputFrame {
     /// if the input is enabled

@@ -5,21 +5,26 @@ namespace ThirdPerson {
 
 /// the player
 public class Player: Player<CharacterInputFrame.Default> {
+    // -- input --
+    [Header("input")]
+    [Tooltip("the player's mapped input source")]
+    [SerializeField] PlayerInputSource m_InputSource;
+
+    // -- Player<InputFrame> --
+    /// the character the player is currently driving
+    public override PlayerInputSource<CharacterInputFrame.Default> InputSource {
+        get => m_InputSource;
+    }
 }
 
 /// the player
-public class Player<InputFrame>: MonoBehaviour, PlayerContainer
+public abstract class Player<InputFrame>: MonoBehaviour, PlayerContainer
     where InputFrame: CharacterInputFrame {
 
     // -- state --
     [Header("state")]
     [Tooltip("the currently controlled character")]
     [SerializeField] Character<InputFrame> m_Character;
-
-    // -- refs --
-    [Header("refs")]
-    [Tooltip("the player input source")]
-    [SerializeField] PlayerInputSource<InputFrame> m_InputSource;
 
     // -- events --
     [Header("events")]
@@ -67,7 +72,7 @@ public class Player<InputFrame>: MonoBehaviour, PlayerContainer
 
         var dst = character;
         if (dst) {
-            dst.Drive(m_InputSource);
+            dst.Drive(InputSource);
             m_OnDriveStart?.Invoke(dst);
         }
 
@@ -83,13 +88,13 @@ public class Player<InputFrame>: MonoBehaviour, PlayerContainer
 
     // -- queries --
     /// the character the player is currently driving
-    public Character<InputFrame> Character {
-        get => m_Character;
+    public abstract PlayerInputSource<InputFrame> InputSource {
+        get;
     }
 
     /// the character the player is currently driving
-    public PlayerInputSource<InputFrame> InputSource {
-        get => m_InputSource;
+    public Character<InputFrame> Character {
+        get => m_Character;
     }
 
     // -- PlayerContainer --

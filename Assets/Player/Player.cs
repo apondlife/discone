@@ -34,6 +34,11 @@ public sealed class Player: Player<InputFrame> {
     [Tooltip("if the player is closing their eyes (aspirational)")]
     [SerializeField] BoolVariable m_IsClosingEyes;
 
+    // -- input --
+    [Header("input")]
+    [Tooltip("the currently controlled character")]
+    [SerializeField] InputSource m_InputSource;
+
     // -- props --
     /// the checkpoint
     PlayerCheckpoint m_Checkpoint;
@@ -121,7 +126,7 @@ public sealed class Player: Player<InputFrame> {
 
     /// when the dialog becomes in/active
     void OnIsDialogueActiveChanged(bool isDialogueActive) {
-        InputSource.enabled = !isDialogueActive;
+        InputSource.IsEnabled = !isDialogueActive;
     }
 
     // -- props/hot --
@@ -129,6 +134,12 @@ public sealed class Player: Player<InputFrame> {
     public bool IsInputEnabled {
         get => InputSource.IsEnabled;
         set => InputSource.IsEnabled = value;
+    }
+
+    // -- Player<InputFrame> --
+    /// the character the player is currently driving
+    public override PlayerInputSource<InputFrame> InputSource {
+        get => m_InputSource;
     }
 }
 

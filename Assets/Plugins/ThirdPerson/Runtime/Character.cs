@@ -140,14 +140,14 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     }
 
     protected virtual void FixedUpdate() {
+        // read input
+        // TODO: read input in update
+        m_Input.Read();
+
         // run simulation
         if (!m_IsPaused) {
             // store the previous frame
             m_State.Advance();
-
-            // read input
-            // TODO: read input in update
-            m_Input.Read();
 
             // step systems
             Step();

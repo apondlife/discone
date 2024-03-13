@@ -56,8 +56,6 @@ public class Demo: MonoBehaviour {
                 break;
             case State.Playing:
                 break;
-            default:
-                break;
         }
 
         if (m_IsActive) {

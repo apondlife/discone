@@ -1,9 +1,11 @@
+using System;
 using ThirdPerson;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Discone {
 
+[Serializable]
 public sealed class InputSource: PlayerInputSource<InputFrame> {
     // -- refs/discone --
     [Tooltip("the load checkpoint input")]
