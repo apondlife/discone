@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityAtoms.BaseAtoms;
 
 namespace Discone {
 
+[ExecuteAlways]
 [RequireComponent(typeof(TMPro.TMP_Text))]
-public class ServerModeDisplay : MonoBehaviour
+sealed class ServerModeView : MonoBehaviour
 {
     #if UNITY_SERVER
     void Awake()

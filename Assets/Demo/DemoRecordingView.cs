@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Soil;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
@@ -8,7 +5,8 @@ using UnityEngine.UI;
 
 namespace Discone {
 
-public class DemoRecordingView: MonoBehaviour {
+[ExecuteAlways]
+sealed class DemoRecordingView: MonoBehaviour {
     // -- config --
     [Header("config")]
     [Tooltip("blinking period")]
@@ -40,4 +38,5 @@ public class DemoRecordingView: MonoBehaviour {
 
     }
 }
+
 }
