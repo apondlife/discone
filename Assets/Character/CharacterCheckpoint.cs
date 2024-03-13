@@ -62,6 +62,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
         foreach (var system in m_Systems) {
             system.Init(
                 m_Container.State,
+                m_Container.Input,
                 m_Container.Checkpoint
             );
         }
@@ -183,19 +184,6 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
         // i don't know why this doesn't work in the same frame...
         this.DoNextFrame(() => m_Flower?.Server_Grab());
-    }
-
-    /// -- c/load
-    /// restore to the current checkpoint, if any
-    [Obsolete]
-    public void StartLoad() {
-        m_Load.Input.IsLoading = true;
-    }
-
-    /// cancel a load if active
-    [Obsolete]
-    public void StopLoad() {
-        m_Load.Input.IsLoading = false;
     }
 
     // -- events --

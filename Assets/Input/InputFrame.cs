@@ -1,13 +1,24 @@
 using ThirdPerson;
+
 namespace Discone {
 
 /// the discone input frame
 public readonly struct InputFrame: CharacterInputFrame {
-    public CharacterInputMain Main { get; }
+    // -- props --
+    /// if the loading input is active
+    public readonly bool IsLoadPressed;
 
-    public InputFrame(CharacterInputMain main) {
+    // -- lifetime --
+    public InputFrame(
+        CharacterInputMain main,
+        bool isLoadPressed
+    ) {
         Main = main;
+        IsLoadPressed = isLoadPressed;
     }
+
+    // -- CharacterInputFrame --
+    public CharacterInputMain Main { get; }
 }
 
 }

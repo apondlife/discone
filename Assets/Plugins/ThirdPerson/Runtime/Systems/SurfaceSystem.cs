@@ -15,7 +15,7 @@ namespace ThirdPerson {
 
     /// how the character interacts with surfaces
     [Serializable]
-    sealed class SurfaceSystem : CharacterSystem {
+    sealed class SurfaceSystem: CharacterSystem {
         // -- System --
         protected override Phase InitInitialPhase() {
             return NotOnSurface;

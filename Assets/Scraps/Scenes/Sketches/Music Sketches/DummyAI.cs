@@ -25,7 +25,8 @@ public class AiInputSource: PlayerInputSource<InputFrame> {
                 m_Move,
                 UnityEngine.Random.value < m_JumpProbability,
                 false
-            )
+            ),
+            isLoadPressed: false
         );
     }
 }

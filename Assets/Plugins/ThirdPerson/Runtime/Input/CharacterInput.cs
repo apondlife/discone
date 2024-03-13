@@ -3,10 +3,6 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// the character's default input facade
-public class CharacterInput: CharacterInput<CharacterInputFrame.Default> {
-}
-
 /// the character's input facade
 public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame {
     // -- constants --

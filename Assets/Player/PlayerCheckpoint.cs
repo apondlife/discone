@@ -8,13 +8,8 @@ namespace Discone {
 public sealed class PlayerCheckpoint: MonoBehaviour {
     // -- atoms --
     [Header("atoms")]
-    [Tooltip("the progress of the checkpoint save")] [SerializeField]
-    DisconeCharacterVariable m_Character;
-
-    // -- refs --
-    [Header("refs")]
-    [Tooltip("the load checkpoint input")] [SerializeField]
-    InputActionReference m_LoadCheckpointAction;
+    [Tooltip("the progress of the checkpoint save")]
+    [SerializeField] DisconeCharacterVariable m_Character;
 
     // -- props --
     /// if the checkpoint was saving previously
@@ -26,18 +21,9 @@ public sealed class PlayerCheckpoint: MonoBehaviour {
     // -- lifecycle --
     void Update() {
         // coordinate input & current character's checkpoint
-        var checkpoint = m_Character?.Value?.Checkpoint;
-        if (checkpoint == null) {
+        var character = m_Character.Value;
+        if (!character || !character.Checkpoint) {
             return;
-        }
-
-        // load/cancel checkpoint on press/release
-        var load = m_LoadCheckpointAction.action;
-        if (load.WasPressedThisFrame()) {
-            checkpoint.StartLoad();
-        }
-        else if (load.WasReleasedThisFrame()) {
-            checkpoint.StopLoad();
         }
 
         var isSaving = IsSaving;

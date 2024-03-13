@@ -27,20 +27,12 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
         public float LoadCancelMultiplier;
     }
 
-    [Obsolete]
-    public sealed class LoadInput {
-        public bool IsLoading;
-    }
-
     // -- deps --
     [Tooltip("the tuning")]
     [UnityEngine.Serialization.FormerlySerializedAs("m_Tunables")]
     [SerializeField] public Tuning m_Tuning;
 
     // -- props --
-    /// the input state
-    LoadInput m_Input = new();
-
     /// the elapsed time
     float m_Elapsed = k_Inactive;
 
@@ -55,12 +47,6 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
 
     /// the current state while loading
     CharacterState.Frame m_CurState;
-
-    // -- queries --
-    /// the input state
-    public LoadInput Input {
-        get => m_Input;
-    }
 
     // -- ThirdPerson.System --
     protected override Phase InitInitialPhase() {
@@ -117,7 +103,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
 
     void Loading_Update(float delta) {
         // if loading, aggregate time
-        if (m_Input.IsLoading) {
+        if (m_Input.IsLoading()) {
             m_Elapsed += delta;
         } else if (m_Elapsed >= 0.0f) {
             m_Elapsed -= Mathf.Max(0, delta * m_Tuning.LoadCancelMultiplier);
@@ -170,7 +156,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     }
 
     void Loaded_Update(float _) {
-        if (!m_Input.IsLoading) {
+        if (!m_Input.IsLoading()) {
             ChangeTo(NotLoading);
         }
     }
@@ -178,7 +164,7 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
     // -- queries --
     /// if the player can load to their flower
     bool CanLoad {
-        get => m_Input.IsLoading && m_Checkpoint.Flower != null;
+        get => m_Input.IsLoading() && m_Checkpoint.Flower != null;
     }
 
     public bool IsLoading {
