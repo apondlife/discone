@@ -17,7 +17,7 @@ public class Demo: MonoBehaviour {
     [Tooltip("the recording toggle input")]
     [SerializeField] InputActionReference m_Record;
 
-    [Tooltip("the recording start input")]
+    [Tooltip("the demo start input")]
     [SerializeField] InputActionReference m_Start;
 
     [Tooltip("the player")]
@@ -25,6 +25,14 @@ public class Demo: MonoBehaviour {
 
     [Tooltip("if the demo is recording")]
     [SerializeField] BoolReference m_IsRecording;
+
+    [Tooltip("if the demo is running")]
+    [SerializeField] BoolReference m_IsRunning;
+
+    // -- published --
+    [Header("published")]
+    [Tooltip("if the demo is running")]
+    [SerializeField] VoidEvent m_Reset;
 
     // -- props --
     /// the list of subscriptions
@@ -34,14 +42,16 @@ public class Demo: MonoBehaviour {
     [NaughtyAttributes.ReadOnly]
     State m_State;
 
-    /// the current state
-    bool m_IsActive;
-
     /// the input recording
     InputRecording m_Recording = new(isLooping: true);
 
+    /// if the player is idle after start
+    bool m_IsIdle;
+
     // -- lifecycle --
     void Start() {
+        m_IsRunning.Value = false;
+
         m_Subscriptions
             .Add(m_Record.action, OnRecord)
             .Add(m_Start.action, OnStart);
@@ -49,17 +59,29 @@ public class Demo: MonoBehaviour {
 
     void FixedUpdate() {
         switch (m_State) {
-            case State.Recording:
-                // record input
+            case State.Recording: {
                 var frame = m_Player.Value.Character.Input.Curr;
                 m_Recording.Record(frame);
                 break;
-            case State.Playing:
+            }
+            case State.Playing: {
                 break;
+            }
         }
 
-        if (m_IsActive) {
-            // if player input, restart game
+        if (m_IsRunning.Value) {
+            var inputSource = m_Player.Value.InputSource;
+            var hasAnyInput = inputSource.Read().Any;
+
+            // once the input is released
+            if (!hasAnyInput) {
+                m_IsIdle = true;
+            }
+
+            // on any input, restart game
+            if (m_IsIdle && hasAnyInput) {
+                m_Reset.Raise();
+            }
         }
     }
 
@@ -69,7 +91,9 @@ public class Demo: MonoBehaviour {
 
     // -- events --
     void OnStart(InputAction.CallbackContext _) {
-        m_IsActive = true;
+        m_IsIdle = false;
+        m_IsRunning.Value = true;
+        SwitchTo(State.Playing);
     }
 
     void OnRecord(InputAction.CallbackContext _) {

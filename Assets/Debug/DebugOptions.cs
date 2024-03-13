@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityAtoms;
 using UnityEngine.InputSystem;
 using System.Reflection;
+using UnityAtoms.BaseAtoms;
 using UnityEngine.Serialization;
 
 namespace Discone {
@@ -31,6 +32,9 @@ public class DebugOptions: MonoBehaviour {
     [Tooltip("the save store")]
     [SerializeField] Store m_Store;
 
+    [Tooltip("the reset event")]
+    [SerializeField] VoidEvent m_Reset;
+
     // -- props --
     /// the menu input
     DebugInput m_Input;
@@ -51,7 +55,13 @@ public class DebugOptions: MonoBehaviour {
         m_Input = GetComponent<DebugInput>();
 
         // bind events
-        m_Subscriptions.Add(m_Input.Reset, OnResetPressed);
+        m_Subscriptions
+            .Add(m_Input.Reset, OnResetPressed)
+            .Add(m_Reset, OnReset);
+    }
+
+    void OnDestroy() {
+        m_Subscriptions.Dispose();
     }
 
     // -- commands --
@@ -106,6 +116,11 @@ public class DebugOptions: MonoBehaviour {
     #endif
 
     // -- events --
+    /// .
+    void OnReset() {
+        Reset();
+    }
+
     /// .
     void OnResetPressed(InputAction.CallbackContext _) {
         Reset();

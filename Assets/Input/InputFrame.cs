@@ -17,6 +17,12 @@ public readonly struct InputFrame: CharacterInputFrame {
         IsLoadPressed = isLoadPressed;
     }
 
+    // -- queries --
+    /// if there is any input
+    public bool Any {
+        get => IsLoadPressed || Main.Any;
+    }
+
     // -- CharacterInputFrame --
     public CharacterInputMain Main { get; }
 }

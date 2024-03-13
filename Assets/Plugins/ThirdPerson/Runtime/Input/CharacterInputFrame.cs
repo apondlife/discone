@@ -57,6 +57,12 @@ public readonly struct CharacterInputMain {
         IsJumpPressed = isJumpPressed;
         IsCrouchPressed = isCrouchPressed;
     }
+
+    // -- queries --
+    /// if there is any input
+    public bool Any {
+        get => IsJumpPressed || IsCrouchPressed || Move != Vector3.zero;
+    }
 }
 
 }
