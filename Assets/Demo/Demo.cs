@@ -52,21 +52,16 @@ public class Demo: MonoBehaviour {
     void Start() {
         m_IsRunning.Value = false;
 
+        // add subscriptions
         m_Subscriptions
             .Add(m_Record.action, OnRecord)
             .Add(m_Start.action, OnStart);
     }
 
     void FixedUpdate() {
-        switch (m_State) {
-            case State.Recording: {
-                var frame = m_Player.Value.Character.Input.Curr;
-                m_Recording.Record(frame);
-                break;
-            }
-            case State.Playing: {
-                break;
-            }
+        if (m_State == State.Recording) {
+            var frame = m_Player.Value.Character.Input.Curr;
+            m_Recording.Record(frame);
         }
 
         if (m_IsRunning.Value) {
@@ -95,9 +90,12 @@ public class Demo: MonoBehaviour {
             return;
         }
 
+        var nextIsRunning = !m_IsRunning.Value;
+
         m_IsIdle = false;
-        m_IsRunning.Value = true;
-        SwitchTo(State.Playing);
+        m_IsRunning.Value = nextIsRunning;
+
+        SwitchTo(nextIsRunning ? State.Playing : State.Inactive);
     }
 
     void OnRecord(InputAction.CallbackContext _) {
@@ -116,12 +114,10 @@ public class Demo: MonoBehaviour {
         var isRecording = nextState == State.Recording;
         if (isRecording) {
             m_Recording.Clear();
-            // place flower
         }
 
         var character = m_Player.Value.Character;
         if (nextState == State.Playing) {
-            // reset to flower
             m_Recording.Play();
             character.Drive(m_Recording);
         }
