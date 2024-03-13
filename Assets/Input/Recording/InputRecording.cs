@@ -61,6 +61,10 @@ sealed class InputRecording: CharacterInputSource<InputFrame> {
     }
 
     public InputFrame Read() {
+        if (m_Frames.Count == 0) {
+            return new InputFrame();
+        }
+
         if (IsFinished) {
             if (!m_IsLooping) {
                 return new InputFrame();

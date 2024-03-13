@@ -91,6 +91,10 @@ public class Demo: MonoBehaviour {
 
     // -- events --
     void OnStart(InputAction.CallbackContext _) {
+        if (m_State == State.Inactive) {
+            return;
+        }
+
         m_IsIdle = false;
         m_IsRunning.Value = true;
         SwitchTo(State.Playing);
