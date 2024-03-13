@@ -15,9 +15,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SpawnCharacter",
+                    "name": "Spawn",
                     "type": "Button",
                     "id": "f3f6fbe9-a0a5-4941-baa8-739cdd6b58c2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Warp",
+                    "type": "Button",
+                    "id": "aba00129-e89a-49df-972f-e1e12f3eacd9",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -152,7 +161,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SpawnCharacter",
+                    "action": "Spawn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -163,7 +172,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SpawnCharacter",
+                    "action": "Spawn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -174,7 +183,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SpawnCharacter",
+                    "action": "Spawn",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -185,7 +194,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SpawnCharacter",
+                    "action": "Spawn",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -196,7 +205,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SpawnCharacter",
+                    "action": "Spawn",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -716,6 +725,17 @@
                     "action": "Demo_Start",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "cd2b4707-e38e-483c-8990-21dc09396ac7",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
