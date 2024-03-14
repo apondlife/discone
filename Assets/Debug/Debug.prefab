@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1942248847958021238}
   - component: {fileID: 6072778277822681612}
   - component: {fileID: 6020180077936893905}
+  - component: {fileID: 3179233034740655244}
   m_Layer: 0
   m_Name: Debug
   m_TagString: Untagged
@@ -106,6 +107,31 @@ MonoBehaviour:
   m_Values:
     m_Entries: []
     m_Warning: 
+--- !u!114 &3179233034740655244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1664509182698535071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7eee4e02b0cc472ab12696f60f65537, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_WarpTag: Debug_WarpPoint
+  m_WarpRepeat:
+    m_Duration: 3
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_Warp: {fileID: -7314266968180294713, guid: a41a769db5f0442d4a59a9ae705458b1, type: 3}
+  m_WarpIndex: {fileID: 7043134893465917437, guid: a41a769db5f0442d4a59a9ae705458b1, type: 3}
+  m_Player: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
+  m_Camera: {fileID: 817346737246290631}
 --- !u!1 &2128369678572810018
 GameObject:
   m_ObjectHideFlags: 0

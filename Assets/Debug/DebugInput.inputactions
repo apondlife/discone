@@ -24,6 +24,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Warp_Index",
+                    "type": "Button",
+                    "id": "efb94a02-57fe-4c54-ae79-01e62ba9ccf8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Warp",
                     "type": "Button",
                     "id": "aba00129-e89a-49df-972f-e1e12f3eacd9",
@@ -89,7 +98,7 @@
             ],
             "bindings": [
                 {
-                    "name": "Start + Select",
+                    "name": "Start",
                     "id": "97cfa6dd-f1cf-4b24-84d1-4c9490b39bcc",
                     "path": "OneModifier",
                     "interactions": "",
@@ -122,7 +131,7 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Ctrl + R",
+                    "name": "R",
                     "id": "66be5ac0-9341-4770-8235-4cce217e9353",
                     "path": "OneModifier",
                     "interactions": "",
@@ -135,7 +144,7 @@
                 {
                     "name": "modifier",
                     "id": "bd758590-3e41-4a08-a050-e06a3cada60e",
-                    "path": "<Keyboard>/leftCtrl",
+                    "path": "<Keyboard>/z",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -153,28 +162,6 @@
                     "action": "Reset ",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "58538816-168b-4660-8be7-32767cf72fc2",
-                    "path": "<Keyboard>/1",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Spawn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c293db3f-6489-4b2f-9344-8db81c915574",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Spawn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 },
                 {
                     "name": "West",
@@ -210,15 +197,70 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "a9a0f90c-4e27-4a61-ad01-b25fc8300dc0",
+                    "name": "Left Button",
+                    "id": "eed8d0d7-8e0f-4cc5-a9eb-31ed67117387",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Spawn",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "31d386da-cc53-4c5f-bef6-b4626378aa37",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Spawn",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "43eb166a-59a5-498d-beea-2faf8fc1b533",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Spawn",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Tab",
+                    "id": "965cb3ab-84fc-49f6-acd4-0c6bde18f3f6",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NoClip",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "38ddb2c7-3476-44ae-91c7-5a1f24a9494c",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NoClip",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "752d4115-605d-4a28-8b42-7a25e70886f2",
                     "path": "<Keyboard>/tab",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "NoClip",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
                 },
                 {
                     "name": "South",
@@ -641,7 +683,7 @@
                 {
                     "name": "modifier",
                     "id": "df2a2084-177a-49a7-96c1-5dcd5f7eddf1",
-                    "path": "<Keyboard>/ctrl",
+                    "path": "<Keyboard>/z",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -707,7 +749,7 @@
                 {
                     "name": "modifier",
                     "id": "3cc8ac35-ceca-42af-a857-39b1676a93ac",
-                    "path": "<Keyboard>/ctrl",
+                    "path": "<Keyboard>/z",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -727,15 +769,367 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "cd2b4707-e38e-483c-8990-21dc09396ac7",
-                    "path": "",
+                    "name": "One Modifier",
+                    "id": "b3393098-4d90-469a-a6bb-d0c98dda8f0c",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "762b4da9-d08f-4833-b663-1bf3aa74844e",
+                    "path": "<Keyboard>/z",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Warp",
                     "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "3e522bf4-5122-4b19-8e89-52876014fe90",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "1",
+                    "id": "7f234a2a-d779-486b-a6e7-2c549a20bd40",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "a04293d9-efee-49c3-bc31-d3cb910787ec",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "9d8a8f59-7088-431c-8cb0-3e496eb735fe",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "2",
+                    "id": "7d6da8f6-a236-47f9-a938-2f9040efa9ae",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "759a9a88-25c7-4606-8905-838d854ec4c7",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "949d9681-536c-4df4-84d0-08c96ee63d7e",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "3",
+                    "id": "d7a16245-6f05-4bae-be95-be4f8b25563b",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "e95e367b-d037-4ef1-b25a-514dfbf937f9",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "defedec4-c888-44a2-8d74-bb7c58a50c60",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "3",
+                    "id": "658d8933-9cb3-4163-9f14-bff48e87c681",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "589459d6-ac1c-4b18-b43d-b47de54d16c5",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "05196b6a-172b-4d25-ab7e-72c613bf3af1",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "4",
+                    "id": "c705c9d4-57fa-4be9-b9a6-a38fc6edbc5c",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "32690287-7ecf-4c9d-b957-de5f4c3e114d",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "49378cb3-a24d-4652-90b0-d5f13ac75c94",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "5",
+                    "id": "63768fcb-91bb-4955-9aca-fcde31968a18",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "82f178e3-383b-4630-92d7-41f2c6748b0a",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "1657a244-d197-42ac-8959-4ac3068c4f38",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "6",
+                    "id": "9f294bc1-6ff5-4a28-be23-840131607a81",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "d0c61ccd-a73b-4d2b-bcfd-2ac7f744af9a",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "202dbbb1-3d8e-4ec9-8563-e94d03051b60",
+                    "path": "<Keyboard>/6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "7",
+                    "id": "af30e646-e448-40b6-8c0f-59efb9d5ee47",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "627472b6-b15d-4ff4-a52b-9358e4cbf8bc",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "36bd875e-2f83-40eb-a89f-c4cb907be1fe",
+                    "path": "<Keyboard>/7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "8",
+                    "id": "b3c0e345-5372-4b0c-8797-bf8d58284b59",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "2e5ea246-85a3-4899-8341-c6e206587a07",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "41dbee35-c6e1-4e47-87a5-339b937f2d7f",
+                    "path": "<Keyboard>/8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "9",
+                    "id": "0016f0e2-5fa4-42b9-9298-2dd898f8a0bb",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "1231ab28-5a2e-4783-9c90-40bad69fe56e",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "bd6aaa97-b7be-4c38-8ebc-cc978fcb5ffe",
+                    "path": "<Keyboard>/9",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Warp_Index",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

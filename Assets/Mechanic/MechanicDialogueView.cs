@@ -49,7 +49,7 @@ sealed class MechanicDialogueView: DialogueViewBase {
         var max = m_Lines.Length - 2;
 
         // advance to the next line
-        m_Lines.Move(-1);
+        m_Lines.Offset();
 
         // show the new line
         var nextLine = m_Lines[0];

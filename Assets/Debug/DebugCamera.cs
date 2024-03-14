@@ -40,9 +40,6 @@ sealed class DebugCamera: MonoBehaviour {
     [SerializeField] DisconePlayerVariable m_Player;
 
     // -- props --
-    /// the input
-    DebugInput m_Input;
-
     /// the debug flying camera
     CinemachineVirtualCamera m_Camera;
 
@@ -55,15 +52,14 @@ sealed class DebugCamera: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         // get dependencies
-        m_Input = GetComponentInParent<DebugInput>();
         m_Camera = GetComponent<CinemachineVirtualCamera>();
 
         // set initial state
         m_Camera.enabled = false;
 
         // bind events
-        m_Subscriptions.Add(m_Toggle, OnTogglePressed);
-        m_Subscriptions.Add(m_Input.SpawnCharacter, OnSpawnCharacterPressed);
+        m_Subscriptions
+            .Add(m_Toggle, OnTogglePressed);
     }
 
     void OnDestroy() {
@@ -71,10 +67,9 @@ sealed class DebugCamera: MonoBehaviour {
     }
 
     void Update() {
-        if (!IsEnabled) {
+        if (!IsNoClip) {
             return;
         }
-
         var delta = Time.deltaTime;
         var ct = transform;
 
@@ -98,7 +93,7 @@ sealed class DebugCamera: MonoBehaviour {
 
         var nextEnabled = !m_Camera.enabled;
         if (nextEnabled) {
-            var targetCamera = m_Player.Value.GetComponentInChildren<UnityEngine.Camera>();
+            var targetCamera = m_Player.Value.GetComponentInChildren<Camera>();
             var ot = targetCamera.transform;
             ct.position = ot.position;
             ct.rotation = ot.rotation;
@@ -111,33 +106,14 @@ sealed class DebugCamera: MonoBehaviour {
         m_Camera.enabled = nextEnabled;
     }
 
-    /// move the current character the camera position
-    void MoveToDebugCamera() {
-        var character = m_Player.Value.Character;
-
-        // build frame at camera position
-        var nextFrame = character.State.Curr.Copy();
-        nextFrame.Position = m_Camera.transform.position;
-        nextFrame.Velocity = Vector3.zero;
-
-        // force to new position
-        character.ForceState(nextFrame);
-    }
-
     // -- queries --
-    bool IsEnabled {
+    public bool IsNoClip {
         get => m_Camera.enabled;
     }
 
     // -- events --
     void OnTogglePressed(InputAction.CallbackContext _) {
         ToggleDebugCamera();
-    }
-
-    void OnSpawnCharacterPressed(InputAction.CallbackContext _) {
-        if (IsEnabled) {
-            MoveToDebugCamera();
-        }
     }
 }
 

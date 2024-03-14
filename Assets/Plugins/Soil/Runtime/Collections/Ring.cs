@@ -43,8 +43,13 @@ public sealed class Ring<T>: IEnumerable<T> {
     }
 
     /// move the head of the queue by the offset
-    public void Move(int offset) {
+    public void Offset(int offset = -1) {
         m_Head = GetIndex(offset);
+    }
+
+    /// move the head to an index
+    public void Move(int index) {
+        m_Head = GetIndex(m_Head + index);
     }
 
     /// clear the values in the buffer
@@ -80,6 +85,11 @@ public sealed class Ring<T>: IEnumerable<T> {
         set {
             m_Queue[GetIndex(offset)] = value;
         }
+    }
+
+    /// the head of the ring
+    public T Head {
+        get => this[0];
     }
 
     /// gets the circular index given an offset from the start index

@@ -101,7 +101,7 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
     #if UNITY_EDITOR
     /// set the current frame offset
     public void Debug_MoveHead(int offset) {
-        m_Frames.Move(offset);
+        m_Frames.Offset(offset);
     }
     #endif
 }
