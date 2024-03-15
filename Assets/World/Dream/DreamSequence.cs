@@ -26,20 +26,17 @@ sealed class DreamSequence: MonoBehaviour {
 
     // -- cfg --
     [Header("cfg")]
+    [FormerlySerializedAs("m_FlowerPosition")]
+    [Tooltip("the initial flower position")]
+    [SerializeField] Transform m_InitialFlowerPos;
+
     [Tooltip("the sequence of steps")]
     [SerializeField] Step[] m_Steps;
 
     // -- refs --
     [Header("refs")]
-    [FormerlySerializedAs("m_FlowerPosition")]
-    [Tooltip("the initial flower position")]
-    [SerializeField] Transform m_InitialFlowerPos;
-
     [Tooltip("a reference to the current character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
-
-    [Tooltip("the shared data store")]
-    [SerializeField] Store m_Store;
 
     [Tooltip("the mechanic yarn project")]
     [SerializeField] YarnProject m_Mechanic;
@@ -47,13 +44,17 @@ sealed class DreamSequence: MonoBehaviour {
     [Tooltip("the initial camera")]
     [SerializeField] GameObject m_Camera;
 
+    [Tooltip("the shared data store")]
+    [SerializeField] Store m_Store;
+
     // -- dispatched --
     [Header("dispatched")]
-    [Tooltip("when the mechanic should jump to a node")]
-    [SerializeField] StringEvent m_Mechanic_JumpToNode;
-
     [Tooltip("when the dream ends")]
     [SerializeField] VoidEvent m_DreamEnded;
+
+    [FormerlySerializedAs("m_Mechanic_JumpToNode")]
+    [Tooltip("jump to a new mechanic node")]
+    [SerializeField] StringEvent m_Mechanic_Jump;
 
     /// -- props --
     /// the current step in the sequence
@@ -140,7 +141,7 @@ sealed class DreamSequence: MonoBehaviour {
         curr.Trigger.Finish();
 
         // show the dialogue
-        m_Mechanic_JumpToNode.Raise(curr.Mechanic_StartNode);
+        m_Mechanic_Jump.Raise(curr.Mechanic_StartNode);
 
         // advance to the next step
         m_StepIndex += 1;
