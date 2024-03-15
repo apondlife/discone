@@ -82,6 +82,10 @@ sealed class DreamSequence: MonoBehaviour {
     }
 
     void Update() {
+        if (IsInitialCamera && m_CurrentCharacter.Value.Input.Curr.Any) {
+            OnCharacterMove();
+        }
+
         if (m_StepIndex < m_Steps.Length) {
             var step = m_Steps[m_StepIndex];
             if (step.Timeout.TryComplete()) {
@@ -128,9 +132,6 @@ sealed class DreamSequence: MonoBehaviour {
         // bind events
         m_Subscriptions
             .Add(checkpoint.OnCreate, OnCreateCheckpoint);
-
-        character.Events
-            .Once(CharacterEvent.Move, OnCharacterMove);
     }
 
     /// starts the current step
@@ -169,6 +170,11 @@ sealed class DreamSequence: MonoBehaviour {
     /// get the current step, if any
     Step FindCurrStep() {
         return m_StepIndex < m_Steps.Length ? m_Steps[m_StepIndex] : null;
+    }
+
+    /// if we are looking at the game from the initial camera
+    bool IsInitialCamera {
+        get => m_Camera.activeSelf;
     }
 
     // -- events --
