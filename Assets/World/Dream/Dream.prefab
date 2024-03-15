@@ -731,6 +731,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28ab1b0a05e14b55a55aa3179227fbdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_StartNode: Intro_Skip
+  m_StartFlowerPos: {fileID: 1823493061}
   m_Steps:
   - Trigger: {fileID: 8125843447588610638}
     Timeout:
@@ -780,13 +782,12 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
     Mechanic_StartNode: Intro_Close
-  m_InitialFlowerPos: {fileID: 1823493061}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
-  m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
   m_Mechanic: {fileID: 7545569452688597077, guid: b2916276469f3434fbfd12489a5d0307, type: 3}
   m_Camera: {fileID: 7228041983209929687}
-  m_Mechanic_JumpToNode: {fileID: 11400000, guid: 24238e53c72c14c908cd529b69ca0357, type: 2}
+  m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
   m_DreamEnded: {fileID: 11400000, guid: a74cf379fa3594ddba7c29efb14fd39c, type: 2}
+  m_Mechanic_Jump: {fileID: 11400000, guid: 24238e53c72c14c908cd529b69ca0357, type: 2}
 --- !u!1 &6257572251386793448
 GameObject:
   m_ObjectHideFlags: 0

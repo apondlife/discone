@@ -26,35 +26,43 @@ sealed class DreamSequence: MonoBehaviour {
 
     // -- cfg --
     [Header("cfg")]
+    [FormerlySerializedAs("m_InitialFlowerPos")]
     [FormerlySerializedAs("m_FlowerPosition")]
     [Tooltip("the initial flower position")]
-    [SerializeField] Transform m_InitialFlowerPos;
+    [SerializeField] Transform m_StartFlowerPos;
 
     [Tooltip("the sequence of steps")]
     [SerializeField] Step[] m_Steps;
 
-    // -- refs --
-    [Header("refs")]
-    [Tooltip("a reference to the current character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
-
+    // -- dialogue --
+    [Header("dialogue")]
     [Tooltip("the mechanic yarn project")]
     [SerializeField] YarnProject m_Mechanic;
 
-    [Tooltip("the initial camera")]
-    [SerializeField] GameObject m_Camera;
+    [FormerlySerializedAs("m_StartNode")]
+    [Tooltip("the initial dialogue node")]
+    [YarnNode(nameof(m_Mechanic))]
+    [SerializeField] string m_Mechanic_StartNode;
 
-    [Tooltip("the shared data store")]
-    [SerializeField] Store m_Store;
+    [FormerlySerializedAs("m_Mechanic_JumpToNode")]
+    [Tooltip("jump to a new mechanic node")]
+    [SerializeField] StringEvent m_Mechanic_Jump;
 
     // -- dispatched --
     [Header("dispatched")]
     [Tooltip("when the dream ends")]
     [SerializeField] VoidEvent m_DreamEnded;
 
-    [FormerlySerializedAs("m_Mechanic_JumpToNode")]
-    [Tooltip("jump to a new mechanic node")]
-    [SerializeField] StringEvent m_Mechanic_Jump;
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("a reference to the current character")]
+    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+
+    [Tooltip("the initial camera")]
+    [SerializeField] GameObject m_Camera;
+
+    [Tooltip("the shared data store")]
+    [SerializeField] Store m_Store;
 
     /// -- props --
     /// the current step in the sequence
@@ -65,6 +73,10 @@ sealed class DreamSequence: MonoBehaviour {
 
     /// -- lifecycle --
     void Start() {
+        // jump to the start dialogue node
+        m_Mechanic_Jump.Raise(m_Mechanic_StartNode);
+
+        // add subscriptions
         m_Subscriptions
             .Add(m_CurrentCharacter.ChangedWithHistory, OnCurrentCharacterChanged);
     }
@@ -100,7 +112,7 @@ sealed class DreamSequence: MonoBehaviour {
     // -- commands --
     void Init() {
         var character = m_CurrentCharacter.Value;
-        character.PlantFlower(Checkpoint.FromTransform(m_InitialFlowerPos));
+        character.PlantFlower(Checkpoint.FromTransform(m_StartFlowerPos));
 
         var checkpoint = character.Checkpoint;
         character.Checkpoint.IsBlocked = true;

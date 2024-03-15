@@ -192,6 +192,16 @@ sealed partial class Mechanic: MonoBehaviour {
         }
     }
 
+    /// stop & push back any active dialogue views
+    void PushDialogue() {
+        StopDialogue();
+
+        var view = FindDialogueView();
+        if (view) {
+            view.Push();
+        }
+    }
+
     /// .
     void SetVariable(string key, string value) {
         Log.Mechanic.I($"set var {key} => {value}");
@@ -378,7 +388,7 @@ sealed partial class Mechanic: MonoBehaviour {
         // stop dialogue; stop accumulating when opening eyes
         else {
             m_IsDelayAccumulating = false;
-            StopDialogue();
+            PushDialogue();
         }
     }
 

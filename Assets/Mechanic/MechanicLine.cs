@@ -139,6 +139,7 @@ sealed class MechanicLine: UIBehaviour {
         if (animated) {
             Fade(0f);
         } else {
+            m_Fade.Cancel();
             m_Group.alpha = 0f;
         }
     }
