@@ -42,6 +42,7 @@ public record EaseTimer {
     // -- commands --
     /// start the timer (optionally, at a particular raw percent)
     public void Start(float pct = 0.0f, bool isReversed = false) {
+        m_RawPct = pct;
         m_Elapsed = pct * m_Duration;
         m_IsReversed = isReversed;
     }

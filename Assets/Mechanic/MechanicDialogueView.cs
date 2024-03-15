@@ -32,9 +32,9 @@ sealed class MechanicDialogueView: DialogueViewBase {
 
     // -- commands --
     /// hide any visible lines
-    public void Hide() {
+    public void Hide(bool animated = true) {
         foreach (var line in m_Lines) {
-            line.Hide();
+            line.Hide(animated);
         }
     }
 
@@ -52,7 +52,7 @@ sealed class MechanicDialogueView: DialogueViewBase {
         m_Lines.Offset();
 
         // show the new line
-        var nextLine = m_Lines[0];
+        var nextLine = m_Lines.Head;
         nextLine.Show(dialogueLine.Text.Text);
 
         // offset all the lines
@@ -62,6 +62,10 @@ sealed class MechanicDialogueView: DialogueViewBase {
 
             for (var i = 1; i < max + 1; i++) {
                 var line = m_Lines[i];
+                if (line.IsHidden) {
+                    break;
+                }
+
                 var lineHeight = line.Height * 0.5f;
 
                 // for older lines, update offset so that our text clears the line below
@@ -86,7 +90,7 @@ sealed class MechanicDialogueView: DialogueViewBase {
         var prevLine = m_Lines[max];
         prevLine.Hide();
 
-        // TODO: consider if we should call this after the scatter animation finishes
+        // complete the line immediately
         onDialogueLineFinished?.Invoke();
     }
 }

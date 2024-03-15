@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace Discone.Ui {
 
@@ -70,6 +71,12 @@ sealed class MechanicLine: UIBehaviour {
         m_Text.OnPreRenderText += OnPreRenderText;
     }
 
+    protected override void Start() {
+        base.Start();
+
+        m_Group.alpha = 0f;
+    }
+
     void Update() {
         // transition the label in / out
         if (m_Fade.TryTick()) {
@@ -99,6 +106,12 @@ sealed class MechanicLine: UIBehaviour {
     // -- commands --
     /// show a line of dialogue
     public void Show(string text) {
+        // TODO: figure out what to do an active move timer
+        if (m_Move.IsActive) {
+            m_Move.Cancel();
+            Log.Mechanic.E($"tried to show a new line on one currently moving");
+        }
+
         // update the text
         m_Text.text = text;
 
@@ -118,16 +131,23 @@ sealed class MechanicLine: UIBehaviour {
     }
 
     /// hide the line
-    public void Hide() {
-        if (!IsHidden) {
+    public void Hide(bool animated = true) {
+        if (IsHidden) {
+            return;
+        }
+
+        if (animated) {
             Fade(0f);
+        } else {
+            m_Group.alpha = 0f;
         }
     }
 
     /// fade to an alpha
     public void Fade(float alpha) {
         m_Fade_Alpha.Src = m_Group.alpha;
-        m_Fade_Alpha.Dst = alpha;
+        m_Fade_Alpha.Dst = m_Fade.IsActive ? m_Fade_Alpha.Dst * alpha : alpha;
+
         m_Fade.Start();
     }
 

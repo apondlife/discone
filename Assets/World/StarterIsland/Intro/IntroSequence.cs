@@ -11,9 +11,6 @@ namespace Discone {
 sealed class IntroSequence: MonoBehaviour {
     // -- config --
     [Header("config")]
-    [Tooltip("the delay before showing the first line of dialogue (hack)")]
-    [SerializeField] EaseTimer m_DialogueDelay;
-
     [Tooltip("the delay before finishing the intro")]
     [SerializeField] EaseTimer m_FinishDelay;
 
@@ -22,22 +19,9 @@ sealed class IntroSequence: MonoBehaviour {
     [Tooltip("the mechanic yarn project")]
     [SerializeField] YarnProject m_Mechanic;
 
-    [Tooltip("the mechanic node to play on start")]
-    [YarnNode(nameof(m_Mechanic))]
-    [SerializeField] string m_Mechanic_StartNode;
-
-    [Tooltip("the mechanic node to play on input")]
-    [YarnNode(nameof(m_Mechanic))]
-    [SerializeField] string m_Mechanic_InputNode;
-
     [Tooltip("the mechanic node to play on eyes open")]
     [YarnNode(nameof(m_Mechanic))]
     [SerializeField] string m_Mechanic_EndNode;
-
-    // -- inputs --
-    [Header("inputs")]
-    [Tooltip("the input action asset")]
-    [SerializeField] InputActionAsset m_Inputs;
 
     // -- refs --
     [Header("refs")]
@@ -53,9 +37,7 @@ sealed class IntroSequence: MonoBehaviour {
     [Tooltip("the intro retrigger camera")]
     [SerializeField] GameObject m_IntroCameraRetrigger;
 
-    [FormerlySerializedAs("m_InitialRotation")]
-    [Tooltip("the character's rotation reference for the inital shot")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_CharacterRotationReference")]
+    [Tooltip("the character's rotation reference for the initial shot")]
     [SerializeField] Transform m_InitialTransform;
 
     [Tooltip("the shared data store")]
@@ -90,11 +72,6 @@ sealed class IntroSequence: MonoBehaviour {
     }
 
     void Update() {
-        // show start dialogue
-        if (m_DialogueDelay.TryComplete()) {
-            m_Mechanic_JumpToNode.Raise(m_Mechanic_StartNode);
-        }
-
         // finish the intro once the character moves
         m_FinishDelay.Tick();
 
@@ -114,8 +91,6 @@ sealed class IntroSequence: MonoBehaviour {
         if (isClosingEyes) {
             return;
         }
-
-        // m_IntroInput.action.actionMap.Disable();
 
         // jump to the end node
         m_Mechanic_JumpToNode.Raise(m_Mechanic_EndNode);
@@ -151,24 +126,21 @@ sealed class IntroSequence: MonoBehaviour {
         m_Subscriptions
             .Add(m_IsClosingEyes.Changed, OnIsClosingEyesChanged);
 
-        // start intro dialogue
-        m_DialogueDelay.Start();
-
         // switch to the intro camera
         m_IntroCamera.SetActive(true);
 
-        var character = m_CurrentCharacter.Value;
-
         // HACK: do this better later this is so that the follow camera points
         // towards a different direction then ice creams orientation
+        var character = m_CurrentCharacter.Value;
+
         // set initial character state
-        var initialState = character.State.Curr.Copy();
-        initialState.Position = m_InitialTransform.position;
-        initialState.Forward = m_InitialTransform.forward;
-        character.ForceState(initialState);
+        var nextState = character.State.Curr.Copy();
+        nextState.Position = m_InitialTransform.position;
+        nextState.Forward = m_InitialTransform.forward;
+        character.ForceState(nextState);
 
         // TODO: plant flower somewhere in the initial shot
-        character.PlantFlower(Checkpoint.FromState(initialState));
+        character.PlantFlower(Checkpoint.FromState(nextState));
     }
 }
 

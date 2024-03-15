@@ -163,6 +163,13 @@ sealed partial class Mechanic: MonoBehaviour {
             Log.Mechanic.I($"strt: {nodeName}");
         }
 
+
+        // interrupt & hide any text before a loud line
+        var node = m_Nodes[nodeName];
+        if (node.IsLoud) {
+            HideDialogue(animated: m_IsAlwaysVisible.Value);
+        }
+
         m_DialogueRunner.StartDialogue(nodeName);
     }
 
@@ -176,12 +183,12 @@ sealed partial class Mechanic: MonoBehaviour {
     }
 
     /// stop & hide any active dialogue views
-    void HideDialogue() {
+    void HideDialogue(bool animated = true) {
         StopDialogue();
 
         var view = FindDialogueView();
         if (view) {
-            view.Hide();
+            view.Hide(animated);
         }
     }
 
@@ -269,8 +276,7 @@ sealed partial class Mechanic: MonoBehaviour {
     /// wait for a fixed number of seconds (adjusted for animation)
     [YarnCommand("hold")]
     public IEnumerator Hold(float duration) {
-        var wait = duration + LineEnterDuration;
-        yield return new WaitForSeconds(wait);
+        yield return new WaitForSeconds(duration + LineEnterDuration);
     }
 
     /// wait for an aggregated number of seconds (adjusted for animation)
@@ -369,10 +375,10 @@ sealed partial class Mechanic: MonoBehaviour {
             m_Delay += m_DelayBonus;
             StartDialogue();
         }
-        // hide dialogue; stop accumulating when opening eyes
+        // stop dialogue; stop accumulating when opening eyes
         else {
             m_IsDelayAccumulating = false;
-            HideDialogue();
+            StopDialogue();
         }
     }
 

@@ -23,46 +23,72 @@ title: Intro_Flower
 tags: #loud #last #hide
 ---
 <<then Mechanic Intro_Skip>>
-hold the "triangle" button, by default, to return to your flower.
-<<hold Mechanic 10>>
+
+hold the "triangle" button,
+<<hold Mechanic 0>>
+
+by default,
+<<hold Mechanic 2>>
+
+to return to your flower.
+<<hold Mechanic 99>>
 ===
 
 title: Intro_Jump
 tags: #loud #last #hide
 ---
 <<then Mechanic Intro_Skip>>
-hold the "x" button, by default, to jump.
+
+<<hold Mechanic 2>>
+hold the "x" button,
+<<hold Mechanic 0>>
+
+by default,
+<<hold Mechanic 0>>
+
+to jump.
 <<hold Mechanic 10>>
 ===
 
 title: Intro_Close
-tags: #loud #last #hide
+tags: #loud #last
 ---
 <<then Mechanic Intro_Breath>>
-hold the "left or right trigger" button, by default, to close your eyes.
+
+hold the "left or right trigger",
+<<hold Mechanic 0>>
+
+by default,
+<<hold Mechanic 0>>
+
+to close your eyes.
 <<hold Mechanic 10>>
 ===
 
 title: Intro_Breath
-tags: #loud #last
 ---
-and take a deep breath with your body, by default, to plant a new flower.
-<<hold Mechanic 4>>
+and take a deep breath with your body,
+<<hold Mechanic 0>>
 
-// wait for a breath
+by default,
+<<hold Mechanic 0>>
+
+to plant a new flower.
 <<hold Mechanic 6>>
 ===
 
-title: Intro
+title: Intro_Plant
 tags: #last
 ---
-<<hold Mechanic 2>>
 wow
 <<hold Mechanic 2>>
+
 what a nice flower you just planted
 <<hold Mechanic 3>>
+
 there.
 <<hold Mechanic 10>>
+
 by the way, release "left or right trigger", by default, to open your eyes.
 ===
 
