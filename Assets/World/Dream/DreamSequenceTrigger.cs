@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Runtime.Remoting.Services;
 using NaughtyAttributes;
-using ThirdPerson;
 using UnityEngine;
 
 namespace Discone {
