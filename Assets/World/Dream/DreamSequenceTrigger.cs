@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Discone {
 
-[RequireComponent(typeof(Collider))]
 sealed class DreamSequenceTrigger: MonoBehaviour {
     enum Event {
         Enter,
@@ -23,12 +22,25 @@ sealed class DreamSequenceTrigger: MonoBehaviour {
     [ShowIf(nameof(m_Event), Event.Stay)]
     [SerializeField] float m_StayDuration;
 
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("the collider")]
+    [SerializeField] Collider m_Collider;
+
     // -- props --
     /// an action to to fire on trigger enter
     Action m_OnFire;
 
     /// an action to to fire on trigger enter
     float m_StayElapsed;
+
+    // -- lifecycle --
+    void Start() {
+        if (m_Collider is MeshCollider meshCollider) {
+            var mesh = GetComponentInParent<MeshFilter>();
+            meshCollider.sharedMesh = mesh.sharedMesh;
+        }
+    }
 
     // -- commands --
     /// enables/disables the trigger

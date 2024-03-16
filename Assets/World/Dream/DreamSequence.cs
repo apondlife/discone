@@ -82,7 +82,8 @@ sealed class DreamSequence: MonoBehaviour {
     }
 
     void Update() {
-        if (IsInitialCamera && m_CurrentCharacter.Value.Input.Curr.Any) {
+        var character = m_CurrentCharacter.Value;
+        if (IsInitialCamera && character && character.Input.Curr.Any) {
             OnCharacterMove();
         }
 
