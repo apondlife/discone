@@ -108,7 +108,7 @@ sealed class DebugWarp: MonoBehaviour {
 
         var match = null as GameObject;
         foreach (var warpPoint in m_WarpPoints) {
-            if (!warpPoint.name.Contains(query)) {
+            if (warpPoint.name.Contains(query)) {
                 match = warpPoint;
                 break;
             }
