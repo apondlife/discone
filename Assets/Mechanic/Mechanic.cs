@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 using Yarn.Unity;
@@ -47,6 +48,9 @@ sealed partial class Mechanic: MonoBehaviour {
 
     // -- subscribed --
     [Header("subscribed")]
+    [Tooltip("an event that switches the current dialogue node")]
+    [SerializeField] StringEvent m_SwitchNode;
+
     [Tooltip("an event that jumps to a new dialogue node immediately")]
     [SerializeField] StringEvent m_JumpToNode;
 
@@ -56,8 +60,8 @@ sealed partial class Mechanic: MonoBehaviour {
     [Tooltip("an event when the eyelid just closes or starts to open")]
     [SerializeField] BoolEvent m_IsEyelidClosed_Changed;
 
-    [Tooltip("an event when the intro sequence finishes")]
-    [SerializeField] VoidEvent m_Intro_SequenceEnded;
+    [Tooltip("when a game step starts")]
+    [SerializeField] GameStepEvent m_GameStep_Started;
 
     // -- props --
     /// if delay is currently accumulating
@@ -82,10 +86,11 @@ sealed partial class Mechanic: MonoBehaviour {
         m_Subscriptions
             .Add(m_DialogueRunner.onNodeStart, OnNodeWillStart)
             .Add(m_DialogueRunner.onNodeComplete, OnNodeDidComplete)
+            .Add(m_SwitchNode, OnSwitchNode)
             .Add(m_JumpToNode, OnJumpToNode)
             .Add(m_IsEyelidClosed_Changed, OnEyelidClosedChanged)
-            .Add(m_Intro_SequenceEnded, OnIntroSequenceEnded)
-            .Add(m_SetBirthplaceStep, OnSetBirthplaceStep);
+            .Add(m_SetBirthplaceStep, OnSetBirthplaceStep)
+            .Add(m_GameStep_Started, OnGameStepStarted);
     }
 
     void Update() {
@@ -368,6 +373,11 @@ sealed partial class Mechanic: MonoBehaviour {
         }
     }
 
+    /// when the mechanic should switch to a named node
+    void OnSwitchNode(string nodeName) {
+        SwitchNode(nodeName);
+    }
+
     /// when the mechanic should jump to a named node
     void OnJumpToNode(string nodeName) {
         JumpToNode(nodeName);
@@ -393,8 +403,10 @@ sealed partial class Mechanic: MonoBehaviour {
     }
 
     /// .
-    void OnIntroSequenceEnded() {
-        JumpToNode(m_StartNode);
+    void OnGameStepStarted(GameStep step) {
+        if (step == GameStep.Finished) {
+            JumpToNode(m_StartNode);
+        }
     }
 
     // -- factories --

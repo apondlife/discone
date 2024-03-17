@@ -1,4 +1,5 @@
 using ThirdPerson;
+using UnityEngine;
 
 namespace Discone {
 
@@ -21,6 +22,11 @@ public readonly struct InputFrame: CharacterInputFrame {
     /// if there is any input
     public bool Any {
         get => IsLoadPressed || Main.Any;
+    }
+
+    /// if there is any move input
+    public bool AnyMove {
+        get => Main.Move != Vector3.zero;
     }
 
     // -- CharacterInputFrame --

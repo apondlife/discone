@@ -1,6 +1,5 @@
 ﻿using System;
 using Soil;
-using ThirdPerson;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
@@ -26,10 +25,12 @@ sealed class DreamSequence: MonoBehaviour {
 
     // -- cfg --
     [Header("cfg")]
-    [FormerlySerializedAs("m_InitialFlowerPos")]
-    [FormerlySerializedAs("m_FlowerPosition")]
     [Tooltip("the initial flower position")]
     [SerializeField] Transform m_StartFlowerPos;
+
+    [FormerlySerializedAs("m_Camera")]
+    [Tooltip("the camera for the opening shot")]
+    [SerializeField] GameObject m_StartCamera;
 
     [Tooltip("the sequence of steps")]
     [SerializeField] Step[] m_Steps;
@@ -44,6 +45,9 @@ sealed class DreamSequence: MonoBehaviour {
     [YarnNode(nameof(m_Mechanic))]
     [SerializeField] string m_Mechanic_StartNode;
 
+    [Tooltip("switch the current mechanic node")]
+    [SerializeField] StringEvent m_Mechanic_Switch;
+
     [FormerlySerializedAs("m_Mechanic_JumpToNode")]
     [Tooltip("jump to a new mechanic node")]
     [SerializeField] StringEvent m_Mechanic_Jump;
@@ -53,43 +57,43 @@ sealed class DreamSequence: MonoBehaviour {
     [Tooltip("when the dream ends")]
     [SerializeField] VoidEvent m_DreamEnded;
 
+    // -- subscribed --
+    [Header("subscribed")]
+    [Tooltip("when a game step starts")]
+    [SerializeField] GameStepEvent m_GameStep_Started;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("a reference to the current character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
 
-    [Tooltip("the initial camera")]
-    [SerializeField] GameObject m_Camera;
-
-    [Tooltip("the shared data store")]
-    [SerializeField] Store m_Store;
+    [Tooltip("if the player's eyes are closed")]
+    [SerializeField] BoolReference m_IsEyelidClosed;
 
     /// -- props --
     /// the current step in the sequence
     int m_StepIndex;
 
-    /// the set of event subscriptions
+    /// a set of event subscriptions
     readonly DisposeBag m_Subscriptions = new();
 
     /// -- lifecycle --
     void Start() {
-        // jump to the start dialogue node
-        m_Mechanic_Jump.Raise(m_Mechanic_StartNode);
-
         // add subscriptions
-        m_Subscriptions
-            .Add(m_CurrentCharacter.ChangedWithHistory, OnCurrentCharacterChanged);
+        m_Subscriptions.Add(m_GameStep_Started, OnGameStepStarted);
     }
 
     void Update() {
         var character = m_CurrentCharacter.Value;
-        if (IsInitialCamera && character && character.Input.Curr.Any) {
+        if (IsStartCamera && character && character.Input.Curr.AnyMove) {
             OnCharacterMove();
         }
 
         if (m_StepIndex < m_Steps.Length) {
             var step = m_Steps[m_StepIndex];
-            if (step.Timeout.TryComplete()) {
+
+            step.Timeout.TryTick();
+            if (step.Timeout.IsComplete && !m_IsEyelidClosed) {
                 FinishStep();
             }
         }
@@ -108,19 +112,22 @@ sealed class DreamSequence: MonoBehaviour {
             }
         }
 
-        // on first session, finish the dream
-        if (!m_Store.Player.HasData) {
-            m_DreamEnded.Raise();
-        }
+        // clean up the camera
+        m_StartCamera.SetActive(false);
     }
 
     // -- commands --
     void Init() {
+        // plant initial flower
         var character = m_CurrentCharacter.Value;
         character.PlantFlower(Checkpoint.FromTransform(m_StartFlowerPos));
 
+        // block subsequent flowers
         var checkpoint = character.Checkpoint;
         character.Checkpoint.IsBlocked = true;
+
+        // switch to the start dialogue node
+        m_Mechanic_Switch.Raise(m_Mechanic_StartNode);
 
         // init steps
         var i = 0;
@@ -131,12 +138,11 @@ sealed class DreamSequence: MonoBehaviour {
         }
 
         // bind events
-        m_Subscriptions
-            .Add(checkpoint.OnCreate, OnCreateCheckpoint);
+        m_Subscriptions.Add(checkpoint.OnCreate, OnCreateCheckpoint);
     }
 
     /// starts the current step
-    public void StartStep() {
+    void StartStep() {
         var curr = m_Steps[m_StepIndex];
 
         // enable the trigger
@@ -149,7 +155,7 @@ sealed class DreamSequence: MonoBehaviour {
     }
 
     /// finish the current step and start the next one, if any
-    public void FinishStep() {
+    void FinishStep() {
         // complete this step
         var curr = FindCurrStep();
         curr.Trigger.Finish();
@@ -167,6 +173,11 @@ sealed class DreamSequence: MonoBehaviour {
         }
     }
 
+    /// finish the sequence
+    void Finish() {
+        Destroy(this);
+    }
+
     // -- queries --
     /// get the current step, if any
     Step FindCurrStep() {
@@ -174,24 +185,14 @@ sealed class DreamSequence: MonoBehaviour {
     }
 
     /// if we are looking at the game from the initial camera
-    bool IsInitialCamera {
-        get => m_Camera.activeSelf;
+    bool IsStartCamera {
+        get => m_StartCamera.activeSelf;
     }
 
     // -- events --
-    /// when the initial character loads
-    void OnCurrentCharacterChanged(DisconeCharacterPair _) {
-        if (m_Store.Player.HasData) {
-            Destroy(this);
-            return;
-        }
-
-        Init();
-    }
-
     /// when the character initially moves
     void OnCharacterMove() {
-        m_Camera.SetActive(false);
+        m_StartCamera.SetActive(false);
         StartStep();
     }
 
@@ -202,8 +203,17 @@ sealed class DreamSequence: MonoBehaviour {
 
     /// when the final checkpoint is created
     void OnCreateCheckpoint(Checkpoint _) {
-        m_CurrentCharacter.Value.Checkpoint.IsBlocked = false;
-        Destroy(this);
+        m_DreamEnded.Raise();
+        Finish();
+    }
+
+    /// when a new game step starts
+    void OnGameStepStarted(GameStep step) {
+        if (step == GameStep.Dream) {
+            Init();
+        } else if (step > GameStep.Dream) {
+            Finish();
+        }
     }
 }
 

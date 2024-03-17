@@ -143,4 +143,16 @@ public sealed class Player: Player<InputFrame> {
     }
 }
 
+static class PlayerExt {
+    /// if this game object is the current player
+    public static bool IsLocalPlayer(this GameObject component) {
+        return component.CompareTag("PlayerDialogueTarget");
+    }
+
+    /// if this component is the current player
+    public static bool IsLocalPlayer(this Component component) {
+        return component.CompareTag("PlayerDialogueTarget");
+    }
+}
+
 }

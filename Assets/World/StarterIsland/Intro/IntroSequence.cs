@@ -2,17 +2,25 @@ using Soil;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using Yarn.Unity;
 
 namespace Discone {
 
 sealed class IntroSequence: MonoBehaviour {
-    // -- config --
-    [Header("config")]
-    [Tooltip("the delay before finishing the intro")]
-    [SerializeField] EaseTimer m_FinishDelay;
+    // -- cfg --
+    [Header("cfg")]
+    [FormerlySerializedAs("m_InitialTransform")]
+    [Tooltip("the character's rotation reference for the initial shot")]
+    [SerializeField] Transform m_StartTransform;
+
+    [FormerlySerializedAs("m_IntroCamera")]
+    [Tooltip("the intro camera")]
+    [SerializeField] GameObject m_LetterCamera;
+
+    [FormerlySerializedAs("m_IntroCameraRetrigger")]
+    [Tooltip("the intro camera when returning to the letter")]
+    [SerializeField] GameObject m_LetterCameraRevisit;
 
     // -- mechanic --
     [Header("mechanic")]
@@ -23,62 +31,36 @@ sealed class IntroSequence: MonoBehaviour {
     [YarnNode(nameof(m_Mechanic))]
     [SerializeField] string m_Mechanic_EndNode;
 
+    [FormerlySerializedAs("m_Mechanic_JumpToNode")]
+    [Tooltip("jump to a new mechanic node")]
+    [SerializeField] StringEvent m_Mechanic_Jump;
+
+    // -- subscribed --
+    [Header("subscribed")]
+    [Tooltip("when the dream is over")]
+    [SerializeField] VoidEvent m_DreamEnded;
+
+    [Tooltip("when a game step starts")]
+    [SerializeField] GameStepEvent m_GameStep_Started;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the player's character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
 
-    [Tooltip("if the eyes should be closed")]
-    [SerializeField] BoolVariable m_IsClosingEyes;
-
-    [Tooltip("the intro camera")]
-    [SerializeField] GameObject m_IntroCamera;
-
-    [Tooltip("the intro retrigger camera")]
-    [SerializeField] GameObject m_IntroCameraRetrigger;
-
-    [Tooltip("the character's rotation reference for the initial shot")]
-    [SerializeField] Transform m_InitialTransform;
-
-    [Tooltip("the shared data store")]
-    [SerializeField] Store m_Store;
-
-    // -- dispatched --
-    [Header("subscribed")]
-    [Tooltip("when the dream is over")]
-    [SerializeField] VoidEvent m_DreamEnded;
-
-    // -- dispatched --
-    [Header("dispatched")]
-    [Tooltip("when the intro is over")]
-    [SerializeField] VoidEvent m_IntroEnded;
-
-    [Tooltip("when the mechanic should jump to a node")]
-    [SerializeField] StringEvent m_Mechanic_JumpToNode;
-
     // -- props --
     /// if the input was performed
-    bool m_WasPerformed;
+    bool m_DidJumpToNode;
 
-    /// the set of event subscriptions
+    /// a set of event subscriptions
     readonly DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Start() {
         // bind events
         m_Subscriptions
-            .Add(m_Store.LoadFinished, OnLoadFinished)
-            .Add(m_DreamEnded, OnDreamEnded);
-    }
-
-    void Update() {
-        // finish the intro once the character moves
-        m_FinishDelay.Tick();
-
-        // we want the character to be able to move after the timer is complete
-        if (m_FinishDelay.IsComplete && !m_CurrentCharacter.Value.State.IsIdle) {
-            Finish();
-        }
+           .Add(m_DreamEnded, OnDreamEnded)
+           .Add(m_GameStep_Started, OnGameStepStarted);
     }
 
     void OnDestroy() {
@@ -86,61 +68,54 @@ sealed class IntroSequence: MonoBehaviour {
     }
 
     // -- commands --
-    /// open the player's eyes
-    void OnIsClosingEyesChanged(bool isClosingEyes) {
-        if (isClosingEyes) {
-            return;
-        }
+    /// warp to the intro
+    void Warp() {
+        // towards a different direction then ice creams orientation
+        var character = m_CurrentCharacter.Value;
 
-        // jump to the end node
-        m_Mechanic_JumpToNode.Raise(m_Mechanic_EndNode);
+        // set initial character state
+        var nextState = character.State.Curr.Copy();
+        nextState.Position = m_StartTransform.position;
+        nextState.Forward = m_StartTransform.forward;
+        character.ForceState(nextState);
+    }
 
-        // open the eyes
-        m_FinishDelay.Start();
+    /// start the sequence
+    void Init() {
+        // switch to the intro camera
+        m_LetterCamera.SetActive(true);
+
+        // plant the birthplace flower
+        // TODO: plant flower somewhere in the initial shot
+        var character = m_CurrentCharacter.Value;
+        character.PlantFlower(Checkpoint.FromState(character.CurrentState));
     }
 
     /// finish the sequence and destroy it
     void Finish() {
         // blend to the game camera
-        m_IntroCamera.SetActive(false);
+        m_LetterCamera.SetActive(false);
 
-        // signal the end of the intro
-        m_IntroEnded.Raise();
-
-        // enable retriggering this camera
-        m_IntroCameraRetrigger.SetActive(true);
+        // enable revisiting this camera
+        m_LetterCameraRevisit.SetActive(true);
 
         // ...
         Destroy(this);
     }
 
     // -- events --
-    void OnLoadFinished() {
-        if (m_Store.Player.HasData) {
-            Finish();
-        }
+    /// when the dream sequence ends
+    void OnDreamEnded() {
+        Warp();
     }
 
-    void OnDreamEnded() {
-        // add open eyes subscription
-        m_Subscriptions
-            .Add(m_IsClosingEyes.Changed, OnIsClosingEyesChanged);
-
-        // switch to the intro camera
-        m_IntroCamera.SetActive(true);
-
-        // HACK: do this better later this is so that the follow camera points
-        // towards a different direction then ice creams orientation
-        var character = m_CurrentCharacter.Value;
-
-        // set initial character state
-        var nextState = character.State.Curr.Copy();
-        nextState.Position = m_InitialTransform.position;
-        nextState.Forward = m_InitialTransform.forward;
-        character.ForceState(nextState);
-
-        // TODO: plant flower somewhere in the initial shot
-        character.PlantFlower(Checkpoint.FromState(nextState));
+    /// when a new game step starts
+    void OnGameStepStarted(GameStep step) {
+        if (step == GameStep.Intro) {
+            Init();
+        } else if (step > GameStep.Intro) {
+            Finish();
+        }
     }
 }
 

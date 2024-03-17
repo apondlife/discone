@@ -114,12 +114,15 @@ sealed class DebugWarp: MonoBehaviour {
             }
         }
 
-        if (match) {
-            Log.Debug.I($"starting @ {match.name}");
-            Warp(match);
-        } else {
+        if (!match) {
             Log.Debug.E($"failed to match warp point for {query}");
+            return;
         }
+
+        // TODO: every stateful sequence (Dream, Intro) needs to be able to tear itself
+        // down if the character is not present
+        Log.Debug.I($"starting @ {match.name}");
+        Warp(match);
     }
     #endif
 

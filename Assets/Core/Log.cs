@@ -10,6 +10,7 @@ public static class Log {
     public static readonly Tag Debug     = new("debugg", "#046920");
     public static readonly Tag Dialog    = new("dialog", "#bbccaa");
     public static readonly Tag Flower    = new("flower", "#410034");
+    public static readonly Tag Game      = new("gameee", "#548833");
     public static readonly Tag Mechanic  = new("mechnk", "#ddaaff");
     public static readonly Tag Menu      = new("menuuu", "#420420");
     public static readonly Tag Online    = new("online", "#ff00ff");

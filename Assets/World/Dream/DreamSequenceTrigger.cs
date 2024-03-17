@@ -20,16 +20,14 @@ sealed class DreamSequenceTrigger: MonoBehaviour {
     [ShowIf(nameof(m_Event), Event.Stay)]
     [SerializeField] float m_StayDuration;
 
-    // -- refs --
-    [Header("refs")]
     [Tooltip("the collider")]
     [SerializeField] Collider m_Collider;
 
     // -- props --
-    /// an action to to fire on trigger enter
+    /// an action to to fire on the trigger event
     Action m_OnFire;
 
-    /// an action to to fire on trigger enter
+    /// how long the player has remained in the trigger
     float m_StayElapsed;
 
     // -- lifecycle --

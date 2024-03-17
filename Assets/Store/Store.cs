@@ -35,6 +35,9 @@ public sealed class Store: ScriptableObject {
     /// the current player on disk
     PlayerRec m_Player;
 
+    /// if the store has finished loading data
+    bool m_IsLoadFinished;
+
     // -- commands --
     /// load data from disk
     public async void Load() {
@@ -58,6 +61,7 @@ public sealed class Store: ScriptableObject {
         m_Player = ResultFrom(p) ?? new PlayerRec();
 
         // dispatch completion
+        m_IsLoadFinished = true;
         m_LoadFinished.Raise();
     }
 
@@ -171,6 +175,11 @@ public sealed class Store: ScriptableObject {
     /// when the load finishes
     public VoidEvent LoadFinished {
         get => m_LoadFinished;
+    }
+
+    /// if the load has finished
+    public bool IsLoadFinished {
+        get => m_IsLoadFinished;
     }
 
     /// resolve a relative path to an absolute one
