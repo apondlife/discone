@@ -2,7 +2,7 @@ using Soil;
 using UnityEngine;
 using UnityEditor;
 using UnityAtoms;
-
+using UnityAtoms.BaseAtoms;
 using E = UnityEditor.EditorGUILayout;
 using G = UnityEngine.GUILayout;
 
@@ -18,6 +18,9 @@ public sealed class Shortcuts: EditorWindow {
     [Tooltip("the entity repos")]
     [SerializeField] EntitiesVariable m_Entities;
 
+    [Tooltip("the start warp query")]
+    [SerializeField] StringVariable m_StartWarp;
+
     // -- props --
     /// the current scroll position
     Vector2 m_ScrollPos;
@@ -29,7 +32,7 @@ public sealed class Shortcuts: EditorWindow {
     Character m_Character;
 
     /// the repaint timer
-    EaseTimer m_Repaint = new EaseTimer(1f / 60f);
+    EaseTimer m_Repaint = new(1f / 60f);
 
     // -- lifecycle --
     /// show the window
@@ -62,7 +65,6 @@ public sealed class Shortcuts: EditorWindow {
         if (EditorApplication.isPlaying && !EditorApplication.isPaused) {
             m_Repaint.Start();
         }
-
     }
 
     void OnInspectorUpdate() {
@@ -85,7 +87,11 @@ public sealed class Shortcuts: EditorWindow {
     void DrawViewVertical(Character character) {
         m_ScrollPos = L.BS(m_ScrollPos);
             L.BV(S.Margins, G.MaxWidth(S.ColumnWidth));
+                DrawStartWarpField();
+                E.Space(S.Spacing, false);
+
                 DrawCharacterSearch(character);
+                E.Space(S.Spacing, false);
 
                 // show the state ui
                 if (character) {
@@ -102,6 +108,7 @@ public sealed class Shortcuts: EditorWindow {
     void DrawViewHorizontal(Character character) {
         L.BH(S.Margins);
             L.BV(G.MaxWidth(S.ColumnWidth));
+                DrawStartWarpField();
                 DrawCharacterSearch(character);
             L.EV();
 
@@ -116,6 +123,20 @@ public sealed class Shortcuts: EditorWindow {
                 L.ES();
             }
         L.EH();
+    }
+
+    // show selected start warp point
+    void DrawStartWarpField() {
+        // show current or selected character
+        E.LabelField(
+            "start warp",
+            EditorStyles.boldLabel
+        );
+
+        m_StartWarp.InitialValue = E.TextField(
+            "warp point",
+            m_StartWarp.InitialValue
+        );
     }
 
     /// draw the character input and child search
