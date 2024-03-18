@@ -14,6 +14,9 @@ public sealed class CharacterModel: MonoBehaviour {
     const string k_LayerArms = "Arms";
 
     // TODO: Prop.SetXXX(x)
+    /// the airborne jump trigger prop
+    const string k_PropJump = "Jump";
+
     /// the airborne animator prop
     const string k_PropIsAirborne = "IsAirborne";
 
@@ -216,6 +219,11 @@ public sealed class CharacterModel: MonoBehaviour {
         );
 
         // set jump animation params
+        var isJump = state.Events.Contains(CharacterEvent.Jump);
+        if (isJump) {
+            anim.SetTrigger(k_PropJump);
+        }
+
         anim.SetBool(
             k_PropIsLanding,
             state.IsLanding
@@ -223,9 +231,8 @@ public sealed class CharacterModel: MonoBehaviour {
 
         anim.SetBool(
             k_PropIsAirborne,
-            state.MainSurface.IsNone
+            state.MainSurface.IsNone || isJump
         );
-
 
         if (state.IsInJumpSquat) {
             var jumpSquatPct = 1f;
