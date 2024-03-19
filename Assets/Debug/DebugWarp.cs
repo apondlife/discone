@@ -30,6 +30,13 @@ sealed class DebugWarp: MonoBehaviour {
     [Tooltip("the warp to index action")]
     [SerializeField] InputActionReference m_WarpIndex;
 
+    // -- subscribed --
+    [Header("subscribed")]
+    #if UNITY_EDITOR
+    [Tooltip("when the intro sequence starts")]
+    [SerializeField] VoidEvent m_Intro_Started;
+    #endif
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the debug camera")]
@@ -53,10 +60,12 @@ sealed class DebugWarp: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
-        // get dependencies
+        // get deps
         m_Input = GetComponentInParent<DebugInput>();
         m_WarpPoints = new Ring<GameObject>(GameObject.FindGameObjectsWithTag(m_Tag));
+    }
 
+    void Start() {
         // bind events
         m_Subscriptions
             .Add(m_Warp, OnWarpPressed)
@@ -64,8 +73,9 @@ sealed class DebugWarp: MonoBehaviour {
             .Add(m_Input.SpawnCharacter, OnSpawnCharacterPressed);
 
         #if UNITY_EDITOR
+        // TODO: a once subscription
         m_Subscriptions
-            .Add(m_CurrentCharacter.ChangedWithHistory, OnCharacterChanged);
+            .Add(m_Intro_Started, OnGameSequenceStarted);
         #endif
     }
 
@@ -90,16 +100,16 @@ sealed class DebugWarp: MonoBehaviour {
 
     /// move to the warp point (or move the camera if in noclip)
     void Warp(GameObject warpPoint) {
-        var warpPos = warpPoint.transform.position;
+        var warpTransform = warpPoint.transform;
         if (m_Camera.IsNoClip) {
-            m_Camera.transform.position = warpPos;
+            m_Camera.transform.position = warpTransform.position;
         } else {
-            MoveCharacterToPosition(warpPos);
+            m_CurrentCharacter.Value.Warp(warpTransform);
         }
     }
 
-    /// if a query is set, try to warp to the start point
     #if UNITY_EDITOR
+    /// if a query is set, try to warp to the start point
     void WarpToStartPoint() {
         var query = m_StartQuery.Value;
         if (string.IsNullOrEmpty(query)) {
@@ -119,29 +129,14 @@ sealed class DebugWarp: MonoBehaviour {
             return;
         }
 
-        // TODO: every stateful sequence (Dream, Intro) needs to be able to tear itself
-        // down if the character is not present
-        Log.Debug.I($"starting @ {match.name}");
+        Log.Debug.W($"warping to {match.name}");
         Warp(match);
     }
     #endif
 
     /// move the current character the camera position
     void MoveCharacterToDebugCamera() {
-        MoveCharacterToPosition(m_Camera.transform.position);
-    }
-
-    /// move the current character to position
-    void MoveCharacterToPosition(Vector3 position) {
-        var character = m_CurrentCharacter.Value;
-
-        // build frame at position
-        var nextFrame = character.State.Curr.Copy();
-        nextFrame.Position = position;
-        nextFrame.Velocity = Vector3.zero;
-
-        // force to new position
-        character.ForceState(nextFrame);
+        m_CurrentCharacter.Value.Warp(m_Camera.transform);
     }
 
     // -- events --
@@ -168,16 +163,8 @@ sealed class DebugWarp: MonoBehaviour {
     }
 
     #if UNITY_EDITOR
-    // TODO: an event when the game is initialized (the first character exists)
-    /// when the initial character is set
-    void OnCharacterChanged(DisconeCharacterPair characters) {
-        if (characters.Item2) {
-            return;
-        }
-
-        #if UNITY_EDITOR
+    void OnGameSequenceStarted() {
         WarpToStartPoint();
-        #endif
     }
     #endif
 }

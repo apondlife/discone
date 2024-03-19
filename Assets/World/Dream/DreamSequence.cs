@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Drawing2D;
 using Soil;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
@@ -25,6 +26,9 @@ sealed class DreamSequence: MonoBehaviour {
 
     // -- cfg --
     [Header("cfg")]
+    [Tooltip("the start position")]
+    [SerializeField] Transform m_StartPos;
+
     [Tooltip("the initial flower position")]
     [SerializeField] Transform m_StartFlowerPos;
 
@@ -59,8 +63,11 @@ sealed class DreamSequence: MonoBehaviour {
 
     // -- subscribed --
     [Header("subscribed")]
-    [Tooltip("when a game step starts")]
-    [SerializeField] GameStepEvent m_GameStep_Started;
+    [Tooltip("when the intro starts")]
+    [SerializeField] VoidEvent m_Intro_Started;
+
+    [Tooltip("when an intro step starts")]
+    [SerializeField] GameStepEvent m_IntroStep_Started;
 
     // -- refs --
     [Header("refs")]
@@ -79,8 +86,10 @@ sealed class DreamSequence: MonoBehaviour {
 
     /// -- lifecycle --
     void Start() {
-        // add subscriptions
-        m_Subscriptions.Add(m_GameStep_Started, OnGameStepStarted);
+        // bind events
+        m_Subscriptions
+            .Add(m_Intro_Started, OnIntroStarted)
+            .Add(m_IntroStep_Started, OnIntroStepStarted);
     }
 
     void Update() {
@@ -117,14 +126,24 @@ sealed class DreamSequence: MonoBehaviour {
     }
 
     // -- commands --
-    void Init() {
-        // plant initial flower
+    /// warp to the start position
+    void Warp() {
+        Log.Intro.W($"warping to dream");
         var character = m_CurrentCharacter.Value;
-        character.PlantFlower(Checkpoint.FromTransform(m_StartFlowerPos));
+        character.Warp(m_StartPos);
+    }
 
-        // block subsequent flowers
-        var checkpoint = character.Checkpoint;
+    /// initialize the sequence
+    void Init() {
+        var character = m_CurrentCharacter.Value;
+
+        // plant initial flower
+        // TODO: use no-flower-zones to block checkpoints
+        character.PlantFlower(Checkpoint.FromTransform(m_StartFlowerPos));
         character.Checkpoint.IsBlocked = true;
+
+        // activate the opening shot
+        m_StartCamera.SetActive(true);
 
         // switch to the start dialogue node
         m_Mechanic_Switch.Raise(m_Mechanic_StartNode);
@@ -138,7 +157,7 @@ sealed class DreamSequence: MonoBehaviour {
         }
 
         // bind events
-        m_Subscriptions.Add(checkpoint.OnCreate, OnCreateCheckpoint);
+        m_Subscriptions.Add(character.Checkpoint.OnCreate, OnCreateCheckpoint);
     }
 
     /// starts the current step
@@ -203,12 +222,19 @@ sealed class DreamSequence: MonoBehaviour {
 
     /// when the final checkpoint is created
     void OnCreateCheckpoint(Checkpoint _) {
+        // TODO: this could be m_GameStep_Advance.Raise (or m_IntroStep_Advance.Raise), and
+        // then we don't need to split warp/init in intro
         m_DreamEnded.Raise();
         Finish();
     }
 
-    /// when a new game step starts
-    void OnGameStepStarted(GameStep step) {
+    /// when the intro starts
+    void OnIntroStarted() {
+        Warp();
+    }
+
+    /// when a new intro step starts
+    void OnIntroStepStarted(GameStep step) {
         if (step == GameStep.Dream) {
             Init();
         } else if (step > GameStep.Dream) {

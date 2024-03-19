@@ -79,6 +79,19 @@ public sealed class Character: Character<InputFrame> {
         m_Checkpoint.CreateCheckpoint(checkpoint);
     }
 
+    /// warp to the transform
+    public void Warp(Transform t) {
+        Warp(t.position, t.forward);
+    }
+
+    /// warp to the position & facing
+    public void Warp(Vector3 pos, Vector3 fwd) {
+        var nextState = m_State.Curr.Copy();
+        nextState.Position = pos;
+        nextState.Forward = fwd;
+        ForceState(nextState);
+    }
+
     // -- queries --
     /// the character's key
     public CharacterKey Key {

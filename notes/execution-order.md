@@ -8,3 +8,4 @@ maybe in the future we can convert this file into some format and use it instead
 - ProvideGameObject asap : (a lot of stuff depends on a game object being provided)
 - *Characters before DisconeCharacter* : (spawn event has to be subscribed, and maybe not great to replay it)
 - *Online before OnlineInterest* : both singletons, should destroy Online before Checking for duplicate interest
+- *DebugWarp after DreamSequence*: so that is can override the initial position

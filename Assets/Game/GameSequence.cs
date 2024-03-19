@@ -1,8 +1,10 @@
 using UnityAtoms;
+using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
 namespace Discone {
 
+// TODO: rename to IntroSequence or RootSequence? IntroSequence, DreamSequence, IslandSequence
 sealed class GameSequence: MonoBehaviour {
     // -- cfg --
     [Header("cfg")]
@@ -15,8 +17,16 @@ sealed class GameSequence: MonoBehaviour {
 
     // -- dispatched --
     [Header("dispatched")]
+    [Tooltip("when this sequence starts")]
+    [SerializeField] VoidEvent m_Started;
+
     [Tooltip("when a game step starts")]
     [SerializeField] GameStepEvent m_GameStep_Started;
+
+    // -- subscribed --
+    [Header("subscribed")]
+    [Tooltip("advance to the next game step")]
+    [SerializeField] VoidEvent m_Advance;
 
     // -- refs --
     [Header("refs")]
@@ -35,17 +45,17 @@ sealed class GameSequence: MonoBehaviour {
 
     // -- lifecycle --
     void Start() {
-        Log.Game.I($"start step {m_Step}");
-
         // init steps
         foreach (var trigger in m_Triggers) {
             trigger.OnEnter(OnStepEnter);
             trigger.OnExit(OnStepExit);
         }
 
-        // add subscriptions
+        // bind events
         m_Subscriptions
+            .Add(m_Advance, OnAdvance)
             .Add(m_Store.LoadFinished, OnLoadFinished)
+            // TODO: a once subscription or initial character event
             .Add(m_CurrentCharacter.ChangedWithHistory, OnCharacterChanged);
     }
 
@@ -60,13 +70,23 @@ sealed class GameSequence: MonoBehaviour {
     }
 
     // -- commands --
+    /// start the sequence
+    void Init() {
+        m_Started.Raise();
+
+        // AAA: do an overlap check to get initial step?
+
+        Log.Intro.W($"start initial step {m_Step}");
+        m_GameStep_Started.Raise(m_Step);
+    }
+
     /// start a new step
     void StartStep(GameStep step) {
         if (step <= m_Step) {
             return;
         }
 
-        Log.Game.I($"start step {step}");
+        Log.Intro.I($"start step {step}");
         m_Step = step;
         m_IsExiting = false;
 
@@ -95,6 +115,11 @@ sealed class GameSequence: MonoBehaviour {
     }
 
     // -- events --
+    /// when an advance is requested
+    void OnAdvance() {
+        StartStep(m_Step + 1);
+    }
+
     /// when the store finishes loading data
     void OnLoadFinished() {
         if (m_Store.Player.HasData) {
@@ -105,7 +130,7 @@ sealed class GameSequence: MonoBehaviour {
     /// when the store finishes loading data
     void OnCharacterChanged(DisconeCharacterPair character) {
         if (!character.Item2) {
-            m_GameStep_Started.Raise(m_Step);
+            Init();
         }
     }
 

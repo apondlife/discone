@@ -1,7 +1,6 @@
 using UnityEngine;
 
 /// a celestial body positioned spherically in the sky
-[ExecuteAlways]
 class SkyBody: MonoBehaviour {
     // -- fields --
     [Header("fields")]
@@ -25,9 +24,6 @@ class SkyBody: MonoBehaviour {
     }
 
     void OnValidate() {
-        // re-run initializers
-        Init();
-
         // turn off shadows on all renderers
         var renderers = GetComponentsInChildren<Renderer>();
         foreach (var r in renderers) {

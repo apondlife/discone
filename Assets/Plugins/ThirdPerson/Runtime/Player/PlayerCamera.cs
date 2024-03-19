@@ -16,10 +16,16 @@ sealed class PlayerCamera: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         c = GetComponentInParent<PlayerContainer>();
+
+        // bind events
         m_Brain.m_CameraActivatedEvent.AddListener(OnCameraActivated);
     }
 
-    // Update is called once per frame
+    void OnDestroy() {
+        m_Brain.m_CameraActivatedEvent.RemoveListener(OnCameraActivated);
+    }
+
+    // -- events --
     void OnCameraActivated(ICinemachineCamera dst, ICinemachineCamera src) {
         // if no source camera
         if (src == null) {

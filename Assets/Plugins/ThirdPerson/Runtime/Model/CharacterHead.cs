@@ -92,8 +92,8 @@ public sealed class CharacterHead: MonoBehaviour, CharacterLimb {
 
         // if no headbone, this character has no head, destroy self
         if(m_HeadBone == null) {
-            Debug.LogWarning($"[CharacterHead] destroying head for character: {m_Animator.transform.parent.name}");
-            Destroy(this.gameObject);
+            Log.Model.W($"destroying head: {m_Animator.transform.parent.name}");
+            Destroy(gameObject);
             return;
         }
 

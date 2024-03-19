@@ -63,13 +63,13 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     CharacterSystem[] m_Systems;
 
     /// the character's state
-    CharacterState m_State;
+    protected CharacterState m_State;
 
     /// the character's state
-    CharacterEvents m_Events;
+    protected CharacterEvents m_Events;
 
     /// the input wrapper
-    CharacterInput<InputFrame> m_Input;
+    protected CharacterInput<InputFrame> m_Input;
 
     // TODO: extract the camera out of the character, maybe?
     /// the character's virtual camera
