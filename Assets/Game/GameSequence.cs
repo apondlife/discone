@@ -1,3 +1,4 @@
+using Soil;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
@@ -74,10 +75,12 @@ sealed class GameSequence: MonoBehaviour {
     void Init() {
         m_Started.Raise();
 
-        // AAA: do an overlap check to get initial step?
+        // start the initial step
+        var initialStep = FindInitialStep();
+        Log.Intro.W($"start initial step {initialStep}");
 
-        Log.Intro.W($"start initial step {m_Step}");
-        m_GameStep_Started.Raise(m_Step);
+        m_Step = initialStep;
+        m_GameStep_Started.Raise(initialStep);
     }
 
     /// start a new step
@@ -89,10 +92,7 @@ sealed class GameSequence: MonoBehaviour {
         Log.Intro.I($"start step {step}");
         m_Step = step;
         m_IsExiting = false;
-
-        if (step == GameStep.Finished || IsReady) {
-            m_GameStep_Started.Raise(step);
-        }
+        m_GameStep_Started.Raise(step);
     }
 
     /// finish a step, if possible
@@ -109,9 +109,17 @@ sealed class GameSequence: MonoBehaviour {
     }
 
     // -- queries --
-    /// if the sequence is ready to start
-    bool IsReady {
-        get => m_CurrentCharacter;
+    /// find the initial step based on the character's current position
+    GameStep FindInitialStep() {
+        var pos = m_CurrentCharacter.Value.State.Position;
+
+        foreach (var trigger in m_Triggers) {
+            if (trigger.Contains(pos)) {
+                return trigger.Step;
+            }
+        }
+
+        return GameStep.Finished;
     }
 
     // -- events --
@@ -141,6 +149,7 @@ sealed class GameSequence: MonoBehaviour {
 
     /// when we enter a step trigger
     void OnStepEnter(GameStep step) {
+        Log.Intro.W($"got trigger for {step}");
         StartStep(step);
     }
 }

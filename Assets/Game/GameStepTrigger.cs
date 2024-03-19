@@ -58,6 +58,18 @@ sealed class GameStepTrigger: MonoBehaviour {
         m_OnExit?.Invoke(m_Step);
     }
 
+    // -- queries --
+    /// if the trigger contains the point
+    public bool Contains(Vector3 pos) {
+        var closest = m_Collider.ClosestPoint(pos);
+        return closest == pos;
+    }
+
+    /// the step for this trigger
+    public GameStep Step {
+        get => m_Step;
+    }
+
     // -- events --
     void OnGameStepStarted(GameStep step) {
         if (step > m_Step) {
