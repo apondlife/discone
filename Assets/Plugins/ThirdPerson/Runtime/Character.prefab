@@ -254,12 +254,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Tuning: {fileID: 11400000, guid: 3f4f38b8f078747a5a3036a8b6e5c6e8, type: 2}
-  m_Camera: {fileID: 1289189456}
-  m_Model: {fileID: 1061133086809451152}
-  m_Follow: {fileID: 7435246552485848647}
-  m_Destination: {fileID: 3673039484627793572}
-  m_LookAtTarget: {fileID: 3032161264613087381}
-  m_Input: {fileID: 4626327253638621584, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
   m_FollowSystem:
     m_Phase:
       Name: 
@@ -280,6 +274,12 @@ MonoBehaviour:
       Name: 
     m_IsDisabled: 0
     m_IsLogging: 0
+  m_Camera: {fileID: 1289189456}
+  m_Model: {fileID: 1061133086809451152}
+  m_Follow: {fileID: 7435246552485848647}
+  m_Destination: {fileID: 3673039484627793572}
+  m_LookAtTarget: {fileID: 3032161264613087381}
+  m_Input: {fileID: 4626327253638621584, guid: 52de88e05eb48a5409435da721b7d79c, type: 3}
 --- !u!1 &3326463586402868696
 GameObject:
   m_ObjectHideFlags: 0
@@ -734,6 +734,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LeftArm
       objectReference: {fileID: 0}
+    - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
+      propertyPath: m_Goal
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3634307922059092450, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -877,6 +881,10 @@ PrefabInstance:
     - target: {fileID: 1311217693618543391, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_Name
       value: RightArm
+      objectReference: {fileID: 0}
+    - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
+      propertyPath: m_Goal
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3634307922059092450, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_RootOrder
@@ -1221,6 +1229,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4050878531379853891, guid: 3d946afca7c034017ab51ed11f7888f5, type: 3}
+      propertyPath: m_Goal
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917336604372201585, guid: 3d946afca7c034017ab51ed11f7888f5, type: 3}
       propertyPath: m_Goal
       value: 1
       objectReference: {fileID: 0}

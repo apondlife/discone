@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// an ik limb for the character model
-public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
+public sealed class CharacterArm: MonoBehaviour, CharacterPart {
     // -- deps --
     /// the containing character
     CharacterContainer c;
@@ -192,7 +192,6 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
 
     /// if this position exceeds the stride length
     bool HasExceededStrideLength(Vector3 pos) {
-        // so that we can tune the values
         return Vector3.SqrMagnitude(pos - m_DestPosition) >= m_SqrStrideLength;
     }
 
@@ -202,11 +201,15 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
             return;
         }
 
+        // ignore terrain since getting closes point for terrains will be very unlikely
+        if (other is TerrainCollider) {
+            return;
+        }
+
         // can't use closest point on concave meshes
         if (other is MeshCollider m && !m.convex) {
             return;
         }
-
 
         // TODO: move anchor forward based on speed?
         var pos = other.ClosestPoint(m_Anchor.position);
@@ -224,6 +227,11 @@ public sealed class CharacterArm: MonoBehaviour, CharacterLimb {
 
     void OnTriggerStay(Collider other) {
         if (!m_IsActive || !IsValid) {
+            return;
+        }
+
+        // ignore terrain since getting closes point for terrains will be very unlikely
+        if (other is TerrainCollider) {
             return;
         }
 

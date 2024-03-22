@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// an ik limb for the character model
-public sealed class CharacterHead: MonoBehaviour, CharacterLimb {
+public sealed class CharacterHead: MonoBehaviour, CharacterPart {
     // -- deps --
     /// the containing character
     CharacterContainer c;

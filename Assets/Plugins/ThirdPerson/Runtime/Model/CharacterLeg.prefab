@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3634307922059092450}
-  - component: {fileID: 4050878531379853891}
+  - component: {fileID: 8917336604372201585}
   - component: {fileID: 467891707397163346}
   m_Layer: 13
   m_Name: CharacterLeg
@@ -34,7 +34,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4050878531379853891
+--- !u!114 &8917336604372201585
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,17 +43,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1311217693618543391}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fae2df052e96c4150b6053721f698985, type: 3}
+  m_Script: {fileID: 11500000, guid: 48a1865b4aad40efb56933cc1fe698bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Goal: 0
   m_Anchor: {fileID: 1608823498810612986}
-  m_MoveSpeed: 1
   m_TurnSpeed: 360
-  m_SurfaceAngle: 80
   m_BlendInDuration: 0.2
   m_BlendOutDuration: 0.2
   m_StrideLength: 0
+  m_StrideSpeed: 0
+  m_StrideEpsilon: 0
 --- !u!136 &467891707397163346
 CapsuleCollider:
   m_ObjectHideFlags: 0

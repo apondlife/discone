@@ -97,7 +97,7 @@ public sealed class CharacterModel: MonoBehaviour {
     CharacterInputQuery m_Input => m_Container.InputQuery;
 
     /// the list of ik limbs
-    CharacterLimb[] m_Limbs;
+    CharacterPart[] m_Limbs;
 
     /// the legs layer index
     int m_LayerLegs;
@@ -129,7 +129,7 @@ public sealed class CharacterModel: MonoBehaviour {
         m_Container = GetComponentInParent<CharacterContainer>();
 
         // set props
-        m_Limbs = GetComponentsInChildren<CharacterLimb>();
+        m_Limbs = GetComponentsInChildren<CharacterPart>();
 
         // init animator
         m_Animator = GetComponentInChildren<Animator>();
