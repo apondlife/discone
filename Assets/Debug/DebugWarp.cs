@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using Soil;
 using UnityAtoms;
@@ -118,7 +119,7 @@ sealed class DebugWarp: MonoBehaviour {
 
         var match = null as GameObject;
         foreach (var warpPoint in m_WarpPoints) {
-            if (warpPoint.name.Contains(query)) {
+            if (warpPoint.name.Contains(query, StringComparison.OrdinalIgnoreCase)) {
                 match = warpPoint;
                 break;
             }

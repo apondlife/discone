@@ -143,6 +143,7 @@ sealed class DreamSequence: MonoBehaviour {
         character.Checkpoint.IsBlocked = true;
 
         // activate the opening shot
+        Log.Intro.E($"dream init");
         m_StartCamera.SetActive(true);
 
         // switch to the start dialogue node
@@ -211,6 +212,7 @@ sealed class DreamSequence: MonoBehaviour {
     // -- events --
     /// when the character initially moves
     void OnCharacterMove() {
+        Log.Intro.E($"dream character move");
         m_StartCamera.SetActive(false);
         StartStep();
     }

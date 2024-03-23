@@ -32,8 +32,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5484918973602519817}
-  - {fileID: 1823493061}
   - {fileID: 8759114444851961389}
+  - {fileID: 1823493061}
   m_Father: {fileID: 1349401198}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -7.309, z: 0}
@@ -349,7 +349,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1823493061}
   m_Layer: 0
-  m_Name: Start_Flower
+  m_Name: Dream_StartFlower
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: d41eb11c960b3489f909b9270107e86c, type: 3}
   m_NavMeshLayer: 0
@@ -364,11 +364,11 @@ Transform:
   m_GameObject: {fileID: 1823493060}
   m_LocalRotation: {x: -0, y: 0.031574942, z: -0, w: 0.9995014}
   m_LocalPosition: {x: -0.039972585, y: 0.89998376, z: -0.75998056}
-  m_LocalScale: {x: 0.99999994, y: 1, z: 0.99999994}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 218637302}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: -61.504, z: 0}
 --- !u!1 &498245153970098332
 GameObject:
@@ -579,7 +579,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6515013072035104251}
   m_Layer: 0
-  m_Name: Start
+  m_Name: Dream_Start
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1054,7 +1054,7 @@ MonoBehaviour:
   m_Mechanic_Jump: {fileID: 11400000, guid: 24238e53c72c14c908cd529b69ca0357, type: 2}
   m_DreamEnded: {fileID: 11400000, guid: a74cf379fa3594ddba7c29efb14fd39c, type: 2}
   m_Intro_Started: {fileID: 11400000, guid: 721366f8515dc4998bff735ccd54a21b, type: 2}
-  m_GameStep_Started: {fileID: 11400000, guid: 3760c6febd3544659a8cb4427e49df07, type: 2}
+  m_IntroStep_Started: {fileID: 11400000, guid: 3760c6febd3544659a8cb4427e49df07, type: 2}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
   m_IsEyelidClosed:
     _usage: 2
@@ -1417,7 +1417,7 @@ GameObject:
   - component: {fileID: 1595138834398748145}
   - component: {fileID: 1898756370584073348}
   m_Layer: 0
-  m_Name: StartCamera
+  m_Name: Dream_StartCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2260,7 +2260,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8759114446855735561, guid: 4574fc9fab1289a4eb814f00c3719ce7, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8759114446855735561, guid: 4574fc9fab1289a4eb814f00c3719ce7, type: 3}
       propertyPath: m_LocalScale.x
