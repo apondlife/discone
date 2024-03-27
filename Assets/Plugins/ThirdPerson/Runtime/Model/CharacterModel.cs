@@ -96,9 +96,6 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the character's tuning
     CharacterInputQuery m_Input => m_Container.InputQuery;
 
-    /// the list of ik limbs
-    CharacterPart[] m_Limbs;
-
     /// the legs layer index
     int m_LayerLegs;
 
@@ -128,9 +125,6 @@ public sealed class CharacterModel: MonoBehaviour {
         // set dependencies
         m_Container = GetComponentInParent<CharacterContainer>();
 
-        // set props
-        m_Limbs = GetComponentsInChildren<CharacterPart>();
-
         // init animator
         m_Animator = GetComponentInChildren<Animator>();
         if (m_Animator != null) {
@@ -147,25 +141,6 @@ public sealed class CharacterModel: MonoBehaviour {
             // set layers indices
             m_LayerLegs = m_Animator.GetLayerIndex(k_LayerLegs);
             m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
-
-            // init ik limbs
-            foreach (var limb in m_Limbs) {
-                limb.Init(m_Animator);
-            }
-
-            // proxy animator callbacks
-            var proxy = m_Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
-            if (proxy == null) {
-                proxy = m_Animator.gameObject.AddComponent<CharacterAnimatorProxy>();
-            }
-
-            proxy.Bind(OnAnimatorIK);
-        } else {
-            // destroy ik limbs
-            Log.Model.W($"character {m_Container.Name} has no animator, destroying limbs");
-            foreach (Component limb in m_Limbs) {
-                Destroy(limb.gameObject);
-            }
         }
 
         // make sure complex model trees have the correct layer
@@ -298,13 +273,6 @@ public sealed class CharacterModel: MonoBehaviour {
             m_LayerArms,
             yoshiing
         );
-    }
-
-    /// a callback for calculating IK
-    void OnAnimatorIK(int layer) {
-        foreach (var limb in m_Limbs) {
-            limb.ApplyIk();
-        }
     }
 
     /// tilt the model as a fn of character acceleration

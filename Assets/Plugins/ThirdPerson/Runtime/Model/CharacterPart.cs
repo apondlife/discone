@@ -10,6 +10,10 @@ public interface CharacterPart {
 
     /// applies the limb ik
     void ApplyIk();
+
+    // -- queries --
+    /// the attached game object
+    GameObject gameObject { get; }
 }
 
 }

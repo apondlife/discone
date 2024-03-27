@@ -6,9 +6,18 @@ using Yarn.Compiler;
 
 namespace ThirdPerson {
 
+/// the current position of a bone
+public interface CharacterBone {
+    /// the root position
+    public Vector3 RootPos { get; }
+
+    /// the goal position
+    public Vector3 GoalPos { get; }
+}
+
 /// center of mass? move character down?
 /// an ik limb for the character model
-public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
+public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
     enum State {
         Hold,
         Move,
@@ -71,7 +80,7 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
     float m_Weight;
 
     /// the current ik position of the limb in local space
-    Vector3 m_CurrPos;
+    Vector3 m_GoalPos;
 
     /// the current ik rotation of the limb
     Quaternion m_CurrRot;
@@ -82,8 +91,8 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
     /// the destination ik rotation of the limb
     Quaternion m_DestRot;
 
-    /// the position where the stride is anchored
-    Vector3 m_AnchorPos;
+    /// the bone the stride is anchored by
+    CharacterBone m_Anchor;
 
     /// the current speed scale
     float m_CurrSpeedScale;
@@ -103,6 +112,10 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
         // set deps
         c = GetComponentInParent<CharacterContainer>();
 
+        // TODO: unclear if we really ever want this
+        // start as our own anchor
+        m_Anchor = this;
+
         // cache stride length
         #if !UNITY_EDITOR
         m_CastLen = Mathf.Sqrt(m_Length * m_Length + m_StrideLength.Dst.Dst * m_StrideLength.Dst.Dst);
@@ -114,13 +127,17 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
             return;
         }
 
+        if (Vector3.SqrMagnitude(m_GoalPos - m_Anchor.GoalPos) > m_StrideLength.Dst.Max * m_StrideLength.Dst.Max) {
+            MoveToGround();
+        }
+
         var speed = c.State.Curr.SurfaceVelocity.magnitude;
         m_CurrSpeedScale = m_SpeedScale.Evaluate(speed);
         m_CurrStrideLength = m_StrideLength.Evaluate(m_CurrSpeedScale);
 
         switch (m_State) {
         case State.Idle:
-            m_AnchorPos = Position;
+            // AAA: what are we doing with this state
             FindTarget();
             break;
         case State.Move:
@@ -171,12 +188,8 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
         // use the initial direction of the anchor as cast dir
         m_CastDir = m_RootBone.up;
 
-        // set initial positions
-        // TODO: cast downwards to get initial ground position
-        m_AnchorPos = m_GoalBone.position;
-        m_CurrPos = m_AnchorPos;
-
-        ResetPos();
+        // set initial position
+        MoveToGround();
 
         // error on misconfiguration
         if (!IsValid) {
@@ -184,28 +197,10 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
         }
     }
 
-    void ResetPos() {
-      var didHit = Physics.Raycast(
-            m_RootBone.position,
-            -transform.up,
-            out var hit,
-            10f,
-            m_LayerMask,
-            QueryTriggerInteraction.Ignore
-        );
-
-        if (!didHit) {
-            Log.Character.E($"{c.Name} - <limb: {m_Goal}> failed to find starting pos");
-        } else {
-            m_AnchorPos = hit.point;
-            m_CurrPos = hit.point;
-        }
-    }
-
     /// starts a new stride for the limb
-    public void Move(Vector3 anchor) {
+    public void Move(CharacterBone anchor) {
         m_State = State.Move;
-        m_AnchorPos = anchor;
+        m_Anchor = anchor;
     }
 
     public void Hold() {
@@ -226,7 +221,7 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
         if (m_Weight != 0.0f) {
             m_Animator.SetIKPosition(
                 m_Goal,
-                m_CurrPos
+                m_GoalPos
             );
         }
     }
@@ -234,7 +229,7 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
     /// try to find a new ik target
     void FindTarget() {
         var castPos = m_RootBone.position;
-        var castDst = m_AnchorPos + m_CurrStrideLength * c.State.Curr.SurfaceVelocity.normalized;
+        var castDst = m_Anchor.GoalPos + m_CurrStrideLength * c.State.Curr.SurfaceVelocity.normalized;
         var castDir = castDst - castPos;
         var castLen = m_CastLen;
 
@@ -268,7 +263,7 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
 
         if (m_State != State.Move) {
             // set current position from the bone's current position in our local space
-            m_CurrPos = transform.InverseTransformPoint(m_GoalBone.position);
+            m_GoalPos = transform.InverseTransformPoint(m_GoalBone.position);
         }
 
         // start moving towards the target
@@ -280,25 +275,57 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
 
     /// move towards the dest ik target
     void MoveToTarget() {
-        var rootPos = transform.position;
+        // get offset to anchor and mirror it over of anchor dir
+        var offset = m_Anchor.RootPos - m_Anchor.GoalPos;
+        var direction = Vector3.ProjectOnPlane(offset, Vector3.up);
+        direction = Vector3.ClampMagnitude(direction, m_CurrStrideLength / 2f);
+        direction.y = -offset.y;
 
-        // get offset to anchor
-        var offset = rootPos - m_AnchorPos;
-
-        // and mirror it over of anchor dir
-        offset.y = -offset.y;
-
-        m_CurrPos = rootPos + offset;
-
-        if (Vector3.SqrMagnitude(m_CurrPos - rootPos) > m_CurrStrideLength * m_CurrStrideLength / 4) {
-            m_State = State.Hold;
-        }
+        m_GoalPos = transform.position + direction;
 
         DebugDraw.Push(
-            $"limb-{m_Goal}-pos",
-            m_CurrPos,
-            new DebugDraw.Config(Color.cyan)
+            $"stride-curr-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
+            m_Anchor.GoalPos,
+            m_GoalPos - m_Anchor.GoalPos,
+            new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.cyan : Color.yellow, tags: DebugDraw.Tag.Movement, width: 1f, count: 1)
         );
+
+        // once we complete our stride, switch to hold
+        if (Vector3.SqrMagnitude(m_GoalPos - m_Anchor.GoalPos) > m_CurrStrideLength * m_CurrStrideLength) {
+            m_State = State.Hold;
+
+            DebugDraw.Push(
+                $"stride-hold-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
+                m_GoalPos,
+                new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.blue : Color.red, tags: DebugDraw.Tag.Movement, width: 3f)
+            );
+
+            DebugDraw.Push(
+                $"stride-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
+                m_Anchor.GoalPos,
+                m_GoalPos - m_Anchor.GoalPos,
+                new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.blue : Color.red, tags: DebugDraw.Tag.Movement, width: 0.5f)
+            );
+        }
+    }
+
+    /// move position to nearest surface
+    void MoveToGround() {
+        var didHit = Physics.Raycast(
+            m_RootBone.position,
+            -transform.up,
+            out var hit,
+            10f,
+            m_LayerMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        if (!didHit) {
+            Log.Character.E($"{c.Name} - <limb: {m_Goal}> failed to find starting pos");
+            return;
+        }
+
+        m_GoalPos = hit.point;
     }
 
     // -- queries --
@@ -307,14 +334,14 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
         get => m_RootBone && m_GoalBone;
     }
 
-    /// .
-    public AvatarIKGoal Goal {
-        get => m_Goal;
+    /// the current root bone position
+    public Vector3 RootPos {
+        get => transform.position;
     }
 
-    /// the position of the goal in world space
-    public Vector3 Position {
-        get => m_CurrPos;
+    /// the current goal bone position
+    public Vector3 GoalPos {
+        get => m_GoalPos;
     }
 
     /// .

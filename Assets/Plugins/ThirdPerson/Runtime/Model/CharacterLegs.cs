@@ -12,18 +12,7 @@ class CharacterLegs: MonoBehaviour {
     [Tooltip("the right leg")]
     [SerializeField] CharacterLimb m_Right;
 
-    CharacterLimb m_Curr;
-    CharacterLimb m_Next;
-
     // -- lifecycle --
-    void OnValidate() {
-        m_Left.transform.localPosition = Vector3.zero;
-        m_Right.transform.localPosition = Vector3.zero;
-
-        m_Curr = m_Left;
-        m_Next = m_Right;
-    }
-
     void Update() {
         if (!m_Left.IsHeld || !m_Right.IsHeld) {
             return;
@@ -31,19 +20,17 @@ class CharacterLegs: MonoBehaviour {
 
         var rootPos = transform.position;
 
-        m_Curr = m_Left;
-        m_Next = m_Right;
+        var curr = m_Left;
+        var held = m_Right;
 
-        var currDist = Vector3.SqrMagnitude(m_Curr.Position - rootPos);
-        var heldDist = Vector3.SqrMagnitude(m_Next.Position - rootPos);
+        var currDist = Vector3.SqrMagnitude(curr.GoalPos - rootPos);
+        var heldDist = Vector3.SqrMagnitude(held.GoalPos - rootPos);
         if (heldDist < currDist) {
-            (m_Curr, m_Next) = (m_Next, m_Curr);
+            (curr, held) = (held, curr);
         }
 
-        m_Next.Move(m_Curr.Position);
-        m_Curr.Hold();
-
-        (m_Curr, m_Next) = (m_Next, m_Curr);
+        held.Move(curr);
+        curr.Hold();
     }
 }
 
