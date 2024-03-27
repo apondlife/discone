@@ -1,9 +1,20 @@
+using System;
+using Soil;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Yarn.Compiler;
 
 namespace ThirdPerson {
 
+/// center of mass? move character down?
 /// an ik limb for the character model
 public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
+    enum State {
+        Hold,
+        Move,
+        Idle,
+    }
+
     // -- deps --
     /// the containing character
     CharacterContainer c;
@@ -16,8 +27,14 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
     [Tooltip("the type of goal of this limb")]
     [SerializeField] AvatarIKGoal m_Goal;
 
-    [Tooltip("the anchor transform for collision checks")]
-    [SerializeField] Transform m_Anchor;
+    [Tooltip("the scale for the speed")]
+    [SerializeField] MapInCurve m_SpeedScale;
+
+    [Tooltip("the cast layer mask")]
+    [SerializeField] LayerMask m_LayerMask;
+
+    [Tooltip("the length of the cast")]
+    [SerializeField] float m_Length;
 
     // -- tuning --
     [Header("tuning")]
@@ -25,60 +42,60 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
     [SerializeField] float m_TurnSpeed;
 
     [Tooltip("the duration of the ik blend when searching for target")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_BlendDuration")]
     [SerializeField] float m_BlendInDuration;
 
     [Tooltip("the duration of the ik blend when dropping target")]
     [SerializeField] float m_BlendOutDuration;
 
     [Header("tuning - stride")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_MaxDistance")]
     [Tooltip("the max distance before searching for a new dest")]
-    [SerializeField] float m_StrideLength;
+    [SerializeField] MapOutCurve m_StrideLength;
 
     [Tooltip("the move speed of the ik position, when striding")]
-    [SerializeField] float m_StrideSpeed;
-
-    [Tooltip("the distance the hand can be from the target when striding when close enough")]
-    [SerializeField] float m_StrideEpsilon;
+    [SerializeField] MapOutCurve m_StrideSpeed;
 
     // -- props --
-    /// if the limb is moving towards something
-    bool m_IsActive;
+    /// the current limb state
+    [SerializeField] State m_State;
 
-    /// if the limb is moving towards something
-    bool m_HasTarget;
+    /// the transform of the root bone, if any
+    Transform m_RootBone;
 
     /// the transform of the goal bone, if any
-    Transform m_AnimatedBone;
+    Transform m_GoalBone;
+
+    /// the direction of the cast
+    Vector3 m_CastDir;
 
     /// the blending weight for this limb
     float m_Weight;
 
-    /// the current ik position of the limb
-    Vector3 m_CurrPosition;
+    /// the current ik position of the limb in local space
+    Vector3 m_CurrPos;
 
     /// the current ik rotation of the limb
-    Quaternion m_CurrRotation;
+    Quaternion m_CurrRot;
 
-    /// the destination ik position of the limb
-    Vector3 m_DestPosition;
+    /// the destination ik position of the limb in world space
+    Vector3 m_DestPos;
 
     /// the destination ik rotation of the limb
-    Quaternion m_DestRotation;
+    Quaternion m_DestRot;
 
-    /// the square stride length
-    #if UNITY_EDITOR
-    float m_SqrStrideLength => m_StrideLength * m_StrideLength;
-    #else
-    float m_SqrStrideLength;
-    #endif
+    /// the position where the stride is anchored
+    Vector3 m_AnchorPos;
 
-    /// the square stride length
+    /// the current speed scale
+    float m_CurrSpeedScale;
+
+    /// the current stride length
+    float m_CurrStrideLength;
+
+    /// the max cast length
     #if UNITY_EDITOR
-    float m_SqrStrideEpsilon => m_StrideEpsilon * m_StrideEpsilon;
+    float m_CastLen => Mathf.Sqrt(m_Length * m_Length + m_StrideLength.Dst.Max * m_StrideLength.Dst.Max);
     #else
-    float m_SqrStrideEpsilon;
+    float m_CastLen;
     #endif
 
     // -- lifecycle --
@@ -88,14 +105,8 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
 
         // cache stride length
         #if !UNITY_EDITOR
-        m_SqrStrideLength = m_StrideLength * m_StrideLength;
-        m_SqrStrideEpsilon = m_StrideEpsilon * m_StrideEpsilon;
+        m_CastLen = Mathf.Sqrt(m_Length * m_Length + m_StrideLength.Dst.Dst * m_StrideLength.Dst.Dst);
         #endif
-    }
-
-    void FixedUpdate() {
-        // hands are always active
-        SetIsActive(true);
     }
 
     void Update() {
@@ -103,34 +114,31 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
             return;
         }
 
-        var delta = Time.deltaTime;
+        var speed = c.State.Curr.SurfaceVelocity.magnitude;
+        m_CurrSpeedScale = m_SpeedScale.Evaluate(speed);
+        m_CurrStrideLength = m_StrideLength.Evaluate(m_CurrSpeedScale);
 
-
-        // lerp the ik position towards destination
-        if (m_IsActive) {
-            // if we are fully blended in, we are striding
-            var dest = transform.InverseTransformPoint(m_DestPosition);
-            // TODO: this could be better kept as a state, striding => not striding
-            var hasCompletedStride = Vector3.SqrMagnitude(m_CurrPosition - dest) >= m_SqrStrideEpsilon;
-            var isStriding = m_Weight >= 1.0f && hasCompletedStride;
-            if (isStriding) {
-                m_CurrPosition = Vector3.MoveTowards(
-                    m_CurrPosition,
-                    dest,
-                    m_StrideSpeed * Time.deltaTime
-                );
-            } else {
-                m_CurrPosition = dest;
-            }
+        switch (m_State) {
+        case State.Idle:
+            m_AnchorPos = Position;
+            FindTarget();
+            break;
+        case State.Move:
+            MoveToTarget();
+            break;
+        case State.Hold:
+            break;
         }
 
-        // lerp the weight
-        var isBlendingIn = m_IsActive && m_HasTarget;
+        // blend the weight
+        var isBlendingIn = m_State != State.Idle;
         m_Weight = Mathf.MoveTowards(
             m_Weight,
             isBlendingIn ? 1.0f : 0.0f,
-            delta / (isBlendingIn ? m_BlendInDuration : m_BlendOutDuration)
+            Time.deltaTime / (isBlendingIn ? m_BlendInDuration : m_BlendOutDuration)
         );
+
+        m_Weight = isBlendingIn ? 1.0f : 0.0f;
     }
 
     // -- commands --
@@ -140,24 +148,68 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
         m_Animator = animator;
 
         // cache the bone; we can't really do anything if we don't find a bone
-        m_AnimatedBone = m_Animator.GetBoneTransform(m_Goal switch {
-            AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
-            _ /*AvatarIKGoal.LeftHand*/ => HumanBodyBones.LeftHand,
-        });
+        m_RootBone = m_Animator.GetBoneTransform(
+            m_Goal switch {
+                AvatarIKGoal.RightHand => HumanBodyBones.RightUpperArm,
+                AvatarIKGoal.LeftHand => HumanBodyBones.LeftUpperArm,
+                AvatarIKGoal.RightFoot => HumanBodyBones.RightUpperLeg,
+                AvatarIKGoal.LeftFoot => HumanBodyBones.LeftUpperLeg,
+                _ => throw new Exception($"invalid goal {m_Goal}")
+            }
+        );
+
+        m_GoalBone = m_Animator.GetBoneTransform(
+            m_Goal switch {
+                AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
+                AvatarIKGoal.LeftHand => HumanBodyBones.LeftHand,
+                AvatarIKGoal.RightFoot => HumanBodyBones.RightFoot,
+                AvatarIKGoal.LeftFoot => HumanBodyBones.LeftFoot,
+                _ => throw new Exception($"invalid goal {m_Goal}")
+            }
+        );
+
+        // use the initial direction of the anchor as cast dir
+        m_CastDir = m_RootBone.up;
+
+        // set initial positions
+        // TODO: cast downwards to get initial ground position
+        m_AnchorPos = m_GoalBone.position;
+        m_CurrPos = m_AnchorPos;
+
+        ResetPos();
 
         // error on misconfiguration
         if (!IsValid) {
-            Debug.LogError($"[chrctr] {c.Name} - has a limb w/ no matching bone: {Goal}");
+            Log.Character.E($"{c.Name} - <limb: {m_Goal}> no matching bone");
         }
     }
 
-    /// update if ik is active for is this lime
-    public void SetIsActive(bool isActive) {
-        if (!isActive) {
-            m_HasTarget = false;
-        }
+    void ResetPos() {
+      var didHit = Physics.Raycast(
+            m_RootBone.position,
+            -transform.up,
+            out var hit,
+            10f,
+            m_LayerMask,
+            QueryTriggerInteraction.Ignore
+        );
 
-        m_IsActive = isActive;
+        if (!didHit) {
+            Log.Character.E($"{c.Name} - <limb: {m_Goal}> failed to find starting pos");
+        } else {
+            m_AnchorPos = hit.point;
+            m_CurrPos = hit.point;
+        }
+    }
+
+    /// starts a new stride for the limb
+    public void Move(Vector3 anchor) {
+        m_State = State.Move;
+        m_AnchorPos = anchor;
+    }
+
+    public void Hold() {
+        m_State = State.Hold;
     }
 
     /// applies the limb ik
@@ -174,15 +226,85 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
         if (m_Weight != 0.0f) {
             m_Animator.SetIKPosition(
                 m_Goal,
-                transform.TransformPoint(m_CurrPosition)
+                m_CurrPos
             );
         }
+    }
+
+    /// try to find a new ik target
+    void FindTarget() {
+        var castPos = m_RootBone.position;
+        var castDst = m_AnchorPos + m_CurrStrideLength * c.State.Curr.SurfaceVelocity.normalized;
+        var castDir = castDst - castPos;
+        var castLen = m_CastLen;
+
+        // (there's a world in which we want to calculate an cast length based on anchor & start pos)
+        var didHit = Physics.Raycast(
+            castPos,
+            castDir,
+            out var hit,
+            castLen,
+            m_LayerMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        // if we miss, switch to idle
+        if (!didHit) {
+            return;
+        }
+
+        var pos = hit.point;
+
+        // var hitDist = Vector3.SqrMagnitude(pos - m_StrideStart);
+        // if (hitDist > m_CurrStrideLength * m_CurrStrideLength) {
+        //     return;
+        // }
+
+        // if this is farther than the current target, ignore it
+        // var destDist = Vector3.SqrMagnitude(m_DestPos - m_StrideStart);
+        // if (hitDist > destDist) {
+        //     return;
+        // }
+
+        if (m_State != State.Move) {
+            // set current position from the bone's current position in our local space
+            m_CurrPos = transform.InverseTransformPoint(m_GoalBone.position);
+        }
+
+        // start moving towards the target
+        m_State = State.Move;
+
+        // move towards the closest point on surface
+        m_DestPos = pos;
+    }
+
+    /// move towards the dest ik target
+    void MoveToTarget() {
+        var rootPos = transform.position;
+
+        // get offset to anchor
+        var offset = rootPos - m_AnchorPos;
+
+        // and mirror it over of anchor dir
+        offset.y = -offset.y;
+
+        m_CurrPos = rootPos + offset;
+
+        if (Vector3.SqrMagnitude(m_CurrPos - rootPos) > m_CurrStrideLength * m_CurrStrideLength / 4) {
+            m_State = State.Hold;
+        }
+
+        DebugDraw.Push(
+            $"limb-{m_Goal}-pos",
+            m_CurrPos,
+            new DebugDraw.Config(Color.cyan)
+        );
     }
 
     // -- queries --
     /// if this limb has the dependencies it needs to apply ik
     public bool IsValid {
-        get => m_AnimatedBone != null;
+        get => m_RootBone && m_GoalBone;
     }
 
     /// .
@@ -190,97 +312,43 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart {
         get => m_Goal;
     }
 
-    /// if this position exceeds the stride length
-    bool HasExceededStrideLength(Vector3 pos) {
-        return Vector3.SqrMagnitude(pos - m_DestPosition) >= m_SqrStrideLength;
+    /// the position of the goal in world space
+    public Vector3 Position {
+        get => m_CurrPos;
     }
 
-    // -- events --
-    void OnTriggerEnter(Collider other) {
-        if (!m_IsActive || !IsValid) {
-            return;
-        }
-
-        // ignore terrain since getting closes point for terrains will be very unlikely
-        if (other is TerrainCollider) {
-            return;
-        }
-
-        // can't use closest point on concave meshes
-        if (other is MeshCollider m && !m.convex) {
-            return;
-        }
-
-        // TODO: move anchor forward based on speed?
-        var pos = other.ClosestPoint(m_Anchor.position);
-        if (!m_HasTarget || HasExceededStrideLength(pos)) {
-            // start tracking the target
-            m_HasTarget = true;
-
-            // set current position from the bone's current position in our local space
-            m_CurrPosition = transform.InverseTransformPoint(m_AnimatedBone.position);
-
-            // move towards the closest point on sruface
-            m_DestPosition = pos;
-        }
+    /// .
+    public bool IsIdle {
+        get => m_State == State.Idle;
     }
 
-    void OnTriggerStay(Collider other) {
-        if (!m_IsActive || !IsValid) {
-            return;
-        }
-
-        // ignore terrain since getting closes point for terrains will be very unlikely
-        if (other is TerrainCollider) {
-            return;
-        }
-
-        // can't use closest point on concave meshes
-        // TODO: consider trying a raycast here
-        if (other is MeshCollider m && !m.convex) {
-            return;
-        }
-
-        m_HasTarget = true;
-
-        var pos = other.ClosestPoint(m_Anchor.position);
-        if (HasExceededStrideLength(pos)) {
-            m_DestPosition = pos;
-        }
-    }
-
-    void OnTriggerExit(Collider other) {
-        if (!m_IsActive || !IsValid) {
-            return;
-        }
-
-        m_HasTarget = false;
+    /// .
+    public bool IsHeld {
+        get => m_State == State.Hold;
     }
 
     // -- gizmos --
-    void OnDrawGizmos() {
-        if (!m_IsActive || !m_HasTarget) {
+    void OnDrawGizmosSelected() {
+        if (!IsValid) {
             return;
         }
 
-        var currPos = transform.TransformPoint(m_CurrPosition);
+        var anchorPos = m_RootBone.position;
 
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.green;
         Gizmos.DrawSphere(
-            currPos,
+            anchorPos,
             radius: 0.05f
         );
 
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(
-            m_DestPosition,
-            radius: 0.15f
-        );
+        var castPos = anchorPos;
+        var castDir = m_CastDir + m_StrideLength.Evaluate(m_CurrSpeedScale) * 0.5f * c.State.Curr.SurfaceVelocity.normalized;
+        var castLen = m_CastLen;
 
         Gizmos.color = Color.green;
         Gizmos.DrawLine(
-            currPos,
-            m_DestPosition
+            castPos,
+            castPos + castDir.normalized * castLen
         );
     }
 }

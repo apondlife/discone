@@ -167,7 +167,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
 
     /// push the drawing's next ray
     public static void Push(string name, Vector3 pos, Vector3 dir, Config cfg) {
-        if (s_Instance) {
+        if (!s_Instance) {
             return;
         }
 
