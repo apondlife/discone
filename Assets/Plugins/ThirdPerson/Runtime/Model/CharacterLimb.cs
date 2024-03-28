@@ -42,9 +42,6 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
     [Tooltip("the cast layer mask")]
     [SerializeField] LayerMask m_LayerMask;
 
-    [Tooltip("the length of the cast")]
-    [SerializeField] float m_Length;
-
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the turn speed of the ik rotation")]
@@ -73,9 +70,6 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
     /// the transform of the goal bone, if any
     Transform m_GoalBone;
 
-    /// the direction of the cast
-    Vector3 m_CastDir;
-
     /// the blending weight for this limb
     float m_Weight;
 
@@ -100,13 +94,6 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
     /// the current stride length
     float m_CurrStrideLength;
 
-    /// the max cast length
-    #if UNITY_EDITOR
-    float m_CastLen => Mathf.Sqrt(m_Length * m_Length + m_StrideLength.Dst.Max * m_StrideLength.Dst.Max);
-    #else
-    float m_CastLen;
-    #endif
-
     // -- lifecycle --
     void Awake() {
         // set deps
@@ -115,11 +102,6 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         // TODO: unclear if we really ever want this
         // start as our own anchor
         m_Anchor = this;
-
-        // cache stride length
-        #if !UNITY_EDITOR
-        m_CastLen = Mathf.Sqrt(m_Length * m_Length + m_StrideLength.Dst.Dst * m_StrideLength.Dst.Dst);
-        #endif
     }
 
     void Update() {
@@ -132,11 +114,11 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         if (Vector3.Magnitude(m_GoalPos - m_Anchor.GoalPos) > maxDistance) {
             MoveToGround();
 
-            DebugDraw.Push(
+            DebugDraw.PushLine(
                 $"stride-leg-break-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
                 m_GoalPos,
-                m_Anchor.GoalPos - m_GoalPos,
-            new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.cyan : Color.yellow, tags: DebugDraw.Tag.Movement, width: 5f, count: 100)
+                m_Anchor.GoalPos,
+                new DebugDraw.Config(DebugColor(0.5f), tags: DebugDraw.Tag.Movement, width: 5f, count: 100)
         );
 
         }
@@ -148,7 +130,7 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         switch (m_State) {
         case State.Idle:
             // AAA: what are we doing with this state
-            FindTarget();
+            // FindTarget();
             break;
         case State.Move:
             MoveToTarget();
@@ -169,17 +151,7 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         m_Weight = isBlendingIn ? 1.0f : 0.0f;
 
         if (m_Goal <= AvatarIKGoal.RightFoot) {
-            DebugDraw.Push(
-                $"stride-leg-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
-                m_GoalPos,
-                transform.position - m_GoalPos,
-                new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.cyan : Color.yellow, tags: DebugDraw.Tag.Movement, width: 2f, count: 1)
-            );
-            DebugDraw.Push(
-                $"stride-foot-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
-                m_GoalPos,
-                new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.cyan : Color.yellow, tags: DebugDraw.Tag.Movement, width: 4f, count: 1)
-            );
+            Draw("limb", width: 2f);
         }
     }
 
@@ -209,9 +181,6 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
                 _ => throw new Exception($"invalid goal {m_Goal}")
             }
         );
-
-        // use the initial direction of the anchor as cast dir
-        m_CastDir = m_RootBone.up;
 
         // set initial position
         MoveToGround();
@@ -251,53 +220,6 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         }
     }
 
-    /// try to find a new ik target
-    void FindTarget() {
-        var castPos = m_RootBone.position;
-        var castDst = m_Anchor.GoalPos + m_CurrStrideLength * c.State.Curr.SurfaceVelocity.normalized;
-        var castDir = castDst - castPos;
-        var castLen = m_CastLen;
-
-        // (there's a world in which we want to calculate an cast length based on anchor & start pos)
-        var didHit = Physics.Raycast(
-            castPos,
-            castDir,
-            out var hit,
-            castLen,
-            m_LayerMask,
-            QueryTriggerInteraction.Ignore
-        );
-
-        // if we miss, switch to idle
-        if (!didHit) {
-            return;
-        }
-
-        var pos = hit.point;
-
-        // var hitDist = Vector3.SqrMagnitude(pos - m_StrideStart);
-        // if (hitDist > m_CurrStrideLength * m_CurrStrideLength) {
-        //     return;
-        // }
-
-        // if this is farther than the current target, ignore it
-        // var destDist = Vector3.SqrMagnitude(m_DestPos - m_StrideStart);
-        // if (hitDist > destDist) {
-        //     return;
-        // }
-
-        if (m_State != State.Move) {
-            // set current position from the bone's current position in our local space
-            m_GoalPos = transform.InverseTransformPoint(m_GoalBone.position);
-        }
-
-        // start moving towards the target
-        m_State = State.Move;
-
-        // move towards the closest point on surface
-        m_DestPos = pos;
-    }
-
     /// move towards the dest ik target
     void MoveToTarget() {
         // get offset to anchor and mirror it over of anchor dir
@@ -309,11 +231,11 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
 
         m_GoalPos = transform.position + direction;
 
-        DebugDraw.Push(
+        DebugDraw.PushLine(
             $"stride-curr-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
             m_Anchor.GoalPos,
-            m_GoalPos - m_Anchor.GoalPos,
-            new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.cyan : Color.yellow, tags: DebugDraw.Tag.Movement, width: 1f, count: 1)
+            m_GoalPos,
+            new DebugDraw.Config(DebugColor(), tags: DebugDraw.Tag.Movement, width: 1f, count: 1)
         );
 
         // once we complete our stride, switch to hold
@@ -323,14 +245,14 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
             DebugDraw.Push(
                 $"stride-hold-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
                 m_GoalPos,
-                new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.blue : Color.red, tags: DebugDraw.Tag.Movement, width: 3f)
+                new DebugDraw.Config(DebugColor(0.5f), tags: DebugDraw.Tag.Movement, width: 3f)
             );
 
-            DebugDraw.Push(
+            DebugDraw.PushLine(
                 $"stride-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
                 m_Anchor.GoalPos,
-                m_GoalPos - m_Anchor.GoalPos,
-                new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.blue : Color.red, tags: DebugDraw.Tag.Movement, width: 0.5f)
+                m_GoalPos,
+                new DebugDraw.Config(DebugColor(0.5f), tags: DebugDraw.Tag.Movement, width: 0.5f)
             );
         }
     }
@@ -370,6 +292,11 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         get => m_GoalPos;
     }
 
+    /// the square length of the bone
+    public float SqrLength {
+        get => Vector3.SqrMagnitude(RootPos - GoalPos);
+    }
+
     /// .
     public bool IsIdle {
         get => m_State == State.Idle;
@@ -380,30 +307,36 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         get => m_State == State.Hold;
     }
 
-    // -- gizmos --
-    void OnDrawGizmosSelected() {
-        if (!IsValid) {
-            return;
-        }
+    // -- debug --
+    /// gets the debug color for a limb with given alpha (red is right)
+    public Color DebugColor(float alpha = 1f) {
+        var color = m_Goal switch {
+            AvatarIKGoal.LeftFoot => Color.blue,
+            AvatarIKGoal.RightFoot => Color.red,
+            AvatarIKGoal.LeftHand => Color.blue,
+            AvatarIKGoal.RightHand => Color.red,
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
-        var anchorPos = m_RootBone.position;
+        color.a = alpha;
 
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(
-            anchorPos,
-            radius: 0.05f
+        return color;
+    }
+
+    public void Draw(string name, float alpha = 1f, float width = 1f, int count = 1) {
+        var color = DebugColor(alpha);
+        DebugDraw.PushLine(
+            $"{name}-bone-{m_Goal}",
+            GoalPos,
+            RootPos,
+            new DebugDraw.Config(color, tags: DebugDraw.Tag.Movement, minAlpha: color.a, width: width, count: count)
         );
 
-        var castPos = anchorPos;
-        var castDir = m_CastDir + m_StrideLength.Evaluate(m_CurrSpeedScale) * 0.5f * c.State.Curr.SurfaceVelocity.normalized;
-        var castLen = m_CastLen;
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(
-            castPos,
-            castPos + castDir.normalized * castLen
+        DebugDraw.Push(
+            $"{name}-foot-{m_Goal}",
+            m_GoalPos,
+            new DebugDraw.Config(color, tags: DebugDraw.Tag.Movement, minAlpha: color.a, width: width * 2f, count: count)
         );
     }
 }
-
 }

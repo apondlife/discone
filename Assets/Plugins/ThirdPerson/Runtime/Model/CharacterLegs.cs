@@ -14,24 +14,28 @@ class CharacterLegs: MonoBehaviour {
 
     // -- lifecycle --
     void Update() {
-        if (!m_Left.IsHeld || !m_Right.IsHeld) {
+        if (!(m_Left.IsHeld && m_Right.IsHeld)) {
             return;
         }
 
-        var rootPos = transform.position;
+        DebugDraw.PushLine(
+            "legs-hips",
+            m_Left.RootPos,
+            m_Right.RootPos,
+            new DebugDraw.Config(color: Color.yellow, DebugDraw.Tag.Movement, width: 1f, count: 100)
+        );
+        m_Left.Draw("legs", count: 100);
+        m_Right.Draw("legs", count: 100);
 
-        var curr = m_Left;
-        var held = m_Right;
+        var (move, hold) = m_Left.SqrLength > m_Right.SqrLength
+            ? (m_Left, m_Right)
+            : (m_Right, m_Left);
 
-        var currDist = Vector3.SqrMagnitude(curr.GoalPos - rootPos);
-        var heldDist = Vector3.SqrMagnitude(held.GoalPos - rootPos);
-        if (heldDist < currDist) {
-            (curr, held) = (held, curr);
-        }
-
-        held.Move(curr);
-        curr.Hold();
+        move.Move(hold);
+        hold.Hold();
     }
+
+
 }
 
 }

@@ -154,6 +154,11 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         Push(name, pos, Vector3.zero);
     }
 
+    /// push the drawing's next line
+    public static void PushLine(string name, Vector3 src, Vector3 dst, Config cfg) {
+        Push(name, src, dst-src, cfg);
+    }
+
     /// push the drawing's next point
     public static void Push(string name, Vector3 pos, Config cfg) {
         Push(name, pos, Vector3.zero, cfg);
