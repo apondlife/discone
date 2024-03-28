@@ -127,8 +127,18 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
             return;
         }
 
-        if (Vector3.SqrMagnitude(m_GoalPos - m_Anchor.GoalPos) > m_StrideLength.Dst.Max * m_StrideLength.Dst.Max) {
+        // 2 half strides + hip distance is as far as a leg can go
+        var maxDistance = m_StrideLength.Dst.Max + Vector3.Magnitude(m_Anchor.RootPos - transform.position);
+        if (Vector3.Magnitude(m_GoalPos - m_Anchor.GoalPos) > maxDistance) {
             MoveToGround();
+
+            DebugDraw.Push(
+                $"stride-leg-break-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
+                m_GoalPos,
+                m_Anchor.GoalPos - m_GoalPos,
+            new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.cyan : Color.yellow, tags: DebugDraw.Tag.Movement, width: 5f, count: 100)
+        );
+
         }
 
         var speed = c.State.Curr.SurfaceVelocity.magnitude;
@@ -155,7 +165,22 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
             Time.deltaTime / (isBlendingIn ? m_BlendInDuration : m_BlendOutDuration)
         );
 
+        // AAA: blend ik
         m_Weight = isBlendingIn ? 1.0f : 0.0f;
+
+        if (m_Goal <= AvatarIKGoal.RightFoot) {
+            DebugDraw.Push(
+                $"stride-leg-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
+                m_GoalPos,
+                transform.position - m_GoalPos,
+                new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.cyan : Color.yellow, tags: DebugDraw.Tag.Movement, width: 2f, count: 1)
+            );
+            DebugDraw.Push(
+                $"stride-foot-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
+                m_GoalPos,
+                new DebugDraw.Config(m_Goal == AvatarIKGoal.LeftFoot ? Color.cyan : Color.yellow, tags: DebugDraw.Tag.Movement, width: 4f, count: 1)
+            );
+        }
     }
 
     // -- commands --
@@ -279,6 +304,7 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         var offset = m_Anchor.RootPos - m_Anchor.GoalPos;
         var direction = Vector3.ProjectOnPlane(offset, Vector3.up);
         direction = Vector3.ClampMagnitude(direction, m_CurrStrideLength / 2f);
+        var planarDirection = direction;
         direction.y = -offset.y;
 
         m_GoalPos = transform.position + direction;
@@ -291,7 +317,7 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         );
 
         // once we complete our stride, switch to hold
-        if (Vector3.SqrMagnitude(m_GoalPos - m_Anchor.GoalPos) > m_CurrStrideLength * m_CurrStrideLength) {
+        if (Vector3.SqrMagnitude(planarDirection) > m_CurrStrideLength * m_CurrStrideLength / 4) {
             m_State = State.Hold;
 
             DebugDraw.Push(

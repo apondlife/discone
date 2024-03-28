@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3634307922059092450}
   - component: {fileID: 3004317116465801583}
-  - component: {fileID: 467891707397163346}
   m_Layer: 13
   m_Name: CharacterLimb
   m_TagString: Untagged
@@ -46,27 +45,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Goal: 2
-  m_Length: 0.5
+  m_SpeedScale:
+    m_Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_Src:
+      Min: 0
+      Max: 0
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 385
+  m_Length: 0.5
   m_TurnSpeed: 360
   m_BlendInDuration: 0.2
   m_BlendOutDuration: 0.2
-  m_StrideLength: 0
-  m_StrideSpeed: 0
-  m_StrideEpsilon: 0
---- !u!136 &467891707397163346
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1311217693618543391}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.8
-  m_Height: 2.5
-  m_Direction: 0
-  m_Center: {x: 0, y: 0, z: 0}
+  m_StrideLength:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  m_StrideSpeed:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  m_State: 0

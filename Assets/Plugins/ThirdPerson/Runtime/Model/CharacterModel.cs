@@ -50,13 +50,13 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the random value animator prop
     const string k_PropJumpLeg = "JumpLeg";
 
-    // -- fields --
-    [Header("config")]
-    [Tooltip("the rotation speed in degrees towards look direction")]
-    [FormerlySerializedAs("m_RotationSpeed_Look")]
-    [FormerlySerializedAs("m_RotationSpeed")]
-    [SerializeField] float m_LookRotation_Speed = 0.0f;
+    // -- tuning --
+    [Header("tuning")]
+    [Tooltip("surface scaling factor as a function of surface angle (degrees)")]
+    [SerializeField] AnimationCurve m_SurfaceScale;
 
+    // -- tuning/tilt --
+    [Header("tuning/tilt")]
     [FormerlySerializedAs("m_RotationSpeed_Tilt")]
     [Tooltip("the rotation speed in degrees away for tilting")]
     [SerializeField] float m_MoveTilt_Speed = 100.0f;
@@ -68,9 +68,6 @@ public sealed class CharacterModel: MonoBehaviour {
 
     [Tooltip("the rotation away from the wall in degrees as a fn of surface angle")]
     [SerializeField] MapOutCurve m_SurfaceTilt_Range;
-
-    [Tooltip("surface scaling factor as a function of surface angle (degrees)")]
-    [SerializeField] AnimationCurve m_SurfaceScale;
 
     // -- refs --
     [Header("refs")]
@@ -101,9 +98,6 @@ public sealed class CharacterModel: MonoBehaviour {
 
     /// the arms layer index
     int m_LayerArms;
-
-    /// the stored look rotation
-    Quaternion m_LookRotation = Quaternion.identity;
 
     /// the stored wall rotation
     Quaternion m_SurfaceTilt = Quaternion.identity;
@@ -300,13 +294,7 @@ public sealed class CharacterModel: MonoBehaviour {
             m_MoveTilt_Speed * delta
         );
 
-        m_LookRotation = Quaternion.RotateTowards(
-            m_LookRotation,
-            state.LookRotation,
-            m_LookRotation_Speed * delta
-        );
-
-        transform.localRotation = m_SurfaceTilt * m_MoveTilt * m_LookRotation;
+        transform.localRotation = m_SurfaceTilt * m_MoveTilt;
     }
 
     static void SetDefaultLayersRecursively(GameObject parent, int layer) {

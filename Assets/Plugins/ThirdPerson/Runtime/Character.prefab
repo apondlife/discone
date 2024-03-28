@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.017977966, y: 0.0000000010752251, z: 1.9333484e-11, w: 0.9998384}
+  m_LocalRotation: {x: -0.017977966, y: -0.0000000010752251, z: -1.9333484e-11, w: 0.9998384}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -528,6 +528,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee60d0a5ce5b4a2d836e066c8117e78a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_LookRotation_Speed: 420
 --- !u!1 &7562501268775911199
 GameObject:
   m_ObjectHideFlags: 0
@@ -572,7 +573,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b04aa04aaec9e841bd620ab61ec9231, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LookRotation_Speed: 420
+  m_SurfaceScale:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 90
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 180
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   m_MoveTilt_Speed: 10
   m_SurfaceTilt_Speed: 180
   m_SurfaceTilt_Range:
@@ -612,39 +645,6 @@ MonoBehaviour:
     Dst:
       Min: 0
       Max: 40
-  m_SurfaceScale:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 90
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 180
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   m_AnimatorController: {fileID: 9100000, guid: 597f755a64b35974b963a44170d24fb5, type: 2}
 --- !u!1 &7614967429340073447
 GameObject:
@@ -988,11 +988,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 548326381888055764, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 548326381888055764, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 548326381888055764, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1031,6 +1031,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2864797024996741929, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
+      propertyPath: m_Icon
+      value: 
+      objectReference: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
+    - target: {fileID: 2864797024996741929, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
       propertyPath: m_Name
       value: RightLeg
       objectReference: {fileID: 0}
@@ -1065,11 +1069,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 548326381888055764, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: 548326381888055764, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 548326381888055764, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1103,6 +1107,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2864797024996741929, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
+      propertyPath: m_Icon
+      value: 
+      objectReference: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
     - target: {fileID: 2864797024996741929, guid: 29ead6900cfc35c4f8b1ae2cefbed0b7, type: 3}
       propertyPath: m_Name
       value: LeftLeg

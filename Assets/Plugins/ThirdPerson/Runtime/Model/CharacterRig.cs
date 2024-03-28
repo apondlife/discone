@@ -1,9 +1,15 @@
+using System;
 using UnityEngine;
 
 namespace ThirdPerson {
 
 /// a container for the character's model and animations
 public class CharacterRig: MonoBehaviour {
+    // -- tuning --
+    [Header("tuning")]
+    [Tooltip("the rotation speed in degrees towards look direction")]
+    [SerializeField] float m_LookRotation_Speed;
+
     // -- props --
     /// the containing character
     CharacterContainer c;
@@ -13,6 +19,9 @@ public class CharacterRig: MonoBehaviour {
 
     /// the list of ik limbs
     CharacterPart[] m_Limbs;
+
+    /// the stored look rotation
+    Quaternion m_LookRotation = Quaternion.identity;
 
     // -- lifecycle --
     void Start() {
@@ -44,6 +53,16 @@ public class CharacterRig: MonoBehaviour {
                 Destroy(limb.gameObject);
             }
         }
+    }
+
+    void Update() {
+        m_LookRotation = Quaternion.RotateTowards(
+            m_LookRotation,
+            c.State.Curr.LookRotation,
+            m_LookRotation_Speed * Time.deltaTime
+        );
+
+        transform.localRotation =  m_LookRotation;
     }
 
     // -- commands --
