@@ -27,6 +27,7 @@ class CharacterLegs: MonoBehaviour {
         m_Left.Draw("legs", count: 100);
         m_Right.Draw("legs", count: 100);
 
+        // move leg that is furthest away
         var (move, hold) = m_Left.SqrLength > m_Right.SqrLength
             ? (m_Left, m_Right)
             : (m_Right, m_Left);
@@ -34,8 +35,6 @@ class CharacterLegs: MonoBehaviour {
         move.Move(hold);
         hold.Hold();
     }
-
-
 }
 
 }

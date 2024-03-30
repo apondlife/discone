@@ -64,20 +64,20 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
     /// the current limb state
     [SerializeField] State m_State;
 
-    /// the transform of the root bone, if any
-    Transform m_RootBone;
-
     /// the transform of the goal bone, if any
     Transform m_GoalBone;
+
+    /// the default limb length;
+    float m_Length;
 
     /// the blending weight for this limb
     float m_Weight;
 
-    /// the current ik position of the limb in local space
+    /// the current ik position of the limb
     Vector3 m_GoalPos;
 
     /// the current ik rotation of the limb
-    Quaternion m_CurrRot;
+    Quaternion m_GoalRot;
 
     /// the destination ik position of the limb in world space
     Vector3 m_DestPos;
@@ -118,19 +118,13 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
             // AAA: what are we doing with this state
             // find target and move to
             // FindTarget();
+            MoveToGround();
             break;
         case State.Move:
             MoveToTarget();
             break;
         case State.Hold:
-            // 2 half strides + hip distance is as far as a leg can go
-            var maxDistance = m_StrideLength.Dst.Max + m_StrideLength.Dst.Max / 4;
-            var s = m_GoalPos - transform.position;
-            s = Vector3.ProjectOnPlane(s, Vector3.up);
-            var stride = s.sqrMagnitude;
-            if (stride > maxDistance) {
-                MoveToGround();
-            }
+            MoveToGround();
             break;
         }
 
@@ -157,16 +151,6 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         m_Animator = animator;
 
         // cache the bone; we can't really do anything if we don't find a bone
-        m_RootBone = m_Animator.GetBoneTransform(
-            m_Goal switch {
-                AvatarIKGoal.RightHand => HumanBodyBones.RightUpperArm,
-                AvatarIKGoal.LeftHand => HumanBodyBones.LeftUpperArm,
-                AvatarIKGoal.RightFoot => HumanBodyBones.RightUpperLeg,
-                AvatarIKGoal.LeftFoot => HumanBodyBones.LeftUpperLeg,
-                _ => throw new Exception($"invalid goal {m_Goal}")
-            }
-        );
-
         m_GoalBone = m_Animator.GetBoneTransform(
             m_Goal switch {
                 AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
@@ -176,6 +160,10 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
                 _ => throw new Exception($"invalid goal {m_Goal}")
             }
         );
+
+        // get limb length
+        m_Length = Vector3.Distance(transform.position, m_GoalBone.position);
+        Log.Model.I($"{c.Name} limb {name} length: {m_Length}");
 
         // set initial position
         MoveToGround();
@@ -212,6 +200,11 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
                 m_Goal,
                 m_GoalPos
             );
+
+            m_Animator.SetIKRotation(
+                m_Goal,
+                m_GoalRot
+            );
         }
     }
 
@@ -222,10 +215,35 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         var direction = Vector3.ProjectOnPlane(offset, Vector3.up);
         var planarDirection = direction;
 
-        direction = Vector3.ClampMagnitude(direction, m_CurrStrideLength / 2f);
         direction.y = -offset.y;
+        direction = direction.normalized;
 
-        m_GoalPos = transform.position + direction;
+        var angle = Vector3.Angle(direction, Vector3.down);
+        // the maximum stride distance in "leg space"
+        var maxDist = m_CurrStrideLength / Mathf.Sin(angle);
+        var rootPos = transform.position;
+        var goalPos = rootPos + direction * maxDist;
+        var goalRot = Quaternion.identity;
+
+        // find foot placement
+        var didHit = Physics.Raycast(
+            rootPos,
+            direction,
+            out var hit,
+            maxDist,
+            m_LayerMask
+        );
+
+        if (didHit) {
+            goalPos = hit.point;
+            goalRot = Quaternion.LookRotation(
+                Vector3.ProjectOnPlane(planarDirection, hit.normal),
+                hit.normal
+            );
+        }
+
+        m_GoalPos = goalPos;
+        m_GoalRot = goalRot;
 
         DebugDraw.PushLine(
             $"stride-curr-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
@@ -235,8 +253,8 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         );
 
         // once we complete our stride, switch to hold
-        if (Vector3.SqrMagnitude(planarDirection) > m_CurrStrideLength * m_CurrStrideLength / 4f) {
-            m_State = State.Hold;
+        if (Vector3.SqrMagnitude(planarDirection) > m_CurrStrideLength * m_CurrStrideLength) {
+            MoveToGround();
 
             DebugDraw.Push(
                 $"stride-hold-{(m_Goal == AvatarIKGoal.LeftFoot ? "l" : "r")}",
@@ -255,28 +273,32 @@ public sealed class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
 
     /// move position to nearest surface
     void MoveToGround() {
-        var t = transform;
+        var castDir = -transform.up; // TODO: arms ? maybe t.forward
+        var castLen = m_Length;
+
         var didHit = Physics.Raycast(
-            t.position,
-            -t.up,
+            m_GoalPos,
+            castDir,
             out var hit,
-            10f,
+            castLen,
             m_LayerMask,
             QueryTriggerInteraction.Ignore
         );
 
         if (!didHit) {
-            Log.Character.E($"{c.Name} - <limb: {m_Goal}> failed to find starting pos");
+            m_GoalPos = transform.position + castDir * m_Length;
+            m_State = State.Idle;
             return;
         }
 
+        m_State = State.Hold;
         m_GoalPos = hit.point;
     }
 
     // -- queries --
     /// if this limb has the dependencies it needs to apply ik
     public bool IsValid {
-        get => m_RootBone && m_GoalBone;
+        get => m_GoalBone;
     }
 
     /// the current root bone position
