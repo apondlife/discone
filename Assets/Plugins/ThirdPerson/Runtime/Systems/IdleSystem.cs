@@ -20,7 +20,7 @@ sealed class IdleSystem: CharacterSystem {
 
     // -- System --
     protected override Phase InitInitialPhase() {
-        return Idle;
+        return NotIdle;
     }
 
     protected override SystemState State {
@@ -36,8 +36,7 @@ sealed class IdleSystem: CharacterSystem {
     );
 
     void NotIdle_Enter() {
-        c.State.Next.IdleTime = 0.0f;
-        c.Events.Schedule(CharacterEvent.Move);
+        c.State.Next.IdleTime = 0f;
     }
 
     void NotIdle_Update(float _) {
@@ -50,7 +49,8 @@ sealed class IdleSystem: CharacterSystem {
     Phase Idle => new(
         name: "Idle",
         enter: Idle_Enter,
-        update: Idle_Update
+        update: Idle_Update,
+        exit: Idle_Exit
     );
 
     void Idle_Enter() {
@@ -65,6 +65,10 @@ sealed class IdleSystem: CharacterSystem {
         if (c.State.Curr.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
            ChangeTo(NotIdle);
         }
+    }
+
+    void Idle_Exit() {
+        c.Events.Schedule(CharacterEvent.Move);
     }
 }
 

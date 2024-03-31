@@ -11,10 +11,6 @@ sealed class CameraTiltSystem: CameraSystem {
         return Tilting;
     }
 
-    public override void Init() {
-        base.Init();
-    }
-
     // -- Tracking --
     Phase Tilting => new(
         name: "Tilting",

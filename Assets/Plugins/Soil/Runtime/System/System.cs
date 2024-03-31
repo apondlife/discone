@@ -38,13 +38,13 @@ public abstract class System {
     /// create a new system
     public System() {
         // set props
-        m_Name = this.GetType().Name;
+        m_Name = GetType().Name;
     }
 
     public virtual void Init() {
-        // set the initial phase
-        // TODO: should this call m_Phase.Enter() (e.g. use ChangeTo here)?
-        SetPhase(InitInitialPhase());
+        var phase = InitInitialPhase();
+        phase.Enter();
+        SetPhase(phase);
     }
 
     /// construct the initial phase
@@ -64,7 +64,7 @@ public abstract class System {
 
         // ensure a phase!
         if (m_Phase.Update == null) {
-            Debug.LogError($"[system] must call init! {this}!");
+            Log.System.E($"must call init! {this}!");
         }
         #endif
 
@@ -98,7 +98,7 @@ public abstract class System {
         // debug
         #if UNITY_EDITOR
         if (m_IsLogging) {
-            UnityEngine.Debug.Log($"{m_Name}: did change {prev.Name} -> {next.Name}");
+            Log.System.I($"{m_Name}: did change {prev.Name} -> {next.Name}");
         }
         #endif
     }
@@ -109,7 +109,7 @@ public abstract class System {
         #if UNITY_EDITOR
         if (m_Debug_Phases.Contains(next.Name)) {
             m_Debug_Phases.Add(next.Name);
-            Debug.LogError($"[system] phase change recursion:\n{string.Join("->", m_Debug_Phases)}");
+            Log.System.E($"phase change recursion:\n{string.Join("->", m_Debug_Phases)}");
             return;
         }
         #endif

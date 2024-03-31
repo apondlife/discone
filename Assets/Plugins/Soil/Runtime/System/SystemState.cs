@@ -6,6 +6,7 @@ namespace Soil {
 /// the state for a system
 [Serializable]
 public struct SystemState: IEquatable<SystemState> {
+    // -- fields --
     [Tooltip("the current phase")]
     public string PhaseName;
 
@@ -15,6 +16,7 @@ public struct SystemState: IEquatable<SystemState> {
     [Tooltip("the time in the current phase")]
     public float PhaseElapsed;
 
+    // -- IEquatable --
     public override bool Equals(object o) {
         if (o is SystemState c) {
             return Equals(c);

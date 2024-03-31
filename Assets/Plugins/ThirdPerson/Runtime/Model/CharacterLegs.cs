@@ -18,22 +18,24 @@ class CharacterLegs: MonoBehaviour {
             return;
         }
 
-        DebugDraw.PushLine(
-            "legs-hips",
-            m_Left.RootPos,
-            m_Right.RootPos,
-            new DebugDraw.Config(color: Color.yellow, DebugDraw.Tag.Movement, width: 1f, count: 100)
-        );
-        m_Left.Draw("legs", count: 100);
-        m_Right.Draw("legs", count: 100);
-
         // move leg that is furthest away
         var (move, hold) = m_Left.SqrLength > m_Right.SqrLength
             ? (m_Left, m_Right)
             : (m_Right, m_Left);
 
         move.Move(hold);
-        hold.Hold();
+
+        // draw hips & legs on move
+        DebugDraw.PushLine(
+            "legs-hips",
+            m_Left.RootPos,
+            m_Right.RootPos,
+            new DebugDraw.Config(color: Color.yellow, DebugDraw.Tag.Movement, count: 100)
+        );
+
+        m_Left.DebugDraw("legs", count: 100);
+        m_Right.DebugDraw("legs", count: 100);
+
     }
 }
 
