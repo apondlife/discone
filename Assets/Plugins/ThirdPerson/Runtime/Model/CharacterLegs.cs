@@ -14,10 +14,16 @@ class CharacterLegs: MonoBehaviour {
 
     // -- lifecycle --
     void Update() {
-        if (!(m_Left.IsHeld && m_Right.IsHeld)) {
-            return;
+        if (m_Left.IsHeld && m_Right.IsHeld) {
+            Switch();
+        } else if (m_Left.IsFree != m_Right.IsFree) {
+            Release();
         }
+    }
 
+    // -- commands --
+    /// switch the moving leg
+    void Switch() {
         // move leg that is furthest away
         var (move, hold) = m_Left.SqrLength > m_Right.SqrLength
             ? (m_Left, m_Right)
@@ -35,7 +41,12 @@ class CharacterLegs: MonoBehaviour {
 
         m_Left.DebugDraw("legs", count: 100);
         m_Right.DebugDraw("legs", count: 100);
+    }
 
+    /// make sure both legs are free
+    void Release() {
+        m_Left.Release();
+        m_Right.Release();
     }
 }
 

@@ -32,8 +32,8 @@ class StrideSystem: CharacterSystem {
     /// the ik goal
     AvatarIKGoal m_Goal;
 
-    /// if the limb is currently idle
-    bool m_IsIdle;
+    /// if the limb is currently free
+    bool m_IsFree;
 
     /// if the limb is currently held
     bool m_IsHeld;
@@ -93,20 +93,26 @@ class StrideSystem: CharacterSystem {
         ChangeTo(Moving);
     }
 
-    // -- Idle --
-    Phase Idle => new(
-        name: "Idle",
-        enter: Idle_Enter,
-        update: Idle_Update,
-        exit: Idle_Exit
+    /// release the leg's hold
+    public void Release() {
+        m_Anchor = null;
+        ChangeTo(Free);
+    }
+
+    // -- Free --
+    Phase Free => new(
+        name: "Free",
+        enter: Free_Enter,
+        update: Free_Update,
+        exit: Free_Exit
     );
 
-    void Idle_Enter() {
-        m_IsIdle = true;
+    void Free_Enter() {
+        m_IsFree = true;
         m_GoalPos = m_Root.position + RootDir * m_Length;
     }
 
-    void Idle_Update(float delta) {
+    void Free_Update(float delta) {
         var didHit = FindSurface(out var hit);
         if (didHit) {
             m_GoalPos = hit.point;
@@ -117,8 +123,8 @@ class StrideSystem: CharacterSystem {
         m_GoalPos = m_Root.position + RootDir * m_Length;
     }
 
-    void Idle_Exit() {
-        m_IsIdle = false;
+    void Free_Exit() {
+        m_IsFree = false;
     }
 
     // -- Moving --
@@ -130,9 +136,9 @@ class StrideSystem: CharacterSystem {
     void Moving_Update(float delta) {
         // get offset to anchor and mirror it over of anchor dir
         var offset = m_Anchor.RootPos - m_Anchor.GoalPos;
-        var direction = Vector3.ProjectOnPlane(offset, Vector3.up);
-        var planarDirection = direction;
+        var stride = Vector3.ProjectOnPlane(offset, Vector3.up);
 
+        var direction = stride;
         direction.y = -offset.y;
         direction = direction.normalized;
 
@@ -158,7 +164,7 @@ class StrideSystem: CharacterSystem {
         if (didHit) {
             goalPos = hit.point;
             goalRot = Quaternion.LookRotation(
-                Vector3.ProjectOnPlane(planarDirection, hit.normal),
+                Vector3.ProjectOnPlane(stride, hit.normal),
                 hit.normal
             );
         }
@@ -174,7 +180,7 @@ class StrideSystem: CharacterSystem {
         );
 
         // once we complete our stride, switch to hold
-        if (Vector3.SqrMagnitude(planarDirection) > m_CurrStrideLength * m_CurrStrideLength) {
+        if (Vector3.SqrMagnitude(stride) > m_CurrStrideLength * m_CurrStrideLength) {
             ChangeToImmediate(Holding, delta);
 
             DebugDraw.Push(
@@ -207,7 +213,7 @@ class StrideSystem: CharacterSystem {
     void Holding_Update(float delta) {
         var didHit = FindSurface(out var hit);
         if (!didHit) {
-            ChangeTo(Idle);
+            ChangeTo(Free);
             return;
         }
 
@@ -219,9 +225,9 @@ class StrideSystem: CharacterSystem {
     }
 
     // -- queries --
-    /// if the limb is currently idle
-    public bool IsIdle {
-        get => m_IsIdle;
+    /// if the limb is currently free
+    public bool IsFree {
+        get => m_IsFree;
     }
 
     /// if the limb is currently held

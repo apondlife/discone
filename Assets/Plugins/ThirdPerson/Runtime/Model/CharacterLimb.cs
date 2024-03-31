@@ -53,7 +53,7 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         m_StrideSystem.Update(Time.deltaTime);
 
         // blend the weight
-        var isBlendingIn = m_StrideSystem.IsIdle;
+        var isBlendingIn = !m_StrideSystem.IsFree;
         m_Weight = Mathf.MoveTowards(
             m_Weight,
             isBlendingIn ? 1.0f : 0.0f,
@@ -100,6 +100,11 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         m_StrideSystem.Move(anchor);
     }
 
+    /// released the limb's hold if not already
+    public void Release() {
+        m_StrideSystem.Release();
+    }
+
     /// applies the limb ik
     public void ApplyIk() {
         if (!IsValid) {
@@ -143,6 +148,11 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
     /// the square length of the bone
     public float SqrLength {
         get => Vector3.SqrMagnitude(RootPos - GoalPos);
+    }
+
+    /// .
+    public bool IsFree {
+        get => m_StrideSystem.IsFree;
     }
 
     /// .
