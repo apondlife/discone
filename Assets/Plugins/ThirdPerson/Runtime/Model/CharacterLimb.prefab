@@ -45,43 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Goal: 2
-  m_SpeedScale:
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_Src:
-      Min: 0
-      Max: 0
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 385
-  m_TurnSpeed: 360
   m_BlendInDuration: 0.2
   m_BlendOutDuration: 0.2
-  m_StrideLength:
-    Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Dst:
-      Min: 0
-      Max: 0
-  m_StrideSpeed:
-    Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Dst:
-      Min: 0
-      Max: 0
-  m_System:
+  m_StrideSystem:
     m_Phase:
       Name: 
     m_IsDisabled: 0
@@ -90,6 +56,7 @@ MonoBehaviour:
     m_LayerMask:
       serializedVersion: 2
       m_Bits: 385
+    m_CastOffset: 0.03
     m_SpeedScale:
       m_Curve:
         serializedVersion: 2

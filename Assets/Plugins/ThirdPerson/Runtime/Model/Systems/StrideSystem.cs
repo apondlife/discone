@@ -1,12 +1,11 @@
 using System;
 using Soil;
 using UnityEngine;
-using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
 /// the character limb's stride tracking
-[MovedFrom(true, "ThirdPerson", "ThirdPerson", "CharacterLimbSystem")]
 [Serializable]
 class StrideSystem: CharacterSystem {
     // -- cfg --
@@ -14,8 +13,12 @@ class StrideSystem: CharacterSystem {
     [Tooltip("the root bone")]
     [SerializeField] Transform m_Root;
 
+    [Tooltip("the cast offset")]
+    [SerializeField] float m_CastOffset;
+
+    [FormerlySerializedAs("m_LayerMask")]
     [Tooltip("the cast layer mask")]
-    [SerializeField] LayerMask m_LayerMask;
+    [SerializeField] LayerMask m_CastMask;
 
     // -- tuning --
     [Header("tuning")]
@@ -64,12 +67,13 @@ class StrideSystem: CharacterSystem {
     public void Init(
         CharacterContainer c,
         AvatarIKGoal goal,
-        float length,
+        Vector3 goalPos,
         CharacterBone anchor
     ) {
         m_Goal = goal;
-        m_Length = length;
+        m_GoalPos = goalPos;
         m_Anchor = anchor;
+        m_Length = Vector3.Distance(anchor.RootPos, goalPos);
 
         base.Init(c);
     }
@@ -99,28 +103,18 @@ class StrideSystem: CharacterSystem {
 
     void Idle_Enter() {
         m_IsIdle = true;
+        m_GoalPos = m_Root.position + RootDir * m_Length;
     }
 
     void Idle_Update(float delta) {
-        var castDir = -m_Root.up; // TODO: arms ? maybe t.forward
-        var castLen = m_Length;
-
-        var didHit = Physics.Raycast(
-            m_GoalPos,
-            castDir,
-            out var hit,
-            castLen,
-            m_LayerMask,
-            QueryTriggerInteraction.Ignore
-        );
-
+        var didHit = FindSurface(out var hit);
         if (didHit) {
             m_GoalPos = hit.point;
             ChangeTo(Holding);
             return;
         }
 
-        m_GoalPos = m_Root.position + castDir * m_Length;
+        m_GoalPos = m_Root.position + RootDir * m_Length;
     }
 
     void Idle_Exit() {
@@ -142,9 +136,12 @@ class StrideSystem: CharacterSystem {
         direction.y = -offset.y;
         direction = direction.normalized;
 
-        var angle = Vector3.Angle(direction, Vector3.down);
-        // the maximum stride distance in "leg space"
-        var maxDist = m_CurrStrideLength / Mathf.Sin(angle);
+        // the maximum stride distance projected along the leg
+        var maxDist = Mathf.Max(
+            m_Length,
+            m_CurrStrideLength / Mathf.Sin(Vector3.Angle(direction, Vector3.down))
+        );
+
         var rootPos = m_Root.position;
         var goalPos = rootPos + direction * maxDist;
         var goalRot = Quaternion.identity;
@@ -155,7 +152,7 @@ class StrideSystem: CharacterSystem {
             direction,
             out var hit,
             maxDist,
-            m_LayerMask
+            m_CastMask
         );
 
         if (didHit) {
@@ -173,7 +170,7 @@ class StrideSystem: CharacterSystem {
             m_Goal.DebugName("stride-curr"),
             m_Anchor.GoalPos,
             m_GoalPos,
-            new DebugDraw.Config(m_Goal.DebugColor(), tags: DebugDraw.Tag.Movement, count: 1)
+            new DebugDraw.Config(m_Goal.DebugColor(), tags: DebugDraw.Tag.Movement, count: 1, width: 0.03f)
         );
 
         // once we complete our stride, switch to hold
@@ -208,20 +205,8 @@ class StrideSystem: CharacterSystem {
     }
 
     void Holding_Update(float delta) {
-        var castDir = -m_Root.up; // TODO: arms ? maybe t.forward
-        var castLen = m_Length;
-
-        var didHit = Physics.Raycast(
-            m_GoalPos,
-            castDir,
-            out var hit,
-            castLen,
-            m_LayerMask,
-            QueryTriggerInteraction.Ignore
-        );
-
+        var didHit = FindSurface(out var hit);
         if (!didHit) {
-            m_GoalPos = m_Root.position + castDir * m_Length;
             ChangeTo(Idle);
             return;
         }
@@ -252,6 +237,29 @@ class StrideSystem: CharacterSystem {
     /// the current ik rotation of the limb
     public Quaternion GoalRot {
         get => m_GoalRot;
+    }
+
+    /// the direction towards the surface
+    Vector3 RootDir {
+        get => -m_Root.up;
+    }
+
+    /// cast for a surface underneath the current pos
+    bool FindSurface(out RaycastHit hit) {
+        var castDir = RootDir; // TODO: arms? maybe t.forward
+        var castSrc = m_GoalPos - castDir * m_CastOffset;
+        var castLen = m_Length + m_CastOffset;
+
+        var didHit = Physics.Raycast(
+            castSrc,
+            castDir,
+            out hit,
+            castLen,
+            m_CastMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        return didHit;
     }
 }
 

@@ -87,8 +87,7 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
 
         // init system
         // TODO: unclear if we really want to init as our own anchor
-        var length = Vector3.Distance(transform.position, m_GoalBone.position);
-        m_StrideSystem.Init(c, m_Goal, length, anchor: this);
+        m_StrideSystem.Init(c, m_Goal, m_GoalBone.position, anchor: this);
 
         // error on misconfiguration
         if (!IsValid) {
