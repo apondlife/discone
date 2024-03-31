@@ -66,8 +66,8 @@ class CharacterLegs: MonoBehaviour {
             new DebugDraw.Config(color: Color.yellow, DebugDraw.Tag.Movement, count: 100)
         );
 
-        m_Left.DebugDraw("legs", count: 100);
-        m_Right.DebugDraw("legs", count: 100);
+        m_Left.Debug_Draw("legs", count: 100);
+        m_Right.Debug_Draw("legs", count: 100);
     }
 
     /// make sure both legs are free

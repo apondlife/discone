@@ -53,10 +53,10 @@ MonoBehaviour:
     m_IsDisabled: 0
     m_IsLogging: 0
     m_Root: {fileID: 3634307922059092450}
-    m_LayerMask:
+    m_CastOffset: 0.03
+    m_CastMask:
       serializedVersion: 2
       m_Bits: 385
-    m_CastOffset: 0.03
     m_SpeedScale:
       m_Curve:
         serializedVersion: 2
@@ -77,3 +77,4 @@ MonoBehaviour:
       Dst:
         Min: 0.1
         Max: 1.5
+    m_MinMove: 0.002

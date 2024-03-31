@@ -22,6 +22,9 @@ class StrideSystem: CharacterSystem {
 
     // -- tuning --
     [Header("tuning")]
+    [Tooltip("the threshold under which movements are ignored")]
+    [SerializeField] float m_MinMove;
+
     [Tooltip("the scale for the speed")]
     [SerializeField] MapInCurve m_SpeedScale;
 
@@ -109,9 +112,9 @@ class StrideSystem: CharacterSystem {
     }
 
     void Free_Update(float delta) {
-        var didHit = FindSurface(m_GoalPos, out var hitPoint);
+        var didHit = FindSurface(m_GoalPos, out var hit);
         if (didHit) {
-            m_GoalPos = hitPoint;
+            m_GoalPos = hit.point;
             ChangeTo(Holding);
             return;
         }
@@ -149,7 +152,7 @@ class StrideSystem: CharacterSystem {
         // the maximum stride distance projected along the leg
         var goalMax = Mathf.Max(
             m_Length,
-            strideLength / Mathf.Sin(Vector3.Angle(goalDir, Vector3.down))
+            strideLength / Vector3.Cross(goalDir, Vector3.down).magnitude
         );
 
         var goalPos = rootPos + goalDir * goalMax;
@@ -180,10 +183,10 @@ class StrideSystem: CharacterSystem {
         m_GoalRot = goalRot;
 
         DebugDraw.PushLine(
-            m_Goal.DebugName("stride-curr"),
+            m_Goal.Debug_Name("stride-curr"),
             m_Anchor.GoalPos,
             m_GoalPos,
-            new DebugDraw.Config(m_Goal.DebugColor(), tags: DebugDraw.Tag.Movement, count: 1, width: 0.03f)
+            new DebugDraw.Config(m_Goal.Debug_Color(), tags: DebugDraw.Tag.Movement, count: 1, width: 0.03f)
         );
 
         // once we complete our stride, switch to hold
@@ -191,16 +194,16 @@ class StrideSystem: CharacterSystem {
             ChangeToImmediate(Holding, delta);
 
             DebugDraw.Push(
-                m_Goal.DebugName("stride-hold"),
+                m_Goal.Debug_Name("stride-hold"),
                 m_GoalPos,
-                new DebugDraw.Config(m_Goal.DebugColor(0.5f), tags: DebugDraw.Tag.Movement, width: 5f)
+                new DebugDraw.Config(m_Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Movement, width: 5f)
             );
 
             DebugDraw.PushLine(
-                m_Goal.DebugName("stride"),
+                m_Goal.Debug_Name("stride"),
                 m_Anchor.GoalPos,
                 m_GoalPos,
-                new DebugDraw.Config(m_Goal.DebugColor(0.5f), tags: DebugDraw.Tag.Movement, width: 0.5f)
+                new DebugDraw.Config(m_Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Movement, width: 0.5f)
             );
         }
     }
@@ -218,13 +221,35 @@ class StrideSystem: CharacterSystem {
     }
 
     void Holding_Update(float delta) {
-        var didHit = FindSurface(m_GoalPos - m_Offset, out var hitPoint);
+        var goalPos = m_GoalPos - m_Offset;
+
+        // find placement along limb
+        var castSrc = m_Root.position;
+        var castDir = goalPos - castSrc;
+        var castLen = m_Length;
+
+        var didHit = Physics.Raycast(
+            castSrc,
+            castDir,
+            out var hit,
+            castLen,
+            m_CastMask
+        );
+
+        // if we don't find one, cast in the root direction
+        if (!didHit) {
+            didHit = FindSurface(goalPos, out hit);
+        }
+
         if (!didHit) {
             ChangeTo(Free);
             return;
         }
 
-        m_GoalPos = hitPoint;
+        goalPos = hit.point;
+        if (Vector3.SqrMagnitude(goalPos - m_GoalPos) > m_MinMove * m_MinMove) {
+            m_GoalPos = goalPos;
+        }
     }
 
     void Holding_Exit() {
@@ -258,7 +283,7 @@ class StrideSystem: CharacterSystem {
     }
 
     /// cast for a surface underneath the current pos
-    bool FindSurface(Vector3 goalPos, out Vector3 pos) {
+    bool FindSurface(Vector3 goalPos, out RaycastHit hit) {
         var castDir = RootDir; // TODO: arms? maybe t.forward
         var castSrc = goalPos - castDir * m_CastOffset;
         var castLen = m_Length + m_CastOffset;
@@ -266,13 +291,11 @@ class StrideSystem: CharacterSystem {
         var didHit = Physics.Raycast(
             castSrc,
             castDir,
-            out var hit,
+            out hit,
             castLen,
             m_CastMask,
             QueryTriggerInteraction.Ignore
         );
-
-        pos = hit.point;
 
         return didHit;
     }

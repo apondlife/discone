@@ -63,7 +63,7 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
         m_Weight = isBlendingIn ? 1.0f : 0.0f;
 
         if (m_Goal <= AvatarIKGoal.RightFoot) {
-            DebugDraw("limb", width: 2f);
+            Debug_Draw("limb", width: 2f);
         }
     }
 
@@ -166,25 +166,50 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
 
     // -- debug --
     /// draw the debug line of this bone
-    internal void DebugDraw(string name, float alpha = 1f, float width = 1f, int count = 1) {
-        ThirdPerson.DebugDraw.PushLine(
-            m_Goal.DebugName($"{name}-bone"),
+    internal void Debug_Draw(string name, float alpha = 1f, float width = 1f, int count = 1) {
+        DebugDraw.PushLine(
+            m_Goal.Debug_Name($"{name}-bone"),
             m_StrideSystem.GoalPos,
             transform.position,
-            new DebugDraw.Config(m_Goal.DebugColor(alpha), tags: ThirdPerson.DebugDraw.Tag.Movement, width: width, count: count)
+            new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: DebugDraw.Tag.Movement, width: width, count: count)
         );
 
-        ThirdPerson.DebugDraw.Push(
-            m_Goal.DebugName($"{name}-foot"),
+        DebugDraw.Push(
+            m_Goal.Debug_Name($"{name}-foot-{Debug_PhaseName()}"),
             m_StrideSystem.GoalPos,
-            new DebugDraw.Config(m_Goal.DebugColor(alpha), tags: ThirdPerson.DebugDraw.Tag.Movement, width: width * 2f, count: count)
+            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: DebugDraw.Tag.Movement, width: width * 3f, count: count)
         );
+    }
+    /// the debug color for a limb with given alpha (red is right)
+    string Debug_PhaseName() {
+        var name = "moving";
+        if (m_StrideSystem.IsHeld) {
+            name = "holding";
+        } else if (m_StrideSystem.IsFree) {
+            name = "free";
+        }
+
+        return name;
+    }
+
+    /// the debug color for a limb with given alpha (red is right)
+    Color Debug_PhaseColor(float alpha = 1f) {
+        var color = Color.green;
+        if (m_StrideSystem.IsHeld) {
+            color = Color.black;
+        } else if (m_StrideSystem.IsFree) {
+            color = Color.white;
+        }
+
+        color.a = alpha;
+
+        return color;
     }
 }
 
-static class CharacterLimbDebug {
+static class CharacterLimb_Debug {
     /// the debug name for a drawing
-    internal static string DebugName(this AvatarIKGoal goal, string name) {
+    internal static string Debug_Name(this AvatarIKGoal goal, string name) {
         var suffix = goal switch {
             AvatarIKGoal.LeftFoot => "fl",
             AvatarIKGoal.RightFoot => "fr",
@@ -197,7 +222,7 @@ static class CharacterLimbDebug {
     }
 
     /// the debug color for a limb with given alpha (red is right)
-    internal static Color DebugColor(this AvatarIKGoal goal, float alpha = 1f) {
+    internal static Color Debug_Color(this AvatarIKGoal goal, float alpha = 1f) {
         var color = goal switch {
             AvatarIKGoal.LeftFoot => Color.blue,
             AvatarIKGoal.RightFoot => Color.red,

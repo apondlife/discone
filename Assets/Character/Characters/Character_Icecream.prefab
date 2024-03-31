@@ -67,6 +67,18 @@ PrefabInstance:
       propertyPath: m_StrideLength.Dst.Min
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_MinMove
+      value: 0.002
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_StrideLength.Dst.Max
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_StrideLength.Dst.Min
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 351973787110621403, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Tuning
       value: 
@@ -199,6 +211,14 @@ PrefabInstance:
       propertyPath: m_System.m_StrideLength.Dst.Min
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_StrideLength.Dst.Max
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_StrideLength.Dst.Min
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1499552191486369337, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Tuning
       value: 
@@ -229,7 +249,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1836639054831783722, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.77
+      value: 0.349
       objectReference: {fileID: 0}
     - target: {fileID: 1970618663644783220, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Radius
@@ -506,6 +526,10 @@ PrefabInstance:
     - target: {fileID: 5923792759104680142, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_RootOrder
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_MinMoveSpeed
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6027102374830966439, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: _unityEventResponse.m_PersistentCalls.m_Calls.Array.size
