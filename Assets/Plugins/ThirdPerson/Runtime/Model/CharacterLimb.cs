@@ -8,13 +8,6 @@ namespace ThirdPerson {
 /// center of mass? move character down?
 /// an ik limb for the character model
 public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
-    // -- deps --
-    /// the containing character
-    CharacterContainer c;
-
-    /// the animator for this limb
-    Animator m_Animator;
-
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the type of goal of this limb")]
@@ -33,6 +26,12 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
     [SerializeField] StrideSystem m_StrideSystem;
 
     // -- props --
+    /// the containing character
+    CharacterContainer c;
+
+    /// the animator for this limb
+    Animator m_Animator;
+
     /// the transform of the goal bone, if any
     Transform m_GoalBone;
 
@@ -103,6 +102,11 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
     /// released the limb's hold if not already
     public void Release() {
         m_StrideSystem.Release();
+    }
+
+    /// set the current offset to translate the legs
+    public void SetOffset(Vector3 offset) {
+        m_StrideSystem.SetOffset(offset);
     }
 
     /// applies the limb ik

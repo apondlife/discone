@@ -131,15 +131,15 @@ namespace ThirdPerson {
             //
 
             // get input in curr surface space
-            var inputUp = Vector3.Dot(c.InputQuery.Move, currFwd);
-            var inputRight = Vector3.Dot(c.InputQuery.Move, currUpTg);
+            var inputUp = Vector3.Dot(c.Inputs.Move, currFwd);
+            var inputRight = Vector3.Dot(c.Inputs.Move, currUpTg);
             var inputTg = (inputUp * currUp + inputRight * currUpTg).normalized;
 
             // rotate tangent by input di
             var diAngle = Vector3.SignedAngle(surfaceTg, inputTg, currNormal);
             var diAngleMag = Mathf.Abs(diAngle);
             var diAngleSign = Mathf.Sign(diAngle);
-            var diRot = c.Tuning.Surface_DiRotation.Evaluate(diAngleMag) * diAngleSign * c.InputQuery.MoveMagnitude;
+            var diRot = c.Tuning.Surface_DiRotation.Evaluate(diAngleMag) * diAngleSign * c.Inputs.MoveMagnitude;
 
             // scale transfer by di
             var diScale = c.Tuning.Surface_DiScale.Evaluate(diAngleMag);
@@ -180,7 +180,7 @@ namespace ThirdPerson {
             // TODO: add friction (is this friction?)
             // add upwards pull / surface gravity
             var gripCurve = c.Tuning.Surface_VerticalGrip_Scale;
-            var gripRange = (c.InputQuery.IsJumpPressed, c.State.Curr.Velocity.y) switch {
+            var gripRange = (c.Inputs.IsJumpPressed, c.State.Curr.Velocity.y) switch {
                 (false, >= 0) => c.Tuning.Surface_VerticalGrip_Up,
                 (false, <  0) => c.Tuning.Surface_VerticalGrip_Down,
                 (true,  >= 0) => c.Tuning.Surface_VerticalGrip_UpHold,

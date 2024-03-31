@@ -91,7 +91,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
     // TODO: CharacterContainer, CharacterContainerConvertible
     /// the character's tuning
-    CharacterInputQuery m_Input => m_Container.InputQuery;
+    CharacterInputQuery m_Input => m_Container.Inputs;
 
     /// the legs layer index
     int m_LayerLegs;

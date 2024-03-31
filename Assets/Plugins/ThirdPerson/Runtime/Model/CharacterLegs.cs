@@ -12,11 +12,38 @@ class CharacterLegs: MonoBehaviour {
     [Tooltip("the right leg")]
     [SerializeField] CharacterLimb m_Right;
 
+    [Tooltip("a minimum move speed applied every frame")]
+    [SerializeField] float m_MinMoveSpeed;
+
+    // -- props --
+    /// the character's dependency container
+    CharacterContainer c;
+
     // -- lifecycle --
+    void Awake() {
+        // set deps
+        c = GetComponentInParent<CharacterContainer>();
+    }
+
     void Update() {
+        var offset = Vector3.zero;
+
+        // set offset in move direction
+        var v = c.State.Curr.SurfaceVelocity;
+        if (c.Inputs.IsMoveActive && v.sqrMagnitude < m_MinMoveSpeed * m_MinMoveSpeed) {
+            var moveDir = v != Vector3.zero ? v.normalized : c.State.Curr.Forward;
+            offset = m_MinMoveSpeed * Time.deltaTime * moveDir;
+        }
+
+        m_Left.SetOffset(offset);
+        m_Right.SetOffset(offset);
+
+        // if both legs are held, start moving one
         if (m_Left.IsHeld && m_Right.IsHeld) {
             Switch();
-        } else if (m_Left.IsFree != m_Right.IsFree) {
+        }
+        // if the held leg becomes free, release the moving leg
+        else if (m_Left.IsFree != m_Right.IsFree) {
             Release();
         }
     }

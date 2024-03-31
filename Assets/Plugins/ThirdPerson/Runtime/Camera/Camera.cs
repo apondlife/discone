@@ -79,7 +79,7 @@ public class Camera: MonoBehaviour {
             m_TiltSystem,
         };
 
-        var characterInput = c.InputQuery;
+        var characterInput = c.Inputs;
         foreach (var system in m_Systems) {
             system.Init(
                 m_State,

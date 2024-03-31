@@ -24,6 +24,11 @@ public interface CharacterInputQuery {
 
     /// the buffer size
     public int BufferSize { get; }
+
+    /// if the move input is currently active
+    public bool IsMoveActive {
+        get => !IsMoveIdle();
+    }
 }
 
 }

@@ -266,7 +266,7 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     }
 
     /// .
-    public CharacterInputQuery InputQuery {
+    public CharacterInputQuery Inputs {
         get => m_Input;
     }
 

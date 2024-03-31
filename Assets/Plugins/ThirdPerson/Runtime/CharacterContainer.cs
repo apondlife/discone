@@ -17,7 +17,7 @@ interface CharacterContainer {
     CharacterState State { get; }
 
     /// the input state
-    CharacterInputQuery InputQuery { get; }
+    CharacterInputQuery Inputs { get; }
 
     /// the events
     CharacterEvents Events { get; }

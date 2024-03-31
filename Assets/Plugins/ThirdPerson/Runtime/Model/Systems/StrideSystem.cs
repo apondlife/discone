@@ -50,11 +50,8 @@ class StrideSystem: CharacterSystem {
     /// the bone the stride is anchored by
     CharacterBone m_Anchor;
 
-    /// the current speed scale
-    float m_CurrSpeedScale;
-
-    /// the current stride length
-    float m_CurrStrideLength;
+    /// an offset that translates the held position
+    Vector3 m_Offset;
 
     // -- Soil.System --
     protected override Phase InitInitialPhase() {
@@ -78,14 +75,6 @@ class StrideSystem: CharacterSystem {
         base.Init(c);
     }
 
-    public override void Update(float delta) {
-        var speed = c.State.Curr.SurfaceVelocity.magnitude;
-        m_CurrSpeedScale = m_SpeedScale.Evaluate(speed);
-        m_CurrStrideLength = m_StrideLength.Evaluate(m_CurrSpeedScale);
-
-        base.Update(delta);
-    }
-
     // -- commands --
     /// switch to the moving state
     public void Move(CharacterBone anchor) {
@@ -93,10 +82,17 @@ class StrideSystem: CharacterSystem {
         ChangeTo(Moving);
     }
 
-    /// release the leg's hold
+    /// release the limb if it's not already
     public void Release() {
         m_Anchor = null;
-        ChangeTo(Free);
+        if (!IsFree) {
+            ChangeTo(Free);
+        }
+    }
+
+    /// set the current offset to translate the legs
+    public void SetOffset(Vector3 offset) {
+        m_Offset = offset;
     }
 
     // -- Free --
@@ -113,9 +109,9 @@ class StrideSystem: CharacterSystem {
     }
 
     void Free_Update(float delta) {
-        var didHit = FindSurface(out var hit);
+        var didHit = FindSurface(m_GoalPos, out var hitPoint);
         if (didHit) {
-            m_GoalPos = hit.point;
+            m_GoalPos = hitPoint;
             ChangeTo(Holding);
             return;
         }
@@ -134,30 +130,41 @@ class StrideSystem: CharacterSystem {
     );
 
     void Moving_Update(float delta) {
-        // get offset to anchor and mirror it over of anchor dir
-        var offset = m_Anchor.RootPos - m_Anchor.GoalPos;
-        var stride = Vector3.ProjectOnPlane(offset, Vector3.up);
+        var v = c.State.Curr.SurfaceVelocity;
+        var speedScale = m_SpeedScale.Evaluate(v.magnitude);
+        var strideLength = m_StrideLength.Evaluate(speedScale);
 
-        var direction = stride;
-        direction.y = -offset.y;
-        direction = direction.normalized;
+        // the anchor leg vector
+        var anchor = m_Anchor.RootPos - m_Anchor.GoalPos;
+        var stride = Vector3.ProjectOnPlane(anchor, Vector3.up);
+
+        // the direction to the goal; mirror the stride over anchor up
+        var goalDir = stride;
+        goalDir.y = -anchor.y;
+        goalDir = goalDir.normalized;
+
+        // accumulate root offset an get root position
+        var rootPos = m_Root.position;
 
         // the maximum stride distance projected along the leg
-        var maxDist = Mathf.Max(
+        var goalMax = Mathf.Max(
             m_Length,
-            m_CurrStrideLength / Mathf.Sin(Vector3.Angle(direction, Vector3.down))
+            strideLength / Mathf.Sin(Vector3.Angle(goalDir, Vector3.down))
         );
 
-        var rootPos = m_Root.position;
-        var goalPos = rootPos + direction * maxDist;
+        var goalPos = rootPos + goalDir * goalMax;
         var goalRot = Quaternion.identity;
 
         // find foot placement
+        var castSrc = rootPos;
+        var castDir = goalDir;
+        var castLen = goalMax;
+
         var didHit = Physics.Raycast(
-            rootPos,
-            direction,
+            castSrc,
+            castDir,
             out var hit,
-            maxDist,
+            castLen,
             m_CastMask
         );
 
@@ -180,7 +187,7 @@ class StrideSystem: CharacterSystem {
         );
 
         // once we complete our stride, switch to hold
-        if (Vector3.SqrMagnitude(stride) > m_CurrStrideLength * m_CurrStrideLength) {
+        if (Vector3.SqrMagnitude(stride) > strideLength * strideLength) {
             ChangeToImmediate(Holding, delta);
 
             DebugDraw.Push(
@@ -211,13 +218,13 @@ class StrideSystem: CharacterSystem {
     }
 
     void Holding_Update(float delta) {
-        var didHit = FindSurface(out var hit);
+        var didHit = FindSurface(m_GoalPos - m_Offset, out var hitPoint);
         if (!didHit) {
             ChangeTo(Free);
             return;
         }
 
-        m_GoalPos = hit.point;
+        m_GoalPos = hitPoint;
     }
 
     void Holding_Exit() {
@@ -251,19 +258,21 @@ class StrideSystem: CharacterSystem {
     }
 
     /// cast for a surface underneath the current pos
-    bool FindSurface(out RaycastHit hit) {
+    bool FindSurface(Vector3 goalPos, out Vector3 pos) {
         var castDir = RootDir; // TODO: arms? maybe t.forward
-        var castSrc = m_GoalPos - castDir * m_CastOffset;
+        var castSrc = goalPos - castDir * m_CastOffset;
         var castLen = m_Length + m_CastOffset;
 
         var didHit = Physics.Raycast(
             castSrc,
             castDir,
-            out hit,
+            out var hit,
             castLen,
             m_CastMask,
             QueryTriggerInteraction.Ignore
         );
+
+        pos = hit.point;
 
         return didHit;
     }

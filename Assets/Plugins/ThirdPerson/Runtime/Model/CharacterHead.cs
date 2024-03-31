@@ -56,7 +56,7 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
         m_IsActive = c.State.Next.IsOnGround;
 
         // destination rotation follows input
-        var destFwd = c.InputQuery.Move;
+        var destFwd = c.Inputs.Move;
         if (destFwd == Vector3.zero) {
             destFwd = m_NeckBone.forward;
         }

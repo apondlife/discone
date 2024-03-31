@@ -138,7 +138,7 @@ sealed class JumpSystem: CharacterSystem {
             PhaseElapsed >= JumpTuning.JumpSquatDuration.Max ||
             // or jump was released after the minimum
             // TODO: should we buffer jump released?
-            (!c.InputQuery.IsJumpPressed && PhaseElapsed >= JumpTuning.JumpSquatDuration.Min)
+            (!c.Inputs.IsJumpPressed && PhaseElapsed >= JumpTuning.JumpSquatDuration.Min)
         );
 
         if (shouldJump) {
@@ -220,7 +220,7 @@ sealed class JumpSystem: CharacterSystem {
 
     /// add jump anti-gravity when holding the button
     void AddJumpGravity() {
-        if (!c.InputQuery.IsJumpPressed || c.State.Curr.MainSurface.IsSome) {
+        if (!c.Inputs.IsJumpPressed || c.State.Curr.MainSurface.IsSome) {
             return;
         }
 
@@ -391,7 +391,7 @@ sealed class JumpSystem: CharacterSystem {
 
     /// if the player had a new jump input within the last n frames
     bool HasJumpInput(float buffer) {
-        return c.InputQuery.IsJumpDown(buffer);
+        return c.Inputs.IsJumpDown(buffer);
     }
 
     /// if the character is on something ground like
