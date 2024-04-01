@@ -1,6 +1,15 @@
 what is projected
 ---
 
+# ik legs
+- leg splay after turning, and during turning
+- input driven stride length
+- animate goal pos (& maybe split curr pos from goal pos)
+- fix arms
+- stride length proportional to direction (facing dot velocity)
+- ik weight proportional to direction (facing dot velocity)
+- blend ik (such as during sliding)
+
 # surface
 - unrealized motion (minmove) be converted into inertia?
   - set velocity to zero on min_move?
