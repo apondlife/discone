@@ -190,8 +190,8 @@ class StrideSystem: CharacterSystem {
         );
 
         // once we complete our stride, switch to hold
-        if (Vector3.SqrMagnitude(stride) > strideLength * strideLength) {
-            ChangeToImmediate(Holding, delta);
+        if (Vector3.SqrMagnitude(stride) >= strideLength * strideLength) {
+            ChangeTo(Holding);
 
             DebugDraw.Push(
                 m_Goal.Debug_Name("stride-hold"),
@@ -218,14 +218,10 @@ class StrideSystem: CharacterSystem {
 
     void Holding_Enter() {
         m_IsHeld = true;
-    }
-
-    void Holding_Update(float delta) {
-        var goalPos = m_GoalPos - m_Offset;
 
         // find placement along limb
         var castSrc = m_Root.position;
-        var castDir = goalPos - castSrc;
+        var castDir = Vector3.Normalize(m_GoalPos - castSrc);
         var castLen = m_Length;
 
         var didHit = Physics.Raycast(
@@ -236,7 +232,36 @@ class StrideSystem: CharacterSystem {
             m_CastMask
         );
 
-        // if we don't find one, cast in the root direction
+        // if we don't find one, cast in the root direction, from the end of the limb
+        if (!didHit) {
+            didHit = FindSurface(castSrc + castDir * castLen, out hit);
+        }
+
+        if (!didHit) {
+            ChangeTo(Free);
+            return;
+        }
+
+        m_GoalPos = hit.point;
+    }
+
+    void Holding_Update(float delta) {
+        var goalPos = m_GoalPos - m_Offset;
+
+        // find placement along limb
+        var castSrc = m_Root.position;
+        var castDir = Vector3.Normalize(goalPos - castSrc);
+        var castLen = m_Length;
+
+        var didHit = Physics.Raycast(
+            castSrc,
+            castDir,
+            out var hit,
+            castLen,
+            m_CastMask
+        );
+
+        // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
             didHit = FindSurface(goalPos, out hit);
         }
