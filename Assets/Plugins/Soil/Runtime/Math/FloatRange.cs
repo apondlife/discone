@@ -16,6 +16,11 @@ public struct FloatRange {
 
     // -- queries --
     /// interpolate between the min & max
+    public float Evaluate(float k) {
+        return Lerp(k);
+    }
+
+    /// interpolate between the min & max
     public float Lerp(float k) {
         return Mathf.LerpUnclamped(Min, Max, k);
     }

@@ -72,12 +72,96 @@ PrefabInstance:
       value: 0.002
       objectReference: {fileID: 0}
     - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_StrideLength.Max
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_StrideLength.Min
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_InputScale.m_Src.Min
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_InputScale.m_Sustain
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Src.Max
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Src.Min
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_StrideSystem.m_StrideLength.Dst.Max
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_StrideSystem.m_StrideLength.Dst.Min
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_InputScale.m_MaxScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_InputScale_ReleaseSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_StrideLengthOld.Dst.Max
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_StrideLengthOld.Dst.Min
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_InputScale.m_Release.m_Duration
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[0].value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[0].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[0].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].tangentMode
+      value: 34
       objectReference: {fileID: 0}
     - target: {fileID: 351973787110621403, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Tuning
@@ -212,12 +296,80 @@ PrefabInstance:
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideLength.Dst.Max
+      propertyPath: m_StrideSystem.m_InputScale.m_Src.Min
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_InputScale.m_Sustain
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Src.Max
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Src.Min
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_InputScale.m_MaxScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_InputScale_ReleaseSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_StrideLengthOld.Dst.Max
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideLength.Dst.Min
+      propertyPath: m_StrideSystem.m_StrideLengthOld.Dst.Min
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_InputScale.m_Release.m_Duration
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[0].value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[0].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[0].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_StrideSystem.m_SpeedScale.m_Curve.m_Curve.Array.data[1].tangentMode
+      value: 34
       objectReference: {fileID: 0}
     - target: {fileID: 1499552191486369337, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Tuning

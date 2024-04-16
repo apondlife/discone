@@ -57,6 +57,7 @@ MonoBehaviour:
     m_CastMask:
       serializedVersion: 2
       m_Bits: 385
+    m_MinMove: 0.002
     m_SpeedScale:
       m_Curve:
         serializedVersion: 2
@@ -65,9 +66,9 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       m_Src:
-        Min: 0
-        Max: 20
-    m_StrideLength:
+        Min: 1
+        Max: 1
+    m_InputScale:
       Curve:
         serializedVersion: 2
         m_Curve: []
@@ -75,6 +76,8 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       Dst:
-        Min: 0.1
-        Max: 1.5
-    m_MinMove: 0.002
+        Min: 1
+        Max: 1
+    m_StrideLength:
+      Min: 0
+      Max: 0

@@ -25,11 +25,14 @@ class StrideSystem: CharacterSystem {
     [Tooltip("the threshold under which movements are ignored")]
     [SerializeField] float m_MinMove;
 
-    [Tooltip("the scale for the speed")]
+    [Tooltip("the release speed on the stride scale as a fn of input")]
+    [SerializeField] float m_InputScale_ReleaseSpeed;
+
+    [Tooltip("the stride scale as a fn of speed")]
     [SerializeField] MapInCurve m_SpeedScale;
 
     [Tooltip("the max distance before searching for a new dest")]
-    [SerializeField] MapOutCurve m_StrideLength;
+    [SerializeField] FloatRange m_StrideLength;
 
     // -- props --
     /// the ik goal
@@ -55,6 +58,9 @@ class StrideSystem: CharacterSystem {
 
     /// an offset that translates the held position
     Vector3 m_Offset;
+
+    /// the current stride length input scale
+    float m_InputScale;
 
     // -- Soil.System --
     protected override Phase InitInitialPhase() {
@@ -133,9 +139,18 @@ class StrideSystem: CharacterSystem {
     );
 
     void Moving_Update(float delta) {
-        var v = c.State.Curr.SurfaceVelocity;
-        var speedScale = m_SpeedScale.Evaluate(v.magnitude);
-        var strideLength = m_StrideLength.Evaluate(speedScale);
+        var speedScale = m_SpeedScale.Evaluate(c.State.Curr.SurfaceVelocity.magnitude);
+
+        var inputMag = c.Inputs.MoveMagnitude;
+        var inputScale = m_InputScale;
+        if (inputMag > m_InputScale) {
+            inputScale = inputMag;
+        } else {
+            inputScale = Mathf.MoveTowards(inputScale, inputMag, m_InputScale_ReleaseSpeed * delta);
+        }
+
+        var strideScale = speedScale * inputScale;
+        var strideLength = m_StrideLength.Evaluate(strideScale);
 
         // the anchor leg vector
         var anchor = m_Anchor.RootPos - m_Anchor.GoalPos;
@@ -181,6 +196,7 @@ class StrideSystem: CharacterSystem {
 
         m_GoalPos = goalPos;
         m_GoalRot = goalRot;
+        m_InputScale = inputScale;
 
         DebugDraw.PushLine(
             m_Goal.Debug_Name("stride-curr"),

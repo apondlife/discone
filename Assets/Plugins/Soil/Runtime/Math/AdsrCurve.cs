@@ -8,8 +8,11 @@ namespace Soil {
 [Serializable]
 public struct AdsrCurve {
     // -- fields --
-    [Tooltip("the sustained value after attack & decay")]
+    [Tooltip("the sustained value after decay")]
     [SerializeField] float m_Sustain;
+
+    [Tooltip("the hold duration between attack & decay")]
+    [SerializeField] float m_HoldDuration;
 
     [Tooltip("the scale for the attack & decay")]
     [SerializeField] float m_MaxScale;
@@ -24,6 +27,7 @@ public struct AdsrCurve {
     [SerializeField] DurationCurve m_Release;
 
     // -- queries --
+    // TODO: this needs to accept time deltas to avoid becoming unreliable
     /// evaluate the curve in the range
     public float Evaluate(
         float startTime,
@@ -41,8 +45,12 @@ public struct AdsrCurve {
         if (elapsed < m_Attack.Duration) {
             scale = m_Attack.Evaluate(elapsed) * maxScale;
         }
+        // if in hold, use max until reaching decay
+        else if (elapsed < m_Attack.Duration + m_HoldDuration) {
+            scale = maxScale;
+        }
         // if in decay, decay down to sustain
-        else if (elapsed < m_Attack.Duration + m_Decay.Duration) {
+        else if (elapsed < m_Attack.Duration + m_HoldDuration + m_Decay.Duration) {
             scale = Mathf.Lerp(
                 maxScale,
                 1.0f,
