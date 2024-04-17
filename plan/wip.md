@@ -2,12 +2,11 @@ what is projected
 ---
 
 # ik legs
-- input driven stride length
-- stride length proportional to direction (facing dot velocity)
 - animate goal pos (& maybe split curr pos from goal pos)
-- ik weight proportional to direction (facing dot velocity)
+- slide: ik weight proportional to direction (facing dot velocity)
 - leg splay after turning, and during turning
 - blend ik (such as during sliding)
+- hip movement?
 
 # ik arms
 - fix arms

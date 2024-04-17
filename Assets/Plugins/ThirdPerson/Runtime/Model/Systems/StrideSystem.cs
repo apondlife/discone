@@ -25,11 +25,20 @@ class StrideSystem: CharacterSystem {
     [Tooltip("the threshold under which movements are ignored")]
     [SerializeField] float m_MinMove;
 
+    [Tooltip("the extra search distance when on a surface")]
+    [SerializeField] float m_SearchRange_Surface;
+
+    [Tooltip("the extra search distance when not on a surface")]
+    [SerializeField] float m_SearchRange_NoSurface;
+
     [Tooltip("the release speed on the stride scale as a fn of input")]
     [SerializeField] float m_InputScale_ReleaseSpeed;
 
     [Tooltip("the stride scale as a fn of speed")]
-    [SerializeField] MapInCurve m_SpeedScale;
+    [SerializeField] MapCurve m_SpeedScale;
+
+    [Tooltip("the stride scale as a fn of the angle between facing & velocity")]
+    [SerializeField] MapOutCurve m_FacingScale;
 
     [Tooltip("the max distance before searching for a new dest")]
     [SerializeField] FloatRange m_StrideLength;
@@ -149,7 +158,12 @@ class StrideSystem: CharacterSystem {
             inputScale = Mathf.MoveTowards(inputScale, inputMag, m_InputScale_ReleaseSpeed * delta);
         }
 
-        var strideScale = speedScale * inputScale;
+        var facingScale = m_FacingScale.Evaluate(Vector3.Angle(
+            c.State.Curr.PlanarVelocity,
+            c.State.Curr.Forward
+        ));
+
+        var strideScale = speedScale * inputScale * facingScale;
         var strideLength = m_StrideLength.Evaluate(strideScale);
 
         // the anchor leg vector
@@ -325,9 +339,16 @@ class StrideSystem: CharacterSystem {
 
     /// cast for a surface underneath the current pos
     bool FindSurface(Vector3 goalPos, out RaycastHit hit) {
-        var castDir = RootDir; // TODO: arms? maybe t.forward
+        var castDir = RootDir;
+        var castLen = m_Length + m_SearchRange_NoSurface;
+
+        var currSurface = c.State.Curr.MainSurface;
+        if (currSurface.IsSome) {
+            castDir = -currSurface.Normal;
+            castLen = m_Length + m_SearchRange_Surface;
+        }
+
         var castSrc = goalPos - castDir * m_CastOffset;
-        var castLen = m_Length + m_CastOffset;
 
         var didHit = Physics.Raycast(
             castSrc,
