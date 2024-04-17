@@ -163,20 +163,31 @@ class StrideSystem: System<Container> {
         // the anchor leg vector
         var anchor = m_Anchor.RootPos - m_Anchor.GoalPos;
 
-        // curve the current stride
+        // the movement dir to align against stride
+        var moveDir = v;
+        if (moveDir == Vector3.zero) {
+            moveDir = c.Character.State.Curr.Forward;
+        }
+
+        // get the expected stride position based on the anchor
         var currStride = Vector3.ProjectOnPlane(anchor, Vector3.up);
-        var currStrideLen = Mathf.Min(currStride.magnitude, maxStrideLen);
+        var currStrideLen = currStride.magnitude;
         var currStrideDir = currStride / currStrideLen;
-        var currStrideElapsed = Mathf.Sign(Vector3.Dot(currStride, v)) * currStrideLen / maxStrideLen;
-        currStrideLen = m_Shape.Evaluate(currStrideElapsed) * maxStrideLen;
-        currStride = currStrideLen * currStrideDir;
+
+        // clamp stride to the max length
+        var nextStrideLen = Mathf.Min(currStride.magnitude, maxStrideLen);
+
+        // shape the stride along its progress curve
+        var nextStrideElapsed = Mathf.Sign(Vector3.Dot(currStride, moveDir)) * nextStrideLen / maxStrideLen;
+        nextStrideLen = m_Shape.Evaluate(nextStrideElapsed) * maxStrideLen;
+        var nextStride = nextStrideLen * currStrideDir;
 
         // the direction to the goal; mirror the stride over anchor up
-        var goalDir = currStride;
+        var goalDir = nextStride;
         goalDir.y = -anchor.y;
         goalDir = goalDir.normalized;
 
-        // accumulate root offset an get root position
+        // accumulate root offset and get root position
         var rootPos = m_Root.position;
 
         // the maximum stride distance projected along the leg
@@ -204,7 +215,7 @@ class StrideSystem: System<Container> {
         if (didHit) {
             goalPos = hit.point;
             goalRot = Quaternion.LookRotation(
-                Vector3.ProjectOnPlane(currStride, hit.normal),
+                Vector3.ProjectOnPlane(nextStride, hit.normal),
                 hit.normal
             );
         }
@@ -221,7 +232,7 @@ class StrideSystem: System<Container> {
         );
 
         // once we complete our stride, switch to hold
-        if (currStrideElapsed >= 1f) {
+        if (nextStrideElapsed >= 1f) {
             ChangeTo(Holding);
 
             DebugDraw.Push(
