@@ -17,6 +17,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
         Surface   = 1 << 3,
         Movement  = 1 << 4,
         Friction  = 1 << 5,
+        Model     = 1 << 6,
     }
 
     // -- constants --

@@ -51,14 +51,15 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbCon
             return;
         }
 
-        m_StrideSystem.Update(Time.deltaTime);
+        var delta = Time.deltaTime;
+        m_StrideSystem.Update(delta);
 
         // blend the weight
         var isBlendingIn = !m_StrideSystem.IsFree;
         m_Weight = Mathf.MoveTowards(
             m_Weight,
             isBlendingIn ? 1.0f : 0.0f,
-            Time.deltaTime / (isBlendingIn ? m_BlendInDuration : m_BlendOutDuration)
+            delta / (isBlendingIn ? m_BlendInDuration : m_BlendOutDuration)
         );
 
         // AAA: blend ik
@@ -86,16 +87,14 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbCon
             }
         );
 
-        // init system
-        // TODO: unclear if we really want to init as our own anchor
-
-        m_Length = Vector3.Distance(RootPos, m_GoalBone.position);
-        m_StrideSystem.Init(this);
-
-        // error on misconfiguration
         if (!IsValid) {
             Log.Model.E($"{c.Name} - <limb: {m_Goal}> no matching bone");
         }
+
+        // init system
+        // TODO: unclear if we really want to init as our own anchor
+        m_Length = Vector3.Distance(RootPos, m_GoalBone.position);
+        m_StrideSystem.Init(this);
     }
 
     /// starts a new stride for the limb
@@ -139,7 +138,7 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbCon
 
     // -- queries --
     /// if this limb has the dependencies it needs to apply ik
-    public bool IsValid {
+    bool IsValid {
         get => m_GoalBone;
     }
 
@@ -196,13 +195,13 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbCon
             m_Goal.Debug_Name($"{name}-bone"),
             m_StrideSystem.GoalPos,
             transform.position,
-            new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: DebugDraw.Tag.Movement, width: width, count: count)
+            new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: DebugDraw.Tag.Model, width: width, count: count)
         );
 
         DebugDraw.Push(
             m_Goal.Debug_Name($"{name}-foot-{Debug_PhaseName()}"),
             m_StrideSystem.GoalPos,
-            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: DebugDraw.Tag.Movement, width: width * 3f, count: count)
+            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: DebugDraw.Tag.Model, width: width * 3f, count: count)
         );
     }
     /// the debug color for a limb with given alpha (red is right)

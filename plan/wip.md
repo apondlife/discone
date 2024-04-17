@@ -3,9 +3,10 @@ what is projected
 
 # ik legs
 - animate goal pos (& maybe split curr pos from goal pos)
+- rotation & placement
+- blend ik (such as during sliding)
 - slide: ik weight proportional to direction (facing dot velocity)
 - leg splay after turning, and during turning
-- blend ik (such as during sliding)
 - hip movement?
 
 # ik arms
