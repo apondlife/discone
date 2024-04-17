@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+using Container = CharacterContainer;
+using Phase = Phase<CharacterContainer>;
+
 /// system state extensions
 partial class CharacterState {
     partial class Frame {
@@ -21,8 +24,8 @@ sealed class FrictionSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => c.State.Next.FrictionState;
-        set => c.State.Next.FrictionState = value;
+        get => m_Container.State.Next.FrictionState;
+        set => m_Container.State.Next.FrictionState = value;
     }
 
     // -- NotOnSurface --
@@ -31,13 +34,13 @@ sealed class FrictionSystem: CharacterSystem {
         update: NotOnSurface_Update
     );
 
-    void NotOnSurface_Update(float delta) {
+    void NotOnSurface_Update(float delta, Container c) {
         if (c.State.Curr.IsColliding) {
             ChangeTo(OnSurface);
             return;
         }
 
-        AddDragAndFriction(c.Tuning.Friction_AerialDrag, 0f, delta);
+        AddDragAndFriction(c.Tuning.Friction_AerialDrag, 0f, delta, c);
     }
 
     // -- OnSurface --
@@ -46,7 +49,7 @@ sealed class FrictionSystem: CharacterSystem {
         update: OnSurface_Update
     );
 
-    void OnSurface_Update(float delta) {
+    void OnSurface_Update(float delta, Container c) {
         // return to the ground if grounded
         if (!c.State.Curr.IsColliding || c.State.Next.Events.Contains(CharacterEvent.Jump)) {
             ChangeToImmediate(NotOnSurface, delta);
@@ -68,7 +71,7 @@ sealed class FrictionSystem: CharacterSystem {
         drag *= c.Tuning.Friction_SurfaceDragScale.Evaluate(currSurface.Angle);
         friction *= c.Tuning.Friction_SurfaceFrictionScale.Evaluate(currSurface.Angle);;
 
-        AddDragAndFriction(drag, friction, delta);
+        AddDragAndFriction(drag, friction, delta, c);
     }
 
     // -- integrate --
@@ -77,7 +80,8 @@ sealed class FrictionSystem: CharacterSystem {
     void AddDragAndFriction(
         float drag,
         float friction,
-        float delta
+        float delta,
+        Container c
     ) {
         // integrate accelerated velocity
         var v0 = c.State.Next.SurfaceVelocity;

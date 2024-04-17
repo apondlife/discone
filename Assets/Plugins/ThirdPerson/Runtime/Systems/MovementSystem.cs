@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+using Container = CharacterContainer;
+using Phase = Phase<CharacterContainer>;
+
 /// system state extensions
 partial class CharacterState {
     partial class Frame {
@@ -21,8 +24,8 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => c.State.Next.MovementState;
-        set => c.State.Next.MovementState = value;
+        get => m_Container.State.Next.MovementState;
+        set => m_Container.State.Next.MovementState = value;
     }
 
     // -- NotMoving --
@@ -31,7 +34,7 @@ sealed class MovementSystem: CharacterSystem {
         update: NotMoving_Update
     );
 
-    void NotMoving_Update(float delta) {
+    void NotMoving_Update(float delta, Container c) {
         // start floating if no longer grounded
         if (!c.State.Next.IsOnGround) {
             ChangeTo(Floating);
@@ -39,7 +42,7 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // we're moving if the character is not stopped or if there's input
-        var shouldStartMoving = !c.State.IsStopped || HasMoveInput;
+        var shouldStartMoving = !c.State.IsStopped || HasMoveInput(c);
 
         // change to sliding if moving & crouching
         if (shouldStartMoving && c.State.IsCrouching) {
@@ -60,7 +63,7 @@ sealed class MovementSystem: CharacterSystem {
         update: Moving_Update
     );
 
-    void Moving_Update(float delta) {
+    void Moving_Update(float delta, Container c) {
         // start floating if no longer grounded
         if (!c.State.Next.IsOnGround) {
             ChangeToImmediate(Floating, delta);
@@ -68,7 +71,7 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // we're moving if the character is not stopped or if there's input
-        var shouldStopMoving = c.State.IsStopped && !HasMoveInput;
+        var shouldStopMoving = c.State.IsStopped && !HasMoveInput(c);
 
         // once speed is zero, stop moving
         if (shouldStopMoving) {
@@ -105,7 +108,8 @@ sealed class MovementSystem: CharacterSystem {
         TurnTowards(
             c.Inputs.Move,
             c.Tuning.TurnSpeed,
-            delta
+            delta,
+            c
         );
 
         // add movement force
@@ -120,7 +124,7 @@ sealed class MovementSystem: CharacterSystem {
         update: Sliding_Update
     );
 
-    void Sliding_Update(float delta) {
+    void Sliding_Update(float delta, Container c) {
         // start floating if no longer grounded
         if (!c.State.Next.IsOnGround) {
             ChangeToImmediate(Floating, delta);
@@ -150,11 +154,12 @@ sealed class MovementSystem: CharacterSystem {
         TurnTowards(
             c.Inputs.Move,
             c.Tuning.Crouch_TurnSpeed,
-            delta
+            delta,
+            c
         );
 
         // we're moving if the character is not stopped or if there's input
-        var shouldStopMoving = c.State.IsStopped && !HasMoveInput;
+        var shouldStopMoving = c.State.IsStopped && !HasMoveInput(c);
 
         // once not crouching change to move/not move state
         if (!c.State.IsCrouching) {
@@ -177,12 +182,12 @@ sealed class MovementSystem: CharacterSystem {
         exit: Pivot_Exit
     );
 
-    void Pivot_Enter() {
+    void Pivot_Enter(Container c) {
         c.State.Next.PivotDirection = c.Inputs.Move;
         c.State.Next.PivotFrame = 0;
     }
 
-    void Pivot_Update(float delta) {
+    void Pivot_Update(float delta, Container c) {
         if (!c.State.Next.IsOnGround) {
             ChangeToImmediate(Floating, delta);
             return;
@@ -194,7 +199,8 @@ sealed class MovementSystem: CharacterSystem {
         TurnTowards(
             c.State.Curr.PivotDirection,
             c.Tuning.PivotSpeed,
-            delta
+            delta,
+            c
         );
 
         // calculate next velocity, decelerating towards zero to finish pivot
@@ -206,12 +212,12 @@ sealed class MovementSystem: CharacterSystem {
 
         // once speed is zero, transition to next state
         if (c.State.IsStopped) {
-            ChangeTo(HasMoveInput ? Moving : NotMoving);
+            ChangeTo(HasMoveInput(c) ? Moving : NotMoving);
             return;
         }
     }
 
-    void Pivot_Exit() {
+    void Pivot_Exit(Container c) {
         c.State.Next.PivotFrame = -1;
     }
 
@@ -221,7 +227,7 @@ sealed class MovementSystem: CharacterSystem {
         update: Floating_Update
     );
 
-    void Floating_Update(float delta) {
+    void Floating_Update(float delta, Container c) {
         // return to the ground if grounded
         if (c.State.Next.IsOnGround) {
             ChangeToImmediate(c.State.IsCrouching ? Sliding : Moving, delta);
@@ -235,7 +241,8 @@ sealed class MovementSystem: CharacterSystem {
             TurnTowards(
                 c.Inputs.Move,
                 c.Tuning.Air_TurnSpeed,
-                delta
+                delta,
+                c
             );
         }
 
@@ -246,7 +253,7 @@ sealed class MovementSystem: CharacterSystem {
 
     // -- commands --
     /// turn the character towards the direction by turn speed; impure command
-    void TurnTowards(Vector3 direction, float turnSpeed, float delta) {
+    void TurnTowards(Vector3 direction, float turnSpeed, float delta, Container c) {
         // if no direction, do nothing
         if (direction.sqrMagnitude <= 0.0f) {
             return;
@@ -266,8 +273,8 @@ sealed class MovementSystem: CharacterSystem {
 
     // -- queries --
     /// if there is any user input
-    bool HasMoveInput {
-        get => c.Inputs.Move.sqrMagnitude > 0.0f;
+    bool HasMoveInput(Container c) {
+        return c.Inputs.Move.sqrMagnitude > 0.0f;
     }
 }
 

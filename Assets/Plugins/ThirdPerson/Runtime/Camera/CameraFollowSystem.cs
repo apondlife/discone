@@ -4,8 +4,11 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+using Container = CameraContainer;
+using Phase = Phase<CameraContainer>;
+
 [Serializable]
-sealed class CameraFollowSystem: CameraSystem {
+sealed class CameraFollowSystem: SimpleSystem<Container> {
     // -- props --
     // angle (in degrees) that camera is away from its target yaw
     float m_DeltaYawMag;
@@ -15,13 +18,13 @@ sealed class CameraFollowSystem: CameraSystem {
         return Idle;
     }
 
-    public override void Init() {
-        base.Init();
+    public override void Init(Container c) {
+        base.Init(c);
 
         // set initial state
-        m_State.Next.Spherical.Radius = m_Tuning.MinRadius;
-        m_State.Next.Spherical.Azimuth = 0f;
-        m_State.Next.Spherical.Zenith = m_Tuning.Tracking_MinPitch;
+        c.State.Next.Spherical.Radius = c.Tuning.MinRadius;
+        c.State.Next.Spherical.Azimuth = 0f;
+        c.State.Next.Spherical.Zenith = c.Tuning.Tracking_MinPitch;
     }
 
     // -- Idle --
@@ -31,18 +34,18 @@ sealed class CameraFollowSystem: CameraSystem {
         update: Idle_Update
     );
 
-    void Idle_Update(float delta) {
-        if (m_Input.IsPressed()) {
+    void Idle_Update(float delta, Container c) {
+        if (c.Input.IsPressed()) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
 
-        if (!m_CharacterInput.IsMoveIdle(m_Tuning.Tracking_IdleFrames)) {
+        if (!c.CharacterInput.IsMoveIdle(c.Tuning.Tracking_IdleFrames)) {
             ChangeToImmediate(Tracking, delta);
             return;
         }
 
-        m_State.Next.Spherical = m_State.IntoCurrSpherical();
+        c.State.Next.Spherical = c.State.IntoCurrSpherical();
     }
 
     // -- Tracking --
@@ -52,18 +55,18 @@ sealed class CameraFollowSystem: CameraSystem {
         update: Tracking_Update
     );
 
-    void Tracking_Update(float delta) {
-        if (m_Input.IsPressed()) {
+    void Tracking_Update(float delta, Container c) {
+        if (c.Input.IsPressed()) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
 
         // move camera
-        Tracking_Orbit(delta);
-        Dolly(delta);
+        Tracking_Orbit(delta, false, c);
+        Dolly(delta, c);
 
         // stop tracking wnen move input becomes idle
-        if (m_CharacterInput.IsMoveIdle(m_Tuning.Tracking_IdleFrames)) {
+        if (c.CharacterInput.IsMoveIdle(c.Tuning.Tracking_IdleFrames)) {
             ChangeTo(Idle);
             return;
         }
@@ -77,17 +80,17 @@ sealed class CameraFollowSystem: CameraSystem {
         update: FreeLook_Update
     );
 
-    void FreeLook_Enter() {
-        m_State.Next.IsFreeLook = true;
+    void FreeLook_Enter(Container c) {
+        c.State.Next.IsFreeLook = true;
     }
 
-    void FreeLook_Update(float delta) {
+    void FreeLook_Update(float delta, Container c) {
         // move camera
-        FreeLook_Orbit(delta);
-        Dolly(delta);
+        FreeLook_Orbit(delta, c);
+        Dolly(delta, c);
 
         // if the player stops moving the camera, check their intentions
-        if (!m_Input.IsPressed()) {
+        if (!c.Input.IsPressed()) {
             ChangeTo(FreeLook_Intent);
             return;
         }
@@ -99,26 +102,26 @@ sealed class CameraFollowSystem: CameraSystem {
         update: FreeLook_Intent_Update
     );
 
-    void FreeLook_Intent_Update(float delta) {
-        if (m_Input.IsPressed()) {
+    void FreeLook_Intent_Update(float delta, Container c) {
+        if (c.Input.IsPressed()) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
 
         // move camera
-        FreeLook_Orbit(delta);
-        Dolly(delta);
+        FreeLook_Orbit(delta, c);
+        Dolly(delta, c);
 
         // if the character moves, then we assume they intend to set the camera
         // for athletics
-        if (!m_State.Character.IsIdle) {
+        if (!c.State.Character.IsIdle) {
             ChangeTo(FreeLook_MoveIntent);
             return;
         }
 
         // if player doesnt move the camera for long enough, we assume the
         // player wants to look at the sky
-        if (PhaseElapsed > m_Tuning.FreeLook_Timeout) {
+        if (PhaseElapsed > c.Tuning.FreeLook_Timeout) {
             ChangeTo(FreeLook_IdleIntent);
             return;
         }
@@ -131,26 +134,26 @@ sealed class CameraFollowSystem: CameraSystem {
         exit: FreeLook_MoveIntent_Exit
     );
 
-    void FreeLook_MoveIntent_Update(float delta) {
-        if (m_Input.IsPressed()) {
+    void FreeLook_MoveIntent_Update(float delta, Container c) {
+        if (c.Input.IsPressed()) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
 
         // move camera
-        FreeLook_Orbit(delta);
-        Dolly(delta);
+        FreeLook_Orbit(delta, c);
+        Dolly(delta, c);
 
         // if the player sits around for a while after moving, we assume they've
         // finished moving and reset the camera
-        if (m_State.Character.IdleTime > m_Tuning.FreeLook_MoveIntentTimeout) {
+        if (c.State.Character.IdleTime > c.Tuning.FreeLook_MoveIntentTimeout) {
             ChangeTo(Idle);
             return;
         }
     }
 
-    void FreeLook_MoveIntent_Exit() {
-        m_State.Next.IsFreeLook = false;
+    void FreeLook_MoveIntent_Exit(Container c) {
+        c.State.Next.IsFreeLook = false;
     }
 
     // -- FreeLook_IdleIntent --
@@ -160,42 +163,42 @@ sealed class CameraFollowSystem: CameraSystem {
         exit: FreeLook_IdleIntent_Exit
     );
 
-    void FreeLook_IdleIntent_Update(float delta) {
-        if (m_Input.WasPerformedThisFrame()) {
+    void FreeLook_IdleIntent_Update(float delta, Container c) {
+        if (c.Input.WasPerformedThisFrame()) {
             ChangeToImmediate(FreeLook, delta);
             return;
         }
 
         // move camera
-        FreeLook_Orbit(delta);
-        Dolly(delta);
+        FreeLook_Orbit(delta, c);
+        Dolly(delta, c);
 
         // if the player starts moving, we assume the camera for looking at the
         // sky is not so useful anymore
-        if (!m_State.Character.IsIdle) {
+        if (!c.State.Character.IsIdle) {
             ChangeTo(Tracking);
             return;
         }
     }
 
-    void FreeLook_IdleIntent_Exit() {
-        m_State.Next.IsFreeLook = false;
+    void FreeLook_IdleIntent_Exit(Container c) {
+        c.State.Next.IsFreeLook = false;
     }
 
     // -- commands --
     /// resolve tracking camera orbit
-    void Tracking_Orbit(float delta, bool isRecentering = false) {
+    void Tracking_Orbit(float delta, bool isRecentering, Container c) {
         // TODO: yaw speed could be wrong at this point (yawSpeed !=
         // deltaYaw/deltaTime). we should resample yaw speed from the current
         // state.
 
         // get current yaw
-        var currYaw = m_State.Spherical.Azimuth;
+        var currYaw = c.State.Spherical.Azimuth;
 
         // get desired yaw behind model
-        var destFwd = -Vector3.ProjectOnPlane(m_State.FollowForward, Vector3.up);
+        var destFwd = -Vector3.ProjectOnPlane(c.State.FollowForward, Vector3.up);
         var destYaw = Vector3.SignedAngle(
-            m_State.FollowYawZeroDir,
+            c.State.FollowYawZeroDir,
             destFwd,
             Vector3.up
         );
@@ -207,17 +210,17 @@ sealed class CameraFollowSystem: CameraSystem {
 
         // TODO: make these range curves
         var destYawSpeed = isRecentering
-            ? Mathf.Lerp(0, m_Tuning.Recenter_YawSpeed, m_Tuning.Recenter_YawCurve.Evaluate(deltaYawMag / 180.0f))
-            : Mathf.Lerp(0, m_Tuning.Tracking_YawSpeed, m_Tuning.Tracking_YawCurve.Evaluate(deltaYawMag / 180.0f));
+            ? Mathf.Lerp(0, c.Tuning.Recenter_YawSpeed, c.Tuning.Recenter_YawCurve.Evaluate(deltaYawMag / 180.0f))
+            : Mathf.Lerp(0, c.Tuning.Tracking_YawSpeed, c.Tuning.Tracking_YawCurve.Evaluate(deltaYawMag / 180.0f));
 
         // TODO: make sure recenter actually goes all the way to the back of the character, instead of accelerating forever
         var yawAcceleration = isRecentering
-            ? m_Tuning.Recenter_YawAcceleration
-            : m_Tuning.YawAcceleration;
+            ? c.Tuning.Recenter_YawAcceleration
+            : c.Tuning.YawAcceleration;
 
         // integrate yaw acceleration
         var nextYawSpeed = Mathf.MoveTowards(
-            m_State.Curr.Velocity.Azimuth,
+            c.State.Curr.Velocity.Azimuth,
             deltaYawDir * destYawSpeed,
             yawAcceleration * delta
         );
@@ -230,27 +233,27 @@ sealed class CameraFollowSystem: CameraSystem {
         );
 
         // rotate pitch on the plane containing the target's position and up
-        // TODO: lerp this based on m_State.LookAtTarget_PercentExtended
+        // TODO: lerp this based on c.State.LookAtTarget_PercentExtended
         var destPitch = Mathf.LerpAngle(
-            m_Tuning.Tracking_MinPitch,
-            m_Tuning.Tracking_MaxPitch,
+            c.Tuning.Tracking_MinPitch,
+            c.Tuning.Tracking_MaxPitch,
             0.0f
         );
 
         var nextPitchSpeed = Mathf.MoveTowards(
-            m_State.Curr.Velocity.Zenith,
-            m_Tuning.Tracking_PitchSpeed,
-            m_Tuning.Tracking_PitchAcceleration * delta
+            c.State.Curr.Velocity.Zenith,
+            c.Tuning.Tracking_PitchSpeed,
+            c.Tuning.Tracking_PitchAcceleration * delta
         );
 
         var nextPitch = Mathf.MoveTowardsAngle(
-            m_State.Curr.Spherical.Zenith,
+            c.State.Curr.Spherical.Zenith,
             destPitch,
             nextPitchSpeed * delta
         );
 
         // update state
-        var next = m_State.Next;
+        var next = c.State.Next;
         next.Spherical.Azimuth = nextYaw;
         next.Spherical.Zenith = nextPitch;
 
@@ -261,21 +264,21 @@ sealed class CameraFollowSystem: CameraSystem {
     }
 
     /// resolve free look camera orbit
-    void FreeLook_Orbit(float delta) {
+    void FreeLook_Orbit(float delta, Container c) {
         // get camera input
-        var input = m_Input.ReadValue<Vector2>();
-        input.x = m_Tuning.IsInvertedX ? -input.x : input.x;
-        input.y = m_Tuning.IsInvertedY ? -input.y : input.y;
+        var input = c.Input.ReadValue<Vector2>();
+        input.x = c.Tuning.IsInvertedX ? -input.x : input.x;
+        input.y = c.Tuning.IsInvertedY ? -input.y : input.y;
 
         // integrate yaw acceleration
         var nextYawSpeed = Mathf.MoveTowards(
-            m_State.Curr.Velocity.Azimuth,
-            m_Tuning.FreeLook_YawSpeed * -input.x,
-            m_Tuning.FreeLook_YawAcceleration * delta
+            c.State.Curr.Velocity.Azimuth,
+            c.Tuning.FreeLook_YawSpeed * -input.x,
+            c.Tuning.FreeLook_YawAcceleration * delta
         );
 
         // integrate updated yaw
-        var currYaw = m_State.Curr.Spherical.Azimuth;
+        var currYaw = c.State.Curr.Spherical.Azimuth;
         var nextYaw = Mathf.MoveTowardsAngle(
             currYaw,
             currYaw + nextYawSpeed * delta,
@@ -284,13 +287,13 @@ sealed class CameraFollowSystem: CameraSystem {
 
         // integrate pitch acceleration
         var nextPitchSpeed = Mathf.MoveTowards(
-            m_State.Curr.Velocity.Zenith,
-            m_Tuning.FreeLook_PitchSpeed * input.y,
-            m_Tuning.FreeLook_PitchAcceleration * delta
+            c.State.Curr.Velocity.Zenith,
+            c.Tuning.FreeLook_PitchSpeed * input.y,
+            c.Tuning.FreeLook_PitchAcceleration * delta
         );
 
         // integrate updated pitch
-        var currPitch = m_State.Curr.Spherical.Zenith;
+        var currPitch = c.State.Curr.Spherical.Zenith;
         var nextPitch = Mathf.MoveTowardsAngle(
             currPitch,
             currPitch + nextPitchSpeed * delta,
@@ -299,12 +302,12 @@ sealed class CameraFollowSystem: CameraSystem {
 
         nextPitch = Mathf.Clamp(
             nextPitch,
-            m_Tuning.FreeLook_MinPitch,
-            m_Tuning.FreeLook_MaxPitch
+            c.Tuning.FreeLook_MinPitch,
+            c.Tuning.FreeLook_MaxPitch
         );
 
         // update state
-        var next = m_State.Next;
+        var next = c.State.Next;
         next.Spherical.Azimuth = nextYaw;
         next.Spherical.Zenith = nextPitch;
 
@@ -313,34 +316,34 @@ sealed class CameraFollowSystem: CameraSystem {
     }
 
     /// dolly in or out
-    void Dolly(float delta) {
+    void Dolly(float delta, Container c) {
         // only dolly if not colliding
-        if (m_State.Curr.IsColliding) {
+        if (c.State.Curr.IsColliding) {
             return;
         }
 
         // dolly back; scale dolly radius based on character speed
-        var currRadius = m_State.Curr.Spherical.Radius;
+        var currRadius = c.State.Curr.Spherical.Radius;
         var radiusScale = Mathf.Lerp(
             1.0f,
-            m_Tuning.MaxRadius / m_Tuning.MinRadius,
-            m_Tuning.DollySpeedCurve.Evaluate(Mathf.InverseLerp(
-                m_Tuning.DollyTargetMinSpeed,
-                m_Tuning.DollyTargetMaxSpeed,
-                m_State.Character.Next.Velocity.magnitude
+            c.Tuning.MaxRadius / c.Tuning.MinRadius,
+            c.Tuning.DollySpeedCurve.Evaluate(Mathf.InverseLerp(
+                c.Tuning.DollyTargetMinSpeed,
+                c.Tuning.DollyTargetMaxSpeed,
+                c.State.Character.Next.Velocity.magnitude
             ))
         );
 
         // integrate dolly speed
-        var destRadius = m_Tuning.MinRadius * radiusScale;
+        var destRadius = c.Tuning.MinRadius * radiusScale;
         var nextRadius =  Mathf.MoveTowards(
             currRadius,
             destRadius,
-            m_Tuning.DollySpeed * delta
+            c.Tuning.DollySpeed * delta
         );
 
         // update radius
-        var next = m_State.Next;
+        var next = c.State.Next;
         next.Spherical.Radius = nextRadius;
     }
 }

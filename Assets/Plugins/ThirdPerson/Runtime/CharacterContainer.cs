@@ -2,7 +2,7 @@
 namespace ThirdPerson {
 
 /// a dependency container for character components
-interface CharacterContainer {
+public interface CharacterContainer {
     // -- queries --
     /// the name of the character
     string Name { get; }

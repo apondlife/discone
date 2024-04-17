@@ -5,9 +5,12 @@ using UnityEngine;
 
 namespace Discone {
 
+using Container = CheckpointContainer;
+using Phase = Phase<CheckpointContainer>;
+
 /// a character's ability to load to their saved checkpoint
 [Serializable]
-sealed class LoadCheckpointSystem: CheckpointSystem {
+sealed class LoadCheckpointSystem: SimpleSystem<Container> {
     const float k_Inactive = -1.0f;
 
     // -- types --
@@ -60,12 +63,12 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
         update: NotLoading_Update
     );
 
-    void NotLoading_Enter() {
+    void NotLoading_Enter(Container c) {
         m_Elapsed = k_Inactive;
     }
 
-    void NotLoading_Update(float delta) {
-        if (CanLoad) {
+    void NotLoading_Update(float delta, Container c) {
+        if (CanLoad(c)) {
             ChangeTo(Loading);
         }
     }
@@ -78,11 +81,11 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
         exit: Loading_Exit
     );
 
-    void Loading_Enter() {
+    void Loading_Enter(Container c) {
         // get distance to current checkpoint
         var distance = Vector3.Distance(
-            m_State.Position,
-            m_Checkpoint.Checkpoint.Position
+            c.Character.State.Position,
+            c.Checkpoint.Position
         );
 
         // calculate cast time
@@ -92,18 +95,18 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
         m_Duration = m_Tuning.LoadCastMaxTime * (1 - 1 / (k * distance + 1));
 
         // pause the character
-        m_Checkpoint.Character.Pause();
+        c.Character.Pause();
 
         // and start load
         m_Elapsed = 0.0f;
-        m_SrcState = m_State.Next;
-        m_DstState = m_Checkpoint.Checkpoint.IntoState();
+        m_SrcState = c.Character.State.Next;
+        m_DstState = c.Checkpoint.IntoState();
         m_CurState = m_DstState.Copy();
     }
 
-    void Loading_Update(float delta) {
+    void Loading_Update(float delta, Container c) {
         // if loading, aggregate time
-        if (m_Input.IsLoading()) {
+        if (c.Character.Input.IsLoading()) {
             m_Elapsed += delta;
         } else if (m_Elapsed >= 0.0f) {
             m_Elapsed -= Mathf.Max(0, delta * m_Tuning.LoadCancelMultiplier);
@@ -111,13 +114,13 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
 
         // if we reach 0, cancel the load
         if (m_Elapsed < 0) {
-            m_Checkpoint.Character.ForceState(m_SrcState);
+            c.Character.ForceState(m_SrcState);
             ChangeTo(Loaded);
             return;
         }
         // finish the load once elapsed
         else if (m_Elapsed >= m_Duration) {
-            m_Checkpoint.Character.ForceState(m_DstState);
+            c.Character.ForceState(m_DstState);
             ChangeTo(Loaded);
             return;
         }
@@ -135,13 +138,13 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
                 k
             );
 
-            m_Checkpoint.Character.ForceState(m_CurState);
+            c.Character.ForceState(m_CurState);
         }
 
     }
 
-    void Loading_Exit() {
-       m_Checkpoint.Character.Unpause();
+    void Loading_Exit(Container c) {
+       c.Character.Unpause();
     }
 
     // -- Loaded --
@@ -151,20 +154,20 @@ sealed class LoadCheckpointSystem: CheckpointSystem {
         update: Loaded_Update
     );
 
-    void Loaded_Enter() {
+    void Loaded_Enter(Container c) {
         m_Elapsed = k_Inactive;
     }
 
-    void Loaded_Update(float _) {
-        if (!m_Input.IsLoading()) {
+    void Loaded_Update(float _, Container c) {
+        if (!c.Character.Input.IsLoading()) {
             ChangeTo(NotLoading);
         }
     }
 
     // -- queries --
     /// if the player can load to their flower
-    bool CanLoad {
-        get => m_Input.IsLoading() && m_Checkpoint.Flower != null;
+    bool CanLoad(Container c) {
+        return c.Character.Input.IsLoading() && c.Checkpoint != null;
     }
 
     public bool IsLoading {

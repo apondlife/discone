@@ -7,7 +7,7 @@ using Soil;
 namespace ThirdPerson {
 
 /// a follow target that rotates around the player
-public class Camera: MonoBehaviour {
+public class Camera: MonoBehaviour, CameraContainer {
     // -- cfg --
     [Tooltip("the tuning parameters for the camera")]
     [SerializeField] CameraTuning m_Tuning;
@@ -55,7 +55,11 @@ public class Camera: MonoBehaviour {
     Vector3 m_CorrectionVel;
 
     /// the list of systems acting on this camera
-    CameraSystem[] m_Systems;
+    System<CameraContainer>[] m_Systems;
+
+    // TODO: why do we need this here
+    /// the attached character
+    CharacterInputQuery m_CharacterInput;
 
     // -- lifecycle --
     void Start() {
@@ -67,26 +71,23 @@ public class Camera: MonoBehaviour {
             c.State
         );
 
+        m_CharacterInput = c.Inputs;
+
         // synchronize state
-        m_State.Next.Forward = m_Camera.transform.forward;
-        m_State.Next.Up = m_Camera.transform.up;
+        var t = m_Camera.transform;
+        m_State.Next.Forward = t.forward;
+        m_State.Next.Up = t.up;
 
         // init systems
-        m_Systems = new CameraSystem[]{
+        m_Systems = new System<CameraContainer>[]{
             m_FollowSystem,
             m_CollisionSystem,
             m_ZoomSystem,
             m_TiltSystem,
         };
 
-        var characterInput = c.Inputs;
         foreach (var system in m_Systems) {
-            system.Init(
-                m_State,
-                m_Tuning,
-                m_Input,
-                characterInput
-            );
+            system.Init(this);
         }
 
         // set initial position
@@ -179,12 +180,35 @@ public class Camera: MonoBehaviour {
         get => m_State.IsFreeLook;
     }
 
-    public CameraState.Frame State {
+    /// the current state frame
+    public CameraState.Frame Curr {
         get => m_State.Curr;
     }
 
+    /// the cinemachine camera
     public CinemachineVirtualCamera Virtual {
         get => m_Camera;
+    }
+
+    // -- CameraContainer --
+    /// the current camera state
+    public CameraState State {
+        get => m_State;
+    }
+
+    /// the tuning
+    public CameraTuning Tuning {
+        get => m_Tuning;
+    }
+
+    /// the free look camera input
+    public InputAction Input {
+        get => m_Input;
+    }
+
+    /// the character's input
+    public CharacterInputQuery CharacterInput {
+        get => m_CharacterInput;
     }
 
     // -- debug --

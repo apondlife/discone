@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace ThirdPerson.Editor {
 
-[CustomPropertyDrawer(typeof(Phase))]
+[CustomPropertyDrawer(typeof(Phase<CharacterContainer>))]
 public sealed class CharacterPhaseDrawer: PropertyDrawer {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
         EditorGUI.BeginProperty(position, label, property);

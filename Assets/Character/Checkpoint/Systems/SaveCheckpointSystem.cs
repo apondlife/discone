@@ -4,10 +4,13 @@ using UnityEngine;
 
 namespace Discone {
 
+using Container = CheckpointContainer;
+using Phase = Phase<CheckpointContainer>;
+
 /// a character's ability to save new checkpoints
 /// not => smelling => (grab) planting => (plant) done
 [Serializable]
-sealed class SaveCheckpointSystem: CheckpointSystem {
+sealed class SaveCheckpointSystem: SimpleSystem<Container> {
     // -- types --
     /// the tuning for the checkpoint system
     [Serializable]
@@ -62,18 +65,18 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         exit: NotSaving_Exit
     );
 
-    void NotSaving_Enter() {
+    void NotSaving_Enter(Container c) {
         m_IsSaving = false;
     }
 
-    void NotSaving_Update(float delta) {
-        if (CanSave) {
+    void NotSaving_Update(float delta, Container c) {
+        if (CanSave(c)) {
             ChangeTo(Delaying);
         }
     }
 
-    void NotSaving_Exit() {
-        m_PendingCheckpoint = Checkpoint.FromState(m_State.Next);
+    void NotSaving_Exit(Container c) {
+        m_PendingCheckpoint = Checkpoint.FromState(c.Character.State.Next);
     }
 
     // -- Delaying --
@@ -83,12 +86,12 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         update: Delaying_Update
     );
 
-    void Delaying_Enter() {
+    void Delaying_Enter(Container c) {
     }
 
-    void Delaying_Update(float delta) {
+    void Delaying_Update(float delta, Container c) {
         // continue delaying
-        if (!CanSave) {
+        if (!CanSave(c)) {
             ChangeTo(NotSaving);
             return;
         }
@@ -106,13 +109,13 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         update: Smelling_Update
     );
 
-    void Smelling_Enter() {
+    void Smelling_Enter(Container c) {
         m_IsSaving = true;
     }
 
-    void Smelling_Update(float delta) {
+    void Smelling_Update(float delta, Container c) {
         // continue smelling
-        if (!CanSave) {
+        if (!CanSave(c)) {
             ChangeTo(NotSaving);
             return;
         }
@@ -130,12 +133,12 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         update: Planting_Update
     );
 
-    void Planting_Enter() {
-        m_Checkpoint.GrabCheckpoint();
+    void Planting_Enter(Container c) {
+        c.GrabCheckpoint();
     }
 
-    void Planting_Update(float delta) {
-        if (!CanSave) {
+    void Planting_Update(float delta, Container c) {
+        if (!CanSave(c)) {
             ChangeTo(NotSaving);
             return;
         }
@@ -153,12 +156,12 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
         update: Being_Update
     );
 
-    void Being_Enter() {
-        m_Checkpoint.CreateCheckpoint(m_PendingCheckpoint);
+    void Being_Enter(Container c) {
+        c.CreateCheckpoint(m_PendingCheckpoint);
     }
 
-    void Being_Update(float delta) {
-        if (!CanSave) {
+    void Being_Update(float delta, Container c) {
+        if (!CanSave(c)) {
             ChangeTo(NotSaving);
             return;
         }
@@ -171,8 +174,8 @@ sealed class SaveCheckpointSystem: CheckpointSystem {
     }
 
     /// if the character can currently save
-    bool CanSave {
-        get => m_State.Curr.IsCrouching && m_State.Curr.IsIdle;
+    bool CanSave(Container c) {
+        return c.Character.State.Curr.IsCrouching && c.Character.State.Curr.IsIdle;
     }
 }
 

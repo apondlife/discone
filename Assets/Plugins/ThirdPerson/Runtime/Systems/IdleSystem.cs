@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+using Container = CharacterContainer;
+using Phase = Phase<CharacterContainer>;
+
 /// system state extensions
 partial class CharacterState {
     partial class Frame {
@@ -24,8 +27,8 @@ sealed class IdleSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => c.State.Next.IdleState;
-        set => c.State.Next.IdleState = value;
+        get => m_Container.State.Next.IdleState;
+        set => m_Container.State.Next.IdleState = value;
     }
 
     // -- NotIdle --
@@ -35,11 +38,11 @@ sealed class IdleSystem: CharacterSystem {
         update: NotIdle_Update
     );
 
-    void NotIdle_Enter() {
+    void NotIdle_Enter(Container c) {
         c.State.Next.IdleTime = 0f;
     }
 
-    void NotIdle_Update(float _) {
+    void NotIdle_Update(float _, Container c) {
         if (c.State.Curr.Velocity.sqrMagnitude <= k_IdleSpeedThreshold) {
            ChangeTo(Idle);
         }
@@ -53,13 +56,13 @@ sealed class IdleSystem: CharacterSystem {
         exit: Idle_Exit
     );
 
-    void Idle_Enter() {
+    void Idle_Enter(Container c) {
         // TODO: make into PhaseElapsed
         c.State.Next.IdleTime = Time.deltaTime;
         c.Events.Schedule(CharacterEvent.Idle);
     }
 
-    void Idle_Update(float delta) {
+    void Idle_Update(float delta, Container c) {
         c.State.Next.IdleTime += delta;
 
         if (c.State.Curr.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
@@ -67,7 +70,7 @@ sealed class IdleSystem: CharacterSystem {
         }
     }
 
-    void Idle_Exit() {
+    void Idle_Exit(Container c) {
         c.Events.Schedule(CharacterEvent.Move);
     }
 }

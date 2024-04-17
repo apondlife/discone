@@ -5,6 +5,9 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace ThirdPerson {
 
+using Container = CharacterContainer;
+using Phase = Phase<CharacterContainer>;
+
 /// system state extensions
 partial class CharacterState {
     partial class Frame {
@@ -22,8 +25,8 @@ sealed class CollisionSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => c.State.Next.CollisionState;
-        set => c.State.Next.CollisionState = value;
+        get => m_Container.State.Next.CollisionState;
+        set => m_Container.State.Next.CollisionState = value;
     }
 
     // -- NotIdle --
@@ -32,7 +35,7 @@ sealed class CollisionSystem: CharacterSystem {
         update: Active_Update
     );
 
-    void Active_Update(float delta) {
+    void Active_Update(float delta, Container c) {
         var curr = c.State.Curr;
         var next = c.State.Next;
 

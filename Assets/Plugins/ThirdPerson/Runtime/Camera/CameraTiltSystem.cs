@@ -4,8 +4,11 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+using Container = CameraContainer;
+using Phase = Phase<CameraContainer>;
+
 [Serializable]
-sealed class CameraTiltSystem: CameraSystem {
+sealed class CameraTiltSystem: SimpleSystem<Container> {
     // -- System --
     protected override Phase InitInitialPhase() {
         return Tilting;
@@ -17,12 +20,12 @@ sealed class CameraTiltSystem: CameraSystem {
         update: Tilting_Update
     );
 
-    void Tilting_Update(float delta) {
+    void Tilting_Update(float delta, Container c) {
         // get angle between tilt up and camera up
         var tilt = Vector3.SignedAngle(
-            m_State.Up,
-            Vector3.ProjectOnPlane(m_State.Character.Tilt * Vector3.up, m_State.Forward),
-            m_State.Forward
+            c.State.Up,
+            Vector3.ProjectOnPlane(c.State.Character.Tilt * Vector3.up, c.State.Forward),
+            c.State.Forward
         );
 
         // map angle from [0, 360] to [-180, 180]
@@ -31,10 +34,10 @@ sealed class CameraTiltSystem: CameraSystem {
         }
 
         // TODO: smoothing with a finite end time (tween)
-        m_State.Dutch = Mathf.LerpAngle(
-            m_State.Dutch,
-            tilt * m_Tuning.DutchScale,
-            m_Tuning.DutchSmoothing
+        c.State.Dutch = Mathf.LerpAngle(
+            c.State.Dutch,
+            tilt * c.Tuning.DutchScale,
+            c.Tuning.DutchSmoothing
         );
     }
 }

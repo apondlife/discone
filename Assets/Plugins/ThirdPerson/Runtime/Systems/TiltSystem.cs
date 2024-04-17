@@ -2,7 +2,11 @@ using UnityEngine;
 using System;
 using Soil;
 
+// TODO: this system should be in the model
 namespace ThirdPerson {
+
+using Container = CharacterContainer;
+using Phase = Phase<CharacterContainer>;
 
 /// system state extensions
 partial class CharacterState {
@@ -21,8 +25,8 @@ sealed class TiltSystem : CharacterSystem {
     }
 
     protected override SystemState State {
-        get => c.State.Next.TiltState;
-        set => c.State.Next.TiltState = value;
+        get => m_Container.State.Next.TiltState;
+        set => m_Container.State.Next.TiltState = value;
     }
 
     // -- NotTilting --
@@ -31,14 +35,14 @@ sealed class TiltSystem : CharacterSystem {
         update: NotTilting_Update
     );
 
-    void NotTilting_Update(float _) {
+    void NotTilting_Update(float _, Container c) {
         var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
         if (acceleration.sqrMagnitude != 0.0f) {
             ChangeTo(Tilting);
             return;
         }
 
-        InterpolateTilt(Quaternion.identity);
+        InterpolateTilt(Quaternion.identity, c);
     }
 
     // -- Tilting --
@@ -47,7 +51,7 @@ sealed class TiltSystem : CharacterSystem {
         update: Tilting_Update
     );
 
-    void Tilting_Update(float _) {
+    void Tilting_Update(float _, Container c) {
         var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
         if (acceleration.sqrMagnitude == 0.0f) {
             ChangeTo(NotTilting);
@@ -70,12 +74,12 @@ sealed class TiltSystem : CharacterSystem {
             tiltAxis.normalized
         );
 
-        InterpolateTilt(tilt);
+        InterpolateTilt(tilt, c);
     }
 
     // -- commands --
     /// smooth tilt towards target
-    void InterpolateTilt(Quaternion target) {
+    void InterpolateTilt(Quaternion target, Container c) {
         c.State.Next.Tilt = Quaternion.Slerp(
             c.State.Next.Tilt,
             target,

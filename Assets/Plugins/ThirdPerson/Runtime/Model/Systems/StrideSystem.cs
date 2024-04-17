@@ -5,9 +5,13 @@ using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
+using Container = LimbContainer;
+using Phase = Phase<LimbContainer>;
+
+// TODO: collapse tuning & other config values into container
 /// the character limb's stride tracking
 [Serializable]
-class StrideSystem: CharacterSystem {
+class StrideSystem: System<LimbContainer> {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the root bone")]
@@ -79,17 +83,7 @@ class StrideSystem: CharacterSystem {
     protected override SystemState State { get; set; } = new();
 
     // -- lifecycle --
-    public void Init(
-        CharacterContainer c,
-        AvatarIKGoal goal,
-        Vector3 goalPos,
-        CharacterBone anchor
-    ) {
-        m_Goal = goal;
-        m_GoalPos = goalPos;
-        m_Anchor = anchor;
-        m_Length = Vector3.Distance(anchor.RootPos, goalPos);
-
+    public override void Init(Container c) {
         base.Init(c);
     }
 
@@ -121,13 +115,13 @@ class StrideSystem: CharacterSystem {
         exit: Free_Exit
     );
 
-    void Free_Enter() {
+    void Free_Enter(Container c) {
         m_IsFree = true;
         m_GoalPos = m_Root.position + RootDir * m_Length;
     }
 
-    void Free_Update(float delta) {
-        var didHit = FindSurface(m_GoalPos, out var hit);
+    void Free_Update(float delta, Container c) {
+        var didHit = FindSurface(m_GoalPos, out var hit, c);
         if (didHit) {
             m_GoalPos = hit.point;
             ChangeTo(Holding);
@@ -137,7 +131,7 @@ class StrideSystem: CharacterSystem {
         m_GoalPos = m_Root.position + RootDir * m_Length;
     }
 
-    void Free_Exit() {
+    void Free_Exit(Container c) {
         m_IsFree = false;
     }
 
@@ -147,10 +141,10 @@ class StrideSystem: CharacterSystem {
         update: Moving_Update
     );
 
-    void Moving_Update(float delta) {
-        var speedScale = m_SpeedScale.Evaluate(c.State.Curr.SurfaceVelocity.magnitude);
+    void Moving_Update(float delta, Container c) {
+        var speedScale = m_SpeedScale.Evaluate(c.Character.State.Curr.SurfaceVelocity.magnitude);
 
-        var inputMag = c.Inputs.MoveMagnitude;
+        var inputMag = c.Character.Inputs.MoveMagnitude;
         var inputScale = m_InputScale;
         if (inputMag > m_InputScale) {
             inputScale = inputMag;
@@ -159,8 +153,8 @@ class StrideSystem: CharacterSystem {
         }
 
         var facingScale = m_FacingScale.Evaluate(Vector3.Angle(
-            c.State.Curr.PlanarVelocity,
-            c.State.Curr.Forward
+            c.Character.State.Curr.PlanarVelocity,
+            c.Character.State.Curr.Forward
         ));
 
         var strideScale = speedScale * inputScale * facingScale;
@@ -246,7 +240,7 @@ class StrideSystem: CharacterSystem {
         exit: Holding_Exit
     );
 
-    void Holding_Enter() {
+    void Holding_Enter(Container c) {
         m_IsHeld = true;
 
         // find placement along limb
@@ -264,7 +258,7 @@ class StrideSystem: CharacterSystem {
 
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
-            didHit = FindSurface(castSrc + castDir * castLen, out hit);
+            didHit = FindSurface(castSrc + castDir * castLen, out hit, c);
         }
 
         if (!didHit) {
@@ -275,7 +269,7 @@ class StrideSystem: CharacterSystem {
         m_GoalPos = hit.point;
     }
 
-    void Holding_Update(float delta) {
+    void Holding_Update(float delta, Container c) {
         var goalPos = m_GoalPos - m_Offset;
 
         // find placement along limb
@@ -293,7 +287,7 @@ class StrideSystem: CharacterSystem {
 
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
-            didHit = FindSurface(goalPos, out hit);
+            didHit = FindSurface(goalPos, out hit, c);
         }
 
         if (!didHit) {
@@ -307,7 +301,7 @@ class StrideSystem: CharacterSystem {
         }
     }
 
-    void Holding_Exit() {
+    void Holding_Exit(Container c) {
         m_IsHeld = false;
     }
 
@@ -338,11 +332,15 @@ class StrideSystem: CharacterSystem {
     }
 
     /// cast for a surface underneath the current pos
-    bool FindSurface(Vector3 goalPos, out RaycastHit hit) {
+    bool FindSurface(
+        Vector3 goalPos,
+        out RaycastHit hit,
+        Container c
+    ) {
         var castDir = RootDir;
         var castLen = m_Length + m_SearchRange_NoSurface;
 
-        var currSurface = c.State.Curr.MainSurface;
+        var currSurface = c.Character.State.Curr.MainSurface;
         if (currSurface.IsSome) {
             castDir = -currSurface.Normal;
             castLen = m_Length + m_SearchRange_Surface;

@@ -7,13 +7,14 @@ using System.Collections.Generic;
 
 namespace Soil {
 
+// TODO: containers should provide state
 /// a character system; may be a state machine
 [Serializable]
-public abstract class System {
+public abstract class System<Container> {
     // -- state --
     [Header("state")]
     [Tooltip("the current phase")]
-    [SerializeField] protected Phase m_Phase;
+    [SerializeField] protected Phase<Container> m_Phase;
 
     // -- s/debug
     #if UNITY_EDITOR
@@ -28,6 +29,9 @@ public abstract class System {
     /// a name for this system
     protected string m_Name;
 
+    // the system config/state container
+    protected Container m_Container;
+
     // -- p/debug
     #if UNITY_EDITOR
     /// the set of phases we've changed to this frame
@@ -41,14 +45,17 @@ public abstract class System {
         m_Name = GetType().Name;
     }
 
-    public virtual void Init() {
+    /// initialize & configure the system
+    public virtual void Init(Container config) {
+        m_Container = config;
+
         var phase = InitInitialPhase();
-        phase.Enter();
+        phase.Enter(m_Container);
         SetPhase(phase);
     }
 
     /// construct the initial phase
-    protected abstract Phase InitInitialPhase();
+    protected abstract Phase<Container> InitInitialPhase();
 
     // -- commands --
     /// update the system's current phase
@@ -72,11 +79,11 @@ public abstract class System {
         state.PhaseElapsed += delta;
         State = state;
 
-        m_Phase.Update(delta);
+        m_Phase.Update(delta, m_Container);
     }
 
     /// switch to a new phase and run the phase change lifecycle
-    protected void ChangeTo(Phase next) {
+    protected void ChangeTo(Phase<Container> next) {
         // if this is the same phase, don't do anything
         if (m_Phase.Equals(next)) {
             return;
@@ -91,9 +98,9 @@ public abstract class System {
         #endif
 
         // otherwise, run phase change lifecycle
-        m_Phase.Exit();
+        m_Phase.Exit(m_Container);
         SetPhase(next);
-        m_Phase.Enter();
+        m_Phase.Enter(m_Container);
 
         // debug
         #if UNITY_EDITOR
@@ -104,7 +111,7 @@ public abstract class System {
     }
 
     /// switch to a new phase, run the phase change lifecycle, and run an immediate update
-    protected void ChangeToImmediate(Phase next, float delta) {
+    protected void ChangeToImmediate(Phase<Container> next, float delta) {
         // if we hit a phase loop, we need to terminate immediately
         #if UNITY_EDITOR
         if (m_Debug_Phases.Contains(next.Name)) {
@@ -118,11 +125,11 @@ public abstract class System {
         ChangeTo(next);
 
         // and run the update immediately
-        m_Phase.Update(delta);
+        m_Phase.Update(delta, m_Container);
     }
 
     /// set the current phase & initialize its state w/o calling events
-    protected void SetPhase(Phase phase) {
+    protected void SetPhase(Phase<Container> phase) {
         m_Phase = phase;
 
         var state = State;

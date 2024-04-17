@@ -4,17 +4,20 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+using Container = CameraContainer;
+using Phase = Phase<CameraContainer>;
+
 [Serializable]
-sealed class CameraZoomSystem: CameraSystem {
+sealed class CameraZoomSystem: SimpleSystem<Container> {
     // -- System --
     protected override Phase InitInitialPhase() {
         return Zooming;
     }
 
-    public override void Init() {
-        base.Init();
+    public override void Init(Container c) {
+        base.Init(c);
 
-        m_State.Fov = m_Tuning.Fov.Evaluate(0);
+        c.State.Fov = c.Tuning.Fov.Evaluate(0);
     }
 
     // -- Tracking --
@@ -23,19 +26,19 @@ sealed class CameraZoomSystem: CameraSystem {
         update: Zooming_Update
     );
 
-    void Zooming_Update(float delta) {
-        var destFov = m_Tuning.Fov.Evaluate(
+    void Zooming_Update(float delta, Container c) {
+        var destFov = c.Tuning.Fov.Evaluate(
             Mathf.InverseLerp(
-                m_Tuning.FovTargetMinSpeed,
-                m_Tuning.FovTargetMaxSpeed,
-                m_State.Character.Next.Velocity.magnitude
+                c.Tuning.FovTargetMinSpeed,
+                c.Tuning.FovTargetMaxSpeed,
+                c.State.Character.Next.Velocity.magnitude
             )
         );
 
-        m_State.Next.Fov = Mathf.MoveTowards(
-            m_State.Fov,
+        c.State.Next.Fov = Mathf.MoveTowards(
+            c.State.Fov,
             destFov,
-            m_Tuning.FovSpeed * delta
+            c.Tuning.FovSpeed * delta
         );
     }
 }

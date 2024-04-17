@@ -1,5 +1,6 @@
 using System;
 using Mirror;
+using Soil;
 using UnityEngine;
 using UnityAtoms;
 using ThirdPerson;
@@ -10,7 +11,7 @@ namespace Discone {
 /// the character's ability to save and reload to a particular state in
 /// the world, like planting a flag.
 [RequireComponent(typeof(Character))]
-public class CharacterCheckpoint: NetworkBehaviour {
+public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
     // -- fields --
     [Header("tuning")]
     [Tooltip("how far from a checkpoint can you grab it")]
@@ -41,7 +42,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
     bool m_IsBlocked;
 
     /// checkpoint-specific character systems
-    CheckpointSystem[] m_Systems;
+    System<CheckpointContainer>[] m_Systems;
 
     /// an event when the checkpoint is created
     UnityEvent<Checkpoint> m_OnCreate = new();
@@ -54,17 +55,13 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     void Start() {
         // init systems
-        m_Systems = new CheckpointSystem[] {
+        m_Systems = new System<CheckpointContainer>[] {
             m_Save,
             m_Load,
         };
 
         foreach (var system in m_Systems) {
-            system.Init(
-                m_Container.State,
-                m_Container.Input,
-                m_Container.Checkpoint
-            );
+            system.Init(this);
         }
     }
 
@@ -219,7 +216,7 @@ public class CharacterCheckpoint: NetworkBehaviour {
 
     /// the current flower's checkpoint
     public Checkpoint Checkpoint {
-        get => m_Flower?.Checkpoint;
+        get => m_Flower ? m_Flower.Checkpoint : null;
     }
 
     /// if the character is currently loading

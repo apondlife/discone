@@ -6,7 +6,7 @@ namespace ThirdPerson {
 
 /// center of mass? move character down?
 /// an ik limb for the character model
-public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
+public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbContainer {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the type of goal of this limb")]
@@ -36,6 +36,9 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
 
     /// the blending weight for this limb
     float m_Weight;
+
+    /// the length of the limb
+    float m_Length;
 
     // -- lifecycle --
     void Awake() {
@@ -85,7 +88,9 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
 
         // init system
         // TODO: unclear if we really want to init as our own anchor
-        m_StrideSystem.Init(c, m_Goal, m_GoalBone.position, anchor: this);
+
+        m_Length = Vector3.Distance(RootPos, m_GoalBone.position);
+        m_StrideSystem.Init(this);
 
         // error on misconfiguration
         if (!IsValid) {
@@ -161,6 +166,27 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone {
     /// .
     public bool IsHeld {
         get => m_StrideSystem.IsHeld;
+    }
+
+    // -- LimbContainer --
+    /// the ik goal
+    public AvatarIKGoal Goal {
+        get => m_Goal;
+    }
+
+    /// the bone the stride is anchored by
+    public CharacterBone Anchor {
+        get => this;
+    }
+
+    /// the length of the limb
+    public float Length {
+        get => m_Length;
+    }
+
+    /// the character container
+    public CharacterContainer Character {
+        get => c;
     }
 
     // -- debug --

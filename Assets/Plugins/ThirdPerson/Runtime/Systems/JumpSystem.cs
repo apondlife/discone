@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+using Container = CharacterContainer;
+using Phase = Phase<CharacterContainer>;
+
 /// system state extensions
 partial class CharacterState {
     partial class Frame {
@@ -21,22 +24,22 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => c.State.Next.JumpState;
-        set => c.State.Next.JumpState = value;
+        get => m_Container.State.Next.JumpState;
+        set => m_Container.State.Next.JumpState = value;
     }
 
     // -- lifecycle --
-    public override void Init() {
-        base.Init();
-        ResetJumps();
+    public override void Init(Container c) {
+        base.Init(c);
+        ResetJumps(c);
     }
 
     public override void Update(float delta) {
         // advance the cooldown timer
-        Cooldown(delta);
+        Cooldown(delta, m_Container);
 
         // always add gravity
-        c.State.Next.Force += c.Tuning.Gravity * Vector3.up;
+        m_Container.State.Next.Force += m_Container.Tuning.Gravity * Vector3.up;
 
         base.Update(delta);
     }
@@ -48,14 +51,14 @@ sealed class JumpSystem: CharacterSystem {
         update: NotJumping_Update
     );
 
-    void NotJumping_Enter() {
+    void NotJumping_Enter(Container c) {
         c.State.Next.IsLanding = false;
     }
 
-    void NotJumping_Update(float delta) {
+    void NotJumping_Update(float delta, Container c) {
         // reset jump surface whenever grounded
-        if (IsOnSurface()) {
-            ResetJumpSurface();
+        if (IsOnSurface(c)) {
+            ResetJumpSurface(c);
         }
         // but if not, subtract delta
         else {
@@ -69,7 +72,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if you jump
-        if (ShouldStartJump(c.Tuning.Jump_BufferDuration)) {
+        if (ShouldStartJump(c, c.Tuning.Jump_BufferDuration)) {
             ChangeTo(JumpSquat);
             return;
         }
@@ -82,16 +85,16 @@ sealed class JumpSystem: CharacterSystem {
         update: Landing_Update
     );
 
-    void Landing_Enter() {
-        ResetJumps();
+    void Landing_Enter(Container c) {
+        ResetJumps(c);
         c.State.Next.IsLanding = true;
         c.Events.Schedule(CharacterEvent.Land);
     }
 
-    void Landing_Update(float delta) {
+    void Landing_Update(float delta, Container c) {
         // reset jump surface whenever grounded
-        if (IsOnSurface()) {
-            ResetJumpSurface();
+        if (IsOnSurface(c)) {
+            ResetJumpSurface(c);
         }
         // but if not, subtract a delta
         else {
@@ -105,7 +108,7 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // if you jump
-        if (ShouldStartJump(c.Tuning.Jump_BufferDuration)) {
+        if (ShouldStartJump(c, c.Tuning.Jump_BufferDuration)) {
             ChangeTo(JumpSquat);
             return;
         }
@@ -125,38 +128,38 @@ sealed class JumpSystem: CharacterSystem {
         exit: JumpSquat_Exit
     );
 
-    void JumpSquat_Enter() {
+    void JumpSquat_Enter(Container c) {
         c.State.Next.IsInJumpSquat = true;
     }
 
-    void JumpSquat_Update(float delta) {
-        AddJumpGravity();
+    void JumpSquat_Update(float delta, Container c) {
+        AddJumpGravity(c);
 
         // jump if jump was released or jump squat ended
         var shouldJump = (
             // if the jump squat finished
-            PhaseElapsed >= JumpTuning.JumpSquatDuration.Max ||
+            PhaseElapsed >= GetJumpTuning(c).JumpSquatDuration.Max ||
             // or jump was released after the minimum
             // TODO: should we buffer jump released?
-            (!c.Inputs.IsJumpPressed && PhaseElapsed >= JumpTuning.JumpSquatDuration.Min)
+            (!c.Inputs.IsJumpPressed && PhaseElapsed >= GetJumpTuning(c).JumpSquatDuration.Min)
         );
 
         if (shouldJump) {
-            Jump(PhaseElapsed);
+            Jump(PhaseElapsed, c);
             ChangeTo(Falling);
             return;
         }
 
         // reset back to initial jump & jump surface whenever grounded
         // TODO: support a mario-like triple jump?
-        var isOnSurface = IsOnSurface();
+        var isOnSurface = IsOnSurface(c);
         if (isOnSurface) {
-            ResetJumps();
-            ResetJumpSurface();
+            ResetJumps(c);
+            ResetJumpSurface(c);
         }
 
         // if this is the first jump, you might be in coyote time
-        if (IsFirstJump) {
+        if (IsFirstJump(c)) {
             // if airborne, reduce coyote time
             if (!isOnSurface) {
                 c.State.CoyoteTime -= delta;
@@ -164,10 +167,10 @@ sealed class JumpSystem: CharacterSystem {
 
             // when coyote time expires, consume this jump
             if (c.State.CoyoteTime <= 0) {
-                AdvanceJumps();
+                AdvanceJumps(c);
 
                 // if we're out of jumps, fall instead
-                if (!HasJump()) {
+                if (!HasJump(c)) {
                     ChangeTo(Falling);
                     return;
                 }
@@ -175,7 +178,7 @@ sealed class JumpSystem: CharacterSystem {
         }
     }
 
-    void JumpSquat_Exit() {
+    void JumpSquat_Exit(Container c) {
         // NOTE: do we force the jump here?
         c.State.Next.IsInJumpSquat = false;
     }
@@ -187,25 +190,25 @@ sealed class JumpSystem: CharacterSystem {
         update: Falling_Update
     );
 
-    void Falling_Enter() {
-        AdvanceJumps();
+    void Falling_Enter(Container c) {
+        AdvanceJumps(c);
         c.State.Next.IsLanding = false;
     }
 
-    void Falling_Update(float delta) {
-        AddJumpGravity();
+    void Falling_Update(float delta, Container c) {
+        AddJumpGravity(c);
 
         // update timers
         c.State.CoyoteTime -= delta;
 
         // start jump on a new press
-        if (ShouldStartJump()) {
+        if (ShouldStartJump(c)) {
             ChangeTo(JumpSquat);
             return;
         }
 
         // transition out of jump
-        if (IsOnSurface()) {
+        if (IsOnSurface(c)) {
             ChangeTo(Landing);
             return;
         }
@@ -213,13 +216,13 @@ sealed class JumpSystem: CharacterSystem {
 
     // -- commands --
     /// reset the next surface to jump from
-    void ResetJumpSurface() {
+    void ResetJumpSurface(Container c) {
         c.State.Next.CoyoteTime = c.Tuning.CoyoteDuration;
         c.State.Next.JumpSurface = c.State.Curr.PerceivedSurface;
     }
 
     /// add jump anti-gravity when holding the button
-    void AddJumpGravity() {
+    void AddJumpGravity(Container c) {
         if (!c.Inputs.IsJumpPressed || c.State.Curr.MainSurface.IsSome) {
             return;
         }
@@ -234,13 +237,13 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     /// add the jump impulse for this jump index
-    void Jump(float elapsed) {
+    void Jump(float elapsed, Container c) {
         // accumulate jump delta dv
         var v0 = c.State.Curr.Velocity;
         var dv = Vector3.zero;
 
         // get curved percent complete through jump squat
-        var pct = JumpTuning.JumpSquatDuration.InverseLerp(elapsed);
+        var pct = GetJumpTuning(c).JumpSquatDuration.InverseLerp(elapsed);
 
         // the cached surface we're jumping off of
         var surface = c.State.Next.JumpSurface;
@@ -254,16 +257,16 @@ sealed class JumpSystem: CharacterSystem {
         // cancel vertical momentum if falling. according to tuning if going up (we don't want to lose
         // upwards speed in general, but not jumping if too fast is too weird)
         // TODO: add downwards momentum loss so that air jumps can be very bad
-        var verticalLoss = v0.y > 0f ? JumpTuning.Upwards_MomentumLoss : 1f;
+        var verticalLoss = v0.y > 0f ? GetJumpTuning(c).Upwards_MomentumLoss : 1f;
         dv -= surfaceScale * v0.y * verticalLoss * Vector3.up;
 
         // cancel horizontal momentum
-        var horizontalLoss = JumpTuning.Horizontal_MomentumLoss;
+        var horizontalLoss = GetJumpTuning(c).Horizontal_MomentumLoss;
         dv -= surfaceScale * horizontalLoss * c.State.Curr.PlanarVelocity;
 
         // add directional jump velocity
         // TODO: change Vector3.up to JumpTuning.Direction
-        var jumpSpeed = JumpTuning.Vertical_Speed.Evaluate(pct);
+        var jumpSpeed = GetJumpTuning(c).Vertical_Speed.Evaluate(pct);
         dv += jumpSpeed * surfaceScale * Vector3.up;
 
         // add surface normal jump velocity
@@ -278,13 +281,13 @@ sealed class JumpSystem: CharacterSystem {
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteTime = 0f;
         c.State.Next.Jump_CooldownElapsed = 0f;
-        c.State.Next.Jump_CooldownDuration = JumpTuning.CooldownDuration.Evaluate(pct);
+        c.State.Next.Jump_CooldownDuration = GetJumpTuning(c).CooldownDuration.Evaluate(pct);
 
         c.Events.Schedule(CharacterEvent.Jump);
     }
 
     /// add jump cooldown, if any
-    void Cooldown(float delta) {
+    void Cooldown(float delta, Container c) {
         // update jump cooldown
         var nextElapsed = c.State.Curr.Jump_CooldownElapsed;;
         var nextDuration = c.State.Curr.Jump_CooldownDuration;
@@ -311,16 +314,16 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     /// track jump and switch to the correct jump if necessary
-    void AdvanceJumps() {
+    void AdvanceJumps(Container c) {
         c.State.Next.Jumps += 1;
         c.State.Next.JumpTuningJumpIndex += 1;
 
-        if (JumpTuning.Count == 0) {
+        if (GetJumpTuning(c).Count == 0) {
             return;
         }
 
         var shouldAdvanceJump = (
-            c.State.Next.JumpTuningJumpIndex >= JumpTuning.Count &&
+            c.State.Next.JumpTuningJumpIndex >= GetJumpTuning(c).Count &&
             c.State.Next.JumpTuningIndex < c.Tuning.Jumps.Length - 1
         );
 
@@ -331,30 +334,31 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     /// reset the jump count to its initial state
-    void ResetJumps() {
+    void ResetJumps(Container c) {
         c.State.Next.Jumps = 0;
         c.State.Next.JumpTuningJumpIndex = 0;
         c.State.Next.JumpTuningIndex = 0;
     }
 
     // -- queries --
+
     /// the current jump tuning
-    CharacterTuning.JumpTuning JumpTuning {
-        get => c.Tuning.Jumps[c.State.JumpTuningIndex];
+    CharacterTuning.JumpTuning GetJumpTuning(Container c) {
+        return c.Tuning.Jumps[c.State.JumpTuningIndex];
     }
 
     /// if this is the character's first (grounded) jump
-    bool IsFirstJump {
-        get => c.State.JumpTuningIndex == 0 && c.State.JumpTuningJumpIndex == 0;
+    bool IsFirstJump(Container c) {
+        return c.State.JumpTuningIndex == 0 && c.State.JumpTuningJumpIndex == 0;
     }
 
     /// if the character should jump within the last n frames
-    bool ShouldStartJump(float buffer = 0) {
-        return HasJump() && HasJumpInput(Mathf.Max(buffer, c.State.Next.Jump_CooldownElapsed));
+    bool ShouldStartJump(Container c, float buffer = 0) {
+        return HasJump(c) && HasJumpInput(Mathf.Max(buffer, c.State.Next.Jump_CooldownElapsed), c);
     }
 
     /// if the character has a jump available to execute
-    bool HasJump() {
+    bool HasJump(Container c) {
         // if the character can't ever jump
         if (c.Tuning.Jumps.Length == 0) {
             return false;
@@ -371,18 +375,18 @@ sealed class JumpSystem: CharacterSystem {
         // jump finish here, and transitioning directly to jump
 
         // if it's your first jump, account for coyote time
-        if (IsFirstJump && c.State.Next.CoyoteTime >= 0f) {
+        if (IsFirstJump(c) && c.State.Next.CoyoteTime >= 0f) {
             return true;
         }
 
         // zero count means infinite jumps
-        if (JumpTuning.Count == 0) {
+        if (GetJumpTuning(c).Count == 0) {
             return true;
         }
 
         // start an air jump if available
         // if there's still jumps available in the current jump definition
-        if (c.State.Next.JumpTuningJumpIndex < JumpTuning.Count) {
+        if (c.State.Next.JumpTuningJumpIndex < GetJumpTuning(c).Count) {
             return true;
         }
 
@@ -390,12 +394,12 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     /// if the player had a new jump input within the last n frames
-    bool HasJumpInput(float buffer) {
+    bool HasJumpInput(float buffer, Container c) {
         return c.Inputs.IsJumpDown(buffer);
     }
 
     /// if the character is on something ground like
-    bool IsOnSurface() {
+    bool IsOnSurface(Container c) {
         return c.State.Curr.MainSurface.IsSome;
     }
 }

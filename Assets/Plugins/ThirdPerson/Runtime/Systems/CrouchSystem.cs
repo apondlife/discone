@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
+using Container = CharacterContainer;
+using Phase = Phase<CharacterContainer>;
+
 /// system state extensions
 partial class CharacterState {
     partial class Frame {
@@ -21,8 +24,8 @@ sealed class CrouchSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => c.State.Next.CrouchState;
-        set => c.State.Next.CrouchState = value;
+        get => m_Container.State.Next.CrouchState;
+        set => m_Container.State.Next.CrouchState = value;
     }
 
     // -- NotCrouching --
@@ -32,7 +35,7 @@ sealed class CrouchSystem: CharacterSystem {
         update: NotCrouching_Update
     );
 
-    void NotCrouching_Enter() {
+    void NotCrouching_Enter(Container c) {
         // stop crouching
         c.State.IsCrouching = false;
 
@@ -42,7 +45,7 @@ sealed class CrouchSystem: CharacterSystem {
         c.State.Next.Surface_StaticFriction = c.Tuning.Friction_Static;
     }
 
-    void NotCrouching_Update(float delta) {
+    void NotCrouching_Update(float delta, Container c) {
         // reset friction every frame in debug
         // TODO: doing this every frame in the build right now bc we don't have
         // a good way to initialize frames from tuning and/or split up network
@@ -65,7 +68,7 @@ sealed class CrouchSystem: CharacterSystem {
         update: Crouching_Update
     );
 
-    void Crouching_Enter() {
+    void Crouching_Enter(Container c) {
         // start crouching
         c.State.IsCrouching = true;
 
@@ -80,7 +83,7 @@ sealed class CrouchSystem: CharacterSystem {
             : c.State.Curr.PlanarVelocity.normalized;
     }
 
-    void Crouching_Update(float delta) {
+    void Crouching_Update(float delta, Container c) {
         // if airborne or if crouch is released, end crouch
         if (!c.State.Next.IsColliding || !c.Inputs.IsCrouchPressed) {
             ChangeTo(NotCrouching);
