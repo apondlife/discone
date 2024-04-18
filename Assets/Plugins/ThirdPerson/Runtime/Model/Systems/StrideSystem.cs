@@ -224,29 +224,13 @@ class StrideSystem: System<Container> {
         m_GoalRot = goalRot;
         m_InputScale = inputScale;
 
-        DebugDraw.PushLine(
-            c.Goal.Debug_Name("stride-curr"),
-            m_Anchor.GoalPos,
-            m_GoalPos,
-            new DebugDraw.Config(c.Goal.Debug_Color(), tags: DebugDraw.Tag.Model, count: 1, width: 0.03f)
-        );
+        Debug_DrawMove(c);
 
         // once we complete our stride, switch to hold
         if (nextStrideElapsed >= 1f) {
             ChangeTo(Holding);
-
-            DebugDraw.Push(
-                c.Goal.Debug_Name("stride-hold"),
-                m_GoalPos,
-                new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Model, width: 5f)
-            );
-
-            DebugDraw.PushLine(
-                c.Goal.Debug_Name("stride"),
-                m_Anchor.GoalPos,
-                m_GoalPos,
-                new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Model, width: 0.5f)
-            );
+            Debug_DrawHold(c);
+            return;
         }
     }
 
@@ -376,6 +360,31 @@ class StrideSystem: System<Container> {
         );
 
         return didHit;
+    }
+
+    // -- debug --
+    void Debug_DrawMove(Container c) {
+        DebugDraw.PushLine(
+            c.Goal.Debug_Name("stride-curr"),
+            m_Anchor.GoalPos,
+            m_GoalPos,
+            new DebugDraw.Config(c.Goal.Debug_Color(), tags: DebugDraw.Tag.Model, count: 1, width: 0.03f)
+        );
+    }
+
+    void Debug_DrawHold(Container c) {
+        DebugDraw.Push(
+            c.Goal.Debug_Name("stride-hold"),
+            m_GoalPos,
+            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Model, width: 5f)
+        );
+
+        DebugDraw.PushLine(
+            c.Goal.Debug_Name("stride"),
+            m_Anchor.GoalPos,
+            m_GoalPos,
+            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Model, width: 0.5f)
+        );
     }
 }
 
