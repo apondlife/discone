@@ -3,8 +3,9 @@ what is projected
 
 # ik legs
 - rotation & placement
-- hip movement?
+- splaying
 - foot height: tune during stride
+- hip movement?
 
 # ik arms
 - fix arms
@@ -32,20 +33,17 @@ what is projected
 - flower disabling zones
 
 # particles
-
 - wall particle proportional to wall influence
 - wall particle indicates state (attack, hold button)
 - wall particle indicates direction of transfer
 
 # tools
-
 - Vector3 drawer that rounds to a reasonable number of digits
 - fix character state preview in shortcuts so it's more useful
 - make fields toggleable
 - make fields readonly
 
 # others
-
 - wall gravity doesn't take yoshiing/regrabbing into account
 - falling while holding jump (no jump squat) doesn't trigger fall gravity
 

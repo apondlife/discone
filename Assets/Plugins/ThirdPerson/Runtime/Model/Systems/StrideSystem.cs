@@ -12,6 +12,20 @@ using Phase = Phase<LimbContainer>;
 /// the character limb's stride tracking
 [Serializable]
 class StrideSystem: System<Container> {
+    readonly struct Placement {
+        /// .
+        public readonly Vector3 Pos;
+
+        /// .
+        public readonly Quaternion Rot;
+
+        /// .
+        public Placement(Vector3 pos, Quaternion rot) {
+            Pos = pos;
+            Rot = rot;
+        }
+    }
+
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the root bone")]
@@ -119,9 +133,9 @@ class StrideSystem: System<Container> {
     }
 
     void Free_Update(float delta, Container c) {
-        var didHit = FindSurface(m_GoalPos, out var hit, c);
+        var didHit = FindSurface(m_GoalPos, out var placement, c);
         if (didHit) {
-            m_GoalPos = hit.point;
+            m_GoalPos = placement.Pos;
             ChangeTo(Holding);
             return;
         }
@@ -204,20 +218,17 @@ class StrideSystem: System<Container> {
         var castDir = goalDir;
         var castLen = goalMax;
 
-        var didHit = Physics.Raycast(
+        var didHit = FindPlacement(
             castSrc,
             castDir,
-            out var hit,
             castLen,
-            m_CastMask
+            out var hit,
+            c
         );
 
         if (didHit) {
-            goalPos = hit.point;
-            goalRot = Quaternion.LookRotation(
-                Vector3.ProjectOnPlane(nextStride, hit.normal),
-                hit.normal
-            );
+            goalPos = hit.Pos;
+            goalRot = hit.Rot;
         }
 
         m_GoalPos = goalPos;
@@ -250,17 +261,21 @@ class StrideSystem: System<Container> {
         var castDir = Vector3.Normalize(m_GoalPos - castSrc);
         var castLen = c.Length + m_SearchRange_Surface;
 
-        var didHit = Physics.Raycast(
+        var didHit = FindPlacement(
             castSrc,
             castDir,
-            out var hit,
             castLen,
-            m_CastMask
+            out var placement,
+            c
         );
 
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
-            didHit = FindSurface(castSrc + castDir * castLen, out hit, c);
+            didHit = FindSurface(
+                castSrc + castDir * castLen,
+                out placement,
+                c
+            );
         }
 
         if (!didHit) {
@@ -268,7 +283,8 @@ class StrideSystem: System<Container> {
             return;
         }
 
-        m_GoalPos = hit.point;
+        m_GoalPos = placement.Pos;
+        m_GoalRot = placement.Rot;
     }
 
     void Holding_Update(float delta, Container c) {
@@ -279,17 +295,17 @@ class StrideSystem: System<Container> {
         var castDir = Vector3.Normalize(goalPos - castSrc);
         var castLen = c.Length + m_SearchRange_Surface;
 
-        var didHit = Physics.Raycast(
+        var didHit = FindPlacement(
             castSrc,
             castDir,
-            out var hit,
             castLen,
-            m_CastMask
+            out var placement,
+            c
         );
 
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
-            didHit = FindSurface(goalPos, out hit, c);
+            didHit = FindSurface(goalPos, out placement, c);
         }
 
         if (!didHit) {
@@ -297,9 +313,10 @@ class StrideSystem: System<Container> {
             return;
         }
 
-        goalPos = hit.point;
+        goalPos = placement.Pos;
         if (Vector3.SqrMagnitude(goalPos - m_GoalPos) > m_MinMove * m_MinMove) {
             m_GoalPos = goalPos;
+            m_GoalRot = placement.Rot;
         }
     }
 
@@ -336,7 +353,7 @@ class StrideSystem: System<Container> {
     /// cast for a surface underneath the current pos
     bool FindSurface(
         Vector3 goalPos,
-        out RaycastHit hit,
+        out Placement placement,
         Container c
     ) {
         var castDir = RootDir;
@@ -350,16 +367,53 @@ class StrideSystem: System<Container> {
 
         var castSrc = goalPos - castDir * m_CastOffset;
 
+        var didHit = FindPlacement(
+            castSrc,
+            castDir,
+            castLen,
+            out placement,
+            c
+        );
+
+        return didHit;
+    }
+
+    bool FindPlacement(
+        Vector3 castSrc,
+        Vector3 castDir,
+        float castLen,
+        out Placement placement,
+        Container c
+    ) {
+        var goalUp = m_Root.position - m_GoalPos;
+        var offset = Quaternion.FromToRotation(m_Root.up, goalUp) * c.EndOffset;
+
         var didHit = Physics.Raycast(
             castSrc,
             castDir,
-            out hit,
+            out var hit,
             castLen,
             m_CastMask,
             QueryTriggerInteraction.Ignore
         );
 
-        return didHit;
+        if (!didHit) {
+            placement = new Placement(
+                Vector3.zero,
+                Quaternion.identity
+            );
+
+            return false;
+        }
+
+        var up = hit.normal;
+
+        placement = new Placement(
+            hit.point - offset,
+            Quaternion.FromToRotation(m_Root.up, up)
+        );
+
+        return true;
     }
 
     // -- debug --

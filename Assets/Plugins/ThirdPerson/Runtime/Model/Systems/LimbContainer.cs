@@ -12,6 +12,9 @@ interface LimbContainer {
     /// the length of the limb
     float Length { get; }
 
+    /// the offset of the bone used for placement
+    Vector3 EndOffset { get; }
+
     /// the character container
     CharacterContainer Character { get; }
 }

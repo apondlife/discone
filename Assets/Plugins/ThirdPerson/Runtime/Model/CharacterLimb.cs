@@ -40,6 +40,9 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
     /// the transform of the goal bone, if any
     Transform m_GoalBone;
 
+    /// the offset of the end bone used for placement, if any
+    Vector3 m_EndOffset;
+
     /// the current blend weight
     float m_Weight;
 
@@ -67,14 +70,15 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
                 c.State.Curr.PlanarVelocity +
                 m_Blend_InputVelocity * c.Inputs.Move
             );
+            destWeight = 1f;
 
-            destWeight = Mathf.Max(
-                0f,
-                Vector3.Dot(
-                    blendVelocity.normalized,
-                    c.State.Curr.Forward
-                )
-            );
+            // destWeight = Mathf.Max(
+            //     0f,
+            //     Vector3.Dot(
+            //         blendVelocity.normalized,
+            //         c.State.Curr.Forward
+            //     )
+            // );
         }
 
         // interpolate the weight
@@ -106,13 +110,28 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
             }
         );
 
-        if (!IsValid) {
+        var lastBone = m_Animator.GetBoneTransform(
+            m_Goal switch {
+                AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
+                AvatarIKGoal.LeftHand => HumanBodyBones.LeftHand,
+                AvatarIKGoal.RightFoot => HumanBodyBones.RightToes,
+                AvatarIKGoal.LeftFoot => HumanBodyBones.LeftToes,
+                _ => throw new Exception($"invalid goal {m_Goal}")
+            }
+        );
+
+        var endBone = lastBone ? lastBone.GetChild(0) : null;
+
+        if (!m_GoalBone || !endBone) {
             Log.Model.E($"{c.Name} - <limb: {m_Goal}> no matching bone");
+            return;
         }
 
         // init system
         // TODO: unclear if we really want to init as our own anchor
-        m_Length = Vector3.Distance(RootPos, m_GoalBone.position);
+        var goalPos = m_GoalBone.position;
+        m_Length = Vector3.Distance(RootPos, goalPos);
+        m_EndOffset = endBone.position - goalPos;
         m_StrideSystem.Init(this);
     }
 
@@ -146,6 +165,7 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
             m_Goal,
             m_Weight
         );
+
 
         if (m_Weight != 0.0f) {
             m_Animator.SetIKPosition(
@@ -210,6 +230,11 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
     /// the character container
     public CharacterContainer Character {
         get => c;
+    }
+
+    /// the offset of the bone used for placement
+    public Vector3 EndOffset {
+        get => m_EndOffset;
     }
 }
 
