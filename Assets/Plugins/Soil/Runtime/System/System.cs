@@ -50,8 +50,8 @@ public abstract class System<Container> {
         m_Container = config;
 
         var phase = InitInitialPhase();
-        phase.Enter(m_Container);
         SetPhase(phase);
+        phase.Enter(m_Container);
     }
 
     /// construct the initial phase

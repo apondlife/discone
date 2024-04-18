@@ -12,20 +12,6 @@ using Phase = Phase<LimbContainer>;
 /// the character limb's stride tracking
 [Serializable]
 class StrideSystem: System<Container> {
-    readonly struct Placement {
-        /// .
-        public readonly Vector3 Pos;
-
-        /// .
-        public readonly Quaternion Rot;
-
-        /// .
-        public Placement(Vector3 pos, Quaternion rot) {
-            Pos = pos;
-            Rot = rot;
-        }
-    }
-
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the root bone")]
@@ -74,8 +60,8 @@ class StrideSystem: System<Container> {
     /// the current ik position of the limb
     Vector3 m_GoalPos;
 
-    /// the current ik rotation of the limb
-    Quaternion m_GoalRot;
+    /// the current surface normal
+    Vector3 m_Normal;
 
     /// the bone the stride is anchored by
     CharacterBone m_Anchor;
@@ -88,7 +74,7 @@ class StrideSystem: System<Container> {
 
     // -- Soil.System --
     protected override Phase InitInitialPhase() {
-        return Holding;
+        return Free;
     }
 
     protected override SystemState State { get; set; } = new();
@@ -130,10 +116,23 @@ class StrideSystem: System<Container> {
     void Free_Enter(Container c) {
         m_IsFree = true;
         m_GoalPos = m_Root.position + RootDir * c.Length;
+        // TODO: set m_GoalRot?
     }
 
     void Free_Update(float delta, Container c) {
-        var didHit = FindSurface(m_GoalPos, out var placement, c);
+        // cast in the root direction, from the end of the limb
+        var castDir = RootDir;
+        var castLen = c.Length + m_SearchRange_NoSurface;
+        var castSrc = m_GoalPos - castDir * m_CastOffset;
+
+        var didHit = FindPlacement(
+            castSrc,
+            castDir,
+            castLen,
+            out var placement,
+            c
+        );
+
         if (didHit) {
             m_GoalPos = placement.Pos;
             ChangeTo(Holding);
@@ -211,7 +210,6 @@ class StrideSystem: System<Container> {
         );
 
         var goalPos = rootPos + goalDir * goalMax;
-        var goalRot = Quaternion.identity;
 
         // find foot placement
         var castSrc = rootPos;
@@ -222,17 +220,16 @@ class StrideSystem: System<Container> {
             castSrc,
             castDir,
             castLen,
-            out var hit,
+            out var placement,
             c
         );
 
         if (didHit) {
-            goalPos = hit.Pos;
-            goalRot = hit.Rot;
+            goalPos = placement.Pos;
         }
 
         m_GoalPos = goalPos;
-        m_GoalRot = goalRot;
+        m_Normal = placement.Normal;
         m_InputScale = inputScale;
 
         Debug_DrawMove(c);
@@ -271,12 +268,14 @@ class StrideSystem: System<Container> {
 
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
-            didHit = FindSurface(
+            didHit = FindSurface_Hold(
                 castSrc + castDir * castLen,
                 out placement,
                 c
             );
         }
+
+        m_Normal = placement.Normal;
 
         if (!didHit) {
             ChangeTo(Free);
@@ -284,7 +283,6 @@ class StrideSystem: System<Container> {
         }
 
         m_GoalPos = placement.Pos;
-        m_GoalRot = placement.Rot;
     }
 
     void Holding_Update(float delta, Container c) {
@@ -305,8 +303,10 @@ class StrideSystem: System<Container> {
 
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
-            didHit = FindSurface(goalPos, out placement, c);
+            didHit = FindSurface_Hold(goalPos, out placement, c);
         }
+
+        m_Normal = placement.Normal;
 
         if (!didHit) {
             ChangeTo(Free);
@@ -316,7 +316,6 @@ class StrideSystem: System<Container> {
         goalPos = placement.Pos;
         if (Vector3.SqrMagnitude(goalPos - m_GoalPos) > m_MinMove * m_MinMove) {
             m_GoalPos = goalPos;
-            m_GoalRot = placement.Rot;
         }
     }
 
@@ -340,9 +339,9 @@ class StrideSystem: System<Container> {
         get => m_GoalPos;
     }
 
-    /// the current ik rotation of the limb
-    public Quaternion GoalRot {
-        get => m_GoalRot;
+    /// the current placement normal
+    public Vector3 Normal {
+        get => m_Normal;
     }
 
     /// the direction towards the surface
@@ -351,7 +350,7 @@ class StrideSystem: System<Container> {
     }
 
     /// cast for a surface underneath the current pos
-    bool FindSurface(
+    bool FindSurface_Hold(
         Vector3 goalPos,
         out Placement placement,
         Container c
@@ -378,6 +377,7 @@ class StrideSystem: System<Container> {
         return didHit;
     }
 
+    /// cast for a placement on the surface
     bool FindPlacement(
         Vector3 castSrc,
         Vector3 castDir,
@@ -385,9 +385,6 @@ class StrideSystem: System<Container> {
         out Placement placement,
         Container c
     ) {
-        var goalUp = m_Root.position - m_GoalPos;
-        var offset = Quaternion.FromToRotation(m_Root.up, goalUp) * c.EndOffset;
-
         var didHit = Physics.Raycast(
             castSrc,
             castDir,
@@ -397,23 +394,47 @@ class StrideSystem: System<Container> {
             QueryTriggerInteraction.Ignore
         );
 
+        // if the cast missed, there's nothing
         if (!didHit) {
             placement = new Placement(
                 Vector3.zero,
-                Quaternion.identity
+                Vector3.zero
             );
 
             return false;
         }
 
-        var up = hit.normal;
+        // if the cast is farther than the leg
+        if (Vector3.Distance(hit.point, m_Root.position) > c.Length) {
+            placement = new Placement(
+                hit.point,
+                Vector3.zero
+            );
+
+            return true;
+        }
 
         placement = new Placement(
-            hit.point - offset,
-            Quaternion.FromToRotation(m_Root.up, up)
+            hit.point,
+            hit.normal
         );
 
         return true;
+    }
+
+    /// a position and rotation placement for the goal
+    public readonly struct Placement {
+        /// .
+        public readonly Vector3 Pos;
+
+        /// .
+        public readonly Vector3 Normal;
+
+        /// .
+        public Placement(Vector3 pos, Vector3 normal) {
+            Pos = pos;
+            Normal = normal;
+        }
     }
 
     // -- debug --

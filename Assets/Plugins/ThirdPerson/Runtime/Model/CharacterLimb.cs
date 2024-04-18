@@ -40,14 +40,14 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
     /// the transform of the goal bone, if any
     Transform m_GoalBone;
 
-    /// the offset of the end bone used for placement, if any
-    Vector3 m_EndOffset;
-
     /// the current blend weight
     float m_Weight;
 
     /// the length of the limb
     float m_Length;
+
+    /// the offset of the end bone used for placement, if any
+    float m_EndLength;
 
     // -- lifecycle --
     void Awake() {
@@ -127,11 +127,16 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
             return;
         }
 
+        // get default limb lengths
+        var goalPos = m_GoalBone.position;
+        var limb = goalPos - transform.position;
+        var end = endBone.position - goalPos;
+        var endLength = Vector3.Dot(end, limb.normalized);
+        m_Length = limb.magnitude + endLength;
+        m_EndLength = endLength;
+
         // init system
         // TODO: unclear if we really want to init as our own anchor
-        var goalPos = m_GoalBone.position;
-        m_Length = Vector3.Distance(RootPos, goalPos);
-        m_EndOffset = endBone.position - goalPos;
         m_StrideSystem.Init(this);
     }
 
@@ -166,16 +171,32 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
             m_Weight
         );
 
-
         if (m_Weight != 0.0f) {
+            var hitUp = m_StrideSystem.Normal;
+
+            var goalPos = m_StrideSystem.GoalPos;
+            if (hitUp != Vector3.zero) {
+                goalPos += m_EndLength * hitUp;
+            }
+
             m_Animator.SetIKPosition(
                 m_Goal,
-                m_StrideSystem.GoalPos
+                goalPos
+            );
+
+            var up = hitUp;
+            if (up == Vector3.zero) {
+                up = Vector3.Normalize(transform.position - goalPos);
+            }
+
+            var rot = Quaternion.LookRotation(
+                Vector3.ProjectOnPlane(c.State.Curr.Forward, up),
+                up
             );
 
             m_Animator.SetIKRotation(
                 m_Goal,
-                m_StrideSystem.GoalRot
+                rot
             );
         }
     }
@@ -230,11 +251,6 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
     /// the character container
     public CharacterContainer Character {
         get => c;
-    }
-
-    /// the offset of the bone used for placement
-    public Vector3 EndOffset {
-        get => m_EndOffset;
     }
 }
 
