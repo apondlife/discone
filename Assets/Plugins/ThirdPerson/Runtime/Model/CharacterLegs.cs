@@ -12,8 +12,13 @@ class CharacterLegs: MonoBehaviour {
     [Tooltip("the right leg")]
     [SerializeField] CharacterLimb m_Right;
 
-    [Tooltip("a minimum move speed applied every frame")]
-    [SerializeField] float m_MinMoveSpeed;
+    // -- tuning --
+    [Header("tuning")]
+    [Tooltip("the threshold under which the character legs slide opposite movement")]
+    [SerializeField] float m_SlideThreshold;
+
+    [Tooltip("the speed the legs slide")]
+    [SerializeField] float m_SlideSpeed;
 
     // -- props --
     /// the character's dependency container
@@ -30,9 +35,18 @@ class CharacterLegs: MonoBehaviour {
 
         // set offset in move direction
         var v = c.State.Curr.SurfaceVelocity;
-        if (c.Inputs.IsMoveActive && v.sqrMagnitude < m_MinMoveSpeed * m_MinMoveSpeed) {
-            var moveDir = v != Vector3.zero ? v.normalized : c.State.Curr.Forward;
-            offset = m_MinMoveSpeed * Time.deltaTime * moveDir;
+        var moveDir = v != Vector3.zero ? v.normalized : c.State.Curr.Forward;
+        var moveInput = c.Inputs.MoveMagnitude;
+
+        var isHeldLegSliding = (
+            // if we have input
+            moveInput > 0f &&
+            // and the velocity towards input is below a threshold
+            Vector3.Dot(v, c.Inputs.Move.normalized) < m_SlideThreshold
+        );
+
+        if (isHeldLegSliding) {
+            offset = moveInput * m_SlideSpeed * Time.deltaTime * moveDir;
         }
 
         m_Left.SetOffset(offset);

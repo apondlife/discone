@@ -136,8 +136,16 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 949730817486058081, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Blend_InSpeed
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 949730817486058081, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_StrideEpsilon
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 949730817486058081, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Blend_OutSpeed
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 949730817486058081, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Length.Dst.Max
@@ -576,8 +584,20 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_SlideSpeed
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_OffsetSpeed
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_MinMoveSpeed
-      value: 1
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_SlideThreshold
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 6027102374830966439, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: _unityEventResponse.m_PersistentCalls.m_Calls.Array.size
@@ -760,8 +780,16 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8248423624936514695, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Blend_InSpeed
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8248423624936514695, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_StrideEpsilon
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8248423624936514695, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Blend_OutSpeed
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8248423624936514695, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Length.Dst.Max

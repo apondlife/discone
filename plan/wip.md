@@ -3,8 +3,6 @@ what is projected
 
 # ik legs
 - rotation & placement
-- blend ik (such as during sliding)
-- slide: ik weight proportional to direction (facing dot velocity)
 - hip movement?
 - foot height: tune during stride
 
@@ -28,8 +26,7 @@ what is projected
 - real jump charge (small jump -> tangent, big charge -> normal, or maybe the other way around)
 
 # crouch
-
-- wip
+- crouch ik slide
 
 # flower
 - flower disabling zones

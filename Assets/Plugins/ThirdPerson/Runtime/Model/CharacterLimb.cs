@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
-/// center of mass? move character down?
+// TODO: center of mass? move character down?
 /// an ik limb for the character model
 public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbContainer {
     // -- cfg --
@@ -14,13 +14,19 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbCon
 
     // -- tuning --
     [Header("tuning")]
-    [Tooltip("the duration of the ik blend when searching for target")]
-    [SerializeField] float m_BlendInDuration;
+    [Tooltip("the extra velocity when blending ik as a function of input")]
+    [SerializeField] float m_Blend_InputVelocity;
 
-    [Tooltip("the duration of the ik blend when dropping target")]
-    [SerializeField] float m_BlendOutDuration;
+    [FormerlySerializedAs("m_BlendInDuration")]
+    [Tooltip("the speed the ik weight blends towards one")]
+    [SerializeField] float m_Blend_InSpeed;
 
-    [FormerlySerializedAs("m_System")]
+    [FormerlySerializedAs("m_BlendOutDuration")]
+    [Tooltip("the speed the ik weight blends towards zero")]
+    [SerializeField] float m_Blend_OutSpeed;
+
+    // -- systems --
+    [Header("systems")]
     [Tooltip("the limb system")]
     [SerializeField] StrideSystem m_StrideSystem;
 
@@ -28,13 +34,13 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbCon
     /// the containing character
     CharacterContainer c;
 
-    /// the animator for this limb
+    /// the animator
     Animator m_Animator;
 
     /// the transform of the goal bone, if any
     Transform m_GoalBone;
 
-    /// the blending weight for this limb
+    /// the current blend weight
     float m_Weight;
 
     /// the length of the limb
@@ -54,17 +60,32 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbCon
         var delta = Time.deltaTime;
         m_StrideSystem.Update(delta);
 
-        // blend the weight
-        var isBlendingIn = !m_StrideSystem.IsFree;
+        // set target ik weight if limb is active
+        var destWeight = 0f;
+        if (!m_StrideSystem.IsFree && !c.State.Curr.IsCrouching && !c.State.Curr.IsInJumpSquat) {
+            var blendVelocity = (
+                c.State.Curr.PlanarVelocity +
+                m_Blend_InputVelocity * c.Inputs.Move
+            );
+
+            destWeight = Mathf.Max(
+                0f,
+                Vector3.Dot(
+                    blendVelocity.normalized,
+                    c.State.Curr.Forward
+                )
+            );
+        }
+
+        // interpolate the weight
+        var blendSpeed = destWeight > m_Weight ? m_Blend_InSpeed : m_Blend_OutSpeed;
         m_Weight = Mathf.MoveTowards(
             m_Weight,
-            isBlendingIn ? 1.0f : 0.0f,
-            delta / (isBlendingIn ? m_BlendInDuration : m_BlendOutDuration)
+            destWeight,
+            blendSpeed * delta
         );
 
-        // AAA: blend ik
-        m_Weight = isBlendingIn ? 1.0f : 0.0f;
-
+        // debug
         if (m_Goal <= AvatarIKGoal.RightFoot) {
             Debug_Draw("limb", width: 2f);
         }
@@ -119,6 +140,11 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbCon
         }
 
         m_Animator.SetIKPositionWeight(
+            m_Goal,
+            m_Weight
+        );
+
+        m_Animator.SetIKRotationWeight(
             m_Goal,
             m_Weight
         );
@@ -204,6 +230,7 @@ public class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbCon
             new DebugDraw.Config(Debug_PhaseColor(alpha), tags: DebugDraw.Tag.Model, width: width * 3f, count: count)
         );
     }
+
     /// the debug color for a limb with given alpha (red is right)
     string Debug_PhaseName() {
         var name = "moving";
