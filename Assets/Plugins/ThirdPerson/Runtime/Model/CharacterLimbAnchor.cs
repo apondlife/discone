@@ -3,12 +3,12 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the current position of a bone
-public interface CharacterBone {
+public interface CharacterLimbAnchor {
     /// the root position
-    public Vector3 RootPos { get; }
+    Vector3 RootPos { get; }
 
     /// the goal position
-    public Vector3 GoalPos { get; }
+    Vector3 GoalPos { get; }
 }
 
 }

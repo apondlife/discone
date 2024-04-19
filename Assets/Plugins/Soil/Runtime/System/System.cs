@@ -154,6 +154,11 @@ public abstract class System<Container> {
     }
 
     // -- debug --
+    /// the current phase name
+    public string Debug_PhaseName {
+        get => State.PhaseName;
+    }
+
     #if UNITY_EDITOR
     /// log debug information for this system
     protected void UseLogging(bool isLogging = true) {

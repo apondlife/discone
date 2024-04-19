@@ -5,7 +5,6 @@ what is projected
 - rotation & placement
 - splaying
 - foot height: tune during stride
-- hip movement?
 
 # ik arms
 - fix arms

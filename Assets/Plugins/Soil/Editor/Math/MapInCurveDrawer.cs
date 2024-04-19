@@ -24,8 +24,8 @@ sealed class MapInCurveDrawer: PropertyDrawer {
         E.BeginProperty(r, label, prop);
 
         // get attrs
-        var curve = prop.FindPropertyRelative("m_Curve");
-        var range = prop.FindPropertyRelative("m_Src");
+        var curve = prop.FindPropertyRelative(nameof(MapInCurve.Curve));
+        var range = prop.FindPropertyRelative(nameof(MapInCurve.Src));
 
         // draw label w/ indent
         E.LabelField(r, label);

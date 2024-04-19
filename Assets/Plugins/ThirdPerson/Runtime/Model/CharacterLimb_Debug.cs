@@ -30,14 +30,7 @@ public partial class CharacterLimb {
 
     /// the debug color for a limb with given alpha (red is right)
     string Debug_PhaseName() {
-        var name = "moving";
-        if (m_StrideSystem.IsHeld) {
-            name = "holding";
-        } else if (m_StrideSystem.IsFree) {
-            name = "free";
-        }
-
-        return name;
+        return m_StrideSystem.Debug_PhaseName.ToLower();
     }
 
     /// the debug color for a limb with given alpha (red is right)
@@ -47,6 +40,8 @@ public partial class CharacterLimb {
             color = Color.black;
         } else if (m_StrideSystem.IsFree) {
             color = Color.white;
+        } else if (!m_StrideSystem.IsActive) {
+            color = Color.red;
         }
 
         color.a = alpha;

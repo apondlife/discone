@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Soil {
 
@@ -8,19 +9,21 @@ namespace Soil {
 [Serializable]
 public struct MapInCurve {
     // -- fields --
+    [FormerlySerializedAs("m_Curve")]
     [Tooltip("the curve")]
-    [SerializeField] AnimationCurve m_Curve;
+    public AnimationCurve Curve;
 
+    [FormerlySerializedAs("m_Src")]
     [Tooltip("the source range")]
-    [SerializeField] FloatRange m_Src;
+    public FloatRange Src;
 
     // -- queries --
     /// evaluate the value along the curve
     public float Evaluate(float input) {
-        var k = m_Src.InverseLerp(input);
+        var k = Src.InverseLerp(input);
 
-        if (m_Curve != null && m_Curve.length != 0) {
-            k = m_Curve.Evaluate(k);
+        if (Curve != null && Curve.length != 0) {
+            k = Curve.Evaluate(k);
         }
 
         return k;
@@ -28,7 +31,7 @@ public struct MapInCurve {
 
     // -- debug --
     public override string ToString() {
-        return $"<MapInCurve src={m_Src}>";
+        return $"<MapInCurve src={Src}>";
     }
 }
 

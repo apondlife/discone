@@ -6,7 +6,7 @@ namespace ThirdPerson {
 
 // TODO: center of mass? move character down?
 /// an ik limb for the character model
-public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone, LimbContainer {
+public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbAnchor, LimbContainer {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the type of goal of this limb")]
@@ -44,7 +44,7 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
     float m_Weight;
 
     /// the length of the limb
-    float m_Length;
+    float m_InitialLen;
 
     /// the offset of the end bone used for placement, if any
     float m_EndLength;
@@ -64,22 +64,7 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
         m_StrideSystem.Update(delta);
 
         // set target ik weight if limb is active
-        var destWeight = 0f;
-        if (!m_StrideSystem.IsFree && !c.State.Curr.IsCrouching && !c.State.Curr.IsInJumpSquat) {
-            var blendVelocity = (
-                c.State.Curr.PlanarVelocity +
-                m_Blend_InputVelocity * c.Inputs.Move
-            );
-            destWeight = 1f;
-
-            // destWeight = Mathf.Max(
-            //     0f,
-            //     Vector3.Dot(
-            //         blendVelocity.normalized,
-            //         c.State.Curr.Forward
-            //     )
-            // );
-        }
+        var destWeight = m_StrideSystem.IsActive ? 1f : 0f;
 
         // interpolate the weight
         var blendSpeed = destWeight > m_Weight ? m_Blend_InSpeed : m_Blend_OutSpeed;
@@ -129,19 +114,30 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
 
         // get default limb lengths
         var goalPos = m_GoalBone.position;
+
         var limb = goalPos - transform.position;
+        var limbDir = limb.normalized;
+
         var end = endBone.position - goalPos;
-        var endLength = Vector3.Dot(end, limb.normalized);
-        m_Length = limb.magnitude + endLength;
+        var endLength = Vector3.Dot(end, limbDir);
+
+        m_InitialLen = limb.magnitude + endLength;
         m_EndLength = endLength;
 
+        // align root direction
+        transform.forward = limbDir;
+
         // init system
-        // TODO: unclear if we really want to init as our own anchor
         m_StrideSystem.Init(this);
     }
 
+    /// toggles stride system enabled
+    public void SetIsStriding(bool isStriding) {
+        m_StrideSystem.SetIsStriding(isStriding);
+    }
+
     /// starts a new stride for the limb
-    public void Move(CharacterBone anchor) {
+    public void Move(CharacterLimbAnchor anchor) {
         m_StrideSystem.Move(anchor);
     }
 
@@ -150,9 +146,9 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
         m_StrideSystem.Release();
     }
 
-    /// set the current offset to translate the legs
-    public void SetOffset(Vector3 offset) {
-        m_StrideSystem.SetOffset(offset);
+    /// set the slide offset to translate the legs
+    public void SetSlideOffset(Vector3 offset) {
+        m_StrideSystem.SetSlideOffset(offset);
     }
 
     /// applies the limb ik
@@ -219,7 +215,12 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
 
     /// the square length of the bone
     public float SqrLength {
-        get => Vector3.SqrMagnitude(RootPos - GoalPos);
+        get => Vector3.SqrMagnitude(transform.position - GoalPos);
+    }
+
+    /// if the limb is is applying ik
+    public bool IsActive {
+        get => m_StrideSystem.IsActive;
     }
 
     /// .
@@ -239,19 +240,25 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterBone,
     }
 
     /// the bone the stride is anchored by
-    public CharacterBone Anchor {
+    public CharacterLimbAnchor InitialAnchor {
         get => this;
     }
 
     /// the length of the limb
-    public float Length {
-        get => m_Length;
+    public float InitialLen {
+        get => m_InitialLen;
+    }
+
+    /// the direction towards the surface
+    public Vector3 InitialDir {
+        get => transform.forward;
     }
 
     /// the character container
     public CharacterContainer Character {
         get => c;
     }
+
 }
 
 }

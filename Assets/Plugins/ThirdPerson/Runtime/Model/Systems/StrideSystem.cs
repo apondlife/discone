@@ -51,6 +51,9 @@ class StrideSystem: System<Container> {
     [SerializeField] float m_SearchRange_NoSurface;
 
     // -- props --
+    /// if the limb is not striding
+    bool m_IsNotStriding;
+
     /// if the limb is currently free
     bool m_IsFree;
 
@@ -64,10 +67,10 @@ class StrideSystem: System<Container> {
     Vector3 m_Normal;
 
     /// the bone the stride is anchored by
-    CharacterBone m_Anchor;
+    CharacterLimbAnchor m_Anchor;
 
     /// an offset that translates the held position
-    Vector3 m_Offset;
+    Vector3 m_SlideOffset;
 
     /// the current stride length input scale
     float m_InputScale;
@@ -81,13 +84,26 @@ class StrideSystem: System<Container> {
 
     // -- lifecycle --
     public override void Init(Container c) {
-        m_Anchor = c.Anchor;
+        m_Anchor = c.InitialAnchor;
         base.Init(c);
     }
 
     // -- commands --
+    /// set if the limb is striding
+    public void SetIsStriding(bool isStriding) {
+        if (m_IsNotStriding != isStriding) {
+            return;
+        }
+
+        if (!isStriding) {
+            ChangeTo(NotStriding);
+        } else {
+            ChangeTo(Free);
+        }
+    }
+
     /// switch to the moving state
-    public void Move(CharacterBone anchor) {
+    public void Move(CharacterLimbAnchor anchor) {
         m_Anchor = anchor;
         ChangeTo(Moving);
     }
@@ -95,14 +111,34 @@ class StrideSystem: System<Container> {
     /// release the limb if it's not already
     public void Release() {
         m_Anchor = null;
-        if (!IsFree) {
+        if (!m_IsFree) {
             ChangeTo(Free);
         }
     }
 
-    /// set the current offset to translate the legs
-    public void SetOffset(Vector3 offset) {
-        m_Offset = offset;
+    /// set the slide offset to translate the legs
+    public void SetSlideOffset(Vector3 offset) {
+        m_SlideOffset = offset;
+    }
+
+    // -- Free --
+    Phase NotStriding => new(
+        name: "NotStriding",
+        enter: NotStriding_Enter,
+        update: NotStriding_Update,
+        exit: NotStriding_Exit
+    );
+
+    void NotStriding_Enter(Container c) {
+        m_IsNotStriding = true;
+    }
+
+    void NotStriding_Update(float delta, Container c) {
+        m_GoalPos = m_Root.position + c.InitialDir * c.InitialLen;
+    }
+
+    void NotStriding_Exit(Container c) {
+        m_IsNotStriding = false;
     }
 
     // -- Free --
@@ -115,14 +151,14 @@ class StrideSystem: System<Container> {
 
     void Free_Enter(Container c) {
         m_IsFree = true;
-        m_GoalPos = m_Root.position + RootDir * c.Length;
+        m_GoalPos = m_Root.position + c.InitialDir * c.InitialLen;
         // TODO: set m_GoalRot?
     }
 
     void Free_Update(float delta, Container c) {
         // cast in the root direction, from the end of the limb
-        var castDir = RootDir;
-        var castLen = c.Length + m_SearchRange_NoSurface;
+        var castDir = c.InitialDir;
+        var castLen = c.InitialLen + m_SearchRange_NoSurface;
         var castSrc = m_GoalPos - castDir * m_CastOffset;
 
         var didHit = FindPlacement(
@@ -139,7 +175,7 @@ class StrideSystem: System<Container> {
             return;
         }
 
-        m_GoalPos = m_Root.position + RootDir * c.Length;
+        m_GoalPos = m_Root.position + c.InitialDir * c.InitialLen;
     }
 
     void Free_Exit(Container c) {
@@ -205,7 +241,7 @@ class StrideSystem: System<Container> {
 
         // the maximum stride distance projected along the leg
         var goalMax = Mathf.Max(
-            c.Length,
+            c.InitialLen,
             maxStrideLen / Vector3.Cross(goalDir, Vector3.down).magnitude
         );
 
@@ -256,7 +292,7 @@ class StrideSystem: System<Container> {
         // find placement along limb
         var castSrc = m_Root.position;
         var castDir = Vector3.Normalize(m_GoalPos - castSrc);
-        var castLen = c.Length + m_SearchRange_Surface;
+        var castLen = c.InitialLen + m_SearchRange_Surface;
 
         var didHit = FindPlacement(
             castSrc,
@@ -286,12 +322,12 @@ class StrideSystem: System<Container> {
     }
 
     void Holding_Update(float delta, Container c) {
-        var goalPos = m_GoalPos - m_Offset;
+        var goalPos = m_GoalPos - m_SlideOffset;
 
         // find placement along limb
         var castSrc = m_Root.position;
         var castDir = Vector3.Normalize(goalPos - castSrc);
-        var castLen = c.Length + m_SearchRange_Surface;
+        var castLen = c.InitialLen + m_SearchRange_Surface;
 
         var didHit = FindPlacement(
             castSrc,
@@ -324,14 +360,19 @@ class StrideSystem: System<Container> {
     }
 
     // -- queries --
-    /// if the limb is currently free
-    public bool IsFree {
-        get => m_IsFree;
+    /// if the stride is currently active
+    public bool IsActive {
+        get => !m_IsNotStriding && !m_IsFree;
     }
 
-    /// if the limb is currently held
+    /// .
     public bool IsHeld {
         get => m_IsHeld;
+    }
+
+    /// .
+    public bool IsFree {
+        get => m_IsFree;
     }
 
     /// the current ik position of the limb
@@ -344,24 +385,19 @@ class StrideSystem: System<Container> {
         get => m_Normal;
     }
 
-    /// the direction towards the surface
-    Vector3 RootDir {
-        get => -m_Root.up;
-    }
-
     /// cast for a surface underneath the current pos
     bool FindSurface_Hold(
         Vector3 goalPos,
         out Placement placement,
         Container c
     ) {
-        var castDir = RootDir;
-        var castLen = c.Length + m_SearchRange_NoSurface;
+        var castDir = c.InitialDir;
+        var castLen = c.InitialLen + m_SearchRange_NoSurface;
 
         var currSurface = c.Character.State.Curr.MainSurface;
         if (currSurface.IsSome) {
             castDir = -currSurface.Normal;
-            castLen = c.Length + m_SearchRange_Surface;
+            castLen = c.InitialLen + m_SearchRange_Surface;
         }
 
         var castSrc = goalPos - castDir * m_CastOffset;
@@ -405,7 +441,7 @@ class StrideSystem: System<Container> {
         }
 
         // if the cast is farther than the leg
-        if (Vector3.Distance(hit.point, m_Root.position) > c.Length) {
+        if (Vector3.Distance(hit.point, m_Root.position) > c.InitialLen) {
             placement = new Placement(
                 hit.point,
                 Vector3.zero
