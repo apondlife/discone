@@ -213,16 +213,6 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
         get => m_StrideSystem.GoalPos;
     }
 
-    /// the square length of the bone
-    public float SqrLength {
-        get => Vector3.SqrMagnitude(transform.position - GoalPos);
-    }
-
-    /// if the limb is is applying ik
-    public bool IsActive {
-        get => m_StrideSystem.IsActive;
-    }
-
     /// .
     public bool IsFree {
         get => m_StrideSystem.IsFree;

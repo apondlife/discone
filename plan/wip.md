@@ -2,8 +2,8 @@ what is projected
 ---
 
 # ik legs
+- inclines: surface velocity for legs?
 - rotation & placement
-- splaying
 - foot height: tune during stride
 
 # ik arms

@@ -125,7 +125,7 @@ class CharacterLegs: MonoBehaviour {
     /// switch the moving leg
     void Switch() {
         // move leg that is furthest away
-        var (move, hold) = m_Left.SqrLength > m_Right.SqrLength
+        var (move, hold) = LimbExtension(m_Left) > LimbExtension(m_Right)
             ? (m_Left, m_Right)
             : (m_Right, m_Left);
 
@@ -193,6 +193,17 @@ class CharacterLegs: MonoBehaviour {
         var translation = m_Hips_CurrOffset * Vector3.down;
         transform.localPosition = m_InitialPos + translation;
         m_Model.localPosition = m_InitialModelPos + translation;
+    }
+
+    // -- queries --
+    /// the displacement of the leg projected along the current velocity
+    float LimbExtension(CharacterLimb limb) {
+        var displacement = Vector3.Dot(
+            limb.GoalPos - limb.RootPos,
+            c.State.Curr.PlanarVelocity
+        );
+
+        return -displacement;
     }
 }
 

@@ -29,8 +29,11 @@ class StrideSystem: System<Container> {
     [Tooltip("the threshold under which movements are ignored")]
     [SerializeField] float m_MinMove;
 
-    [Tooltip("the max distance before searching for a new dest")]
+    [Tooltip("the max length (radius) of the stride")]
     [SerializeField] FloatRange m_MaxLength;
+
+    [Tooltip("the max length (radius) of the stride on the cross axis")]
+    [SerializeField] float m_MaxLength_CrossScale;
 
     [Tooltip("the shape of the stride as a fn of progress through the complete stride")]
     [SerializeField] AnimationCurve m_Shape;
@@ -207,24 +210,33 @@ class StrideSystem: System<Container> {
         ));
 
         var maxStrideScale = speedScale * inputScale * facingScale;
-        var maxStrideLen = m_MaxLength.Evaluate(maxStrideScale);
+        var maxStrideLenFwd = m_MaxLength.Evaluate(maxStrideScale);
+        var maxStrideLenCross = maxStrideLenFwd * m_MaxLength_CrossScale;
 
         // the anchor leg vector
         var anchor = m_Anchor.RootPos - m_Anchor.GoalPos;
-
-        // the movement dir to align against stride
-        var moveDir = v;
-        if (moveDir == Vector3.zero) {
-            moveDir = c.Character.State.Curr.Forward;
-        }
 
         // get the expected stride position based on the anchor
         var currStride = Vector3.ProjectOnPlane(anchor, Vector3.up);
         var currStrideLen = currStride.magnitude;
         var currStrideDir = currStride / currStrideLen;
+        var currFwd = c.Character.State.Curr.Forward;
+        var currStrideAngle = Vector3.Angle(currStrideDir, currFwd);
+
+        // calculate max stride length on the ellipse
+        var maxStrideX = maxStrideLenFwd * Mathf.Cos(currStrideAngle);
+        var maxStrideY = maxStrideLenCross * Mathf.Sin(currStrideAngle);
+        var maxStrideLen = Mathf.Sqrt(maxStrideX * maxStrideX + maxStrideY * maxStrideY);
 
         // clamp stride to the max length
-        var nextStrideLen = Mathf.Min(currStride.magnitude, maxStrideLen);
+        var nextStrideLenRaw = currStride.magnitude;
+        var nextStrideLen = Mathf.Min(nextStrideLenRaw, maxStrideLen);
+
+        // the movement dir to align against stride
+        var moveDir = v;
+        if (moveDir == Vector3.zero) {
+            moveDir = currFwd;
+        }
 
         // shape the stride along its progress curve
         var nextStrideElapsed = Mathf.Sign(Vector3.Dot(currStride, moveDir)) * nextStrideLen / maxStrideLen;

@@ -264,6 +264,11 @@ public sealed partial class CharacterState {
             get => Velocity.XNZ();
         }
 
+        /// the velocity on the xz-plane
+        public Vector3 PlanarForce {
+            get => Force.XNZ();
+        }
+
         /// the velocity in the main surface plane, or raw velocity if none
         public Vector3 SurfaceVelocity {
             get {

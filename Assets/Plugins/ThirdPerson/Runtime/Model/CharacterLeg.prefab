@@ -33,11 +33,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_StrideSystem.m_MaxLength.Max
-      value: 2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_StrideSystem.m_MaxLength.Min
-      value: 0.2
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_StrideSystem.m_StrideLength.Max
@@ -57,7 +57,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_StrideSystem.m_FacingScale.Dst.Min
-      value: 0.2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_StrideSystem.m_SearchRange_Surface
@@ -66,6 +66,10 @@ PrefabInstance:
     - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_StrideSystem.m_InputScale.m_Src.Min
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
+      propertyPath: m_StrideSystem.m_MaxLength_CrossScale
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_StrideSystem.m_SpeedScale.m_Dst.Max
