@@ -254,6 +254,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Left: {fileID: 4999883145047628387}
   m_Right: {fileID: 6027531842518704437}
+  m_Slide_Threshold: 0
+  m_Slide_Speed: 0
+  m_Hips_Spring: 0
+  m_Hips_Damping: 0
+  m_Hips_SkipOffset:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Src:
+      Min: 0
+      Max: 0
+  m_Model: {fileID: 1061133086809451152}
 --- !u!1 &1114928914988804812
 GameObject:
   m_ObjectHideFlags: 0
