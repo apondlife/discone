@@ -24,8 +24,11 @@ class CharacterLegs: MonoBehaviour {
     [Tooltip("the speed the legs slide")]
     [SerializeField] float m_Slide_Speed;
 
-    [Tooltip("the blending speed for the model")]
-    [SerializeField] float m_Hips_BlendSpeed;
+    [Tooltip("the spring constant when blending the hips offset")]
+    [SerializeField] float m_Hips_Spring;
+
+    [Tooltip("the spring damping when blending the hips offset")]
+    [SerializeField] float m_Hips_Damping;
 
     [Tooltip("the height of the skip")]
     [SerializeField] MapInCurve m_Hips_SkipOffset;
@@ -46,7 +49,13 @@ class CharacterLegs: MonoBehaviour {
     Vector3 m_InitialModelPos;
 
     /// the interpolated hips offset
-    float m_Hips_ModelOffset;
+    float m_Hips_CurrOffset;
+
+    /// the current spring speed
+    float m_Hips_Spring_Speed;
+
+    /// the distance between the current and dest offset the previous frame
+    float m_Hips_Spring_PrevDist;
 
     // -- lifecycle --
     void Awake() {
@@ -62,6 +71,34 @@ class CharacterLegs: MonoBehaviour {
     void Update() {
         var delta = Time.deltaTime;
 
+        // slide the held leg if necessary
+        Slide(delta);
+
+        // if the character is currently striding
+        SetIsStriding(!c.State.Curr.IsCrouching && !c.State.Curr.IsInJumpSquat);
+
+        // if the held leg becomes free, release the moving leg
+        if (m_Left.IsFree != m_Right.IsFree) {
+            Release();
+        }
+        // if both legs are held, start moving one
+        else if (m_Left.IsHeld && m_Right.IsHeld) {
+            Switch();
+        }
+
+        // add an offset to move the hips to match the character's stance
+        MoveHips(delta);
+    }
+
+    // -- commands --
+    /// update if the limbs are currently striding
+    void SetIsStriding(bool isStriding) {
+        m_Left.SetIsStriding(isStriding);
+        m_Right.SetIsStriding(isStriding);
+    }
+
+    /// slide the held leg when they lose grip
+    void Slide(float delta) {
         // add an offset to slide the legs when they lose grip
         var slideOffset = Vector3.zero;
 
@@ -83,62 +120,6 @@ class CharacterLegs: MonoBehaviour {
 
         m_Left.SetSlideOffset(slideOffset);
         m_Right.SetSlideOffset(slideOffset);
-
-
-        // if the character is currently striding
-        SetIsStriding(!c.State.Curr.IsCrouching && !c.State.Curr.IsInJumpSquat);
-
-        // if the held leg becomes free, release the moving leg
-        if (m_Left.IsFree != m_Right.IsFree) {
-            Release();
-        }
-        // if both legs are held, start moving one
-        else if (m_Left.IsHeld && m_Right.IsHeld) {
-            Switch();
-        }
-
-        // add an offset to move the hips to match the character's stance
-        var hipsOffset = 0f;
-
-        var heldLeg = m_Left.IsHeld ? m_Left : m_Right;
-        if (heldLeg.IsHeld) {
-            var srcCos = Vector3.Dot(heldLeg.InitialDir, Vector3.down);
-            var curOffset = m_InitialPos - transform.localPosition;
-            var curDir = Vector3.Normalize(heldLeg.GoalPos - heldLeg.RootPos - curOffset);
-            var curCos = Vector3.Dot(curDir, Vector3.down);
-            var curAngle = Mathf.Acos(curCos) * Mathf.Rad2Deg;
-
-            if (curAngle < m_Hips_SkipOffset.Src.Min) {
-                hipsOffset = (srcCos - curCos) * heldLeg.InitialLen;
-            } else {
-                var skipCos = Mathf.Cos(m_Hips_SkipOffset.Src.Min);
-                var skipOffset = (srcCos - skipCos) * heldLeg.InitialLen;
-
-                hipsOffset = Mathf.LerpUnclamped(
-                    skipOffset,
-                    0f,
-                    m_Hips_SkipOffset.Evaluate(curAngle)
-                );
-            }
-        }
-
-        // blend offset
-        m_Hips_ModelOffset = Mathf.MoveTowards(
-            m_Hips_ModelOffset,
-            hipsOffset,
-            m_Hips_BlendSpeed * delta
-        );
-
-        // apply hip offset
-        transform.localPosition = m_InitialPos + hipsOffset * Vector3.down;
-        m_Model.localPosition = m_InitialModelPos + m_Hips_ModelOffset * Vector3.down;
-    }
-
-    // -- commands --
-    /// update if the limbs are currently striding
-    void SetIsStriding(bool isStriding) {
-        m_Left.SetIsStriding(isStriding);
-        m_Right.SetIsStriding(isStriding);
     }
 
     /// switch the moving leg
@@ -166,6 +147,52 @@ class CharacterLegs: MonoBehaviour {
     void Release() {
         m_Left.Release();
         m_Right.Release();
+    }
+
+    /// move hips according to current stride
+    void MoveHips(float delta) {
+        var hipsOffset = 0f;
+
+        var heldLeg = m_Left.IsHeld ? m_Left : m_Right;
+        if (heldLeg.IsHeld) {
+            var srcCos = Vector3.Dot(heldLeg.InitialDir, Vector3.down);
+            var curOffset = m_InitialPos - transform.localPosition;
+            var curDir = Vector3.Normalize(heldLeg.GoalPos - heldLeg.RootPos - curOffset);
+            var curCos = Vector3.Dot(curDir, Vector3.down);
+            var curAngle = Mathf.Acos(curCos) * Mathf.Rad2Deg;
+
+            if (curAngle < m_Hips_SkipOffset.Src.Min) {
+                hipsOffset = (srcCos - curCos) * heldLeg.InitialLen;
+            } else {
+                var skipCos = Mathf.Cos(m_Hips_SkipOffset.Src.Min);
+                var skipOffset = (srcCos - skipCos) * heldLeg.InitialLen;
+
+                hipsOffset = Mathf.LerpUnclamped(
+                    skipOffset,
+                    0f,
+                    m_Hips_SkipOffset.Evaluate(curAngle)
+                );
+            }
+        }
+
+        // TODO: extract spring damp struct
+        // blend offset
+        var currOffset = m_Hips_CurrOffset;
+        var destOffset = hipsOffset;
+
+        var offsetDist = destOffset - currOffset;
+        var offsetDistSpeed = (offsetDist - m_Hips_Spring_PrevDist) / delta;
+        var nextSpeed = m_Hips_Spring_Speed + (m_Hips_Spring * offsetDist - m_Hips_Damping * offsetDistSpeed) * delta;
+        var nextOffset = currOffset + nextSpeed * delta;
+
+        m_Hips_CurrOffset = nextOffset;
+        m_Hips_Spring_Speed = nextSpeed;
+        m_Hips_Spring_PrevDist = offsetDist;
+
+        // apply hip offset
+        var translation = m_Hips_CurrOffset * Vector3.down;
+        transform.localPosition = m_InitialPos + translation;
+        m_Model.localPosition = m_InitialModelPos + translation;
     }
 }
 
