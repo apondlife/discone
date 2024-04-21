@@ -9,8 +9,13 @@ public readonly struct ShaderProp {
     readonly int m_Id;
 
     // -- lifetime --
-    ShaderProp(int id) {
+    public ShaderProp(int id) {
         m_Id = id;
+    }
+
+    /// a shader prop for the given name
+    public ShaderProp(string name) {
+        m_Id = Shader.PropertyToID(name);
     }
 
     // -- commands --
@@ -28,12 +33,6 @@ public readonly struct ShaderProp {
     /// convert the prop to an id
     public static implicit operator int(ShaderProp p) {
         return p.m_Id;
-    }
-
-    // -- factories --
-    /// a shader prop for the given name
-    public static ShaderProp Named(string name) {
-        return new ShaderProp(Shader.PropertyToID(name));
     }
 }
 

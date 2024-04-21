@@ -13,42 +13,38 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the arms animator layer (for yoshiing animation)
     const string k_LayerArms = "Arms";
 
-    // TODO: Prop.SetXXX(x)
-    /// the airborne jump trigger prop
-    const string k_PropJump = "Jump";
-
-    /// the airborne animator prop
-    const string k_PropIsAirborne = "IsAirborne";
-
-    /// the jump charge animator prop
-    const string k_PropJumpCharge = "JumpCharge";
-
-    /// the is landing animator prop
-    const string k_PropIsLanding = "IsLanding";
-
-    /// the crouching animator prop
-    const string k_PropIsCrouching = "IsCrouching";
-
     /// the move speed animator prop
-    const string k_PropMoveSpeed = "MoveSpeed";
+    static readonly AnimatorProp s_MoveSpeed = new("MoveSpeed");
 
     /// the move input animator prop
-    const string k_PropMoveInputMag = "MoveInputMag";
-
-    /// the vertical speed animator prop
-    const string k_PropVerticalSpeed = "VerticalSpeed";
-
-    /// the landing speed animator prop
-    const string k_PropLandingSpeed = "LandingSpeed";
+    static readonly AnimatorProp s_MoveInputMag = new("MoveInputMag");
 
     /// the dot product of move facing and velocity prop
-    const string k_PropMoveFacingDotVelocity = "MoveFacingDotVelocity";
+    static readonly AnimatorProp s_MoveVelocityDotFacing = new("MoveVelocityDotFacing");
 
     /// the move input animator prop
-    const string k_PropSurfaceScale = "SurfaceScale";
+    static readonly AnimatorProp s_SurfaceScale = new("SurfaceScale");
+
+    /// the landing speed animator prop
+    static readonly AnimatorProp s_LandingSpeed = new("LandingSpeed");
+
+    /// the airborne jump trigger prop
+    static readonly AnimatorProp s_Jump = new("Jump");
+
+    /// the jump charge animator prop
+    static readonly AnimatorProp s_JumpCharge = new("JumpCharge");
 
     /// the random value animator prop
-    const string k_PropJumpLeg = "JumpLeg";
+    static readonly AnimatorProp s_JumpLeg = new("JumpLeg");
+
+    /// the vertical speed animator prop
+    static readonly AnimatorProp s_VerticalSpeed = new("VerticalSpeed");
+
+    /// the airborne animator prop
+    static readonly AnimatorProp s_IsAirborne = new("IsAirborne");
+
+    /// the crouching animator prop
+    static readonly AnimatorProp s_IsCrouching = new("IsCrouching");
 
     // -- tuning --
     [Header("tuning")]
@@ -57,12 +53,9 @@ public sealed class CharacterModel: MonoBehaviour {
 
     // -- tuning/tilt --
     [Header("tuning/tilt")]
-    [FormerlySerializedAs("m_RotationSpeed_Tilt")]
     [Tooltip("the rotation speed in degrees away for tilting")]
     [SerializeField] float m_MoveTilt_Speed = 100.0f;
 
-    [FormerlySerializedAs("m_SurfaceRotation_Speed")]
-    [FormerlySerializedAs("m_RotationSpeed_Wall")]
     [Tooltip("the rotation speed in degrees away from the wall")]
     [SerializeField] float m_SurfaceTilt_Speed = 0.0f;
 
@@ -78,21 +71,6 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the character's animator
     Animator m_Animator;
 
-    /// the containing character
-    CharacterContainer m_Container;
-
-    // TODO: CharacterContainer, CharacterContainerConvertible
-    /// the character's state
-    CharacterState m_State => m_Container.State;
-
-    // TODO: CharacterContainer, CharacterContainerConvertible
-    /// the character's tuning
-    CharacterTuning m_Tuning => m_Container.Tuning;
-
-    // TODO: CharacterContainer, CharacterContainerConvertible
-    /// the character's tuning
-    CharacterInputQuery m_Input => m_Container.Inputs;
-
     /// the legs layer index
     int m_LayerLegs;
 
@@ -105,24 +83,25 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the stored tilt rotation
     Quaternion m_MoveTilt = Quaternion.identity;
 
-    /// the stored speed when landing
-    float m_LandingSpeed = 0.0f;
-
-    /// the stored last time of fixedUpdate (for interpolation)
+    /// the stored last time of fixed update (for interpolation)
     float m_LastFixedUpdate = 0.0f;
 
     /// the current jumping leg (0-left, 1-right)
     int m_JumpLeg = 0;
 
+    // -- deps --
+    /// the containing character
+    CharacterContainer c;
+
     // -- lifecycle --
     void Start() {
         // set dependencies
-        m_Container = GetComponentInParent<CharacterContainer>();
+        c = GetComponentInParent<CharacterContainer>();
 
         // init animator
         m_Animator = GetComponentInChildren<Animator>();
-        if (m_Animator != null) {
-            if (m_Animator.runtimeAnimatorController == null) {
+        if (m_Animator) {
+            if (!m_Animator.runtimeAnimatorController) {
                 m_Animator.runtimeAnimatorController = m_AnimatorController;
             }
 
@@ -145,7 +124,7 @@ public sealed class CharacterModel: MonoBehaviour {
         m_LastFixedUpdate = Time.time;
 
         // alternate legs
-        if (m_State.Next.Events.Contains(CharacterEvent.Jump)) {
+        if (c.State.Next.Events.Contains(CharacterEvent.Jump)) {
             m_JumpLeg = (m_JumpLeg + 1) % 2;
         }
     }
@@ -154,8 +133,8 @@ public sealed class CharacterModel: MonoBehaviour {
         // interpolate frame based on time since last update
         var delta = Time.time - m_LastFixedUpdate;
         var state = CharacterState.Frame.Interpolate(
-            m_State.Curr,
-            m_State.Next,
+            c.State.Curr,
+            c.State.Next,
             delta / Time.fixedDeltaTime
         );
 
@@ -168,91 +147,85 @@ public sealed class CharacterModel: MonoBehaviour {
     /// sync the animator's params
     void SyncAnimator(CharacterState.Frame state) {
         var anim = m_Animator;
-        if (anim == null || anim.runtimeAnimatorController == null) {
+        if (!anim || !anim.runtimeAnimatorController) {
             return;
         }
 
         // set move animation params
         anim.SetFloat(
-            k_PropMoveSpeed,
+            s_MoveSpeed,
             Mathx.InverseLerpUnclamped(
                 0.0f,
-                m_Tuning.Surface_MaxSpeed,
+                c.Tuning.Surface_MaxSpeed,
                 state.SurfaceVelocity.magnitude
             )
         );
 
         anim.SetFloat(
-            k_PropMoveInputMag,
-            m_Input.Move.magnitude
+            s_MoveInputMag,
+            c.Inputs.Move.magnitude
         );
 
         // set jump animation params
         var isJump = state.Events.Contains(CharacterEvent.Jump);
         if (isJump) {
-            anim.SetTrigger(k_PropJump);
+            anim.SetTrigger(s_Jump);
         }
 
         anim.SetBool(
-            k_PropIsLanding,
-            state.IsLanding
-        );
-
-        anim.SetBool(
-            k_PropIsAirborne,
+            s_IsAirborne,
             state.MainSurface.IsNone || isJump
         );
 
         if (state.IsInJumpSquat) {
             var jumpSquatPct = 1f;
-            var jumpTuning = m_Tuning.Jumps[m_State.JumpTuningIndex];
+            var jumpTuning = c.Tuning.Jumps[c.State.JumpTuningIndex];
             if (jumpTuning.JumpSquatDuration.Max > 0f) {
                 jumpSquatPct = state.JumpState.PhaseElapsed / jumpTuning.JumpSquatDuration.Max;
             }
 
             anim.SetFloat(
-                k_PropJumpLeg,
+                s_JumpLeg,
                 m_JumpLeg
             );
 
             anim.SetFloat(
-                k_PropJumpCharge,
+                s_JumpCharge,
                 jumpSquatPct
             );
         }
 
         anim.SetBool(
-            k_PropIsCrouching,
+            s_IsCrouching,
             state.IsInJumpSquat || state.IsCrouching
         );
 
         anim.SetFloat(
-            k_PropVerticalSpeed,
+            s_VerticalSpeed,
             state.Velocity.y
         );
 
         // TODO: fix rolling
-        m_LandingSpeed = state.IsColliding ? state.Inertia : 0f;
         anim.SetFloat(
-            k_PropLandingSpeed,
-            m_LandingSpeed
+            s_LandingSpeed,
+            state.IsColliding ? state.Inertia : 0f
         );
 
         anim.SetFloat(
-            k_PropMoveFacingDotVelocity,
-            Vector3.Dot(state.SurfaceVelocity.normalized, state.Forward)
+            s_MoveVelocityDotFacing,
+            Vector3.Dot(state.SurfaceVelocity, state.Forward)
         );
 
         // blend yoshiing
         // TODO: lerp
         var surface = state.MainSurface;
-        var yoshiing = (m_Input.IsJumpPressed ? 1.0f : 0.0f);
+        var yoshiing = (c.Inputs.IsJumpPressed ? 1.0f : 0.0f);
 
         if (surface.IsSome) {
             yoshiing *= Mathf.Abs(surface.Angle / 90.0f);
 
             anim.SetFloat(
-                k_PropSurfaceScale,
+                s_SurfaceScale,
                 m_SurfaceScale.Evaluate(surface.Angle)
             );
         }
