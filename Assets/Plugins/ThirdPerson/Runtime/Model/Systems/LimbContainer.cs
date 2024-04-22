@@ -6,6 +6,9 @@ interface LimbContainer {
     /// the ik goal
     AvatarIKGoal Goal { get; }
 
+    /// the layer mask
+    LayerMask CastMask { get; }
+
     /// the initial length of the limb
     float InitialLen { get; }
 

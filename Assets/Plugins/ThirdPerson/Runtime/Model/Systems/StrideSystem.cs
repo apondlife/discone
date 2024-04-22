@@ -20,10 +20,6 @@ class StrideSystem: System<Container> {
     [Tooltip("the cast offset")]
     [SerializeField] float m_CastOffset;
 
-    [FormerlySerializedAs("m_LayerMask")]
-    [Tooltip("the cast layer mask")]
-    [SerializeField] LayerMask m_CastMask;
-
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the threshold under which movements are ignored")]
@@ -254,6 +250,7 @@ class StrideSystem: System<Container> {
         // the maximum stride distance projected along the leg
         var goalMax = Mathf.Max(
             c.InitialLen,
+            // AAA: Vector3.down maybe limb direction?
             maxStrideLen / Vector3.Cross(goalDir, Vector3.down).magnitude
         );
 
@@ -351,7 +348,12 @@ class StrideSystem: System<Container> {
 
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
+            DebugDraw.Push("held-miss-1", castSrc, castDir * castLen, new DebugDraw.Config(Color.cyan));
             didHit = FindSurface_Hold(goalPos, out placement, c);
+        }
+
+        if (didHit) {
+            DebugDraw.Push("held-hit", placement.Pos, placement.Normal, new DebugDraw.Config(Color.yellow, count: 1, width: 2f));
         }
 
         m_Normal = placement.Normal;
@@ -403,6 +405,7 @@ class StrideSystem: System<Container> {
         out Placement placement,
         Container c
     ) {
+        var castSrc = goalPos;
         var castDir = c.InitialDir;
         var castLen = c.InitialLen + m_SearchRange_NoSurface;
 
@@ -412,7 +415,8 @@ class StrideSystem: System<Container> {
             castLen = c.InitialLen + m_SearchRange_Surface;
         }
 
-        var castSrc = goalPos - castDir * m_CastOffset;
+        castSrc -= castDir * m_CastOffset;
+        castLen += m_CastOffset;
 
         var didHit = FindPlacement(
             castSrc,
@@ -421,6 +425,10 @@ class StrideSystem: System<Container> {
             out placement,
             c
         );
+
+        if (!didHit) {
+            DebugDraw.Push("held-miss-2", castSrc, castDir * castLen, new DebugDraw.Config(Color.magenta));
+        }
 
         return didHit;
     }
@@ -438,7 +446,7 @@ class StrideSystem: System<Container> {
             castDir,
             out var hit,
             castLen,
-            m_CastMask,
+            c.CastMask,
             QueryTriggerInteraction.Ignore
         );
 
@@ -456,7 +464,9 @@ class StrideSystem: System<Container> {
         if (Vector3.Distance(hit.point, m_Root.position) > c.InitialLen) {
             placement = new Placement(
                 hit.point,
-                Vector3.zero
+                // AAA: consider this, maybe return enum of kind of placement?
+                // Vector3.zero
+                hit.normal
             );
 
             return true;
@@ -499,7 +509,7 @@ class StrideSystem: System<Container> {
         DebugDraw.Push(
             c.Goal.Debug_Name("stride-hold"),
             m_GoalPos,
-            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Model, width: 5f)
+            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Model, width: 2f)
         );
 
         DebugDraw.PushLine(

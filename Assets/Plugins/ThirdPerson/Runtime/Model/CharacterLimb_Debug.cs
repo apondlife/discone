@@ -7,24 +7,28 @@ public partial class CharacterLimb {
     // -- lifecycle --
     void Debug_Update() {
         if (m_Goal <= AvatarIKGoal.RightFoot) {
-            Debug_Draw("limb", width: 2f);
+            Debug_Draw("limb", width: 1f);
         }
     }
 
     // -- debug --
     /// draw the debug line of this bone
     internal void Debug_Draw(string name, float alpha = 1f, float width = 1f, int count = 1) {
+        var pos = m_CurrPos;
+        var rot = m_CurrRot;
+
         DebugDraw.PushLine(
             m_Goal.Debug_Name($"{name}-bone"),
-            m_StrideSystem.GoalPos,
+            pos,
             transform.position,
             new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: DebugDraw.Tag.Model, width: width, count: count)
         );
 
         DebugDraw.Push(
             m_Goal.Debug_Name($"{name}-foot-{Debug_PhaseName()}"),
-            m_StrideSystem.GoalPos,
-            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: DebugDraw.Tag.Model, width: width * 3f, count: count)
+            pos,
+            rot * Vector3.forward * 0.5f,
+            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: DebugDraw.Tag.Model, width: width, count: count)
         );
     }
 

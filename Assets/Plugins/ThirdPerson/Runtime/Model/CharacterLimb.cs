@@ -12,6 +12,9 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     [Tooltip("the type of goal of this limb")]
     [SerializeField] AvatarIKGoal m_Goal;
 
+    [Tooltip("the layer mask")]
+    [SerializeField] LayerMask  m_CastMask;
+
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the extra velocity when blending ik as a function of input")]
@@ -40,14 +43,20 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     /// the transform of the goal bone, if any
     Transform m_GoalBone;
 
+    /// the current ik position
+    Vector3 m_CurrPos;
+
+    /// the current ik rotation
+    Quaternion m_CurrRot;
+
     /// the current blend weight
     float m_Weight;
 
-    /// the length of the limb
-    float m_InitialLen;
+    /// the initial distance to the goal
+    float m_LimbLen;
 
     /// the offset of the end bone used for placement, if any
-    float m_EndLength;
+    float m_EndLen;
 
     // -- lifecycle --
     void Awake() {
@@ -121,8 +130,8 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
         var end = endBone.position - goalPos;
         var endLength = Vector3.Dot(end, limbDir);
 
-        m_InitialLen = limb.magnitude + endLength;
-        m_EndLength = endLength;
+        m_LimbLen = limb.magnitude;
+        m_EndLen = endLength;
 
         // align root direction
         transform.forward = limbDir;
@@ -172,12 +181,13 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
 
             var goalPos = m_StrideSystem.GoalPos;
             if (hitUp != Vector3.zero) {
-                goalPos += m_EndLength * hitUp;
+                goalPos += m_EndLen * hitUp;
             }
 
+            m_CurrPos = goalPos;
             m_Animator.SetIKPosition(
                 m_Goal,
-                goalPos
+                m_CurrPos
             );
 
             var up = hitUp;
@@ -190,6 +200,7 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
                 up
             );
 
+            m_CurrRot = rot;
             m_Animator.SetIKRotation(
                 m_Goal,
                 rot
@@ -198,6 +209,51 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     }
 
     // -- queries --
+    /// cast for the distance to the nearest surface in the limb direction
+    public float FindDistanceToSurface() {
+        var t = transform;
+        var rootPos = t.position;
+
+        var castSrc = rootPos + (m_CurrPos - rootPos).normalized * (m_LimbLen + m_EndLen);
+        var castDir = t.forward;
+        var castLen = 1f;
+
+        var didHit = Physics.Raycast(
+            castSrc,
+            castDir,
+            out var hit,
+            castLen, // AAA: should this be search range, surface search?
+            m_CastMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        DebugDraw.Push(
+            "held-distance",
+            castSrc,
+            castDir * castLen,
+            new DebugDraw.Config(Color.red, count: 1)
+        );
+
+        if (!didHit) {
+            return 0f;
+        }
+
+        DebugDraw.Push(
+            "held-distance-hit",
+            hit.point,
+            new DebugDraw.Config(Color.red, width: 3f, count: 1)
+        );
+
+        DebugDraw.Push(
+            "held-distance-hit-leg",
+            hit.point,
+            -castDir * hit.distance,
+            new DebugDraw.Config(Color.red, width: 3f, count: 1)
+        );
+
+        return hit.distance;
+    }
+
     /// if this limb has the dependencies it needs to apply ik
     bool IsValid {
         get => m_GoalBone;
@@ -229,6 +285,11 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
         get => m_Goal;
     }
 
+    /// the cast layer mask
+    public LayerMask CastMask {
+        get => m_CastMask;
+    }
+
     /// the bone the stride is anchored by
     public CharacterLimbAnchor InitialAnchor {
         get => this;
@@ -236,7 +297,7 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
 
     /// the length of the limb
     public float InitialLen {
-        get => m_InitialLen;
+        get => m_LimbLen + m_EndLen;
     }
 
     /// the direction towards the surface
@@ -248,7 +309,6 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     public CharacterContainer Character {
         get => c;
     }
-
 }
 
 }

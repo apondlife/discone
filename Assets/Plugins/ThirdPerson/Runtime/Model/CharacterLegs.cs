@@ -71,9 +71,6 @@ class CharacterLegs: MonoBehaviour {
     void Update() {
         var delta = Time.deltaTime;
 
-        // slide the held leg if necessary
-        Slide(delta);
-
         // if the character is currently striding
         SetIsStriding(!c.State.Curr.IsCrouching && !c.State.Curr.IsInJumpSquat);
 
@@ -85,6 +82,9 @@ class CharacterLegs: MonoBehaviour {
         else if (m_Left.IsHeld && m_Right.IsHeld) {
             Switch();
         }
+
+        // slide the held leg if necessary
+        Slide(delta);
 
         // add an offset to move the hips to match the character's stance
         MoveHips(delta);
@@ -125,7 +125,7 @@ class CharacterLegs: MonoBehaviour {
     /// switch the moving leg
     void Switch() {
         // move leg that is furthest away
-        var (move, hold) = LimbExtension(m_Left) > LimbExtension(m_Right)
+        var (move, hold) = GetExtension(m_Left) > GetExtension(m_Right)
             ? (m_Left, m_Right)
             : (m_Right, m_Left);
 
@@ -155,6 +155,10 @@ class CharacterLegs: MonoBehaviour {
 
         var heldLeg = m_Left.IsHeld ? m_Left : m_Right;
         if (heldLeg.IsHeld) {
+            // move hips to correct for distance from the bottom of the character to the current surface
+            hipsOffset += heldLeg.FindDistanceToSurface();
+
+            // move hips to correct for leg splay
             var srcCos = Vector3.Dot(heldLeg.InitialDir, Vector3.down);
             var curOffset = m_InitialPos - transform.localPosition;
             var curDir = Vector3.Normalize(heldLeg.GoalPos - heldLeg.RootPos - curOffset);
@@ -162,12 +166,12 @@ class CharacterLegs: MonoBehaviour {
             var curAngle = Mathf.Acos(curCos) * Mathf.Rad2Deg;
 
             if (curAngle < m_Hips_SkipOffset.Src.Min) {
-                hipsOffset = (srcCos - curCos) * heldLeg.InitialLen;
+                hipsOffset += (srcCos - curCos) * heldLeg.InitialLen;
             } else {
                 var skipCos = Mathf.Cos(m_Hips_SkipOffset.Src.Min);
                 var skipOffset = (srcCos - skipCos) * heldLeg.InitialLen;
 
-                hipsOffset = Mathf.LerpUnclamped(
+                hipsOffset += Mathf.LerpUnclamped(
                     skipOffset,
                     0f,
                     m_Hips_SkipOffset.Evaluate(curAngle)
@@ -178,7 +182,8 @@ class CharacterLegs: MonoBehaviour {
         // TODO: extract spring damp struct
         // blend offset
         var currOffset = m_Hips_CurrOffset;
-        var destOffset = hipsOffset;
+        var maxOffset = heldLeg.InitialLen;
+        var destOffset = Mathf.Min(hipsOffset, maxOffset);
 
         var offsetDist = destOffset - currOffset;
         var offsetDistSpeed = (offsetDist - m_Hips_Spring_PrevDist) / delta;
@@ -196,11 +201,17 @@ class CharacterLegs: MonoBehaviour {
     }
 
     // -- queries --
-    /// the displacement of the leg projected along the current velocity
-    float LimbExtension(CharacterLimb limb) {
+    /// the displacement of the leg projected along the move dir
+    float GetExtension(CharacterLimb limb) {
+        // TODO: how many places are we implementing a fallback to forward in some fashion?
+        var moveDir = c.State.Curr.PlanarVelocity;
+        if (moveDir == Vector3.zero) {
+            moveDir = c.State.Curr.Forward;
+        }
+
         var displacement = Vector3.Dot(
             limb.GoalPos - limb.RootPos,
-            c.State.Curr.PlanarVelocity
+            moveDir
         );
 
         return -displacement;
