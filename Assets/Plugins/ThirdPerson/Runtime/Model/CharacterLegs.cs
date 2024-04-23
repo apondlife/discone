@@ -85,6 +85,10 @@ class CharacterLegs: MonoBehaviour {
 
         // slide the held leg if necessary
         Slide(delta);
+    }
+
+    void FixedUpdate() {
+        var delta = Time.deltaTime;
 
         // add an offset to move the hips to match the character's stance
         MoveHips(delta);
@@ -155,9 +159,6 @@ class CharacterLegs: MonoBehaviour {
 
         var heldLeg = m_Left.IsHeld ? m_Left : m_Right;
         if (heldLeg.IsHeld) {
-            // move hips to correct for distance from the bottom of the character to the current surface
-            hipsOffset += heldLeg.FindDistanceToSurface();
-
             // move hips to correct for leg splay
             var srcCos = Vector3.Dot(heldLeg.InitialDir, Vector3.down);
             var curOffset = m_InitialPos - transform.localPosition;
@@ -165,9 +166,16 @@ class CharacterLegs: MonoBehaviour {
             var curCos = Vector3.Dot(curDir, Vector3.down);
             var curAngle = Mathf.Acos(curCos) * Mathf.Rad2Deg;
 
+            // add the offset below skip threshold
             if (curAngle < m_Hips_SkipOffset.Src.Min) {
+                // move hips to correct for distance from the bottom of the character to the current surface
+                hipsOffset += heldLeg.FindDistanceToSurface();
+
+                // move hips down according to leg splay
                 hipsOffset += (srcCos - curCos) * heldLeg.InitialLen;
-            } else {
+            }
+            // curve offset above skip threshold
+            else {
                 var skipCos = Mathf.Cos(m_Hips_SkipOffset.Src.Min);
                 var skipOffset = (srcCos - skipCos) * heldLeg.InitialLen;
 
