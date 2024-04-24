@@ -4,6 +4,13 @@ using UnityEngine;
 namespace ThirdPerson {
 
 public partial class CharacterLimb {
+    // -- props --
+    /// the current debug ik pos
+    Vector3 m_Debug_Pos;
+
+    /// the current debug ik rotation
+    Quaternion m_Debug_Rot;
+
     // -- lifecycle --
     void Debug_Update() {
         if (m_Goal <= AvatarIKGoal.RightFoot) {
@@ -11,11 +18,16 @@ public partial class CharacterLimb {
         }
     }
 
+    void Debug_ApplyIk() {
+        m_Debug_Pos = m_Animator.GetIKPosition(m_Goal);
+        m_Debug_Rot = m_Animator.GetIKRotation(m_Goal);
+    }
+
     // -- debug --
     /// draw the debug line of this bone
     internal void Debug_Draw(string name, float alpha = 1f, float width = 1f, int count = 1) {
-        var pos = m_CurrPos;
-        var rot = m_CurrRot;
+        var pos = m_Debug_Pos;
+        var rot = m_Debug_Rot;
 
         DebugDraw.PushLine(
             m_Goal.Debug_Name($"{name}-bone"),

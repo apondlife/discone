@@ -169,7 +169,7 @@ class CharacterLegs: MonoBehaviour {
             // add the offset below skip threshold
             if (curAngle < m_Hips_SkipOffset.Src.Min) {
                 // move hips to correct for distance from the bottom of the character to the current surface
-                hipsOffset += heldLeg.FindDistanceToSurface();
+                hipsOffset += heldLeg.HeldDistance;
 
                 // move hips down according to leg splay
                 hipsOffset += (srcCos - curCos) * heldLeg.InitialLen;

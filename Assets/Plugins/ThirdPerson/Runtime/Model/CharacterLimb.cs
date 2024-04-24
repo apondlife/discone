@@ -43,12 +43,6 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     /// the transform of the goal bone, if any
     Transform m_GoalBone;
 
-    /// the current ik position
-    Vector3 m_CurrPos;
-
-    /// the current ik rotation
-    Quaternion m_CurrRot;
-
     /// the current blend weight
     float m_Weight;
 
@@ -177,20 +171,19 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
         );
 
         if (m_Weight != 0.0f) {
-            var hitUp = m_StrideSystem.Normal;
+            var normal = m_StrideSystem.Normal;
 
             var goalPos = m_StrideSystem.GoalPos;
-            if (hitUp != Vector3.zero) {
-                goalPos += m_EndLen * hitUp;
+            if (normal != Vector3.zero) {
+                goalPos += m_EndLen * normal;
             }
 
-            m_CurrPos = goalPos;
             m_Animator.SetIKPosition(
                 m_Goal,
-                m_CurrPos
+                goalPos
             );
 
-            var up = hitUp;
+            var up = normal;
             if (up == Vector3.zero) {
                 up = Vector3.Normalize(transform.position - goalPos);
             }
@@ -200,60 +193,16 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
                 up
             );
 
-            m_CurrRot = rot;
             m_Animator.SetIKRotation(
                 m_Goal,
                 rot
             );
         }
+
+        Debug_ApplyIk();
     }
 
     // -- queries --
-    /// cast for the distance to the nearest surface in the limb direction
-    public float FindDistanceToSurface() {
-        var t = transform;
-        var rootPos = t.position;
-
-        var castSrc = rootPos + (m_CurrPos - rootPos).normalized * (m_LimbLen + m_EndLen);
-        var castDir = t.forward;
-        var castLen = 1f;
-
-        var didHit = Physics.Raycast(
-            castSrc,
-            castDir,
-            out var hit,
-            castLen, // AAA: should this be search range, surface search?
-            m_CastMask,
-            QueryTriggerInteraction.Ignore
-        );
-
-        DebugDraw.Push(
-            "held-distance",
-            castSrc,
-            castDir * castLen,
-            new DebugDraw.Config(Color.red, count: 1)
-        );
-
-        if (!didHit) {
-            return 0f;
-        }
-
-        DebugDraw.Push(
-            "held-distance-hit",
-            hit.point,
-            new DebugDraw.Config(Color.red, width: 3f, count: 1)
-        );
-
-        DebugDraw.Push(
-            "held-distance-hit-leg",
-            hit.point,
-            -castDir * hit.distance,
-            new DebugDraw.Config(Color.red, width: 3f, count: 1)
-        );
-
-        return hit.distance;
-    }
-
     /// if this limb has the dependencies it needs to apply ik
     bool IsValid {
         get => m_GoalBone;
@@ -277,6 +226,11 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     /// .
     public bool IsHeld {
         get => m_StrideSystem.IsHeld;
+    }
+
+    /// cast for the distance to the nearest surface in the limb direction
+    public float HeldDistance {
+        get => m_StrideSystem.HeldDistance;
     }
 
     // -- LimbContainer --

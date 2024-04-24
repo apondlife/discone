@@ -1,7 +1,6 @@
 using System;
 using Soil;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -62,8 +61,11 @@ class StrideSystem: System<Container> {
     /// the current ik position of the limb
     Vector3 m_GoalPos;
 
-    /// the current surface normal
-    Vector3 m_Normal;
+    /// the current surface placement
+    Placement m_Placement;
+
+    /// the distance to the held surface
+    float m_HeldDistance;
 
     /// the bone the stride is anchored by
     CharacterLimbAnchor m_Anchor;
@@ -164,6 +166,7 @@ class StrideSystem: System<Container> {
             castSrc,
             castDir,
             castLen,
+            0f,
             out var placement,
             c
         );
@@ -265,6 +268,7 @@ class StrideSystem: System<Container> {
             castSrc,
             castDir,
             castLen,
+            0f,
             out var placement,
             c
         );
@@ -274,7 +278,7 @@ class StrideSystem: System<Container> {
         }
 
         m_GoalPos = goalPos;
-        m_Normal = placement.Normal;
+        m_Placement = placement;
         m_InputScale = inputScale;
 
         Debug_DrawMove(c);
@@ -301,26 +305,34 @@ class StrideSystem: System<Container> {
         // find placement along limb
         var castSrc = m_Root.position;
         var castDir = Vector3.Normalize(m_GoalPos - castSrc);
-        var castLen = c.InitialLen + m_SearchRange_Surface;
+        var castLen = c.InitialLen;
 
         var didHit = FindPlacement(
             castSrc,
             castDir,
             castLen,
+            0,
             out var placement,
             c
         );
 
+        var heldDistance = 0f;
+
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
-            didHit = FindSurface_Hold(
+            didHit = FindPlacementFromEnd(
                 castSrc + castDir * castLen,
                 out placement,
                 c
             );
+
+            if (didHit) {
+                heldDistance = placement.Distance;
+            }
         }
 
-        m_Normal = placement.Normal;
+        m_Placement = placement;
+        m_HeldDistance = heldDistance;
 
         if (!didHit) {
             ChangeTo(Free);
@@ -336,27 +348,33 @@ class StrideSystem: System<Container> {
         // find placement along limb
         var castSrc = m_Root.position;
         var castDir = Vector3.Normalize(goalPos - castSrc);
-        var castLen = c.InitialLen + m_SearchRange_Surface;
+        var castLen = c.InitialLen;
 
         var didHit = FindPlacement(
             castSrc,
             castDir,
             castLen,
+            0f,
             out var placement,
             c
         );
 
+        var heldDistance = 0f;
+
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
-            DebugDraw.Push("held-miss-1", castSrc, castDir * castLen, new DebugDraw.Config(Color.cyan));
-            didHit = FindSurface_Hold(goalPos, out placement, c);
+            didHit = FindPlacementFromEnd(goalPos, out placement, c);
+
+            if (didHit) {
+                // the projected distance from the goal to the end of the limb
+                var endPos = castSrc + castDir * c.InitialLen;
+                heldDistance += Vector3.Dot(goalPos - endPos, c.InitialDir);
+                heldDistance += placement.Distance;
+            }
         }
 
-        if (didHit) {
-            DebugDraw.Push("held-hit", placement.Pos, placement.Normal, new DebugDraw.Config(Color.yellow, count: 1, width: 2f));
-        }
-
-        m_Normal = placement.Normal;
+        m_Placement = placement;
+        m_HeldDistance = heldDistance;
 
         if (!didHit) {
             ChangeTo(Free);
@@ -396,11 +414,25 @@ class StrideSystem: System<Container> {
 
     /// the current placement normal
     public Vector3 Normal {
-        get => m_Normal;
+        get => (m_Placement.Result, IsHeld) switch {
+            (CastResult.Hit, _) => m_Placement.Normal,
+            (CastResult.OutOfRange, true) => m_Placement.Normal,
+            _ => Vector3.zero
+        };
+    }
+
+    /// the distance to the held surface
+    public float HeldDistance {
+        get => m_IsHeld ? m_HeldDistance : 0f;
+    }
+
+    /// the current placement result
+    public CastResult PlacementResult {
+        get => m_Placement.Result;
     }
 
     /// cast for a surface underneath the current pos
-    bool FindSurface_Hold(
+    bool FindPlacementFromEnd(
         Vector3 goalPos,
         out Placement placement,
         Container c
@@ -415,20 +447,14 @@ class StrideSystem: System<Container> {
             castLen = c.InitialLen + m_SearchRange_Surface;
         }
 
-        castSrc -= castDir * m_CastOffset;
-        castLen += m_CastOffset;
-
         var didHit = FindPlacement(
             castSrc,
             castDir,
             castLen,
+            m_CastOffset,
             out placement,
             c
         );
-
-        if (!didHit) {
-            DebugDraw.Push("held-miss-2", castSrc, castDir * castLen, new DebugDraw.Config(Color.magenta));
-        }
 
         return didHit;
     }
@@ -438,9 +464,13 @@ class StrideSystem: System<Container> {
         Vector3 castSrc,
         Vector3 castDir,
         float castLen,
+        float castOffset,
         out Placement placement,
         Container c
     ) {
+        castSrc -= castDir * m_CastOffset;
+        castLen += m_CastOffset;
+
         var didHit = Physics.Raycast(
             castSrc,
             castDir,
@@ -452,32 +482,26 @@ class StrideSystem: System<Container> {
 
         // if the cast missed, there's nothing
         if (!didHit) {
-            placement = new Placement(
-                Vector3.zero,
-                Vector3.zero
-            );
-
+            placement = Placement.Miss;
             return false;
         }
 
         // if the cast is farther than the leg
         if (Vector3.Distance(hit.point, m_Root.position) > c.InitialLen) {
-            placement = new Placement(
-                hit.point,
-                // AAA: consider this, maybe return enum of kind of placement?
-                // Vector3.zero
-                hit.normal
-            );
-
+            placement = Placement.Hit(hit, castOffset, CastResult.OutOfRange);
             return true;
         }
 
-        placement = new Placement(
-            hit.point,
-            hit.normal
-        );
+        placement = Placement.Hit(hit, castOffset, CastResult.Hit);
 
         return true;
+    }
+
+    /// the result of the placement cast
+    public enum CastResult {
+        Hit,
+        OutOfRange,
+        Miss
     }
 
     /// a position and rotation placement for the goal
@@ -488,10 +512,45 @@ class StrideSystem: System<Container> {
         /// .
         public readonly Vector3 Normal;
 
+        /// the distance to the hit surface, if any
+        public readonly float Distance;
+
+        /// the kind of placement cast
+        public readonly CastResult Result;
+
         /// .
-        public Placement(Vector3 pos, Vector3 normal) {
+        public Placement(
+            Vector3 pos,
+            Vector3 normal,
+            float distance,
+            CastResult result
+        ) {
             Pos = pos;
             Normal = normal;
+            Distance = distance;
+            Result = result;
+        }
+
+        public static Placement Hit(
+            RaycastHit hit,
+            float offset,
+            CastResult result
+        ) {
+            return new Placement(
+                hit.point,
+                hit.normal,
+                Mathf.Max(hit.distance - offset, 0f),
+                result
+            );
+        }
+
+        public static Placement Miss {
+            get => new(
+                Vector3.zero,
+                Vector3.zero,
+                0f,
+                CastResult.Miss
+            );
         }
     }
 

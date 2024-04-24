@@ -461,9 +461,9 @@ public sealed class CharacterController {
 
     enum CastResult {
         Hit,
-        Miss,
+        OutOfRange,
         Blocked,
-        OutOfRange
+        Miss
     }
 
     CastResult CollideCapsule(
