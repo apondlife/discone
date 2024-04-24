@@ -18,3 +18,6 @@ mired in debt
 - head ik direction only works for some models
 - default speed of head ik is poorly tuned
 - having zero jumps is not considered
+- rename character* to model* (generally reconsider 3p namespaces)
+- extract state for characterlimb (templates for state/tuning creation???)
+- compiling stuff out in debug/development (but still want it for testing maybe)

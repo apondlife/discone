@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the current position of a bone
-public interface CharacterLimbAnchor {
+public interface LimbAnchor {
     /// the root position
     Vector3 RootPos { get; }
 

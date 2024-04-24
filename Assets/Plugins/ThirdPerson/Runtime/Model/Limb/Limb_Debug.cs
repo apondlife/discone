@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-public partial class CharacterLimb {
+public partial class Limb {
     // -- props --
     /// the current debug ik pos
     Vector3 m_Debug_Pos;
@@ -66,7 +66,7 @@ public partial class CharacterLimb {
     }
 }
 
-static class CharacterLimb_Debug {
+static class Limb_Debug {
     /// the debug name for a drawing
     internal static string Debug_Name(this AvatarIKGoal goal, string name) {
         var suffix = goal switch {

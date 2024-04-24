@@ -9,10 +9,10 @@ class CharacterLegs: MonoBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the left leg")]
-    [SerializeField] CharacterLimb m_Left;
+    [SerializeField] Limb m_Left;
 
     [Tooltip("the right leg")]
-    [SerializeField] CharacterLimb m_Right;
+    [SerializeField] Limb m_Right;
 
     // -- tuning --
     [Header("tuning")]
@@ -210,7 +210,7 @@ class CharacterLegs: MonoBehaviour {
 
     // -- queries --
     /// the displacement of the leg projected along the move dir
-    float GetExtension(CharacterLimb limb) {
+    float GetExtension(Limb limb) {
         // TODO: how many places are we implementing a fallback to forward in some fashion?
         var moveDir = c.State.Curr.PlanarVelocity;
         if (moveDir == Vector3.zero) {

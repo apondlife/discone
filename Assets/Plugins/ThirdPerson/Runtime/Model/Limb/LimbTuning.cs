@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-[CreateAssetMenu(fileName = "CharacterLimbTuning", menuName = "thirdperson/CharacterLimbTuning")]
-public class CharacterLimbTuning: ScriptableObject {
+[CreateAssetMenu(fileName = "LimbTuning", menuName = "thirdperson/LimbTuning")]
+public class LimbTuning: ScriptableObject {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the layer mask")]

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-interface CharacterLimbContainer {
+interface LimbContainer {
     /// the ik goal
     AvatarIKGoal Goal { get; }
 
@@ -10,7 +10,7 @@ interface CharacterLimbContainer {
     Vector3 RootPos { get; }
 
     /// the tuning for the limb
-    CharacterLimbTuning Tuning { get; }
+    LimbTuning Tuning { get; }
 
     /// the character container
     CharacterContainer Character { get; }
@@ -23,7 +23,7 @@ interface CharacterLimbContainer {
 
     // TODO: unclear if we really want to init as our own anchor
     /// the bone the stride is anchored by
-    CharacterLimbAnchor InitialAnchor { get; }
+    LimbAnchor InitialAnchor { get; }
 }
 
 }

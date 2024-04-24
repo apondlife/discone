@@ -6,14 +6,14 @@ namespace ThirdPerson {
 
 // TODO: center of mass? move character down?
 /// an ik limb for the character model
-public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbAnchor, CharacterLimbContainer {
+public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContainer {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the type of goal of this limb")]
     [SerializeField] AvatarIKGoal m_Goal;
 
     [Tooltip("the tuning")]
-    [SerializeField] CharacterLimbTuning m_Tuning;
+    [SerializeField] LimbTuning m_Tuning;
 
     // -- systems --
     [Header("systems")]
@@ -127,7 +127,7 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     }
 
     /// starts a new stride for the limb
-    public void Move(CharacterLimbAnchor anchor) {
+    public void Move(LimbAnchor anchor) {
         m_StrideSystem.Move(anchor);
     }
 
@@ -227,7 +227,7 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     }
 
     /// the tuning for the limb
-    public CharacterLimbTuning Tuning {
+    public LimbTuning Tuning {
         get => m_Tuning;
     }
 
@@ -237,7 +237,7 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     }
 
     /// the bone the stride is anchored by
-    public CharacterLimbAnchor InitialAnchor {
+    public LimbAnchor InitialAnchor {
         get => this;
     }
 

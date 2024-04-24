@@ -2,9 +2,9 @@ what is projected
 ---
 
 # ik legs
-- inclines: surface velocity for legs? going downhill looks bad
-- don't align airborne feet to surface
+- don't align held foot to surface while skipping
 - fix casts so that we're not finding the ground while jumping (up)
+- inclines: surface velocity for legs? going downhill looks bad
 - foot height: tune during stride
 
 # ik arms
