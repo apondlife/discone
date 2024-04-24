@@ -6,27 +6,14 @@ namespace ThirdPerson {
 
 // TODO: center of mass? move character down?
 /// an ik limb for the character model
-public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbAnchor, LimbContainer {
+public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbAnchor, CharacterLimbContainer {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the type of goal of this limb")]
     [SerializeField] AvatarIKGoal m_Goal;
 
-    [Tooltip("the layer mask")]
-    [SerializeField] LayerMask  m_CastMask;
-
-    // -- tuning --
-    [Header("tuning")]
-    [Tooltip("the extra velocity when blending ik as a function of input")]
-    [SerializeField] float m_Blend_InputVelocity;
-
-    [FormerlySerializedAs("m_BlendInDuration")]
-    [Tooltip("the speed the ik weight blends towards one")]
-    [SerializeField] float m_Blend_InSpeed;
-
-    [FormerlySerializedAs("m_BlendOutDuration")]
-    [Tooltip("the speed the ik weight blends towards zero")]
-    [SerializeField] float m_Blend_OutSpeed;
+    [Tooltip("the tuning")]
+    [SerializeField] CharacterLimbTuning m_Tuning;
 
     // -- systems --
     [Header("systems")]
@@ -70,7 +57,7 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
         var destWeight = m_StrideSystem.IsActive ? 1f : 0f;
 
         // interpolate the weight
-        var blendSpeed = destWeight > m_Weight ? m_Blend_InSpeed : m_Blend_OutSpeed;
+        var blendSpeed = destWeight > m_Weight ? m_Tuning.Blend_InSpeed : m_Tuning.Blend_OutSpeed;
         m_Weight = Mathf.MoveTowards(
             m_Weight,
             destWeight,
@@ -208,11 +195,6 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
         get => m_GoalBone;
     }
 
-    /// the current root bone position
-    public Vector3 RootPos {
-        get => transform.position;
-    }
-
     /// the current goal bone position
     public Vector3 GoalPos {
         get => m_StrideSystem.GoalPos;
@@ -233,15 +215,25 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
         get => m_StrideSystem.HeldDistance;
     }
 
-    // -- LimbContainer --
+    // -- CharacterLimbContainer --
     /// the ik goal
     public AvatarIKGoal Goal {
         get => m_Goal;
     }
 
-    /// the cast layer mask
-    public LayerMask CastMask {
-        get => m_CastMask;
+    /// the current root bone position
+    public Vector3 RootPos {
+        get => transform.position;
+    }
+
+    /// the tuning for the limb
+    public CharacterLimbTuning Tuning {
+        get => m_Tuning;
+    }
+
+    /// the character container
+    public CharacterContainer Character {
+        get => c;
     }
 
     /// the bone the stride is anchored by
@@ -257,11 +249,6 @@ public partial class CharacterLimb: MonoBehaviour, CharacterPart, CharacterLimbA
     /// the direction towards the surface
     public Vector3 InitialDir {
         get => transform.forward;
-    }
-
-    /// the character container
-    public CharacterContainer Character {
-        get => c;
     }
 }
 

@@ -4,50 +4,13 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-using Container = LimbContainer;
-using Phase = Phase<LimbContainer>;
+using Container = CharacterLimbContainer;
+using Phase = Phase<CharacterLimbContainer>;
 
-// TODO: collapse tuning & other config values into container
+// TODO: extract state into container
 /// the character limb's stride tracking
 [Serializable]
 class StrideSystem: System<Container> {
-    // -- cfg --
-    [Header("cfg")]
-    [Tooltip("the root bone")]
-    [SerializeField] Transform m_Root;
-
-    [Tooltip("the cast offset")]
-    [SerializeField] float m_CastOffset;
-
-    // -- tuning --
-    [Header("tuning")]
-    [Tooltip("the threshold under which movements are ignored")]
-    [SerializeField] float m_MinMove;
-
-    [Tooltip("the max length (radius) of the stride")]
-    [SerializeField] FloatRange m_MaxLength;
-
-    [Tooltip("the max length (radius) of the stride on the cross axis")]
-    [SerializeField] float m_MaxLength_CrossScale;
-
-    [Tooltip("the shape of the stride as a fn of progress through the complete stride")]
-    [SerializeField] AnimationCurve m_Shape;
-
-    [Tooltip("the release speed on the stride scale as a fn of input")]
-    [SerializeField] float m_InputScale_ReleaseSpeed;
-
-    [Tooltip("the stride scale as a fn of speed")]
-    [SerializeField] MapCurve m_SpeedScale;
-
-    [Tooltip("the stride scale as a fn of the angle between facing & velocity")]
-    [SerializeField] MapOutCurve m_FacingScale;
-
-    [Tooltip("the extra search distance when on a surface")]
-    [SerializeField] float m_SearchRange_Surface;
-
-    [Tooltip("the extra search distance when not on a surface")]
-    [SerializeField] float m_SearchRange_NoSurface;
-
     // -- props --
     /// if the limb is not striding
     bool m_IsNotStriding;
@@ -135,7 +98,7 @@ class StrideSystem: System<Container> {
     }
 
     void NotStriding_Update(float delta, Container c) {
-        m_GoalPos = m_Root.position + c.InitialDir * c.InitialLen;
+        m_GoalPos = c.RootPos + c.InitialDir * c.InitialLen;
     }
 
     void NotStriding_Exit(Container c) {
@@ -152,15 +115,15 @@ class StrideSystem: System<Container> {
 
     void Free_Enter(Container c) {
         m_IsFree = true;
-        m_GoalPos = m_Root.position + c.InitialDir * c.InitialLen;
+        m_GoalPos = c.RootPos + c.InitialDir * c.InitialLen;
         // TODO: set m_GoalRot?
     }
 
     void Free_Update(float delta, Container c) {
         // cast in the root direction, from the end of the limb
         var castDir = c.InitialDir;
-        var castLen = c.InitialLen + m_SearchRange_NoSurface;
-        var castSrc = m_GoalPos - castDir * m_CastOffset;
+        var castLen = c.InitialLen + c.Tuning.SearchRange_NoSurface;
+        var castSrc = m_GoalPos - castDir * c.Tuning.CastOffset;
 
         var didHit = FindPlacement(
             castSrc,
@@ -177,7 +140,7 @@ class StrideSystem: System<Container> {
             return;
         }
 
-        m_GoalPos = m_Root.position + c.InitialDir * c.InitialLen;
+        m_GoalPos = c.RootPos + c.InitialDir * c.InitialLen;
     }
 
     void Free_Exit(Container c) {
@@ -193,24 +156,19 @@ class StrideSystem: System<Container> {
     void Moving_Update(float delta, Container c) {
         var v = c.Character.State.Curr.SurfaceVelocity;
 
-        var speedScale = m_SpeedScale.Evaluate(v.magnitude);
+        var speedScale = c.Tuning.SpeedScale.Evaluate(v.magnitude);
 
         var inputMag = c.Character.Inputs.MoveMagnitude;
         var inputScale = m_InputScale;
         if (inputMag > m_InputScale) {
             inputScale = inputMag;
         } else {
-            inputScale = Mathf.MoveTowards(inputScale, inputMag, m_InputScale_ReleaseSpeed * delta);
+            inputScale = Mathf.MoveTowards(inputScale, inputMag, c.Tuning.InputScale_ReleaseSpeed * delta);
         }
 
-        var facingScale = m_FacingScale.Evaluate(Vector3.Angle(
-            c.Character.State.Curr.PlanarVelocity,
-            c.Character.State.Curr.Forward
-        ));
-
-        var maxStrideScale = speedScale * inputScale * facingScale;
-        var maxStrideLenFwd = m_MaxLength.Evaluate(maxStrideScale);
-        var maxStrideLenCross = maxStrideLenFwd * m_MaxLength_CrossScale;
+        var maxStrideScale = speedScale * inputScale;
+        var maxStrideLenFwd = c.Tuning.MaxLength.Evaluate(maxStrideScale);
+        var maxStrideLenCross = maxStrideLenFwd * c.Tuning.MaxLength_CrossScale;
 
         // the anchor leg vector
         var anchor = m_Anchor.RootPos - m_Anchor.GoalPos;
@@ -239,7 +197,7 @@ class StrideSystem: System<Container> {
 
         // shape the stride along its progress curve
         var nextStrideElapsed = Mathf.Sign(Vector3.Dot(currStride, moveDir)) * nextStrideLen / maxStrideLen;
-        nextStrideLen = m_Shape.Evaluate(nextStrideElapsed) * maxStrideLen;
+        nextStrideLen = c.Tuning.Shape.Evaluate(nextStrideElapsed) * maxStrideLen;
         var nextStride = nextStrideLen * currStrideDir;
 
         // the direction to the goal; mirror the stride over anchor up
@@ -248,7 +206,7 @@ class StrideSystem: System<Container> {
         goalDir = goalDir.normalized;
 
         // accumulate root offset and get root position
-        var rootPos = m_Root.position;
+        var rootPos = c.RootPos;
 
         // the maximum stride distance projected along the leg
         var goalMax = Mathf.Max(
@@ -303,7 +261,7 @@ class StrideSystem: System<Container> {
         m_IsHeld = true;
 
         // find placement along limb
-        var castSrc = m_Root.position;
+        var castSrc = c.RootPos;
         var castDir = Vector3.Normalize(m_GoalPos - castSrc);
         var castLen = c.InitialLen;
 
@@ -346,7 +304,7 @@ class StrideSystem: System<Container> {
         var goalPos = m_GoalPos - m_SlideOffset;
 
         // find placement along limb
-        var castSrc = m_Root.position;
+        var castSrc = c.RootPos;
         var castDir = Vector3.Normalize(goalPos - castSrc);
         var castLen = c.InitialLen;
 
@@ -382,7 +340,7 @@ class StrideSystem: System<Container> {
         }
 
         goalPos = placement.Pos;
-        if (Vector3.SqrMagnitude(goalPos - m_GoalPos) > m_MinMove * m_MinMove) {
+        if (Vector3.SqrMagnitude(goalPos - m_GoalPos) > c.Tuning.MinMove * c.Tuning.MinMove) {
             m_GoalPos = goalPos;
         }
     }
@@ -439,19 +397,19 @@ class StrideSystem: System<Container> {
     ) {
         var castSrc = goalPos;
         var castDir = c.InitialDir;
-        var castLen = c.InitialLen + m_SearchRange_NoSurface;
+        var castLen = c.InitialLen + c.Tuning.SearchRange_NoSurface;
 
         var currSurface = c.Character.State.Curr.MainSurface;
         if (currSurface.IsSome) {
             castDir = -currSurface.Normal;
-            castLen = c.InitialLen + m_SearchRange_Surface;
+            castLen = c.InitialLen + c.Tuning.SearchRange_Surface;
         }
 
         var didHit = FindPlacement(
             castSrc,
             castDir,
             castLen,
-            m_CastOffset,
+            c.Tuning.CastOffset,
             out placement,
             c
         );
@@ -468,15 +426,15 @@ class StrideSystem: System<Container> {
         out Placement placement,
         Container c
     ) {
-        castSrc -= castDir * m_CastOffset;
-        castLen += m_CastOffset;
+        castSrc -= castDir * c.Tuning.CastOffset;
+        castLen += c.Tuning.CastOffset;
 
         var didHit = Physics.Raycast(
             castSrc,
             castDir,
             out var hit,
             castLen,
-            c.CastMask,
+            c.Tuning.CastMask,
             QueryTriggerInteraction.Ignore
         );
 
@@ -487,7 +445,7 @@ class StrideSystem: System<Container> {
         }
 
         // if the cast is farther than the leg
-        if (Vector3.Distance(hit.point, m_Root.position) > c.InitialLen) {
+        if (Vector3.Distance(hit.point, c.RootPos) > c.InitialLen) {
             placement = Placement.Hit(hit, castOffset, CastResult.OutOfRange);
             return true;
         }
