@@ -259,11 +259,11 @@ class StrideSystem: System<LimbContainer> {
         m_IsHeld = true;
 
         // find placement along limb
+        // the extra range is to account for entering hold from a skip, should be the same
+        // value as goalMax above.
         var castSrc = c.RootPos;
         var castDir = Vector3.Normalize(m_GoalPos - castSrc);
-        // the extra range is to account for entering hold from a skip,
-        // should be the same valua as goalMax above.
-        var castLen = c.InitialLen + c.Tuning.SearchRange_Surface;
+        var castLen = c.InitialLen + c.Tuning.SearchRange_OnSurface;
 
         var didHit = FindPlacement(
             castSrc,
@@ -277,8 +277,7 @@ class StrideSystem: System<LimbContainer> {
         // since we might be casting away from the character
         var heldDistance = placement.Distance;
 
-        // TODO: should this just be the same as below?
-        // what is different about enter?
+        // TODO: should this just be the same as below? what is different about enter?
         // if we don't find one, cast in the root direction, from the end of the limb
         if (!didHit) {
             didHit = FindPlacementFromEnd(
@@ -380,7 +379,7 @@ class StrideSystem: System<LimbContainer> {
                 return m_Placement.Normal;
             }
 
-            if (m_Placement.Result == CastResult.OutOfRange && m_IsHeld && m_HeldDistance == 0f) {
+            if (m_Placement.Result == CastResult.OutOfRange && m_IsHeld && m_HeldDistance <= m_Container.Tuning.HeldDistance_OnSurface) {
                 return m_Placement.Normal;
             }
 
@@ -411,7 +410,7 @@ class StrideSystem: System<LimbContainer> {
         var currSurface = c.Character.State.Curr.MainSurface;
         if (currSurface.IsSome) {
             castDir = -currSurface.Normal;
-            castLen = c.InitialLen + c.Tuning.SearchRange_Surface;
+            castLen = c.InitialLen + c.Tuning.SearchRange_OnSurface;
         }
 
         var didHit = FindPlacement(

@@ -69,7 +69,7 @@ public partial class Limb {
 static class Limb_Debug {
     /// the debug name for a drawing
     internal static string Debug_Name(this AvatarIKGoal goal, string name) {
-        var suffix = goal switch {
+        var key = goal switch {
             AvatarIKGoal.LeftFoot => "fl",
             AvatarIKGoal.RightFoot => "fr",
             AvatarIKGoal.LeftHand => "hl",
@@ -77,7 +77,7 @@ static class Limb_Debug {
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        return $"{name}-{suffix}";
+        return $"limb-{key}-{name}";
     }
 
     /// the debug color for a limb with given alpha (red is right)

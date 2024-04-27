@@ -40,11 +40,6 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     float m_EndLen;
 
     // -- lifecycle --
-    void Awake() {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
-    }
-
     void Update() {
         if (!IsValid) {
             return;
@@ -71,6 +66,9 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     // -- commands --
     /// initialize this limb w/ an animator
     public void Init(Animator animator) {
+        // set deps
+        c = GetComponentInParent<CharacterContainer>();
+
         // set props
         m_Animator = animator;
 

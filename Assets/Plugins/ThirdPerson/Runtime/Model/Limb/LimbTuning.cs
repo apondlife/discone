@@ -1,5 +1,6 @@
 ﻿using Soil;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -44,12 +45,15 @@ public class LimbTuning: ScriptableObject {
     [Tooltip("the stride scale as a fn of speed")]
     public MapCurve SpeedScale;
 
+    [FormerlySerializedAs("SearchRange_Surface")]
     [Tooltip("the extra search distance when on a surface")]
-    public float SearchRange_Surface;
+    public float SearchRange_OnSurface;
 
     [Tooltip("the extra search distance when not on a surface")]
     public float SearchRange_NoSurface;
-}
 
+    [Tooltip("the threshold under which the held distance is considered on surface")]
+    public float HeldDistance_OnSurface;
+}
 
 }

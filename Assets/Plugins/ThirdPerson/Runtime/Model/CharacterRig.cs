@@ -23,7 +23,7 @@ public class CharacterRig: MonoBehaviour {
     Quaternion m_LookRotation = Quaternion.identity;
 
     // -- lifecycle --
-    void Start() {
+    void Awake() {
         // set dependencies
         c = GetComponentInParent<CharacterContainer>();
 
