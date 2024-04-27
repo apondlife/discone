@@ -14,7 +14,7 @@ public class LimbTuning: ScriptableObject {
     public float CastOffset;
 
     // -- tuning --
-    [Header("tuning - blend")]
+    [Header("tuning - ik")]
     [Tooltip("the extra velocity when blending ik as a function of input")]
     public float Blend_InputVelocity;
 
