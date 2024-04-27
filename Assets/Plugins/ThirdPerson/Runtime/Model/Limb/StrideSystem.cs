@@ -1,14 +1,18 @@
 using System;
 using Soil;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace ThirdPerson {
-    using Phase = Phase<LimbContainer>;
+
+using Phase = Phase<LimbContainer>;
+using Container = LimbContainer;
 
 // TODO: extract state into container
 /// the character limb's stride tracking
 [Serializable]
-class StrideSystem: System<LimbContainer> {
+class StrideSystem: System<Container> {
     // -- props --
     /// if the limb is not striding
     bool m_IsNotStriding;
@@ -45,7 +49,7 @@ class StrideSystem: System<LimbContainer> {
     protected override SystemState State { get; set; } = new();
 
     // -- lifecycle --
-    public override void Init(LimbContainer c) {
+    public override void Init(Container c) {
         m_Anchor = c.InitialAnchor;
         base.Init(c);
     }
@@ -83,7 +87,7 @@ class StrideSystem: System<LimbContainer> {
         m_SlideOffset = offset;
     }
 
-    // -- Free --
+    // -- NotStriding --
     Phase NotStriding => new(
         name: "NotStriding",
         enter: NotStriding_Enter,
@@ -91,15 +95,15 @@ class StrideSystem: System<LimbContainer> {
         exit: NotStriding_Exit
     );
 
-    void NotStriding_Enter(LimbContainer c) {
+    void NotStriding_Enter(Container c) {
         m_IsNotStriding = true;
     }
 
-    void NotStriding_Update(float delta, LimbContainer c) {
+    void NotStriding_Update(float delta, Container c) {
         m_GoalPos = c.RootPos + c.InitialDir * c.InitialLen;
     }
 
-    void NotStriding_Exit(LimbContainer c) {
+    void NotStriding_Exit(Container c) {
         m_IsNotStriding = false;
     }
 
@@ -111,23 +115,17 @@ class StrideSystem: System<LimbContainer> {
         exit: Free_Exit
     );
 
-    void Free_Enter(LimbContainer c) {
+    void Free_Enter(Container c) {
         m_IsFree = true;
         m_GoalPos = c.RootPos + c.InitialDir * c.InitialLen;
         // TODO: set m_GoalRot?
     }
 
-    void Free_Update(float delta, LimbContainer c) {
+    void Free_Update(float delta, Container c) {
         // cast in the root direction, from the end of the limb
-        var castDir = c.InitialDir;
-        var castLen = c.InitialLen + c.Tuning.SearchRange_NoSurface;
-        var castSrc = m_GoalPos - castDir * c.Tuning.CastOffset;
-
-        var didHit = FindPlacement(
-            castSrc,
-            castDir,
-            castLen,
-            0f,
+        var goalPos = c.RootPos + c.InitialDir * c.InitialLen;
+        var didHit = FindPlacementFromEnd(
+            goalPos,
             out var placement,
             c
         );
@@ -138,10 +136,10 @@ class StrideSystem: System<LimbContainer> {
             return;
         }
 
-        m_GoalPos = c.RootPos + c.InitialDir * c.InitialLen;
+        m_GoalPos = goalPos;
     }
 
-    void Free_Exit(LimbContainer c) {
+    void Free_Exit(Container c) {
         m_IsFree = false;
     }
 
@@ -151,7 +149,7 @@ class StrideSystem: System<LimbContainer> {
         update: Moving_Update
     );
 
-    void Moving_Update(float delta, LimbContainer c) {
+    void Moving_Update(float delta, Container c) {
         var v = c.Character.State.Curr.SurfaceVelocity;
 
         var speedScale = c.Tuning.SpeedScale.Evaluate(v.magnitude);
@@ -262,7 +260,7 @@ class StrideSystem: System<LimbContainer> {
         exit: Holding_Exit
     );
 
-    void Holding_Enter(LimbContainer c) {
+    void Holding_Enter(Container c) {
         m_IsHeld = true;
 
         // find placement along limb
@@ -309,7 +307,7 @@ class StrideSystem: System<LimbContainer> {
         m_GoalPos = placement.Pos;
     }
 
-    void Holding_Update(float delta, LimbContainer c) {
+    void Holding_Update(float delta, Container c) {
         var goalPos = m_GoalPos - m_SlideOffset;
 
         // find placement along limb
@@ -354,7 +352,7 @@ class StrideSystem: System<LimbContainer> {
         }
     }
 
-    void Holding_Exit(LimbContainer c) {
+    void Holding_Exit(Container c) {
         m_IsHeld = false;
     }
 
@@ -375,12 +373,12 @@ class StrideSystem: System<LimbContainer> {
     }
 
     /// the current ik position of the limb
-    public Vector3 GoalPos {
+    public Vector2 GoalPos {
         get => m_GoalPos;
     }
 
     /// the current placement normal
-    public Vector3 Normal {
+    public Vector2 Normal {
         get {
             if (m_Placement.Result == CastResult.Hit) {
                 return m_Placement.Normal;
@@ -390,13 +388,13 @@ class StrideSystem: System<LimbContainer> {
                 return m_Placement.Normal;
             }
 
-            return Vector3.zero;
+            return Vector2.zero;
         }
     }
 
     /// the distance to the held surface
     public float HeldDistance {
-        get => m_IsHeld ? m_HeldDistance : 0f;
+        get => m_IsHeld ? m_HeldDistance : -1f;
     }
 
     /// the current placement result
@@ -408,17 +406,25 @@ class StrideSystem: System<LimbContainer> {
     bool FindPlacementFromEnd(
         Vector3 goalPos,
         out Placement placement,
-        LimbContainer c
+        Container c
     ) {
         var castSrc = goalPos;
-        var castDir = c.InitialDir;
-        var castLen = c.InitialLen + c.Tuning.SearchRange_NoSurface;
+        var castDir = Vector3.zero;
+        var castLen = 0f;
 
         var currSurface = c.Character.State.Curr.MainSurface;
         if (currSurface.IsSome) {
             castDir = -currSurface.Normal;
-            castLen = c.InitialLen + c.Tuning.SearchRange_OnSurface;
+            castLen = c.Tuning.SearchRange_OnSurface;
+        } else {
+            // TODO: scale search range based on velocity magnitude?
+            var searchScale = Math.Max(Vector3.Dot(c.Character.State.Curr.Velocity.normalized, c.InitialDir), 0f);
+            castDir = c.InitialDir;
+            castLen = c.Tuning.SearchRange_NoSurface * searchScale;
         }
+
+       DebugDraw.Push(c.Goal.Debug_Name("stride-endcast"), castSrc, castDir * castLen, new DebugDraw.Config(Color.white, count: 1, width: 2f));
+       DebugDraw.Push(c.Goal.Debug_Name("stride-endcastpoint"), castSrc, new DebugDraw.Config(Color.white, count: 1, width: 2f));
 
         var didHit = FindPlacement(
             castSrc,
@@ -439,7 +445,7 @@ class StrideSystem: System<LimbContainer> {
         float castLen,
         float castOffset,
         out Placement placement,
-        LimbContainer c
+        Container c
     ) {
         castSrc -= castDir * c.Tuning.CastOffset;
         castLen += c.Tuning.CastOffset;
@@ -470,6 +476,7 @@ class StrideSystem: System<LimbContainer> {
         return true;
     }
 
+    // -- types --
     /// the result of the placement cast
     public enum CastResult {
         Hit,
@@ -528,7 +535,7 @@ class StrideSystem: System<LimbContainer> {
     }
 
     // -- debug --
-    void Debug_DrawMove(LimbContainer c) {
+    void Debug_DrawMove(Container c) {
         DebugDraw.PushLine(
             c.Goal.Debug_Name("stride-curr"),
             m_Anchor.GoalPos,
@@ -537,7 +544,7 @@ class StrideSystem: System<LimbContainer> {
         );
     }
 
-    void Debug_DrawHold(LimbContainer c) {
+    void Debug_DrawHold(Container c) {
         DebugDraw.Push(
             c.Goal.Debug_Name("stride-hold"),
             m_GoalPos,

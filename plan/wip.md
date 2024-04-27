@@ -3,6 +3,9 @@ what is projected
 
 # ik legs
 - fix casts so that we're not finding the ground while jumping (up)
+- smooth goal rotation (for moving limb?)
+- smooth goal position for moving limb
+- make both limbs hold when not moving
 - inclines: surface velocity for legs? going downhill looks bad
 
 # ik arms
