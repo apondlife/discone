@@ -169,6 +169,8 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
             );
 
             var up = normal;
+
+            // if no normal, use the direction towards the root
             if (up == Vector3.zero) {
                 up = Vector3.Normalize(transform.position - goalPos);
             }

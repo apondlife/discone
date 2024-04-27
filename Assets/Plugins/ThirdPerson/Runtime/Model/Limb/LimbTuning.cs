@@ -39,6 +39,10 @@ public class LimbTuning: ScriptableObject {
     [Tooltip("the shape of the stride as a fn of progress through the complete stride")]
     public AnimationCurve Shape;
 
+    [FormerlySerializedAs("Shape_Height")]
+    [Tooltip("the shape of the height of the moving foot as a fn of progress through the complete stride")]
+    public MapOutCurve Shape_Offset;
+
     [Tooltip("the release speed on the stride scale as a fn of input")]
     public float InputScale_ReleaseSpeed;
 

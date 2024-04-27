@@ -213,14 +213,14 @@ class StrideSystem: System<LimbContainer> {
             maxStrideLen / Vector3.Cross(goalDir, Vector3.down).magnitude
         );
 
-        var goalPos = rootPos + goalDir * goalMax;
+        var goalPos = rootPos + goalDir * c.InitialLen;
 
         // find foot placement
         var castSrc = rootPos;
         var castDir = goalDir;
         var castLen = goalMax;
 
-        var didHit = FindPlacement(
+        FindPlacement(
             castSrc,
             castDir,
             castLen,
@@ -229,9 +229,16 @@ class StrideSystem: System<LimbContainer> {
             c
         );
 
-        if (didHit) {
-            goalPos = placement.Pos;
+        var offset = 0f;
+        if (placement.Result == CastResult.Hit) {
+            offset = c.InitialLen - placement.Distance;
         }
+
+        // add the shape's perpendicular offset
+        offset = Mathf.Max(offset, c.Tuning.Shape_Offset.Evaluate(nextStrideElapsed) * inputScale);
+
+        // displace the goal to correct for placement/offset
+        goalPos += offset * -castDir;
 
         m_GoalPos = goalPos;
         m_Placement = placement;
