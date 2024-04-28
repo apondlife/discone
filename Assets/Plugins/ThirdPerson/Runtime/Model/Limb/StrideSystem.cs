@@ -1,8 +1,6 @@
 using System;
 using Soil;
 using UnityEngine;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
 
 namespace ThirdPerson {
 
@@ -174,7 +172,7 @@ class StrideSystem: System<Container> {
         var currStrideLen = currStride.magnitude;
         var currStrideDir = currStride / currStrideLen;
         var currFwd = c.Character.State.Curr.Forward;
-        var currStrideAngle = Vector3.Angle(currStrideDir, currFwd);
+        var currStrideAngle = Vector3.Angle(currStrideDir, currFwd) * Mathf.Deg2Rad;
 
         // calculate max stride length on the ellipse
         var maxStrideX = maxStrideLenFwd * Mathf.Cos(currStrideAngle);
@@ -373,12 +371,12 @@ class StrideSystem: System<Container> {
     }
 
     /// the current ik position of the limb
-    public Vector2 GoalPos {
+    public Vector3 GoalPos {
         get => m_GoalPos;
     }
 
     /// the current placement normal
-    public Vector2 Normal {
+    public Vector3 Normal {
         get {
             if (m_Placement.Result == CastResult.Hit) {
                 return m_Placement.Normal;
@@ -388,7 +386,7 @@ class StrideSystem: System<Container> {
                 return m_Placement.Normal;
             }
 
-            return Vector2.zero;
+            return Vector3.zero;
         }
     }
 
