@@ -2,11 +2,9 @@ what is projected
 ---
 
 # ik legs
-- fix casts so that we're not finding the ground while jumping (up) [REVIEW]
-- smooth goal rotation (for moving limb?) [REVIEW]
-- smooth goal position for moving limb [REVIEW]
-- make both limbs hold when not moving [REVIEW]
 - inclines: surface velocity for legs? going downhill looks bad
+- wall ride
+- sliding down slope sideways
 
 # ik arms
 - fix arms

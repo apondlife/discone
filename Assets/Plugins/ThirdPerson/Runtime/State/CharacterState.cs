@@ -246,12 +246,12 @@ public sealed partial class CharacterState {
 
         /// if the character is on the wall
         public bool IsOnWall {
-            get => MainSurface.Angle > 0;
+            get => MainSurface.Angle > 0f;
         }
 
         /// if currently idle
         public bool IsIdle {
-            get => IdleTime > 0.0f;
+            get => IdleTime > 0f;
         }
 
         /// the character's look rotation (facing & tilt)

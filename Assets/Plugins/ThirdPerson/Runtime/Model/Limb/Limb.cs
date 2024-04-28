@@ -75,10 +75,11 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
 
         // if not held, interpolate position.
         if (!m_StrideSystem.IsHeld) {
+            var goalDist = Vector3.SqrMagnitude(goalPos - m_GoalPos);
             goalPos = Vector3.MoveTowards(
                 m_GoalPos,
                 goalPos,
-                m_Tuning.Goal_MoveSpeed * Time.deltaTime
+                m_Tuning.Goal_MoveSpeed * goalDist * delta
             );
         }
 
@@ -96,10 +97,11 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         );
 
         // always interpolate rotation
+        var goalRotDist = Quaternion.Angle(goalRot, m_GoalRot);
         goalRot = Quaternion.RotateTowards(
             m_GoalRot,
             goalRot,
-            m_Tuning.Goal_RotationSpeed * Time.deltaTime
+            m_Tuning.Goal_RotationSpeed * goalRotDist * delta
         );
 
         // update state

@@ -1,3 +1,4 @@
+using Soil;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -7,7 +8,7 @@ sealed class CharacterWallSkid: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the number of particles per frame")]
-    [SerializeField] int m_ParticleCount;
+    [SerializeField] MapCurve m_Count;
 
     // -- refs --
     [Header("refs")]
@@ -53,7 +54,8 @@ sealed class CharacterWallSkid: MonoBehaviour {
         main.startRotationZ = a.z;
 
         // emit particles
-        m_Particles.Emit(m_ParticleCount);
+        var count = (int)m_Count.Evaluate(c.State.Curr.SurfaceVelocity.sqrMagnitude);
+        m_Particles.Emit(count);
     }
 }
 

@@ -18,9 +18,6 @@ partial class CharacterState {
 /// how the character is affected by gravity
 [Serializable]
 sealed class IdleSystem: CharacterSystem {
-    // -- constants --
-    const float k_IdleSpeedThreshold = 0.1f;
-
     // -- System --
     protected override Phase InitInitialPhase() {
         return NotIdle;
@@ -43,7 +40,7 @@ sealed class IdleSystem: CharacterSystem {
     }
 
     void NotIdle_Update(float _, Container c) {
-        if (c.State.Curr.Velocity.sqrMagnitude <= k_IdleSpeedThreshold) {
+        if (c.Inputs.IsMoveIdle() && c.State.Curr.Velocity.sqrMagnitude <= c.Tuning.Idle_SqrSpeedThreshold) {
            ChangeTo(Idle);
         }
     }
@@ -65,7 +62,7 @@ sealed class IdleSystem: CharacterSystem {
     void Idle_Update(float delta, Container c) {
         c.State.Next.IdleTime += delta;
 
-        if (c.State.Curr.Velocity.sqrMagnitude > k_IdleSpeedThreshold) {
+        if (!c.Inputs.IsMoveIdle() || c.State.Curr.Velocity.sqrMagnitude > c.Tuning.Idle_SqrSpeedThreshold) {
            ChangeTo(NotIdle);
         }
     }

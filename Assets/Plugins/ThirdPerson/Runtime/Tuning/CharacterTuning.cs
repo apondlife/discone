@@ -13,8 +13,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [TextArea(3, 6)]
     [SerializeField] string m_Description;
 
-    // -- movement system --
-    [Header("movement system")]
+    // -- movement --
+    [Header("movement")]
     [FormerlySerializedAs("Horizontal_MinSpeed")]
     [Tooltip("the horizontal speed at which the character stops")]
     public float Surface_MinSpeed;
@@ -57,8 +57,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the planar acceleration while floating")]
     public float AerialDriftAcceleration;
 
-    // -- crouch system --
-    [Header("crouch system")]
+    // -- crouch --
+    [Header("crouch")]
     [Tooltip("the static friction value when crouching")]
     public float Crouch_StaticFriction;
 
@@ -87,8 +87,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the drag when crouching against movement")]
     public MapOutCurve Crouch_NegativeDrag;
 
-    // -- jump system --
-    [Header("jump system")]
+    // -- jump --
+    [Header("jump")]
     [Tooltip("the acceleration due to gravity")]
     public float Gravity;
 
@@ -200,8 +200,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the speed the perceived surface's normal moves towards a new normal")]
     public float Surface_PerceptionAngularSpeed;
 
-    // -- friction system --
-    [Header("friction system")]
+    // -- friction --
+    [Header("friction")]
     [Tooltip("the quadratic drag in the air")]
     public float Friction_AerialDrag;
 
@@ -224,6 +224,11 @@ public sealed class CharacterTuning: ScriptableObject {
     [FormerlySerializedAs("Surface_FrictionScale")]
     [Tooltip("the friction scale as a fn of the surface angle")]
     public MapOutCurve Friction_SurfaceFrictionScale;
+
+    // -- idle --
+    [Header("idle")]
+    [Tooltip("the speed threshold under which the character is considered idle (squared)")]
+    public float Idle_SqrSpeedThreshold;
 
     // -- model/animation --
     [Header("model / animation")]
