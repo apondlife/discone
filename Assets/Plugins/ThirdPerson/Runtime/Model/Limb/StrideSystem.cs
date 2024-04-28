@@ -73,15 +73,16 @@ class StrideSystem: System<Container> {
     }
 
     /// switch to the holding state
-    public void Hold() {
+    public void Hold(float delta) {
         if (!m_IsHeld) {
-            ChangeTo(Holding);
+            ChangeToImmediate(Holding, delta);
         }
     }
 
     /// release the limb if it's not already
     public void Release() {
         m_Anchor = null;
+
         if (!m_IsFree) {
             ChangeTo(Free);
         }
@@ -135,7 +136,7 @@ class StrideSystem: System<Container> {
 
         if (didHit) {
             m_GoalPos = placement.Pos;
-            ChangeTo(Holding);
+            ChangeToImmediate(Holding, delta);
             return;
         }
 
@@ -249,7 +250,7 @@ class StrideSystem: System<Container> {
 
         // once we complete our stride, switch to hold
         if (nextStrideElapsed >= 1f) {
-            ChangeTo(Holding);
+            ChangeToImmediate(Holding, delta);
             Debug_DrawHold(c);
             return;
         }
@@ -265,34 +266,42 @@ class StrideSystem: System<Container> {
 
     void Holding_Enter(Container c) {
         m_IsHeld = true;
-
-        var didHit = FindPlacement_Held(
-            m_GoalPos,
-            out var placement,
-            out var heldDistance,
-            c
-        );
-
-        m_Placement = placement;
-        m_HeldDistance = heldDistance;
-
-        if (!didHit) {
-            ChangeTo(Free);
-            return;
-        }
-
-        m_GoalPos = placement.Pos;
     }
 
     void Holding_Update(float delta, Container c) {
         var goalPos = m_GoalPos - m_SlideOffset;
 
-        var didHit = FindPlacement_Held(
-            goalPos,
+        // check if there's any collision from the limb to where we want to be holding
+        // we might be holding farther away from the limb itself
+        var castSrc = c.RootPos;
+        var castDir = Vector3.Normalize(goalPos - castSrc);
+
+        // TODO: this search range is bad, should be similar to goalMax in moving, or just maxmaxstride projected
+        // search range is the maximum we are allowing ourselves to extend our limb at this point
+        var castLen = c.InitialLen + c.Tuning.SearchRange_OnSurface;
+
+        var didHit = FindPlacement(
+            castSrc,
+            castDir,
+            castLen,
+            0f,
             out var placement,
-            out var heldDistance,
             c
         );
+
+        // project the placement distance along the initial limb axis
+        // to know the distance of the end of the limb to the collision
+        // in the direction of the limb axis
+        var heldDistance = (placement.Distance - c.InitialLen) * Vector3.Dot(castDir, c.InitialDir);
+
+        // if we don't find a surface, cast in the limb axis direction, from the end of the limb
+        if (!didHit) {
+            didHit = FindPlacementFromEnd(out placement, c);
+
+            if (didHit) {
+                heldDistance = placement.Distance;
+            }
+        }
 
         m_Placement = placement;
         m_HeldDistance = heldDistance;
@@ -356,47 +365,6 @@ class StrideSystem: System<Container> {
     /// the current placement result
     public CastResult PlacementResult {
         get => m_Placement.Result;
-    }
-
-    bool FindPlacement_Held(
-        Vector3 goalPos,
-        out Placement placement,
-        out float heldDistance,
-        Container c
-    ) {
-        // check if there's any collision from the limb to where we want to be holding
-        // we might be holding farther away from the limb itself
-        var castSrc = c.RootPos;
-        var castDir = Vector3.Normalize(goalPos - castSrc);
-
-        // TODO: this search range is bad, should be similar to goalMax in moving, or just maxmaxstride projected
-        // search range is the maximum we are allowing ourselves to extend our limb at this point
-        var castLen = c.InitialLen + c.Tuning.SearchRange_OnSurface;
-
-        var didHit = FindPlacement(
-            castSrc,
-            castDir,
-            castLen,
-            0f,
-            out placement,
-            c
-        );
-
-        // project the placement distance along the initial limb axis
-        // to know the distance of the end of the limb to the collision
-        // in the direction of the limb axis
-        heldDistance = (placement.Distance - c.InitialLen) * Vector3.Dot(castDir, c.InitialDir);
-
-        // if we don't find a surface, cast in the limb axis direction, from the end of the limb
-        if (!didHit) {
-            didHit = FindPlacementFromEnd(out placement, c);
-
-            if (didHit) {
-                heldDistance = placement.Distance;
-            }
-        }
-
-        return didHit;
     }
 
     /// cast for a surface underneath the current pos

@@ -76,7 +76,7 @@ class CharacterLegs: MonoBehaviour {
 
         // if we are not moving, make sure both legs are holding
         if (c.State.Curr.IsIdle) {
-            Hold();
+            Hold(delta);
         }
         // if the held leg becomes free, release the moving leg
         else if (m_Left.IsFree != m_Right.IsFree) {
@@ -105,29 +105,16 @@ class CharacterLegs: MonoBehaviour {
         m_Right.SetIsStriding(isStriding);
     }
 
-    /// slide the held leg when they lose grip
-    void Slide(float delta) {
-        // add an offset to slide the legs when they lose grip
-        var slideOffset = Vector3.zero;
+    /// make sure both legs are holding
+    void Hold(float delta) {
+        m_Left.Hold(delta);
+        m_Right.Hold(delta);
+    }
 
-        // set offset in move direction
-        var v = c.State.Curr.SurfaceVelocity;
-        var moveDir = v != Vector3.zero ? v.normalized : c.State.Curr.Forward;
-        var moveInput = c.Inputs.MoveMagnitude;
-
-        var isHeldLegSliding = (
-            // if we have input
-            moveInput > 0f &&
-            // and the velocity towards input is below a threshold
-            Vector3.Dot(v, c.Inputs.Move.normalized) < m_Slide_Threshold
-        );
-
-        if (isHeldLegSliding) {
-            slideOffset = moveInput * m_Slide_Speed * delta * moveDir;
-        }
-
-        m_Left.SetSlideOffset(slideOffset);
-        m_Right.SetSlideOffset(slideOffset);
+    /// make sure both legs are free
+    void Release() {
+        m_Left.Release();
+        m_Right.Release();
     }
 
     /// switch the moving leg
@@ -151,16 +138,29 @@ class CharacterLegs: MonoBehaviour {
         m_Right.Debug_Draw("legs", count: 100);
     }
 
-    /// make sure both legs are free
-    void Release() {
-        m_Left.Release();
-        m_Right.Release();
-    }
+    /// slide the held leg when they lose grip
+    void Slide(float delta) {
+        // add an offset to slide the legs when they lose grip
+        var slideOffset = Vector3.zero;
 
-    /// make sure both legs are holding
-    void Hold() {
-        m_Left.Hold();
-        m_Right.Hold();
+        // set offset in move direction
+        var v = c.State.Curr.SurfaceVelocity;
+        var moveDir = v != Vector3.zero ? v.normalized : c.State.Curr.Forward;
+        var moveInput = c.Inputs.MoveMagnitude;
+
+        var isHeldLegSliding = (
+            // if we have input
+            moveInput > 0f &&
+            // and the velocity towards input is below a threshold
+            Vector3.Dot(v, c.Inputs.Move.normalized) < m_Slide_Threshold
+        );
+
+        if (isHeldLegSliding) {
+            slideOffset = moveInput * m_Slide_Speed * delta * moveDir;
+        }
+
+        m_Left.SetSlideOffset(slideOffset);
+        m_Right.SetSlideOffset(slideOffset);
     }
 
     /// move hips according to current stride

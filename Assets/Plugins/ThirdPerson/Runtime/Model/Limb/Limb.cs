@@ -55,22 +55,34 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         m_StrideSystem.Update(delta);
 
         // set target ik weight if limb is active
-        var destWeight = m_StrideSystem.IsActive ? 1f : 0f;
+        var weight = m_StrideSystem.IsActive ? 1f : 0f;
 
         // interpolate the weight
-        var blendSpeed = destWeight > m_Weight ? m_Tuning.Blend_InSpeed : m_Tuning.Blend_OutSpeed;
-        m_Weight = Mathf.MoveTowards(
+        var blendSpeed = weight > m_Weight ? m_Tuning.Blend_InSpeed : m_Tuning.Blend_OutSpeed;
+        weight = Mathf.MoveTowards(
             m_Weight,
-            destWeight,
+            weight,
             blendSpeed * delta
         );
 
         var normal = m_StrideSystem.Normal;
+
+        // get next position goal position, removing the end offset if necessary
         var goalPos = m_StrideSystem.GoalPos;
         if (normal != Vector3.zero) {
             goalPos += m_EndLen * normal;
         }
 
+        // if not held, interpolate position.
+        if (!m_StrideSystem.IsHeld) {
+            goalPos = Vector3.MoveTowards(
+                m_GoalPos,
+                goalPos,
+                m_Tuning.Goal_MoveSpeed * Time.deltaTime
+            );
+        }
+
+        // get next rotation
         var up = normal;
 
         // if no normal, use the direction towards the root
@@ -78,28 +90,22 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
             up = Vector3.Normalize(transform.position - goalPos);
         }
 
-        var rot = Quaternion.LookRotation(
+        var goalRot = Quaternion.LookRotation(
             Vector3.ProjectOnPlane(c.State.Curr.Forward, up),
             up
         );
 
-        // if held, move immediately, otherwise, interpolate position.
         // always interpolate rotation
-        if (m_StrideSystem.IsHeld) {
-            m_GoalPos = goalPos;
-        } else {
-            m_GoalPos = Vector3.MoveTowards(
-                m_GoalPos,
-                goalPos,
-                m_Tuning.Goal_MoveSpeed * Time.deltaTime
-            );
-        }
-
-        m_GoalRot = Quaternion.RotateTowards(
+        goalRot = Quaternion.RotateTowards(
             m_GoalRot,
-            rot,
+            goalRot,
             m_Tuning.Goal_RotationSpeed * Time.deltaTime
         );
+
+        // update state
+        m_Weight = weight;
+        m_GoalPos = goalPos;
+        m_GoalRot = goalRot;
 
         // TODO: consider how to compile out debug utils; DEVELOPMENT_BUILD, DEBUG?
         Debug_Update();
@@ -172,8 +178,8 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     }
 
     /// holds the limb if not already
-    public void Hold() {
-        m_StrideSystem.Hold();
+    public void Hold(float delta) {
+        m_StrideSystem.Hold(delta);
     }
 
     /// released the limb's hold if not already
@@ -203,13 +209,10 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         );
 
         if (m_Weight != 0.0f) {
-            var normal = m_StrideSystem.Normal;
-
             m_Animator.SetIKPosition(
                 m_Goal,
                 m_GoalPos
             );
-
 
             m_Animator.SetIKRotation(
                 m_Goal,
