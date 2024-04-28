@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3634307922059092450}
   - component: {fileID: 3004317116465801583}
   m_Layer: 13
-  m_Name: CharacterLimb
+  m_Name: Limb
   m_TagString: Untagged
   m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -45,39 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Goal: 2
-  m_BlendInDuration: 0.2
-  m_BlendOutDuration: 0.2
+  m_Tuning: {fileID: 0}
   m_StrideSystem:
     m_Phase:
       Name: 
     m_IsDisabled: 0
     m_IsLogging: 0
-    m_Root: {fileID: 3634307922059092450}
-    m_CastOffset: 0.03
-    m_CastMask:
-      serializedVersion: 2
-      m_Bits: 385
-    m_MinMove: 0.002
-    m_SpeedScale:
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      m_Src:
-        Min: 1
-        Max: 1
-    m_InputScale:
-      Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      Dst:
-        Min: 1
-        Max: 1
-    m_StrideLength:
-      Min: 0
-      Max: 0

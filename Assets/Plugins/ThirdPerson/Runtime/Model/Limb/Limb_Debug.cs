@@ -13,9 +13,7 @@ public partial class Limb {
 
     // -- lifecycle --
     void Debug_Update() {
-        if (m_Goal <= AvatarIKGoal.RightFoot) {
-            Debug_Draw("limb", width: 1f);
-        }
+        Debug_Draw("limb", width: 1f);
     }
 
     void Debug_ApplyIk() {
@@ -33,14 +31,20 @@ public partial class Limb {
             m_Goal.Debug_Name($"{name}-bone"),
             pos,
             transform.position,
-            new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: DebugDraw.Tag.Model, width: width, count: count)
+            new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width, count: count)
         );
 
         DebugDraw.Push(
-            m_Goal.Debug_Name($"{name}-foot-{Debug_PhaseName()}"),
+            m_Goal.Debug_Name($"{name}-dir-{Debug_PhaseName()}"),
             pos,
-            rot * Vector3.forward * 0.5f,
-            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: DebugDraw.Tag.Model, width: width, count: count)
+            rot * Vector3.forward * 0.3f,
+            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: m_Goal.Debug_Tag(), width: width, count: count)
+        );
+
+        DebugDraw.Push(
+            m_Goal.Debug_Name($"{name}-dir-end-{Debug_PhaseName()}"),
+            pos,
+            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: m_Goal.Debug_Tag(), width: width * 2f, count: count)
         );
     }
 
@@ -78,6 +82,17 @@ static class Limb_Debug {
         };
 
         return $"limb-{key}-{name}";
+    }
+
+    /// the debug tag for a limb
+    internal static DebugDraw.Tag Debug_Tag(this AvatarIKGoal goal) {
+        return goal switch {
+            AvatarIKGoal.LeftFoot => DebugDraw.Tag.Walk,
+            AvatarIKGoal.RightFoot => DebugDraw.Tag.Walk,
+            AvatarIKGoal.LeftHand => DebugDraw.Tag.None,
+            AvatarIKGoal.RightHand => DebugDraw.Tag.None,
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 
     /// the debug color for a limb with given alpha (red is right)

@@ -131,7 +131,7 @@ class CharacterLegs: MonoBehaviour {
             "legs-hips",
             m_Left.RootPos,
             m_Right.RootPos,
-            new DebugDraw.Config(color: Color.yellow, DebugDraw.Tag.Model, count: 100)
+            new DebugDraw.Config(color: Color.yellow, DebugDraw.Tag.Walk, count: 100)
         );
 
         m_Left.Debug_Draw("legs", count: 100);

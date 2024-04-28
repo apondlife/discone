@@ -498,7 +498,7 @@ class StrideSystem: System<Container> {
             c.Goal.Debug_Name("stride-curr"),
             m_Anchor.GoalPos,
             m_GoalPos,
-            new DebugDraw.Config(c.Goal.Debug_Color(), tags: DebugDraw.Tag.Model, count: 1, width: 0.03f)
+            new DebugDraw.Config(c.Goal.Debug_Color(), tags: c.Goal.Debug_Tag(), count: 1, width: 0.03f)
         );
     }
 
@@ -506,14 +506,14 @@ class StrideSystem: System<Container> {
         DebugDraw.Push(
             c.Goal.Debug_Name("stride-hold"),
             m_GoalPos,
-            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Model, width: 2f)
+            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: c.Goal.Debug_Tag(), width: 2f)
         );
 
         DebugDraw.PushLine(
             c.Goal.Debug_Name("stride"),
             m_Anchor.GoalPos,
             m_GoalPos,
-            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: DebugDraw.Tag.Model, width: 0.5f)
+            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: c.Goal.Debug_Tag(), width: 0.5f)
         );
     }
 }

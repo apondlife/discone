@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -15,6 +13,22 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     [Tooltip("the tuning")]
     [SerializeField] LimbTuning m_Tuning;
 
+    [Tooltip("the goal bone")]
+    [SerializeField] Transform m_GoalBone;
+
+    #if UNITY_EDITOR
+    [Tooltip("the end bone")]
+    [SerializeField] Transform m_EndBone;
+    #endif
+
+    // [HideInInspector]
+    [Tooltip("the initial position of the goal bone")]
+    [SerializeField] Vector3 m_InitialGoalPos;
+
+    // [HideInInspector]
+    [Tooltip("the initial position of the end bone")]
+    [SerializeField] Vector3 m_InitialEndPos;
+
     // -- systems --
     [Header("systems")]
     [Tooltip("the limb system")]
@@ -26,9 +40,6 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
 
     /// the animator
     Animator m_Animator;
-
-    /// the transform of the goal bone, if any
-    Transform m_GoalBone;
 
     /// the current blend weight
     float m_Weight;
@@ -113,6 +124,17 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         Debug_Update();
     }
 
+    #if UNITY_EDITOR
+    void OnValidate() {
+        m_InitialGoalPos = FindInitialBonePos(m_GoalBone);
+        m_InitialEndPos = FindInitialBonePos(m_EndBone);
+    }
+
+    Vector3 FindInitialBonePos(Transform bone) {
+        return bone ? transform.InverseTransformPoint(bone.transform.position) : Vector3.zero;
+    }
+    #endif
+
     // -- commands --
     /// initialize this limb w/ an animator
     public void Init(Animator animator) {
@@ -122,41 +144,15 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         // set props
         m_Animator = animator;
 
-        // cache the bone; we can't really do anything if we don't find a bone
-        m_GoalBone = m_Animator.GetBoneTransform(
-            m_Goal switch {
-                AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
-                AvatarIKGoal.LeftHand => HumanBodyBones.LeftHand,
-                AvatarIKGoal.RightFoot => HumanBodyBones.RightFoot,
-                AvatarIKGoal.LeftFoot => HumanBodyBones.LeftFoot,
-                _ => throw new Exception($"invalid goal {m_Goal}")
-            }
-        );
-
-        var lastBone = m_Animator.GetBoneTransform(
-            m_Goal switch {
-                AvatarIKGoal.RightHand => HumanBodyBones.RightHand,
-                AvatarIKGoal.LeftHand => HumanBodyBones.LeftHand,
-                AvatarIKGoal.RightFoot => HumanBodyBones.RightToes,
-                AvatarIKGoal.LeftFoot => HumanBodyBones.LeftToes,
-                _ => throw new Exception($"invalid goal {m_Goal}")
-            }
-        );
-
-        var endBone = lastBone ? lastBone.GetChild(0) : null;
-
-        if (!m_GoalBone || !endBone) {
-            Log.Model.E($"{c.Name} - <limb: {m_Goal}> no matching bone");
-            return;
-        }
-
         // get default limb lengths
-        var goalPos = m_GoalBone.position;
+        var rootPos = Vector3.zero;
+        var goalPos = m_InitialGoalPos;
+        var endPos = m_InitialEndPos;
 
-        var limb = goalPos - transform.position;
+        var limb = goalPos - rootPos;
         var limbDir = limb.normalized;
 
-        var end = endBone.position - goalPos;
+        var end = endPos - goalPos;
         var endLength = Vector3.Dot(end, limbDir);
 
         m_LimbLen = limb.magnitude;
