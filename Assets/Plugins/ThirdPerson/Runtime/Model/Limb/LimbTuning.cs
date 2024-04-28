@@ -25,6 +25,12 @@ public class LimbTuning: ScriptableObject {
     [Tooltip("the speed the ik weight blends towards zero")]
     public float Blend_OutSpeed;
 
+    [Tooltip("the speed the ik goal moved towards the stride goal")]
+    public float Goal_MoveSpeed;
+
+    [Tooltip("the angular speed (in degrees) the ik goal moved towards the stride goal")]
+    public float Goal_RotationSpeed;
+
     // -- tuning --
     [Header("tuning - stride")]
     [Tooltip("the threshold under which movements are ignored")]

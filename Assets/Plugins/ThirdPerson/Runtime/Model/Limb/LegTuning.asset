@@ -19,11 +19,13 @@ MonoBehaviour:
   Blend_InputVelocity: 5
   Blend_InSpeed: 5
   Blend_OutSpeed: 5
+  Goal_MoveSpeed: 100
+  Goal_RotationSpeed: 720
   MinMove: 0.002
   MaxLength:
-    Min: 0.6
+    Min: 0.2
     Max: 2.5
-  MaxLength_CrossScale: 0.4
+  MaxLength_CrossScale: 0.33
   Shape:
     serializedVersion: 2
     m_Curve:
@@ -57,6 +59,43 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  Shape_Offset:
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -1
+        value: 0
+        inSlope: 0.08945224
+        outSlope: 0.08945224
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.20627357
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.10491356
+        outWeight: 0.65351224
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.18202241
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0.3
   InputScale_ReleaseSpeed: 3
   SpeedScale:
     m_Curve:
@@ -89,5 +128,6 @@ MonoBehaviour:
     m_Dst:
       Min: 0
       Max: 1
-  SearchRange_Surface: 2
+  SearchRange_OnSurface: 2.5
   SearchRange_NoSurface: 1
+  HeldDistance_OnSurface: 0.3

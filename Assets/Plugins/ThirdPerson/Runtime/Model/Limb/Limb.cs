@@ -39,6 +39,12 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     /// the offset of the end bone used for placement, if any
     float m_EndLen;
 
+    /// the position of the ik goal
+    Vector3 m_GoalPos;
+
+    /// the rotation of the ik goal
+    Quaternion m_GoalRot;
+
     // -- lifecycle --
     void Update() {
         if (!IsValid) {
@@ -57,6 +63,42 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
             m_Weight,
             destWeight,
             blendSpeed * delta
+        );
+
+        var normal = m_StrideSystem.Normal;
+        var goalPos = m_StrideSystem.GoalPos;
+        if (normal != Vector3.zero) {
+            goalPos += m_EndLen * normal;
+        }
+
+        var up = normal;
+
+        // if no normal, use the direction towards the root
+        if (up == Vector3.zero) {
+            up = Vector3.Normalize(transform.position - goalPos);
+        }
+
+        var rot = Quaternion.LookRotation(
+            Vector3.ProjectOnPlane(c.State.Curr.Forward, up),
+            up
+        );
+
+        // if held, move immediately, otherwise, interpolate position.
+        // always interpolate rotation
+        if (m_StrideSystem.IsHeld) {
+            m_GoalPos = goalPos;
+        } else {
+            m_GoalPos = Vector3.MoveTowards(
+                m_GoalPos,
+                goalPos,
+                m_Tuning.Goal_MoveSpeed * Time.deltaTime
+            );
+        }
+
+        m_GoalRot = Quaternion.RotateTowards(
+            m_GoalRot,
+            rot,
+            m_Tuning.Goal_RotationSpeed * Time.deltaTime
         );
 
         // TODO: consider how to compile out debug utils; DEVELOPMENT_BUILD, DEBUG?
@@ -163,31 +205,15 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         if (m_Weight != 0.0f) {
             var normal = m_StrideSystem.Normal;
 
-            var goalPos = m_StrideSystem.GoalPos;
-            if (normal != Vector3.zero) {
-                goalPos += m_EndLen * normal;
-            }
-
             m_Animator.SetIKPosition(
                 m_Goal,
-                goalPos
+                m_GoalPos
             );
 
-            var up = normal;
-
-            // if no normal, use the direction towards the root
-            if (up == Vector3.zero) {
-                up = Vector3.Normalize(transform.position - goalPos);
-            }
-
-            var rot = Quaternion.LookRotation(
-                Vector3.ProjectOnPlane(c.State.Curr.Forward, up),
-                up
-            );
 
             m_Animator.SetIKRotation(
                 m_Goal,
-                rot
+                m_GoalRot
             );
         }
 
