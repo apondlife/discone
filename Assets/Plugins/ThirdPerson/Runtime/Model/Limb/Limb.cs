@@ -129,6 +129,11 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         m_StrideSystem.Move(anchor);
     }
 
+    /// holds the limb if not already
+    public void Hold() {
+        m_StrideSystem.Hold();
+    }
+
     /// released the limb's hold if not already
     public void Release() {
         m_StrideSystem.Release();

@@ -74,8 +74,12 @@ class CharacterLegs: MonoBehaviour {
         // if the character is currently striding
         SetIsStriding(!c.State.Curr.IsCrouching && !c.State.Curr.IsInJumpSquat);
 
+        // if we are not moving, make sure both legs are holding
+        if (c.State.Curr.IsIdle) {
+            Hold();
+        }
         // if the held leg becomes free, release the moving leg
-        if (m_Left.IsFree != m_Right.IsFree) {
+        else if (m_Left.IsFree != m_Right.IsFree) {
             Release();
         }
         // if both legs are held, start moving one
@@ -151,6 +155,12 @@ class CharacterLegs: MonoBehaviour {
     void Release() {
         m_Left.Release();
         m_Right.Release();
+    }
+
+    /// make sure both legs are holding
+    void Hold() {
+        m_Left.Hold();
+        m_Right.Hold();
     }
 
     /// move hips according to current stride

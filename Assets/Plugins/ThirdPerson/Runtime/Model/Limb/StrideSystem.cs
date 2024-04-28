@@ -72,6 +72,13 @@ class StrideSystem: System<Container> {
         ChangeTo(Moving);
     }
 
+    /// switch to the holding state
+    public void Hold() {
+        if (!m_IsHeld) {
+            ChangeTo(Holding);
+        }
+    }
+
     /// release the limb if it's not already
     public void Release() {
         m_Anchor = null;
