@@ -252,7 +252,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         var destSurfaceTilt = Quaternion.AngleAxis(
             m_SurfaceTilt_Range.Evaluate(surface.Angle),
-            surfaceTiltTangent
+            transform.InverseTransformDirection(surfaceTiltTangent)
         );
 
         m_SurfaceTilt = Quaternion.RotateTowards(
