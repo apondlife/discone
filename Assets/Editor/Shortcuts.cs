@@ -165,6 +165,12 @@ public sealed class Shortcuts: EditorWindow {
                 if (G.Button("select it")) {
                     SelectChild();
                 }
+
+                // focus (press f) the object
+                if (G.Button("focus it")) {
+                    SelectChild();
+                    SceneView.FrameLastActiveSceneView();
+                }
             L.EV();
         }
     }

@@ -373,17 +373,14 @@ class StrideSystem: System<Container> {
         Container c
     ) {
         var castSrc = c.RootPos + Vector3.Normalize(m_GoalPos - c.RootPos) * c.InitialLen;
-        var castDir = Vector3.zero;
+        var castDir = c.InitialDir;
         var castLen = 0f;
 
-        var currSurface = c.Character.State.Curr.MainSurface;
-        if (currSurface.IsSome) {
-            castDir = -currSurface.Normal;
+        if (m_IsHeld) {
             castLen = c.Tuning.SearchRange_OnSurface;
         } else {
             // TODO: scale search range based on velocity magnitude?
             var searchScale = Math.Max(Vector3.Dot(c.Character.State.Curr.Velocity.normalized, c.InitialDir), 0f);
-            castDir = c.InitialDir;
             castLen = c.Tuning.SearchRange_NoSurface * searchScale;
         }
 
