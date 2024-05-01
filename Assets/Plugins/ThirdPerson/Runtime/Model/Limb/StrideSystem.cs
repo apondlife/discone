@@ -289,17 +289,25 @@ class StrideSystem: System<Container> {
             c
         );
 
-        // project the placement distance along the initial limb axis
-        // to know the distance of the end of the limb to the collision
-        // in the direction of the limb axis
-        var heldDistance = (placement.Distance - c.InitialLen) * Vector3.Dot(castDir, c.InitialDir);
+        var heldDistance = 0f;
 
+        // project the placement distance along the search dir to know the distance from the end
+        // of the limb to the collision in the search dir
+        if (didHit) {
+            // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587553685421&cot=14
+            var heldExtension = (placement.Distance - c.InitialLen) * castDir;
+            var heldDotNormal = Vector3.Dot(heldExtension, placement.Normal);
+            var normDotSearch = Vector3.Dot(placement.Normal, Vector3.down);
+            heldDistance = heldDotNormal / normDotSearch;
+        }
         // if we don't find a surface, cast in the limb axis direction, from the end of the limb
-        if (!didHit) {
+        else {
             didHit = FindPlacementFromEnd(out placement, c);
 
-            if (didHit) {
-                heldDistance = placement.Distance;
+            // TODO: fix hold distance here
+            if (placement.Result == CastResult.OutOfRange) {
+                var dir = placement.Pos - c.RootPos;
+                heldDistance = Vector3.Dot((placement.Distance - c.InitialLen) * Vector3.Normalize(dir), Vector3.down);
             }
         }
 
@@ -319,6 +327,7 @@ class StrideSystem: System<Container> {
 
     void Holding_Exit(Container c) {
         m_IsHeld = false;
+        m_HeldDistance = 0f;
     }
 
     // -- queries --
@@ -359,7 +368,7 @@ class StrideSystem: System<Container> {
 
     /// the distance to the held surface
     public float HeldDistance {
-        get => m_IsHeld ? m_HeldDistance : -1f;
+        get => m_HeldDistance;
     }
 
     /// the current placement result

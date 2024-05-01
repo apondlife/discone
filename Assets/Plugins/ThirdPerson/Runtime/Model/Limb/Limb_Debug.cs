@@ -4,57 +4,51 @@ using UnityEngine;
 namespace ThirdPerson {
 
 public partial class Limb {
-    // -- props --
-    /// the current debug ik pos
-    Vector3 m_Debug_Pos;
-
-    /// the current debug ik rotation
-    Quaternion m_Debug_Rot;
-
     // -- lifecycle --
     void Debug_Update() {
         Debug_Draw("limb", width: 1f);
     }
 
     void Debug_ApplyIk() {
-        m_Debug_Pos = m_Animator.GetIKPosition(m_Goal);
-        m_Debug_Rot = m_Animator.GetIKRotation(m_Goal);
     }
 
     // -- debug --
     /// draw the debug line of this bone
     internal void Debug_Draw(string name, float alpha = 1f, float width = 1f, int count = 1) {
-        var pos = m_Debug_Pos;
-        var rot = m_Debug_Rot;
+        var goalPos = m_StrideSystem.GoalPos;
+        var rootPos = transform.position;
+        var goalDir = Vector3.Normalize(goalPos - rootPos);
 
         DebugDraw.PushLine(
             m_Goal.Debug_Name($"{name}-bone"),
-            pos,
-            transform.position,
+            rootPos,
+            goalPos,
             new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width, count: count)
         );
 
+        var endPos = rootPos + goalDir * InitialLen;
+
         DebugDraw.Push(
-            m_Goal.Debug_Name($"{name}-dir-{Debug_PhaseName()}"),
-            pos,
-            rot * Vector3.forward * 0.3f,
-            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: m_Goal.Debug_Tag(), width: width, count: count)
+            m_Goal.Debug_Name($"{name}-bone-end-{Debug_PhaseName()}"),
+            endPos,
+            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: m_Goal.Debug_Tag(), width: width + 3f, count: count)
         );
 
         DebugDraw.Push(
-            m_Goal.Debug_Name($"{name}-dir-end-{Debug_PhaseName()}"),
-            pos,
-            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: m_Goal.Debug_Tag(), width: width * 2f, count: count)
+            m_Goal.Debug_Name($"{name}-held-dist"),
+            endPos,
+            Vector3.down * m_StrideSystem.HeldDistance,
+            new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width - 0.5f, count: count)
         );
     }
 
     /// the debug color for a limb with given alpha (red is right)
-    string Debug_PhaseName() {
+    internal string Debug_PhaseName() {
         return m_StrideSystem.Debug_PhaseName.ToLower();
     }
 
     /// the debug color for a limb with given alpha (red is right)
-    Color Debug_PhaseColor(float alpha = 1f) {
+    internal Color Debug_PhaseColor(float alpha = 1f) {
         var color = Color.green;
         if (m_StrideSystem.IsHeld) {
             color = Color.black;
