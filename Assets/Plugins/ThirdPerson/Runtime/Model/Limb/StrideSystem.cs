@@ -290,25 +290,27 @@ class StrideSystem: System<Container> {
         );
 
         var heldDistance = 0f;
+        var heldExtension = Mathf.Max(0, placement.Distance - c.InitialLen) * castDir;
 
+        // if we don't find a surface, cast in the limb axis direction, from the end of the limb
+        if (!didHit) {
+            didHit = FindPlacementFromEnd(out placement, c);
+
+            if (placement.Result == CastResult.OutOfRange) {
+                var dir = (placement.Pos - c.RootPos);
+                var dist = dir.magnitude - c.InitialLen;
+                heldExtension = dir * dist;
+            }
+        }
+        
         // project the placement distance along the search dir to know the distance from the end
         // of the limb to the collision in the search dir
-        if (didHit) {
+        if (placement.Result == CastResult.OutOfRange) {
             // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587553685421&cot=14
-            var heldExtension = (placement.Distance - c.InitialLen) * castDir;
+            // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587792518618&cot=14
             var heldDotNormal = Vector3.Dot(heldExtension, placement.Normal);
             var normDotSearch = Vector3.Dot(placement.Normal, Vector3.down);
             heldDistance = heldDotNormal / normDotSearch;
-        }
-        // if we don't find a surface, cast in the limb axis direction, from the end of the limb
-        else {
-            didHit = FindPlacementFromEnd(out placement, c);
-
-            // TODO: fix hold distance here
-            if (placement.Result == CastResult.OutOfRange) {
-                var dir = placement.Pos - c.RootPos;
-                heldDistance = Vector3.Dot((placement.Distance - c.InitialLen) * Vector3.Normalize(dir), Vector3.down);
-            }
         }
 
         m_Placement = placement;
@@ -382,7 +384,7 @@ class StrideSystem: System<Container> {
         Container c
     ) {
         var castSrc = c.RootPos + Vector3.Normalize(m_GoalPos - c.RootPos) * c.InitialLen;
-        var castDir = c.InitialDir;
+        var castDir = Vector3.down;
         var castLen = 0f;
 
         if (m_IsHeld) {
