@@ -391,8 +391,8 @@ class StrideSystem: System<Container> {
             castLen = c.Tuning.SearchRange_OnSurface;
         } else {
             // TODO: scale search range based on velocity magnitude?
-            var searchScale = Math.Max(Vector3.Dot(c.Character.State.Curr.Velocity.normalized, c.InitialDir), 0f);
-            castLen = c.Tuning.SearchRange_NoSurface * searchScale;
+            var searchScale = Math.Max(Vector3.Dot(c.Character.State.Curr.Velocity.normalized, Vector3.down), 0f);
+            castLen = Mathf.Max(c.Tuning.SearchRange_NoSurface * searchScale, c.Tuning.HeldDistance_OnSurface);
         }
 
         var didHit = FindPlacement(
