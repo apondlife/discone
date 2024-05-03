@@ -170,7 +170,7 @@ class CharacterLegs: MonoBehaviour {
         var heldLeg = m_Left.IsHeld ? m_Left : m_Right;
         if (heldLeg.IsHeld) {
             // move hips to correct for leg splay
-            var srcCos = Vector3.Dot(heldLeg.InitialDir, Vector3.down);
+            var srcCos = Vector3.Dot(heldLeg.SearchDir, Vector3.down);
             var curOffset = m_InitialPos - transform.localPosition;
             var curDir = Vector3.Normalize(heldLeg.GoalPos - heldLeg.RootPos - curOffset);
             var curCos = Vector3.Dot(curDir, Vector3.down);

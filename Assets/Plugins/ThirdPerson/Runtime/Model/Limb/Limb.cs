@@ -56,6 +56,9 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     /// the rotation of the ik goal
     Quaternion m_GoalRot;
 
+    /// the position of the ik goal
+    Vector3 m_SearchDir;
+
     // -- lifecycle --
     void Update() {
         if (!IsValid) {
@@ -279,7 +282,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     }
 
     /// the direction towards the surface
-    public Vector3 InitialDir {
+    public Vector3 SearchDir {
         get => transform.forward;
     }
 }

@@ -18,8 +18,8 @@ interface LimbContainer {
     /// the initial length of the limb
     float InitialLen { get; }
 
-    /// the initial direction of the limb's root
-    Vector3 InitialDir { get; }
+    /// the search direction of the limb
+    Vector3 SearchDir { get; }
 
     // TODO: unclear if we really want to init as our own anchor
     /// the bone the stride is anchored by

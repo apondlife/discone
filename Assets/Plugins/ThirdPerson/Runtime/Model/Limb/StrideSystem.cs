@@ -106,7 +106,7 @@ class StrideSystem: System<Container> {
     }
 
     void NotStriding_Update(float delta, Container c) {
-        m_GoalPos = c.RootPos + c.InitialDir * c.InitialLen;
+        m_GoalPos = c.RootPos + c.SearchDir * c.InitialLen;
     }
 
     void NotStriding_Exit(Container c) {
@@ -123,7 +123,7 @@ class StrideSystem: System<Container> {
 
     void Free_Enter(Container c) {
         m_IsFree = true;
-        m_GoalPos = c.RootPos + c.InitialDir * c.InitialLen;
+        m_GoalPos = c.RootPos + c.SearchDir * c.InitialLen;
         // TODO: set m_GoalRot?
     }
 
@@ -140,7 +140,7 @@ class StrideSystem: System<Container> {
             return;
         }
 
-        m_GoalPos = c.RootPos + c.InitialDir * c.InitialLen;
+        m_GoalPos = c.RootPos + c.SearchDir * c.InitialLen;
     }
 
     void Free_Exit(Container c) {
@@ -174,7 +174,7 @@ class StrideSystem: System<Container> {
         var anchor = m_Anchor.RootPos - m_Anchor.GoalPos;
 
         // get the expected stride position based on the anchor
-        var currStride = Vector3.ProjectOnPlane(anchor, Vector3.up);
+        var currStride = Vector3.ProjectOnPlane(anchor, c.SearchDir);
         var currStrideLen = currStride.magnitude;
         var currStrideDir = currStride / currStrideLen;
         var currFwd = c.Character.State.Curr.Forward;
@@ -211,8 +211,7 @@ class StrideSystem: System<Container> {
         // the maximum stride distance projected along the leg
         var goalMax = Mathf.Max(
             c.InitialLen,
-            // AAA: Vector3.down maybe limb direction?
-            maxStrideLen / Vector3.Cross(goalDir, Vector3.down).magnitude
+            maxStrideLen / Vector3.Cross(goalDir, c.SearchDir).magnitude
         );
 
         var goalPos = rootPos + goalDir * c.InitialLen;
@@ -305,11 +304,12 @@ class StrideSystem: System<Container> {
         
         // project the placement distance along the search dir to know the distance from the end
         // of the limb to the collision in the search dir
-        if (placement.Result == CastResult.OutOfRange) {
+        var normDotSearch = Vector3.Dot(placement.Normal, c.SearchDir);
+        // if the cast is outside the limb, and the search is opposed to the normal, there's held distance
+        if (placement.Result == CastResult.OutOfRange && normDotSearch < 0) {
             // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587553685421&cot=14
             // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587792518618&cot=14
             var heldDotNormal = Vector3.Dot(heldExtension, placement.Normal);
-            var normDotSearch = Vector3.Dot(placement.Normal, Vector3.down);
             heldDistance = heldDotNormal / normDotSearch;
         }
 
@@ -384,14 +384,14 @@ class StrideSystem: System<Container> {
         Container c
     ) {
         var castSrc = c.RootPos + Vector3.Normalize(m_GoalPos - c.RootPos) * c.InitialLen;
-        var castDir = Vector3.down;
+        var castDir = c.SearchDir;
         var castLen = 0f;
 
         if (m_IsHeld) {
             castLen = c.Tuning.SearchRange_OnSurface;
         } else {
             // TODO: scale search range based on velocity magnitude?
-            var searchScale = Math.Max(Vector3.Dot(c.Character.State.Curr.Velocity.normalized, Vector3.down), 0f);
+            var searchScale = Math.Max(Vector3.Dot(c.Character.State.Curr.Velocity.normalized, c.SearchDir), 0f);
             castLen = Mathf.Max(c.Tuning.SearchRange_NoSurface * searchScale, c.Tuning.HeldDistance_OnSurface);
         }
 
