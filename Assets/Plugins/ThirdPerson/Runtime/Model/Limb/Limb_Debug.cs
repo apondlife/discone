@@ -37,7 +37,7 @@ public partial class Limb {
         DebugDraw.Push(
             m_Goal.Debug_Name($"{name}-held-dist"),
             endPos,
-            Vector3.down * m_StrideSystem.HeldDistance,
+            SearchDir * m_StrideSystem.HeldDistance,
             new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width - 0.5f, count: count)
         );
     }

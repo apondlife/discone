@@ -74,8 +74,9 @@ class CharacterLegs: MonoBehaviour {
         // if the character is currently striding
         SetIsStriding(!c.State.Curr.IsCrouching && !c.State.Curr.IsInJumpSquat);
 
-        // if we are not moving, make sure both legs are holding
-        if (c.State.Curr.IsIdle) {
+        // if we are not moving and legs are closer than minimum, make sure both legs are holding
+        var totalExtension = Mathf.Abs(GetExtension(m_Left) + GetExtension(m_Right));
+        if (c.State.Curr.IsIdle && totalExtension < 2.0f * m_Left.Tuning.MaxLength.Min) { 
             Hold(delta);
         }
         // if the held leg becomes free, release the moving leg

@@ -28,6 +28,9 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     // [HideInInspector]
     [Tooltip("the initial position of the end bone")]
     [SerializeField] Vector3 m_InitialEndPos;
+    
+    [Tooltip("the direction this limb searches for a surface")]
+    [SerializeField] Vector3 m_SearchDir;
 
     // -- systems --
     [Header("systems")]
@@ -49,15 +52,12 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
 
     /// the offset of the end bone used for placement, if any
     float m_EndLen;
-
+    
     /// the position of the ik goal
     Vector3 m_GoalPos;
 
     /// the rotation of the ik goal
     Quaternion m_GoalRot;
-
-    /// the position of the ik goal
-    Vector3 m_SearchDir;
 
     // -- lifecycle --
     void Update() {
@@ -160,9 +160,6 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
 
         m_LimbLen = limb.magnitude;
         m_EndLen = endLength;
-
-        // align root direction
-        transform.forward = limbDir;
 
         // init system
         m_StrideSystem.Init(this);
