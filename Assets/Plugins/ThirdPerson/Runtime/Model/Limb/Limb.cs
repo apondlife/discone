@@ -133,7 +133,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         }
 
         var prefabRoot = prefabStage.prefabContentsRoot;
-        if (!prefabRoot || !prefabRoot.GetComponent<Character>()) {
+        if (!prefabRoot || !prefabRoot.name.Contains("Character")) {
             return;
         }
 
