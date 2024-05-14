@@ -128,8 +128,12 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     #if UNITY_EDITOR
     void OnValidate() {
         var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
-        var character = prefabStage.prefabContentsRoot.GetComponent<Character>();
-        if (!character) {
+        if (!prefabStage) {
+            return;
+        }
+
+        var prefabRoot = prefabStage.prefabContentsRoot;
+        if (!prefabRoot || !prefabRoot.GetComponent<Character>()) {
             return;
         }
 
