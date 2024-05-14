@@ -19,11 +19,11 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     [Tooltip("the end bone")]
     [SerializeField] Transform m_EndBone;
 
-    // [HideInInspector]
+    [HideInInspector]
     [Tooltip("the initial position of the goal bone")]
     [SerializeField] Vector3 m_InitialGoalPos;
 
-    // [HideInInspector]
+    [HideInInspector]
     [Tooltip("the initial position of the end bone")]
     [SerializeField] Vector3 m_InitialEndPos;
 
@@ -127,6 +127,16 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
 
     #if UNITY_EDITOR
     void OnValidate() {
+        var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+        var character = prefabStage.prefabContentsRoot.GetComponent<Character>();
+        if (!character) {
+            return;
+        }
+
+        // disallow rotation, search dir is local
+        transform.rotation = Quaternion.identity;
+
+        // cache positions of the bones
         m_InitialGoalPos = FindInitialBonePos(m_GoalBone);
         m_InitialEndPos = FindInitialBonePos(m_EndBone);
     }
@@ -278,7 +288,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
 
     /// the direction towards the surface
     public Vector3 SearchDir {
-        get => transform.forward;
+        get => transform.TransformDirection(m_SearchDir);
     }
 }
 

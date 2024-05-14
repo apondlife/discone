@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1311217693618543391, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_Name
-      value: CharacterLeg
+      value: Leg
       objectReference: {fileID: 0}
     - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_Goal
@@ -23,6 +23,10 @@ PrefabInstance:
       propertyPath: m_Tuning
       value: 
       objectReference: {fileID: 11400000, guid: 46bd4f5a4cceeb94d9f777b857886c70, type: 2}
+    - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
+      propertyPath: m_SearchDir.y
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 3004317116465801583, guid: 9715b301afc1e194ea9b54f499b9c1a6, type: 3}
       propertyPath: m_Blend_InSpeed
       value: 5

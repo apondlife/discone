@@ -14,6 +14,7 @@ mired in debt
 - transition from fixed cameras to character camera has bad rotation in in-between state
 
 # debt
+- replace characters in world with a placeholder to spawn them at runtime; improve editor saving speed
 - need to manually enable input actions
 - head ik direction only works for some models
 - default speed of head ik is poorly tuned

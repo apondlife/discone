@@ -12,11 +12,16 @@ public partial class Limb {
     void Debug_ApplyIk() {
     }
 
+    void OnDrawGizmosSelected() {
+        Gizmos.color = m_Goal.Debug_Color();
+        Gizmos.DrawRay(RootPos, SearchDir * Mathf.Max(InitialLen, 1f));
+    }
+
     // -- debug --
     /// draw the debug line of this bone
     internal void Debug_Draw(string name, float alpha = 1f, float width = 1f, int count = 1) {
-        var goalPos = m_StrideSystem.GoalPos;
-        var rootPos = transform.position;
+        var goalPos = GoalPos;
+        var rootPos = RootPos;
         var goalDir = Vector3.Normalize(goalPos - rootPos);
 
         DebugDraw.PushLine(
