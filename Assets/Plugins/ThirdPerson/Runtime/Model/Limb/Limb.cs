@@ -16,10 +16,8 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     [Tooltip("the goal bone")]
     [SerializeField] Transform m_GoalBone;
 
-    #if UNITY_EDITOR
     [Tooltip("the end bone")]
     [SerializeField] Transform m_EndBone;
-    #endif
 
     // [HideInInspector]
     [Tooltip("the initial position of the goal bone")]
@@ -28,7 +26,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     // [HideInInspector]
     [Tooltip("the initial position of the end bone")]
     [SerializeField] Vector3 m_InitialEndPos;
-    
+
     [Tooltip("the direction this limb searches for a surface")]
     [SerializeField] Vector3 m_SearchDir;
 
@@ -52,7 +50,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
 
     /// the offset of the end bone used for placement, if any
     float m_EndLen;
-    
+
     /// the position of the ik goal
     Vector3 m_GoalPos;
 
