@@ -17,13 +17,12 @@ public abstract class System<Container> {
     [SerializeField] protected Phase<Container> m_Phase;
 
     // -- s/debug
-    #if UNITY_EDITOR
+    // TODO: investigate why we can't #if UNITY_EDITOR these properties
     [Tooltip("if this system is disabled")]
     [SerializeField] bool m_IsDisabled;
 
     [Tooltip("if this system is logging")]
     [SerializeField] bool m_IsLogging;
-    #endif
 
     // -- props --
     /// a name for this system

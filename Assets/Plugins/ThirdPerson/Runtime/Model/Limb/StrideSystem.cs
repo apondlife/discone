@@ -201,8 +201,7 @@ class StrideSystem: System<Container> {
         var nextStride = nextStrideLen * currStrideDir;
 
         // the direction to the goal; mirror the stride over anchor up
-        var goalDir = nextStride;
-        goalDir.y = -anchor.y;
+        var goalDir = nextStride - Vector3.Project(anchor, c.SearchDir);
         goalDir = goalDir.normalized;
 
         // accumulate root offset and get root position
@@ -301,10 +300,11 @@ class StrideSystem: System<Container> {
                 heldExtension = dir * dist;
             }
         }
-        
+
         // project the placement distance along the search dir to know the distance from the end
         // of the limb to the collision in the search dir
         var normDotSearch = Vector3.Dot(placement.Normal, c.SearchDir);
+
         // if the cast is outside the limb, and the search is opposed to the normal, there's held distance
         if (placement.Result == CastResult.OutOfRange && normDotSearch < 0) {
             // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587553685421&cot=14
