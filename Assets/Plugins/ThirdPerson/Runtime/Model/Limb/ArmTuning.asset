@@ -17,15 +17,15 @@ MonoBehaviour:
     m_Bits: 33153
   CastOffset: 0.03
   Blend_InputVelocity: 5
-  Blend_InSpeed: 5
+  Blend_InSpeed: 3
   Blend_OutSpeed: 5
   Goal_MoveSpeed: 100
   Goal_RotationSpeed: 720
   MinMove: 0.002
   MaxLength:
-    Min: 0.2
-    Max: 2.5
-  MaxLength_CrossScale: 0.33
+    Min: 0.1
+    Max: 1
+  MaxLength_CrossScale: 1
   Shape:
     serializedVersion: 2
     m_Curve:
@@ -95,7 +95,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     Dst:
       Min: 0
-      Max: 0.3
+      Max: 0
   InputScale_ReleaseSpeed: 3
   SpeedScale:
     m_Curve:
@@ -123,11 +123,11 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_Src:
-      Min: 0
-      Max: 20
+      Min: 20
+      Max: 0
     m_Dst:
       Min: 0.2
       Max: 1
-  SearchRange_OnSurface: 2.5
-  SearchRange_NoSurface: 1
+  SearchRange_OnSurface: 0.4
+  SearchRange_NoSurface: 0.1
   HeldDistance_OnSurface: 0.1

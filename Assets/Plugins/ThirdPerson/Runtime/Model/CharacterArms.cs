@@ -55,24 +55,44 @@ class CharacterArms: MonoBehaviour {
 
     // -- commands --
     void MoveArm(Limb arm, ArmAnchor anchor) {
-        // TODO: if arm just became free
-        if (!arm.IsFree) {
+        if (c.State.Curr.IsIdle) {
+            return;
+        }
+        
+        // if arm is moving, don't change target
+        if (!arm.IsFree && !arm.IsHeld) {
             return;
         }
 
         var currDir = arm.RootPos - arm.GoalPos;
-        var currProjSearch = Vector3.Project(currDir, arm.SearchDir);
-        var currStride = currDir - currProjSearch;
-        var currStrideLen = currStride.magnitude;
-        if (currStrideLen < arm.Tuning.MaxLength.Max) {
-            return;
+        var fwd = c.State.Curr.Velocity.normalized;
+        if (fwd == Vector3.zero) {
+            fwd = c.State.Curr.Forward;
         }
 
-        var castDir = currDir - 2f * currProjSearch;
+        // get the signed distance of the held arm
+        var currDist = Vector3.Dot(currDir, fwd);
+        
+        // if far enough away, look for an anchor position
+        // AAA: this dist is projected into the surface
+        // should probably just be doing the whole move method to prevent clipping
+        var maxStride = Mathf.Max(arm.Tuning.MaxLength.Max, arm.Tuning.MaxLength.Min);
+        maxStride = Mathf.Max(maxStride, maxStride * arm.Tuning.MaxLength_CrossScale);
+        
+        var maxDist = Mathf.Max(
+            arm.InitialLen,
+            maxStride / Vector3.Cross(currDir.normalized, arm.SearchDir).magnitude
+        );
+        
+        if (currDist < maxDist) {
+            return; 
+        }
+
+        var currProjSearch = Vector3.Project(currDir, arm.SearchDir);
+        var castDir = (currDir - 2f * currProjSearch).normalized;
         var castSrc = arm.RootPos;
 
-        // AAA: better length
-        var castLen = arm.InitialLen * 2f;
+        var castLen = arm.InitialLen + arm.Tuning.SearchRange_OnSurface / Vector3.Dot(castDir, arm.SearchDir);
 
         DebugDraw.Push(arm.Goal.Debug_Name("phantom-cast"), castSrc, castDir * castLen, new DebugDraw.Config(arm.Goal.Debug_Color(), count: 1));
 
