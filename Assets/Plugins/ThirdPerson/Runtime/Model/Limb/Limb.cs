@@ -292,7 +292,8 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
 
     /// the direction towards the surface
     public Vector3 SearchDir {
-        get => transform.TransformDirection(m_SearchDir);
+        // AAA: make sure SearchDir is always normalized
+        get => transform.TransformDirection(m_SearchDir).normalized;
     }
 }
 

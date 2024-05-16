@@ -128,11 +128,26 @@ class StrideSystem: System<Container> {
     }
 
     void Free_Update(float delta, Container c) {
-        // cast in the root direction, from the end of the limb
-        var didHit = FindPlacementFromEnd(
+        // check for collision within the limb
+        var castSrc = c.RootPos;
+        var castDir = c.SearchDir;
+        var castLen = c.InitialLen;
+        var didHit = FindPlacement(
+            castSrc,
+            castDir,
+            castLen,
+            0f,
             out var placement,
             c
         );
+        
+        // cast in the root direction, from the end of the limb
+        if (!didHit) {
+            didHit = FindPlacementFromEnd(
+                out placement,
+                c
+            );
+        }
 
         if (didHit) {
             m_GoalPos = placement.Pos;
@@ -274,9 +289,10 @@ class StrideSystem: System<Container> {
         var castSrc = c.RootPos;
         var castDir = Vector3.Normalize(goalPos - castSrc);
 
-        // TODO: this search range is bad, should be similar to goalMax in moving, or just maxmaxstride projected
+        // TODO(done?): this search range is bad, should be similar to goalMax in moving, or just maxmaxstride projected
         // search range is the maximum we are allowing ourselves to extend our limb at this point
-        var castLen = c.InitialLen + c.Tuning.SearchRange_OnSurface;
+        // which is as far as we are willing to have our limb away from the search dir
+        var castLen = c.InitialLen + c.Tuning.SearchRange_OnSurface / Vector3.Dot(castDir, c.SearchDir);
 
         var didHit = FindPlacement(
             castSrc,
@@ -322,6 +338,7 @@ class StrideSystem: System<Container> {
         }
 
         goalPos = placement.Pos;
+        // AAA: why do we do this?
         if (Vector3.SqrMagnitude(goalPos - m_GoalPos) > c.Tuning.MinMove * c.Tuning.MinMove) {
             m_GoalPos = goalPos;
         }
@@ -391,6 +408,7 @@ class StrideSystem: System<Container> {
             castLen = c.Tuning.SearchRange_OnSurface;
         } else {
             // TODO: scale search range based on velocity magnitude?
+            // TODO: this might just be unified (arms might want the search scale to change)
             var searchScale = Math.Max(Vector3.Dot(c.Character.State.Curr.Velocity.normalized, c.SearchDir), 0f);
             castLen = Mathf.Max(c.Tuning.SearchRange_NoSurface * searchScale, c.Tuning.HeldDistance_OnSurface);
         }
