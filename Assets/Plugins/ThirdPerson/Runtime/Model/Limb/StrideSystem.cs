@@ -7,55 +7,20 @@ namespace ThirdPerson {
 using Phase = Phase<LimbContainer>;
 using Container = LimbContainer;
 
-// TODO: extract state into container
 /// the character limb's stride tracking
 [Serializable]
-class StrideSystem: System<Container> {
-    // -- props --
-    /// if the limb is not striding
-    bool m_IsNotStriding;
-
-    /// if the limb is currently free
-    bool m_IsFree;
-
-    /// if the limb is currently held
-    bool m_IsHeld;
-
-    /// the current ik position of the limb
-    Vector3 m_GoalPos;
-
-    /// the current surface placement
-    Placement m_Placement;
-
-    /// the distance to the held surface
-    float m_HeldDistance;
-
-    /// the bone the stride is anchored by
-    LimbAnchor m_Anchor;
-
-    /// an offset that translates the held position
-    Vector3 m_SlideOffset;
-
-    /// the current stride length input scale
-    float m_InputScale;
-
+class StrideSystem: SimpleSystem<Container> {
     // -- Soil.System --
     protected override Phase InitInitialPhase() {
         return Free;
     }
 
-    protected override SystemState State { get; set; } = new();
-
-    // -- lifecycle --
-    public override void Init(Container c) {
-        m_Anchor = c.InitialAnchor;
-        base.Init(c);
-    }
-
     // -- commands --
     /// set if the limb is striding
     public void SetIsStriding(bool isStriding) {
-        if (m_IsNotStriding != isStriding) {
+        // TODO: should `ChangeTo` be public and should this kind of method live on the obj
+        // that owns the system?
+        if (c.State.IsNotStriding != isStriding) {
             return;
         }
 
@@ -68,29 +33,29 @@ class StrideSystem: System<Container> {
 
     /// switch to the moving state
     public void Move(LimbAnchor anchor) {
-        m_Anchor = anchor;
+        c.State.Anchor = anchor;
         ChangeTo(Moving);
     }
 
     /// switch to the holding state
     public void Hold(float delta) {
-        if (!m_IsHeld) {
+        if (!c.State.IsHeld) {
             ChangeToImmediate(Holding, delta);
         }
     }
 
     /// release the limb if it's not already
     public void Release() {
-        m_Anchor = null;
+        c.State.Anchor = null;
 
-        if (!m_IsFree) {
+        if (!c.State.IsFree) {
             ChangeTo(Free);
         }
     }
 
     /// set the slide offset to translate the legs
     public void SetSlideOffset(Vector3 offset) {
-        m_SlideOffset = offset;
+        c.State.SlideOffset = offset;
     }
 
     // -- NotStriding --
@@ -102,15 +67,15 @@ class StrideSystem: System<Container> {
     );
 
     void NotStriding_Enter(Container c) {
-        m_IsNotStriding = true;
+        c.State.IsNotStriding = true;
     }
 
     void NotStriding_Update(float delta, Container c) {
-        m_GoalPos = c.RootPos + c.SearchDir * c.InitialLen;
+        c.State.GoalPos = c.RootPos + c.SearchDir * c.InitialLen;
     }
 
     void NotStriding_Exit(Container c) {
-        m_IsNotStriding = false;
+        c.State.IsNotStriding = false;
     }
 
     // -- Free --
@@ -122,9 +87,9 @@ class StrideSystem: System<Container> {
     );
 
     void Free_Enter(Container c) {
-        m_IsFree = true;
-        m_GoalPos = c.RootPos + c.SearchDir * c.InitialLen;
-        // TODO: set m_GoalRot?
+        c.State.IsFree = true;
+        c.State.GoalPos = c.RootPos + c.SearchDir * c.InitialLen;
+        // TODO: set c.State.GoalRot?
     }
 
     void Free_Update(float delta, Container c) {
@@ -132,6 +97,7 @@ class StrideSystem: System<Container> {
         var castSrc = c.RootPos;
         var castDir = c.SearchDir;
         var castLen = c.InitialLen;
+
         var didHit = FindPlacement(
             castSrc,
             castDir,
@@ -140,7 +106,7 @@ class StrideSystem: System<Container> {
             out var placement,
             c
         );
-        
+
         // cast in the root direction, from the end of the limb
         if (!didHit) {
             didHit = FindPlacementFromEnd(
@@ -150,16 +116,16 @@ class StrideSystem: System<Container> {
         }
 
         if (didHit) {
-            m_GoalPos = placement.Pos;
+            c.State.GoalPos = placement.Pos;
             ChangeToImmediate(Holding, delta);
             return;
         }
 
-        m_GoalPos = c.RootPos + c.SearchDir * c.InitialLen;
+        c.State.GoalPos = c.RootPos + c.SearchDir * c.InitialLen;
     }
 
     void Free_Exit(Container c) {
-        m_IsFree = false;
+        c.State.IsFree = false;
     }
 
     // -- Moving --
@@ -174,8 +140,8 @@ class StrideSystem: System<Container> {
         var speedScale = c.Tuning.SpeedScale.Evaluate(v.magnitude);
 
         var inputMag = c.Character.Inputs.MoveMagnitude;
-        var inputScale = m_InputScale;
-        if (inputMag > m_InputScale) {
+        var inputScale = c.State.InputScale;
+        if (inputMag > c.State.InputScale) {
             inputScale = inputMag;
         } else {
             inputScale = Mathf.MoveTowards(inputScale, inputMag, c.Tuning.InputScale_ReleaseSpeed * delta);
@@ -186,7 +152,7 @@ class StrideSystem: System<Container> {
         var maxStrideLenCross = maxStrideLenFwd * c.Tuning.MaxLength_CrossScale;
 
         // the anchor leg vector
-        var anchor = m_Anchor.RootPos - m_Anchor.GoalPos;
+        var anchor = c.State.Anchor.RootPos - c.State.Anchor.GoalPos;
 
         // get the expected stride position based on the anchor
         var currStride = Vector3.ProjectOnPlane(anchor, c.SearchDir);
@@ -245,7 +211,7 @@ class StrideSystem: System<Container> {
         );
 
         var offset = 0f;
-        if (placement.Result == CastResult.Hit) {
+        if (placement.Result == LimbPlacement.CastResult.Hit) {
             offset = c.InitialLen - placement.Distance;
         }
 
@@ -255,9 +221,9 @@ class StrideSystem: System<Container> {
         // displace the goal to correct for placement/offset
         goalPos += offset * -castDir;
 
-        m_GoalPos = goalPos;
-        m_Placement = placement;
-        m_InputScale = inputScale;
+        c.State.GoalPos = goalPos;
+        c.State.Placement = placement;
+        c.State.InputScale = inputScale;
 
         Debug_DrawMove(c);
 
@@ -278,11 +244,11 @@ class StrideSystem: System<Container> {
     );
 
     void Holding_Enter(Container c) {
-        m_IsHeld = true;
+        c.State.IsHeld = true;
     }
 
     void Holding_Update(float delta, Container c) {
-        var goalPos = m_GoalPos - m_SlideOffset;
+        var goalPos = c.State.GoalPos - c.State.SlideOffset;
 
         // check if there's any collision from the limb to where we want to be holding
         // we might be holding farther away from the limb itself
@@ -310,7 +276,7 @@ class StrideSystem: System<Container> {
         if (!didHit) {
             didHit = FindPlacementFromEnd(out placement, c);
 
-            if (placement.Result == CastResult.OutOfRange) {
+            if (placement.Result == LimbPlacement.CastResult.OutOfRange) {
                 var dir = (placement.Pos - c.RootPos);
                 var dist = dir.magnitude - c.InitialLen;
                 heldExtension = dir * dist;
@@ -322,15 +288,15 @@ class StrideSystem: System<Container> {
         var normDotSearch = Vector3.Dot(placement.Normal, c.SearchDir);
 
         // if the cast is outside the limb, and the search is opposed to the normal, there's held distance
-        if (placement.Result == CastResult.OutOfRange && normDotSearch < 0) {
+        if (placement.Result == LimbPlacement.CastResult.OutOfRange && normDotSearch < 0) {
             // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587553685421&cot=14
             // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587792518618&cot=14
             var heldDotNormal = Vector3.Dot(heldExtension, placement.Normal);
             heldDistance = heldDotNormal / normDotSearch;
         }
 
-        m_Placement = placement;
-        m_HeldDistance = heldDistance;
+        c.State.Placement = placement;
+        c.State.HeldDistance = heldDistance;
 
         if (!didHit) {
             ChangeTo(Free);
@@ -339,46 +305,46 @@ class StrideSystem: System<Container> {
 
         goalPos = placement.Pos;
         // AAA: why do we do this?
-        if (Vector3.SqrMagnitude(goalPos - m_GoalPos) > c.Tuning.MinMove * c.Tuning.MinMove) {
-            m_GoalPos = goalPos;
+        if (Vector3.SqrMagnitude(goalPos - c.State.GoalPos) > c.Tuning.MinMove * c.Tuning.MinMove) {
+            c.State.GoalPos = goalPos;
         }
     }
 
     void Holding_Exit(Container c) {
-        m_IsHeld = false;
-        m_HeldDistance = 0f;
+        c.State.IsHeld = false;
+        c.State.HeldDistance = 0f;
     }
 
     // -- queries --
     /// if the stride is currently active
     public bool IsActive {
-        get => !m_IsNotStriding && !m_IsFree;
+        get => !c.State.IsNotStriding && !c.State.IsFree;
     }
 
     /// .
     public bool IsHeld {
-        get => m_IsHeld;
+        get => c.State.IsHeld;
     }
 
     /// .
     public bool IsFree {
-        get => m_IsFree;
+        get => c.State.IsFree;
     }
 
     /// the current ik position of the limb
     public Vector3 GoalPos {
-        get => m_GoalPos;
+        get => c.State.GoalPos;
     }
 
     /// the current placement normal
     public Vector3 Normal {
         get {
-            if (m_Placement.Result == CastResult.Hit) {
-                return m_Placement.Normal;
+            if (c.State.Placement.Result == LimbPlacement.CastResult.Hit) {
+                return c.State.Placement.Normal;
             }
 
-            if (m_Placement.Result == CastResult.OutOfRange && m_IsHeld && m_HeldDistance <= m_Container.Tuning.HeldDistance_OnSurface) {
-                return m_Placement.Normal;
+            if (c.State.Placement.Result == LimbPlacement.CastResult.OutOfRange && c.State.IsHeld && c.State.HeldDistance <= c.Tuning.HeldDistance_OnSurface) {
+                return c.State.Placement.Normal;
             }
 
             return Vector3.zero;
@@ -387,24 +353,19 @@ class StrideSystem: System<Container> {
 
     /// the distance to the held surface
     public float HeldDistance {
-        get => m_HeldDistance;
-    }
-
-    /// the current placement result
-    public CastResult PlacementResult {
-        get => m_Placement.Result;
+        get => c.State.HeldDistance;
     }
 
     /// cast for a surface underneath the current pos
     bool FindPlacementFromEnd(
-        out Placement placement,
+        out LimbPlacement placement,
         Container c
     ) {
-        var castSrc = c.RootPos + Vector3.Normalize(m_GoalPos - c.RootPos) * c.InitialLen;
+        var castSrc = c.RootPos + Vector3.Normalize(c.State.GoalPos - c.RootPos) * c.InitialLen;
         var castDir = c.SearchDir;
         var castLen = 0f;
 
-        if (m_IsHeld) {
+        if (c.State.IsHeld) {
             castLen = c.Tuning.SearchRange_OnSurface;
         } else {
             // TODO: scale search range based on velocity magnitude?
@@ -431,7 +392,7 @@ class StrideSystem: System<Container> {
         Vector3 castDir,
         float castLen,
         float castOffset,
-        out Placement placement,
+        out LimbPlacement placement,
         Container c
     ) {
         castSrc -= castDir * c.Tuning.CastOffset;
@@ -448,85 +409,27 @@ class StrideSystem: System<Container> {
 
         // if the cast missed, there's nothing
         if (!didHit) {
-            placement = Placement.Miss;
+            placement = LimbPlacement.Miss;
             return false;
         }
 
         // if the cast is farther than the leg
         if (Vector3.Distance(hit.point, c.RootPos) > c.InitialLen) {
-            placement = Placement.Hit(hit, castOffset, CastResult.OutOfRange);
+            placement = LimbPlacement.Hit(hit, castOffset, LimbPlacement.CastResult.OutOfRange);
             return true;
         }
 
-        placement = Placement.Hit(hit, castOffset, CastResult.Hit);
+        placement = LimbPlacement.Hit(hit, castOffset, LimbPlacement.CastResult.Hit);
 
         return true;
-    }
-
-    // -- types --
-    /// the result of the placement cast
-    public enum CastResult {
-        Hit,
-        OutOfRange,
-        Miss
-    }
-
-    /// a position and rotation placement for the goal
-    public readonly struct Placement {
-        /// .
-        public readonly Vector3 Pos;
-
-        /// .
-        public readonly Vector3 Normal;
-
-        /// the distance to the hit surface, if any
-        public readonly float Distance;
-
-        /// the kind of placement cast
-        public readonly CastResult Result;
-
-        /// .
-        public Placement(
-            Vector3 pos,
-            Vector3 normal,
-            float distance,
-            CastResult result
-        ) {
-            Pos = pos;
-            Normal = normal;
-            Distance = distance;
-            Result = result;
-        }
-
-        public static Placement Hit(
-            RaycastHit hit,
-            float offset,
-            CastResult result
-        ) {
-            return new Placement(
-                hit.point,
-                hit.normal,
-                Mathf.Max(hit.distance - offset, 0f),
-                result
-            );
-        }
-
-        public static Placement Miss {
-            get => new(
-                Vector3.zero,
-                Vector3.zero,
-                0f,
-                CastResult.Miss
-            );
-        }
     }
 
     // -- debug --
     void Debug_DrawMove(Container c) {
         DebugDraw.PushLine(
             c.Goal.Debug_Name("stride-curr"),
-            m_Anchor.GoalPos,
-            m_GoalPos,
+            c.State.Anchor.GoalPos,
+            c.State.GoalPos,
             new DebugDraw.Config(c.Goal.Debug_Color(), tags: c.Goal.Debug_Tag(), count: 1, width: 0.03f)
         );
     }
@@ -534,14 +437,14 @@ class StrideSystem: System<Container> {
     void Debug_DrawHold(Container c) {
         DebugDraw.Push(
             c.Goal.Debug_Name("stride-hold"),
-            m_GoalPos,
+            c.State.GoalPos,
             new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: c.Goal.Debug_Tag(), width: 2f)
         );
 
         DebugDraw.PushLine(
             c.Goal.Debug_Name("stride"),
-            m_Anchor.GoalPos,
-            m_GoalPos,
+            c.State.Anchor.GoalPos,
+            c.State.GoalPos,
             new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: c.Goal.Debug_Tag(), width: 0.5f)
         );
     }

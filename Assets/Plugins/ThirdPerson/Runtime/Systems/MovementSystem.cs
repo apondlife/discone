@@ -24,8 +24,8 @@ sealed class MovementSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_Container.State.Next.MovementState;
-        set => m_Container.State.Next.MovementState = value;
+        get => c.State.Next.MovementState;
+        set => c.State.Next.MovementState = value;
     }
 
     // -- NotMoving --

@@ -7,7 +7,15 @@ using System.Collections.Generic;
 
 namespace Soil {
 
-// TODO: containers should provide state
+// TODO: for phases to be static, the system must contain all state, to get there:
+// - there should be no subclasses of `System`, just the `System` record (struct?) generic
+//   over its container
+// - phase actions should receive `System<Container>`, not `Container`; they need the
+//   system to change phase
+// - then `System<Container>` is an object that transitions between objects of type
+//   `Phase<Container>`; as long as the `Container` type is correct, phases can come from
+//   any source
+
 /// a character system; may be a state machine
 [Serializable]
 public abstract class System<Container> {
@@ -24,12 +32,13 @@ public abstract class System<Container> {
     [Tooltip("if this system is logging")]
     [SerializeField] bool m_IsLogging;
 
+    // -- deps --
+    // the system container
+    protected Container c;
+
     // -- props --
     /// a name for this system
     protected string m_Name;
-
-    // the system config/state container
-    protected Container m_Container;
 
     // -- p/debug
     #if UNITY_EDITOR
@@ -45,12 +54,12 @@ public abstract class System<Container> {
     }
 
     /// initialize & configure the system
-    public virtual void Init(Container config) {
-        m_Container = config;
+    public virtual void Init(Container c) {
+        this.c = c;
 
         var phase = InitInitialPhase();
         SetPhase(phase);
-        phase.Enter(m_Container);
+        phase.Enter(this.c);
     }
 
     /// construct the initial phase
@@ -78,7 +87,7 @@ public abstract class System<Container> {
         state.PhaseElapsed += delta;
         State = state;
 
-        m_Phase.Update(delta, m_Container);
+        m_Phase.Update(delta, c);
     }
 
     /// switch to a new phase and run the phase change lifecycle
@@ -97,9 +106,9 @@ public abstract class System<Container> {
         #endif
 
         // otherwise, run phase change lifecycle
-        m_Phase.Exit(m_Container);
+        m_Phase.Exit(c);
         SetPhase(next);
-        m_Phase.Enter(m_Container);
+        m_Phase.Enter(c);
 
         // debug
         #if UNITY_EDITOR
@@ -124,7 +133,7 @@ public abstract class System<Container> {
         ChangeTo(next);
 
         // and run the update immediately
-        m_Phase.Update(delta, m_Container);
+        m_Phase.Update(delta, c);
     }
 
     /// set the current phase & initialize its state w/o calling events

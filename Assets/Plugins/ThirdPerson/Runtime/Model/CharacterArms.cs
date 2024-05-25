@@ -58,7 +58,7 @@ class CharacterArms: MonoBehaviour {
         if (c.State.Curr.IsIdle) {
             return;
         }
-        
+
         // if arm is moving, don't change target
         if (!arm.IsFree && !arm.IsHeld) {
             return;
@@ -72,20 +72,20 @@ class CharacterArms: MonoBehaviour {
 
         // get the signed distance of the held arm
         var currDist = Vector3.Dot(currDir, fwd);
-        
+
         // if far enough away, look for an anchor position
         // AAA: this dist is projected into the surface
         // should probably just be doing the whole move method to prevent clipping
         var maxStride = Mathf.Max(arm.Tuning.MaxLength.Max, arm.Tuning.MaxLength.Min);
         maxStride = Mathf.Max(maxStride, maxStride * arm.Tuning.MaxLength_CrossScale);
-        
+
         var maxDist = Mathf.Max(
             arm.InitialLen,
             maxStride / Vector3.Cross(currDir.normalized, arm.SearchDir).magnitude
         );
-        
+
         if (currDist < maxDist) {
-            return; 
+            return;
         }
 
         var currProjSearch = Vector3.Project(currDir, arm.SearchDir);

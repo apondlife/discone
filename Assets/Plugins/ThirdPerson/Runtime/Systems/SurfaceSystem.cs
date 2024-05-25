@@ -24,8 +24,8 @@ sealed class SurfaceSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_Container.State.Next.SurfaceState;
-        set => m_Container.State.Next.SurfaceState = value;
+        get => c.State.Next.SurfaceState;
+        set => c.State.Next.SurfaceState = value;
     }
 
     // -- NotOnSurface --

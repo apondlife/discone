@@ -36,8 +36,8 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     [SerializeField] StrideSystem m_StrideSystem;
 
     // -- props --
-    /// the containing character
-    CharacterContainer c;
+    /// the limb state
+    LimbState m_State;
 
     /// the animator
     Animator m_Animator;
@@ -56,6 +56,9 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
 
     /// the rotation of the ik goal
     Quaternion m_GoalRot;
+
+    /// the containing character
+    CharacterContainer c;
 
     // -- lifecycle --
     void Update() {
@@ -157,7 +160,11 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         c = GetComponentInParent<CharacterContainer>();
 
         // set props
+        m_State = new LimbState();
         m_Animator = animator;
+
+        // TODO: unclear if we really want to init as our own anchor
+        m_State.Anchor = this;
 
         // get default limb lengths
         var rootPos = Vector3.zero;
@@ -275,14 +282,14 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         get => m_Tuning;
     }
 
+    /// the state for the limb
+    public LimbState State {
+        get => m_State;
+    }
+
     /// the character container
     public CharacterContainer Character {
         get => c;
-    }
-
-    /// the bone the stride is anchored by
-    public LimbAnchor InitialAnchor {
-        get => this;
     }
 
     /// the length of the limb

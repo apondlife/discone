@@ -24,8 +24,8 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_Container.State.Next.JumpState;
-        set => m_Container.State.Next.JumpState = value;
+        get => c.State.Next.JumpState;
+        set => c.State.Next.JumpState = value;
     }
 
     // -- lifecycle --
@@ -36,10 +36,10 @@ sealed class JumpSystem: CharacterSystem {
 
     public override void Update(float delta) {
         // advance the cooldown timer
-        Cooldown(delta, m_Container);
+        Cooldown(delta, c);
 
         // always add gravity
-        m_Container.State.Next.Force += m_Container.Tuning.Gravity * Vector3.up;
+        c.State.Next.Force += c.Tuning.Gravity * Vector3.up;
 
         base.Update(delta);
     }

@@ -24,8 +24,8 @@ sealed class FrictionSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_Container.State.Next.FrictionState;
-        set => m_Container.State.Next.FrictionState = value;
+        get => c.State.Next.FrictionState;
+        set => c.State.Next.FrictionState = value;
     }
 
     // -- NotOnSurface --

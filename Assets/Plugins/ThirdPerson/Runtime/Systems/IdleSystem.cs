@@ -24,8 +24,8 @@ sealed class IdleSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_Container.State.Next.IdleState;
-        set => m_Container.State.Next.IdleState = value;
+        get => c.State.Next.IdleState;
+        set => c.State.Next.IdleState = value;
     }
 
     // -- NotIdle --

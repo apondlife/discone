@@ -25,8 +25,8 @@ sealed class TiltSystem : CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_Container.State.Next.TiltState;
-        set => m_Container.State.Next.TiltState = value;
+        get => c.State.Next.TiltState;
+        set => c.State.Next.TiltState = value;
     }
 
     // -- NotTilting --

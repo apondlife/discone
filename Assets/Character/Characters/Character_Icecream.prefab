@@ -197,42 +197,6 @@ PrefabInstance:
       propertyPath: m_StrideLength.Dst.Min
       value: 0.1
       objectReference: {fileID: 0}
-    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_CastMask.m_Bits
-      value: 2433
-      objectReference: {fileID: 0}
-    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_InputScale.m_Src.Min
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_InputScale.m_Sustain
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideLength.Dst.Max
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideLength.Dst.Min
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_InputScale.m_MaxScale
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideLengthOld.Dst.Max
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideLengthOld.Dst.Min
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_InputScale.m_Release.m_Duration
-      value: 0.4
-      objectReference: {fileID: 0}
     - target: {fileID: 351973787110621403, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Tuning
       value: 
@@ -428,46 +392,6 @@ PrefabInstance:
     - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_System.m_StrideLength.Dst.Min
       value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_CastMask.m_Bits
-      value: 2433
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_InputScale.m_Src.Min
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_InputScale.m_Sustain
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_InputScale.m_MaxScale
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideLengthOld.Dst.Max
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideLengthOld.Dst.Min
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideShape.m_Curve.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_InputScale.m_Release.m_Duration
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideShape.m_Curve.Array.data[1].time
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
-      propertyPath: m_StrideSystem.m_StrideShape.m_Curve.Array.data[1].value
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1499552191486369337, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Tuning
@@ -1472,11 +1396,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1172656224154144300, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -0.06750555
+      value: -0.067505546
       objectReference: {fileID: 0}
     - target: {fileID: 1172656224154144300, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: -0.77822405
+      value: -0.77822393
       objectReference: {fileID: 0}
     - target: {fileID: 1172656224154144300, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.z
@@ -1544,7 +1468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6968317382233487145, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -0.00000007816323
+      value: -0.000000078163225
       objectReference: {fileID: 0}
     - target: {fileID: 6968317382233487145, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.y

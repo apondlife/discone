@@ -395,12 +395,12 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
     // -- queries --
     /// the pos of the current hit surface
     public Vector3 ClipPos {
-        get => m_Container.State.Next.IsColliding ? m_HitPos : m_Container.State.Next.Pos;
+        get => c.State.Next.IsColliding ? m_HitPos : c.State.Next.Pos;
     }
 
     /// the normal of the current hit surface
     public Vector3 ClipNormal {
-        get => m_Container.State.Next.IsColliding ? m_HitNormal : m_Container.State.Next.Forward;
+        get => c.State.Next.IsColliding ? m_HitNormal : c.State.Next.Forward;
     }
 }
 

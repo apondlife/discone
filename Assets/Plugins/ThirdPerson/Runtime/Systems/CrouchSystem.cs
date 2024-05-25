@@ -24,8 +24,8 @@ sealed class CrouchSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_Container.State.Next.CrouchState;
-        set => m_Container.State.Next.CrouchState = value;
+        get => c.State.Next.CrouchState;
+        set => c.State.Next.CrouchState = value;
     }
 
     // -- NotCrouching --

@@ -25,8 +25,8 @@ sealed class CollisionSystem: CharacterSystem {
     }
 
     protected override SystemState State {
-        get => m_Container.State.Next.CollisionState;
-        set => m_Container.State.Next.CollisionState = value;
+        get => c.State.Next.CollisionState;
+        set => c.State.Next.CollisionState = value;
     }
 
     // -- NotIdle --
