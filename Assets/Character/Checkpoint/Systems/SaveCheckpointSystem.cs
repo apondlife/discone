@@ -11,40 +11,6 @@ using Phase = Phase<CheckpointContainer>;
 /// not => smelling => (grab) planting => (plant) done
 [Serializable]
 sealed class SaveCheckpointSystem: SimpleSystem<Container> {
-    // -- types --
-    /// the tuning for the checkpoint system
-    [Serializable]
-    public sealed class Tuning {
-        [Tooltip("the time (s) start smelling after crouch")]
-        [SerializeField] float m_Delay;
-
-        [Tooltip("the time (s) to smell a flower")]
-        [SerializeField] float m_SmellDuration;
-
-        [Tooltip("the time (s) to plant a flower")]
-        [SerializeField] float m_PlantDuration;
-
-        // -- queries --
-        /// the time (s) start smelling after crouch
-        public float Delay {
-            get => m_Delay;
-        }
-
-        /// the time (s) to smell a flower after delay
-        public float SmellDuration {
-            get => m_SmellDuration - Delay;
-        }
-
-        /// the time (s) to plant a flower after smell
-        public float PlantDuration {
-            get => m_PlantDuration - SmellDuration;
-        }
-    }
-
-    // -- deps --
-    [Tooltip("the tuning")]
-    [SerializeField] public Tuning m_Tuning;
-
     // -- props --
     /// whether the system is saving
     bool m_IsSaving;
@@ -97,7 +63,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<Container> {
         }
 
         // start smelling once delay elapses
-        if (PhaseElapsed > m_Tuning.Delay) {
+        if (PhaseElapsed > c.Tuning.Save_Delay) {
             ChangeTo(Smelling);
         }
     }
@@ -121,7 +87,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<Container> {
         }
 
         // start planting once you finish smelling around for a flower
-        if (PhaseElapsed > m_Tuning.SmellDuration) {
+        if (PhaseElapsed > c.Tuning.Save_SmellDuration) {
             ChangeTo(Planting);
         }
     }
@@ -144,7 +110,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<Container> {
         }
 
         // switch to simply existing after planting
-        if (PhaseElapsed > m_Tuning.PlantDuration) {
+        if (PhaseElapsed > c.Tuning.Save_PlantDuration) {
             ChangeTo(Being);
         }
     }

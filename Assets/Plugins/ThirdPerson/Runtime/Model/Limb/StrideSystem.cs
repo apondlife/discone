@@ -9,7 +9,7 @@ using Container = LimbContainer;
 
 /// the character limb's stride tracking
 [Serializable]
-class StrideSystem: SimpleSystem<Container> {
+sealed class StrideSystem: SimpleSystem<Container> {
     // -- Soil.System --
     protected override Phase InitInitialPhase() {
         return Free;

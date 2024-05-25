@@ -9,10 +9,6 @@ using Phase = Phase<CameraContainer>;
 
 [Serializable]
 sealed class CameraFollowSystem: SimpleSystem<Container> {
-    // -- props --
-    // angle (in degrees) that camera is away from its target yaw
-    float m_DeltaYawMag;
-
     // -- System --
     protected override Phase InitInitialPhase() {
         return Idle;
@@ -259,8 +255,6 @@ sealed class CameraFollowSystem: SimpleSystem<Container> {
 
         next.Velocity.Azimuth = nextYawSpeed;
         next.Velocity.Zenith = nextPitchSpeed;
-
-        m_DeltaYawMag = deltaYawMag;
     }
 
     /// resolve free look camera orbit

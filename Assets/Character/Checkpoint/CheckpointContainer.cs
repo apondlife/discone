@@ -2,6 +2,9 @@ namespace Discone {
 
 /// a dependency container for checkpoint systems
 interface CheckpointContainer {
+    /// the checkpoint tuning
+    CheckpointTuning Tuning { get; }
+
     /// the character
     Character Character { get; }
 

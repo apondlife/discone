@@ -14,8 +14,8 @@ public class LimbTuning: ScriptableObject {
     [Tooltip("the cast offset")]
     public float CastOffset;
 
-    // -- tuning --
-    [Header("tuning - ik")]
+    // -- ik --
+    [Header("ik")]
     [Tooltip("the extra velocity when blending ik as a function of input")]
     public float Blend_InputVelocity;
 
@@ -31,8 +31,8 @@ public class LimbTuning: ScriptableObject {
     [Tooltip("the speed multiplier on angular distance the ik goal moves towards the stride rot")]
     public float Goal_RotationSpeed;
 
-    // -- tuning --
-    [Header("tuning - stride")]
+    // -- stride --
+    [Header("stride")]
     [Tooltip("the threshold under which movements are ignored")]
     public float MinMove;
 

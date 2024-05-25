@@ -475,8 +475,16 @@ PrefabInstance:
       value: 0.7184785
       objectReference: {fileID: 0}
     - target: {fileID: 2231163931342640749, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2231163931342640749, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0.69554925
+      objectReference: {fileID: 0}
+    - target: {fileID: 2231163931342640749, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2505435118483560403, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
@@ -493,6 +501,22 @@ PrefabInstance:
     - target: {fileID: 3273269923708946028, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.78
+      objectReference: {fileID: 0}
+    - target: {fileID: 3343201550814714466, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7184785
+      objectReference: {fileID: 0}
+    - target: {fileID: 3343201550814714466, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3343201550814714466, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.69554925
+      objectReference: {fileID: 0}
+    - target: {fileID: 3343201550814714466, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3471353191468890186, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
@@ -771,7 +795,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  m_GrabRadius: 5
+  m_Tuning: {fileID: 11400000, guid: 499086a7c7a3542f38d95fc89051731f, type: 2}
   m_Save:
     m_Phase:
       Name: 

@@ -12,10 +12,10 @@ namespace Discone {
 /// the world, like planting a flag.
 [RequireComponent(typeof(Character))]
 public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
-    // -- fields --
-    [Header("tuning")]
-    [Tooltip("how far from a checkpoint can you grab it")]
-    [SerializeField] float m_GrabRadius;
+    // -- data --
+    [Header("data")]
+    [Tooltip("the tuning")]
+    [SerializeField] CheckpointTuning m_Tuning;
 
     // -- systems --
     [Header("systems")]
@@ -137,7 +137,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
             .FindClosest(pos);
 
         // if we found one, grab it
-        if (flower != null && Vector3.Distance(flower.Checkpoint.Position, pos) < m_GrabRadius) {
+        if (flower != null && Vector3.Distance(flower.Checkpoint.Position, pos) < m_Tuning.GrabRadius) {
             Log.Character.I($"found flower to grab {flower}");
             Server_GrabCheckpoint(flower);
         }
@@ -214,24 +214,30 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
         get => m_Flower;
     }
 
-    /// the current flower's checkpoint
-    public Checkpoint Checkpoint {
-        get => m_Flower ? m_Flower.Checkpoint : null;
-    }
-
     /// if the character is currently loading
     public bool IsLoading {
         get => m_Load.IsLoading;
     }
 
-    /// a reference to the character
-    public Character Character {
-        get => m_Container;
-    }
-
     /// an event when the checkpoint is created
     public UnityEvent<Checkpoint> OnCreate {
         get => m_OnCreate;
+    }
+
+    // -- CheckpointContainer --
+    /// the tuning
+    public CheckpointTuning Tuning {
+        get => m_Tuning;
+    }
+
+    /// the current flower's checkpoint
+    public Checkpoint Checkpoint {
+        get => m_Flower ? m_Flower.Checkpoint : null;
+    }
+
+    /// a reference to the character
+    public Character Character {
+        get => m_Container;
     }
 
     // -- props/hot --

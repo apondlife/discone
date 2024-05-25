@@ -13,28 +13,6 @@ using Phase = Phase<CheckpointContainer>;
 sealed class LoadCheckpointSystem: SimpleSystem<Container> {
     const float k_Inactive = -1.0f;
 
-    // -- types --
-    /// tuning for the load checkpoint system
-    [Serializable]
-    public sealed class Tuning {
-        /// the max load duration
-        public float LoadCastMaxTime;
-
-        /// the load duration at the point distance
-        public float LoadCastPointTime;
-
-        /// the distance at the point duration
-        public float LoadCastPointDistance;
-
-        /// the time multiplier when unloading
-        public float LoadCancelMultiplier;
-    }
-
-    // -- deps --
-    [Tooltip("the tuning")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_Tunables")]
-    [SerializeField] public Tuning m_Tuning;
-
     // -- props --
     /// the elapsed time
     float m_Elapsed = k_Inactive;
@@ -89,10 +67,10 @@ sealed class LoadCheckpointSystem: SimpleSystem<Container> {
         );
 
         // calculate cast time
-        var f = m_Tuning.LoadCastPointTime / m_Tuning.LoadCastMaxTime;
-        var d = m_Tuning.LoadCastPointDistance;
+        var f = c.Tuning.Load_CastPointTime / c.Tuning.Load_CastMaxTime;
+        var d = c.Tuning.Load_CastPointDistance;
         var k = f / (d * (1 - f));
-        m_Duration = m_Tuning.LoadCastMaxTime * (1 - 1 / (k * distance + 1));
+        m_Duration = c.Tuning.Load_CastMaxTime * (1 - 1 / (k * distance + 1));
 
         // pause the character
         c.Character.Pause();
@@ -109,7 +87,7 @@ sealed class LoadCheckpointSystem: SimpleSystem<Container> {
         if (c.Character.Input.IsLoading()) {
             m_Elapsed += delta;
         } else if (m_Elapsed >= 0.0f) {
-            m_Elapsed -= Mathf.Max(0, delta * m_Tuning.LoadCancelMultiplier);
+            m_Elapsed -= Mathf.Max(0, delta * c.Tuning.Load_CancelMultiplier);
         }
 
         // if we reach 0, cancel the load

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f0a3d160a5e4044a0f4ba9ee2fa68de, type: 3}
+  m_Name: CheckpointTuning
+  m_EditorClassIdentifier: 
+  GrabRadius: 5
+  Save_Delay: 0.5
+  Save_SmellTime: 0.97
+  Save_PlantTime: 4.3
+  Load_CastMaxTime: 30
+  Load_CastPointTime: 1
+  Load_CastPointDistance: 35
+  Load_CancelMultiplier: 1
