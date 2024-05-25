@@ -1,6 +1,5 @@
 using System;
 using Soil;
-using UnityEngine;
 
 namespace Discone {
 
@@ -11,13 +10,6 @@ using Phase = Phase<CheckpointContainer>;
 /// not => smelling => (grab) planting => (plant) done
 [Serializable]
 sealed class SaveCheckpointSystem: SimpleSystem<Container> {
-    // -- props --
-    /// whether the system is saving
-    bool m_IsSaving;
-
-    /// the checkpoint being saved
-    Checkpoint m_PendingCheckpoint;
-
     // -- ThirdPerson.System --
     protected override Phase InitInitialPhase() {
         return NotSaving;
@@ -32,7 +24,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<Container> {
     );
 
     void NotSaving_Enter(Container c) {
-        m_IsSaving = false;
+        c.State.IsSaving = false;
     }
 
     void NotSaving_Update(float delta, Container c) {
@@ -42,7 +34,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<Container> {
     }
 
     void NotSaving_Exit(Container c) {
-        m_PendingCheckpoint = Checkpoint.FromState(c.Character.State.Next);
+        c.State.Save_PendingCheckpoint = Checkpoint.FromState(c.Character.State.Next);
     }
 
     // -- Delaying --
@@ -76,7 +68,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<Container> {
     );
 
     void Smelling_Enter(Container c) {
-        m_IsSaving = true;
+        c.State.IsSaving = true;
     }
 
     void Smelling_Update(float delta, Container c) {
@@ -123,7 +115,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<Container> {
     );
 
     void Being_Enter(Container c) {
-        c.CreateCheckpoint(m_PendingCheckpoint);
+        c.CreateCheckpoint(c.State.Save_PendingCheckpoint);
     }
 
     void Being_Update(float delta, Container c) {
@@ -136,7 +128,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<Container> {
     // -- queries --
     /// TODO: this should be written to some external state structure
     public bool IsSaving {
-        get => m_IsSaving;
+        get => c.State.IsSaving;
     }
 
     /// if the character can currently save

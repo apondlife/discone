@@ -9,16 +9,16 @@ interface LimbContainer {
     /// the position of the root
     Vector3 RootPos { get; }
 
-    /// the tuning for the limb
+    /// the tuning
     LimbTuning Tuning { get; }
 
-    /// the state of the limb
-    LimbState State { get;  }
+    /// the state
+    LimbState State { get; }
 
-    /// the search direction of the limb
+    /// the search direction
     Vector3 SearchDir { get; }
 
-    /// the initial length of the limb
+    /// the initial length
     float InitialLen { get; }
 
     /// the character container

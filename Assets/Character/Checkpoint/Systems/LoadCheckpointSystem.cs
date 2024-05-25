@@ -11,24 +11,6 @@ using Phase = Phase<CheckpointContainer>;
 /// a character's ability to load to their saved checkpoint
 [Serializable]
 sealed class LoadCheckpointSystem: SimpleSystem<Container> {
-    const float k_Inactive = -1.0f;
-
-    // -- props --
-    /// the elapsed time
-    float m_Elapsed = k_Inactive;
-
-    /// the total cast time
-    float m_Duration;
-
-    /// the state when the load starts
-    CharacterState.Frame m_SrcState;
-
-    /// the final state when the load completes
-    CharacterState.Frame m_DstState;
-
-    /// the current state while loading
-    CharacterState.Frame m_CurState;
-
     // -- ThirdPerson.System --
     protected override Phase InitInitialPhase() {
         return NotLoading;
@@ -42,7 +24,7 @@ sealed class LoadCheckpointSystem: SimpleSystem<Container> {
     );
 
     void NotLoading_Enter(Container c) {
-        m_Elapsed = k_Inactive;
+        c.State.Load_Reset();
     }
 
     void NotLoading_Update(float delta, Container c) {
@@ -70,53 +52,53 @@ sealed class LoadCheckpointSystem: SimpleSystem<Container> {
         var f = c.Tuning.Load_CastPointTime / c.Tuning.Load_CastMaxTime;
         var d = c.Tuning.Load_CastPointDistance;
         var k = f / (d * (1 - f));
-        m_Duration = c.Tuning.Load_CastMaxTime * (1 - 1 / (k * distance + 1));
+        c.State.Load_Duration = c.Tuning.Load_CastMaxTime * (1 - 1 / (k * distance + 1));
 
         // pause the character
         c.Character.Pause();
 
         // and start load
-        m_Elapsed = 0.0f;
-        m_SrcState = c.Character.State.Next;
-        m_DstState = c.Checkpoint.IntoState();
-        m_CurState = m_DstState.Copy();
+        c.State.Load_Elapsed = 0.0f;
+        c.State.Load_SrcState = c.Character.State.Next;
+        c.State.Load_DstState = c.Checkpoint.IntoState();
+        c.State.Load_CurState = c.State.Load_DstState.Copy();
     }
 
     void Loading_Update(float delta, Container c) {
         // if loading, aggregate time
         if (c.Character.Input.IsLoading()) {
-            m_Elapsed += delta;
-        } else if (m_Elapsed >= 0.0f) {
-            m_Elapsed -= Mathf.Max(0, delta * c.Tuning.Load_CancelMultiplier);
+            c.State.Load_Elapsed += delta;
+        } else if (c.State.Load_Elapsed >= 0.0f) {
+            c.State.Load_Elapsed -= Mathf.Max(0, delta * c.Tuning.Load_CancelMultiplier);
         }
 
         // if we reach 0, cancel the load
-        if (m_Elapsed < 0) {
-            c.Character.ForceState(m_SrcState);
+        if (c.State.Load_Elapsed < 0) {
+            c.Character.ForceState(c.State.Load_SrcState);
             ChangeTo(Loaded);
             return;
         }
         // finish the load once elapsed
-        else if (m_Elapsed >= m_Duration) {
-            c.Character.ForceState(m_DstState);
+        else if (c.State.Load_Elapsed >= c.State.Load_Duration) {
+            c.Character.ForceState(c.State.Load_DstState);
             ChangeTo(Loaded);
             return;
         }
         // otherwise, interpolate the load
         else {
             // we are interpolating position quadratically
-            var pct = Mathf.Clamp01(m_Elapsed / m_Duration);
+            var pct = Mathf.Clamp01(c.State.Load_Elapsed / c.State.Load_Duration);
             var k = pct * pct;
 
             // update to the interpolated state
             CharacterState.Frame.Interpolate(
-                m_SrcState,
-                m_DstState,
-                ref m_CurState,
+                c.State.Load_SrcState,
+                c.State.Load_DstState,
+                ref c.State.Load_CurState,
                 k
             );
 
-            c.Character.ForceState(m_CurState);
+            c.Character.ForceState(c.State.Load_CurState);
         }
 
     }
@@ -133,7 +115,7 @@ sealed class LoadCheckpointSystem: SimpleSystem<Container> {
     );
 
     void Loaded_Enter(Container c) {
-        m_Elapsed = k_Inactive;
+        c.State.Load_Reset();
     }
 
     void Loaded_Update(float _, Container c) {
@@ -149,7 +131,7 @@ sealed class LoadCheckpointSystem: SimpleSystem<Container> {
     }
 
     public bool IsLoading {
-        get => m_Elapsed >= 0;
+        get => c.State.Load_Elapsed >= 0;
     }
 }
 

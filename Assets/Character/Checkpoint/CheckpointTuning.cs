@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Discone {
 
 [CreateAssetMenu(fileName = "CheckpointTuning", menuName = "discone/CheckpointTuning")]
-public class CheckpointTuning: ScriptableObject {
+public sealed class CheckpointTuning: ScriptableObject {
     [Tooltip("how far from a checkpoint can you grab it")]
     public float GrabRadius;
 

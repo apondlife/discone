@@ -32,7 +32,10 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
 
     // -- props --
     /// the character
-    Character m_Container;
+    Character m_Character;
+
+    /// the state
+    CheckpointState m_State;
 
     /// the flower at the current checkpoint, if any
     [SyncVar]
@@ -50,7 +53,10 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
     // -- lifecycle --
     void Awake() {
         // set deps
-        m_Container = GetComponent<Character>();
+        m_Character = GetComponent<Character>();
+
+        // set props
+        m_State = new CheckpointState();
     }
 
     void Start() {
@@ -86,12 +92,12 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
             return;
         }
 
-        if (!m_Container) {
+        if (!m_Character) {
             Log.Character.E($"{name} - started server w/ no container");
             return;
         }
 
-        m_Container.Online.OnSimulationChanged += Server_OnSimulationChanged;
+        m_Character.Online.OnSimulationChanged += Server_OnSimulationChanged;
     }
 
     // -- commands --
@@ -160,7 +166,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
         // if none, spawn a new one
         if (flower == null) {
             flower = CharacterFlower.Server_Spawn(
-                m_Container.Key,
+                m_Character.Key,
                 pos,
                 fwd
             );
@@ -195,7 +201,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
         // TODO: "floating flowers" maybe this should happen when character is first looked at
 
         // maybe there's an AI
-        m_Container.Events.Once(CharacterEvent.Idle, () => {
+        m_Character.Events.Once(CharacterEvent.Idle, () => {
             if (m_Flower != null) {
                 return;
             }
@@ -230,6 +236,11 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
         get => m_Tuning;
     }
 
+    /// the state
+    public CheckpointState State {
+        get => m_State;
+    }
+
     /// the current flower's checkpoint
     public Checkpoint Checkpoint {
         get => m_Flower ? m_Flower.Checkpoint : null;
@@ -237,7 +248,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
 
     /// a reference to the character
     public Character Character {
-        get => m_Container;
+        get => m_Character;
     }
 
     // -- props/hot --
