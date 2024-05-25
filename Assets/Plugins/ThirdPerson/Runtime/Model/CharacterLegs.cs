@@ -76,15 +76,15 @@ class CharacterLegs: MonoBehaviour {
 
         // if we are not moving and legs are closer than minimum, make sure both legs are holding
         var totalExtension = Mathf.Abs(GetExtension(m_Left) + GetExtension(m_Right));
-        if (c.State.Curr.IsIdle && totalExtension < 2.0f * m_Left.Tuning.MaxLength.Min) { 
+        if (c.State.Curr.IsIdle && totalExtension < 2.0f * m_Left.Tuning.MaxLength.Min) {
             Hold(delta);
         }
         // if the held leg becomes free, release the moving leg
-        else if (m_Left.IsFree != m_Right.IsFree) {
+        else if (m_Left.State.IsFree != m_Right.State.IsFree) {
             Release();
         }
         // if both legs are held, start moving one
-        else if (m_Left.IsHeld && m_Right.IsHeld) {
+        else if (m_Left.State.IsHeld && m_Right.State.IsHeld) {
             Switch();
         }
 
@@ -168,8 +168,8 @@ class CharacterLegs: MonoBehaviour {
     void MoveHips(float delta) {
         var hipsOffset = 0f;
 
-        var heldLeg = m_Left.IsHeld ? m_Left : m_Right;
-        if (heldLeg.IsHeld) {
+        var heldLeg = m_Left.State.IsHeld ? m_Left : m_Right;
+        if (heldLeg.State.IsHeld) {
             // move hips to correct for leg splay
             var srcCos = Vector3.Dot(heldLeg.SearchDir, Vector3.down);
             var curOffset = m_InitialPos - transform.localPosition;
@@ -180,7 +180,7 @@ class CharacterLegs: MonoBehaviour {
             // add the offset below skip threshold
             if (curAngle < m_Hips_SkipOffset.Src.Min) {
                 // move hips to correct for distance from the bottom of the character to the current surface
-                hipsOffset += heldLeg.HeldDistance;
+                hipsOffset += heldLeg.State.HeldDistance;
 
                 // move hips down according to leg splay
                 hipsOffset += (srcCos - curCos) * heldLeg.InitialLen;

@@ -4,7 +4,7 @@ namespace ThirdPerson {
 
 /// the current state of the limb
 public record LimbState {
-    // -- stride --
+    // -- props --
     /// if the limb is not striding
     public bool IsNotStriding;
 
@@ -31,6 +31,12 @@ public record LimbState {
 
     /// the current stride length input scale
     public float InputScale;
+
+    // -- queries --
+    /// if the stride is currently active
+    public bool IsActive {
+        get => !IsNotStriding && !IsFree;
+    }
 }
 
 }

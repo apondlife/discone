@@ -60,7 +60,7 @@ class CharacterArms: MonoBehaviour {
         }
 
         // if arm is moving, don't change target
-        if (!arm.IsFree && !arm.IsHeld) {
+        if (!arm.State.IsFree && !arm.State.IsHeld) {
             return;
         }
 

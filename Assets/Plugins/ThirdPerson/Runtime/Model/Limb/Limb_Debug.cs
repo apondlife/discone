@@ -42,7 +42,7 @@ public partial class Limb {
         DebugDraw.Push(
             m_Goal.Debug_Name($"{name}-held-dist"),
             endPos,
-            SearchDir * m_StrideSystem.HeldDistance,
+            SearchDir * m_State.HeldDistance,
             new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width - 0.5f, count: count)
         );
     }
@@ -55,11 +55,11 @@ public partial class Limb {
     /// the debug color for a limb with given alpha (red is right)
     internal Color Debug_PhaseColor(float alpha = 1f) {
         var color = Color.green;
-        if (m_StrideSystem.IsHeld) {
+        if (m_State.IsHeld) {
             color = Color.black;
-        } else if (m_StrideSystem.IsFree) {
+        } else if (m_State.IsFree) {
             color = Color.white;
-        } else if (!m_StrideSystem.IsActive) {
+        } else if (!m_State.IsActive) {
             color = Color.red;
         }
 

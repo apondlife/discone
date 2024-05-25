@@ -316,46 +316,6 @@ class StrideSystem: SimpleSystem<Container> {
     }
 
     // -- queries --
-    /// if the stride is currently active
-    public bool IsActive {
-        get => !c.State.IsNotStriding && !c.State.IsFree;
-    }
-
-    /// .
-    public bool IsHeld {
-        get => c.State.IsHeld;
-    }
-
-    /// .
-    public bool IsFree {
-        get => c.State.IsFree;
-    }
-
-    /// the current ik position of the limb
-    public Vector3 GoalPos {
-        get => c.State.GoalPos;
-    }
-
-    /// the current placement normal
-    public Vector3 Normal {
-        get {
-            if (c.State.Placement.Result == LimbPlacement.CastResult.Hit) {
-                return c.State.Placement.Normal;
-            }
-
-            if (c.State.Placement.Result == LimbPlacement.CastResult.OutOfRange && c.State.IsHeld && c.State.HeldDistance <= c.Tuning.HeldDistance_OnSurface) {
-                return c.State.Placement.Normal;
-            }
-
-            return Vector3.zero;
-        }
-    }
-
-    /// the distance to the held surface
-    public float HeldDistance {
-        get => c.State.HeldDistance;
-    }
-
     /// cast for a surface underneath the current pos
     bool FindPlacementFromEnd(
         out LimbPlacement placement,

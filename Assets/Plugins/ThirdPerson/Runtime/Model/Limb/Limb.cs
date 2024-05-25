@@ -70,7 +70,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         m_StrideSystem.Update(delta);
 
         // set target ik weight if limb is active
-        var weight = m_StrideSystem.IsActive ? 1f : 0f;
+        var weight = m_State.IsActive ? 1f : 0f;
 
         // interpolate the weight
         var blendSpeed = weight > m_Weight ? m_Tuning.Blend_InSpeed : m_Tuning.Blend_OutSpeed;
@@ -80,16 +80,24 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
             blendSpeed * delta
         );
 
-        var normal = m_StrideSystem.Normal;
+        // the current placement normal
+        var placement = m_State.Placement;
+        var normal = placement.Result switch {
+            LimbPlacement.CastResult.Hit =>
+                placement.Normal,
+            LimbPlacement.CastResult.OutOfRange when m_State.IsHeld && m_State.HeldDistance <= m_Tuning.HeldDistance_OnSurface =>
+                placement.Normal,
+            _ => Vector3.zero
+        };
 
         // get next position goal position, removing the end offset if necessary
-        var goalPos = m_StrideSystem.GoalPos;
+        var goalPos = m_State.GoalPos;
         if (normal != Vector3.zero) {
             goalPos += m_EndLen * normal;
         }
 
         // if not held, interpolate position.
-        if (!m_StrideSystem.IsHeld) {
+        if (!m_State.IsHeld) {
             var goalDist = Vector3.SqrMagnitude(goalPos - m_GoalPos);
             goalPos = Vector3.MoveTowards(
                 m_GoalPos,
@@ -246,24 +254,10 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         get => m_GoalBone;
     }
 
+    // -- LimbAnchor --
     /// the current goal bone position
     public Vector3 GoalPos {
-        get => m_StrideSystem.GoalPos;
-    }
-
-    /// .
-    public bool IsFree {
-        get => m_StrideSystem.IsFree;
-    }
-
-    /// .
-    public bool IsHeld {
-        get => m_StrideSystem.IsHeld;
-    }
-
-    /// cast for the distance to the nearest surface in the limb direction
-    public float HeldDistance {
-        get => m_StrideSystem.HeldDistance;
+        get => m_State.GoalPos;
     }
 
     // -- CharacterLimbContainer --
