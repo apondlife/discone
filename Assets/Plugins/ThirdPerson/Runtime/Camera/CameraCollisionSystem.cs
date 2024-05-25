@@ -9,16 +9,6 @@ using Phase = Phase<CameraContainer>;
 
 [Serializable]
 sealed class CameraCollisionSystem: SimpleSystem<Container> {
-    // -- props --
-    /// storage for raycasts
-    RaycastHit m_Hit;
-
-    /// the pos of the current hit surface
-    Vector3 m_HitPos;
-
-    /// the normal of the current hit surface
-    Vector3 m_HitNormal;
-
     // -- System --
     protected override Phase InitInitialPhase() {
         return Tracking;
@@ -127,7 +117,7 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
         }
 
         // scale tolerance with hit normal
-        var normalDotUp = Vector3.Dot(m_HitNormal, Vector3.up);
+        var normalDotUp = Vector3.Dot(c.State.HitNormal, Vector3.up);
         var tolerance = c.Tuning.Collision_ClipToleranceByNormal.Evaluate(normalDotUp);
         var mag = Vector3.Magnitude(ideal - corrected);
         if (mag > tolerance) {
@@ -218,7 +208,7 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
             origin,
             c.Tuning.Collision_ContactOffset,
             vizDir,
-            out m_Hit,
+            out var hit,
             vizLen,
             c.Tuning.Collision_Mask,
             QueryTriggerInteraction.Ignore
@@ -226,8 +216,8 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
 
         // TODO: don't set state in here
         c.State.Next.IsColliding = didHit;
-        m_HitPos = m_Hit.point;
-        m_HitNormal = m_Hit.normal;
+        c.State.HitPos = hit.point;
+        c.State.HitNormal = hit.normal;
 
         // if the target is visible, we have our desired position
         if (!didHit) {
@@ -236,8 +226,8 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
 
         // otherwise, we found the point on this surface (note: offset by c.o.
         // so that step 3b works)
-        var vizNormal = m_Hit.normal;
-        var vizPos = OffsetHit(m_Hit, c);
+        var vizNormal = hit.normal;
+        var vizPos = OffsetHit(hit, c);
 
         destPos = vizPos;
 
@@ -282,7 +272,7 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
             origin,
             c.Tuning.Collision_ContactOffset,
             vizDir,
-            out m_Hit,
+            out var hit,
             vizLen,
             c.Tuning.Collision_Mask,
             QueryTriggerInteraction.Ignore
@@ -290,8 +280,8 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
 
         // TODO: don't set state in here
         c.State.Next.IsColliding = didHit;
-        m_HitPos = m_Hit.point;
-        m_HitNormal = m_Hit.normal;
+        c.State.HitPos = hit.point;
+        c.State.HitNormal = hit.normal;
 
         // if the target is visible, we have our desired position
         if (!didHit) {
@@ -300,8 +290,8 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
 
         // otherwise, we found the point on this surface (note: offset by c.o.
         // so that step 3b works)
-        var vizNormal = m_Hit.normal;
-        var vizPos = OffsetHit(m_Hit, c);
+        var vizNormal = hit.normal;
+        var vizPos = OffsetHit(hit, c);
 
         destPos = vizPos;
 
@@ -337,14 +327,14 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
         didHit = Physiics.BounceCast(
             destPos,
             exitVertDir,
-            out m_Hit,
+            out hit,
             exitVertLen,
             c.Tuning.Collision_Mask,
             QueryTriggerInteraction.Ignore
         );
 
         if (didHit) {
-            destPos = OffsetHit(m_Hit, c);
+            destPos = OffsetHit(hit, c);
         }
 
         // step 3.b: if we didn't exit vertically, we're still in the viz plane.
@@ -357,13 +347,13 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
             didHit = Physics.Linecast(
                 exitPlaneSrc,
                 exitPlaneDst,
-                out m_Hit,
+                out hit,
                 c.Tuning.Collision_Mask,
                 QueryTriggerInteraction.Ignore
             );
 
             if (didHit) {
-                destPos = OffsetHit(m_Hit, c);
+                destPos = OffsetHit(hit, c);
             }
         }
 
@@ -375,13 +365,13 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
         didHit = Physics.Linecast(
             vizCastEndSrc,
             vizCastEndDst,
-            out m_Hit,
+            out hit,
             c.Tuning.Collision_Mask,
             QueryTriggerInteraction.Ignore
         );
 
         if (didHit) {
-            destPos = OffsetHit(m_Hit, c);
+            destPos = OffsetHit(hit, c);
         }
 
         return destPos;
@@ -395,12 +385,12 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
     // -- queries --
     /// the pos of the current hit surface
     public Vector3 ClipPos {
-        get => c.State.Next.IsColliding ? m_HitPos : c.State.Next.Pos;
+        get => c.State.Next.IsColliding ? c.State.HitPos : c.State.Next.Pos;
     }
 
     /// the normal of the current hit surface
     public Vector3 ClipNormal {
-        get => c.State.Next.IsColliding ? m_HitNormal : c.State.Next.Forward;
+        get => c.State.Next.IsColliding ? c.State.HitNormal : c.State.Next.Forward;
     }
 }
 

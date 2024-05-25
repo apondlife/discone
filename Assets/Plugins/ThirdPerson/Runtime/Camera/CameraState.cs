@@ -27,6 +27,12 @@ public sealed partial class CameraState {
     /// the yaw world-direction at init
     Vector3 m_FollowYawZeroDir;
 
+    /// the pos of the current hit surface
+    Vector3 m_HitPos;
+
+    /// the normal of the current hit surface
+    Vector3 m_HitNormal;
+
     // -- lifetime --
     /// create state from intial frame
     public CameraState(
@@ -160,6 +166,20 @@ public sealed partial class CameraState {
     /// if the state has no frames
     public bool IsEmpty {
         get => m_Frames.IsEmpty;
+    }
+
+    // -- props/hot --
+    // TODO: unclear why these were on collision system and not on frame
+    /// the pos of the current hit surface
+    public Vector3 HitPos {
+        get => m_HitPos;
+        set => m_HitPos = value;
+    }
+
+    /// the normal of the current hit surface
+    public Vector3 HitNormal {
+        get => m_HitNormal;
+        set => m_HitNormal = value;
     }
 
     // -- types --
