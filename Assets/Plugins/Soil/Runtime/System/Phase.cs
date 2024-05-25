@@ -10,20 +10,20 @@ public struct Phase<Container>: IEquatable<Phase<Container>> {
     public string Name;
 
     /// the action to call the phase the frame starts
-    public readonly Action<Container> Enter;
+    public readonly Action<System<Container>, Container> Enter;
 
     /// the action to call every frame the phase is active
-    public readonly Action<float, Container> Update;
+    public readonly Action<float, System<Container>, Container> Update;
 
     /// the action to call the frame the phase ends
-    public readonly Action<Container> Exit;
+    public readonly Action<System<Container>, Container> Exit;
 
     // -- lifetime --
     public Phase(
         string name,
-        Action<Container> enter = null,
-        Action<float, Container> update = null,
-        Action<Container> exit = null
+        Action<System<Container>, Container> enter = null,
+        Action<float, System<Container>, Container> update = null,
+        Action<System<Container>, Container> exit = null
     ) {
         Name = name;
         Enter = enter ?? NoOp;
@@ -33,11 +33,11 @@ public struct Phase<Container>: IEquatable<Phase<Container>> {
 
     // -- commands --
     /// does nothing
-    static void NoOp(Container _) {
+    static void NoOp(System<Container> _, Container __) {
     }
 
     /// does nothing
-    static void NoOp(float _, Container __) {
+    static void NoOp(float _, System<Container> __, Container ___) {
     }
 
     // -- IEquatable --

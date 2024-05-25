@@ -4,17 +4,14 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-using Container = CameraContainer;
-using Phase = Phase<CameraContainer>;
-
 [Serializable]
-sealed class CameraFollowSystem: SimpleSystem<Container> {
+sealed class CameraFollowSystem: SimpleSystem<CameraContainer> {
     // -- System --
-    protected override Phase InitInitialPhase() {
+    protected override Phase<CameraContainer> InitInitialPhase() {
         return Idle;
     }
 
-    public override void Init(Container c) {
+    public override void Init(CameraContainer c) {
         base.Init(c);
 
         // set initial state
@@ -25,168 +22,143 @@ sealed class CameraFollowSystem: SimpleSystem<Container> {
 
     // -- Idle --
     // player not moving and not controlling the camera
-    Phase Idle => new(
-        name: "Idle",
-        update: Idle_Update
+    static readonly Phase<CameraContainer> Idle = new("Idle",
+        update: (delta, s, c) => {
+            if (c.Input.IsPressed()) {
+                s.ChangeToImmediate(FreeLook, delta);
+                return;
+            }
+
+            if (!c.CharacterInput.IsMoveIdle(c.Tuning.Tracking_IdleFrames)) {
+                s.ChangeToImmediate(Tracking, delta);
+                return;
+            }
+
+            c.State.Next.Spherical = c.State.IntoCurrSpherical();
+        }
     );
-
-    void Idle_Update(float delta, Container c) {
-        if (c.Input.IsPressed()) {
-            ChangeToImmediate(FreeLook, delta);
-            return;
-        }
-
-        if (!c.CharacterInput.IsMoveIdle(c.Tuning.Tracking_IdleFrames)) {
-            ChangeToImmediate(Tracking, delta);
-            return;
-        }
-
-        c.State.Next.Spherical = c.State.IntoCurrSpherical();
-    }
 
     // -- Tracking --
     // camera following the player on its own
-    Phase Tracking => new(
-        name: "Tracking",
-        update: Tracking_Update
+    static readonly Phase<CameraContainer> Tracking = new("Tracking",
+        update: (delta, s, c) => {
+            if (c.Input.IsPressed()) {
+                s.ChangeToImmediate(FreeLook, delta);
+                return;
+            }
+
+            // move camera
+            Tracking_Orbit(delta, false, c);
+            Dolly(delta, c);
+
+            // stop tracking wnen move input becomes idle
+            if (c.CharacterInput.IsMoveIdle(c.Tuning.Tracking_IdleFrames)) {
+                s.ChangeTo(Idle);
+                return;
+            }
+        }
     );
-
-    void Tracking_Update(float delta, Container c) {
-        if (c.Input.IsPressed()) {
-            ChangeToImmediate(FreeLook, delta);
-            return;
-        }
-
-        // move camera
-        Tracking_Orbit(delta, false, c);
-        Dolly(delta, c);
-
-        // stop tracking wnen move input becomes idle
-        if (c.CharacterInput.IsMoveIdle(c.Tuning.Tracking_IdleFrames)) {
-            ChangeTo(Idle);
-            return;
-        }
-    }
 
     // -- FreeLook --
     // player controlling the camera
-    Phase FreeLook => new(
-        name: "FreeLook",
-        enter: FreeLook_Enter,
-        update: FreeLook_Update
-    );
+    static readonly Phase<CameraContainer> FreeLook = new("FreeLook",
+        enter: (_, c) => {
+            c.State.Next.IsFreeLook = true;
+        },
+        update: (delta, s, c) => {
+            // move camera
+            FreeLook_Orbit(delta, c);
+            Dolly(delta, c);
 
-    void FreeLook_Enter(Container c) {
-        c.State.Next.IsFreeLook = true;
-    }
-
-    void FreeLook_Update(float delta, Container c) {
-        // move camera
-        FreeLook_Orbit(delta, c);
-        Dolly(delta, c);
-
-        // if the player stops moving the camera, check their intentions
-        if (!c.Input.IsPressed()) {
-            ChangeTo(FreeLook_Intent);
-            return;
+            // if the player stops moving the camera, check their intentions
+            if (!c.Input.IsPressed()) {
+                s.ChangeTo(FreeLook_Intent);
+                return;
+            }
         }
-    }
+    );
 
     // -- FreeLook_Intent --
-    Phase FreeLook_Intent => new(
-        name: "FreeLook_Intent",
-        update: FreeLook_Intent_Update
+    static readonly Phase<CameraContainer> FreeLook_Intent = new("FreeLook_Intent",
+        update: (delta, s, c) => {
+            if (c.Input.IsPressed()) {
+                s.ChangeToImmediate(FreeLook, delta);
+                return;
+            }
+
+            // move camera
+            FreeLook_Orbit(delta, c);
+            Dolly(delta, c);
+
+            // if the character moves, then we assume they intend to set the camera
+            // for athletics
+            if (!c.State.Character.IsIdle) {
+                s.ChangeTo(FreeLook_MoveIntent);
+                return;
+            }
+
+            // if player doesnt move the camera for long enough, we assume the
+            // player wants to look at the sky
+            if (s.PhaseElapsed > c.Tuning.FreeLook_Timeout) {
+                s.ChangeTo(FreeLook_IdleIntent);
+                return;
+            }
+        }
     );
-
-    void FreeLook_Intent_Update(float delta, Container c) {
-        if (c.Input.IsPressed()) {
-            ChangeToImmediate(FreeLook, delta);
-            return;
-        }
-
-        // move camera
-        FreeLook_Orbit(delta, c);
-        Dolly(delta, c);
-
-        // if the character moves, then we assume they intend to set the camera
-        // for athletics
-        if (!c.State.Character.IsIdle) {
-            ChangeTo(FreeLook_MoveIntent);
-            return;
-        }
-
-        // if player doesnt move the camera for long enough, we assume the
-        // player wants to look at the sky
-        if (PhaseElapsed > c.Tuning.FreeLook_Timeout) {
-            ChangeTo(FreeLook_IdleIntent);
-            return;
-        }
-    }
 
     // -- FreeLook_MoveIntent --
-    Phase FreeLook_MoveIntent => new(
-        name: "FreeLook_MoveIntent",
-        update: FreeLook_MoveIntent_Update,
-        exit: FreeLook_MoveIntent_Exit
+    static readonly Phase<CameraContainer> FreeLook_MoveIntent = new("FreeLook_MoveIntent",
+        update: (delta, s, c) => {
+            if (c.Input.IsPressed()) {
+                s.ChangeToImmediate(FreeLook, delta);
+                return;
+            }
+
+            // move camera
+            FreeLook_Orbit(delta, c);
+            Dolly(delta, c);
+
+            // if the player sits around for a while after moving, we assume they've
+            // finished moving and reset the camera
+            if (c.State.Character.IdleTime > c.Tuning.FreeLook_MoveIntentTimeout) {
+                s.ChangeTo(Idle);
+                return;
+            }
+        },
+        exit: (s, c) => {
+            c.State.Next.IsFreeLook = false;
+        }
     );
-
-    void FreeLook_MoveIntent_Update(float delta, Container c) {
-        if (c.Input.IsPressed()) {
-            ChangeToImmediate(FreeLook, delta);
-            return;
-        }
-
-        // move camera
-        FreeLook_Orbit(delta, c);
-        Dolly(delta, c);
-
-        // if the player sits around for a while after moving, we assume they've
-        // finished moving and reset the camera
-        if (c.State.Character.IdleTime > c.Tuning.FreeLook_MoveIntentTimeout) {
-            ChangeTo(Idle);
-            return;
-        }
-    }
-
-    void FreeLook_MoveIntent_Exit(Container c) {
-        c.State.Next.IsFreeLook = false;
-    }
 
     // -- FreeLook_IdleIntent --
-    Phase FreeLook_IdleIntent => new(
-        name: "FreeLook_IdleIntent",
-        update: FreeLook_IdleIntent_Update,
-        exit: FreeLook_IdleIntent_Exit
+    static readonly Phase<CameraContainer> FreeLook_IdleIntent = new("FreeLook_IdleIntent",
+        update: (delta, s, c) => {
+            if (c.Input.WasPerformedThisFrame()) {
+                s.ChangeToImmediate(FreeLook, delta);
+                return;
+            }
+
+            // move camera
+            FreeLook_Orbit(delta, c);
+            Dolly(delta, c);
+
+            // if the player starts moving, we assume the camera for looking at the
+            // sky is not so useful anymore
+            if (!c.State.Character.IsIdle) {
+                s.ChangeTo(Tracking);
+                return;
+            }
+        },
+        exit: (_, c) => {
+            c.State.Next.IsFreeLook = false;
+        }
     );
-
-    void FreeLook_IdleIntent_Update(float delta, Container c) {
-        if (c.Input.WasPerformedThisFrame()) {
-            ChangeToImmediate(FreeLook, delta);
-            return;
-        }
-
-        // move camera
-        FreeLook_Orbit(delta, c);
-        Dolly(delta, c);
-
-        // if the player starts moving, we assume the camera for looking at the
-        // sky is not so useful anymore
-        if (!c.State.Character.IsIdle) {
-            ChangeTo(Tracking);
-            return;
-        }
-    }
-
-    void FreeLook_IdleIntent_Exit(Container c) {
-        c.State.Next.IsFreeLook = false;
-    }
 
     // -- commands --
     /// resolve tracking camera orbit
-    void Tracking_Orbit(float delta, bool isRecentering, Container c) {
-        // TODO: yaw speed could be wrong at this point (yawSpeed !=
-        // deltaYaw/deltaTime). we should resample yaw speed from the current
-        // state.
+    static void Tracking_Orbit(float delta, bool isRecentering, CameraContainer c) {
+        // TODO: yaw speed could be wrong at this point (yawSpeed != deltaYaw/deltaTime).
+        // we should resample yaw speed from the current state.
 
         // get current yaw
         var currYaw = c.State.Spherical.Azimuth;
@@ -258,7 +230,7 @@ sealed class CameraFollowSystem: SimpleSystem<Container> {
     }
 
     /// resolve free look camera orbit
-    void FreeLook_Orbit(float delta, Container c) {
+    static void FreeLook_Orbit(float delta, CameraContainer c) {
         // get camera input
         var input = c.Input.ReadValue<Vector2>();
         input.x = c.Tuning.IsInvertedX ? -input.x : input.x;
@@ -310,7 +282,7 @@ sealed class CameraFollowSystem: SimpleSystem<Container> {
     }
 
     /// dolly in or out
-    void Dolly(float delta, Container c) {
+    static void Dolly(float delta, CameraContainer c) {
         // only dolly if not colliding
         if (c.State.Curr.IsColliding) {
             return;

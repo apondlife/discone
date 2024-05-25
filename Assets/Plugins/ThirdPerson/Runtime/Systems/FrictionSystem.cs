@@ -5,6 +5,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 using Container = CharacterContainer;
+using System = System<CharacterContainer>;
 using Phase = Phase<CharacterContainer>;
 
 /// system state extensions
@@ -29,55 +30,49 @@ sealed class FrictionSystem: CharacterSystem {
     }
 
     // -- NotOnSurface --
-    Phase NotOnSurface => new(
-        name: "NotOnSurface",
-        update: NotOnSurface_Update
-    );
+    static readonly Phase NotOnSurface = new("NotOnSurface",
+        update: (delta, s, c) => {
+            if (c.State.Curr.IsColliding) {
+                s.ChangeTo(OnSurface);
+                return;
+            }
 
-    void NotOnSurface_Update(float delta, Container c) {
-        if (c.State.Curr.IsColliding) {
-            ChangeTo(OnSurface);
-            return;
+            AddDragAndFriction(c.Tuning.Friction_AerialDrag, 0f, delta, c);
         }
-
-        AddDragAndFriction(c.Tuning.Friction_AerialDrag, 0f, delta, c);
-    }
+    );
 
     // -- OnSurface --
-    Phase OnSurface => new(
-        name: "OnSurface",
-        update: OnSurface_Update
+    static readonly Phase OnSurface = new("OnSurface",
+        update: (delta, s, c) => {
+            // return to the ground if grounded
+            if (!c.State.Curr.IsColliding || c.State.Next.Events.Contains(CharacterEvent.Jump)) {
+                s.ChangeToImmediate(NotOnSurface, delta);
+                return;
+            }
+
+            var drag = 0f;
+            if (!c.State.IsStopped) {
+                drag = c.State.Next.Surface_Drag;
+            }
+
+            var friction = c.State.Next.Surface_StaticFriction;
+            if (!c.State.IsStopped || c.Inputs.Move.sqrMagnitude > 0f) {
+                friction = c.State.Next.Surface_KineticFriction;
+            }
+
+            // scale by surface
+            var currSurface = c.State.Curr.MainSurface;
+            drag *= c.Tuning.Friction_SurfaceDragScale.Evaluate(currSurface.Angle);
+            friction *= c.Tuning.Friction_SurfaceFrictionScale.Evaluate(currSurface.Angle);
+
+            AddDragAndFriction(drag, friction, delta, c);
+        }
     );
-
-    void OnSurface_Update(float delta, Container c) {
-        // return to the ground if grounded
-        if (!c.State.Curr.IsColliding || c.State.Next.Events.Contains(CharacterEvent.Jump)) {
-            ChangeToImmediate(NotOnSurface, delta);
-            return;
-        }
-
-        var drag = 0f;
-        if (!c.State.IsStopped) {
-            drag = c.State.Next.Surface_Drag;
-        }
-
-        var friction = c.State.Next.Surface_StaticFriction;
-        if (!c.State.IsStopped || c.Inputs.Move.sqrMagnitude > 0f) {
-            friction = c.State.Next.Surface_KineticFriction;
-        }
-
-        // scale by surface
-        var currSurface = c.State.Curr.MainSurface;
-        drag *= c.Tuning.Friction_SurfaceDragScale.Evaluate(currSurface.Angle);
-        friction *= c.Tuning.Friction_SurfaceFrictionScale.Evaluate(currSurface.Angle);;
-
-        AddDragAndFriction(drag, friction, delta, c);
-    }
 
     // -- integrate --
     // TODO: consider if this should be integrated somewhere more fundamental (e.g. on state v & a)
     /// integrate velocity delta from all Friction forces
-    void AddDragAndFriction(
+    static void AddDragAndFriction(
         float drag,
         float friction,
         float delta,

@@ -5,6 +5,7 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace ThirdPerson {
 
+using System = System<CharacterContainer>;
 using Container = CharacterContainer;
 using Phase = Phase<CharacterContainer>;
 
@@ -30,12 +31,12 @@ sealed class CollisionSystem: CharacterSystem {
     }
 
     // -- NotIdle --
-    Phase Active => new(
+    static readonly Phase Active = new(
         name: "Active",
         update: Active_Update
     );
 
-    void Active_Update(float delta, Container c) {
+    static void Active_Update(float delta, System s, Container c) {
         var curr = c.State.Curr;
         var next = c.State.Next;
 

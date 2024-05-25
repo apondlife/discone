@@ -104,7 +104,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
     // -- c/save
     /// if the character is saving
     public bool IsSaving {
-        get => m_Save.IsSaving;
+        get => m_State.IsSaving;
     }
 
     /// grab the nearby checkpoint
@@ -222,7 +222,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
 
     /// if the character is currently loading
     public bool IsLoading {
-        get => m_Load.IsLoading;
+        get => m_State.IsLoading;
     }
 
     /// an event when the checkpoint is created

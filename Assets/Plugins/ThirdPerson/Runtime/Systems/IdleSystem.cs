@@ -4,9 +4,6 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-using Container = CharacterContainer;
-using Phase = Phase<CharacterContainer>;
-
 /// system state extensions
 partial class CharacterState {
     partial class Frame {
@@ -19,7 +16,7 @@ partial class CharacterState {
 [Serializable]
 sealed class IdleSystem: CharacterSystem {
     // -- System --
-    protected override Phase InitInitialPhase() {
+    protected override Phase<CharacterContainer> InitInitialPhase() {
         return NotIdle;
     }
 
@@ -29,47 +26,35 @@ sealed class IdleSystem: CharacterSystem {
     }
 
     // -- NotIdle --
-    Phase NotIdle => new(
-        name: "NotIdle",
-        enter: NotIdle_Enter,
-        update: NotIdle_Update
-    );
-
-    void NotIdle_Enter(Container c) {
-        c.State.Next.IdleTime = 0f;
-    }
-
-    void NotIdle_Update(float _, Container c) {
-        if (c.Inputs.IsMoveIdle() && c.State.Curr.Velocity.sqrMagnitude <= c.Tuning.Idle_SqrSpeedThreshold) {
-           ChangeTo(Idle);
+    static readonly Phase<CharacterContainer> NotIdle = new("NotIdle",
+        enter: (_, c) => {
+            c.State.Next.IdleTime = 0f;
+        },
+        update: (_, s, c) => {
+            if (c.Inputs.IsMoveIdle() && c.State.Curr.Velocity.sqrMagnitude <= c.Tuning.Idle_SqrSpeedThreshold) {
+               s.ChangeTo(Idle);
+            }
         }
-    }
+    );
 
     // -- Idle --
-    Phase Idle => new(
-        name: "Idle",
-        enter: Idle_Enter,
-        update: Idle_Update,
-        exit: Idle_Exit
-    );
+    static readonly Phase<CharacterContainer> Idle = new("Idle",
+        enter: (_, c) => {
+            // TODO: make into PhaseElapsed
+            c.State.Next.IdleTime = Time.deltaTime;
+            c.Events.Schedule(CharacterEvent.Idle);
+        },
+        update: (delta, s, c) => {
+            c.State.Next.IdleTime += delta;
 
-    void Idle_Enter(Container c) {
-        // TODO: make into PhaseElapsed
-        c.State.Next.IdleTime = Time.deltaTime;
-        c.Events.Schedule(CharacterEvent.Idle);
-    }
-
-    void Idle_Update(float delta, Container c) {
-        c.State.Next.IdleTime += delta;
-
-        if (!c.Inputs.IsMoveIdle() || c.State.Curr.Velocity.sqrMagnitude > c.Tuning.Idle_SqrSpeedThreshold) {
-           ChangeTo(NotIdle);
+            if (!c.Inputs.IsMoveIdle() || c.State.Curr.Velocity.sqrMagnitude > c.Tuning.Idle_SqrSpeedThreshold) {
+               s.ChangeTo(NotIdle);
+            }
+        },
+        exit: (_, c) => {
+            c.Events.Schedule(CharacterEvent.Move);
         }
-    }
-
-    void Idle_Exit(Container c) {
-        c.Events.Schedule(CharacterEvent.Move);
-    }
+    );
 }
 
 }

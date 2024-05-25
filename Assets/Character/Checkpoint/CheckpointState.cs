@@ -10,6 +10,11 @@ public record CheckpointState {
     /// whether the checkpoint is saving
     public bool IsSaving;
 
+    /// whether the checkpoint is loading
+    public bool IsLoading {
+        get => Load_Elapsed >= 0;
+    }
+
     // -- save --
     /// the checkpoint being saved
     public Checkpoint Save_PendingCheckpoint;

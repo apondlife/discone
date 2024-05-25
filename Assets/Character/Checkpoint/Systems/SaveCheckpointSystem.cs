@@ -3,136 +3,99 @@ using Soil;
 
 namespace Discone {
 
-using Container = CheckpointContainer;
-using Phase = Phase<CheckpointContainer>;
-
 /// a character's ability to save new checkpoints
 /// not => smelling => (grab) planting => (plant) done
 [Serializable]
-sealed class SaveCheckpointSystem: SimpleSystem<Container> {
+sealed class SaveCheckpointSystem: SimpleSystem<CheckpointContainer > {
     // -- ThirdPerson.System --
-    protected override Phase InitInitialPhase() {
+    protected override Phase<CheckpointContainer> InitInitialPhase() {
         return NotSaving;
     }
 
     // -- NotSaving --
-    Phase NotSaving => new(
-        name: "NotSaving",
-        enter: NotSaving_Enter,
-        update: NotSaving_Update,
-        exit: NotSaving_Exit
-    );
-
-    void NotSaving_Enter(Container c) {
-        c.State.IsSaving = false;
-    }
-
-    void NotSaving_Update(float delta, Container c) {
-        if (CanSave(c)) {
-            ChangeTo(Delaying);
+    static readonly Phase<CheckpointContainer> NotSaving = new("NotSaving",
+        enter: (_, c) => {
+            c.State.IsSaving = false;
+        },
+        update: (_, s, c) => {
+            if (CanSave(c)) {
+                s.ChangeTo(Delaying);
+            }
+        },
+        exit: (_, c) => {
+            c.State.Save_PendingCheckpoint = Checkpoint.FromState(c.Character.State.Next);
         }
-    }
-
-    void NotSaving_Exit(Container c) {
-        c.State.Save_PendingCheckpoint = Checkpoint.FromState(c.Character.State.Next);
-    }
+    );
 
     // -- Delaying --
-    Phase Delaying => new(
-        name: "Delaying",
-        enter: Delaying_Enter,
-        update: Delaying_Update
+    static readonly Phase<CheckpointContainer> Delaying = new("Delaying",
+        update: (_, s, c) => {
+            // continue delaying
+            if (!CanSave(c)) {
+                s.ChangeTo(NotSaving);
+                return;
+            }
+
+            // start smelling once delay elapses
+            if (s.PhaseElapsed > c.Tuning.Save_Delay) {
+                s.ChangeTo(Smelling);
+            }
+        }
     );
-
-    void Delaying_Enter(Container c) {
-    }
-
-    void Delaying_Update(float delta, Container c) {
-        // continue delaying
-        if (!CanSave(c)) {
-            ChangeTo(NotSaving);
-            return;
-        }
-
-        // start smelling once delay elapses
-        if (PhaseElapsed > c.Tuning.Save_Delay) {
-            ChangeTo(Smelling);
-        }
-    }
 
     // -- Smelling --
-    Phase Smelling => new(
-        name: "Smelling",
-        enter: Smelling_Enter,
-        update: Smelling_Update
+    static readonly Phase<CheckpointContainer> Smelling = new("Smelling",
+        enter: (s, c) => {
+            c.State.IsSaving = true;
+        },
+        update: (delta, s, c) => {
+            // continue smelling
+            if (!CanSave(c)) {
+                s.ChangeTo(NotSaving);
+                return;
+            }
+
+            // start planting once you finish smelling around for a flower
+            if (s.PhaseElapsed > c.Tuning.Save_SmellDuration) {
+                s.ChangeTo(Planting);
+            }
+        }
     );
-
-    void Smelling_Enter(Container c) {
-        c.State.IsSaving = true;
-    }
-
-    void Smelling_Update(float delta, Container c) {
-        // continue smelling
-        if (!CanSave(c)) {
-            ChangeTo(NotSaving);
-            return;
-        }
-
-        // start planting once you finish smelling around for a flower
-        if (PhaseElapsed > c.Tuning.Save_SmellDuration) {
-            ChangeTo(Planting);
-        }
-    }
 
     // -- Planting --
-    Phase Planting => new(
-        name: "Planting",
-        enter: Planting_Enter,
-        update: Planting_Update
+    static readonly Phase<CheckpointContainer> Planting = new("Planting",
+        enter: (s, c) => {
+            c.GrabCheckpoint();
+        },
+        update: (delta, s, c) => {
+            if (!CanSave(c)) {
+                s.ChangeTo(NotSaving);
+                return;
+            }
+
+            // switch to simply existing after planting
+            if (s.PhaseElapsed > c.Tuning.Save_PlantDuration) {
+                s.ChangeTo(Being);
+            }
+        }
     );
-
-    void Planting_Enter(Container c) {
-        c.GrabCheckpoint();
-    }
-
-    void Planting_Update(float delta, Container c) {
-        if (!CanSave(c)) {
-            ChangeTo(NotSaving);
-            return;
-        }
-
-        // switch to simply existing after planting
-        if (PhaseElapsed > c.Tuning.Save_PlantDuration) {
-            ChangeTo(Being);
-        }
-    }
 
     // -- Being --
-    Phase Being => new(
-        name: "Being",
-        enter: Being_Enter,
-        update: Being_Update
+    static readonly Phase<CheckpointContainer> Being = new("Being",
+        enter: (s, c) => {
+            c.CreateCheckpoint(c.State.Save_PendingCheckpoint);
+        },
+        update: (delta, s, c) => {
+            if (!CanSave(c)) {
+                s.ChangeTo(NotSaving);
+                return;
+            }
+        }
     );
 
-    void Being_Enter(Container c) {
-        c.CreateCheckpoint(c.State.Save_PendingCheckpoint);
-    }
-
-    void Being_Update(float delta, Container c) {
-        if (!CanSave(c)) {
-            ChangeTo(NotSaving);
-            return;
-        }
-    }
-
     // -- queries --
-    /// TODO: this should be written to some external state structure
-    public bool IsSaving {
-        get => c.State.IsSaving;
-    }
-
     /// if the character can currently save
-    bool CanSave(Container c) {
+    static bool CanSave(CheckpointContainer c) {
         return c.Character.State.Curr.IsCrouching && c.Character.State.Curr.IsIdle;
     }
 }

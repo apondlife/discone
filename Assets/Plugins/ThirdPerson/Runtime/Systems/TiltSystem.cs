@@ -5,9 +5,6 @@ using Soil;
 // TODO: this system should be in the model
 namespace ThirdPerson {
 
-using Container = CharacterContainer;
-using Phase = Phase<CharacterContainer>;
-
 /// system state extensions
 partial class CharacterState {
     partial class Frame {
@@ -18,9 +15,9 @@ partial class CharacterState {
 
 /// how the character tilts on the ground
 [Serializable]
-sealed class TiltSystem : CharacterSystem {
+sealed class TiltSystem: CharacterSystem {
     // -- System --
-    protected override Phase InitInitialPhase() {
+    protected override Phase<CharacterContainer> InitInitialPhase() {
         return NotTilting;
     }
 
@@ -30,56 +27,50 @@ sealed class TiltSystem : CharacterSystem {
     }
 
     // -- NotTilting --
-    Phase NotTilting => new(
-        "NotTilting",
-        update: NotTilting_Update
-    );
+    static readonly Phase<CharacterContainer> NotTilting = new("NotTilting",
+        update: (_, s, c) => {
+            var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
+            if (acceleration.sqrMagnitude != 0.0f) {
+                s.ChangeTo(Tilting);
+                return;
+            }
 
-    void NotTilting_Update(float _, Container c) {
-        var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
-        if (acceleration.sqrMagnitude != 0.0f) {
-            ChangeTo(Tilting);
-            return;
+            InterpolateTilt(Quaternion.identity, c);
         }
-
-        InterpolateTilt(Quaternion.identity, c);
-    }
+    );
 
     // -- Tilting --
-    Phase Tilting => new(
-        "Tilting",
-        update: Tilting_Update
-    );
+    static readonly Phase<CharacterContainer> Tilting = new("Tilting",
+        update: (_, s, c) => {
+            var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
+            if (acceleration.sqrMagnitude == 0.0f) {
+                s.ChangeTo(NotTilting);
+                return;
+            }
 
-    void Tilting_Update(float _, Container c) {
-        var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
-        if (acceleration.sqrMagnitude == 0.0f) {
-            ChangeTo(NotTilting);
-            return;
+            var tiltAngle = Mathf.Clamp(
+                acceleration.magnitude / c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle) * c.Tuning.TiltForBaseAcceleration,
+                0,
+                c.Tuning.MaxTilt
+            );
+
+            var tiltAxis = Vector3.Cross(
+                Vector3.up,
+                acceleration.normalized
+            );
+
+            var tilt = Quaternion.AngleAxis(
+                tiltAngle,
+                tiltAxis.normalized
+            );
+
+            InterpolateTilt(tilt, c);
         }
-
-        var tiltAngle = Mathf.Clamp(
-            acceleration.magnitude / c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle) * c.Tuning.TiltForBaseAcceleration,
-            0,
-            c.Tuning.MaxTilt
-        );
-
-        var tiltAxis = Vector3.Cross(
-            Vector3.up,
-            acceleration.normalized
-        );
-
-        var tilt = Quaternion.AngleAxis(
-            tiltAngle,
-            tiltAxis.normalized
-        );
-
-        InterpolateTilt(tilt, c);
-    }
+    );
 
     // -- commands --
     /// smooth tilt towards target
-    void InterpolateTilt(Quaternion target, Container c) {
+    static void InterpolateTilt(Quaternion target, CharacterContainer c) {
         c.State.Next.Tilt = Quaternion.Slerp(
             c.State.Next.Tilt,
             target,

@@ -93,6 +93,16 @@ public sealed partial class CameraState {
         get => m_FollowYawZeroDir;
     }
 
+    /// the pos of the current hit surface
+    public Vector3 ClipPos {
+        get => Next.IsColliding ? HitPos : Next.Pos;
+    }
+
+    /// the normal of the current hit surface
+    public Vector3 ClipNormal {
+        get => Next.IsColliding ? HitNormal : Next.Forward;
+    }
+
     /// the current position on the camera sphere in world coords
     public Vector3 IntoIdealPosition() {
         return SphericalIntoWorld(Next.Spherical);

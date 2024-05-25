@@ -18,16 +18,19 @@ public record Tag {
     }
 
     // -- commands --
+    // ReSharper disable Unity.PerformanceAnalysis
     /// log an info message
     public void I(string message) {
         Debug.Log(F(message));
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     /// log an warning message
     public void W(string message) {
         Debug.LogWarning(F(message));
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     /// log an error message
     public void E(string message) {
         Debug.LogError(F(message));

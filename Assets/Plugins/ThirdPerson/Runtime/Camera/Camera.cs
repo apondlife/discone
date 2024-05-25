@@ -100,7 +100,7 @@ public class Camera: MonoBehaviour, CameraContainer {
         // set camera clip shader props
         Shader.SetGlobalVector(
             ShaderProps.CameraClipPlane,
-            new Plane(m_CollisionSystem.ClipNormal, m_CollisionSystem.ClipPos).AsVector4()
+            new Plane(m_State.ClipNormal, m_State.ClipPos).AsVector4()
         );
     }
 
@@ -131,12 +131,12 @@ public class Camera: MonoBehaviour, CameraContainer {
         // set camera clip shader props
         Shader.SetGlobalVector(
             ShaderProps.CameraClipPos,
-            m_CollisionSystem.ClipPos
+            m_State.ClipPos
         );
 
         Shader.SetGlobalVector(
             ShaderProps.CameraClipPlane,
-            new Plane(m_CollisionSystem.ClipNormal, m_CollisionSystem.ClipPos).AsVector4()
+            new Plane(m_State.ClipNormal, m_State.ClipPos).AsVector4()
         );
     }
 

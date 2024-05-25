@@ -4,17 +4,14 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-using Container = CameraContainer;
-using Phase = Phase<CameraContainer>;
-
 [Serializable]
-sealed class CameraCollisionSystem: SimpleSystem<Container> {
+sealed class CameraCollisionSystem: SimpleSystem<CameraContainer> {
     // -- System --
-    protected override Phase InitInitialPhase() {
+    protected override Phase<CameraContainer> InitInitialPhase() {
         return Tracking;
     }
 
-    public override void Init(Container c) {
+    public override void Init(CameraContainer c) {
         base.Init(c);
 
         // set initial state
@@ -22,175 +19,156 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
     }
 
     // -- Tracking --
-    Phase Tracking => new(
-        name: "Tracking",
-        update: Tracking_Update
+    static readonly Phase<CameraContainer> Tracking = new("Tracking",
+        update: (delta, s, c) => {
+            if (c.State.IsFreeLook) {
+                s.ChangeToImmediate(FreeLook, delta);
+                return;
+            }
+
+            var ideal = c.State.IntoIdealPosition();
+            var corrected = GetTrackingPos(ideal, c);
+            c.State.Next.Pos = ideal;
+
+            if (ideal != corrected) {
+                s.ChangeTo(Tracking_Correcting);
+                return;
+            }
+        }
     );
-
-    void Tracking_Update(float delta, Container c) {
-        if (c.State.IsFreeLook) {
-            ChangeToImmediate(FreeLook, delta);
-            return;
-        }
-
-        var ideal = c.State.IntoIdealPosition();
-        var corrected = GetTrackingPos(ideal, c);
-        c.State.Next.Pos = ideal;
-
-        if (ideal != corrected) {
-            ChangeTo(Tracking_Correcting);
-            return;
-        }
-    }
 
     // -- Tracking_Correcting --
-    Phase Tracking_Correcting => new(
-        name: "Tracking_Correcting",
-        update: Tracking_Correcting_Update
+    static readonly Phase<CameraContainer> Tracking_Correcting = new("Tracking_Correcting",
+        update: (delta, s, c) => {
+            if (c.State.IsFreeLook) {
+                s.ChangeToImmediate(FreeLook, delta);
+                return;
+            }
+
+            var idealPos = c.State.IntoIdealPosition();
+            var correctPos = GetTrackingPos(idealPos, c);
+
+            var nextPos = Vector3.MoveTowards(
+                c.State.Curr.Pos,
+                correctPos,
+                c.Tuning.Collision_Tracking_CorrectionSpeed * delta
+            );
+
+            c.State.Next.Pos = nextPos;
+
+            if (nextPos == idealPos) {
+                s.ChangeTo(Tracking);
+                return;
+            }
+        }
     );
-
-    void Tracking_Correcting_Update(float delta, Container c) {
-        if (c.State.IsFreeLook) {
-            ChangeToImmediate(FreeLook, delta);
-            return;
-        }
-
-        var idealPos = c.State.IntoIdealPosition();
-        var correctPos = GetTrackingPos(idealPos, c);
-
-        var nextPos = Vector3.MoveTowards(
-            c.State.Curr.Pos,
-            correctPos,
-            c.Tuning.Collision_Tracking_CorrectionSpeed * delta
-        );
-
-        c.State.Next.Pos = nextPos;
-
-        if (nextPos == idealPos) {
-            ChangeTo(Tracking);
-            return;
-        }
-    }
 
     // -- FreeLook --
-    Phase FreeLook => new(
-        name: "FreeLook",
-        update: FreeLook_Update
+    static readonly Phase<CameraContainer> FreeLook = new("FreeLook",
+        update: (delta, s, c) => {
+            if (!c.State.IsFreeLook) {
+                s.ChangeToImmediate(Tracking, delta);
+                return;
+            }
+
+            var ideal = c.State.IntoIdealPosition();
+            var corrected = GetFreeLookPos(ideal, c);
+
+            c.State.Next.Pos = ideal;
+
+            if (ideal != corrected) {
+                s.ChangeTo(FreeLook_Colliding);
+                return;
+            }
+        }
     );
-
-    void FreeLook_Update(float delta, Container c) {
-        if (!c.State.IsFreeLook) {
-            ChangeToImmediate(Tracking, delta);
-            return;
-        }
-
-        var ideal = c.State.IntoIdealPosition();
-        var corrected = GetFreeLookPos(ideal, c);
-
-        c.State.Next.Pos = ideal;
-
-        if (ideal != corrected) {
-            ChangeTo(FreeLook_Colliding);
-            return;
-        }
-    }
 
     // -- FreeLook_Colliding --
-    Phase FreeLook_Colliding => new(
-        name: "FreeLook_Colliding",
-        update: FreeLook_Colliding_Update
+    static readonly Phase<CameraContainer> FreeLook_Colliding = new("FreeLook_Colliding",
+        update: (delta, s, c) => {
+            if (!c.State.IsFreeLook) {
+                s.ChangeToImmediate(Tracking, delta);
+                return;
+            }
+
+            var ideal = c.State.IntoIdealPosition();
+            var corrected = GetFreeLookPos(ideal, c);
+
+            // c.State.Next.Pos = c.State.Curr.Pos + (inputImpulse + correctionImpulse);
+            if (ideal == corrected) {
+                s.ChangeToImmediate(FreeLook, delta);
+                return;
+            }
+
+            // scale tolerance with hit normal
+            var normalDotUp = Vector3.Dot(c.State.HitNormal, Vector3.up);
+            var tolerance = c.Tuning.Collision_ClipToleranceByNormal.Evaluate(normalDotUp);
+            var mag = Vector3.Magnitude(ideal - corrected);
+            if (mag > tolerance) {
+                s.ChangeToImmediate(FreeLook_Clipping, delta);
+                return;
+            }
+
+            // interpolate towards corrected position while colliding
+            c.State.Next.Pos = Vector3.MoveTowards(
+                c.State.Next.Pos,
+                corrected,
+                c.Tuning.Collision_FreeLook_CorrectionSpeed * delta
+            );
+        }
     );
 
-    void FreeLook_Colliding_Update(float delta, Container c) {
-        if (!c.State.IsFreeLook) {
-            ChangeToImmediate(Tracking, delta);
-            return;
+    // -- FreeLook_Clipping --
+    static readonly Phase<CameraContainer> FreeLook_Clipping = new("FreeLook_Clipping",
+        enter: (s, c) => {
+            c.State.Next.Velocity *= 1f - c.Tuning.Collision_ClipDamping.Evaluate(s.PhaseStart, releaseStartTime: s.PhaseStart);
+        },
+        update: (delta, s, c) => {
+            if (!c.State.IsFreeLook) {
+                s.ChangeToImmediate(Tracking, delta);
+                return;
+            }
+
+            var ideal = c.State.IntoIdealPosition();
+            var corrected = GetFreeLookPos(ideal, c);
+
+            c.State.Next.Pos = ideal;
+            c.State.Next.Velocity *= 1.0f - c.Tuning.Collision_ClipDamping.Evaluate(s.PhaseStart, releaseStartTime: s.PhaseStart);
+
+            if (ideal == corrected) {
+                s.ChangeTo(FreeLook_ClippingCooldown);
+                return;
+            }
         }
-
-        var ideal = c.State.IntoIdealPosition();
-        var corrected = GetFreeLookPos(ideal, c);
-
-        // c.State.Next.Pos = c.State.Curr.Pos + (inputImpulse + correctionImpulse);
-        if (ideal == corrected) {
-            ChangeToImmediate(FreeLook, delta);
-            return;
-        }
-
-        // scale tolerance with hit normal
-        var normalDotUp = Vector3.Dot(c.State.HitNormal, Vector3.up);
-        var tolerance = c.Tuning.Collision_ClipToleranceByNormal.Evaluate(normalDotUp);
-        var mag = Vector3.Magnitude(ideal - corrected);
-        if (mag > tolerance) {
-            ChangeToImmediate(FreeLook_Clipping, delta);
-            return;
-        }
-
-        // interpolate towards corrected position while colliding
-        c.State.Next.Pos = Vector3.MoveTowards(
-            c.State.Next.Pos,
-            corrected,
-            c.Tuning.Collision_FreeLook_CorrectionSpeed * delta
-        );
-    }
-
-    // -- FreeLook_Clipping--
-    Phase FreeLook_Clipping => new(
-        name: "FreeLook_Clipping",
-        enter: FreeLook_Clipping_Enter,
-        update: FreeLook_Clipping_Update
     );
 
-    void FreeLook_Clipping_Enter(Container c) {
-        c.State.Next.Velocity *= 1.0f - c.Tuning.Collision_ClipDamping.Evaluate(PhaseStart, releaseStartTime: PhaseStart);
-    }
+    // -- FreeLook_ClippingCooldown --
+    static readonly Phase<CameraContainer> FreeLook_ClippingCooldown = new("FreeLook_ClippingCooldown",
+        update: (delta, s, c) => {
+            if (!c.State.IsFreeLook) {
+                s.ChangeToImmediate(Tracking, delta);
+                return;
+            }
 
-    void FreeLook_Clipping_Update(float delta, Container c) {
-        if (!c.State.IsFreeLook) {
-            ChangeToImmediate(Tracking, delta);
-            return;
+            var ideal = c.State.IntoIdealPosition();
+            var corrected = GetFreeLookPos(ideal, c);
+
+            c.State.Next.Pos = ideal;
+
+            if (ideal != corrected) {
+                s.ChangeTo(FreeLook_Clipping);
+                return;
+            }
+
+            if (s.PhaseElapsed >= c.Tuning.Collision_ClipCooldown) {
+                s.ChangeTo(FreeLook);
+                return;
+            }
         }
-
-        var ideal = c.State.IntoIdealPosition();
-        var corrected = GetFreeLookPos(ideal, c);
-
-        c.State.Next.Pos = ideal;
-        c.State.Next.Velocity *= 1.0f - c.Tuning.Collision_ClipDamping.Evaluate(PhaseStart, releaseStartTime: PhaseStart);
-
-        if (ideal == corrected) {
-            ChangeTo(FreeLook_ClippingCooldown);
-            return;
-        }
-    }
-
-    Phase FreeLook_ClippingCooldown => new(
-        name: "FreeLook_ClippingCooldown",
-        update: FreeLook_ClippingCooldown_Update
     );
-
-    void FreeLook_ClippingCooldown_Update(float delta, Container c) {
-        if (!c.State.IsFreeLook) {
-            ChangeToImmediate(Tracking, delta);
-            return;
-        }
-
-        var ideal = c.State.IntoIdealPosition();
-        var corrected = GetFreeLookPos(ideal, c);
-
-        c.State.Next.Pos = ideal;
-
-        if (ideal != corrected) {
-            ChangeTo(FreeLook_Clipping);
-            return;
-        }
-
-        if (PhaseElapsed >= c.Tuning.Collision_ClipCooldown) {
-            ChangeTo(FreeLook);
-            return;
-        }
-    }
 
     // -- queries --
-    Vector3 GetFreeLookPos(Vector3 candidate, Container c) {
+    static Vector3 GetFreeLookPos(Vector3 candidate, CameraContainer c) {
         // the final position
         var destPos = candidate;
 
@@ -254,7 +232,7 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
 
     /// correct camera position in attempt to preserve line of sight
     /// see: https://miro.com/app/board/uXjVOWfpI6I=/?moveToWidget=3458764535240497690&cot=14
-    Vector3 GetTrackingPos(Vector3 candidate, Container c) {
+    static Vector3 GetTrackingPos(Vector3 candidate, CameraContainer c) {
         // the final position
         var destPos = candidate;
 
@@ -378,19 +356,8 @@ sealed class CameraCollisionSystem: SimpleSystem<Container> {
     }
 
     /// the hit point adjusted by the contact offset
-    Vector3 OffsetHit(RaycastHit hit, Container c) {
+    static Vector3 OffsetHit(RaycastHit hit, CameraContainer c) {
         return hit.point + c.Tuning.Collision_ContactOffset * hit.normal;
-    }
-
-    // -- queries --
-    /// the pos of the current hit surface
-    public Vector3 ClipPos {
-        get => c.State.Next.IsColliding ? c.State.HitPos : c.State.Next.Pos;
-    }
-
-    /// the normal of the current hit surface
-    public Vector3 ClipNormal {
-        get => c.State.Next.IsColliding ? c.State.HitNormal : c.State.Next.Forward;
     }
 }
 

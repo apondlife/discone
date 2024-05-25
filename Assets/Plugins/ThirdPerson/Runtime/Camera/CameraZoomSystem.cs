@@ -4,43 +4,37 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-using Container = CameraContainer;
-using Phase = Phase<CameraContainer>;
-
 [Serializable]
-sealed class CameraZoomSystem: SimpleSystem<Container> {
+sealed class CameraZoomSystem: SimpleSystem<CameraContainer> {
     // -- System --
-    protected override Phase InitInitialPhase() {
+    protected override Phase<CameraContainer> InitInitialPhase() {
         return Zooming;
     }
 
-    public override void Init(Container c) {
+    public override void Init(CameraContainer c) {
         base.Init(c);
 
         c.State.Fov = c.Tuning.Fov.Evaluate(0);
     }
 
     // -- Tracking --
-    Phase Zooming => new(
-        name: "Zooming",
-        update: Zooming_Update
+    static readonly Phase<CameraContainer> Zooming = new("Zooming",
+        update: (delta, _, c) => {
+            var destFov = c.Tuning.Fov.Evaluate(
+                Mathf.InverseLerp(
+                    c.Tuning.FovTargetMinSpeed,
+                    c.Tuning.FovTargetMaxSpeed,
+                    c.State.Character.Next.Velocity.magnitude
+                )
+            );
+
+            c.State.Next.Fov = Mathf.MoveTowards(
+                c.State.Fov,
+                destFov,
+                c.Tuning.FovSpeed * delta
+            );
+        }
     );
-
-    void Zooming_Update(float delta, Container c) {
-        var destFov = c.Tuning.Fov.Evaluate(
-            Mathf.InverseLerp(
-                c.Tuning.FovTargetMinSpeed,
-                c.Tuning.FovTargetMaxSpeed,
-                c.State.Character.Next.Velocity.magnitude
-            )
-        );
-
-        c.State.Next.Fov = Mathf.MoveTowards(
-            c.State.Fov,
-            destFov,
-            c.Tuning.FovSpeed * delta
-        );
-    }
 }
 
 }
