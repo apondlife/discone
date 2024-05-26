@@ -108,13 +108,15 @@ sealed class Character_Spawn: NetworkBehaviour {
             return;
         }
 
-        var placeholder = CharacterDefs
+        var character = CharacterDefs
             .Instance
-            .Find(m_Character)
-            .Placeholder;
+            .Find(m_Character);
 
+        var placeholder = character.Placeholder;
         if (placeholder != m_Placeholder) {
             var renderers = placeholder.GetComponentsInChildren<Renderer>();
+
+            Array.Clear(m_PlaceholderRenderers, 0, m_PlaceholderRenderers.Length);
             if (renderers.Length > m_PlaceholderRenderers.Length) {
                 Array.Resize(ref m_PlaceholderRenderers, renderers.Length);
             }
@@ -134,25 +136,24 @@ sealed class Character_Spawn: NetworkBehaviour {
                 m_PlaceholderRenderers[i] = (renderer, mesh);
                 i += 1;
             }
+
+            m_Placeholder = placeholder;
         }
 
-        var t = transform;
-        var pos = t.position;
-        var rot = t.rotation;
+        var matrix = transform.localToWorldMatrix * Matrix4x4.Translate(character.Placeholder_Offset);
 
         foreach (var (renderer, mesh) in m_PlaceholderRenderers) {
             if (mesh == null) {
                 continue;
             }
 
-            renderer.sharedMaterial.SetPass(0);
-
-            t = renderer.transform;
-            Graphics.DrawMeshNow(
-                mesh,
-                pos + t.localPosition,
-                rot * t.localRotation
-            );
+            var isMaterialSet = renderer.sharedMaterial.SetPass(0);
+            if (isMaterialSet) {
+                Graphics.DrawMeshNow(
+                    mesh,
+                    matrix * renderer.transform.localToWorldMatrix
+                );
+            }
         }
     }
     #endif
