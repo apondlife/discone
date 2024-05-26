@@ -25,7 +25,7 @@ class SkyBodyOrbit: MonoBehaviour {
     /// the zenith orbit's elapsed time
     float m_ZenithElapsed;
 
-    // -- lifeycle --
+    // -- lifecycle --
     void Awake() {
         m_Body = GetComponent<SkyBody>();
         m_Initial = m_Body.Coordinate;

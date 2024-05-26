@@ -1,3 +1,4 @@
+using Soil;
 using UnityEngine;
 
 /// a celestial body positioned spherically in the sky
@@ -44,6 +45,11 @@ class SkyBody: MonoBehaviour {
 
     /// reposition the body given the player's world position
     void SyncPosition() {
-        transform.localPosition = m_Coordinate.IntoCartesian();
+        var position = m_Coordinate.IntoCartesian();
+
+        var t = transform;
+        if (!Mathx.IsZero(position - t.localPosition)) {
+            t.localPosition = position;
+        }
     }
 }
