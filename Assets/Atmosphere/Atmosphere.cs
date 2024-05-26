@@ -5,7 +5,6 @@ using UnityAtoms.Discone;
 namespace Discone {
 
 // BUG: if you start in no region, there's no atmosphere
-// TODO: stop this from thrashing git state
 /// the current skybox region
 public partial class Atmosphere: MonoBehaviour {
     // -- state --
