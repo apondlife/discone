@@ -30,13 +30,13 @@ public class OnlineInterest: InterestManagement {
 
     // -- props --
     /// a cache of interesting objects by id
-    Dictionary<uint, Interest> m_Interests = new Dictionary<uint, Interest>();
+    Dictionary<uint, Interest> m_Interests = new();
 
     /// if the set of simulated characters changed
     bool m_SimulatedChanged;
 
     /// the set net ids for characters the host simulates
-    HashSet<uint> m_SimulatedCharacters = new HashSet<uint>();
+    HashSet<uint> m_SimulatedCharacters = new();
 
     /// the time of the last rebuild
     double m_LastRebuildTime = -1.0;
@@ -47,7 +47,7 @@ public class OnlineInterest: InterestManagement {
     // -- lifecycle --
     [ServerCallback]
     void Update() {
-        if (m_Entities.Value == null) {
+        if (!m_Entities.Value) {
             return;
         }
 
@@ -90,7 +90,7 @@ public class OnlineInterest: InterestManagement {
         }
     }
 
-    // -- InterestManagment --
+    // -- InterestManagement --
     /// [Server]
     public override void Reset() {
         base.Reset();
@@ -123,7 +123,6 @@ public class OnlineInterest: InterestManagement {
         HashSet<NetworkConnectionToClient> newObservers
     ) {
         // check which players can see the identity
-        var players = m_Entities.Value.Players.All;
         foreach (var conn in NetworkServer.connections.Values) {
             if (conn == null || !conn.isAuthenticated || conn.identity == null) {
                 continue;

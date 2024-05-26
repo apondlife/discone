@@ -1130,6 +1130,10 @@ PrefabInstance:
       value: -0.0315
       objectReference: {fileID: 0}
     - target: {fileID: 7612935115146947594, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7612935115146947594, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -1396,11 +1400,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1172656224154144300, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -0.067505546
+      value: -0.06750555
       objectReference: {fileID: 0}
     - target: {fileID: 1172656224154144300, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: -0.77822393
+      value: -0.77822405
       objectReference: {fileID: 0}
     - target: {fileID: 1172656224154144300, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.z
@@ -1421,6 +1425,10 @@ PrefabInstance:
     - target: {fileID: 3962901543644761615, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_Name
       value: icecream-hair
+      objectReference: {fileID: 0}
+    - target: {fileID: 3962901543644761615, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4446422109639103669, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_RootOrder
@@ -1468,7 +1476,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6968317382233487145, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -0.000000078163225
+      value: -0.00000007816323
       objectReference: {fileID: 0}
     - target: {fileID: 6968317382233487145, guid: ede088dc77fc4124aaf74ea358b21a0f, type: 3}
       propertyPath: m_ConnectedAnchor.y
@@ -1771,6 +1779,10 @@ PrefabInstance:
     - target: {fileID: 7075559816279309441, guid: 4b6eb2f7facff6c4e9917fe442dfcd5f, type: 3}
       propertyPath: m_Name
       value: Icecream_Face
+      objectReference: {fileID: 0}
+    - target: {fileID: 7075559816279309441, guid: 4b6eb2f7facff6c4e9917fe442dfcd5f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7600563821327640123, guid: 4b6eb2f7facff6c4e9917fe442dfcd5f, type: 3}
       propertyPath: m_RootOrder

@@ -13,6 +13,9 @@ sealed class CharacterDef: ScriptableObject {
     [Tooltip("the character flower prefab")]
     [SerializeField] CharacterFlower m_Flower;
 
+    [Tooltip("the placeholder prefab")]
+    [SerializeField] GameObject m_Placeholder;
+
     // -- queries --
     // the character prefab
     public Character Character {
@@ -22,6 +25,11 @@ sealed class CharacterDef: ScriptableObject {
     // the character flower prefab
     public CharacterFlower Flower {
         get => m_Flower;
+    }
+
+    // the character placeholder prefab
+    public GameObject Placeholder {
+        get => m_Placeholder;
     }
 }
 

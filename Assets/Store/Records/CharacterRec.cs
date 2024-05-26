@@ -20,7 +20,7 @@ public record CharacterRec {
     public FlowerRec F;
 
     // -- lifetime --
-    [Obsolete("use the paramterized constructor")]
+    [Obsolete("use the parameterized constructor")]
     public CharacterRec() {
     }
 

@@ -9,8 +9,6 @@ namespace Discone {
 /// an online character
 [RequireComponent(typeof(Character))]
 public sealed class Character_Online: NetworkBehaviour {
-    // -- types --
-
     // -- state --
     [Header("state")]
     [Tooltip("where the simulation for this character takes place")]
@@ -238,7 +236,6 @@ public sealed class Character_Online: NetworkBehaviour {
     }
 
     // -- events --
-    // -- e/client
     /// when the client receives new state from the server
     [Client]
     void Client_OnStateReceived(CharacterState.Frame prev, CharacterState.Frame next) {
@@ -285,4 +282,5 @@ public sealed class Character_Online: NetworkBehaviour {
     }
     #endif
 }
+
 }

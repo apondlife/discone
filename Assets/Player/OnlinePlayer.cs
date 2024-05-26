@@ -124,7 +124,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     }
 
     // -- commands --
-    /// creates a given charater at the given transform
+    /// creates a given character at the given transform
     public void SpawnCharacterAtPoint(CharacterKey key, Transform t) {
         // spawn a new character
         var pos = t.position;
@@ -147,45 +147,28 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     /// when the requests to instantiate its previous character
     [Command]
-    public void Command_DriveSpawnedCharacter(CharacterRec character) {
-        var prefab = CharacterDefs.Instance.Find(character.Key).Character;
-
-        // TODO: character spawns exactly in the ground, and because of chunk
-        // delay it ends up falling through the ground
-        const float offset = 1.0f;
-        var newCharacter = Instantiate(
-            prefab,
-            character.Pos + Vector3.up * offset,
-            character.Rot
+    public void Command_DriveSpawnedCharacter(CharacterRec record) {
+        var newCharacter = Character_Spawn.Server_Create(
+            record,
+            connectionToClient.connectionId.ToString()
         );
 
-        var dstCharacter = newCharacter.Online;
-
-        // we need to set the character here before calling Spawn because Spawn
-        // calls the interest management and that uses the player position
-        // (which is dependent on the characters).
-        // NOTE/TODO: if this weren't true, then we could use
-        // Server_DriveCharacter instead of Server_SwitchCharacter and have
-        // fewer code paths
+        // we need to set the character here before calling Spawn because Spawn calls the interest management and that
+        // uses the player position (which is dependent on the characters).
+        // TODO: if this weren't true, then we could use Server_DriveCharacter instead of Server_SwitchCharacter and
+        // have fewer code paths
         var src = m_Character?.gameObject;
         m_Character = newCharacter;
 
-        #if UNITY_EDITOR
-        dstCharacter.name = $"{character.Key.Name()} <spawned@{connectionToClient.connectionId}>";
-        #endif
-
         // spawn the character
-        var dst = dstCharacter.gameObject;
-        NetworkServer.Spawn(dst);
+        Character_Spawn.Server_Spawn(newCharacter);
 
         // notify all clients of the switch
+        var dst = newCharacter.gameObject;
         Server_SwitchCharacter(src, dst);
 
         // place the character's flower, if any
-        if (character.Flower != null) {
-            // TODO: should this be event?
-            newCharacter.Checkpoint.Server_CreateCheckpoint(character.Flower);
-        }
+        Character_Spawn.Server_FinishSpawn(newCharacter, record);
     }
 
     /// drive a random character marked with "IsInitial"
