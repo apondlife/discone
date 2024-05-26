@@ -34,7 +34,7 @@ public partial class Atmosphere: MonoBehaviour {
     Region m_DstRegion;
 
     /// a list of event subscriptions
-    DisposeBag m_Subscriptions = new();
+    readonly DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Awake() {

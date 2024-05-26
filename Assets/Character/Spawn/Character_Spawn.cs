@@ -44,7 +44,7 @@ sealed class Character_Spawn: NetworkBehaviour {
 
         // TODO: character spawns exactly in the ground, and because of chunk
         // delay it ends up falling through the ground
-        const float offset = 0.0f;
+        const float offset = 1f;
         var newCharacter = Instantiate(
             prefab,
             record.Pos + offset * Vector3.up,
