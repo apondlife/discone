@@ -78,8 +78,9 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
         }
 
         // update the systems
+        var delta = Time.deltaTime;
         foreach (var system in m_Systems) {
-            system.Update(Time.deltaTime);
+            system.Update(delta);
         }
     }
 
@@ -110,7 +111,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
     /// grab the nearby checkpoint
     public void GrabCheckpoint() {
         // grab an existing flower
-        Command_GrabCheckpoint(Character.State.Position);
+        Command_GrabCheckpoint(Character.State.Next.Position);
     }
 
     /// create the checkpoint

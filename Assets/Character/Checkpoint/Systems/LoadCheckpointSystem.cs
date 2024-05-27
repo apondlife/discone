@@ -30,7 +30,7 @@ sealed class LoadCheckpointSystem: SimpleSystem<CheckpointContainer> {
         enter: (s, c) => {
             // get distance to current checkpoint
             var distance = Vector3.Distance(
-                c.Character.State.Position,
+                c.Character.State.Next.Position,
                 c.Checkpoint.Position
             );
 

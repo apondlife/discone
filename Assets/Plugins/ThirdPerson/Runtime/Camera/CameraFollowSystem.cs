@@ -120,7 +120,7 @@ sealed class CameraFollowSystem: SimpleSystem<CameraContainer> {
 
             // if the player sits around for a while after moving, we assume they've
             // finished moving and reset the camera
-            if (c.State.Character.IdleTime > c.Tuning.FreeLook_MoveIntentTimeout) {
+            if (c.State.Character.Next.IdleTime > c.Tuning.FreeLook_MoveIntentTimeout) {
                 s.ChangeTo(Idle);
                 return;
             }
@@ -161,7 +161,7 @@ sealed class CameraFollowSystem: SimpleSystem<CameraContainer> {
         // we should resample yaw speed from the current state.
 
         // get current yaw
-        var currYaw = c.State.Spherical.Azimuth;
+        var currYaw = c.State.Next.Spherical.Azimuth;
 
         // get desired yaw behind model
         var destFwd = -Vector3.ProjectOnPlane(c.State.FollowForward, Vector3.up);

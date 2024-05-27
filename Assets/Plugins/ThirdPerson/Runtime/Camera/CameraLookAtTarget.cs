@@ -137,7 +137,7 @@ public class CameraLookAtTarget: MonoBehaviour {
         delta *= Mathf.InverseLerp(
             m_MinFallingSpeed,
             m_MaxFallingSpeed,
-            -c.State.Velocity.y
+            -c.State.Next.Velocity.y
         );
 
         return footPos + delta * Vector3.down;

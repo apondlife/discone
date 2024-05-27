@@ -177,7 +177,7 @@ public class Camera: MonoBehaviour, CameraContainer {
 
     /// if free look is enabled
     public bool IsFreeLookEnabled {
-        get => m_State.IsFreeLook;
+        get => m_State.Next.IsFreeLook;
     }
 
     /// the current state frame
@@ -217,7 +217,7 @@ public class Camera: MonoBehaviour, CameraContainer {
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(ideal, 0.3f);
 
-        var actual = m_State.Pos;
+        var actual = m_State.Next.Pos;
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(actual, 0.15f);
 

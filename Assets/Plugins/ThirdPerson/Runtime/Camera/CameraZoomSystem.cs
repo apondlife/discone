@@ -14,7 +14,7 @@ sealed class CameraZoomSystem: SimpleSystem<CameraContainer> {
     public override void Init(CameraContainer c) {
         base.Init(c);
 
-        c.State.Fov = c.Tuning.Fov.Evaluate(0);
+        c.State.Next.Fov = c.Tuning.Fov.Evaluate(0);
     }
 
     // -- Tracking --
@@ -29,7 +29,7 @@ sealed class CameraZoomSystem: SimpleSystem<CameraContainer> {
             );
 
             c.State.Next.Fov = Mathf.MoveTowards(
-                c.State.Fov,
+                c.State.Next.Fov,
                 destFov,
                 c.Tuning.FovSpeed * delta
             );

@@ -21,7 +21,7 @@ sealed class CameraCollisionSystem: SimpleSystem<CameraContainer> {
     // -- Tracking --
     static readonly Phase<CameraContainer> Tracking = new("Tracking",
         update: (delta, s, c) => {
-            if (c.State.IsFreeLook) {
+            if (c.State.Next.IsFreeLook) {
                 s.ChangeToImmediate(FreeLook, delta);
                 return;
             }
@@ -40,7 +40,7 @@ sealed class CameraCollisionSystem: SimpleSystem<CameraContainer> {
     // -- Tracking_Correcting --
     static readonly Phase<CameraContainer> Tracking_Correcting = new("Tracking_Correcting",
         update: (delta, s, c) => {
-            if (c.State.IsFreeLook) {
+            if (c.State.Next.IsFreeLook) {
                 s.ChangeToImmediate(FreeLook, delta);
                 return;
             }
@@ -66,7 +66,7 @@ sealed class CameraCollisionSystem: SimpleSystem<CameraContainer> {
     // -- FreeLook --
     static readonly Phase<CameraContainer> FreeLook = new("FreeLook",
         update: (delta, s, c) => {
-            if (!c.State.IsFreeLook) {
+            if (!c.State.Next.IsFreeLook) {
                 s.ChangeToImmediate(Tracking, delta);
                 return;
             }
@@ -86,7 +86,7 @@ sealed class CameraCollisionSystem: SimpleSystem<CameraContainer> {
     // -- FreeLook_Colliding --
     static readonly Phase<CameraContainer> FreeLook_Colliding = new("FreeLook_Colliding",
         update: (delta, s, c) => {
-            if (!c.State.IsFreeLook) {
+            if (!c.State.Next.IsFreeLook) {
                 s.ChangeToImmediate(Tracking, delta);
                 return;
             }
@@ -124,7 +124,7 @@ sealed class CameraCollisionSystem: SimpleSystem<CameraContainer> {
             c.State.Next.Velocity *= 1f - c.Tuning.Collision_ClipDamping.Evaluate(s.PhaseStart, releaseStartTime: s.PhaseStart);
         },
         update: (delta, s, c) => {
-            if (!c.State.IsFreeLook) {
+            if (!c.State.Next.IsFreeLook) {
                 s.ChangeToImmediate(Tracking, delta);
                 return;
             }
@@ -145,7 +145,7 @@ sealed class CameraCollisionSystem: SimpleSystem<CameraContainer> {
     // -- FreeLook_ClippingCooldown --
     static readonly Phase<CameraContainer> FreeLook_ClippingCooldown = new("FreeLook_ClippingCooldown",
         update: (delta, s, c) => {
-            if (!c.State.IsFreeLook) {
+            if (!c.State.Next.IsFreeLook) {
                 s.ChangeToImmediate(Tracking, delta);
                 return;
             }

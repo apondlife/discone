@@ -1,6 +1,5 @@
 ﻿using Soil;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -179,7 +178,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         if (state.IsInJumpSquat) {
             var jumpSquatPct = 1f;
-            var jumpTuning = c.Tuning.Jumps[c.State.JumpTuningIndex];
+            var jumpTuning = c.Tuning.Jumps[c.State.Next.JumpTuningIndex];
             if (jumpTuning.JumpSquatDuration.Max > 0f) {
                 jumpSquatPct = state.JumpState.PhaseElapsed / jumpTuning.JumpSquatDuration.Max;
             }

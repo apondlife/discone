@@ -50,17 +50,6 @@ namespace ThirdPerson.SourceGeneration {
                     (f) => f.name
                 );
 
-                // accessors for properties on the current frame
-                var stateFieldsImpl = IntoLines(
-                    frameFields,
-                    @"public {1} {0} {{
-                        get => m_Frames[0].{0};
-                        set => m_Frames[0].{0} = value;
-                    }}",
-                    (f) => f.name,
-                    (f) => f.type
-                );
-
                 // the state impl
                 var stateImpl = $@"
                     using Soil;
@@ -69,8 +58,6 @@ namespace ThirdPerson.SourceGeneration {
                     namespace ThirdPerson {{
 
                     public partial class {className} {{
-                        {stateFieldsImpl}
-
                         public partial class Frame {{
                             /// create a copy of an existing frame
                             public Frame({className}.Frame f) {{

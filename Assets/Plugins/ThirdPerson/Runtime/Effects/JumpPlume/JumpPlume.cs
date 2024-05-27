@@ -43,7 +43,7 @@ public class JumpPlume: MonoBehaviour {
         var next = c.State.Next;
         if (next.Events.Contains(CharacterEvent.Jump)) {
             var dv = next.Velocity - c.State.Curr.Velocity;
-            m_Particles.transform.up = c.State.PerceivedSurface.Normal;
+            m_Particles.transform.up = c.State.Next.PerceivedSurface.Normal;
 
             // TODO: get actual jump speed
             var sqrSpeed = Vector3.SqrMagnitude(dv);

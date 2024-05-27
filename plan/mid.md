@@ -14,11 +14,9 @@ mired in debt
 - transition from fixed cameras to character camera has bad rotation in in-between state
 
 # debt
-- replace characters in world with a placeholder to spawn them at runtime; improve editor saving speed
 - need to manually enable input actions
 - head ik direction only works for some models
 - default speed of head ik is poorly tuned
 - having zero jumps is not considered
 - rename character* to model* (generally reconsider 3p namespaces)
-- extract state for characterlimb (templates for state/tuning creation???)
 - compiling stuff out in debug/development (but still want it for testing maybe)

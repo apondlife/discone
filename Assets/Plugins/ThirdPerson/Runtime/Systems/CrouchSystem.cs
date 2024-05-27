@@ -29,7 +29,7 @@ sealed class CrouchSystem: CharacterSystem {
     static readonly Phase<CharacterContainer> NotCrouching = new("NotCrouching",
         enter: (_, c) => {
             // stop crouching
-            c.State.IsCrouching = false;
+            c.State.Next.IsCrouching = false;
 
             // reset friction
             c.State.Next.Surface_Drag = c.Tuning.Friction_SurfaceDrag;
@@ -58,7 +58,7 @@ sealed class CrouchSystem: CharacterSystem {
     static readonly Phase<CharacterContainer> Crouching = new("Crouching",
         enter: (_, c) => {
             // start crouching
-            c.State.IsCrouching = true;
+            c.State.Next.IsCrouching = true;
 
             // increase static friction on crouch
             c.State.Next.Surface_StaticFriction = c.Tuning.Crouch_StaticFriction;

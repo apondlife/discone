@@ -53,11 +53,11 @@ sealed class JumpSystem: CharacterSystem {
             }
             // but if not, subtract delta
             else {
-                c.State.CoyoteTime -= delta;
+                c.State.Next.CoyoteTime -= delta;
             }
 
             // fall once coyote time expires
-            if (c.State.CoyoteTime <= 0f) {
+            if (c.State.Next.CoyoteTime <= 0f) {
                 s.ChangeTo(Falling);
                 return;
             }
@@ -84,11 +84,11 @@ sealed class JumpSystem: CharacterSystem {
             }
             // but if not, subtract a delta
             else {
-                c.State.CoyoteTime -= delta;
+                c.State.Next.CoyoteTime -= delta;
             }
 
             // fall once coyote time expires
-            if (c.State.CoyoteTime <= 0f) {
+            if (c.State.Next.CoyoteTime <= 0f) {
                 s.ChangeTo(Falling);
                 return;
             }
@@ -142,11 +142,11 @@ sealed class JumpSystem: CharacterSystem {
             if (IsFirstJump(c)) {
                 // if airborne, reduce coyote time
                 if (!isOnSurface) {
-                    c.State.CoyoteTime -= delta;
+                    c.State.Next.CoyoteTime -= delta;
                 }
 
                 // when coyote time expires, consume this jump
-                if (c.State.CoyoteTime <= 0) {
+                if (c.State.Next.CoyoteTime <= 0) {
                     AdvanceJumps(c);
 
                     // if we're out of jumps, fall instead
@@ -173,7 +173,7 @@ sealed class JumpSystem: CharacterSystem {
             AddJumpGravity(c);
 
             // update timers
-            c.State.CoyoteTime -= delta;
+            c.State.Next.CoyoteTime -= delta;
 
             // start jump on a new press
             if (ShouldStartJump(c)) {
@@ -318,12 +318,12 @@ sealed class JumpSystem: CharacterSystem {
     // -- queries --
     /// the current jump tuning
     static CharacterTuning.JumpTuning GetJumpTuning(CharacterContainer c) {
-        return c.Tuning.Jumps[c.State.JumpTuningIndex];
+        return c.Tuning.Jumps[c.State.Next.JumpTuningIndex];
     }
 
     /// if this is the character's first (grounded) jump
     static bool IsFirstJump(CharacterContainer c) {
-        return c.State.JumpTuningIndex == 0 && c.State.JumpTuningJumpIndex == 0;
+        return c.State.Next.JumpTuningIndex == 0 && c.State.Next.JumpTuningJumpIndex == 0;
     }
 
     /// if the character should jump within the last n frames

@@ -38,7 +38,7 @@ sealed class MovementSystem: CharacterSystem {
             var shouldStartMoving = !c.State.IsStopped || HasMoveInput(c);
 
             // change to sliding if moving & crouching
-            if (shouldStartMoving && c.State.IsCrouching) {
+            if (shouldStartMoving && c.State.Next.IsCrouching) {
                 s.ChangeTo(Sliding);
                 return;
             }
@@ -149,7 +149,7 @@ sealed class MovementSystem: CharacterSystem {
             var shouldStopMoving = c.State.IsStopped && !HasMoveInput(c);
 
             // once not crouching change to move/not move state
-            if (!c.State.IsCrouching) {
+            if (!c.State.Next.IsCrouching) {
                 s.ChangeTo(shouldStopMoving ? NotMoving : Moving);
                 return;
             }
@@ -207,7 +207,7 @@ sealed class MovementSystem: CharacterSystem {
         update: (delta, s, c) => {
             // return to the ground if grounded
             if (c.State.Next.IsOnGround) {
-                s.ChangeToImmediate(c.State.IsCrouching ? Sliding : Moving, delta);
+                s.ChangeToImmediate(c.State.Next.IsCrouching ? Sliding : Moving, delta);
                 return;
             }
 
