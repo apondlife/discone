@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO: code generation
 /// extensions for atoms
-public static class AtomExt {
+public static class AtomExt1 {
     // -- queries --
     /// get a component in this game object atom
     public static C GetComponent<C>(
