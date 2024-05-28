@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 
+namespace Discone {
+
 /// the root audio script
 public class Audio: MonoBehaviour {
     /// if the music is playing
@@ -65,9 +67,9 @@ public class Audio: MonoBehaviour {
         }
 
         // set props
-        m_MainBus = FMODUnity.RuntimeManager.GetBus(k_MainBusName);
-        m_MusicBus = FMODUnity.RuntimeManager.GetBus(k_MusicBusName);
-        m_SfxBus = FMODUnity.RuntimeManager.GetBus(k_SfxBusName);
+        m_MainBus = RuntimeManager.GetBus(k_MainBusName);
+        m_MusicBus = RuntimeManager.GetBus(k_MusicBusName);
+        m_SfxBus = RuntimeManager.GetBus(k_SfxBusName);
 
         // bind events
         m_Subscriptions
@@ -122,4 +124,6 @@ public class Audio: MonoBehaviour {
             m_Music.Play();
         }
     }
+}
+
 }

@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityAtoms.BaseAtoms;
 using System;
 
+namespace Discone {
+
 /// a sun that changes color
 public class SkySun: MonoBehaviour {
     // -- statics --
@@ -34,7 +36,7 @@ public class SkySun: MonoBehaviour {
     DisposeBag m_Subscriptions = new DisposeBag();
 
     // -- lifecycle --
-    private void Awake() {
+    void Awake() {
         // set props
         m_Renderers = GetComponentsInChildren<Renderer>();
 
@@ -85,4 +87,6 @@ public class SkySun: MonoBehaviour {
     void OnPlayerCountChanged(int count) {
         SyncColor();
     }
+}
+
 }

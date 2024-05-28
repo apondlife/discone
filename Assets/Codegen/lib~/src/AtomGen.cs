@@ -7,82 +7,84 @@ using System;
 
 namespace Discone.Codegen {
 
-/// generates state code from the nodes discovered by `FrameSyntaxReceiver`
+/// generates atom helpers
 [Generator]
 public class AtomGen: ISourceGenerator {
+    // -- constants --
+    /// the assembly this generates code for
+    const string k_Assembly = "Assembly-CSharp";
+
+    /// the assembly containing base unity atoms
+    const string k_AtomsAssembly = "UnityAtoms.UnityAtomsBaseAtoms.Runtime";
+
+    // -- ISourceGenerator --
     public void Initialize(GeneratorInitializationContext context) {
-    }
-
-    IEnumerable<ITypeSymbol> GetTypes(INamespaceOrTypeSymbol member) {
-        switch (member) {
-            case INamespaceSymbol ns:
-                return ns.GetMembers().SelectMany(GetTypes);
-            case ITypeSymbol t:
-                return Enumerable.Repeat(t, 1);
-            default:
-                return null;
-        }
-    }
-
-    bool HasBaseType(ITypeSymbol type, string name) {
-        var baseType = type.BaseType;
-        while (baseType != null) {
-            if (baseType.Name == name) {
-                return true;
-            }
-
-            baseType = baseType.BaseType;
-        }
-
-        return false;
-    }
-
-    string GetTypeName(ITypeSymbol type) {
-        switch (type.SpecialType) {
-            case SpecialType.System_Boolean:
-                return "bool";
-            case SpecialType.System_String:
-                return "string";
-            case SpecialType.System_Int32:
-                return "int";
-            case SpecialType.System_Single:
-                return "float";
-            case SpecialType.System_Double:
-                return "double";
-            case SpecialType.None:
-                return type.Name;
-            default:
-                throw new Exception($"[Discone.Codegen] unhandled special type {type.SpecialType}");
-        }
+        // this does all its discovery using context.Compilation because it needs to inspect referenced assemblies
     }
 
     public void Execute(GeneratorExecutionContext context) {
+        var assemblyName = context.Compilation.AssemblyName;
+        if (assemblyName != k_Assembly) {
+            throw new Exception($"[Discone.Codegen] assembly named `{assemblyName}` is not `{k_Assembly}`");
+        }
+
         var sourceModule = context
             .Compilation
             .SourceModule;
 
-        var variables = sourceModule
+        // find all variables
+        var allVariables = sourceModule
             .ReferencedAssemblySymbols
-            .Where((a) => a.Name.Equals("UnityAtoms.UnityAtomsBaseAtoms.Runtime"))
+            .Where((a) => a.Name.Equals(k_AtomsAssembly))
             .Select((a) => a.GlobalNamespace)
             .Append(sourceModule.GlobalNamespace)
-            .SelectMany(GetTypes)
-            .Where((t) => t != null && HasBaseType(t, "AtomVariable"));
+            .SelectMany((ns) => ns.FindTypes())
+            .Where((t) => t != null && t.IsA("AtomVariable"))
+            .ToArray();
 
         // generate each state type
-        if (!variables.Any()) {
+        if (!allVariables.Any()) {
             throw new Exception($"[Discone.Codegen] no `AtomVariable` subclasses in this assembly");
         }
 
         // implement dispose bag subscribe fns
         var addImpl = IntoLines(
-            variables,
-            @"public static DisposeBag Add(this DisposeBag, {0} variable, Action<{1}> a) {{
-                return variable != null ? Add(variable.Changed, a) : this;
-            }}",
+            allVariables,
+            @"
+            /// add a subscription for a {1} changed event
+            public static DisposeBag Add(this DisposeBag bag, {0} variable, Action<{1}> a) {{
+                return variable != null ? bag.Add(variable.Changed, a) : bag;
+            }}
+            ",
             (v) => v.Name,
-            (v) => GetTypeName(v.BaseType?.TypeArguments[0])
+            (v) => FindAtomValue(v).NameOrSpecialName()
         );
+
+        // find variables with a value that supports `GetComponent`
+        var componentBaseTypes = new []{ "GameObject", "Component" };
+        var componentVariables = allVariables
+            .Where((v) => FindAtomValue(v).IsOneOf(componentBaseTypes));
+
+        var getComponentImpl = IntoLines(
+            componentVariables,
+            @"
+            /// get a component from the inner {1}
+            public static C GetComponent<C>(
+                this {0} obj
+            ) where C: Component {{
+                return obj.Value.GetComponent<C>();
+            }}
+            ",
+            (v) => v.Name,
+            (v) => FindAtomValue(v).Name
+        );
+
+        // add a debug tag
+        var debugImpl = $@"
+            public static string Debug() {{
+                return """";
+            }}
+        ";
 
         // the extension impl
         var atomExtImpl = $@"
@@ -91,8 +93,14 @@ public class AtomGen: ISourceGenerator {
             using UnityAtoms.BaseAtoms;
             using UnityEngine;
 
+            namespace Discone {{
+
             static class AtomExt {{
                 {addImpl}
+                {debugImpl}
+                {getComponentImpl}
+            }}
+
             }}
         ";
 
@@ -104,10 +112,17 @@ public class AtomGen: ISourceGenerator {
     }
 
     // -- helpers --
+    /// find the variable's value type
+    static ITypeSymbol FindAtomValue(ITypeSymbol type) {
+        return type.BaseType?.TypeArguments[0];
+    }
+
+    /// format nodes into lines
     string IntoLines<T>(IEnumerable<T> nodes, string format, params Func<T, string>[] args) {
         return IntoLines(nodes, format, "\n", args);
     }
 
+    /// format nodes into lines
     string IntoLines<T>(IEnumerable<T> nodes, string format, string separator, params Func<T, string>[] args) {
         return string.Join(
             separator,
@@ -116,15 +131,6 @@ public class AtomGen: ISourceGenerator {
                 args.Select((f) => f.Invoke(n)).ToArray()
             ))
         );
-    }
-}
-
-/// extensions for dictionaries and related types
-static class DictionaryExt {
-    /// deconstruct a dictionary's key-value pair
-    public static void Deconstruct<K, V>(this KeyValuePair<K, V> p, out K k, out V v) {
-        k = p.Key;
-        v = p.Value;
     }
 }
 

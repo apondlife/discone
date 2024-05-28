@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 
+namespace Discone {
+
 /// the sky-based navigation system
 class SkyTarget: MonoBehaviour {
     // -- config --
@@ -141,4 +143,6 @@ class SkyTarget: MonoBehaviour {
 
         return target;
     }
+}
+
 }

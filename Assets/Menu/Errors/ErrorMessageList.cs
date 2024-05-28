@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
 
+namespace Discone.Ui {
+
 /// the ui for a list of error messages
 public sealed class ErrorMessageList: MonoBehaviour {
     // -- config --
@@ -51,5 +53,7 @@ public sealed class ErrorMessageList: MonoBehaviour {
             ( ) => Destroy(error.gameObject)
         ));
     }
+
+}
 
 }

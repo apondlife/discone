@@ -1,4 +1,3 @@
-using NaughtyAttributes;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
 
@@ -48,11 +47,6 @@ sealed class App: MonoBehaviour {
         #else
         m_Subscriptions.Add(m_Online_ClientStarted, OnOnlineStarted);
         #endif
-    }
-
-    [Button("test")]
-    void Test() {
-        // Log.App.I($"{AtomExt.Test()}");
     }
 
     void OnDestroy() {
