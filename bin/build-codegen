@@ -4,5 +4,5 @@ dir=$(pwd);
 cd "$dir/Assets/Codegen/lib~" || exit 1
 ./build
 
-cd "$dir/Assets/Plugins/ThirdPerson/Runtime/SourceGeneration/lib~" || exit 1
+cd "$dir/Assets/Plugins/ThirdPerson/Runtime/Codegen/lib~" || exit 1
 ./build
