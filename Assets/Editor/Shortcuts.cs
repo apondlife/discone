@@ -36,7 +36,7 @@ public sealed class Shortcuts: EditorWindow {
 
     // -- lifecycle --
     /// show the window
-    [MenuItem("GameObject/discone/shortcuts")]
+    [MenuItem("Window/discone/shortcuts %#d")]
     static void Init() {
         var window = GetWindow<Shortcuts>(
             title: k_Title,

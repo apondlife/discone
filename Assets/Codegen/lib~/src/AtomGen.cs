@@ -97,8 +97,8 @@ public class AtomGen: ISourceGenerator {
 
             static class AtomExt {{
                 {addImpl}
-                {debugImpl}
                 {getComponentImpl}
+                {debugImpl}
             }}
 
             }}

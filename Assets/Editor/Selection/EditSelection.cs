@@ -24,7 +24,7 @@ public sealed class EditSelection: EditorWindow {
 
     // -- lifecycle --
     /// show the window
-    [MenuItem("GameObject/discone/edit selection")]
+    [MenuItem("Window/discone/edit selection %#c")]
     static void Init() {
         var window = GetWindow<EditSelection>(
             title: k_Title,
