@@ -181,15 +181,14 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
         var goalDir = nextStride + anchorProjSearchDir;
         goalDir = goalDir.normalized;
 
-        // accumulate root offset and get root position
-        var rootPos = c.RootPos;
-
         // the maximum stride distance projected along the leg
         var goalMax = Mathf.Max(
             c.InitialLen,
             ellipticalStrideLen / Vector3.Dot(goalDir, currStrideDir)
         );
 
+        // accumulate root offset and get root position
+        var rootPos = c.RootPos;
         var goalPos = rootPos + goalDir * c.InitialLen;
 
         // find foot placement
@@ -242,18 +241,58 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
         c.State.IsHeld = true;
     }
 
-    static void Holding_Update(float _, System<LimbContainer> s, LimbContainer c) {
+    static void Holding_Update(float delta, System<LimbContainer> s, LimbContainer c) {
+        var v = c.Character.State.Curr.SurfaceVelocity;
+
+        var speedScale = c.Tuning.SpeedScale.Evaluate(v.magnitude);
+
+        var inputMag = c.Character.Inputs.MoveMagnitude;
+        var inputScale = c.State.InputScale;
+        if (inputMag > c.State.InputScale) {
+            inputScale = inputMag;
+        } else {
+            inputScale = Mathf.MoveTowards(inputScale, inputMag, c.Tuning.InputScale_ReleaseSpeed * delta);
+        }
+
         var goalPos = c.State.GoalPos - c.State.SlideOffset;
+
+        var maxStrideScale = speedScale * inputScale;
+        var maxStrideLenFwd = c.Tuning.MaxLength.Evaluate(maxStrideScale);
+        var maxStrideLenCross = maxStrideLenFwd * c.Tuning.MaxLength_CrossScale;
+
+        var anchor = goalPos - c.RootPos;
+        var anchorProjSearchDir = Vector3.Project(anchor, c.SearchDir);
+
+        // get the expected stride position based on the anchor
+        // var currStride = anchor - anchorProjSearchDir;
+        var currStride = Vector3.ProjectOnPlane(anchor, c.SearchDir);
+        var currStrideLen = currStride.magnitude;
+        var currStrideDir = currStride / currStrideLen;
+
+        // get the orientation of the stride ellipse
+        var ellipticalStrideFwd = c.Character.State.Curr.Forward; // TODO: arms? this
+        var ellipticalStrideAngle = Vector3.Angle(currStrideDir, ellipticalStrideFwd) * Mathf.Deg2Rad;
+
+        // calculate stride length on the ellipse
+        var ellipticalStrideX = maxStrideLenFwd * Mathf.Cos(ellipticalStrideAngle);
+        var ellipticalStrideY = maxStrideLenCross * Mathf.Sin(ellipticalStrideAngle);
+        var ellipticalStrideLen = Mathf.Sqrt(ellipticalStrideX * ellipticalStrideX + ellipticalStrideY * ellipticalStrideY);
+
+        // the direction to the goal; mirror the stride over search dir
+        var goalDir = anchor;
+        goalDir = goalDir.normalized;
+
+        // the maximum stride distance projected along the leg
+        var goalMax = Mathf.Max(
+            c.InitialLen,
+            ellipticalStrideLen / Vector3.Dot(goalDir, currStrideDir)
+        );
 
         // check if there's any collision from the limb to where we want to be holding
         // we might be holding farther away from the limb itself
         var castSrc = c.RootPos;
         var castDir = Vector3.Normalize(goalPos - castSrc);
-
-        // TODO(done?): this search range is bad, should be similar to goalMax in moving, or just maxmaxstride projected
-        // search range is the maximum we are allowing ourselves to extend our limb at this point
-        // which is as far as we are willing to have our limb away from the search dir
-        var castLen = c.InitialLen + c.Tuning.SearchRange_OnSurface / Vector3.Dot(castDir, c.SearchDir);
+        var castLen = goalMax;
 
         var didHit = FindPlacement(
             castSrc,
