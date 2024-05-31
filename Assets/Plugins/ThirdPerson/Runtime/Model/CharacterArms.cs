@@ -21,40 +21,19 @@ class CharacterArms: MonoBehaviour {
     /// the character's dependency container
     CharacterContainer c;
 
-    /// the initial position of the arm
-    Vector3 m_InitialPos;
-
-    /// the initial position of the model
-    Vector3 m_InitialModelPos;
-
-    /// the left arm anchor
-    ArmAnchor m_LeftAnchor;
-
-    /// the right arm anchor
-    ArmAnchor m_RightAnchor;
-
     // -- lifecycle --
     void Awake() {
         // set deps
         c = GetComponentInParent<CharacterContainer>();
-
-        // set props
-        m_LeftAnchor = new ArmAnchor(m_Left);
-        m_RightAnchor = new ArmAnchor(m_Right);
-    }
-
-    void Start() {
-        m_InitialPos = transform.localPosition;
-        m_InitialModelPos = m_Model.transform.localPosition;
     }
 
     void Update() {
-        MoveArm(m_Left, m_LeftAnchor);
-        MoveArm(m_Right, m_RightAnchor);
+        MoveArm(m_Left);
+        MoveArm(m_Right);
     }
 
     // -- commands --
-    void MoveArm(Limb arm, ArmAnchor anchor) {
+    void MoveArm(Limb arm) {
         if (c.State.Curr.IsIdle) {
             return;
         }
@@ -109,38 +88,12 @@ class CharacterArms: MonoBehaviour {
             return;
         }
 
-        anchor.Move(hit.point);
-        arm.Move(anchor);
-    }
+        arm.State.Anchor = new LimbAnchor(
+            rootPos: arm.RootPos,
+            goalPos: hit.point
+        );
 
-    /// a phantom anchor for the arm
-    struct ArmAnchor: LimbAnchor {
-        /// a reference to the arm to reuse its moving root pos
-        Limb m_Arm;
-
-        /// the position of the arm anchor
-        Vector3 m_GoalPos;
-
-        // -- lifetime --
-        public ArmAnchor(Limb arm) {
-            m_Arm = arm;
-            m_GoalPos = Vector3.zero;
-        }
-
-        // -- commands --
-        /// move the goal position
-        public void Move(Vector3 pos) {
-            m_GoalPos = pos;
-        }
-
-        // -- LimbAnchor --
-        public Vector3 RootPos {
-            get => m_Arm.RootPos;
-        }
-
-        public Vector3 GoalPos {
-            get => m_GoalPos;
-        }
+        arm.Move();
     }
 }
 

@@ -3,12 +3,21 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the current position of a bone
-public interface LimbAnchor {
+public readonly struct LimbAnchor {
     /// the root position
-    Vector3 RootPos { get; }
+    public readonly Vector3 RootPos;
 
     /// the goal position
-    Vector3 GoalPos { get; }
+    public readonly Vector3 GoalPos;
+
+    /// -- lifetime --
+    public LimbAnchor(
+        Vector3 rootPos,
+        Vector3 goalPos
+    ) {
+        RootPos = rootPos;
+        GoalPos = goalPos;
+    }
 }
 
 }

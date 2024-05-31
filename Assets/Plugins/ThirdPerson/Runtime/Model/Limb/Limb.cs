@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
 // TODO: center of mass? move character down?
 /// an ik limb for the character model
-public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContainer {
+public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the type of goal of this limb")]
@@ -33,7 +34,8 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
     // -- systems --
     [Header("systems")]
     [Tooltip("the limb system")]
-    [SerializeField] StrideSystem m_StrideSystem;
+    [FormerlySerializedAs("m_StrideSystem")]
+    [SerializeField] StrideSystem m_System;
 
     // -- props --
     /// the limb state
@@ -67,7 +69,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         }
 
         var delta = Time.deltaTime;
-        m_StrideSystem.Update(delta);
+        m_System.Update(delta);
 
         // set target ik weight if limb is active
         var weight = m_State.IsActive ? 1f : 0f;
@@ -171,9 +173,6 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         m_State = new LimbState();
         m_Animator = animator;
 
-        // TODO: unclear if we really want to init as our own anchor
-        m_State.Anchor = this;
-
         // get default limb lengths
         var rootPos = Vector3.zero;
         var goalPos = m_InitialGoalPos;
@@ -189,32 +188,46 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         m_EndLen = endLength;
 
         // init system
-        m_StrideSystem.Init(this);
+        m_System.Init(this);
     }
 
-    /// toggles stride system enabled
+
+    // -- commands --
+    /// set if the limb is striding
     public void SetIsStriding(bool isStriding) {
-        m_StrideSystem.SetIsStriding(isStriding);
+        if (m_State.IsNotStriding != isStriding) {
+            return;
+        }
+
+        if (!isStriding) {
+            m_System.ChangeTo(StrideSystem.NotStriding);
+        } else {
+            m_System.ChangeTo(StrideSystem.Free);
+        }
     }
 
-    /// starts a new stride for the limb
-    public void Move(LimbAnchor anchor) {
-        m_StrideSystem.Move(anchor);
+    /// switch to the moving state
+    public void Move() {
+        m_System.ChangeTo(StrideSystem.Moving);
     }
 
-    /// holds the limb if not already
+    /// switch to the holding state
     public void Hold(float delta) {
-        m_StrideSystem.Hold(delta);
+        if (!m_State.IsHeld) {
+            m_System.ChangeToImmediate(StrideSystem.Holding, delta);
+        }
     }
 
-    /// released the limb's hold if not already
+    /// release the limb if it's not already
     public void Release() {
-        m_StrideSystem.Release();
+        if (!m_State.IsFree) {
+            m_System.ChangeTo(StrideSystem.Free);
+        }
     }
 
     /// set the slide offset to translate the legs
     public void SetSlideOffset(Vector3 offset) {
-        m_StrideSystem.SetSlideOffset(offset);
+        m_State.SlideOffset = offset;
     }
 
     /// applies the limb ik
@@ -254,10 +267,17 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbAnchor, LimbContain
         get => m_GoalBone;
     }
 
-    // -- LimbAnchor --
     /// the current goal bone position
     public Vector3 GoalPos {
         get => m_State.GoalPos;
+    }
+
+    /// create an anchor from the current state of this limb
+    public LimbAnchor IntoAnchor() {
+        return new LimbAnchor(
+            rootPos: transform.position,
+            goalPos: m_State.GoalPos
+        );
     }
 
     // -- CharacterLimbContainer --

@@ -49,7 +49,7 @@ public partial class Limb {
 
     /// the debug color for a limb with given alpha (red is right)
     internal string Debug_PhaseName() {
-        return m_StrideSystem.Debug_PhaseName.ToLower();
+        return m_System.Debug_PhaseName.ToLower();
     }
 
     /// the debug color for a limb with given alpha (red is right)

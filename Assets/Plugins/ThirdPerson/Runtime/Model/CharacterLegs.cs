@@ -71,6 +71,10 @@ class CharacterLegs: MonoBehaviour {
     void Update() {
         var delta = Time.deltaTime;
 
+        // anchor the legs to one another
+        m_Left.State.Anchor = m_Right.IntoAnchor();
+        m_Right.State.Anchor = m_Left.IntoAnchor();
+
         // if the character is currently striding
         SetIsStriding(!c.State.Curr.IsCrouching && !c.State.Curr.IsInJumpSquat);
 
@@ -121,11 +125,8 @@ class CharacterLegs: MonoBehaviour {
     /// switch the moving leg
     void Switch() {
         // move leg that is furthest away
-        var (move, hold) = GetExtension(m_Left) > GetExtension(m_Right)
-            ? (m_Left, m_Right)
-            : (m_Right, m_Left);
-
-        move.Move(hold);
+        var move = GetExtension(m_Left) > GetExtension(m_Right) ? m_Left : m_Right;
+        move.Move();
 
         // draw hips & legs on move
         DebugDraw.PushLine(

@@ -12,51 +12,8 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
         return Free;
     }
 
-    // -- commands --
-    /// set if the limb is striding
-    public void SetIsStriding(bool isStriding) {
-        // TODO: should `ChangeTo` be public and should this kind of method live on the obj
-        // that owns the system?
-        if (c.State.IsNotStriding != isStriding) {
-            return;
-        }
-
-        if (!isStriding) {
-            ChangeTo(NotStriding);
-        } else {
-            ChangeTo(Free);
-        }
-    }
-
-    /// switch to the moving state
-    public void Move(LimbAnchor anchor) {
-        c.State.Anchor = anchor;
-        ChangeTo(Moving);
-    }
-
-    /// switch to the holding state
-    public void Hold(float delta) {
-        if (!c.State.IsHeld) {
-            ChangeToImmediate(Holding, delta);
-        }
-    }
-
-    /// release the limb if it's not already
-    public void Release() {
-        c.State.Anchor = null;
-
-        if (!c.State.IsFree) {
-            ChangeTo(Free);
-        }
-    }
-
-    /// set the slide offset to translate the legs
-    public void SetSlideOffset(Vector3 offset) {
-        c.State.SlideOffset = offset;
-    }
-
     // -- NotStriding --
-    static readonly Phase<LimbContainer> NotStriding = new("NotStriding",
+    public static readonly Phase<LimbContainer> NotStriding = new("NotStriding",
         enter: NotStriding_Enter,
         update: NotStriding_Update,
         exit: NotStriding_Exit
@@ -75,7 +32,7 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
     }
 
     // -- Free --
-    static readonly Phase<LimbContainer> Free = new("Free",
+    public static readonly Phase<LimbContainer> Free = new("Free",
         enter: Free_Enter,
         update: Free_Update,
         exit: Free_Exit
@@ -124,7 +81,7 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
     }
 
     // -- Moving --
-    static readonly Phase<LimbContainer> Moving = new("Moving",
+    public static readonly Phase<LimbContainer> Moving = new("Moving",
         update: Moving_Update
     );
 
@@ -231,7 +188,7 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
     }
 
     // -- Holding --
-    static readonly Phase<LimbContainer> Holding = new("Holding",
+    public static readonly Phase<LimbContainer> Holding = new("Holding",
         enter: Holding_Enter,
         update: Holding_Update,
         exit: Holding_Exit
