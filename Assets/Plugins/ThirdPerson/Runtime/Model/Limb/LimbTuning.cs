@@ -64,6 +64,9 @@ public class LimbTuning: ScriptableObject {
 
     [Tooltip("the threshold under which the held distance is considered on surface")]
     public float HeldDistance_OnSurface;
+
+    [Tooltip("the extra search distance when not on a surface")]
+    public float Hold_CastLength;
 }
 
 }
