@@ -270,7 +270,7 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
             if (placement.Result == LimbPlacement.CastResult.OutOfRange) {
                 var dir = (placement.Pos - c.RootPos);
                 var dist = dir.magnitude - c.InitialLen;
-                heldExtension = dir * dist;
+                heldExtension = dir.normalized * dist;
             }
         }
 
