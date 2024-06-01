@@ -207,7 +207,7 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
         // we might be holding farther away from the limb itself
         var castSrc = c.RootPos;
         var castDir = goalDir;
-        var castLen = c.Tuning.Hold_CastLength;
+        var castLen = c.InitialLen + c.Tuning.Hold_CastLength;
 
         // TODO: we'd like to be able to limit the hold length to prevent snapping when casting down, we'd like to
         // generally avoid casting down except perhaps small distances. however this breaks the held leg sliding up/down

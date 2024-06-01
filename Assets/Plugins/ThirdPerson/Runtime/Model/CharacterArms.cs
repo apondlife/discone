@@ -25,6 +25,9 @@ class CharacterArms: MonoBehaviour {
     void Awake() {
         // set deps
         c = GetComponentInParent<CharacterContainer>();
+
+        // TODO: move arms
+        enabled = false;
     }
 
     void Update() {
