@@ -3,11 +3,14 @@ what is projected
 
 # ik legs
 - inclines: surface velocity for legs? going downhill looks bad
-- wall ride
 - sliding down slope sideways
+- fix leg sticking out (if brave, revisit goalMax in holding)
+- move stride ellipse so it's not centered on the leg (e.g. right leg can extend more to the right)
+- investigate move hips (disable the spring to evaluate)
 
 # ik arms
 - fix arms
+- move search dir according to...velocity? input?
 
 # surface
 - unrealized motion (minmove) be converted into inertia?
