@@ -1,8 +1,8 @@
 using NaughtyAttributes;
 using UnityEngine;
 using Soil;
-using ThirdPerson;
 using UnityAtoms.BaseAtoms;
+using Color = UnityEngine.Color;
 using Random = UnityEngine.Random;
 
 namespace Discone {

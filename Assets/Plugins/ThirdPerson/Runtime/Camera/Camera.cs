@@ -3,6 +3,7 @@ using UnityEngine.Serialization;
 using UnityEngine.InputSystem;
 using Cinemachine;
 using Soil;
+using Color = UnityEngine.Color;
 
 namespace ThirdPerson {
 

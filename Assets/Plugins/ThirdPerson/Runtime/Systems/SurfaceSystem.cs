@@ -1,6 +1,7 @@
 using System;
 using Soil;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace ThirdPerson {
 

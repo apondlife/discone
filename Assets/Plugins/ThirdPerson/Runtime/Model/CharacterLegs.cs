@@ -1,6 +1,7 @@
 ﻿using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Color = UnityEngine.Color;
 
 namespace ThirdPerson {
 

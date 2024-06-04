@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Shapes;
 using Soil;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace ThirdPerson {
 

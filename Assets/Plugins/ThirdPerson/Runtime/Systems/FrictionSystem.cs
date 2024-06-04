@@ -1,12 +1,9 @@
 using System;
 using Soil;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace ThirdPerson {
-
-using Container = CharacterContainer;
-using System = System<CharacterContainer>;
-using Phase = Phase<CharacterContainer>;
 
 /// system state extensions
 partial class CharacterState {
@@ -20,7 +17,7 @@ partial class CharacterState {
 [Serializable]
 sealed class FrictionSystem: CharacterSystem {
     // -- System --
-    protected override Phase InitInitialPhase() {
+    protected override Phase<CharacterContainer> InitInitialPhase() {
         return NotOnSurface;
     }
 
@@ -30,7 +27,7 @@ sealed class FrictionSystem: CharacterSystem {
     }
 
     // -- NotOnSurface --
-    static readonly Phase NotOnSurface = new("NotOnSurface",
+    static readonly Phase<CharacterContainer> NotOnSurface = new("NotOnSurface",
         update: (delta, s, c) => {
             if (c.State.Curr.IsColliding) {
                 s.ChangeTo(OnSurface);
@@ -42,7 +39,7 @@ sealed class FrictionSystem: CharacterSystem {
     );
 
     // -- OnSurface --
-    static readonly Phase OnSurface = new("OnSurface",
+    static readonly Phase<CharacterContainer> OnSurface = new("OnSurface",
         update: (delta, s, c) => {
             // return to the ground if grounded
             if (!c.State.Curr.IsColliding || c.State.Next.Events.Contains(CharacterEvent.Jump)) {
@@ -76,7 +73,7 @@ sealed class FrictionSystem: CharacterSystem {
         float drag,
         float friction,
         float delta,
-        Container c
+        CharacterContainer c
     ) {
         // integrate accelerated velocity
         var v0 = c.State.Next.SurfaceVelocity;

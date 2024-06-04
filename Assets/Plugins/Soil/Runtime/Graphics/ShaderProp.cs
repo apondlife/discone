@@ -25,7 +25,7 @@ public readonly struct ShaderProp {
     }
 
     /// set the global color value
-    public void Set(Color value) {
+    public void Set(UnityEngine.Color value) {
         Shader.SetGlobalColor(m_Id, value);
     }
 

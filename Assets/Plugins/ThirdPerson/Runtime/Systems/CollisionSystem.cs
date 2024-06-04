@@ -1,13 +1,10 @@
 using System;
 using Soil;
 using UnityEngine;
+using Color = UnityEngine.Color;
 using Vector3 = UnityEngine.Vector3;
 
 namespace ThirdPerson {
-
-using System = System<CharacterContainer>;
-using Container = CharacterContainer;
-using Phase = Phase<CharacterContainer>;
 
 /// system state extensions
 partial class CharacterState {
@@ -21,7 +18,7 @@ partial class CharacterState {
 [Serializable]
 sealed class CollisionSystem: CharacterSystem {
     // -- System --
-    protected override Phase InitInitialPhase() {
+    protected override Phase<CharacterContainer> InitInitialPhase() {
         return Active;
     }
 
@@ -31,12 +28,12 @@ sealed class CollisionSystem: CharacterSystem {
     }
 
     // -- NotIdle --
-    static readonly Phase Active = new(
+    static readonly Phase<CharacterContainer> Active = new(
         name: "Active",
         update: Active_Update
     );
 
-    static void Active_Update(float delta, System s, Container c) {
+    static void Active_Update(float delta, System<CharacterContainer> s, CharacterContainer c) {
         var curr = c.State.Curr;
         var next = c.State.Next;
 

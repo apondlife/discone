@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# generates c# methods for colors given a file where each line is
+# a color name and a hex color (with leading '#')
+
+# -- parsing --
+Usage() {
+  echo "usage: ./bin/colors [-h] <file>"
+  exit -1
+}
+
+while getopts ":h" option; do
+  case "${option}" in
+    h*) Usage ;;
+  esac
+done
+
+# -- awk --
+program='
+  function cap(STR) { 
+    return(toupper(substr(STR, 1, 1))""substr(STR, 2)) 
+  } 
+
+  function col(STR, OFFSET) { 
+    return(strtonum("0x" substr(STR, OFFSET, 2))) / 255 
+  } 
+
+  $0 { 
+    print "public static UnityEngine.Color "cap($1)" {"; 
+    print "    [MethodImpl(MethodImplOptions.AggressiveInlining)]"; 
+    print "    get => new("col($2, 2)"f, "col($2, 4)"f, "col($2, 6)"f);"; 
+    print "}\n" 
+  }
+' 
+
+# -- bootstrap -- 
+Main() {
+  file="$1"
+  if [ -z "$file" ]; then 
+    Usage
+  fi
+
+  awk -M "$program" "$file"
+}
+
+Main "$*"
