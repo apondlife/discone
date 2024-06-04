@@ -51,11 +51,17 @@ class CharacterLegs: MonoBehaviour {
     /// the interpolated hips offset
     float m_Hips_CurrOffset;
 
+    /// the accumulated hips held length
+    float m_Hips_HeldDistance;
+
     /// the current spring speed
     float m_Hips_Spring_Speed;
 
     /// the distance between the current and dest offset the previous frame
     float m_Hips_Spring_PrevDist;
+
+    /// the previous world position
+    Vector3 m_Debug_PrevPos;
 
     // -- lifecycle --
     void Awake() {
@@ -180,11 +186,18 @@ class CharacterLegs: MonoBehaviour {
 
             // add the offset below skip threshold
             if (curAngle < m_Hips_SkipOffset.Src.Min) {
+                // TODO: HeldLength vs HeldDistance?
+                m_Hips_HeldDistance += heldLeg.State.HeldDistance;
+
                 // move hips to correct for distance from the bottom of the character to the current surface
-                hipsOffset += heldLeg.State.HeldDistance;
+                // AAA: finish or unroll hips changes
+                // hipsOffset += heldLeg.State.HeldDistance;
+                hipsOffset += m_Hips_HeldDistance;
 
                 // move hips down according to leg splay
                 hipsOffset += (srcCos - curCos) * heldLeg.InitialLen;
+
+                Log.Model.I($"held: {m_Hips_HeldDistance} dist: {heldLeg.State.HeldDistance} splay: {hipsOffset - heldLeg.State.HeldDistance}");
             }
             // curve offset above skip threshold
             else {
@@ -210,14 +223,22 @@ class CharacterLegs: MonoBehaviour {
         var nextSpeed = m_Hips_Spring_Speed + (m_Hips_Spring * offsetDist - m_Hips_Damping * offsetDistSpeed) * delta;
         var nextOffset = currOffset + nextSpeed * delta;
 
-        m_Hips_CurrOffset = nextOffset;
+        // AAA: finish or unroll hips changes
+        // m_Hips_CurrOffset = nextOffset;
+        m_Hips_CurrOffset = destOffset;
         m_Hips_Spring_Speed = nextSpeed;
         m_Hips_Spring_PrevDist = offsetDist;
 
         // apply hip offset
+        var t = transform;
         var translation = m_Hips_CurrOffset * Vector3.down;
-        transform.localPosition = m_InitialPos + translation;
+        t.localPosition = m_InitialPos + translation;
         m_Model.localPosition = m_InitialModelPos + translation;
+
+        // draw hips
+        var currPos = t.position;
+        DebugDraw.PushLine("legs-hips-pos", m_Debug_PrevPos, currPos, new DebugDraw.Config(Color.yellow, width: 1f));
+        m_Debug_PrevPos = currPos;
     }
 
     // -- queries --

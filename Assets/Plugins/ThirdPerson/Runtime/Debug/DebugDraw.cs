@@ -4,7 +4,7 @@ using Shapes;
 using Soil;
 using UnityEngine;
 
-namespace  ThirdPerson {
+namespace ThirdPerson {
 
 /// a debug utility for adding drawings
 public partial class DebugDraw: ImmediateModeShapeDrawer {
