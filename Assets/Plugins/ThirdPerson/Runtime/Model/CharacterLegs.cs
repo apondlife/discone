@@ -1,4 +1,5 @@
-﻿using Soil;
+﻿using System;
+using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Color = UnityEngine.Color;
@@ -28,14 +29,11 @@ class CharacterLegs: MonoBehaviour {
     [Tooltip("the minimum & maximum offset downwards of the hips as a scale on limb length (min is no offset)")]
     [SerializeField] FloatRange m_Hips_OffsetRangeScale;
 
-    [Tooltip("the spring constant when blending the hips offset")]
-    [SerializeField] float m_Hips_Spring;
-
-    [Tooltip("the spring damping when blending the hips offset")]
-    [SerializeField] float m_Hips_Damping;
-
     [Tooltip("the height of the skip")]
     [SerializeField] MapInCurve m_Hips_SkipOffset;
+
+    [Tooltip("the hips offset ease")]
+    [SerializeField] DynamicEasing m_Hips_Ease;
 
     // -- refs --
     [Header("refs")]
@@ -52,15 +50,6 @@ class CharacterLegs: MonoBehaviour {
     /// the initial position of the model
     Vector3 m_InitialModelPos;
 
-    /// the interpolated hips offset
-    float m_Hips_CurrOffset;
-
-    /// the current spring speed
-    float m_Hips_Spring_Speed;
-
-    /// the distance between the current and dest offset the previous frame
-    float m_Hips_Spring_PrevDist;
-
     /// the previous world position
     Vector3 m_Debug_PrevPos;
 
@@ -73,6 +62,7 @@ class CharacterLegs: MonoBehaviour {
     void Start() {
         m_InitialPos = transform.localPosition;
         m_InitialModelPos = m_Model.transform.localPosition;
+        m_Hips_Ease.Init(Vector3.zero);
     }
 
     void Update() {
@@ -105,6 +95,7 @@ class CharacterLegs: MonoBehaviour {
 
     void FixedUpdate() {
         var delta = Time.deltaTime;
+        m_Hips_Ease.Init(m_Hips_Ease.Target);
 
         // add an offset to move the hips to match the character's stance
         OffsetHips(delta);
@@ -174,7 +165,7 @@ class CharacterLegs: MonoBehaviour {
 
     /// offset hips downwards according to current stride
     void OffsetHips(float delta) {
-        var hipsOffset = 0f;
+        var hipsOffset = Vector3.zero;
 
         var heldLeg = m_Left.State.HeldDistance < m_Right.State.HeldDistance ? m_Left : m_Right;
         if (heldLeg.State.IsHeld) {
@@ -187,7 +178,7 @@ class CharacterLegs: MonoBehaviour {
             // add the offset below skip threshold
             if (curAngle < m_Hips_SkipOffset.Src.Min) {
                 // offset hips to account for distance to surface
-                hipsOffset += m_Hips_CurrOffset + heldLeg.State.HeldDistance;
+                hipsOffset += m_Hips_Ease.Pos + (heldLeg.State.HeldDistance * Vector3.down);
             }
             // curve offset above skip threshold
             else {
@@ -195,7 +186,7 @@ class CharacterLegs: MonoBehaviour {
                 var skipCos = Mathf.Cos(m_Hips_SkipOffset.Src.Min);
                 var skipOffset = (srcCos - skipCos) * heldLeg.InitialLen;
 
-                hipsOffset += Mathf.LerpUnclamped(
+                hipsOffset += Vector3.down * Mathf.LerpUnclamped(
                     skipOffset,
                     0f,
                     m_Hips_SkipOffset.Evaluate(curAngle)
@@ -203,26 +194,16 @@ class CharacterLegs: MonoBehaviour {
             }
         }
 
-        // TODO: extract spring damp struct
-        // blend offset
+        // clamp offset within vertical limits
         var offsetRange = m_Hips_OffsetRangeScale * heldLeg.InitialLen;
-        var destOffset = offsetRange.Clamp(hipsOffset);
+        hipsOffset.y = offsetRange.Clamp(hipsOffset.y);
 
-        var currOffset = m_Hips_CurrOffset;
-        var offsetDist = destOffset - currOffset;
-        var offsetDistSpeed = (offsetDist - m_Hips_Spring_PrevDist) / delta;
-        var nextSpeed = m_Hips_Spring_Speed + (m_Hips_Spring * offsetDist - m_Hips_Damping * offsetDistSpeed) * delta;
-        var nextOffset = currOffset + nextSpeed * delta;
-
-        // AAA: finish or unroll hips changes
-        // m_Hips_CurrOffset = nextOffset;
-        m_Hips_CurrOffset = destOffset;
-        m_Hips_Spring_Speed = nextSpeed;
-        m_Hips_Spring_PrevDist = offsetDist;
+        // ease the target offset
+        m_Hips_Ease.Update(delta, hipsOffset);
 
         // apply hip offset
         var t = transform;
-        var translation = m_Hips_CurrOffset * Vector3.down;
+        var translation = m_Hips_Ease.Pos;
         t.localPosition = m_InitialPos + translation;
         m_Model.localPosition = m_InitialModelPos + translation;
 
