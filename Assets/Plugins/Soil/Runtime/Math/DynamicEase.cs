@@ -34,6 +34,16 @@ public struct DynamicEasing {
     // -- commands --
     /// setup with an initial value
     public void Init(Vector3 initial) {
+        ComputeTerms();
+        
+        // initialize state
+        m_Target = initial;
+        m_Pos = initial;
+        m_Velocity = Vector3.zero;
+    }
+
+    // TODO: custom editor to not have to call this on update
+    public void ComputeTerms() {
         // compute terms
         var pif1 = Mathf.PI * F;
         var pif2 = pif1 * 2f;
@@ -41,17 +51,12 @@ public struct DynamicEasing {
         m_K1 = Z / pif1;
         m_K2 = 1f / (pif2 * pif2);
         m_K3 = R * Z / pif2;
-
-        // initialize state
-        m_Target = initial;
-        m_Pos = initial;
-        m_Velocity = Vector3.zero;
     }
 
     /// move towards the target with an estimated target velocity
     public void Update(float delta, Vector3 target) {
         var targetVelocity = (target - m_Target) / delta;
-        Update(delta, m_Target, targetVelocity);
+        Update(delta, target, targetVelocity);
     }
 
     /// move towards the target

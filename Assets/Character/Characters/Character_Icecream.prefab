@@ -155,7 +155,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_InitialEndPos.y
-      value: -0.63860726
+      value: -0.6246072
       objectReference: {fileID: 0}
     - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_InitialEndPos.z
@@ -167,7 +167,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_InitialGoalPos.y
-      value: -0.5568439
+      value: -0.5428439
       objectReference: {fileID: 0}
     - target: {fileID: 189365610049711115, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_InitialGoalPos.z
@@ -291,7 +291,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1133536890200367056, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1133536890200367056, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -335,7 +335,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_InitialEndPos.y
-      value: -0.64711964
+      value: -0.6331196
       objectReference: {fileID: 0}
     - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_InitialEndPos.z
@@ -347,7 +347,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_InitialGoalPos.y
-      value: -0.556844
+      value: -0.542844
       objectReference: {fileID: 0}
     - target: {fileID: 1469858448099776349, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_InitialGoalPos.z
@@ -423,7 +423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1836639054831783722, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.349
+      value: 0.635
       objectReference: {fileID: 0}
     - target: {fileID: 1836939471801132166, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -431,7 +431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1836939471801132166, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1836939471801132166, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -758,6 +758,18 @@ PrefabInstance:
       value: 1.4
       objectReference: {fileID: 0}
     - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Hips_Ease.F
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Hips_Ease.R
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Hips_Ease.Z
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Hips_Spring
       value: 150
       objectReference: {fileID: 0}
@@ -795,7 +807,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Hips_SkipOffset.Src.Min
-      value: 45
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 5951265437944498292, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Hips_OffsetRangeScale.Max
