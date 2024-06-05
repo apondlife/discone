@@ -225,8 +225,6 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
 
         var heldDistance = 0f;
         var heldExtension = (placement.Distance - c.InitialLen) * castDir;
-        // AAA: finish or unroll hips changes
-        // var heldExtension = Mathf.Max(placement.Distance - c.InitialLen, 0f) * castDir;
 
         // if we don't find a surface, cast in the limb axis direction, from the end of the limb
         if (!didHit) {
@@ -245,12 +243,12 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
 
         // AAA: finish or unroll hips changes
         // if the cast is outside the limb, and the search is opposed to the normal, there's held distance
-        // if (placement.Result == LimbPlacement.CastResult.OutOfRange && normDotSearch < 0) {
+        if (normDotSearch < 0) {
             // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587553685421&cot=14
             // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587792518618&cot=14
             var heldDotNormal = Vector3.Dot(heldExtension, placement.Normal);
             heldDistance = heldDotNormal / normDotSearch;
-        // }
+        }
 
         c.State.Placement = placement;
         c.State.HeldDistance = heldDistance;
@@ -269,7 +267,7 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
 
     static void Holding_Exit(System<LimbContainer> _, LimbContainer c) {
         c.State.IsHeld = false;
-        c.State.HeldDistance = 0f;
+        c.State.HeldDistance = Mathf.Infinity;
     }
 
     // -- commands --

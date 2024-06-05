@@ -25,6 +25,9 @@ class CharacterLegs: MonoBehaviour {
     [Tooltip("the speed the legs slide")]
     [SerializeField] float m_Slide_Speed;
 
+    [Tooltip("the minimum & maximum offset downwards of the hips as a scale on limb length (min is no offset)")]
+    [SerializeField] FloatRange m_Hips_OffsetRangeScale;
+
     [Tooltip("the spring constant when blending the hips offset")]
     [SerializeField] float m_Hips_Spring;
 
@@ -51,9 +54,6 @@ class CharacterLegs: MonoBehaviour {
 
     /// the interpolated hips offset
     float m_Hips_CurrOffset;
-
-    /// the accumulated hips held length
-    float m_Hips_HeldDistance;
 
     /// the current spring speed
     float m_Hips_Spring_Speed;
@@ -107,7 +107,7 @@ class CharacterLegs: MonoBehaviour {
         var delta = Time.deltaTime;
 
         // add an offset to move the hips to match the character's stance
-        MoveHips(delta);
+        OffsetHips(delta);
     }
 
     // -- commands --
@@ -172,14 +172,13 @@ class CharacterLegs: MonoBehaviour {
         m_Right.SetSlideOffset(slideOffset);
     }
 
-    /// move hips according to current stride
-    void MoveHips(float delta) {
+    /// offset hips downwards according to current stride
+    void OffsetHips(float delta) {
         var hipsOffset = 0f;
 
-        var heldLeg = m_Left.State.IsHeld ? m_Left : m_Right;
+        var heldLeg = m_Left.State.HeldDistance < m_Right.State.HeldDistance ? m_Left : m_Right;
         if (heldLeg.State.IsHeld) {
-            // move hips to correct for leg splay
-            var srcCos = Vector3.Dot(heldLeg.SearchDir, Vector3.down);
+            // get the angle of the current stride
             var curOffset = m_InitialPos - transform.localPosition;
             var curDir = Vector3.Normalize(heldLeg.GoalPos - heldLeg.RootPos - curOffset);
             var curCos = Vector3.Dot(curDir, Vector3.down);
@@ -187,21 +186,12 @@ class CharacterLegs: MonoBehaviour {
 
             // add the offset below skip threshold
             if (curAngle < m_Hips_SkipOffset.Src.Min) {
-                // TODO: HeldLength vs HeldDistance?
-                m_Hips_HeldDistance += heldLeg.State.HeldDistance;
-
-                // move hips to correct for distance from the bottom of the character to the current surface
-                // AAA: finish or unroll hips changes
-                // hipsOffset += heldLeg.State.HeldDistance;
-                hipsOffset += m_Hips_HeldDistance;
-
-                // move hips down according to leg splay
-                hipsOffset += (srcCos - curCos) * heldLeg.InitialLen;
-
-                Log.Model.I($"held: {m_Hips_HeldDistance} dist: {heldLeg.State.HeldDistance} splay: {hipsOffset - heldLeg.State.HeldDistance}");
+                // offset hips to account for distance to surface
+                hipsOffset += m_Hips_CurrOffset + heldLeg.State.HeldDistance;
             }
             // curve offset above skip threshold
             else {
+                var srcCos = Vector3.Dot(heldLeg.SearchDir, Vector3.down);
                 var skipCos = Mathf.Cos(m_Hips_SkipOffset.Src.Min);
                 var skipOffset = (srcCos - skipCos) * heldLeg.InitialLen;
 
@@ -215,10 +205,10 @@ class CharacterLegs: MonoBehaviour {
 
         // TODO: extract spring damp struct
         // blend offset
-        var currOffset = m_Hips_CurrOffset;
-        var maxOffset = heldLeg.InitialLen;
-        var destOffset = Mathf.Min(hipsOffset, maxOffset);
+        var offsetRange = m_Hips_OffsetRangeScale * heldLeg.InitialLen;
+        var destOffset = offsetRange.Clamp(hipsOffset);
 
+        var currOffset = m_Hips_CurrOffset;
         var offsetDist = destOffset - currOffset;
         var offsetDistSpeed = (offsetDist - m_Hips_Spring_PrevDist) / delta;
         var nextSpeed = m_Hips_Spring_Speed + (m_Hips_Spring * offsetDist - m_Hips_Damping * offsetDistSpeed) * delta;

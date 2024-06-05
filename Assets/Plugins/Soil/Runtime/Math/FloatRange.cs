@@ -14,6 +14,12 @@ public struct FloatRange {
     [Tooltip("the max value")]
     public float Max;
 
+    // -- lifetime --
+    public FloatRange(float min, float max) {
+        Min = min;
+        Max = max;
+    }
+
     // -- queries --
     /// interpolate between the min & max
     public float Evaluate(float k) {
@@ -28,6 +34,20 @@ public struct FloatRange {
     /// normalize the value between min & max
     public float InverseLerp(float val) {
         return Mathf.InverseLerp(Min, Max, val);
+    }
+
+    /// normalize the value between min & max
+    public float Clamp(float val) {
+        return Mathf.Clamp(val, Min, Max);
+    }
+
+    // -- operators --
+    public static FloatRange operator *(FloatRange range, float scale) {
+        return new FloatRange(range.Min * scale, range.Max * scale);
+    }
+
+    public static FloatRange operator *(float scale, FloatRange range) {
+        return range * scale;
     }
 
     // -- aliases --
