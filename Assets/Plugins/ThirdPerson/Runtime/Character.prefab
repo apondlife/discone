@@ -305,8 +305,9 @@ MonoBehaviour:
   m_Right: {fileID: 6027531842518704437}
   m_Slide_Threshold: 0
   m_Slide_Speed: 0
-  m_Hips_Spring: 0
-  m_Hips_Damping: 0
+  m_Hips_OffsetRangeScale:
+    Min: 0
+    Max: 0
   m_Hips_SkipOffset:
     Curve:
       serializedVersion: 2
@@ -317,6 +318,10 @@ MonoBehaviour:
     Src:
       Min: 0
       Max: 0
+  m_Hips_Ease:
+    F: 0
+    Z: 0
+    R: 0
   m_Model: {fileID: 1061133086809451152}
 --- !u!1 &1114928914988804812
 GameObject:

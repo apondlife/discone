@@ -1,5 +1,4 @@
-﻿using System;
-using Soil;
+﻿using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Color = UnityEngine.Color;
@@ -33,7 +32,7 @@ class CharacterLegs: MonoBehaviour {
     [SerializeField] MapInCurve m_Hips_SkipOffset;
 
     [Tooltip("the hips offset ease")]
-    [SerializeField] DynamicEasing m_Hips_Ease;
+    [SerializeField] DynamicEase m_Hips_Ease;
 
     // -- refs --
     [Header("refs")]
@@ -209,7 +208,7 @@ class CharacterLegs: MonoBehaviour {
         var pos = t.parent.TransformPoint(m_InitialPos);
         DebugDraw.PushLine("legs-hips-pos", m_Debug_PrevInitialPos + prevOffset, pos + m_Hips_Ease.Pos, new DebugDraw.Config(Soil.Color.GreenYellow, width: 1f));
         DebugDraw.PushLine("legs-hips-target", m_Debug_PrevInitialPos + prevTarget, pos + m_Hips_Ease.Target, new DebugDraw.Config(Soil.Color.MediumVioletRed, width: 1f));
-        
+
         // apply hip offset
         var translation = m_Hips_Ease.Pos;
         t.localPosition = m_InitialPos + translation;

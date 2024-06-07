@@ -9,9 +9,6 @@ namespace Soil.Editor {
 [CustomPropertyDrawer(typeof(FloatRange))]
 public sealed class FloatRangeDrawer: PropertyDrawer {
     // -- constants --
-    /// the gap between elements
-    const float k_Gap = 2f;
-
     /// the width of the range separator label ("...")
     const float k_SeparatorWidth = 16f;
 
@@ -30,7 +27,7 @@ public sealed class FloatRangeDrawer: PropertyDrawer {
         E.indentLevel = 0;
 
         // move rect past the label
-        var lw = U.labelWidth + k_Gap;
+        var lw = U.labelWidth + Theme.Gap1;
         r.x += lw;
         r.width -= lw;
 
@@ -50,17 +47,17 @@ public sealed class FloatRangeDrawer: PropertyDrawer {
         var max = prop.FindPropertyRelative("Max");
 
         // calc width of each field from remaining space
-        var fw = (r.width - k_SeparatorWidth - k_Gap * 2f) / 2f;
+        var fw = (r.width - k_SeparatorWidth - Theme.Gap1 * 2f) / 2f;
 
         // draw the min field
         r.width = fw;
         min.floatValue = E.FloatField(r, min.floatValue);
-        r.x += fw + k_Gap;
+        r.x += fw + Theme.Gap1;
 
         // draw the separator
         r.width = k_SeparatorWidth;
         E.LabelField(r, "...", Separator());
-        r.x += k_SeparatorWidth + k_Gap;
+        r.x += k_SeparatorWidth + Theme.Gap1;
 
         // draw the max field
         r.width = fw;

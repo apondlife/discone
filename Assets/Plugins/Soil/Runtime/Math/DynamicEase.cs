@@ -6,7 +6,7 @@ namespace Soil {
 /// a dynamic pid controller for a moving target value
 /// see: https://www.youtube.com/watch?v=KPoeNZZ6H4s
 [Serializable]
-public struct DynamicEasing {
+public struct DynamicEase {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the frequency")]
@@ -35,7 +35,7 @@ public struct DynamicEasing {
     /// setup with an initial value
     public void Init(Vector3 initial) {
         ComputeTerms();
-        
+
         // initialize state
         m_Target = initial;
         m_Pos = initial;

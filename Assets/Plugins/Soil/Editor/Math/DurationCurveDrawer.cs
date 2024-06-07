@@ -9,12 +9,6 @@ namespace Soil.Editor {
 [CustomPropertyDrawer(typeof(DurationCurve))]
 sealed class DurationCurveDrawer: PropertyDrawer {
     // -- constants --
-    /// the gap between elements
-    const float k_Gap1 = 2f;
-
-    /// the gap between curve & field
-    const float k_Gap2 = 6f;
-
     /// the width of the curve
     const float k_CurveWidth = 40f;
 
@@ -34,7 +28,7 @@ sealed class DurationCurveDrawer: PropertyDrawer {
         E.indentLevel = 0;
 
         // move rect past the label
-        var lw = U.labelWidth + k_Gap1;
+        var lw = U.labelWidth + Theme.Gap1;
         r.x += lw;
         r.width -= lw;
 
@@ -46,7 +40,7 @@ sealed class DurationCurveDrawer: PropertyDrawer {
         curve.animationCurveValue = E.CurveField(rc, curve.animationCurveValue);
 
         // draw the duration
-        var delta = rc.width + k_Gap2;
+        var delta = rc.width + Theme.Gap3;
         r.x += delta;
         r.width -= delta;
         duration.floatValue = E.FloatField(r, duration.floatValue);

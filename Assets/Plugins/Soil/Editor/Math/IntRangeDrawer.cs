@@ -10,9 +10,6 @@ namespace Soil.Editor {
 [CustomPropertyDrawer(typeof(IntRange))]
 public sealed class IntRangeDrawer: PropertyDrawer {
     // -- constants --
-    /// the gap between elements
-    const float k_Gap = 2f;
-
     /// the width of the range separator label ("...")
     const float k_SeparatorWidth = 16f;
 
@@ -31,7 +28,7 @@ public sealed class IntRangeDrawer: PropertyDrawer {
         E.indentLevel = 0;
 
         // move rect past the label
-        var lw = U.labelWidth + k_Gap;
+        var lw = U.labelWidth + Theme.Gap1;
         r.x += lw;
         r.width -= lw;
 
@@ -57,7 +54,7 @@ public sealed class IntRangeDrawer: PropertyDrawer {
 
         // calc width of each field from remaining space
         var sw = rangeAttr == null ? k_SeparatorWidth : 100f;
-        var fw = (r.width - sw - k_Gap * 2f) / 2f;
+        var fw = (r.width - sw - Theme.Gap1 * 2f) / 2f;
 
         // the next min  & max
         var nextMin = min.intValue;
@@ -66,7 +63,7 @@ public sealed class IntRangeDrawer: PropertyDrawer {
         // draw the min field
         r.width = fw;
         nextMin = E.DelayedIntField(r, nextMin);
-        r.x += fw + k_Gap;
+        r.x += fw + Theme.Gap1;
 
         // if this has range extents, draw the slider
         if (rangeAttr != null) {
@@ -75,7 +72,7 @@ public sealed class IntRangeDrawer: PropertyDrawer {
 
             r.width = sw;
             E.MinMaxSlider(r, ref minF, ref maxF, rangeAttr.Min, rangeAttr.Max);
-            r.x += sw + k_Gap;
+            r.x += sw + Theme.Gap1;
 
             nextMin = (int)minF;
             nextMax = (int)maxF;
@@ -84,7 +81,7 @@ public sealed class IntRangeDrawer: PropertyDrawer {
         else {
             r.width = sw;
             E.LabelField(r, "...", Separator());
-            r.x += sw + k_Gap;
+            r.x += sw + Theme.Gap1;
         }
 
         // draw the max field
