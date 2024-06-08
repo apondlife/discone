@@ -18,6 +18,10 @@ public struct DynamicEase {
     [Tooltip("the responsiveness")]
     public float R;
 
+    /// difficult math to describe, watch the video
+    [HideInInspector]
+    [SerializeField] float m_K1, m_K2, m_K3;
+
     // -- props --
     /// the previous target value
     Vector3 m_Target;
@@ -28,29 +32,12 @@ public struct DynamicEase {
     /// the current velocity
     Vector3 m_Velocity;
 
-    /// difficult math to describe, watch the video
-    float m_K1, m_K2, m_K3;
-
     // -- commands --
     /// setup with an initial value
     public void Init(Vector3 initial) {
-        ComputeTerms();
-
-        // initialize state
         m_Target = initial;
         m_Pos = initial;
         m_Velocity = Vector3.zero;
-    }
-
-    // TODO: custom editor to not have to call this on update
-    public void ComputeTerms() {
-        // compute terms
-        var pif1 = Mathf.PI * F;
-        var pif2 = pif1 * 2f;
-
-        m_K1 = Z / pif1;
-        m_K2 = 1f / (pif2 * pif2);
-        m_K3 = R * Z / pif2;
     }
 
     /// move towards the target with an estimated target velocity
@@ -84,6 +71,18 @@ public struct DynamicEase {
     /// the current position
     public Vector3 Pos {
         get => m_Pos;
+    }
+
+    /// compute the eigenvalue (or w/e) terms given f, z, r
+    public static (float, float, float) ComputeTerms(float f, float z, float r) {
+        var pif1 = Mathf.PI * f;
+        var pif2 = pif1 * 2f;
+
+        var k1 = z / pif1;
+        var k2 = 1f / (pif2 * pif2);
+        var k3 = r * z / pif2;
+
+        return (k1, k2, k3);
     }
 
     // -- factories --

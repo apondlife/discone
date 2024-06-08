@@ -94,7 +94,6 @@ class CharacterLegs: MonoBehaviour {
 
     void FixedUpdate() {
         var delta = Time.deltaTime;
-        m_Hips_Ease.ComputeTerms();
 
         // add an offset to move the hips to match the character's stance
         OffsetHips(delta);

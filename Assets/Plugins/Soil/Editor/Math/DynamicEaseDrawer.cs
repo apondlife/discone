@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using E = UnityEditor.EditorGUI;
@@ -81,6 +80,12 @@ public class DynamicEaseDrawer: PropertyDrawer {
         pF.floatValue = values[0];
         pZ.floatValue = values[1];
         pR.floatValue = values[2];
+
+        // update terms attrs
+        var (k1, k2, k3) = DynamicEase.ComputeTerms(pF.floatValue, pZ.floatValue, pR.floatValue);
+        prop.SetValue("m_K1", k1);
+        prop.SetValue("m_K2", k2);
+        prop.SetValue("m_K3", k3);
 
         // draw graph on foldout
         var hasValue = prop.FindValue(out DynamicEase ease);

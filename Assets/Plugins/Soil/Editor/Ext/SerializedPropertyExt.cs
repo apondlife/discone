@@ -4,6 +4,17 @@ using UnityEditor;
 namespace Soil.Editor {
 
 public static class SerializedPropertyExt {
+    // -- commands --
+    /// set the float value for the relative property
+    public static void SetValue(
+        this SerializedProperty prop,
+        string path,
+        float value
+    ) {
+        prop.FindPropertyRelative(path).floatValue = value;
+    }
+
+    // -- queries --
     /// find the associated value-typed property for a serialized property
     public static bool FindValue<T>(
         this SerializedProperty prop,
