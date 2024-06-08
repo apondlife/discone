@@ -85,6 +85,18 @@ public struct DynamicEase {
     public Vector3 Pos {
         get => m_Pos;
     }
+
+    // -- factories --
+    public DynamicEase Clone() {
+        return new DynamicEase() {
+            F = F,
+            Z = Z,
+            R = R,
+            m_K1 = m_K1,
+            m_K2 = m_K2,
+            m_K3 = m_K3,
+        };
+    }
 }
 
 }

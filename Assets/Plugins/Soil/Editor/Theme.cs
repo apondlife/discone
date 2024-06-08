@@ -1,4 +1,7 @@
-﻿namespace Soil.Editor {
+﻿using UnityEngine;
+using EU = UnityEditor.EditorGUIUtility;
+
+namespace Soil.Editor {
 
 static class Theme {
     // -- constants --
@@ -10,6 +13,9 @@ static class Theme {
 
     /// a gap between elements (6px)
     public const float Gap3 = 6f;
+
+    /// the editor background color
+    public static readonly Color32 Bg = EU.isProSkin ? new Color32(56, 56, 56, 255) : new Color32(194, 194, 194, 255);
 }
 
 }
