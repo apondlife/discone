@@ -7,13 +7,6 @@ namespace Soil.Editor {
 
 [CustomPropertyDrawer(typeof(DynamicEase))]
 public class DynamicEaseDrawer: PropertyDrawer {
-    // -- constants --
-    /// the width of a Vector3 drawer label
-    const float k_LabelWidth = 15.5f;
-
-    /// a small inset on the Vector3 drawer (it doesn't actually reach the right edge)
-    const float k_RightInset = 0.5f;
-
     // -- PropertyDrawer --
     public override void OnGUI(Rect r, SerializedProperty prop, GUIContent label) {
         E.BeginProperty(r, label, prop);
@@ -31,28 +24,16 @@ public class DynamicEaseDrawer: PropertyDrawer {
         r.x += lw;
         r.width -= lw;
 
-        var fw = (r.width - k_RightInset - k_LabelWidth * 3f - Theme.Gap2 * 2f) / 3f;
-        var fr = r;
-        fr.width = fw;
+        // draw fzr fields
+        var labels = new GUIContent[] { new(pF.name), new(pZ.name), new(pR.name) };
+        var values = new[] { pF.floatValue, pZ.floatValue, pR.floatValue };
+        E.MultiFloatField(r, labels, values);
 
-        pF.floatValue = DrawInput(fr, fw, pF);
-        fr.x += fw + k_LabelWidth + Theme.Gap2;
-        pZ.floatValue = DrawInput(fr, fw, pZ);
-        fr.x += fw + k_LabelWidth + Theme.Gap2;
-        pR.floatValue = DrawInput(fr, fw, pR);
+        pF.floatValue = values[0];
+        pZ.floatValue = values[1];
+        pR.floatValue = values[2];
 
         E.EndProperty();
-    }
-
-    float DrawInput(Rect r, float w, SerializedProperty prop) {
-        r.width = k_LabelWidth;
-        E.LabelField(r, prop.name);
-
-        r.x += k_LabelWidth;
-        r.width = w;
-        var newValue = E.FloatField(r, prop.floatValue);
-
-        return newValue;
     }
 }
 
