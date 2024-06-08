@@ -1,0 +1,32 @@
+﻿using System.Reflection;
+using UnityEditor;
+
+namespace Soil.Editor {
+
+public static class SerializedPropertyExt {
+    /// find the associated value-typed property for a serialized property
+    public static bool FindValue<T>(
+        this SerializedProperty prop,
+        out T value,
+        BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic
+    ) where T: struct {
+        var owner = prop.serializedObject.targetObject;
+        var ownerType = owner.GetType();
+
+        var field = ownerType.GetField(prop.name, flags);
+        if (field == null) {
+            value = default;
+            return false;
+        }
+
+        if (field.GetValue(owner) is not T inner) {
+            value = default;
+            return false;
+        }
+
+        value = inner;
+        return true;
+    }
+}
+
+}

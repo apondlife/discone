@@ -10,17 +10,17 @@ namespace Soil.Editor {
 [CustomPropertyDrawer(typeof(DynamicEase))]
 public class DynamicEaseDrawer: PropertyDrawer {
     // -- constants --
-    /// the duration for the ease chart
+    /// the duration for the ease graph
     const float k_Duration = 2f;
 
-    /// the count for the ease chart
+    /// the count for the ease graph
     const int k_Count = 120;
 
-    /// the duration for the ease chart
+    /// the duration for the ease graph
     const float k_Delta = k_Duration / k_Count;
 
-    /// the height of the chart
-    const float k_ChartHeight = 60f;
+    /// the height of the graph
+    const float k_GraphHeight = 60f;
 
     /// the drawing material
     static readonly Material s_Material;
@@ -34,22 +34,30 @@ public class DynamicEaseDrawer: PropertyDrawer {
     }
 
     // -- props --
-    /// the list of chart values
+    /// the list of graph values
     float[] m_Values = new float[k_Count];
 
     // -- PropertyDrawer --
     public override float GetPropertyHeight(SerializedProperty prop, GUIContent label) {
-        return U.singleLineHeight + Theme.Gap3 + k_ChartHeight;
+        var height = U.singleLineHeight;
+        if (prop.isExpanded) {
+            height += Theme.Gap3 + k_GraphHeight;
+        }
+
+        return height;
     }
 
     public override void OnGUI(Rect r, SerializedProperty prop, GUIContent label) {
+        // unclear why this is sometimes called with a rect of width 1f
+        if (r.width <= 1f) {
+            return;
+        }
+
+        E.BeginProperty(r, label, prop);
+
         // get the rect for a line
         var rl = r;
         rl.height = U.singleLineHeight;
-
-        // draw the full height of the property
-        // r.height = GetPropertyHeight(prop, label);
-        E.BeginProperty(r, label, prop);
 
         // get attrs
         var pF = prop.FindPropertyRelative("F");
@@ -58,7 +66,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
 
         // draw label w/ indent
         r = rl;
-        E.LabelField(r, label);
+        prop.isExpanded = E.Foldout(r, prop.isExpanded, new GUIContent(label), toggleOnLabelClick: true);
 
         // move rect past the label
         var lw = U.labelWidth + Theme.Gap1;
@@ -74,27 +82,35 @@ public class DynamicEaseDrawer: PropertyDrawer {
         pZ.floatValue = values[1];
         pR.floatValue = values[2];
 
-        // draw next line
-        r = rl;
-        r.x += U.labelWidth;
-        r.y += rl.height + Theme.Gap3;
-        r.width -= U.labelWidth;
-        r.height = k_ChartHeight;
+        // draw graph on foldout
+        var hasValue = prop.FindValue(out DynamicEase ease);
+        if (prop.isExpanded && hasValue) {
+            // move to next line
+            r = rl;
+            r.x += U.labelWidth;
+            r.y += rl.height + Theme.Gap3;
+            r.width -= U.labelWidth;
+            r.height = k_GraphHeight;
 
-        // get a copy of the dynamic ease
-        var owner = prop.serializedObject.targetObject;
-        var ownerType = owner.GetType();
+            // draw the actual graph
+            DrawGraph(r, ease);
+        }
 
-        var easeField = ownerType.GetField(prop.name, BindingFlags.Instance | BindingFlags.NonPublic);
-        var easeBox = easeField.GetValue(owner) as DynamicEase?;
-        var ease = easeBox.Value.Clone();
+        E.EndProperty();
+    }
 
-        // calculate the values
+    /// draw the graph visualizing the dynamic ease
+    void DrawGraph(Rect r, DynamicEase ease) {
+        // work with a copy of the ease to avoid changing game state
+        ease = ease.Clone();
+
+        // keep track of extents of the graph
         var range = new FloatRange(
             min: float.MaxValue,
             max: float.MinValue
         );
 
+        // sample values from the ease
         ease.Init(Vector3.zero);
         for (var i = 0; i < k_Count; i++) {
             ease.Update(k_Delta, Vector3.up);
@@ -111,14 +127,12 @@ public class DynamicEaseDrawer: PropertyDrawer {
             m_Values[i] = ease.Pos.y;
         }
 
-        // draw chart
+        // start drawing into a render texture
         s_Material.SetPass(0);
         var texture = RenderTexture.GetTemporary((int)r.width, (int)r.height);
         RenderTexture.active = texture;
-
         GL.PushMatrix();
         GL.LoadPixelMatrix(0f, texture.width, 0f, texture.height);
-        GL.Clear(false, true, Theme.Bg);
 
         // the rect boundaries
         var x0 = 0f;
@@ -129,6 +143,9 @@ public class DynamicEaseDrawer: PropertyDrawer {
 
         // the operation to filter subpixel values
         var filter = (Func<float, float>)Mathf.Floor;
+
+        // draw the background
+        GL.Clear(false, true, Theme.Bg);
 
         // draw the boundaries
         GL.Begin(GL.LINE_STRIP);
@@ -165,13 +182,11 @@ public class DynamicEaseDrawer: PropertyDrawer {
 
         GL.End();
 
+        // clean up drawing context & render texture
         GL.PopMatrix();
-
         RenderTexture.active = null;
         E.DrawPreviewTexture(r, texture);
         RenderTexture.ReleaseTemporary(texture);
-
-        E.EndProperty();
     }
 }
 
