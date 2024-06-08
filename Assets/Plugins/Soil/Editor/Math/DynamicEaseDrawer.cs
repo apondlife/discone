@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using E = UnityEditor.EditorGUI;
@@ -19,14 +20,14 @@ public class DynamicEaseDrawer: PropertyDrawer {
     const float k_Delta = k_Duration / k_Count;
 
     /// the height of the chart
-    const float k_ChartHeight = 18f;
+    const float k_ChartHeight = 60f;
 
     /// the drawing material
     static readonly Material s_Material;
 
     // -- setup --
     static DynamicEaseDrawer() {
-        var material = new Material(Shader.Find("GUI/Text Shader"));
+        var material = new Material(Shader.Find("UI/Default"));
         material.hideFlags = HideFlags.HideAndDontSave;
         material.shader.hideFlags = HideFlags.HideAndDontSave;
         s_Material = material;
@@ -38,7 +39,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
 
     // -- PropertyDrawer --
     public override float GetPropertyHeight(SerializedProperty prop, GUIContent label) {
-        return U.singleLineHeight + U.standardVerticalSpacing + k_ChartHeight;
+        return U.singleLineHeight + Theme.Gap3 + k_ChartHeight;
     }
 
     public override void OnGUI(Rect r, SerializedProperty prop, GUIContent label) {
@@ -76,7 +77,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
         // draw next line
         r = rl;
         r.x += U.labelWidth;
-        r.y += rl.height + U.standardVerticalSpacing;
+        r.y += rl.height + Theme.Gap3;
         r.width -= U.labelWidth;
         r.height = k_ChartHeight;
 
@@ -112,7 +113,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
 
         // draw chart
         s_Material.SetPass(0);
-        var texture = RenderTexture.GetTemporary((int)rl.width, (int)rl.height);
+        var texture = RenderTexture.GetTemporary((int)r.width, (int)r.height);
         RenderTexture.active = texture;
 
         GL.PushMatrix();
@@ -123,11 +124,17 @@ public class DynamicEaseDrawer: PropertyDrawer {
         var x0 = 0f;
         var x1 = texture.width;
 
+        // the y-position
+        var y = 0f;
+
+        // the operation to filter subpixel values
+        var filter = (Func<float, float>)Mathf.Floor;
+
         // draw the boundaries
         GL.Begin(GL.LINE_STRIP);
         GL.Color(Color.LightGray);
 
-        var y = range.InverseLerp(0f) * texture.height;
+        y = filter(range.InverseLerp(0f) * texture.height);
         GL.Vertex(new Vector3(x0, y, 0f));
         GL.Vertex(new Vector3(x1, y, 0f));
 
@@ -135,23 +142,23 @@ public class DynamicEaseDrawer: PropertyDrawer {
 
         // draw the 1-line
         GL.Begin(GL.LINE_STRIP);
-        GL.Color(Color.Cyan);
+        GL.Color(Color.LightGreen);
 
-        y = range.InverseLerp(1f) * texture.height;
-        GL.Vertex(new Vector3(0f, y, 0f));
-        GL.Vertex(new Vector3(1f * texture.width, y, 0f));
+        y = filter(range.InverseLerp(1f) * texture.height);
+        GL.Vertex(new Vector3(x0, y, 0f));
+        GL.Vertex(new Vector3(x1, y, 0f));
 
         GL.End();
 
         // draw the ease
         GL.Begin(GL.LINE_STRIP);
-        GL.Color(Color.Yellow);
+        GL.Color(Color.Cyan);
 
         for (var i = 0; i < k_Count; i++) {
             var value = m_Values[i];
             GL.Vertex(new Vector3(
-                x: i * k_Delta * texture.width,
-                y: range.InverseLerp(value) * texture.height,
+                x: filter(i * k_Delta * texture.width),
+                y: filter(range.InverseLerp(value) * texture.height),
                 z: 0f
             ));
         }
