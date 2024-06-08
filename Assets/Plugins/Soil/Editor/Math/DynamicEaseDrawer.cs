@@ -65,7 +65,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
 
         // draw label w/ indent
         r = rl;
-        prop.isExpanded = E.Foldout(r, prop.isExpanded, new GUIContent(label), toggleOnLabelClick: true);
+        prop.isExpanded = E.Foldout(r, prop.isExpanded, new GUIContent(label));
 
         // move rect past the label
         var lw = U.labelWidth + Theme.Gap1;
