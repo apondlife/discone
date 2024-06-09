@@ -89,7 +89,7 @@ sealed class Character_Spawn: NetworkBehaviour {
         Character character,
         CharacterRec record
     ) {
-        // TODO: should this be event?
+        // TODO: should this be an event?
         if (record.Flower != null) {
             character.Checkpoint.Server_CreateCheckpoint(record.Flower);
         }

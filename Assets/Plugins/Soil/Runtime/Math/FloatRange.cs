@@ -37,9 +37,14 @@ public struct FloatRange {
         return Mathf.InverseLerp(Min, Max, val);
     }
 
-    /// normalize the value between min & max
+    /// clamp the value between min & max
     public float Clamp(float val) {
         return Mathf.Clamp(val, Min, Max);
+    }
+
+    /// clamp the magnitude of the value between min & max, preserving sign
+    public float ClampMagnitude(float val) {
+        return Mathf.Sign(val) * Clamp(Mathf.Abs(val));
     }
 
     // -- operators --

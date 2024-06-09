@@ -169,8 +169,7 @@ class CharacterLegs: MonoBehaviour {
         if (heldLeg.State.IsHeld) {
             // get the angle of the current stride, as if there was no offset
             var curOffset = m_InitialPos - transform.localPosition;
-            var root = heldLeg.RootPos - curOffset;
-            var curDir = (heldLeg.GoalPos - root).normalized;
+            var curDir = Vector3.Normalize(heldLeg.GoalPos - heldLeg.RootPos - curOffset);
             var curCos = Vector3.Dot(curDir, Vector3.down);
             var curAngle = Mathf.Acos(curCos) * Mathf.Rad2Deg;
 
@@ -195,25 +194,23 @@ class CharacterLegs: MonoBehaviour {
 
         // clamp offset within vertical limits
         var offsetRange = m_Hips_OffsetRangeScale * heldLeg.InitialLen;
-        hipsOffset.y = -offsetRange.Clamp(-hipsOffset.y);
+        hipsOffset.y = offsetRange.ClampMagnitude(hipsOffset.y);
 
         // ease the target offset
-        var prevTarget = m_Hips_Ease.Target;
         var prevOffset = m_Hips_Ease.Pos;
+        var prevTarget = m_Hips_Ease.Target;
         m_Hips_Ease.Update(delta, hipsOffset);
 
-        // draw ease offsets (before applying offset)
-        var t = transform;
-        var pos = t.parent.TransformPoint(m_InitialPos);
-        DebugDraw.PushLine("legs-hips-pos", m_Debug_PrevInitialPos + prevOffset, pos + m_Hips_Ease.Pos, new DebugDraw.Config(Soil.Color.GreenYellow, width: 1f));
-        DebugDraw.PushLine("legs-hips-target", m_Debug_PrevInitialPos + prevTarget, pos + m_Hips_Ease.Target, new DebugDraw.Config(Soil.Color.MediumVioletRed, width: 1f));
-
         // apply hip offset
+        var t = transform;
         var translation = m_Hips_Ease.Pos;
         t.localPosition = m_InitialPos + translation;
         m_Model.localPosition = m_InitialModelPos + translation;
 
-        m_Debug_PrevInitialPos = t.parent.TransformPoint(m_InitialPos);
+        var pos = t.parent.TransformPoint(m_InitialPos);
+        DebugDraw.PushLine("legs-hips-pos", m_Debug_PrevInitialPos + prevOffset, pos + m_Hips_Ease.Pos, new DebugDraw.Config(Soil.Color.GreenYellow, width: 1f));
+        DebugDraw.PushLine("legs-hips-target", m_Debug_PrevInitialPos + prevTarget, pos + m_Hips_Ease.Target, new DebugDraw.Config(Soil.Color.MediumVioletRed, width: 1f));
+        m_Debug_PrevInitialPos = pos;
     }
 
     // -- queries --
