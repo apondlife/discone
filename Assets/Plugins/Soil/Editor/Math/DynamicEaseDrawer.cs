@@ -41,6 +41,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
         var height = U.singleLineHeight;
         if (prop.isExpanded) {
             height += Theme.Gap3 + k_GraphHeight;
+            height += U.standardVerticalSpacing + U.singleLineHeight;
         }
 
         return height;
@@ -62,6 +63,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
         var pF = prop.FindPropertyRelative("F");
         var pZ = prop.FindPropertyRelative("Z");
         var pR = prop.FindPropertyRelative("R");
+        var pIsDisabled = prop.FindPropertyRelative("m_IsDisabled");
 
         // draw label w/ indent
         r = rl;
@@ -90,15 +92,34 @@ public class DynamicEaseDrawer: PropertyDrawer {
         // draw graph on foldout
         var hasValue = prop.FindValue(out DynamicEase ease);
         if (prop.isExpanded && hasValue) {
-            // move to next line
-            r = rl;
-            r.x += U.labelWidth;
-            r.y += rl.height + Theme.Gap3;
-            r.width -= U.labelWidth;
+            E.indentLevel += 1;
+
+            // move to beginning of line
+            r.y = r.yMax;
+            r.x = rl.x;
+            r.width = rl.width;
+
+            // draw toggle
+            r.y += U.standardVerticalSpacing;
+            r.height = rl.height;
+
+            E.PropertyField(r, pIsDisabled);
+
+            // move to beginning of line
+            r.y = r.yMax;
+            r.x = rl.x;
+            r.width = rl.width;
+
+            // draw graph
+            var indent = Theme.Gap_Indent * E.indentLevel;
+            r.x += indent;
+            r.y += Theme.Gap3;
+            r.width -= indent;
             r.height = k_GraphHeight;
 
-            // draw the actual graph
             DrawGraph(r, ease);
+
+            E.indentLevel -= 1;
         }
 
         E.EndProperty();
@@ -118,9 +139,9 @@ public class DynamicEaseDrawer: PropertyDrawer {
         // sample values from the ease
         ease.Init(Vector3.zero);
         for (var i = 0; i < k_Count; i++) {
-            ease.Update(k_Delta, Vector3.up);
+            ease.Update(k_Delta, Vector3.up, isAlwaysEnabled: true);
 
-            var value = ease.Pos.y;
+            var value = ease.Value.y;
             if (value < range.Min) {
                 range.Min = value;
             }
@@ -129,7 +150,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
                 range.Max = value;
             }
 
-            m_Values[i] = ease.Pos.y;
+            m_Values[i] = ease.Value.y;
         }
 
         // start drawing into a render texture

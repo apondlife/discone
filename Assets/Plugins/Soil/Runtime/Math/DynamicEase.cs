@@ -18,6 +18,9 @@ public struct DynamicEase {
     [Tooltip("the responsiveness")]
     public float R;
 
+    [Tooltip("if the ease curve is disabled")]
+    [SerializeField] bool m_IsDisabled;
+
     /// difficult math to describe, watch the video
     [HideInInspector]
     [SerializeField] float m_K1, m_K2, m_K3;
@@ -27,7 +30,7 @@ public struct DynamicEase {
     Vector3 m_Target;
 
     /// the current position
-    Vector3 m_Pos;
+    Vector3 m_Value;
 
     /// the current velocity
     Vector3 m_Velocity;
@@ -36,29 +39,41 @@ public struct DynamicEase {
     /// setup with an initial value
     public void Init(Vector3 initial) {
         m_Target = initial;
-        m_Pos = initial;
+        m_Value = initial;
         m_Velocity = Vector3.zero;
     }
 
     /// move towards the target with an estimated target velocity
-    public void Update(float delta, Vector3 target) {
-        var targetVelocity = (target - m_Target) / delta;
-        Update(delta, target, targetVelocity);
+    public void Update(
+        float delta,
+        Vector3 target,
+        bool isAlwaysEnabled = false
+    ) {
+        Update(delta, target, targetVelocity: (target - m_Target) / delta, isAlwaysEnabled);
     }
 
     /// move towards the target
-    public void Update(float delta, Vector3 target, Vector3 targetVelocity) {
+    public void Update(
+        float delta,
+        Vector3 target,
+        Vector3 targetVelocity,
+        bool isAlwaysEnabled = false
+    ) {
         m_Target = target;
+        if (m_IsDisabled && !isAlwaysEnabled) {
+            m_Value = target;
+            return;
+        }
 
         var k2 = Mathf.Max(m_K2, 1.1f * (delta * delta / 4f + delta * m_K1 / 2f));
 
-        var pos = m_Pos;
+        var pos = m_Value;
         var velocity = m_Velocity;
 
         pos += delta * velocity;
         velocity += delta * (target + m_K3 * targetVelocity - pos - m_K1 * velocity) / k2;
 
-        m_Pos = pos;
+        m_Value = pos;
         m_Velocity = velocity;
     }
 
@@ -68,9 +83,9 @@ public struct DynamicEase {
         get => m_Target;
     }
 
-    /// the current position
-    public Vector3 Pos {
-        get => m_Pos;
+    /// the current value
+    public Vector3 Value {
+        get => m_Value;
     }
 
     /// compute the eigenvalue (or w/e) terms given f, z, r
@@ -94,6 +109,7 @@ public struct DynamicEase {
             m_K1 = m_K1,
             m_K2 = m_K2,
             m_K3 = m_K3,
+            m_IsDisabled = m_IsDisabled,
         };
     }
 }

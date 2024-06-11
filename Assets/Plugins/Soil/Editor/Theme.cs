@@ -14,6 +14,9 @@ static class Theme {
     /// a gap between elements (6px)
     public const float Gap3 = 6f;
 
+    /// the width of each indent level
+    public const float Gap_Indent = 16f;
+
     /// the editor background color
     public static readonly Color32 Bg = EU.isProSkin ? new Color32(56, 56, 56, 255) : new Color32(194, 194, 194, 255);
 }
