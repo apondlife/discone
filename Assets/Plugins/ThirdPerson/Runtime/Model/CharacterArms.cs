@@ -47,13 +47,9 @@ class CharacterArms: MonoBehaviour {
         }
 
         var currDir = arm.RootPos - arm.GoalPos;
-        var fwd = c.State.Curr.Velocity.normalized;
-        if (fwd == Vector3.zero) {
-            fwd = c.State.Curr.Forward;
-        }
 
         // get the signed distance of the held arm
-        var currDist = Vector3.Dot(currDir, fwd);
+        var currDist = Vector3.Dot(currDir, c.State.Curr.Direction);
 
         // if far enough away, look for an anchor position
         // AAA: this dist is projected into the surface

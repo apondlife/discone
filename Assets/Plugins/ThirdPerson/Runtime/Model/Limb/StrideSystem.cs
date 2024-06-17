@@ -107,10 +107,7 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
         var nextStrideLen = Mathf.Min(currStrideLen, maxStrideLen);
 
         // the movement dir to align against stride
-        var moveDir = c.Character.State.Curr.SurfaceVelocity;
-        if (moveDir == Vector3.zero) {
-            moveDir = c.Character.State.Curr.Forward;
-        }
+        var moveDir = c.Character.State.Curr.SurfaceDirection;
 
         // shape the stride along its progress curve
         var nextStrideElapsed = Mathf.Sign(Vector3.Dot(currStride, moveDir)) * nextStrideLen / maxStrideLen;
@@ -185,14 +182,18 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
 
         // get the stride position
         var currStride = Vector3.ProjectOnPlane(goalPos - c.RootPos, c.SearchDir);
-        var currStrideLen = currStride.magnitude;
-        var currStrideDir = currStride / currStrideLen;
 
-        // get the max length of the stride in the current direction
-        var maxStrideLen = FindMaxStrideLength(currStrideDir, c);
-    
-        // ensure the goal isn't farther than the current stride len if it's shrinking
-        goalPos += currStrideDir * Mathf.Min(maxStrideLen - currStrideLen, 0f);
+        // correct the sign of the stride (negative is going backwards)
+        if (Vector3.Dot(currStride, c.Character.State.Curr.SurfaceDirection) > 0f) {
+            var currStrideLen = currStride.magnitude;
+            var currStrideDir = currStride / currStrideLen;
+
+            // get the max length of the stride in the current direction
+            var maxStrideLen = FindMaxStrideLength(currStrideDir, c);
+
+            // ensure the goal isn't farther than the current stride len if it's shrinking
+            goalPos += currStrideDir * Mathf.Min(maxStrideLen - currStrideLen, 0f);
+        }
 
         // the direction to the goal
         var goalDir = Vector3.Normalize(goalPos - c.RootPos);

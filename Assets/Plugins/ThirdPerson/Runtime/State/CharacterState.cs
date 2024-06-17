@@ -259,6 +259,11 @@ public sealed partial class CharacterState {
             get => Tilt * Quaternion.LookRotation(Forward, Up);
         }
 
+        /// the velocity direction
+        public Vector3 Direction {
+            get => AsDirection(Velocity);
+        }
+
         /// the velocity on the xz-plane
         public Vector3 PlanarVelocity {
             get => Velocity.XNZ();
@@ -267,6 +272,11 @@ public sealed partial class CharacterState {
         /// the velocity on the xz-plane
         public Vector3 PlanarForce {
             get => Force.XNZ();
+        }
+
+        /// the velocity direction along the xz-plane
+        public Vector3 PlanarDirection {
+            get => AsDirection(PlanarVelocity);
         }
 
         /// the velocity in the main surface plane, or raw velocity if none
@@ -289,6 +299,20 @@ public sealed partial class CharacterState {
                     return Vector3.ProjectOnPlane(Force, MainSurface.Normal);
                 }
             }
+        }
+
+        /// the velocity direction along the surface
+        public Vector3 SurfaceDirection {
+            get => AsDirection(SurfaceVelocity);
+        }
+
+        /// treat the vector as a direction, falling back to forward
+        public Vector3 AsDirection(Vector3 sourceDir) {
+            if (sourceDir == Vector3.zero) {
+                return Forward;
+            }
+
+            return sourceDir.normalized;
         }
 
         // -- factories --

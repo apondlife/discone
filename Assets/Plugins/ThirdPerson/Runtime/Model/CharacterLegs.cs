@@ -143,7 +143,7 @@ class CharacterLegs: MonoBehaviour {
 
         // set offset in move direction
         var v = c.State.Curr.SurfaceVelocity;
-        var moveDir = v != Vector3.zero ? v.normalized : c.State.Curr.Forward;
+        var moveDir = c.State.Curr.SurfaceDirection;
         var moveInput = c.Inputs.MoveMagnitude;
 
         var isHeldLegSliding = (
@@ -184,7 +184,7 @@ class CharacterLegs: MonoBehaviour {
                 var srcCos = Vector3.Dot(heldLeg.SearchDir, Vector3.down);
                 var skipCos = Mathf.Cos(m_Hips_SkipOffset.Src.Min);
                 var skipOffset = (srcCos - skipCos) * heldLeg.InitialLen;
-            
+
                 hipsOffset += Vector3.down * Mathf.LerpUnclamped(
                     skipOffset,
                     0f,
@@ -217,18 +217,10 @@ class CharacterLegs: MonoBehaviour {
     // -- queries --
     /// the displacement of the leg projected along the move dir
     float GetExtension(Limb limb) {
-        // TODO: how many places are we implementing a fallback to forward in some fashion?
-        var moveDir = c.State.Curr.PlanarVelocity;
-        if (moveDir == Vector3.zero) {
-            moveDir = c.State.Curr.Forward;
-        }
-
-        var displacement = Vector3.Dot(
-            limb.GoalPos - limb.RootPos,
-            moveDir
+        return Vector3.Dot(
+            limb.RootPos - limb.GoalPos,
+            c.State.Curr.PlanarDirection
         );
-
-        return -displacement;
     }
 }
 
