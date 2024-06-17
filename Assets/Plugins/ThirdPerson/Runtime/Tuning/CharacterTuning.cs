@@ -128,8 +128,15 @@ public sealed class CharacterTuning: ScriptableObject {
         [Tooltip("the number of times this jump can be used; 0 = infinite, -1 = none")]
         public int Count = 1;
 
+        [Tooltip("if this jumps happens automatically after the jump squat duration")]
+        public bool ShouldJumpAfterJumpSquat;
+
         [Tooltip("the jump squat duration range")]
         public FloatRange JumpSquatDuration;
+
+        [FormerlySerializedAs("JumpPower")]
+        [Tooltip("the jump power as a fn of jump squat elapsed")]
+        [SerializeField] AdsrCurve m_JumpPower;
 
         [Tooltip("how long after jump until the character can jump again as a fn of charge percent")]
         public MapOutCurve CooldownDuration;
@@ -142,6 +149,16 @@ public sealed class CharacterTuning: ScriptableObject {
 
         [Tooltip("how much horizontal speed is cancelled on jump")]
         public float Horizontal_MomentumLoss;
+
+        /// the jump power as a fn of jump squat elapsed
+        public float JumpPower(float elapsed) {
+            return m_JumpPower.Evaluate(elapsed - JumpSquatDuration.Min);
+        }
+    }
+
+    /// get current jump tuning for a state
+    public JumpTuning CurrentJump(CharacterState state) {
+        return Jumps[state.Next.JumpTuningIndex];
     }
 
     // -- surface --

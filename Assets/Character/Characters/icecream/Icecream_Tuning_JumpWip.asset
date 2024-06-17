@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
-  m_Name: Icecream_Tuning
+  m_Name: Icecream_Tuning_JumpWip
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
   m_Description: iced cream
   Surface_MinSpeed: 0.85
@@ -194,7 +194,7 @@ MonoBehaviour:
       Max: 0.1
   Gravity: -70
   JumpGravity: -30
-  FallGravity: -40
+  FallGravity: -30
   Jump_BufferDuration: 0
   CoyoteDuration: 0.24
   LandingDuration: 0.3
@@ -320,7 +320,7 @@ MonoBehaviour:
       Max: 1
   Jumps:
   - Count: 1
-    ShouldJumpAfterJumpSquat: 1
+    ShouldJumpAfterJumpSquat: 0
     JumpSquatDuration:
       Min: 0
       Max: 0.4
@@ -351,8 +351,8 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.4
-      m_HoldDuration: 0
+        m_Duration: 0.5
+      m_HoldDuration: 0.05
       m_Decay:
         m_Curve:
           serializedVersion: 2
@@ -378,7 +378,7 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
+        m_Duration: 0.2
       m_SustainValue: 1
       m_Release:
         m_Curve:
@@ -387,7 +387,7 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
+        m_Duration: 1
     CooldownDuration:
       Curve:
         serializedVersion: 2
@@ -425,16 +425,16 @@ MonoBehaviour:
         m_RotationOrder: 0
       Dst:
         Min: 15
-        Max: 20
+        Max: 25
     Upwards_MomentumLoss: 0.11
     Horizontal_MomentumLoss: 0
-  - Count: 0
-    ShouldJumpAfterJumpSquat: 1
+  - Count: -1
+    ShouldJumpAfterJumpSquat: 0
     JumpSquatDuration:
       Min: 0
       Max: 0.4
     m_JumpPower:
-      m_AttackValue: 1
+      m_AttackValue: 0
       m_Attack:
         m_Curve:
           serializedVersion: 2
@@ -443,7 +443,7 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         m_Duration: 0.4
-      m_HoldDuration: 0
+      m_HoldDuration: 0.05
       m_Decay:
         m_Curve:
           serializedVersion: 2
@@ -451,8 +451,8 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
-      m_SustainValue: 1
+        m_Duration: 0.2
+      m_SustainValue: 0.5
       m_Release:
         m_Curve:
           serializedVersion: 2

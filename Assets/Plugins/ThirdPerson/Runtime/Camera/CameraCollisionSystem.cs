@@ -121,7 +121,7 @@ sealed class CameraCollisionSystem: SimpleSystem<CameraContainer> {
     // -- FreeLook_Clipping --
     static readonly Phase<CameraContainer> FreeLook_Clipping = new("FreeLook_Clipping",
         enter: (s, c) => {
-            c.State.Next.Velocity *= 1f - c.Tuning.Collision_ClipDamping.Evaluate(s.PhaseStart, releaseStartTime: s.PhaseStart);
+            c.State.Next.Velocity *= 1f - c.Tuning.Collision_ClipDamping.Evaluate(s.PhaseElapsed, releaseAt: s.PhaseStart);
         },
         update: (delta, s, c) => {
             if (!c.State.Next.IsFreeLook) {
@@ -133,7 +133,7 @@ sealed class CameraCollisionSystem: SimpleSystem<CameraContainer> {
             var corrected = GetFreeLookPos(ideal, c);
 
             c.State.Next.Pos = ideal;
-            c.State.Next.Velocity *= 1.0f - c.Tuning.Collision_ClipDamping.Evaluate(s.PhaseStart, releaseStartTime: s.PhaseStart);
+            c.State.Next.Velocity *= 1f - c.Tuning.Collision_ClipDamping.Evaluate(s.PhaseElapsed, releaseAt: s.PhaseStart);
 
             if (ideal == corrected) {
                 s.ChangeTo(FreeLook_ClippingCooldown);

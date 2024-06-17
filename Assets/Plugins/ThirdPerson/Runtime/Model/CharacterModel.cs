@@ -177,11 +177,8 @@ public sealed class CharacterModel: MonoBehaviour {
         );
 
         if (state.IsInJumpSquat) {
-            var jumpSquatPct = 1f;
-            var jumpTuning = c.Tuning.Jumps[c.State.Next.JumpTuningIndex];
-            if (jumpTuning.JumpSquatDuration.Max > 0f) {
-                jumpSquatPct = state.JumpState.PhaseElapsed / jumpTuning.JumpSquatDuration.Max;
-            }
+            var jumpTuning = c.Tuning.CurrentJump(c.State);
+            var jumpPower = jumpTuning.JumpPower(state.JumpState.PhaseElapsed);
 
             anim.SetFloat(
                 s_JumpLeg,
@@ -190,7 +187,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
             anim.SetFloat(
                 s_JumpCharge,
-                jumpSquatPct
+                jumpPower
             );
         }
 

@@ -17,7 +17,13 @@ public struct DurationCurve {
     // -- queries --
     /// evaluate the curve in the range
     public float Evaluate(float elapsed) {
-        return m_Curve.Evaluate(elapsed / m_Duration);
+        var k = elapsed / m_Duration;
+
+        if (m_Curve != null && m_Curve.length != 0) {
+            k = m_Curve.Evaluate(k);
+        }
+
+        return k;
     }
 
     /// the curve duration

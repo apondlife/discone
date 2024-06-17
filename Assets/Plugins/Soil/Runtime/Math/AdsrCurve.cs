@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Soil {
 
@@ -8,65 +9,65 @@ namespace Soil {
 [Serializable]
 public struct AdsrCurve {
     // -- fields --
-    [Tooltip("the sustained value after decay")]
-    [SerializeField] float m_Sustain;
-
-    [Tooltip("the hold duration between attack & decay")]
-    [SerializeField] float m_HoldDuration;
-
     [Tooltip("the scale for the attack & decay")]
-    [SerializeField] float m_MaxScale;
+    [SerializeField] float m_AttackValue;
 
     [Tooltip("the attack curve")]
     [SerializeField] DurationCurve m_Attack;
 
+    [Tooltip("the hold duration between attack & decay")]
+    [SerializeField] float m_HoldDuration;
+
     [Tooltip("the decay curve after attack curve towards sustain")]
     [SerializeField] DurationCurve m_Decay;
 
-    [Tooltip("the decay curve towards sustain value")]
+    [Tooltip("the sustained value after decay")]
+    [SerializeField] float m_SustainValue;
+
+    [Tooltip("the release curve towards zero")]
     [SerializeField] DurationCurve m_Release;
 
     // -- queries --
-    // TODO: this needs to accept time deltas to avoid becoming unreliable
     /// evaluate the curve in the range
     public float Evaluate(
-        float startTime,
-        float amplitudeScale = 1f,
-        float releaseStartTime = float.MaxValue
+        float elapsed,
+        float releaseAt = float.MaxValue
     ) {
-        // elapsed in attack/decay/sustain
-        var elapsed = Math.Min(releaseStartTime, Time.time) - startTime;
+        var value = m_SustainValue;
 
-        // by default, sustain
-        var scale = 1.0f;
-        var maxScale = m_MaxScale * amplitudeScale;
+        // the amount of time since release
+        var releaseElapsed = Mathf.Max(elapsed - releaseAt, 0f);
 
-        // if in attack, use the attack scale
-        if (elapsed < m_Attack.Duration) {
-            scale = m_Attack.Evaluate(elapsed) * maxScale;
+        // calculate progress through the adsr pre-release
+        elapsed -= releaseElapsed;
+
+        // if we're in attack, attack towards the value
+        if (elapsed > 0f && elapsed <= m_Attack.Duration) {
+            value = m_Attack.Evaluate(elapsed) * m_AttackValue;
         }
-        // if in hold, use max until reaching decay
-        else if (elapsed < m_Attack.Duration + m_HoldDuration) {
-            scale = maxScale;
-        }
-        // if in decay, decay down to sustain
-        else if (elapsed < m_Attack.Duration + m_HoldDuration + m_Decay.Duration) {
-            scale = Mathf.Lerp(
-                maxScale,
-                1.0f,
-                m_Decay.Evaluate(elapsed - m_Attack.Duration)
+
+        // move past attack & hold
+        elapsed -= m_Attack.Duration - m_HoldDuration;
+
+        // if we're in decay, decay towards sustain
+        if (elapsed > 0f && elapsed <= m_Decay.Duration) {
+            value = Mathf.Lerp(
+                m_AttackValue,
+                m_SustainValue,
+                m_Decay.Evaluate(elapsed)
             );
         }
 
-        // calculate release scale from final pre-release scale
-        var releaseElapsed = Mathf.Max(Time.time - releaseStartTime, 0.0f);
-        scale = Mathf.Lerp(
-            scale,
-            0.0f,
-            m_Release.Evaluate(releaseElapsed)
-        );
+        // release from the pre-release value towards 0
+        if (releaseElapsed > 0f) {
+            value = Mathf.Lerp(
+                value,
+                0.0f,
+                m_Release.Evaluate(releaseElapsed)
+            );
+        }
 
-        return m_Sustain * scale;
+        return value;
     }
 }
 
