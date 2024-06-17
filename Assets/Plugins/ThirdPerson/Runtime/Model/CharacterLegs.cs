@@ -75,7 +75,7 @@ class CharacterLegs: MonoBehaviour {
         SetIsStriding(!c.State.Curr.IsCrouching && !c.State.Curr.IsInJumpSquat);
 
         // if we are not moving and legs are closer than minimum, make sure both legs are holding
-        var totalExtension = Mathf.Abs(GetExtension(m_Left) + GetExtension(m_Right));
+        var totalExtension = Mathf.Abs(GetExtension(m_Left)) + Mathf.Abs(GetExtension(m_Right));
         if (c.State.Curr.IsIdle && totalExtension < 2.0f * m_Left.Tuning.MaxLength.Min) {
             Hold(delta);
         }
@@ -169,7 +169,8 @@ class CharacterLegs: MonoBehaviour {
         if (heldLeg.State.IsHeld) {
             // get the angle of the current stride, as if there was no offset
             var curOffset = m_InitialPos - transform.localPosition;
-            var curDir = Vector3.Normalize(heldLeg.GoalPos - heldLeg.RootPos - curOffset);
+            var anchor = heldLeg.RootPos - curOffset;
+            var curDir = Vector3.Normalize(heldLeg.GoalPos - anchor);
             var curCos = Vector3.Dot(curDir, Vector3.down);
             var curAngle = Mathf.Acos(curCos) * Mathf.Rad2Deg;
 
@@ -183,7 +184,7 @@ class CharacterLegs: MonoBehaviour {
                 var srcCos = Vector3.Dot(heldLeg.SearchDir, Vector3.down);
                 var skipCos = Mathf.Cos(m_Hips_SkipOffset.Src.Min);
                 var skipOffset = (srcCos - skipCos) * heldLeg.InitialLen;
-
+            
                 hipsOffset += Vector3.down * Mathf.LerpUnclamped(
                     skipOffset,
                     0f,
@@ -194,7 +195,7 @@ class CharacterLegs: MonoBehaviour {
 
         // clamp offset within vertical limits
         var offsetRange = m_Hips_OffsetRangeScale * heldLeg.InitialLen;
-        hipsOffset.y = offsetRange.ClampMagnitude(hipsOffset.y);
+        hipsOffset.y = -offsetRange.Clamp(-hipsOffset.y);
 
         // ease the target offset
         var prevOffset = m_Hips_Ease.Value;

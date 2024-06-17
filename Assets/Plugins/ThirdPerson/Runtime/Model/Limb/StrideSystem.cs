@@ -183,19 +183,19 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
     static void Holding_Update(float delta, System<LimbContainer> s, LimbContainer c) {
         var goalPos = c.State.GoalPos - c.State.SlideOffset;
 
-        // the held leg is an anchor
-        var anchor = goalPos - c.RootPos;
-
-        // the direction to the goal
-        var goalDir = anchor.normalized;
-
         // get the stride position
-        // var currStride = Vector3.ProjectOnPlane(anchor, c.SearchDir);
-        // var currStrideLen = currStride.magnitude;
-        // var currStrideDir = currStride / currStrideLen;
+        var currStride = Vector3.ProjectOnPlane(goalPos - c.RootPos, c.SearchDir);
+        var currStrideLen = currStride.magnitude;
+        var currStrideDir = currStride / currStrideLen;
 
         // get the max length of the stride in the current direction
-        // var maxStrideLen = FindMaxStrideLength(currStrideDir, c);
+        var maxStrideLen = FindMaxStrideLength(currStrideDir, c);
+    
+        // ensure the goal isn't farther than the current stride len if it's shrinking
+        goalPos += currStrideDir * Mathf.Min(maxStrideLen - currStrideLen, 0f);
+
+        // the direction to the goal
+        var goalDir = Vector3.Normalize(goalPos - c.RootPos);
 
         // the maximum stride distance projected along the leg
         // var goalMax = Mathf.Max(
