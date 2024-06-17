@@ -275,13 +275,22 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
     // TODO: this is input processing; it doesn't even need to live in the limb (other than depending on a tuning)
     /// update current input scale, interpolating towards smaller inputs
     static void UpdateInputScale(float delta, LimbContainer c) {
+        var inputMag = c.Character.Inputs.MoveMagnitude;
+
+        var forceMag = Vector3.Dot(
+            c.Character.State.Curr.SurfaceForce.normalized,
+            c.Character.State.Curr.SurfaceDirection
+        );
+
+        forceMag = (forceMag + 1f) * 0.5f;
+
         var inputScale = c.State.InputScale;
 
-        var inputMag = c.Character.Inputs.MoveMagnitude;
-        if (inputMag > inputScale) {
-            inputScale = inputMag;
+        var nextInputScale = Mathf.Max(inputMag, forceMag);
+        if (nextInputScale > inputScale) {
+            inputScale = nextInputScale;
         } else {
-            inputScale = Mathf.MoveTowards(inputScale, inputMag, c.Tuning.InputScale_ReleaseSpeed * delta);
+            inputScale = Mathf.MoveTowards(inputScale, nextInputScale, c.Tuning.InputScale_ReleaseSpeed * delta);
         }
 
         c.State.InputScale = inputScale;
