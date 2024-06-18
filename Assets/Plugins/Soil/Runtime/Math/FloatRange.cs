@@ -47,6 +47,11 @@ public struct FloatRange {
         return Mathf.Sign(val) * Clamp(Mathf.Abs(val));
     }
 
+    /// the length of the range
+    public float Length {
+        get => Mathf.Abs(Max - Min);
+    }
+
     // -- operators --
     public static FloatRange operator *(FloatRange range, float scale) {
         return new FloatRange(range.Min * scale, range.Max * scale);
