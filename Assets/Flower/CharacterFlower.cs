@@ -32,7 +32,7 @@ public class CharacterFlower: NetworkBehaviour {
     const float k_RaycastLen = 5.0f;
 
     /// the cache of per-texture materials
-    static readonly Dictionary<string, Material> k_MaterialCache = new Dictionary<string, Material>();
+    static readonly Dictionary<string, Material> k_MaterialCache = new();
 
     /// the ground layer mask
     static LayerMask s_GroundMask;
@@ -134,7 +134,7 @@ public class CharacterFlower: NetworkBehaviour {
     }
 
     void OnTriggerEnter(Collider other) {
-        // if its not a character, do nothing
+        // if it's not a character, do nothing
         if (!s_CharacterMask.Contains(other.gameObject.layer)) {
             return;
         }
@@ -282,7 +282,7 @@ public class CharacterFlower: NetworkBehaviour {
 
     /// find cached material for texture and saturation
     Material FindMaterial() {
-        return FindMaterial(m_Grabbing == 0 ? m_Saturation : 1.0f);
+        return FindMaterial(m_Grabbing == 0 ? m_Saturation : 1f);
     }
 
     /// find cached material for texture and saturation
@@ -357,11 +357,6 @@ public class CharacterFlower: NetworkBehaviour {
         NetworkServer.Spawn(flower.gameObject);
 
         return flower;
-    }
-
-    /// create state frame from this flower
-    public CharacterState.Frame IntoState() {
-        return m_Checkpoint.IntoState();
     }
 
     /// construct a record from this flower

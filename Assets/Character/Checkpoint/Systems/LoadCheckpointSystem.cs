@@ -46,7 +46,7 @@ sealed class LoadCheckpointSystem: SimpleSystem<CheckpointContainer> {
             // and start load
             c.State.Load_Elapsed = 0.0f;
             c.State.Load_SrcState = c.Character.State.Next;
-            c.State.Load_DstState = c.Checkpoint.IntoState();
+            c.State.Load_DstState = c.Character.State.Create(c.Checkpoint.Position, c.Checkpoint.Forward);
             c.State.Load_CurState = c.State.Load_DstState.Copy();
         },
         update: (delta, s, c) => {

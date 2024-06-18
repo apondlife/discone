@@ -39,12 +39,4 @@ public record Checkpoint {
             transform.forward
         );
     }
-
-    /// create a state frame from this checkpoint
-    public CharacterState.Frame IntoState() {
-        return new CharacterState.Frame(
-            Position,
-            Forward
-        );
-    }
 }

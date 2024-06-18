@@ -1,7 +1,6 @@
 using System;
 using Soil;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -23,15 +22,17 @@ public sealed partial class CharacterState {
     Ring<Frame> m_Frames = new(k_BufferSize);
 
     // -- lifetime --
-    /// create state from intial frame and dependencies
+    /// create state from initial frame and dependencies
     public CharacterState(
-        Frame initial,
+        Vector3 position,
+        Vector3 forward,
         CharacterTuning tuning
     ) {
         // set deps
         m_Tuning = tuning;
 
-        // set props
+        // fill with the initial frame
+        var initial = Create(position, forward);
         Fill(initial);
     }
 
@@ -102,6 +103,30 @@ public sealed partial class CharacterState {
         get => m_Frames[offset];
     }
 
+    // -- factories --
+    /// create a frame from forward and position
+    public Frame Create(
+        Vector3 position,
+        Vector3 forward
+    ) {
+        if (forward == Vector3.zero) {
+            Log.Character.W($"can't set a zero forward vector, ignoring");
+            return new Frame();
+        }
+
+        // create a minimal frame
+        var frame = new Frame();
+        frame.Position = position;
+        frame.Forward = forward;
+
+        // init any properties from tuning
+        frame.Surface_Drag = m_Tuning.Friction_SurfaceDrag;
+        frame.Surface_KineticFriction = m_Tuning.Friction_Kinetic;
+        frame.Surface_StaticFriction = m_Tuning.Friction_Static;
+
+        return frame;
+    }
+
     // -- types --
     /// a single frame of character state
     [Serializable]
@@ -148,16 +173,16 @@ public sealed partial class CharacterState {
         public Vector3 SurfaceTangent;
 
         /// the time the character hasn't moved
-        public float IdleTime = 0.0f;
+        public float IdleTime = 0f;
 
         /// the drag for surface movement
-        public float Surface_Drag = 0.0f;
+        public float Surface_Drag = 0f;
 
         /// the kinetic friction for surface movement
-        public float Surface_KineticFriction = 0.0f;
+        public float Surface_KineticFriction = 0f;
 
         /// the static friction for surface movement
-        public float Surface_StaticFriction = 0.0f;
+        public float Surface_StaticFriction = 0f;
 
         /// the direction of the current pivot
         public Vector3 PivotDirection = Vector3.zero;
@@ -191,24 +216,12 @@ public sealed partial class CharacterState {
         public Frame() {
         }
 
-        /// create an initial frame
-        public Frame(Vector3 position, Vector3 forward) {
-            Position = position;
-
-            if (forward.magnitude == 0) {
-                Log.Character.W($"can't set a zero forward vector, ignoring");
-                return;
-            }
-
-            Forward = forward;
-        }
-
         /// sets the forward direction on the xz plane
         public void SetProjectedForward(Vector3 dir) {
             var projected = Vector3.ProjectOnPlane(dir, Up);
 
             // if zero, use the original direction
-            if (projected.sqrMagnitude > 0.0f) {
+            if (projected.sqrMagnitude > 0f) {
                 Forward = projected.normalized;
             }
         }

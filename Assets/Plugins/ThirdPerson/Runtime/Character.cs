@@ -83,14 +83,7 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         m_Input = new CharacterInput<InputFrame>();
 
         // init state
-        m_State = new CharacterState(
-            new CharacterState.Frame(
-                t.position,
-                t.forward
-            ),
-            m_Tuning
-        );
-
+        m_State = new CharacterState(t.position, t.forward, m_Tuning);
         m_Events = new CharacterEvents(m_State);
 
         // reset rotation; model is the only transform that rotates
