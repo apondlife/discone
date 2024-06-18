@@ -23,8 +23,7 @@ public class AiInputSource: PlayerInputSource<InputFrame> {
         return new InputFrame(
             new CharacterInputMain(
                 m_Move,
-                UnityEngine.Random.value < m_JumpProbability,
-                false
+                UnityEngine.Random.value < m_JumpProbability
             ),
             isLoadPressed: false
         );

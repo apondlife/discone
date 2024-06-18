@@ -32,9 +32,6 @@ public abstract class PlayerInputSource<F>: CharacterInputSource<F> where F: Cha
     [Tooltip("the jump input")]
     [SerializeField] InputActionReference m_Jump;
 
-    [Tooltip("the crouch input")]
-    [SerializeField] InputActionReference m_Crouch;
-
     // -- queries --
     public CharacterInputMain ReadMain() {
         var forward = Vector3.Normalize(Vector3.ProjectOnPlane(
@@ -51,9 +48,8 @@ public abstract class PlayerInputSource<F>: CharacterInputSource<F> where F: Cha
 
         // produce a new frame
         return new CharacterInputMain(
-            forward * input.y + right * input.x,
-            m_Jump.action.IsPressed(),
-            m_Crouch.action.IsPressed()
+            move: Vector3.ClampMagnitude(input.y * forward + input.x * right, 1f),
+            isJumpPressed: m_Jump.action.IsPressed()
         );
     }
 

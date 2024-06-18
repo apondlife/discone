@@ -3,6 +3,7 @@ mired in debt
 
 # bugs/problems
 - **ICE CREAMS HEAD IS FUCKEE+D***=
+- make logi go to correct place in code
 - grip (or something) pulls you over corners weirdly (on the frame collision misses; should it pull you towards the hit point?)
 - can't get into jumpsquat after first aerial jump (if there's not infinite air jumps)
 - jumping in a tight corner (wall & ground) sometimes has no effect (happens in birthplace)

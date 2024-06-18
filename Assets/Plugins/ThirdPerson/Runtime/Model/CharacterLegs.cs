@@ -171,8 +171,7 @@ class CharacterLegs: MonoBehaviour {
             var curOffset = m_InitialPos - transform.localPosition;
             var anchor = heldLeg.RootPos - curOffset;
             var curDir = Vector3.Normalize(heldLeg.GoalPos - anchor);
-            var curCos = Vector3.Dot(curDir, Vector3.down);
-            var curAngle = Mathf.Acos(curCos) * Mathf.Rad2Deg;
+            var curAngle = Vector3.Angle(curDir, Vector3.down);
 
             // add the offset below skip threshold
             if (curAngle < m_Hips_SkipOffset.Src.Min) {

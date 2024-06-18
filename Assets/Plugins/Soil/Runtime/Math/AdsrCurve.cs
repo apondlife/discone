@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Soil {
 
@@ -9,6 +8,9 @@ namespace Soil {
 [Serializable]
 public struct AdsrCurve {
     // -- fields --
+    [Tooltip("the time it takes for the curve to start")]
+    [SerializeField] float m_Delay;
+
     [Tooltip("the scale for the attack & decay")]
     [SerializeField] float m_AttackValue;
 
@@ -41,15 +43,30 @@ public struct AdsrCurve {
         // calculate progress through the adsr pre-release
         elapsed -= releaseElapsed;
 
-        // if we're in attack, attack towards the value
+        if (elapsed > 0f && elapsed <= m_Delay) {
+            value = 0f;
+        }
+
+        // move past delay
+        elapsed -= m_Delay;
+
+        // if we're in attack, attack towards the attack value
         if (elapsed > 0f && elapsed <= m_Attack.Duration) {
             value = m_Attack.Evaluate(elapsed) * m_AttackValue;
         }
 
-        // move past attack & hold
-        elapsed -= m_Attack.Duration - m_HoldDuration;
+        // move past attack
+        elapsed -= m_Attack.Duration;
 
-        // if we're in decay, decay towards sustain
+         // if we're in hold, hold the attack value
+        if (elapsed > 0f && elapsed <= m_HoldDuration) {
+            value = m_AttackValue;
+        }
+
+        // move past hold
+        elapsed -= m_HoldDuration;
+
+        // if we're in decay, decay towards the sustain value
         if (elapsed > 0f && elapsed <= m_Decay.Duration) {
             value = Mathf.Lerp(
                 m_AttackValue,

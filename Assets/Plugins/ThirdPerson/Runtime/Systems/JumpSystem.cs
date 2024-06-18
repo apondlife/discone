@@ -274,8 +274,6 @@ sealed class JumpSystem: CharacterSystem {
             dv += normalSpeed * normalScale * surface.Normal;
         }
 
-        Log.Character.I($"jump! dv = {dv}");
-
         // update state
         c.State.Next.Inertia = 0f;
         c.State.Next.Velocity += dv;

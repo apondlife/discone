@@ -71,11 +71,6 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
         get => m_Frames[0]?.IsJumpPressed ?? false;
     }
 
-    /// if crouch is pressed this frame
-    public bool IsCrouchPressed {
-        get => m_Frames[0]?.IsCrouchPressed ?? false;
-    }
-
     /// if jump was pressed within the buffer window
     public bool IsJumpDown(float buffer) {
         return IsJumpPressed && (m_Time - m_JumpDownTime) <= buffer;

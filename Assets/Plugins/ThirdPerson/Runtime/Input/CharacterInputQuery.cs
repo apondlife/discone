@@ -13,9 +13,6 @@ public interface CharacterInputQuery {
     /// if jump is pressed this frame
     public bool IsJumpPressed { get; }
 
-    /// if crouch is pressed this frame
-    public bool IsCrouchPressed { get; }
-
     /// if jump was pressed within the buffer window
     public bool IsJumpDown(float buffer);
 

@@ -131,9 +131,6 @@ public sealed partial class CharacterState {
         /// if the character is in jump squat
         public bool IsInJumpSquat = false;
 
-        /// if the character is crouching
-        public bool IsCrouching = false;
-
         /// how much tilted the character is
         public Quaternion Tilt = Quaternion.identity;
 
@@ -168,7 +165,7 @@ public sealed partial class CharacterState {
         /// the direction of the current pivot
         public Vector3 PivotDirection = Vector3.zero;
 
-        /// the direction fo the current crouch
+        /// the direction of the current crouch
         public Vector3 CrouchDirection = Vector3.zero;
 
         /// the number of jumps executed since last grounded
@@ -252,6 +249,11 @@ public sealed partial class CharacterState {
         /// if currently idle
         public bool IsIdle {
             get => IdleTime > 0f;
+        }
+
+        /// if the character is crouching
+        public bool IsCrouching {
+            get => IsInJumpSquat;
         }
 
         /// the character's look rotation (facing & tilt)

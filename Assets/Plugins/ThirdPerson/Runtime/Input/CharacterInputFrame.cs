@@ -18,11 +18,6 @@ public interface CharacterInputFrame {
         get => Main.IsJumpPressed;
     }
 
-    /// if crouch is pressed
-    public bool IsCrouchPressed {
-        get => Main.IsCrouchPressed;
-    }
-
     // -- default --
     /// the default input frame
     public readonly struct Default: CharacterInputFrame {
@@ -43,25 +38,20 @@ public readonly struct CharacterInputMain {
     /// if jump is pressed
     public readonly bool IsJumpPressed;
 
-    /// if crouch is pressed
-    public readonly bool IsCrouchPressed;
-
     // -- lifetime --
     /// create a new frame
     public CharacterInputMain(
         Vector3 move,
-        bool isJumpPressed,
-        bool isCrouchPressed
+        bool isJumpPressed
     ) {
         Move = move;
         IsJumpPressed = isJumpPressed;
-        IsCrouchPressed = isCrouchPressed;
     }
 
     // -- queries --
     /// if there is any input
     public bool Any {
-        get => IsJumpPressed || IsCrouchPressed || Move != Vector3.zero;
+        get => IsJumpPressed || Move != Vector3.zero;
     }
 }
 

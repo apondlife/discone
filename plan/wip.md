@@ -18,8 +18,8 @@ what is projected
 
 # jump
 - slow down when holding jump
-- curve gravity on jump
--- commit --
+- curve (adsr?) gravity on jump
+- crouch gravity (previously, fastfall, fastslide)? (per jump)
 - interpolate between crouch & ik legs
 - jump leniency on surface transfer (perception?)
 - real jump charge (small jump -> tangent, big charge -> normal, or maybe the other way around)

@@ -59,16 +59,22 @@ public sealed class CharacterTuning: ScriptableObject {
 
     // -- crouch --
     [Header("crouch")]
+    [Tooltip("the crouch power as a fn of time crouching")]
+    public AdsrCurve Crouch_Power;
+
     [Tooltip("the static friction value when crouching")]
     public float Crouch_StaticFriction;
 
     [Tooltip("the turn speed while crouching")]
     public float Crouch_TurnSpeed;
 
-    [Tooltip("the max lateral speed when crouching")]
-    public float Crouch_LateralMaxSpeed;
+    [Tooltip("the inline input scale when crouching/sliding")]
+    public MapOutCurve Crouch_InlineScale;
 
-    [Tooltip("the turn speed while crouching")]
+    [Tooltip("the cross input scale when crouching/sliding")]
+    public MapOutCurve Crouch_CrossScale;
+
+    [Tooltip("the gravity while crouching")]
     public float Crouch_Gravity;
 
     public float Crouch_Acceleration {
