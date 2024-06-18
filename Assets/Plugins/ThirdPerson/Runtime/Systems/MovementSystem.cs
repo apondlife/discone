@@ -111,7 +111,7 @@ sealed class MovementSystem: CharacterSystem {
 
     // -- Sliding --
     static readonly Phase<CharacterContainer> Sliding = new("Sliding",
-        enter: Sliding_Exit,
+        enter: Sliding_Enter,
         update: Sliding_Update,
         exit: Sliding_Exit
     );
@@ -119,11 +119,6 @@ sealed class MovementSystem: CharacterSystem {
     static void Sliding_Enter(System<CharacterContainer> s, CharacterContainer c) {
         // increase static friction on crouch
         c.State.Next.Surface_StaticFriction = c.Tuning.Crouch_StaticFriction;
-
-        // and store the crouch direction, the character won't reface for the
-        // duration of the crouch (this is implemented in (coupled to) the
-        // movement system)
-        c.State.Next.CrouchDirection = c.State.Curr.PlanarDirection;
     }
 
     static void Sliding_Update(float delta, System<CharacterContainer> s, CharacterContainer c) {
@@ -145,26 +140,17 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // update crouch direction if it changes significantly (> 90°)
-        var moveDir = c.State.Curr.SurfaceDirection;
-        var slideDir = c.State.Next.CrouchDirection;
+        // get directions
+        var moveDir = c.State.Curr.PlanarDirection;
         var inputDir = c.Inputs.Move;
 
-        var moveDotCrouch = Vector3.Dot(moveDir, slideDir);
-        if (moveDotCrouch < 0f) {
-            c.State.Next.CrouchDirection = moveDir;
-        }
+        // get power
+        var power = c.Tuning.Crouch_Power.Evaluate(s.PhaseElapsed);
 
         // check alignment between input and crouch
-        var inputAngle = Vector3.Angle(inputDir, slideDir);
+        var inputAngle = Vector3.Angle(inputDir, moveDir);
         var inputDotCrouch = Mathf.Cos(inputAngle * Mathf.Deg2Rad);
-
-        // if we're stopped and change direction, change crouch direction
-        if (c.State.IsStopped && inputDotCrouch < 0f) {
-            c.State.Next.CrouchDirection = inputDir;
-        }
-
-        var power = c.Tuning.Crouch_Power.Evaluate(s.PhaseElapsed);
+        var inputMag = Mathf.Abs(inputDotCrouch);
 
         // if the input is not in the direction of the crouch, we're braking,
         // otherwise, slide.
@@ -172,9 +158,9 @@ sealed class MovementSystem: CharacterSystem {
             ? c.Tuning.Crouch_NegativeDrag
             : c.Tuning.Crouch_PositiveDrag;
 
-        c.State.Next.Surface_Drag = Mathf.LerpUnclamped(
+        var nextDrag = Mathf.LerpUnclamped(
             c.Tuning.Friction_SurfaceDrag,
-            drag.Evaluate(Mathf.Abs(inputDotCrouch)),
+            drag.Evaluate(inputMag),
             power
         );
 
@@ -182,28 +168,32 @@ sealed class MovementSystem: CharacterSystem {
             ? c.Tuning.Crouch_NegativeKineticFriction
             : c.Tuning.Crouch_PositiveKineticFriction;
 
-        c.State.Next.Surface_KineticFriction = Mathf.LerpUnclamped(
+        var nextKineticFriction = Mathf.LerpUnclamped(
             c.Tuning.Friction_Kinetic,
-            kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch)),
+            kineticFriction.Evaluate(inputMag),
             power
         );
 
-        // split the input axis
-        // can't do acos of dot product since it can be greater than 1
-        var inputDirInline = inputDotCrouch * slideDir;
+        // split the input axis (can't do acos of dot product since it can be greater
+        // than 1)
+        var inputDirInline = inputDotCrouch * moveDir;
         var inputDirCross = inputDir - inputDirInline;
 
-        // modify input across and inline with the slide
-        var scaleInline = c.Tuning.Crouch_InlineScale.Evaluate(inputAngle);
-        var scaleCross = c.Tuning.Crouch_CrossScale.Evaluate(inputAngle);
+        // scale input inline & cross as a fn of input x move angle
+        var inputInline = c.Tuning.Crouch_InlineScale.Evaluate(inputAngle) * inputDirInline;
+        var inputCross = c.Tuning.Crouch_CrossScale.Evaluate(inputAngle) * inputDirCross;
 
-        // add input movement
+        // NOTE: should this be lerped?
+        var inputSlide = inputInline + inputCross;
+
+        // add movement force
         var acceleration = c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle);
+        var force = acceleration * inputSlide;
 
-        var force = Vector3.zero;
-        force += acceleration * scaleInline * inputDirInline;
-        force += acceleration * scaleCross * inputDirCross;
+        // update state
         c.State.Next.Force += force;
+        c.State.Next.Surface_Drag = nextDrag;
+        c.State.Next.Surface_KineticFriction = nextKineticFriction;
 
         // turn towards input direction
         TurnTowards(c.Inputs.Move, c.Tuning.Crouch_TurnSpeed, delta, c);
@@ -219,13 +209,11 @@ sealed class MovementSystem: CharacterSystem {
     // -- Pivot --
     static readonly Phase<CharacterContainer> Pivot = new("Pivot",
         enter: Pivot_Enter,
-        update: Pivot_Update,
-        exit: Pivot_Exit
+        update: Pivot_Update
     );
 
     static void Pivot_Enter(System<CharacterContainer> _, CharacterContainer c) {
         c.State.Next.PivotDirection = c.Inputs.Move;
-        c.State.Next.PivotFrame = 0;
     }
 
     static void Pivot_Update(float delta, System<CharacterContainer> s, CharacterContainer c) {
@@ -234,7 +222,11 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        c.State.Next.PivotFrame += 1;
+        // cancel pivot on crouch/jump
+        if (c.State.Curr.IsCrouching) {
+            s.ChangeTo(Sliding);
+            return;
+        }
 
         // rotate towards pivot direction
         TurnTowards(c.State.Curr.PivotDirection, c.Tuning.PivotSpeed, delta, c);
@@ -246,15 +238,12 @@ sealed class MovementSystem: CharacterSystem {
         // update velocity
         c.State.Next.Force -= a;
 
+        // BUG: this is wrong, other forces can keep the character moving
         // once speed is zero, transition to next state
         if (c.State.IsStopped) {
             s.ChangeTo(HasMoveInput(c) ? Moving : NotMoving);
             return;
         }
-    }
-
-    static void Pivot_Exit(System<CharacterContainer> s, CharacterContainer c) {
-        c.State.Next.PivotFrame = -1;
     }
 
     // -- Floating --

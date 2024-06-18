@@ -129,7 +129,7 @@ class CharacterLegs: MonoBehaviour {
             "legs-hips",
             m_Left.RootPos,
             m_Right.RootPos,
-            new DebugDraw.Config(color: Color.yellow, DebugDraw.Tag.Walk, count: 100)
+            new(Color.yellow, DebugDraw.Tag.Walk, count: 100)
         );
 
         m_Left.Debug_Draw("legs", count: 100);
@@ -207,10 +207,25 @@ class CharacterLegs: MonoBehaviour {
         t.localPosition = m_InitialPos + translation;
         m_Model.localPosition = m_InitialModelPos + translation;
 
-        var pos = t.parent.TransformPoint(m_InitialPos);
-        DebugDraw.PushLine("legs-hips-pos", m_Debug_PrevInitialPos + prevOffset, pos + m_Hips_Ease.Value, new DebugDraw.Config(Soil.Color.GreenYellow, width: 1f));
-        DebugDraw.PushLine("legs-hips-target", m_Debug_PrevInitialPos + prevTarget, pos + m_Hips_Ease.Target, new DebugDraw.Config(Soil.Color.MediumVioletRed, width: 1f));
-        m_Debug_PrevInitialPos = pos;
+        // add drawings
+        var currPos = t.parent.TransformPoint(m_InitialPos);
+        var prevPos = m_Debug_PrevInitialPos;
+
+        DebugDraw.PushLine(
+            "legs-hips-pos",
+            prevPos + prevOffset,
+            currPos + m_Hips_Ease.Value,
+            new(Soil.Color.GreenYellow, DebugDraw.Tag.Walk, width: 1f)
+        );
+
+        DebugDraw.PushLine(
+            "legs-hips-target",
+            prevPos + prevTarget,
+            currPos + m_Hips_Ease.Target,
+            new(Soil.Color.MediumVioletRed, DebugDraw.Tag.Walk, width: 1f)
+        );
+
+        m_Debug_PrevInitialPos = currPos;
     }
 
     // -- queries --

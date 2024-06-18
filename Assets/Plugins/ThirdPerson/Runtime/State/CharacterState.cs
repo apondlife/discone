@@ -159,14 +159,8 @@ public sealed partial class CharacterState {
         /// the static friction for surface movement
         public float Surface_StaticFriction = 0.0f;
 
-        /// the frame in pivot animation
-        public int PivotFrame = -1;
-
         /// the direction of the current pivot
         public Vector3 PivotDirection = Vector3.zero;
-
-        /// the direction of the current crouch
-        public Vector3 CrouchDirection = Vector3.zero;
 
         /// the number of jumps executed since last grounded
         public uint Jumps = 0;
