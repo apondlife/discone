@@ -38,9 +38,6 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     [Tooltip("the movement system")]
     [SerializeField] MovementSystem m_Movement;
 
-    [Tooltip("the crouch system")]
-    [SerializeField] CrouchSystem m_Crouch;
-
     [Tooltip("the tilt system")]
     [SerializeField] TiltSystem m_Tilt;
 
@@ -116,7 +113,6 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
             // a frame 1 rejump substantially worse than a frame 2 jump
             m_Surface,
             m_Jump,
-            m_Crouch,
             m_Movement,
             // friction system depends on the next frame of forces
             m_Friction,

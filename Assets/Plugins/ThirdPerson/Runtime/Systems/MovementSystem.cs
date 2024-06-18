@@ -25,6 +25,15 @@ sealed class MovementSystem: CharacterSystem {
         set => c.State.Next.MovementState = value;
     }
 
+    public override void Init(CharacterContainer c) {
+        // init tuning into state
+        c.State.Next.Surface_Drag = c.Tuning.Friction_SurfaceDrag;
+        c.State.Next.Surface_KineticFriction = c.Tuning.Friction_Kinetic;
+        c.State.Next.Surface_StaticFriction = c.Tuning.Friction_Static;
+
+        base.Init(c);
+    }
+
     // -- NotMoving --
     static readonly Phase<CharacterContainer> NotMoving = new("NotMoving",
         update: NotMoving_Update
@@ -37,14 +46,12 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // we're moving if the character is not stopped or if there's input
-        var shouldStartMoving = !c.State.IsStopped || HasMoveInput(c);
-
         // change to sliding if moving & crouching
-        // if (shouldStartMoving && c.State.Next.IsCrouching) {
-            // s.ChangeTo(Sliding);
-            // return;
-        // }
+        var shouldStartMoving = ShouldStartMoving(c);
+        if (shouldStartMoving && c.State.Next.IsCrouching) {
+            s.ChangeTo(Sliding);
+            return;
+        }
 
         // change to moving once moving
         if (shouldStartMoving) {
@@ -65,10 +72,8 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // we're moving if the character is not stopped or if there's input
-        var shouldStopMoving = c.State.IsStopped && !HasMoveInput(c);
-
         // once speed is zero, stop moving
+        var shouldStopMoving = !ShouldStartMoving(c);
         if (shouldStopMoving) {
             s.ChangeToImmediate(NotMoving, delta);
             return;
@@ -90,7 +95,6 @@ sealed class MovementSystem: CharacterSystem {
 
         // pivot if direction change was significant
         var shouldPivot = (inputDotFwd < c.Tuning.PivotStartThreshold && v.sqrMagnitude > c.Tuning.PivotSqrSpeedThreshold);
-
         if (shouldPivot) {
             s.ChangeToImmediate(Pivot, delta);
             return;
@@ -107,8 +111,20 @@ sealed class MovementSystem: CharacterSystem {
 
     // -- Sliding --
     static readonly Phase<CharacterContainer> Sliding = new("Sliding",
-        update: Sliding_Update
+        enter: Sliding_Exit,
+        update: Sliding_Update,
+        exit: Sliding_Exit
     );
+
+    static void Sliding_Enter(System<CharacterContainer> s, CharacterContainer c) {
+        // increase static friction on crouch
+        c.State.Next.Surface_StaticFriction = c.Tuning.Crouch_StaticFriction;
+
+        // and store the crouch direction, the character won't reface for the
+        // duration of the crouch (this is implemented in (coupled to) the
+        // movement system)
+        c.State.Next.CrouchDirection = c.State.Curr.PlanarDirection;
+    }
 
     static void Sliding_Update(float delta, System<CharacterContainer> s, CharacterContainer c) {
         // start floating if no longer grounded
@@ -117,15 +133,64 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // TODO: merge crouch system
-        // get current forward & input direction
+        // once speed is zero, stop moving
+        if (!ShouldStartMoving(c)) {
+            s.ChangeToImmediate(NotMoving, delta);
+            return;
+        }
+
+        // once not crouching change to move/not move state
+        if (!c.State.Next.IsCrouching) {
+            s.ChangeToImmediate(Moving, delta);
+            return;
+        }
+
+        // update crouch direction if it changes significantly (> 90°)
+        var moveDir = c.State.Curr.SurfaceDirection;
         var slideDir = c.State.Next.CrouchDirection;
         var inputDir = c.Inputs.Move;
 
+        var moveDotCrouch = Vector3.Dot(moveDir, slideDir);
+        if (moveDotCrouch < 0f) {
+            c.State.Next.CrouchDirection = moveDir;
+        }
+
+        // check alignment between input and crouch
+        var inputAngle = Vector3.Angle(inputDir, slideDir);
+        var inputDotCrouch = Mathf.Cos(inputAngle * Mathf.Deg2Rad);
+
+        // if we're stopped and change direction, change crouch direction
+        if (c.State.IsStopped && inputDotCrouch < 0f) {
+            c.State.Next.CrouchDirection = inputDir;
+        }
+
+        var power = c.Tuning.Crouch_Power.Evaluate(s.PhaseElapsed);
+
+        // if the input is not in the direction of the crouch, we're braking,
+        // otherwise, slide.
+        var drag = inputDotCrouch <= 0.0f
+            ? c.Tuning.Crouch_NegativeDrag
+            : c.Tuning.Crouch_PositiveDrag;
+
+        c.State.Next.Surface_Drag = Mathf.LerpUnclamped(
+            c.Tuning.Friction_SurfaceDrag,
+            drag.Evaluate(Mathf.Abs(inputDotCrouch)),
+            power
+        );
+
+        var kineticFriction = inputDotCrouch <= 0.0f
+            ? c.Tuning.Crouch_NegativeKineticFriction
+            : c.Tuning.Crouch_PositiveKineticFriction;
+
+        c.State.Next.Surface_KineticFriction = Mathf.LerpUnclamped(
+            c.Tuning.Friction_Kinetic,
+            kineticFriction.Evaluate(Mathf.Abs(inputDotCrouch)),
+            power
+        );
+
         // split the input axis
         // can't do acos of dot product since it can be greater than 1
-        var inputAngle = Vector3.Angle(inputDir, slideDir);
-        var inputDirInline = Mathf.Cos(inputAngle * Mathf.Deg2Rad) * slideDir;
+        var inputDirInline = inputDotCrouch * slideDir;
         var inputDirCross = inputDir - inputDirInline;
 
         // modify input across and inline with the slide
@@ -142,21 +207,13 @@ sealed class MovementSystem: CharacterSystem {
 
         // turn towards input direction
         TurnTowards(c.Inputs.Move, c.Tuning.Crouch_TurnSpeed, delta, c);
+    }
 
-        // we're moving if the character is not stopped or if there's input
-        var shouldStopMoving = c.State.IsStopped && !HasMoveInput(c);
-
-        // once not crouching change to move/not move state
-        if (!c.State.Next.IsCrouching) {
-            s.ChangeTo(shouldStopMoving ? NotMoving : Moving);
-            return;
-        }
-
-        // once speed is zero, stop moving
-        if (shouldStopMoving) {
-            s.ChangeTo(NotMoving);
-            return;
-        }
+    static void Sliding_Exit(System<CharacterContainer> s, CharacterContainer c) {
+        // reset friction
+        c.State.Next.Surface_Drag = c.Tuning.Friction_SurfaceDrag;
+        c.State.Next.Surface_KineticFriction = c.Tuning.Friction_Kinetic;
+        c.State.Next.Surface_StaticFriction = c.Tuning.Friction_Static;
     }
 
     // -- Pivot --
@@ -249,6 +306,11 @@ sealed class MovementSystem: CharacterSystem {
     /// if there is any user input
     static bool HasMoveInput(CharacterContainer c) {
         return c.Inputs.Move.sqrMagnitude > 0.0f;
+    }
+
+    // we're supposed to start moving if the character is not stopped or if there's input
+    static bool ShouldStartMoving(CharacterContainer c) {
+        return !c.State.IsStopped || HasMoveInput(c);
     }
 }
 

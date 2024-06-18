@@ -44,7 +44,7 @@ public abstract class PlayerInputSource<F>: CharacterInputSource<F> where F: Cha
             Vector3.up
         ));
 
-        var input = m_Move.action.ReadValue<Vector2>();
+        var input = Vector3.ClampMagnitude(m_Move.action.ReadValue<Vector2>(), 1f);
 
         // produce a new frame
         return new CharacterInputMain(

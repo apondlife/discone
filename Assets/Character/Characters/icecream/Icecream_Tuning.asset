@@ -67,9 +67,129 @@ MonoBehaviour:
   PivotSpeedThreshold: 10
   Air_TurnSpeed: 330
   AerialDriftAcceleration: 10
+  Crouch_Power:
+    m_Delay: 0.7
+    m_AttackValue: 1
+    m_Attack:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_HoldDuration: 0
+    m_Decay:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
+    m_SustainValue: 1
+    m_Release:
+      m_Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_Duration: 0
   Crouch_StaticFriction: 690
   Crouch_TurnSpeed: 0
-  Crouch_LateralMaxSpeed: 0.03
+  Crouch_InlineScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -0.00047004133
+        outSlope: -0.00047004133
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.50126904
+        value: 0.9997644
+        inSlope: -0.00010876939
+        outSlope: -0.00010876939
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.24151967
+      - serializedVersion: 3
+        time: 80
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 180
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 1
+  Crouch_CrossScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 180
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 1
+      Max: 1
   Crouch_Gravity: -150
   Crouch_PositiveKineticFriction:
     Curve:
@@ -78,27 +198,27 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
         weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+        inWeight: 0
+        outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
+        value: 1
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
         weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     Dst:
-      Min: 1.2
-      Max: 1.2
+      Min: 40
+      Max: 40
   Crouch_NegativeKineticFriction:
     Curve:
       serializedVersion: 2
@@ -134,7 +254,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     Dst:
-      Min: 16
+      Min: 40
       Max: 50
   Crouch_PositiveDrag:
     Curve:
@@ -194,7 +314,7 @@ MonoBehaviour:
       Max: 0.1
   Gravity: -70
   JumpGravity: -30
-  FallGravity: -40
+  FallGravity: -30
   Jump_BufferDuration: 0
   CoyoteDuration: 0.24
   LandingDuration: 0.3
@@ -320,11 +440,12 @@ MonoBehaviour:
       Max: 1
   Jumps:
   - Count: 1
-    ShouldJumpAfterJumpSquat: 1
+    ShouldJumpAfterJumpSquat: 0
     JumpSquatDuration:
       Min: 0
       Max: 0.4
     m_JumpPower:
+      m_Delay: 0
       m_AttackValue: 1
       m_Attack:
         m_Curve:
@@ -351,8 +472,8 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.4
-      m_HoldDuration: 0
+        m_Duration: 0.5
+      m_HoldDuration: 0.1
       m_Decay:
         m_Curve:
           serializedVersion: 2
@@ -378,8 +499,8 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
-      m_SustainValue: 1
+        m_Duration: 0.1
+      m_SustainValue: 0.3
       m_Release:
         m_Curve:
           serializedVersion: 2
@@ -387,7 +508,7 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
+        m_Duration: 1
     CooldownDuration:
       Curve:
         serializedVersion: 2
@@ -425,15 +546,16 @@ MonoBehaviour:
         m_RotationOrder: 0
       Dst:
         Min: 15
-        Max: 20
+        Max: 25
     Upwards_MomentumLoss: 0.11
     Horizontal_MomentumLoss: 0
   - Count: 0
-    ShouldJumpAfterJumpSquat: 1
+    ShouldJumpAfterJumpSquat: 0
     JumpSquatDuration:
       Min: 0
       Max: 0.4
     m_JumpPower:
+      m_Delay: 0
       m_AttackValue: 1
       m_Attack:
         m_Curve:
@@ -442,7 +564,7 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.4
+        m_Duration: 0.5
       m_HoldDuration: 0
       m_Decay:
         m_Curve:
@@ -451,8 +573,8 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
-      m_SustainValue: 1
+        m_Duration: 0.1
+      m_SustainValue: 0.3
       m_Release:
         m_Curve:
           serializedVersion: 2
