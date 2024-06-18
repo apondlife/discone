@@ -89,12 +89,15 @@ sealed class MovementSystem: CharacterSystem {
         var v = c.State.Next.SurfaceVelocity;
 
         // the current forward & input direction
-        var fwd = c.State.Curr.Forward;
         var inputDir = c.Inputs.Move;
-        var inputDotFwd = Vector3.Dot(inputDir, fwd);
+        var inputAngle = Vector3.Angle(inputDir, c.State.Curr.Forward);
 
         // pivot if direction change was significant
-        var shouldPivot = (inputDotFwd < c.Tuning.PivotStartThreshold && v.sqrMagnitude > c.Tuning.PivotSqrSpeedThreshold);
+        var shouldPivot = (
+            inputAngle > c.Tuning.PivotStartThreshold &&
+            v.sqrMagnitude > c.Tuning.PivotSqrSpeedThreshold
+        );
+
         if (shouldPivot) {
             s.ChangeToImmediate(Pivot, delta);
             return;
@@ -238,9 +241,9 @@ sealed class MovementSystem: CharacterSystem {
         // update velocity
         c.State.Next.Force -= a;
 
-        // BUG: this is wrong, other forces can keep the character moving
-        // once speed is zero, transition to next state
-        if (c.State.IsStopped) {
+        // once speed is zero or the forward and pivot are aligned, transition to next state
+        var angle = Vector3.Angle(c.State.Next.Forward, c.State.Curr.PivotDirection);
+        if (c.State.IsStopped || angle < c.Tuning.PivotEndThreshold) {
             s.ChangeTo(HasMoveInput(c) ? Moving : NotMoving);
             return;
         }

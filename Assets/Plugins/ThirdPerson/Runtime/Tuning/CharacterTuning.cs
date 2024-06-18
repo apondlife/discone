@@ -27,17 +27,20 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the movement acceleration as a fn of surface angle")]
     public MapOutCurve Surface_Acceleration;
 
-    [Tooltip("the turn speed in radians")]
+    [Tooltip("the turn speed in degrees")]
     public float TurnSpeed;
 
-    [Tooltip("the pivot speed in radians")]
+    [Tooltip("the pivot speed in degrees")]
     public float PivotSpeed;
 
     [Tooltip("the time to finish the pivot deceleration from max speed")]
     public float TimeToPivot;
 
-    [Tooltip("the pivot start threshold, facing • input dir (-1.0, 1.0f)")]
+    [Tooltip("the angle to start pivot, facing • input dir")]
     public float PivotStartThreshold;
+
+    [Tooltip("the angle between pivot dir and facing when pivot ends")]
+    public float PivotEndThreshold;
 
     [Tooltip("the minimum speed to be able to pivot")]
     public float PivotSpeedThreshold;
