@@ -25,3 +25,4 @@ mired in debt
 - having zero jumps is not considered
 - rename character* to model* (generally reconsider 3p namespaces)
 - compiling stuff out in debug/development (but still want it for testing maybe)
+- add code generation for equatable (jumpid, charactercollision)

@@ -80,7 +80,7 @@ partial class Character<InputFrame> {
 
         if (next < 0) {
             m_State.Advance();
-            m_Input.Read();
+            m_Input.Read(Time.fixedDeltaTime);
             m_Debug_FrameOffset = 0;
         } else  {
             m_Debug_FrameOffset = next;

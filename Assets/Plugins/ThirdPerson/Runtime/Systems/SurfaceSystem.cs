@@ -174,7 +174,7 @@ sealed class SurfaceSystem: CharacterSystem {
             // TODO: add friction (is this friction?)
             // add upwards pull / surface gravity
             var gripCurve = c.Tuning.Surface_VerticalGrip_Scale;
-            var gripRange = (c.Inputs.IsJumpPressed, c.State.Curr.Velocity.y) switch {
+            var gripRange = (IsJumpPressed: c.Inputs.IsJumpPressed, c.State.Curr.Velocity.y) switch {
                 (false, >= 0) => c.Tuning.Surface_VerticalGrip_Up,
                 (false, <  0) => c.Tuning.Surface_VerticalGrip_Down,
                 (true,  >= 0) => c.Tuning.Surface_VerticalGrip_UpHold,

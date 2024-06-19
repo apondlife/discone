@@ -17,7 +17,6 @@ what is projected
 - indication of change in perception (particle effect), to help with knowing that you missed a wall
 
 # jump
-- curve (adsr?) gravity on jump
 - jump leniency on surface transfer (perception?)
 - jump stretch (currently onlt squa)
 -- publish &  move to #crouch

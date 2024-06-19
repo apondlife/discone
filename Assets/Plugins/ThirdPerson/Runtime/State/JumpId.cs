@@ -3,6 +3,7 @@ using System;
 namespace ThirdPerson {
 
 /// an id to a particular jump in the jump sequence
+/// TODO: make this equatable via code-generation
 [Serializable]
 public struct JumpId: IEquatable<JumpId> {
     /// the index of the tuning in the jump list

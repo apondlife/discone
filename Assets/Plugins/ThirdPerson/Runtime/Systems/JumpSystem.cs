@@ -13,7 +13,7 @@ partial class CharacterState {
         /// the time since last jump triggered
         public float Jump_Elapsed;
 
-        /// the time since last jump release
+        /// the time jump was released at (in relation to jump press)
         public float Jump_ReleasedAt;
 
         /// the id of the next (to-execute) jump
@@ -388,7 +388,7 @@ sealed class JumpSystem: CharacterSystem {
 
     /// if the character should jump within the last n frames
     static bool ShouldStartJump(CharacterContainer c, float buffer = 0) {
-        return HasJump(c) && HasJumpInput(Mathf.Max(buffer, c.State.Next.Jump_CooldownElapsed), c);
+        return HasJump(c) && c.Inputs.IsJumpPressedInBuffer(Mathf.Max(buffer, c.State.Next.Jump_CooldownElapsed));
     }
 
     /// if the character has a jump available to execute
@@ -419,18 +419,12 @@ sealed class JumpSystem: CharacterSystem {
             return true;
         }
 
-        // start an air jump if available
-        // if there's still jumps available in the current jump definition
+        // start an air jump if available, if there's still jumps available in the current jump definition
         if (c.State.Next.NextJump.Count < jumpTuning.Count) {
             return true;
         }
 
         return false;
-    }
-
-    /// if the player had a new jump input within the last n frames
-    static bool HasJumpInput(float buffer, CharacterContainer c) {
-        return c.Inputs.IsJumpDown(buffer);
     }
 
     /// if the character is on something ground like

@@ -16,15 +16,15 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
     /// the source of input frames
     CharacterInputSource<F> m_Source = null;
 
+    // TODO: read input in update
     /// a queue of the most recent input frames
     readonly Ring<F> m_Frames = new((uint)(k_BufferDuration / Time.fixedDeltaTime));
 
-    // TODO: can't store Time.time, must store deltas
-    /// the last time we read input
-    float m_Time;
+    /// the time since the last jump press
+    float m_TimeSinceJumpPress;
 
-    // the time the last jump down input happened
-    float m_JumpDownTime;
+    /// the time the last jump press was released
+    float m_JumpPressReleasedAt = CharacterInputQuery.NotReleased;
 
     // -- commands --
     /// drive the input with a source
@@ -33,7 +33,7 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
     }
 
     /// read the next frame of input
-    public void Read() {
+    public void Read(float delta) {
         if (m_Source == null || !m_Source.IsEnabled) {
             return;
         }
@@ -43,11 +43,19 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
         var next = m_Source.Read();
         m_Frames.Add(next);
 
-        // track input times
-        m_Time = Time.time;
+        // if the jump was just pressed
+        if (!curr.IsJumpPressed && next.IsJumpPressed) {
+            m_TimeSinceJumpPress = 0f;
+            m_JumpPressReleasedAt = CharacterInputQuery.NotReleased;
+        }
+        // otherwise, count time since press
+        else {
+            m_TimeSinceJumpPress += delta;
+        }
 
-        if (next.IsJumpPressed && !curr.IsJumpPressed) {
-            m_JumpDownTime = m_Time;
+        // if the jump was just released
+        if (curr.IsJumpPressed && !next.IsJumpPressed) {
+            m_JumpPressReleasedAt = m_TimeSinceJumpPress;
         }
     }
 
@@ -57,27 +65,31 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
         get => m_Frames[0];
     }
 
-    /// the move axis this frame
+    // -- CharacterInputQuery --
+    public int BufferSize {
+        get => m_Frames.Length;
+    }
+
     public Vector3 Move {
         get => m_Frames[0]?.Move ?? Vector3.zero;
     }
 
-    /// the magnitude of the move input this frame
     public float MoveMagnitude {
         get => Move.magnitude;
     }
 
-    /// if jump is pressed this frame
     public bool IsJumpPressed {
         get => m_Frames[0]?.IsJumpPressed ?? false;
     }
 
-    /// if jump was pressed within the buffer window
-    public bool IsJumpDown(float buffer) {
-        return IsJumpPressed && (m_Time - m_JumpDownTime) <= buffer;
+    public float TimeSinceJumpPress {
+        get => m_TimeSinceJumpPress;
     }
 
-    /// if move was pressed in the past n frames
+    public float JumpPressReleasedAt {
+        get => m_JumpPressReleasedAt;
+    }
+
     public bool IsMoveIdle(int past = 1) {
         for (var i = 0; i < past; i++) {
             if (m_Frames[i]?.Move != Vector3.zero) {
@@ -88,11 +100,6 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
         return true;
     }
 
-    /// the buffer size
-    public int BufferSize {
-        get => m_Frames.Length;
-    }
-
     // -- debug --
     #if UNITY_EDITOR
     /// set the current frame offset
@@ -101,4 +108,5 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
     }
     #endif
 }
+
 }

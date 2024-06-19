@@ -129,9 +129,10 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     }
 
     protected virtual void FixedUpdate() {
+        var delta = Time.deltaTime;
+
         // read input
-        // TODO: read input in update
-        m_Input.Read();
+        m_Input.Read(delta);
 
         // run simulation
         if (!m_IsPaused) {
