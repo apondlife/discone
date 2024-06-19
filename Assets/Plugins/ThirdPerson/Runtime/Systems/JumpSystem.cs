@@ -10,7 +10,7 @@ partial class CharacterState {
         /// .
         public SystemState JumpState;
 
-        /// the time since last jump press
+        /// the time since last jump triggered
         public float Jump_Elapsed;
 
         /// the time since last jump release
@@ -47,41 +47,38 @@ sealed class JumpSystem: CharacterSystem {
         // advance the cooldown timer
         Cooldown(delta, c);
 
+        // jumping updates state that is used below
+        base.Update(delta);
+
         // always add base gravity
         var gravity = c.Tuning.Gravity;
-        if (c.State.Curr.Velocity.y > 0f) {
+        if (c.State.Next.Velocity.y > 0f) {
             gravity = c.Tuning.Gravity_Jump;
         }
 
         // calculate and add jump gravity (adsr)
-        var jumpId = c.State.Curr.ActiveJump;
-        var jumpElapsed = c.State.Curr.Jump_Elapsed;
-        var jumpReleasedAt = c.State.Curr.Jump_ReleasedAt;
+        var jumpId = c.State.Next.ActiveJump;
+        var jumpElapsed = c.State.Next.Jump_Elapsed;
+        var jumpReleasedAt = c.State.Next.Jump_ReleasedAt;
 
-        if (c.Inputs.IsJumpDown(delta)) {
-            jumpId = c.State.Curr.NextJump;
-            jumpElapsed = 0f;
-            jumpReleasedAt = AdsrCurve.NotReleased;
-        }
-
-        if (c.State.Curr.MainSurface.IsNone) {
-            var jumpTuning = c.Tuning.JumpById(jumpId);
-            var jumpAcceleration = jumpTuning.Acceleration.Evaluate(jumpElapsed, jumpReleasedAt);
-            gravity += jumpAcceleration;
-        }
-
-        jumpElapsed += delta;
+        // if we released the jump, track release time
         if (!c.Inputs.IsJumpPressed && jumpReleasedAt == AdsrCurve.NotReleased) {
-            jumpReleasedAt = c.State.Next.Jump_Elapsed;
+            jumpReleasedAt = jumpElapsed;
         }
+
+        // add the jump adsr gravity
+        var jumpTuning = c.Tuning.JumpById(jumpId);
+        var jumpAcceleration = jumpTuning.Lift.Evaluate(jumpElapsed, jumpReleasedAt);
+        gravity += jumpAcceleration;
+
+        // track jump time
+        jumpElapsed += delta;
 
         // apply gravity, update state
         c.State.Next.Force += gravity * Vector3.up;
         c.State.Next.ActiveJump = jumpId;
         c.State.Next.Jump_Elapsed = jumpElapsed;
         c.State.Next.Jump_ReleasedAt = jumpReleasedAt;
-
-        base.Update(delta);
     }
 
     // -- NotJumping --
@@ -176,10 +173,10 @@ sealed class JumpSystem: CharacterSystem {
         var shouldJump = (
             // if jump was released after the minimum
             // TODO: should we buffer jump released?
-            (!c.Inputs.IsJumpPressed && s.PhaseElapsed >= jumpTuning.JumpSquatDuration.Min) ||
+            (!c.Inputs.IsJumpPressed && s.PhaseElapsed >= jumpTuning.Charge_Duration.Min) ||
             // or if the jump squat finished
             // TODO: custom editor to hide max if unused
-            (jumpTuning.ShouldJumpAfterJumpSquat && s.PhaseElapsed >= jumpTuning.JumpSquatDuration.Max)
+            (jumpTuning.Charge_ShouldAutoJump && s.PhaseElapsed >= jumpTuning.Charge_Duration.Max)
         );
 
         if (shouldJump) {
@@ -194,6 +191,15 @@ sealed class JumpSystem: CharacterSystem {
         if (isOnSurface) {
             ResetJumps(c);
             ResetJumpSurface(c);
+            jumpTuning = c.Tuning.NextJump(c.State);
+        }
+
+        // add lift that opposes gravity
+        if (!isOnSurface) {
+            // TODO: should crouch gravity on surface go here?
+            // should this be curved by surface angle
+            // TODO: curve on jumpsquat elapsed
+            c.State.Next.Force += jumpTuning.Charge_Lift * Vector3.up;
         }
 
         // if this is the first jump, you might be in coyote time
@@ -259,7 +265,8 @@ sealed class JumpSystem: CharacterSystem {
 
     /// add the jump impulse for this jump index
     static void Jump(float elapsed, CharacterContainer c) {
-        var jumpTuning = c.Tuning.NextJump(c.State);
+        var jumpId = c.State.Next.NextJump;
+        var jumpTuning = c.Tuning.JumpById(jumpId);
 
         // accumulate jump delta dv
         var v0 = c.State.Curr.Velocity;
@@ -303,6 +310,11 @@ sealed class JumpSystem: CharacterSystem {
         c.State.Next.Inertia = 0f;
         c.State.Next.Velocity += dv;
         c.State.Next.CoyoteTime = 0f;
+
+        c.State.Next.ActiveJump = jumpId;
+        c.State.Next.Jump_Elapsed = 0f;
+        c.State.Next.Jump_ReleasedAt = AdsrCurve.NotReleased;
+
         c.State.Next.Jump_CooldownElapsed = 0f;
         c.State.Next.Jump_CooldownDuration = jumpTuning.CooldownDuration.Evaluate(power);
 
@@ -424,46 +436,6 @@ sealed class JumpSystem: CharacterSystem {
     /// if the character is on something ground like
     static bool IsOnSurface(CharacterContainer c) {
         return c.State.Curr.MainSurface.IsSome;
-    }
-}
-
-/// system state extensions
-partial class CharacterState {
-    /// an id to a particular jump in the jump sequence
-    [Serializable]
-    public struct JumpId: IEquatable<JumpId> {
-        /// the index of the tuning in the jump list
-        public int Index;
-
-        /// the number of times this jump has been used
-        public int Count;
-
-        // -- IEquatable
-        public bool Equals(JumpId other) {
-            return Index == other.Index && Count == other.Count;
-        }
-
-        public override bool Equals(object obj) {
-            return obj is JumpId other && Equals(other);
-        }
-
-        public override int GetHashCode() {
-            return HashCode.Combine(Index, Count);
-        }
-
-        public static bool operator ==(
-            JumpId a,
-            JumpId b
-        ) {
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(
-            JumpId a,
-            JumpId b
-        ) {
-            return !(a == b);
-        }
     }
 }
 

@@ -15,6 +15,7 @@ public sealed class PlayerInputSource: PlayerInputSource<CharacterInputFrame.Def
 }
 
 /// a player's input source for controlling characters
+[Serializable]
 public abstract class PlayerInputSource<F>: CharacterInputSource<F> where F: CharacterInputFrame {
     // -- state --
     [Header("state")]

@@ -440,57 +440,6 @@ MonoBehaviour:
       Max: 1
   Jumps:
   - Count: 1
-    ShouldJumpAfterJumpSquat: 0
-    Acceleration:
-      m_Delay: 0
-      m_AttackValue: 0
-      m_Attack:
-        m_Curve:
-          serializedVersion: 2
-          m_Curve: []
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        m_Duration: 0
-      m_HoldDuration: 0
-      m_Decay:
-        m_Curve:
-          serializedVersion: 2
-          m_Curve: []
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        m_Duration: 0
-      m_SustainValue: 0
-      m_Release:
-        m_Curve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        m_Duration: 0.1
-    JumpSquatDuration:
-      Min: 0
-      Max: 0.4
     m_Power:
       m_Delay: 0
       m_AttackValue: 1
@@ -556,6 +505,53 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         m_Duration: 1
+    Lift:
+      m_Delay: 0
+      m_AttackValue: 0
+      m_Attack:
+        m_Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        m_Duration: 0
+      m_HoldDuration: 0
+      m_Decay:
+        m_Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        m_Duration: 0
+      m_SustainValue: 30
+      m_Release:
+        m_Curve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        m_Duration: 0.5
     CooldownDuration:
       Curve:
         serializedVersion: 2
@@ -593,61 +589,15 @@ MonoBehaviour:
         m_RotationOrder: 0
       Dst:
         Min: 15
-        Max: 25
+        Max: 20
     Upwards_MomentumLoss: 0.11
     Horizontal_MomentumLoss: 0
-  - Count: 0
-    ShouldJumpAfterJumpSquat: 0
-    Acceleration:
-      m_Delay: 0
-      m_AttackValue: 0
-      m_Attack:
-        m_Curve:
-          serializedVersion: 2
-          m_Curve: []
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        m_Duration: 0
-      m_HoldDuration: 0
-      m_Decay:
-        m_Curve:
-          serializedVersion: 2
-          m_Curve: []
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        m_Duration: 0
-      m_SustainValue: 80
-      m_Release:
-        m_Curve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        m_Duration: 0.5
-    JumpSquatDuration:
+    Charge_ShouldAutoJump: 0
+    Charge_Duration:
       Min: 0
       Max: 0.4
+    Charge_Lift: 0
+  - Count: 0
     m_Power:
       m_Delay: 0
       m_AttackValue: 1
@@ -677,6 +627,53 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         m_Duration: 0
+    Lift:
+      m_Delay: 0
+      m_AttackValue: 0
+      m_Attack:
+        m_Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        m_Duration: 0
+      m_HoldDuration: 0
+      m_Decay:
+        m_Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        m_Duration: 0
+      m_SustainValue: 30
+      m_Release:
+        m_Curve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        m_Duration: 0.5
     CooldownDuration:
       Curve:
         serializedVersion: 2
@@ -717,6 +714,11 @@ MonoBehaviour:
         Max: 0.5
     Upwards_MomentumLoss: 0
     Horizontal_MomentumLoss: 0
+    Charge_ShouldAutoJump: 0
+    Charge_Duration:
+      Min: 0
+      Max: 0.4
+    Charge_Lift: 30
   Surface_InertiaDecayTime:
     Curve:
       serializedVersion: 2

@@ -134,19 +134,15 @@ public sealed class CharacterTuning: ScriptableObject {
         [Tooltip("the number of times this jump can be used; 0 = infinite, -1 = none")]
         public int Count = 1;
 
-        [Tooltip("if this jumps happens automatically after the jump squat duration")]
-        public bool ShouldJumpAfterJumpSquat;
-
-        [Tooltip("the vertical acceleration starting @ jump squat")]
-        public AdsrCurve Acceleration;
-
-        [Tooltip("the jump squat duration range")]
-        public FloatRange JumpSquatDuration;
-
         [FormerlySerializedAs("m_JumpPower")]
         [FormerlySerializedAs("JumpPower")]
         [Tooltip("the jump power as a fn of jump squat elapsed")]
         [SerializeField] AdsrCurve m_Power;
+
+        [FormerlySerializedAs("Lift_Jump")]
+        [FormerlySerializedAs("Acceleration")]
+        [Tooltip("the vertical acceleration starting @ jump jump")]
+        public AdsrCurve Lift;
 
         [Tooltip("how long after jump until the character can jump again as a fn of charge percent")]
         public MapOutCurve CooldownDuration;
@@ -160,14 +156,31 @@ public sealed class CharacterTuning: ScriptableObject {
         [Tooltip("how much horizontal speed is cancelled on jump")]
         public float Horizontal_MomentumLoss;
 
+        [Header("charge")]
+        [FormerlySerializedAs("JumpSquat_ShouldAutoJump")]
+        [FormerlySerializedAs("ShouldJumpAfterJumpSquat")]
+        [Tooltip("if this jumps happens automatically after the jump squat duration")]
+        public bool Charge_ShouldAutoJump;
+
+        [FormerlySerializedAs("JumpSquat_Duration")]
+        [FormerlySerializedAs("JumpSquatDuration")]
+        [Tooltip("the jump squat charge duration")]
+        public FloatRange Charge_Duration;
+
+        [FormerlySerializedAs("Lift_Hold")]
+        [Tooltip("the vertical acceleration starting @ jump squat")]
+        public float Charge_Lift;
+
+        // -- queries --
         /// the jump power as a fn of jump squat elapsed
         public float Power(float elapsed) {
-            return m_Power.Evaluate(elapsed - JumpSquatDuration.Min);
+            return m_Power.Evaluate(elapsed - Charge_Duration.Min);
         }
     }
 
+    // -- queries --
     /// get the jump tuning for the id
-    public JumpTuning JumpById(CharacterState.JumpId id) {
+    public JumpTuning JumpById(JumpId id) {
         return Jumps[id.Index];
     }
 
@@ -279,7 +292,7 @@ public sealed class CharacterTuning: ScriptableObject {
             CoyoteDuration = 0f;
         } else {
             // make sure coyote time is not greater than jumpsquat duration
-            CoyoteDuration = Math.Max(CoyoteDuration, Jumps[0].JumpSquatDuration.Min);
+            CoyoteDuration = Math.Max(CoyoteDuration, Jumps[0].Charge_Duration.Min);
         }
     }
 }

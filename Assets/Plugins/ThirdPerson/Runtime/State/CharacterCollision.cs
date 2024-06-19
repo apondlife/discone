@@ -105,6 +105,7 @@ public struct CharacterCollision: IEquatable<CharacterCollision> {
         return HashCode.Combine(Normal, Point);
     }
 
+    // -- operators --
     public static bool operator ==(
         CharacterCollision a,
         CharacterCollision b
