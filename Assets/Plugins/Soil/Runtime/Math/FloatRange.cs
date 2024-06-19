@@ -74,6 +74,18 @@ public struct FloatRange {
         set => Max = value;
     }
 
+    /// the lower bound
+    public float Lower {
+        get => Min;
+        set => Min = value;
+    }
+
+    /// the upper bound
+    public float Upper {
+        get => Max;
+        set => Max = value;
+    }
+
     // -- debug --
     public override string ToString() {
         return $"[{Min}...{Max}]";

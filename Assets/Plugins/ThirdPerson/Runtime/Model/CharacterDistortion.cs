@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Soil;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Color = Soil.Color;
 
 namespace ThirdPerson {
 
@@ -13,8 +16,6 @@ sealed class CharacterDistortion: MonoBehaviour {
 
     // -- fields --
     [Header("fields")]
-    [Tooltip("the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
-    [SerializeField] float m_Intensity;
 
     [Tooltip("the distortion scale on the negative edge of the plane")]
     [SerializeField] float m_NegativeScale;
@@ -24,45 +25,47 @@ sealed class CharacterDistortion: MonoBehaviour {
 
     // -- stretch & squash --
     [Header("tuning")]
-    [Tooltip("TODO: leave me a comment")]
+    [Tooltip("the intensity of the jumpsquat stretch&squash, 0 full squash, 1 no distortion, infinity infinitely stretched")]
     [SerializeField] MapOutCurve m_JumpSquat_Intensity;
 
+    //"the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
     [Tooltip("TODO: leave me a comment")]
     [SerializeField] float m_VerticalAcceleration_StretchIntensity;
 
     [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float m_VerticalAcceleration_SquashIntensity;
+    [SerializeField] FloatRange m_Intensity_Acceleration;
 
     [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float m_VerticalAcceleration_IntensitySpeed;
+    [SerializeField] FloatRange m_Intensity_Velocity;
 
+    //"the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
+    [FormerlySerializedAs("m_VerticalAcceleration_SquashIntensity")]
     [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float m_VerticalAcceleration_IntensityDamp;
+    [SerializeField] float m_Steepness;
+
+    //"the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
+    [FormerlySerializedAs("m_VerticalSpeed_StretchIntesity")]
+    [Tooltip("TODO: leave me a comment")]
+    [SerializeField] float m_VerticalSpeed_StretchIntensity;
+
+    //"the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
+    [Tooltip("TODO: leave me a comment")]
+    [SerializeField] float m_VerticalSpeed_SquashIntesity;
+
+    [Tooltip("the intensity ease on acceleration based stretch & squash")]
+    [SerializeField] DynamicEase m_Ease;
 
     // -- props --
     /// .
-    CharacterState m_State;
-
-    /// .
-    CharacterTuning m_Tuning;
+    CharacterContainer c;
 
     // the list of distorted materials
     Material[] m_Materials;
 
-    /// the current distortion intensity speed
-    public float m_IntensitySpeed = 0f;
-
     // -- lifetime --
-    void Awake() {
-        // set initial values
-        m_Intensity = 1f;
-    }
-
     void Start() {
         // set deps
-        var c = GetComponentInParent<CharacterContainer>();
-        m_State = c.State;
-        m_Tuning = c.Tuning;
+        c = GetComponentInParent<CharacterContainer>();
 
         // aggregate a list of materials
         var materials = new HashSet<Material>();
@@ -74,22 +77,26 @@ sealed class CharacterDistortion: MonoBehaviour {
         }
 
         m_Materials = materials.ToArray();
+
+        // initialize ease
+        m_Ease.Init(Vector3.up);
     }
 
     void FixedUpdate() {
-        StretchAndSquash();
+        var delta = Time.deltaTime;
+        StretchAndSquash(delta);
         Distort();
     }
 
     /// change character scale according to acceleration
-    public float destIntensity = 1f;
-    void StretchAndSquash() {
-        var v = m_State.Prev.Velocity.y;
-        var a = m_State.Curr.Acceleration.y;
+    Vector3 pos;
+    void StretchAndSquash(float delta) {
+        var v = c.State.Prev.Velocity.y;
+        var a = c.State.Curr.Acceleration.y * delta;
         var aMag = Mathf.Abs(a);
 
         // when jumping, move a distortion plane to our feet
-        // if (v >= 0 || m_State.Next.IsOnGround) {
+        // if (v >= 0 || c.State.Next.IsOnGround) {
             transform.localPosition = Vector3.zero;
             transform.up = Vector3.up;
         // }
@@ -100,41 +107,70 @@ sealed class CharacterDistortion: MonoBehaviour {
         // }
 
         // determine dest intensity
-        destIntensity = 1f;
+        var destIntensity = 1f;
+        var p0 = transform.position + Vector3.up;
+        var p = p0;
 
         // if in jump squat, add jump squash
-        if (m_State.Next.IsInJumpSquat) {
-            var jumpTuning = m_Tuning.NextJump(m_State);
-            var jumpPower = jumpTuning.Power(m_State.Next.JumpState.PhaseElapsed);
+        if (c.State.Next.IsInJumpSquat) {
+            var jumpTuning = c.Tuning.NextJump(c.State);
+            var jumpPower = jumpTuning.Power(c.State.Next.JumpState.PhaseElapsed);
 
             destIntensity = m_JumpSquat_Intensity.Evaluate(jumpPower);
+            p += Vector3.right * 1.3f;
+            p += Vector3.right * 1.3f;
         }
         // otherwise, stretch/squash based on vertical the acceleration/velocity relationship
         else {
-            // if accelerating against velocity, sigh should squash (negative sign), otherwise, stretch
-            var aDotV = a * Mathf.Sign(v);
-            var scaledADotB = m_VerticalAcceleration_StretchIntensity * aDotV;
+            // if accelerating against velocity, sign should squash (negative sign), otherwise, stretch
+            var ia = m_Intensity_Acceleration.Evaluate(Mathf.Sign(v * a) * 0.5f + 0.5f) * Mathf.Abs(a);
+            var iv = m_Intensity_Velocity.Evaluate(Mathf.Sign(v) * 0.5f + 0.5f) * Mathf.Abs(v);
+
+            // TODO: maybe spring this instead of the sigmoid?
+            var scaledADotB = (
+                ia + iv
+            );
 
             // sigmoid (thanks paradise)
             // https://www.desmos.com/calculator/stfjbdj5lh
-            destIntensity = 1 + (2 / Mathf.PI) * Mathf.Atan(
+            destIntensity = 1f + (2f / Mathf.PI) * Mathf.Atan(
                 scaledADotB * Mathf.Pow(
                     Mathf.Abs(scaledADotB),
-                    m_VerticalAcceleration_SquashIntensity
+                    m_Steepness
                 )
             );
 
-            // stretch: accelerating the same as velocity
-            // squash: accelerating opposite to velocity
-            // else {
-                // destIntensity = 1 - m_VerticalAcceleration_SquashIntensity / aMag;
-            // }
+            var sr = 0.08f;
+            p += Vector3.right * 1.3f;
+            DebugDraw.Push("dist-a",  p, sr * a * Vector3.up, new DebugDraw.Config(Color.BlanchedAlmond, count: 1));
+            p += Vector3.right * 0.1f;
+            DebugDraw.Push("dist-v",  p, sr * v * Vector3.up, new DebugDraw.Config(Color.Violet, count: 1));
+
+            p += Vector3.right * 1.3f;
+            var s = 1f;
+            DebugDraw.Push("dist-ia",  p, s * ia * Vector3.up, new DebugDraw.Config(Color.BlanchedAlmond, count: 1));
+            p += Vector3.right * 0.1f;
+            DebugDraw.Push("dist-iv",  p, s * iv * Vector3.up, new DebugDraw.Config(Color.Violet, count: 1));
+            p += Vector3.right * 0.1f;
+            DebugDraw.Push("dist-if",  p, s * (scaledADotB) * Vector3.up, new DebugDraw.Config(Color.Yellow, count: 1));
         }
 
-        var intensityAcceleration = m_VerticalAcceleration_IntensitySpeed * (destIntensity - m_Intensity);
-        m_IntensitySpeed += intensityAcceleration * Time.deltaTime;
-        m_Intensity += m_IntensitySpeed * Time.deltaTime;
-        m_IntensitySpeed *= m_VerticalAcceleration_IntensityDamp;
+        // var x = 0f;
+        // var speed = .1f;
+        // var range = 5f;
+        // // pos = transform.position;
+        // DebugDraw.Push("target_ease", pos + x * Vector3.right + Vector3.up * m_Ease.Target.y, new DebugDraw.Config(Color.Tan));
+        // DebugDraw.Push("value_ease", pos + x * Vector3.right, new DebugDraw.Config(Color.Violet));
+        // x += speed * delta;
+        // x = x % range;
+
+        m_Ease.Update(delta, destIntensity * Vector3.up);
+
+        p += Vector3.right * 1.3f;
+        DebugDraw.Push("dist-dest",  p, m_Ease.Target, new DebugDraw.Config(Color.Red, count: 1));
+        p += Vector3.right * 0.1f;
+        DebugDraw.Push("dist-curr",  p, m_Ease.Value, new DebugDraw.Config(Color.Green, count: 1));
+        DebugDraw.PushLine("dist-line",  p0, p, new DebugDraw.Config(Color.Black, count: 1));
     }
 
     // -- commands --
@@ -149,7 +185,7 @@ sealed class CharacterDistortion: MonoBehaviour {
 
             material.SetFloat(
                 ShaderProps.Distortion_Intensity,
-                m_Intensity
+                Mathf.Max(m_Ease.Value.y, 0f)
             );
 
             material.SetFloat(

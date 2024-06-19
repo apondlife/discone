@@ -58,11 +58,6 @@ Shader "ThirdPerson/Character" {
             fixed4 _MainTex_ST;
 
             // -- props --
-            float1 _Distortion_PositiveScale;
-            float1 _Distortion_NegativeScale;
-            float1 _Distortion_Intensity;
-            float4 _Distortion_Plane;
-
             // the number of rows and columns for a spritesheet
             float4 _SpriteSheet;
 
@@ -74,6 +69,11 @@ Shader "ThirdPerson/Character" {
 
             // the relative intensity of the ambient light
             float1 _AmbientLightIntensity;
+
+            float1 _Distortion_Intensity;
+            float4 _Distortion_Plane;
+            float1 _Distortion_PositiveScale;
+            float1 _Distortion_NegativeScale;
 
             // -- program --
             FragIn DrawVert(VertIn v) {
@@ -97,15 +97,17 @@ Shader "ThirdPerson/Character" {
                 o.pos = UnityWorldToClipPos(worldPos);
 
                 // get the sprite's uv
-                // u [0, 1]  => [0.00, 0.25] [0.25, 0.50]
+                // u [0, 1] => [0.00, 0.25] [0.25, 0.50]
                 float2 uv0 = TRANSFORM_TEX(v.uv, _MainTex);
 
                 float1 du = 1 / _SpriteSheet.x; // 0.25 (u + sprU)
                 float1 dv = 1 / _SpriteSheet.y;
+
+                // invert v because uv coordinates origin is at bottom-left
                 int sprU = fmod(_CurrentSprite, floor(_SpriteSheet.x));
                 int sprV = floor(_CurrentSprite / floor(_SpriteSheet.y));
-                // invert because uv coordinates origin is at bottom left
                 sprV = (_SpriteSheet.y - 1) - sprV;
+
                 float2 uv = float2(
                     (uv0.x + sprU) * du,
                     (uv0.y + sprV) * dv
