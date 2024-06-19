@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Soil;
 using UnityEditor;
-
-using E = UnityEditor.EditorGUILayout;
+using UnityEngine;
+using E = UnityEditor.EditorGUI;
+using L = UnityEditor.EditorGUILayout;
 using G = UnityEngine.GUILayout;
 
 namespace ThirdPerson.Editor {
@@ -18,6 +21,9 @@ sealed class CharacterTuningEditor: UnityEditor.Editor {
     // -- fields --
     /// the character tuning
     CharacterTuning m_Tuning;
+
+    /// if the foldout by name is expanded
+    Dictionary<string, bool> m_IsFoldoutExpanded = new();
 
     // -- lifecycle --
     void OnEnable() {
@@ -42,12 +48,34 @@ sealed class CharacterTuningEditor: UnityEditor.Editor {
         var type = m_Tuning.GetType();
 
         var members = type
-            .GetFields().Cast<MemberInfo>()
+            .GetFields()
             .Concat(type.GetProperties().Cast<MemberInfo>());
 
+        var currFoldout = null as string;
         foreach (var m in members) {
             // skip members from supertypes
             if (m.DeclaringType != type) {
+                continue;
+            }
+
+            var foldout = m.GetCustomAttribute<FoldoutAttribute>();
+            if (foldout != null) {
+                if (currFoldout != null) {
+                    L.EndFoldoutHeaderGroup();
+                    E.indentLevel -= 1;
+                    currFoldout = null;
+                }
+
+                currFoldout = foldout.Name;
+                m_IsFoldoutExpanded[currFoldout] = L.BeginFoldoutHeaderGroup(
+                    m_IsFoldoutExpanded.GetValueOrDefault(currFoldout),
+                    new GUIContent(foldout.Name)
+                );
+
+                E.indentLevel += 1;
+            }
+
+            if (currFoldout == null || !m_IsFoldoutExpanded.GetValueOrDefault(currFoldout)) {
                 continue;
             }
 
@@ -66,14 +94,14 @@ sealed class CharacterTuningEditor: UnityEditor.Editor {
 
     // -- commands --
     void Field(SerializedProperty prop) {
-        E.PropertyField(prop);
+        L.PropertyField(prop);
     }
 
     void Row(string label, object value) {
-        E.BeginHorizontal();
-        E.PrefixLabel(label);
-        E.LabelField(value.ToString());
-        E.EndHorizontal();
+        L.BeginHorizontal();
+        L.PrefixLabel(label);
+        L.LabelField(value.ToString());
+        L.EndHorizontal();
     }
 
     static void SyncAll() {

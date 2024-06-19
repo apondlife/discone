@@ -17,11 +17,13 @@ what is projected
 - indication of change in perception (particle effect), to help with knowing that you missed a wall
 
 # jump
-- jump leniency on surface transfer (perception?)
-- jump stretch (currently onlt squa)
+- jump stretch (currently only squash)
+- animation delay for jump charge
+- tuning
 -- publish &  move to #crouch
 - jump di? (input direction)
 - canceling some proportion of momentum in input opposing velocity (di?)
+- jump leniency on surface transfer (perception?)
 - real jump charge (small jump -> tangent, big charge -> normal, or maybe the other way around)
 - cooldown on surfaces (?)
 

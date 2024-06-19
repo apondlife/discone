@@ -8,13 +8,13 @@ namespace ThirdPerson {
 [CreateAssetMenu(fileName = "CharacterTuning", menuName = "thirdperson/CharacterTuning", order = 0)]
 public sealed class CharacterTuning: ScriptableObject {
     // -- metadata --
-    [Header("metadata")]
+    [Foldout("metadata")]
     [Tooltip("a friendly description for this config")]
     [TextArea(3, 6)]
     [SerializeField] string m_Description;
 
     // -- movement --
-    [Header("movement")]
+    [Foldout("movement")]
     [FormerlySerializedAs("Horizontal_MinSpeed")]
     [Tooltip("the horizontal speed at which the character stops")]
     public float Surface_MinSpeed;
@@ -61,7 +61,7 @@ public sealed class CharacterTuning: ScriptableObject {
     public float AerialDriftAcceleration;
 
     // -- crouch --
-    [Header("crouch")]
+    [Foldout("crouch")]
     [Tooltip("the crouch power as a fn of time crouching")]
     public AdsrCurve Crouch_Power;
 
@@ -97,7 +97,7 @@ public sealed class CharacterTuning: ScriptableObject {
     public MapOutCurve Crouch_NegativeDrag;
 
     // -- jump --
-    [Header("jump")]
+    [Foldout("jump")]
     [Tooltip("the acceleration due to gravity")]
     public float Gravity;
 
@@ -126,6 +126,7 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the jump scale opposed to the surface normal as a fn of surface angle")]
     public MapOutCurve Jump_Normal_SurfaceAngleScale;
 
+    [NonReorderable]
     [Tooltip("the tuning for each jump, sequentially")]
     public JumpTuning[] Jumps;
 
@@ -190,7 +191,7 @@ public sealed class CharacterTuning: ScriptableObject {
     }
 
     // -- surface --
-    [Header("surface")]
+    [Foldout("surface")]
     [Tooltip("the time for inertia to decay 99% as a fn of surface angle")]
     public MapOutCurve Surface_InertiaDecayTime;
 
@@ -246,7 +247,7 @@ public sealed class CharacterTuning: ScriptableObject {
     public float Surface_PerceptionAngularSpeed;
 
     // -- friction --
-    [Header("friction")]
+    [Foldout("friction")]
     [Tooltip("the quadratic drag in the air")]
     public float Friction_AerialDrag;
 
@@ -271,12 +272,12 @@ public sealed class CharacterTuning: ScriptableObject {
     public MapOutCurve Friction_SurfaceFrictionScale;
 
     // -- idle --
-    [Header("idle")]
+    [Foldout("idle")]
     [Tooltip("the speed threshold under which the character is considered idle (squared)")]
     public float Idle_SqrSpeedThreshold;
 
     // -- model/animation --
-    [Header("model / animation")]
+    [Foldout("model / animation")]
     [Tooltip("the angle in degrees character model tilts forward on the start up acceleration")]
     public float TiltForBaseAcceleration;
 
