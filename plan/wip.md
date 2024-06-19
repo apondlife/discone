@@ -18,20 +18,23 @@ what is projected
 
 # jump
 - curve (adsr?) gravity on jump
-- crouch gravity (previously, fastfall, fastslide)? (per jump)
-- interpolate between crouch & ik legs
 - jump leniency on surface transfer (perception?)
-- real jump charge (small jump -> tangent, big charge -> normal, or maybe the other way around)
+- jump stretch (currently onlt squa)
+-- publish &  move to #crouch
 - jump di? (input direction)
 - canceling some proportion of momentum in input opposing velocity (di?)
+- real jump charge (small jump -> tangent, big charge -> normal, or maybe the other way around)
 - cooldown on surfaces (?)
+
+# crouch
+- interpolate between crouch & ik legs
+- tilt character when crouched
+- crouch ik slide
+- look into crouching sliding down ramps
+- crouch gravity (previously, fastfall, fastslide)? (per jump)
 
 # pivot
 - make pivot faster (or at least be able to do so)
-
-# crouch
-- crouch ik slide
-- look into crouching sliding down ramps
 
 # flower
 - flower disabling zones

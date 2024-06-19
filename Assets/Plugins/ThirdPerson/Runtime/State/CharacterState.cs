@@ -202,12 +202,6 @@ public sealed partial class CharacterState {
         /// the cooldown time duration
         public float Jump_CooldownDuration = 0f;
 
-        /// the index of the current jump tuning
-        public uint JumpTuningIndex = 0;
-
-        /// the current number of jumps in the current tuning
-        public uint JumpTuningJumpIndex = 0;
-
         /// the container of events that happened this frame
         public CharacterEventSet Events;
 

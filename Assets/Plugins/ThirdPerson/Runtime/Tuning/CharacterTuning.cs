@@ -101,11 +101,8 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the acceleration due to gravity")]
     public float Gravity;
 
-    [Tooltip("the gravity while holding jump and moving up")]
-    public float JumpGravity;
-
-    [Tooltip("the gravity while holding jump and falling")]
-    public float FallGravity;
+    [Tooltip("the acceleration due to gravity when going upwards")]
+    public float Gravity_Jump;
 
     // TODO: make buffer for release edge as well
     [Tooltip("the duration of the jump buffer")]
@@ -140,12 +137,16 @@ public sealed class CharacterTuning: ScriptableObject {
         [Tooltip("if this jumps happens automatically after the jump squat duration")]
         public bool ShouldJumpAfterJumpSquat;
 
+        [Tooltip("the vertical acceleration starting @ jump squat")]
+        public AdsrCurve Acceleration;
+
         [Tooltip("the jump squat duration range")]
         public FloatRange JumpSquatDuration;
 
+        [FormerlySerializedAs("m_JumpPower")]
         [FormerlySerializedAs("JumpPower")]
         [Tooltip("the jump power as a fn of jump squat elapsed")]
-        [SerializeField] AdsrCurve m_JumpPower;
+        [SerializeField] AdsrCurve m_Power;
 
         [Tooltip("how long after jump until the character can jump again as a fn of charge percent")]
         public MapOutCurve CooldownDuration;
@@ -160,14 +161,19 @@ public sealed class CharacterTuning: ScriptableObject {
         public float Horizontal_MomentumLoss;
 
         /// the jump power as a fn of jump squat elapsed
-        public float JumpPower(float elapsed) {
-            return m_JumpPower.Evaluate(elapsed - JumpSquatDuration.Min);
+        public float Power(float elapsed) {
+            return m_Power.Evaluate(elapsed - JumpSquatDuration.Min);
         }
     }
 
-    /// get current jump tuning for a state
-    public JumpTuning CurrentJump(CharacterState state) {
-        return Jumps[state.Next.JumpTuningIndex];
+    /// get the jump tuning for the id
+    public JumpTuning JumpById(CharacterState.JumpId id) {
+        return Jumps[id.Index];
+    }
+
+    /// get the next jump tuning (to initiate a jump)
+    public JumpTuning NextJump(CharacterState state) {
+        return JumpById(state.Next.NextJump);
     }
 
     // -- surface --

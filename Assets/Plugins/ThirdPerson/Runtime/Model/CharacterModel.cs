@@ -177,8 +177,8 @@ public sealed class CharacterModel: MonoBehaviour {
         );
 
         if (state.IsInJumpSquat) {
-            var jumpTuning = c.Tuning.CurrentJump(c.State);
-            var jumpPower = jumpTuning.JumpPower(state.JumpState.PhaseElapsed);
+            var jumpTuning = c.Tuning.NextJump(c.State);
+            var jumpPower = jumpTuning.Power(state.JumpState.PhaseElapsed);
 
             anim.SetFloat(
                 s_JumpLeg,

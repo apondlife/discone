@@ -7,6 +7,9 @@ namespace Soil {
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "AdsrCurve")]
 [Serializable]
 public struct AdsrCurve {
+    /// a value when the curve is not released
+    public const float NotReleased = float.MaxValue;
+
     // -- fields --
     [Tooltip("the time it takes for the curve to start")]
     [SerializeField] float m_Delay;
@@ -33,7 +36,7 @@ public struct AdsrCurve {
     /// evaluate the curve in the range
     public float Evaluate(
         float elapsed,
-        float releaseAt = float.MaxValue
+        float releaseAt = NotReleased
     ) {
         var value = m_SustainValue;
 

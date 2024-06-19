@@ -19,6 +19,7 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
     /// a queue of the most recent input frames
     readonly Ring<F> m_Frames = new((uint)(k_BufferDuration / Time.fixedDeltaTime));
 
+    // TODO: can't store Time.time, must store deltas
     /// the last time we read input
     float m_Time;
 
