@@ -1,3 +1,4 @@
+using Soil;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -6,29 +7,32 @@ namespace ThirdPerson {
 static class ShaderProps {
     // -- constants --
     /// the main texture
-    public static readonly int Main = Shader.PropertyToID("_MainTex");
+    public static readonly ShaderProp MainTex = new(nameof(MainTex));
+
+    /// the world position of the character
+    public static readonly ShaderProp Character_Pos = new(nameof(Character_Pos));
+
+    /// the intensity of the character distortion
+    public static readonly ShaderProp Distortion_Intensity = new(nameof(Distortion_Intensity));
 
     /// the plane the character distorts around
-    public static readonly int Distortion_Plane = Shader.PropertyToID("_Distortion_Plane");
+    public static readonly ShaderProp Distortion_Plane = new(nameof(Distortion_Plane));
 
-    /// the amount the character distorts towards the plane normal
-    public static readonly int Distortion_PositiveScale = Shader.PropertyToID("_Distortion_PositiveScale");
+    /// a scale on intensity along the plane's axis
+    public static readonly ShaderProp Distortion_AxialScale = new(nameof(Distortion_AxialScale));
 
-    /// the amount the character distorts against the plane normal
-    public static readonly int Distortion_NegativeScale = Shader.PropertyToID("_Distortion_NegativeScale");
-
-    /// the amount the character distorts
-    public static readonly int Distortion_Intensity = Shader.PropertyToID("_Distortion_Intensity");
+    /// a scale on intensity around the plane's axis (inversely proportional to axial)
+    public static readonly ShaderProp Distortion_RadialScale = new(nameof(Distortion_RadialScale));
 
     // TODO: move these (and a lot of camera stuff) to discone
     /// the camera's current clip pos
-    public static readonly int CameraClipPos = Shader.PropertyToID("_CameraClipPos");
+    public static readonly ShaderProp CameraClipPos = new(nameof(CameraClipPos));
 
     /// the camera's current clip plane
-    public static readonly int CameraClipPlane = Shader.PropertyToID("_CameraClipPlane");
+    public static readonly ShaderProp CameraClipPlane = new(nameof(CameraClipPlane));
 
     /// the character's ground plane
-    public static readonly int CharacterSurfacePlane = Shader.PropertyToID("_CharacterSurfacePlane");
+    public static readonly ShaderProp CharacterSurfacePlane = new(nameof(CharacterSurfacePlane));
 }
 
 }

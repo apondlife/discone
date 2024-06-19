@@ -17,7 +17,6 @@ what is projected
 - indication of change in perception (particle effect), to help with knowing that you missed a wall
 
 # jump
-- jump stretch (currently only squash)
 - animation delay for jump charge
 - tuning
 -- publish &  move to #crouch

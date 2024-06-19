@@ -14,8 +14,8 @@ public readonly struct ShaderProp {
     }
 
     /// a shader prop for the given name
-    public ShaderProp(string name) {
-        m_Id = Shader.PropertyToID(name);
+    public ShaderProp(string name, string prefix = "_") {
+        m_Id = Shader.PropertyToID(prefix + name);
     }
 
     // -- commands --

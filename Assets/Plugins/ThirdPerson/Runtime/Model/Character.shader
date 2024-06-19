@@ -34,6 +34,7 @@ Shader "ThirdPerson/Character" {
             #include "AutoLight.cginc"
             #include "UnityLightingCommon.cginc"
             #include "Assets/Shaders/Core/Color.hlsl"
+            #include "Character_Distort.hlsl"
 
             // -- types --
             /// the vertex shader input
@@ -70,30 +71,12 @@ Shader "ThirdPerson/Character" {
             // the relative intensity of the ambient light
             float1 _AmbientLightIntensity;
 
-            float1 _Distortion_Intensity;
-            float4 _Distortion_Plane;
-            float1 _Distortion_PositiveScale;
-            float1 _Distortion_NegativeScale;
-
             // -- program --
             FragIn DrawVert(VertIn v) {
                 FragIn o;
 
                 float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
-                float1 distance = dot(worldPos, _Distortion_Plane.xyz) + _Distortion_Plane.w;
-
-                // the distortion...i don't know add a comment
-                float1 distortion = lerp(
-                    distance * -_Distortion_NegativeScale,
-                    distance * +_Distortion_PositiveScale,
-                    step(0, distance)
-                );
-
-                // intensity is in the range [0, 1, infinity]; 0 is fully squashed, 1 is no
-                // distortion, infinity is infinitely stretched.
-                float1 intensity = _Distortion_Intensity - 1;
-
-                worldPos += distortion * intensity * _Distortion_Plane.xyz;
+                Distort(worldPos);
                 o.pos = UnityWorldToClipPos(worldPos);
 
                 // get the sprite's uv
@@ -165,12 +148,7 @@ Shader "ThirdPerson/Character" {
 
             // -- includes --
             #include "UnityCG.cginc"
-
-            // -- props --
-            float1 _Distortion_PositiveScale;
-            float1 _Distortion_NegativeScale;
-            float1 _Distortion_Intensity;
-            float4 _Distortion_Plane;
+            #include "Character_Distort.hlsl"
 
             // -- types --
             struct FragIn {
@@ -181,21 +159,9 @@ Shader "ThirdPerson/Character" {
             FragIn DrawVert(appdata_base v) {
                 FragIn o;
                 TRANSFER_SHADOW_CASTER_NORMALOFFSET(o);
+
                 float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
-                float1 distance = dot(worldPos, _Distortion_Plane.xyz) + _Distortion_Plane.w;
-
-                // the distortion...i don't know add a comment
-                float1 distortion = lerp(
-                    distance * -_Distortion_NegativeScale,
-                    distance * +_Distortion_PositiveScale,
-                    step(0, distance)
-                );
-
-                // intensity is in the range [0, 1, infinity]; 0 is fully squashed, 1 is no
-                // distortion, infinity is infinitely stretched.
-                float1 intensity = _Distortion_Intensity - 1;
-
-                worldPos += distortion * intensity * _Distortion_Plane.xyz;
+                Distort(worldPos);
                 o.pos = UnityWorldToClipPos(worldPos);
 
                 return o;

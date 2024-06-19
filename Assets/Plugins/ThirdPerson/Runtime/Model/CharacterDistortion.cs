@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Soil;
@@ -8,7 +7,6 @@ using Color = Soil.Color;
 
 namespace ThirdPerson {
 
-// [ExecuteAlways]
 sealed class CharacterDistortion: MonoBehaviour {
     // -- config --
     [Tooltip("the position for distorting from above the character")]
@@ -16,16 +14,17 @@ sealed class CharacterDistortion: MonoBehaviour {
 
     // -- fields --
     [Header("fields")]
+    [FormerlySerializedAs("m_PositiveScale")]
+    [Tooltip("a scale on intensity along the plane's axis")]
+    [SerializeField] float m_AxialScale;
 
-    [Tooltip("the distortion scale on the negative edge of the plane")]
-    [SerializeField] float m_NegativeScale;
-
-    [Tooltip("the distortion scale on the positive edge of the plane")]
-    [SerializeField] float m_PositiveScale;
+    [FormerlySerializedAs("m_NegativeScale")]
+    [Tooltip("a scale on intensity around the plane's axis (inversely proportional to axial)")]
+    [SerializeField] float m_RadialScale;
 
     // -- stretch & squash --
     [Header("tuning")]
-    [Tooltip("the intensity of the jumpsquat stretch&squash, 0 full squash, 1 no distortion, infinity infinitely stretched")]
+    [Tooltip("the intensity of the jump squat stretch & squash, 0 full squash, 1 no distortion, infinity infinitely stretched")]
     [SerializeField] MapOutCurve m_JumpSquat_Intensity;
 
     //"the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
@@ -93,18 +92,6 @@ sealed class CharacterDistortion: MonoBehaviour {
     void StretchAndSquash(float delta) {
         var v = c.State.Prev.Velocity.y;
         var a = c.State.Curr.Acceleration.y * delta;
-        var aMag = Mathf.Abs(a);
-
-        // when jumping, move a distortion plane to our feet
-        // if (v >= 0 || c.State.Next.IsOnGround) {
-            transform.localPosition = Vector3.zero;
-            transform.up = Vector3.up;
-        // }
-        // when falling, move a distortion plane above our head
-        // else {
-        //     transform.localPosition = m_Top;
-        //     transform.up = Vector3.down;
-        // }
 
         // determine dest intensity
         var destIntensity = 1f;
@@ -179,6 +166,11 @@ sealed class CharacterDistortion: MonoBehaviour {
 
         foreach (var material in m_Materials) {
             material.SetVector(
+                ShaderProps.Character_Pos,
+                c.State.Curr.Position
+            );
+
+            material.SetVector(
                 ShaderProps.Distortion_Plane,
                 plane
             );
@@ -189,13 +181,13 @@ sealed class CharacterDistortion: MonoBehaviour {
             );
 
             material.SetFloat(
-                ShaderProps.Distortion_PositiveScale,
-                m_NegativeScale
+                ShaderProps.Distortion_AxialScale,
+                m_AxialScale
             );
 
             material.SetFloat(
-                ShaderProps.Distortion_NegativeScale,
-                m_NegativeScale
+                ShaderProps.Distortion_RadialScale,
+                m_RadialScale
             );
         }
     }

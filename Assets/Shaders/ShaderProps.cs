@@ -35,13 +35,13 @@ static class ShaderProps {
     public static readonly int BackgroundExposure = Shader.PropertyToID("_ExposureBackground");
 
     /// the height fog color
-    public static readonly ShaderProp HeightFog_Color = new("_HeightFog_Color");
+    public static readonly ShaderProp HeightFog_Color = new(nameof(HeightFog_Color));
 
     /// the height fog density
-    public static readonly ShaderProp HeightFog_Density = new("_HeightFog_Density");
+    public static readonly ShaderProp HeightFog_Density = new(nameof(HeightFog_Density));
 
     /// the height fog minimum height
-    public static readonly ShaderProp HeightFog_MinDist = new("_HeightFog_MinDist");
+    public static readonly ShaderProp HeightFog_MinDist = new(nameof(HeightFog_MinDist));
 
     /// the region dissolve pct
     public static readonly int DissolveAmount = Shader.PropertyToID("_DissolveAmount");
