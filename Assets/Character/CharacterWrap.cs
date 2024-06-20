@@ -43,7 +43,10 @@ public class CharacterWrap: NetworkBehaviour {
 
         // wrap to the max y (we shouldn't need to force state b/c the frame
         // is a reference type, but in case that changes...)
-        state.Position.y = m_WrapMaxY;
+        var pos = state.Position;
+        pos.y = m_WrapMaxY;
+        state.Position = pos;
+
         m_Character.ForceState(state);
     }
 }

@@ -9,18 +9,6 @@ partial class CharacterState {
     partial class Frame {
         /// .
         public SystemState JumpState;
-
-        /// the time since last jump triggered
-        public float Jump_Elapsed;
-
-        /// the time jump was released at (in relation to jump press)
-        public float Jump_ReleasedAt;
-
-        /// the id of the next (to-execute) jump
-        public JumpId NextJump;
-
-        /// the id of the active (in-progress) jump
-        public JumpId ActiveJump;
     }
 }
 
@@ -83,13 +71,8 @@ sealed class JumpSystem: CharacterSystem {
 
     // -- NotJumping --
     static readonly Phase<CharacterContainer> NotJumping = new("NotJumping",
-        enter: NotJumping_Enter,
         update: NotJumping_Update
     );
-
-    static void NotJumping_Enter(System<CharacterContainer> _, CharacterContainer c) {
-        c.State.Next.IsLanding = false;
-    }
 
     static void NotJumping_Update(float delta, System<CharacterContainer> s, CharacterContainer c) {
         // reset jump surface whenever grounded
@@ -122,7 +105,6 @@ sealed class JumpSystem: CharacterSystem {
 
     static void Landing_Enter(System<CharacterContainer> _, CharacterContainer c) {
         ResetJumps(c);
-        c.State.Next.IsLanding = true;
         c.Events.Schedule(CharacterEvent.Land);
     }
 
@@ -236,7 +218,6 @@ sealed class JumpSystem: CharacterSystem {
 
     static void Falling_Enter(System<CharacterContainer> _, CharacterContainer c) {
         AdvanceJumps(c);
-        c.State.Next.IsLanding = false;
     }
 
     static void Falling_Update(float delta, System<CharacterContainer> s, CharacterContainer c) {
@@ -354,7 +335,6 @@ sealed class JumpSystem: CharacterSystem {
         c.State.Next.ActiveJump = c.State.Curr.NextJump;
 
         // advance next jump
-        c.State.Next.Jumps += 1;
         c.State.Next.NextJump.Count += 1;
 
         var jumpTuning = c.Tuning.NextJump(c.State);
@@ -375,7 +355,6 @@ sealed class JumpSystem: CharacterSystem {
 
     /// reset the jump count to its initial state
     static void ResetJumps(CharacterContainer c) {
-        c.State.Next.Jumps = 0;
         c.State.Next.NextJump.Count = 0;
         c.State.Next.NextJump.Index = 0;
     }

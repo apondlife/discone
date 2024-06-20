@@ -28,45 +28,39 @@ sealed class TiltSystem: CharacterSystem {
 
     // -- NotTilting --
     static readonly Phase<CharacterContainer> NotTilting = new("NotTilting",
-        update: (_, s, c) => {
-            var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
-            if (acceleration.sqrMagnitude != 0.0f) {
-                s.ChangeTo(Tilting);
-                return;
-            }
-
-            InterpolateTilt(Quaternion.identity, c);
-        }
+        update: NotTilting_Update
     );
+
+    static void NotTilting_Update(float _, System<CharacterContainer> s, CharacterContainer c) {
+        var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
+        if (acceleration.sqrMagnitude != 0.0f) {
+            s.ChangeTo(Tilting);
+            return;
+        }
+
+        InterpolateTilt(Quaternion.identity, c);
+    }
 
     // -- Tilting --
     static readonly Phase<CharacterContainer> Tilting = new("Tilting",
-        update: (_, s, c) => {
-            var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
-            if (acceleration.sqrMagnitude == 0.0f) {
-                s.ChangeTo(NotTilting);
-                return;
-            }
-
-            var tiltAngle = Mathf.Clamp(
-                acceleration.magnitude / c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle) * c.Tuning.TiltForBaseAcceleration,
-                0,
-                c.Tuning.MaxTilt
-            );
-
-            var tiltAxis = Vector3.Cross(
-                Vector3.up,
-                acceleration.normalized
-            );
-
-            var tilt = Quaternion.AngleAxis(
-                tiltAngle,
-                tiltAxis.normalized
-            );
-
-            InterpolateTilt(tilt, c);
-        }
+        update: Tilting_Update
     );
+
+    static void Tilting_Update(float _, System<CharacterContainer> s, CharacterContainer c) {
+        var acceleration = Vector3.ProjectOnPlane(c.State.Curr.Acceleration, Vector3.up);
+        if (acceleration.sqrMagnitude == 0.0f) {
+            s.ChangeTo(NotTilting);
+            return;
+        }
+
+        var tiltAngle = Mathf.Clamp(acceleration.magnitude / c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle) * c.Tuning.TiltForBaseAcceleration, 0, c.Tuning.MaxTilt);
+
+        var tiltAxis = Vector3.Cross(Vector3.up, acceleration.normalized);
+
+        var tilt = Quaternion.AngleAxis(tiltAngle, tiltAxis.normalized);
+
+        InterpolateTilt(tilt, c);
+    }
 
     // -- commands --
     /// smooth tilt towards target

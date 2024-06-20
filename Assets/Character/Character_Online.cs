@@ -6,6 +6,24 @@ using UnityEngine;
 
 namespace Discone {
 
+// TODO: only synchronize properties required for presentation, not simulation. here's a
+// list of what's used as of the time of this comment:
+// - Position
+// - Velocity
+// - Inertia
+// - Force
+// - Acceleration
+// - Forward
+// - MainSurface
+// - Surfaces
+// - JumpState
+// - NextJump
+// - IsInJumpSquat
+// - CoyoteTime
+// - IdleTime
+// - Tilt
+// - Events
+
 /// an online character
 [RequireComponent(typeof(Character))]
 public sealed class Character_Online: NetworkBehaviour {
