@@ -115,7 +115,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       m_Duration: 0
-  Crouch_StaticFriction: 690
+  Crouch_StaticFriction: 60
   Crouch_TurnSpeed: 0
   Crouch_InlineScale:
     Curve:
@@ -1085,10 +1085,10 @@ MonoBehaviour:
     m_RotationOrder: 4
   Surface_VerticalGrip_Up:
     Min: 0
-    Max: 24
+    Max: 18
   Surface_VerticalGrip_Down:
     Min: 0
-    Max: 12
+    Max: 9
   Surface_UpwardsVelocityBias:
     Curve:
       serializedVersion: 2
