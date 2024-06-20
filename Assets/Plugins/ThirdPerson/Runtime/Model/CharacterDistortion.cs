@@ -3,7 +3,6 @@ using System.Linq;
 using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Color = Soil.Color;
 
 namespace ThirdPerson {
 
@@ -12,8 +11,7 @@ sealed class CharacterDistortion: MonoBehaviour {
     [Tooltip("the position for distorting from above the character")]
     [SerializeField] Vector3 m_Top;
 
-    // -- fields --
-    [Header("fields")]
+    [Header("tuning")]
     [FormerlySerializedAs("m_PositiveScale")]
     [Tooltip("a scale on intensity along the plane's axis")]
     [SerializeField] float m_AxialScale;
@@ -23,33 +21,19 @@ sealed class CharacterDistortion: MonoBehaviour {
     [SerializeField] float m_RadialScale;
 
     // -- stretch & squash --
-    [Header("tuning")]
+    [FormerlySerializedAs("m_JumpSquat_Intensity")]
     [Tooltip("the intensity of the jump squat stretch & squash, 0 full squash, 1 no distortion, infinity infinitely stretched")]
-    [SerializeField] MapOutCurve m_JumpSquat_Intensity;
+    [SerializeField] MapOutCurve m_Intensity_JumpSquat;
 
-    //"the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float m_VerticalAcceleration_StretchIntensity;
-
-    [Tooltip("TODO: leave me a comment")]
+    [Tooltip("the stretch and squash intensity acceleration scale, 0 full squash, 1 no distortion, infinity infinitely stretched")]
     [SerializeField] FloatRange m_Intensity_Acceleration;
 
-    [Tooltip("TODO: leave me a comment")]
+    [Tooltip("the stretch and squash intensity velocity scale, 0 full squash, 1 no distortion, infinity infinitely stretched")]
     [SerializeField] FloatRange m_Intensity_Velocity;
 
-    //"the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
-    [FormerlySerializedAs("m_VerticalAcceleration_SquashIntensity")]
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float m_Steepness;
-
-    //"the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
-    [FormerlySerializedAs("m_VerticalSpeed_StretchIntesity")]
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float m_VerticalSpeed_StretchIntensity;
-
-    //"the distortion scale; 0 is fully squashed, 1 is no distortion, infinity is infinitely stretched.")]
-    [Tooltip("TODO: leave me a comment")]
-    [SerializeField] float m_VerticalSpeed_SquashIntesity;
+    [FormerlySerializedAs("m_Steepness")]
+    [Tooltip("the responsiveness of the movement based intensity")]
+    [SerializeField] float m_Responsiveness;
 
     [Tooltip("the intensity ease on acceleration based stretch & squash")]
     [SerializeField] DynamicEase m_Ease;
@@ -88,24 +72,19 @@ sealed class CharacterDistortion: MonoBehaviour {
     }
 
     /// change character scale according to acceleration
-    Vector3 pos;
     void StretchAndSquash(float delta) {
         var v = c.State.Prev.Velocity.y;
         var a = c.State.Curr.Acceleration.y * delta;
 
         // determine dest intensity
         var destIntensity = 1f;
-        var p0 = transform.position + Vector3.up;
-        var p = p0;
 
         // if in jump squat, add jump squash
         if (c.State.Next.IsInJumpSquat) {
             var jumpTuning = c.Tuning.NextJump(c.State);
             var jumpPower = jumpTuning.Power(c.State.Next.JumpState.PhaseElapsed);
 
-            destIntensity = m_JumpSquat_Intensity.Evaluate(jumpPower);
-            p += Vector3.right * 1.3f;
-            p += Vector3.right * 1.3f;
+            destIntensity = m_Intensity_JumpSquat.Evaluate(jumpPower);
         }
         // otherwise, stretch/squash based on vertical the acceleration/velocity relationship
         else {
@@ -114,50 +93,19 @@ sealed class CharacterDistortion: MonoBehaviour {
             var iv = m_Intensity_Velocity.Evaluate(Mathf.Sign(v) * 0.5f + 0.5f) * Mathf.Abs(v);
 
             // TODO: maybe spring this instead of the sigmoid?
-            var scaledADotB = (
-                ia + iv
-            );
+            var intensityRaw = ia + iv;
 
             // sigmoid (thanks paradise)
             // https://www.desmos.com/calculator/stfjbdj5lh
             destIntensity = 1f + (2f / Mathf.PI) * Mathf.Atan(
-                scaledADotB * Mathf.Pow(
-                    Mathf.Abs(scaledADotB),
-                    m_Steepness
+                intensityRaw * Mathf.Pow(
+                    Mathf.Abs(intensityRaw),
+                    m_Responsiveness
                 )
             );
-
-            var sr = 0.08f;
-            p += Vector3.right * 1.3f;
-            DebugDraw.Push("dist-a",  p, sr * a * Vector3.up, new DebugDraw.Config(Color.BlanchedAlmond, count: 1));
-            p += Vector3.right * 0.1f;
-            DebugDraw.Push("dist-v",  p, sr * v * Vector3.up, new DebugDraw.Config(Color.Violet, count: 1));
-
-            p += Vector3.right * 1.3f;
-            var s = 1f;
-            DebugDraw.Push("dist-ia",  p, s * ia * Vector3.up, new DebugDraw.Config(Color.BlanchedAlmond, count: 1));
-            p += Vector3.right * 0.1f;
-            DebugDraw.Push("dist-iv",  p, s * iv * Vector3.up, new DebugDraw.Config(Color.Violet, count: 1));
-            p += Vector3.right * 0.1f;
-            DebugDraw.Push("dist-if",  p, s * (scaledADotB) * Vector3.up, new DebugDraw.Config(Color.Yellow, count: 1));
         }
 
-        // var x = 0f;
-        // var speed = .1f;
-        // var range = 5f;
-        // // pos = transform.position;
-        // DebugDraw.Push("target_ease", pos + x * Vector3.right + Vector3.up * m_Ease.Target.y, new DebugDraw.Config(Color.Tan));
-        // DebugDraw.Push("value_ease", pos + x * Vector3.right, new DebugDraw.Config(Color.Violet));
-        // x += speed * delta;
-        // x = x % range;
-
         m_Ease.Update(delta, destIntensity * Vector3.up);
-
-        p += Vector3.right * 1.3f;
-        DebugDraw.Push("dist-dest",  p, m_Ease.Target, new DebugDraw.Config(Color.Red, count: 1));
-        p += Vector3.right * 0.1f;
-        DebugDraw.Push("dist-curr",  p, m_Ease.Value, new DebugDraw.Config(Color.Green, count: 1));
-        DebugDraw.PushLine("dist-line",  p0, p, new DebugDraw.Config(Color.Black, count: 1));
     }
 
     // -- commands --
