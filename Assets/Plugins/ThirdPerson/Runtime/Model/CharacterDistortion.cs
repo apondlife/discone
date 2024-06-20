@@ -20,7 +20,6 @@ sealed class CharacterDistortion: MonoBehaviour {
     [Tooltip("a scale on intensity around the plane's axis (inversely proportional to axial)")]
     [SerializeField] float m_RadialScale;
 
-    // -- stretch & squash --
     [FormerlySerializedAs("m_JumpSquat_Intensity")]
     [Tooltip("the intensity of the jump squat stretch & squash, 0 full squash, 1 no distortion, infinity infinitely stretched")]
     [SerializeField] MapOutCurve m_Intensity_JumpSquat;

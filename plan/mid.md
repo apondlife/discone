@@ -4,11 +4,11 @@ mired in debt
 # bugs/problems
 - **ICE CREAMS HEAD IS FUCKEE+D***=
 - icecream can stand on the curve of the capsule
+- inertia sometimes explodes when character is stuck
 - make log.i go to correct place in code (dll with log & code excluded from project)
 - grip (or something) pulls you over corners weirdly (on the frame collision misses; should it pull you towards the hit point?)
 - can't get into jumpsquat after first aerial jump (if there's not infinite air jumps)
 - jumping in a tight corner (wall & ground) sometimes has no effect (happens in birthplace)
-- inertia sometimes explodes when character is stuck
 - transfer in a vpipe doesn't work nicely
 - recover broken overworld terrain (git history)
 - movement system uses coyote time
