@@ -76,11 +76,14 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the arms layer index
     int m_LayerArms;
 
-    /// the stored wall rotation
+    /// the stored wall tilt rotation
     Quaternion m_SurfaceTilt = Quaternion.identity;
 
-    /// the stored tilt rotation
+    /// the stored move tilt rotation
     Quaternion m_MoveTilt = Quaternion.identity;
+
+    /// the stored input tilt rotation
+    Quaternion m_InputTilt = Quaternion.identity;
 
     /// the stored last time of fixed update (for interpolation)
     float m_LastFixedUpdate = 0.0f;
@@ -243,14 +246,14 @@ public sealed class CharacterModel: MonoBehaviour {
         var surface = state.MainSurface;
 
         // get tilt against surface
-        var surfaceTiltTangent = Vector3.Cross(
+        var surfaceTiltAxis = Vector3.Cross(
             Vector3.up,
             surface.Normal
         );
 
         var surfaceTilt = Quaternion.AngleAxis(
             m_SurfaceTilt_Range.Evaluate(surface.Angle),
-            transform.InverseTransformDirection(surfaceTiltTangent)
+            transform.InverseTransformDirection(surfaceTiltAxis)
         );
 
         var nextSurfaceTilt = Quaternion.RotateTowards(
@@ -260,11 +263,11 @@ public sealed class CharacterModel: MonoBehaviour {
         );
 
         // get tilt against acceleration
-        var acceleration = transform.InverseTransformVector(c.State.Curr.PlanarAcceleration);
+        var move = transform.InverseTransformVector(c.State.Curr.PlanarAcceleration);
         var moveTiltScaleMax = c.Tuning.Surface_Acceleration.Evaluate(surface.Angle);
-        var moveTiltScale = acceleration.magnitude / moveTiltScaleMax;
+        var moveTiltScale = move.magnitude / moveTiltScaleMax;
         var moveTiltAngle = Mathf.Clamp(moveTiltScale * c.Tuning.TiltForBaseAcceleration, 0, c.Tuning.MaxTilt);
-        var moveTiltAxis = Vector3.Cross(Vector3.up, acceleration.normalized);
+        var moveTiltAxis = Vector3.Cross(Vector3.up, move.normalized);
         var moveTilt = Quaternion.AngleAxis(moveTiltAngle, moveTiltAxis.normalized);
 
         var nextMoveTilt = Quaternion.RotateTowards(
@@ -273,12 +276,32 @@ public sealed class CharacterModel: MonoBehaviour {
             m_MoveTilt_Speed * delta
         );
 
+        // get the tilt against input
+        var input = transform.InverseTransformVector(c.Inputs.Move);
+
+        var inputTiltAxis = Vector3.Cross(
+            Vector3.up,
+            input.normalized
+        );
+
+        var inputTilt = Quaternion.AngleAxis(
+            c.Tuning.Model.Tilt_InputAngle.Evaluate(input.magnitude),
+            inputTiltAxis
+        );
+
+        var nextInputTilt = Quaternion.RotateTowards(
+            m_InputTilt,
+            inputTilt,
+            c.Tuning.Model.Tilt_InputSpeed * delta
+        );
+
+        // output to character
+        transform.localRotation = nextSurfaceTilt * nextMoveTilt * nextInputTilt;
+
         // update state
         m_SurfaceTilt = nextSurfaceTilt;
         m_MoveTilt = nextMoveTilt;
-
-        // output to character
-        transform.localRotation = m_SurfaceTilt * m_MoveTilt;
+        m_InputTilt = nextInputTilt;
     }
 
     static void SetDefaultLayersRecursively(GameObject parent, int layer) {

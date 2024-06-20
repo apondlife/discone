@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 namespace ThirdPerson {
 
 [CreateAssetMenu(fileName = "CharacterTuning", menuName = "thirdperson/CharacterTuning", order = 0)]
-public sealed class CharacterTuning: ScriptableObject {
+public sealed partial class CharacterTuning: ScriptableObject {
     // -- metadata --
     [Foldout("metadata")]
     [Tooltip("a friendly description for this config")]
@@ -71,7 +71,7 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the turn speed while crouching")]
     public float Crouch_TurnSpeed;
 
-    [Tooltip("the inline input scale when crouching/sliding")]
+    [Tooltip("the inline inpucharacter model when crouching/sliding")]
     public MapOutCurve Crouch_InlineScale;
 
     [Tooltip("the cross input scale when crouching/sliding")]
