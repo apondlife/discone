@@ -270,17 +270,6 @@ public sealed partial class CharacterTuning: ScriptableObject {
     [Tooltip("the speed threshold under which the character is considered idle (squared)")]
     public float Idle_SqrSpeedThreshold;
 
-    // -- model/animation --
-    [Foldout("model / animation")]
-    [Tooltip("the angle in degrees character model tilts forward on the start up acceleration")]
-    public float TiltForBaseAcceleration;
-
-    [Tooltip("the maximum angle in degrees the character can tilt")]
-    public float MaxTilt;
-
-    [Tooltip("the smoothing on the character tilt")]
-    public float TiltSmoothing;
-
     // -- lifecycle --
     void OnValidate() {
         if (Jumps == null || Jumps.Length == 0) {
