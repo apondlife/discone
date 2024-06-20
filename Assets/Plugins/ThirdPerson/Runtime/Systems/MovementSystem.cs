@@ -47,14 +47,15 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // change to sliding if moving & crouching
-        var shouldStartMoving = ShouldStartMoving(c);
-        if (shouldStartMoving && c.State.Next.IsCrouching) {
+        if (c.State.Next.IsCrouching) {
+            // NOTE: should we worry about setting the power to max in sliding from notmoving
+            // does a crouch complete immediately on notmoving => sliding (skipping transition adsr)
             s.ChangeTo(Sliding);
             return;
         }
 
         // change to moving once moving
-        if (shouldStartMoving) {
+        if (ShouldStartMoving(c)) {
             s.ChangeTo(Moving);
             return;
         }
@@ -131,15 +132,9 @@ sealed class MovementSystem: CharacterSystem {
             return;
         }
 
-        // once speed is zero, stop moving
-        if (!ShouldStartMoving(c)) {
-            s.ChangeToImmediate(NotMoving, delta);
-            return;
-        }
-
         // once not crouching change to move/not move state
         if (!c.State.Next.IsCrouching) {
-            s.ChangeToImmediate(Moving, delta);
+            s.ChangeToImmediate(ShouldStartMoving(c) ? Moving : NotMoving, delta);
             return;
         }
 
@@ -157,7 +152,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // if the input is not in the direction of the crouch, we're braking,
         // otherwise, slide.
-        var drag = inputDotCrouch <= 0.0f
+        var drag = inputDotCrouch <= 0f
             ? c.Tuning.Crouch_NegativeDrag
             : c.Tuning.Crouch_PositiveDrag;
 
@@ -167,7 +162,7 @@ sealed class MovementSystem: CharacterSystem {
             power
         );
 
-        var kineticFriction = inputDotCrouch <= 0.0f
+        var kineticFriction = inputDotCrouch <= 0f
             ? c.Tuning.Crouch_NegativeKineticFriction
             : c.Tuning.Crouch_PositiveKineticFriction;
 
@@ -187,7 +182,11 @@ sealed class MovementSystem: CharacterSystem {
         var inputCross = c.Tuning.Crouch_CrossScale.Evaluate(inputAngle) * inputDirCross;
 
         // NOTE: should this be lerped?
-        var inputSlide = inputInline + inputCross;
+        var inputSlide = Vector3.LerpUnclamped(
+            c.Inputs.Move,
+            inputInline + inputCross,
+            power
+        );
 
         // add movement force
         var acceleration = c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle);
