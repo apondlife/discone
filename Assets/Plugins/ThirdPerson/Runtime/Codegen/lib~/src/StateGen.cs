@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System;
 
-namespace ThirdPerson.SourceGeneration {
+namespace ThirdPerson.Codegen {
     /// generates state code from the nodes discovered by `FrameSyntaxReceiver`
     [Generator]
     public class StateGenerator: ISourceGenerator {
@@ -21,20 +21,21 @@ namespace ThirdPerson.SourceGeneration {
             // generate each state type
             foreach (var (className, classes) in receiver.FrameClasses) {
                 if (!classes.Any()) {
-                    throw new Exception($"[ThirdPerson.SourceGeneration] no {className} class in this assembly");
+                    throw new Exception($"[ThirdPerson.Codegen] no {className} class in this assembly");
                 }
 
-                // find all generatable fields
+                // find all frame fields
                 var frameFields = classes
                     .SelectMany((c) => c.Members)
                     .Select((m) => m as FieldDeclarationSyntax)
-                    .Where((m) => !(m is null))
+                    .Where((m) => m != null)
                     .SelectMany((m) =>
                         m.Declaration.Variables.Select(v => ((
                             name: v.Identifier.ValueText,
                             type: m.Declaration.Type.ToString()
                         )))
-                    );
+                    )
+                    .ToArray();
 
                 // frame constructor
                 var frameCtorImpl = IntoLines(
@@ -44,9 +45,10 @@ namespace ThirdPerson.SourceGeneration {
                 );
 
                 // frame equality
-                var frameEqualsImpl = frameFields.Count() == 0 ? "true" : IntoLines(
+                var frameEqualsImpl = frameFields.Length == 0 ? "true" : IntoLines(
                     frameFields,
-                    "{0} == o.{0}", " && ",
+                    "{0} == o.{0}",
+                    " && ",
                     (f) => f.name
                 );
 
@@ -64,6 +66,7 @@ namespace ThirdPerson.SourceGeneration {
                                 {frameCtorImpl}
                             }}
 
+                            // -- IEquatable --
                             public bool Equals(Frame o) {{
                                 if (o == null) {{
                                     return false;
@@ -82,7 +85,7 @@ namespace ThirdPerson.SourceGeneration {
                 // produce the state/frame extensions
                 var filename = $"{className}.Generated.cs";
                 context.AddSource(filename, SourceText.From(stateImpl, Encoding.UTF8));
-                Console.WriteLine($"[ThirdPerson.SourceGeneration] generated: {filename}\n---\n{stateImpl}\n---");
+                Console.WriteLine($"[ThirdPerson.Codegen] generated: {filename}\n---\n{stateImpl}\n---");
             }
         }
 
