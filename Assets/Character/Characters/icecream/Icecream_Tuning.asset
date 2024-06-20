@@ -469,7 +469,7 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         m_Duration: 0.5
-      m_HoldDuration: 0.2
+      m_HoldDuration: 0.3
       m_Decay:
         m_Curve:
           serializedVersion: 2
@@ -525,7 +525,7 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         m_Duration: 0
-      m_SustainValue: 30
+      m_SustainValue: 20
       m_Release:
         m_Curve:
           serializedVersion: 2
@@ -533,25 +533,25 @@ MonoBehaviour:
           - serializedVersion: 3
             time: 0
             value: 0
-            inSlope: 0
-            outSlope: 0
+            inSlope: -0.0011668674
+            outSlope: -0.0011668674
             tangentMode: 0
-            weightedMode: 0
+            weightedMode: 2
             inWeight: 0
-            outWeight: 0
+            outWeight: 0.9492754
           - serializedVersion: 3
             time: 1
             value: 1
-            inSlope: 0
-            outSlope: 0
+            inSlope: 2.4150004
+            outSlope: 2.4150004
             tangentMode: 0
             weightedMode: 0
-            inWeight: 0
+            inWeight: 0.108695626
             outWeight: 0
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.5
+        m_Duration: 0.4
     CooldownDuration:
       Curve:
         serializedVersion: 2
@@ -588,7 +588,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 0
       Dst:
-        Min: 15
+        Min: 12
         Max: 20
     Upwards_MomentumLoss: 0.11
     Horizontal_MomentumLoss: 0
@@ -596,7 +596,7 @@ MonoBehaviour:
     Charge_Duration:
       Min: 0
       Max: 0.4
-    Charge_Lift: 0
+    Charge_Lift: 20
   - Count: 0
     m_Power:
       m_Delay: 0
@@ -673,7 +673,7 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.5
+        m_Duration: 0.2
     CooldownDuration:
       Curve:
         serializedVersion: 2
@@ -718,7 +718,7 @@ MonoBehaviour:
     Charge_Duration:
       Min: 0
       Max: 0.4
-    Charge_Lift: 30
+    Charge_Lift: 20
   Surface_InertiaDecayTime:
     Curve:
       serializedVersion: 2
@@ -1089,12 +1089,6 @@ MonoBehaviour:
   Surface_VerticalGrip_Down:
     Min: 0
     Max: 12
-  Surface_VerticalGrip_UpHold:
-    Min: 0
-    Max: 47
-  Surface_VerticalGrip_DownHold:
-    Min: 0
-    Max: 40
   Surface_UpwardsVelocityBias:
     Curve:
       serializedVersion: 2

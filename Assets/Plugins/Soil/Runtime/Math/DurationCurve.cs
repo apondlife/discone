@@ -6,6 +6,7 @@ namespace Soil {
 /// a normalized curve with a duration
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "DurationCurve")]
 [Serializable]
+[Obsolete("replace this with a MapInCurve(0, duration)")]
 public struct DurationCurve {
     // -- fields --
     [Tooltip("the curve")]

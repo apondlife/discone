@@ -231,12 +231,6 @@ public sealed class CharacterTuning: ScriptableObject {
     [Tooltip("the vertical grip on the surface while moving down")]
     public FloatRange Surface_VerticalGrip_Down;
 
-    [Tooltip("the vertical grip on the surface while moving up & holding")]
-    public FloatRange Surface_VerticalGrip_UpHold;
-
-    [Tooltip("the vertical grip on the surface while moving down & holding")]
-    public FloatRange Surface_VerticalGrip_DownHold;
-
     [Tooltip("how much upwards velocity we add to our velocity projection tangent as a fn of surface angle")]
     public MapOutCurve Surface_UpwardsVelocityBias;
 

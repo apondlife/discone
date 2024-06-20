@@ -172,18 +172,15 @@ sealed class SurfaceSystem: CharacterSystem {
         // update physics frame
         //
 
-        // add magnet/grip towards the wall so we don't let go
+        // add magnet/grip towards the wall so that we don't let go
         var force = -c.Tuning.Surface_Grip.Evaluate(currAngle) * currNormal;
 
         // TODO: add friction (is this friction?)
         // add upwards pull / surface gravity
         var gripCurve = c.Tuning.Surface_VerticalGrip_Scale;
-        var gripRange = (IsJumpPressed: c.Inputs.IsJumpPressed, c.State.Curr.Velocity.y) switch {
-            (false, >= 0) => c.Tuning.Surface_VerticalGrip_Up,
-            (false, < 0) => c.Tuning.Surface_VerticalGrip_Down,
-            (true, >= 0) => c.Tuning.Surface_VerticalGrip_UpHold,
-            (true, < 0) => c.Tuning.Surface_VerticalGrip_DownHold,
-            _ => c.Tuning.Surface_VerticalGrip_Up
+        var gripRange = c.State.Curr.Velocity.y switch {
+            < 0 => c.Tuning.Surface_VerticalGrip_Down,
+            _   => c.Tuning.Surface_VerticalGrip_Up
         };
 
         var grip = MapOutCurve.Evaluate(gripCurve, gripRange, currAngle);

@@ -38,20 +38,22 @@ sealed class JumpSystem: CharacterSystem {
         // jumping updates state that is used below
         base.Update(delta);
 
-        // always add base gravity
-        var gravity = c.Tuning.Gravity;
+        // aggregate gravity
+        var gravity = 0f;
+
+        // add base gravity
         if (c.State.Next.Velocity.y > 0f) {
-            gravity = c.Tuning.Gravity_Jump;
+            gravity += c.Tuning.Gravity_Jump;
+        } else {
+            gravity += c.Tuning.Gravity;
         }
 
-        // our current surface
-        var surface = c.State.Next.MainSurface;
-
-        // calculate and add jump gravity (adsr)
+        // calculate and add lift
+        var lift = 0f;
         var jumpElapsed = c.State.Next.Jump_Elapsed;
         var jumpReleasedAt = c.State.Next.Jump_ReleasedAt;
 
-        // add jump lift when not holding jump
+        // add jump lift when not holding jump (adsr)
         if (!c.Inputs.IsJumpPressed) {
             // if we released the jump, track release time
             if (jumpReleasedAt == AdsrCurve.NotReleased) {
@@ -60,24 +62,24 @@ sealed class JumpSystem: CharacterSystem {
 
             // add the jump adsr gravity
             var jumpTuning = c.Tuning.JumpById(c.State.Next.ActiveJump);
-            var jumpLift = jumpTuning.Lift.Evaluate(jumpElapsed, jumpReleasedAt);
-
-            // scale jump lift based on surface, if any
-            // the cached surface we're jumping off of
-            var surfaceScale = 1f;
-            if (surface.IsSome) {
-                surfaceScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(surface.Angle);
-            }
-
-            gravity += jumpLift * surfaceScale;
+            lift = jumpTuning.Lift.Evaluate(jumpElapsed, jumpReleasedAt);
         }
         // add charge lift when holding jump
-        else if (surface.IsNone) {
+        else {
             // TODO: should crouch gravity on surface go here?
             // should this be curved by surface angle
             var jumpTuning = c.Tuning.JumpById(c.State.Next.NextJump);
-            gravity += jumpTuning.Charge_Lift;
+            lift += jumpTuning.Charge_Lift;
         }
+
+        // scale lift based on surface, if any
+        var surface = c.State.Next.MainSurface;
+        var surfaceScale = 1f;
+        if (surface.IsSome) {
+            surfaceScale = c.Tuning.Surface_VerticalGrip_Scale.Evaluate(surface.Angle);
+        }
+
+        gravity += lift * surfaceScale;
 
         // track jump time
         jumpElapsed += delta;
