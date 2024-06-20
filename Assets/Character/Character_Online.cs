@@ -21,7 +21,6 @@ namespace Discone {
 // - IsInJumpSquat
 // - CoyoteTime
 // - IdleTime
-// - Tilt
 // - Events
 
 /// an online character

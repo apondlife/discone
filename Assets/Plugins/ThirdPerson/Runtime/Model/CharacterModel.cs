@@ -241,28 +241,43 @@ public sealed class CharacterModel: MonoBehaviour {
     /// tilt the model as a fn of character acceleration
     void Tilt(CharacterState.Frame state, float delta) {
         var surface = state.MainSurface;
+
+        // get tilt against surface
         var surfaceTiltTangent = Vector3.Cross(
             Vector3.up,
             surface.Normal
         );
 
-        var destSurfaceTilt = Quaternion.AngleAxis(
+        var surfaceTilt = Quaternion.AngleAxis(
             m_SurfaceTilt_Range.Evaluate(surface.Angle),
             transform.InverseTransformDirection(surfaceTiltTangent)
         );
 
-        m_SurfaceTilt = Quaternion.RotateTowards(
+        var nextSurfaceTilt = Quaternion.RotateTowards(
             m_SurfaceTilt,
-            destSurfaceTilt,
+            surfaceTilt,
             m_SurfaceTilt_Speed * delta
         );
 
-        m_MoveTilt = Quaternion.RotateTowards(
+        // get tilt against acceleration
+        var acceleration = transform.InverseTransformVector(c.State.Curr.PlanarAcceleration);
+        var moveTiltScaleMax = c.Tuning.Surface_Acceleration.Evaluate(surface.Angle);
+        var moveTiltScale = acceleration.magnitude / moveTiltScaleMax;
+        var moveTiltAngle = Mathf.Clamp(moveTiltScale * c.Tuning.TiltForBaseAcceleration, 0, c.Tuning.MaxTilt);
+        var moveTiltAxis = Vector3.Cross(Vector3.up, acceleration.normalized);
+        var moveTilt = Quaternion.AngleAxis(moveTiltAngle, moveTiltAxis.normalized);
+
+        var nextMoveTilt = Quaternion.RotateTowards(
             m_MoveTilt,
-            state.Tilt,
+            moveTilt,
             m_MoveTilt_Speed * delta
         );
 
+        // update state
+        m_SurfaceTilt = nextSurfaceTilt;
+        m_MoveTilt = nextMoveTilt;
+
+        // output to character
         transform.localRotation = m_SurfaceTilt * m_MoveTilt;
     }
 

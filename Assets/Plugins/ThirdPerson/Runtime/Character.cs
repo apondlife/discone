@@ -38,9 +38,6 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     [Tooltip("the movement system")]
     [SerializeField] MovementSystem m_Movement;
 
-    [Tooltip("the tilt system")]
-    [SerializeField] TiltSystem m_Tilt;
-
     [Tooltip("the friction system")]
     [SerializeField] FrictionSystem m_Friction;
 
@@ -109,7 +106,6 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
             m_Movement,
             // friction system depends on the next frame of forces
             m_Friction,
-            m_Tilt,
             // resolves state against the world, runs after all other systems
             m_Collision,
         };

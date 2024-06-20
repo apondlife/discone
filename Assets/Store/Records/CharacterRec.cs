@@ -13,6 +13,7 @@ public record CharacterRec {
     /// the world position
     public Vector3 P;
 
+    // TODO: store forward instead of rotation
     /// the world rotation
     public Quaternion R;
 

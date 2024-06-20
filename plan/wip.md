@@ -26,6 +26,7 @@ what is projected
 
 # crouch
 - tilt character when crouched
+- aerial crouch rotation
 - interpolate between crouch & ik legs
 - crouch ik slide
 - look into crouching sliding down ramps

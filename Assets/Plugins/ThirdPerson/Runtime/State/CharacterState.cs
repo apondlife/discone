@@ -153,9 +153,6 @@ public sealed partial class CharacterState {
         /// if the character is in jump squat
         public bool IsInJumpSquat = false;
 
-        /// how much tilted the character is
-        public Quaternion Tilt = Quaternion.identity;
-
         /// the collision surfaces
         // TODO: should we sort this by normal mag?
         public CharacterCollision[] Surfaces;
@@ -265,7 +262,7 @@ public sealed partial class CharacterState {
 
         /// the character's look rotation (facing & tilt)
         public Quaternion LookRotation {
-            get => Tilt * Quaternion.LookRotation(Forward, Up);
+            get => Quaternion.LookRotation(Forward, Up);
         }
 
         /// the velocity direction
@@ -276,6 +273,11 @@ public sealed partial class CharacterState {
         /// the velocity on the xz-plane
         public Vector3 PlanarVelocity {
             get => Velocity.XNZ();
+        }
+
+        /// the velocity on the xz-plane
+        public Vector3 PlanarAcceleration {
+            get => Acceleration.XNZ();
         }
 
         /// the velocity on the xz-plane
@@ -359,7 +361,6 @@ public sealed partial class CharacterState {
             res.Force = Vector3.Lerp(start.Force, end.Force, k);
             res.Acceleration = Vector3.Lerp(start.Acceleration, end.Acceleration, k);
             res.Forward = Vector3.Slerp(start.Forward, end.Forward, k);
-            res.Tilt = Quaternion.Slerp(start.Tilt, end.Tilt, k);
         }
     }
 

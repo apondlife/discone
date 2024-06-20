@@ -69,7 +69,7 @@ Main() {
     exit 3
   fi
 
-  if ps -x | grep -qG "$UNITY_PATH -projectpath .*[d]iscone"; then
+  if ps x | grep -qG "$UNITY_PATH -projectpath .*[d]iscone"; then
     echo "✘ unity is running! the build script can't run when unity is open"
     exit 4
   fi
