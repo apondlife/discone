@@ -150,9 +150,6 @@ public sealed partial class CharacterState {
         /// the facing direction
         public Vector3 Forward = Vector3.forward;
 
-        /// if the character is landing
-        public bool IsLanding = false;
-
         /// if the character is in jump squat
         public bool IsInJumpSquat = false;
 
@@ -187,14 +184,23 @@ public sealed partial class CharacterState {
         /// the direction of the current pivot
         public Vector3 PivotDirection = Vector3.zero;
 
-        /// the number of jumps executed since last grounded
-        public uint Jumps = 0;
+        /// the id of the next (to-execute) jump
+        public JumpId NextJump;
+
+        /// the id of the active (in-progress) jump
+        public JumpId ActiveJump;
 
         /// the buffered surface to jump from;
         public CharacterCollision JumpSurface;
 
         /// the coyote time remaining
         public float CoyoteTime = 0;
+
+        /// the time since last jump triggered
+        public float Jump_Elapsed;
+
+        /// the time jump was released at (in relation to jump press)
+        public float Jump_ReleasedAt;
 
         /// the cooldown time remaining
         public float Jump_CooldownElapsed = 0f;
