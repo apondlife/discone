@@ -17,6 +17,7 @@ mired in debt
 - transition from fixed cameras to character camera has bad rotation in in-between state
 - teleport shortcut is inconsistent
 - visuals for adsr
+- if you stop on static friction, decreasing the friction doesn't start moving the character
 
 # debt
 - need to manually enable input actions
