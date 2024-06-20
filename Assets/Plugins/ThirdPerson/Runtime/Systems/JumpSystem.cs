@@ -44,27 +44,47 @@ sealed class JumpSystem: CharacterSystem {
             gravity = c.Tuning.Gravity_Jump;
         }
 
+        // our current surface
+        var surface = c.State.Next.MainSurface;
+
         // calculate and add jump gravity (adsr)
-        var jumpId = c.State.Next.ActiveJump;
         var jumpElapsed = c.State.Next.Jump_Elapsed;
         var jumpReleasedAt = c.State.Next.Jump_ReleasedAt;
 
-        // if we released the jump, track release time
-        if (!c.Inputs.IsJumpPressed && jumpReleasedAt == AdsrCurve.NotReleased) {
-            jumpReleasedAt = jumpElapsed;
-        }
+        // add jump lift when not holding jump
+        if (!c.Inputs.IsJumpPressed) {
+            // if we released the jump, track release time
+            if (jumpReleasedAt == AdsrCurve.NotReleased) {
+                jumpReleasedAt = jumpElapsed;
+            }
 
-        // add the jump adsr gravity
-        var jumpTuning = c.Tuning.JumpById(jumpId);
-        var jumpAcceleration = jumpTuning.Lift.Evaluate(jumpElapsed, jumpReleasedAt);
-        gravity += jumpAcceleration;
+            // add the jump adsr gravity
+            var jumpTuning = c.Tuning.JumpById(c.State.Next.ActiveJump);
+            var jumpLift = jumpTuning.Lift.Evaluate(jumpElapsed, jumpReleasedAt);
+
+            // scale jump lift based on surface, if any
+            // the cached surface we're jumping off of
+            var surfaceScale = 1f;
+            if (surface.IsSome) {
+                surfaceScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(surface.Angle);
+            }
+
+            gravity += jumpLift * surfaceScale;
+        }
+        // add charge lift when holding jump
+        else if (surface.IsNone) {
+            // TODO: should crouch gravity on surface go here?
+            // should this be curved by surface angle
+            var jumpTuning = c.Tuning.JumpById(c.State.Next.NextJump);
+            gravity += jumpTuning.Charge_Lift;
+        }
 
         // track jump time
         jumpElapsed += delta;
 
         // apply gravity, update state
+        // TODO: curve gravity on jumpsquat elapsed?
         c.State.Next.Force += gravity * Vector3.up;
-        c.State.Next.ActiveJump = jumpId;
         c.State.Next.Jump_Elapsed = jumpElapsed;
         c.State.Next.Jump_ReleasedAt = jumpReleasedAt;
     }
@@ -176,14 +196,6 @@ sealed class JumpSystem: CharacterSystem {
             jumpTuning = c.Tuning.NextJump(c.State);
         }
 
-        // add lift that opposes gravity
-        if (!isOnSurface) {
-            // TODO: should crouch gravity on surface go here?
-            // should this be curved by surface angle
-            // TODO: curve on jumpsquat elapsed
-            c.State.Next.Force += jumpTuning.Charge_Lift * Vector3.up;
-        }
-
         // if this is the first jump, you might be in coyote time
         if (IsFirstJump(c)) {
             // if airborne, reduce coyote time
@@ -238,12 +250,6 @@ sealed class JumpSystem: CharacterSystem {
     }
 
     // -- commands --
-    /// reset the next surface to jump from
-    static void ResetJumpSurface(CharacterContainer c) {
-        c.State.Next.CoyoteTime = c.Tuning.CoyoteDuration;
-        c.State.Next.JumpSurface = c.State.Curr.PerceivedSurface;
-    }
-
     /// add the jump impulse for this jump index
     static void Jump(float elapsed, CharacterContainer c) {
         var jumpId = c.State.Next.NextJump;
@@ -262,7 +268,7 @@ sealed class JumpSystem: CharacterSystem {
         // scale jumps based on surface, if any
         var surfaceScale = 1f;
         if (surface.IsSome) {
-            surfaceScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(c.State.Next.JumpSurface.Angle);
+            surfaceScale = c.Tuning.Jump_SurfaceAngleScale.Evaluate(surface.Angle);
         }
 
         // cancel vertical momentum if falling. according to tuning if going up (we don't want to lose
@@ -305,7 +311,7 @@ sealed class JumpSystem: CharacterSystem {
     /// add jump cooldown, if any
     static void Cooldown(float delta, CharacterContainer c) {
         // update jump cooldown
-        var nextElapsed = c.State.Curr.Jump_CooldownElapsed;;
+        var nextElapsed = c.State.Curr.Jump_CooldownElapsed;
         var nextDuration = c.State.Curr.Jump_CooldownDuration;
 
         // if we are in cooldown
@@ -331,32 +337,45 @@ sealed class JumpSystem: CharacterSystem {
 
     /// track jump and switch to the correct jump if necessary
     static void AdvanceJumps(CharacterContainer c) {
+        var nextJump = c.State.Curr.NextJump;
+
         // cache the active jump
-        c.State.Next.ActiveJump = c.State.Curr.NextJump;
+        var activeJump = nextJump;
 
         // advance next jump
-        c.State.Next.NextJump.Count += 1;
+        nextJump.Count += 1;
 
-        var jumpTuning = c.Tuning.NextJump(c.State);
+        var jumpTuning = c.Tuning.JumpById(nextJump);
         if (jumpTuning.Count == 0) {
             return;
         }
 
         var shouldAdvanceJump = (
-            c.State.Next.NextJump.Count >= jumpTuning.Count &&
-            c.State.Next.NextJump.Index < c.Tuning.Jumps.Length - 1
+            nextJump.Count >= jumpTuning.Count &&
+            nextJump.Index < c.Tuning.Jumps.Length - 1
         );
 
         if (shouldAdvanceJump) {
-            c.State.Next.NextJump.Count = 0;
-            c.State.Next.NextJump.Index += 1;
+            nextJump.Count = 0;
+            nextJump.Index += 1;
         }
+
+        c.State.Next.ActiveJump = activeJump;
+        c.State.Next.NextJump = nextJump;
     }
 
     /// reset the jump count to its initial state
     static void ResetJumps(CharacterContainer c) {
-        c.State.Next.NextJump.Count = 0;
-        c.State.Next.NextJump.Index = 0;
+        var nextJump = c.State.Curr.NextJump;
+        nextJump.Index = 0;
+        nextJump.Count = 0;
+        c.State.Next.NextJump = nextJump;
+    }
+
+    /// reset the next surface to jump from
+    static void ResetJumpSurface(CharacterContainer c) {
+        c.State.Next.CoyoteTime = c.Tuning.CoyoteDuration;
+        c.State.Next.JumpSurface = c.State.Curr.PerceivedSurface;
     }
 
     // -- queries --

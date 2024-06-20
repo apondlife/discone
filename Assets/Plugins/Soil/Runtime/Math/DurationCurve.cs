@@ -17,6 +17,10 @@ public struct DurationCurve {
     // -- queries --
     /// evaluate the curve in the range
     public float Evaluate(float elapsed) {
+        if (m_Duration == 0f) {
+            return 1f;
+        }
+
         var k = elapsed / m_Duration;
 
         if (m_Curve != null && m_Curve.length != 0) {

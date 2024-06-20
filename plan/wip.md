@@ -19,6 +19,7 @@ what is projected
 # jump
 - tuning
 -- publish & move to #crouch
+- jump ik legs 
 - jump di? (input direction)
 - canceling some proportion of momentum in input opposing velocity (di?)
 - jump leniency on surface transfer (perception?)
@@ -26,8 +27,8 @@ what is projected
 - cooldown on surfaces (?)
 
 # crouch
-- interpolate between crouch & ik legs
 - tilt character when crouched
+- interpolate between crouch & ik legs
 - crouch ik slide
 - look into crouching sliding down ramps
 - crouch gravity (previously, fastfall, fastslide)? (per jump)
