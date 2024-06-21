@@ -26,6 +26,7 @@ what is projected
 
 # crouch
 - tilt character when crouched
+  e- fix camera dutch angle
 - aerial crouch rotation
 - interpolate between crouch & ik legs
 - crouch ik slide

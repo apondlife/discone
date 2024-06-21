@@ -90,10 +90,11 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
         // set props
         m_HeadBone = m_Animator.GetBoneTransform(HumanBodyBones.Head);
 
-        // if no headbone, this character has no head, destroy self
-        if(m_HeadBone == null) {
+        // if no head bone, this character has no head, destroy self
+        if (m_HeadBone == null) {
             Log.Model.W($"destroying head for character: {m_Animator.transform.parent.name}");
-            Destroy(this.gameObject);
+            // TODO: how to remove this from the m_Limbs array (maybe the rig can take care of that)
+            Destroy(gameObject);
             return;
         }
 
