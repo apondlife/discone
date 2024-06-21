@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,8 +7,8 @@ using U = UnityEditor.EditorGUIUtility;
 
 namespace Soil.Editor {
 
-[CustomPropertyDrawer(typeof(DynamicEase))]
-public class DynamicEaseDrawer: PropertyDrawer {
+[CustomPropertyDrawer(typeof(DynamicEase.Config))]
+public class DynamicEaseConfigDrawer: PropertyDrawer {
     // -- constants --
     /// the duration for the ease graph
     const float k_Duration = 2f;
@@ -26,7 +26,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
     static readonly Material s_Material;
 
     // -- setup --
-    static DynamicEaseDrawer() {
+    static DynamicEaseConfigDrawer() {
         var material = new Material(Shader.Find("UI/Default"));
         material.hideFlags = HideFlags.HideAndDontSave;
         material.shader.hideFlags = HideFlags.HideAndDontSave;
@@ -42,7 +42,6 @@ public class DynamicEaseDrawer: PropertyDrawer {
         var height = U.singleLineHeight;
         if (prop.isExpanded) {
             height += Theme.Gap3 + k_GraphHeight;
-            height += U.standardVerticalSpacing + U.singleLineHeight;
         }
 
         return height;
@@ -64,7 +63,6 @@ public class DynamicEaseDrawer: PropertyDrawer {
         var pF = prop.FindPropertyRelative("F");
         var pZ = prop.FindPropertyRelative("Z");
         var pR = prop.FindPropertyRelative("R");
-        var pIsDisabled = prop.FindPropertyRelative("m_IsDisabled");
 
         // draw label w/ indent
         r = rl;
@@ -84,27 +82,21 @@ public class DynamicEaseDrawer: PropertyDrawer {
         pZ.floatValue = values[1];
         pR.floatValue = values[2];
 
-        // update terms attrs
-        var (k1, k2, k3) = DynamicEase.ComputeTerms(pF.floatValue, pZ.floatValue, pR.floatValue);
-        prop.SetValue("m_K1", k1);
-        prop.SetValue("m_K2", k2);
-        prop.SetValue("m_K3", k3);
+        // recalculate config
+        var config = new DynamicEase.Config(f: values[0], z: values[1], r: values[2]);
+
+        // update attrs
+        pF.floatValue = config.F;
+        pZ.floatValue = config.Z;
+        pR.floatValue = config.R;
+
+        prop.SetValue("K1", config.K1);
+        prop.SetValue("K2", config.K2);
+        prop.SetValue("K3", config.K3);
 
         // draw graph on foldout
-        var hasValue = prop.FindValue(out DynamicEase ease);
-        if (prop.isExpanded && hasValue) {
+        if (prop.isExpanded) {
             E.indentLevel += 1;
-
-            // move to beginning of line
-            r.y = r.yMax;
-            r.x = rl.x;
-            r.width = rl.width;
-
-            // draw toggle
-            r.y += U.standardVerticalSpacing;
-            r.height = rl.height;
-
-            E.PropertyField(r, pIsDisabled);
 
             // move to beginning of line
             r.y = r.yMax;
@@ -118,7 +110,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
             r.width -= indent;
             r.height = k_GraphHeight;
 
-            DrawGraph(r, ease);
+            DrawGraph(r, config);
 
             E.indentLevel -= 1;
         }
@@ -127,9 +119,9 @@ public class DynamicEaseDrawer: PropertyDrawer {
     }
 
     /// draw the graph visualizing the dynamic ease
-    void DrawGraph(Rect r, DynamicEase ease) {
+    void DrawGraph(Rect r, DynamicEase.Config config) {
         // work with a copy of the ease to avoid changing game state
-        ease = ease.Clone();
+        var ease = new DynamicEase(config);
 
         // keep track of extents of the graph
         var range = new FloatRange(

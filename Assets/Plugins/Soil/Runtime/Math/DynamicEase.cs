@@ -35,6 +35,20 @@ public struct DynamicEase {
     /// the current velocity
     Vector3 m_Velocity;
 
+    // -- lifetime --
+    public DynamicEase(Config config) {
+        F = config.F;
+        Z = config.Z;
+        R = config.R;
+        m_K1 = config.K1;
+        m_K2 = config.K2;
+        m_K3 = config.K3;
+        m_IsDisabled = false;
+        m_Target = Vector3.zero;
+        m_Value = Vector3.zero;
+        m_Velocity = Vector3.zero;
+    }
+
     // -- commands --
     /// setup with an initial value
     public void Init(Vector3 initial) {
@@ -46,21 +60,19 @@ public struct DynamicEase {
     /// move towards the target with an estimated target velocity
     public void Update(
         float delta,
-        Vector3 target,
-        bool isAlwaysEnabled = false
+        Vector3 target
     ) {
-        Update(delta, target, targetVelocity: (target - m_Target) / delta, isAlwaysEnabled);
+        Update(delta, target, targetVelocity: (target - m_Target) / delta);
     }
 
     /// move towards the target
     public void Update(
         float delta,
         Vector3 target,
-        Vector3 targetVelocity,
-        bool isAlwaysEnabled = false
+        Vector3 targetVelocity
     ) {
         m_Target = target;
-        if (m_IsDisabled && !isAlwaysEnabled) {
+        if (m_IsDisabled) {
             m_Value = target;
             return;
         }
@@ -109,8 +121,43 @@ public struct DynamicEase {
             m_K1 = m_K1,
             m_K2 = m_K2,
             m_K3 = m_K3,
-            m_IsDisabled = m_IsDisabled,
+            m_IsDisabled = false,
         };
+    }
+
+    // -- Config --
+    [Serializable]
+    public struct Config {
+        [Tooltip("the frequency")]
+        public float F;
+
+        [Tooltip("the damping")]
+        public float Z;
+
+        [Tooltip("the responsiveness")]
+        public float R;
+
+        /// difficult math to describe, watch the video
+        [HideInInspector]
+        public float K1, K2, K3;
+
+        // -- lifetime --
+        /// compute the eigenvalue (or w/e) terms given f, z, r
+        public Config(float f, float z, float r) {
+            var pif1 = Mathf.PI * f;
+            var pif2 = pif1 * 2f;
+
+            var k1 = z / pif1;
+            var k2 = 1f / (pif2 * pif2);
+            var k3 = r * z / pif2;
+
+            F = f;
+            Z = z;
+            R = r;
+            K1 = k1;
+            K2 = k2;
+            K3 = k3;
+        }
     }
 }
 

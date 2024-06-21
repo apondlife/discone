@@ -6,6 +6,7 @@ using U = UnityEditor.EditorGUIUtility;
 
 namespace Soil.Editor {
 
+// TODO: update layout to [curve] [src] ">" [dst]
 [CustomPropertyDrawer(typeof(MapCurve))]
 public sealed class MapCurveDrawer: PropertyDrawer {
     // -- constants --
