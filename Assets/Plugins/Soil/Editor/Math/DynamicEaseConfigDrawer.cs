@@ -35,10 +35,14 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
 
     // -- props --
     /// the list of graph values
-    float[] m_Values = new float[k_Count];
+    readonly float[] m_Values = CreateBuffer();
 
     // -- PropertyDrawer --
     public override float GetPropertyHeight(SerializedProperty prop, GUIContent label) {
+        return GetPropertyHeight(prop);
+    }
+
+    public static float GetPropertyHeight(SerializedProperty prop) {
         var height = U.singleLineHeight;
         if (prop.isExpanded) {
             height += Theme.Gap3 + k_GraphHeight;
@@ -59,11 +63,6 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
         var rl = r;
         rl.height = U.singleLineHeight;
 
-        // get attrs
-        var pF = prop.FindPropertyRelative("F");
-        var pZ = prop.FindPropertyRelative("Z");
-        var pR = prop.FindPropertyRelative("R");
-
         // draw label w/ indent
         r = rl;
         prop.isExpanded = E.Foldout(r, prop.isExpanded, new GUIContent(label));
@@ -72,6 +71,41 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
         var lw = U.labelWidth + Theme.Gap1;
         r.x += lw;
         r.width -= lw;
+
+        // draw fzr fields
+        var config = DrawFzr(r, prop);
+
+        // draw graph on foldout
+        if (prop.isExpanded) {
+            E.indentLevel += 1;
+
+            // move to beginning of line
+            r.x = rl.x;
+            r.y = r.yMax + Theme.Gap3;
+            r.width = rl.width;
+
+            // draw graph
+            DrawGraph(r, config, m_Values);
+
+            E.indentLevel -= 1;
+        }
+
+        E.EndProperty();
+    }
+
+    // -- queries --
+    /// create a buffer for graph values
+    public static float[] CreateBuffer() {
+        return new float[k_Count];
+    }
+
+    // -- elements --
+    /// draw the fzr fields
+    public static DynamicEase.Config DrawFzr(Rect r, SerializedProperty prop) {
+        // get attrs
+        var pF = prop.FindPropertyRelative("F");
+        var pZ = prop.FindPropertyRelative("Z");
+        var pR = prop.FindPropertyRelative("R");
 
         // draw fzr fields
         var labels = new GUIContent[] { new(pF.name), new(pZ.name), new(pR.name) };
@@ -94,32 +128,16 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
         prop.SetValue("K2", config.K2);
         prop.SetValue("K3", config.K3);
 
-        // draw graph on foldout
-        if (prop.isExpanded) {
-            E.indentLevel += 1;
-
-            // move to beginning of line
-            r.y = r.yMax;
-            r.x = rl.x;
-            r.width = rl.width;
-
-            // draw graph
-            var indent = Theme.Gap_Indent * E.indentLevel;
-            r.x += indent;
-            r.y += Theme.Gap3;
-            r.width -= indent;
-            r.height = k_GraphHeight;
-
-            DrawGraph(r, config);
-
-            E.indentLevel -= 1;
-        }
-
-        E.EndProperty();
+        return config;
     }
 
     /// draw the graph visualizing the dynamic ease
-    void DrawGraph(Rect r, DynamicEase.Config config) {
+    public static void DrawGraph(Rect r, DynamicEase.Config config, float[] values) {
+        var indent = Theme.Gap_Indent * E.indentLevel;
+        r.x += indent;
+        r.width -= indent;
+        r.height = k_GraphHeight;
+
         // work with a copy of the ease to avoid changing game state
         var ease = new DynamicEase(config);
 
@@ -143,7 +161,7 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
                 range.Max = value;
             }
 
-            m_Values[i] = ease.Value.y;
+            values[i] = ease.Value.y;
         }
 
         // start drawing into a render texture
@@ -191,7 +209,7 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
         GL.Color(Color.Cyan);
 
         for (var i = 0; i < k_Count; i++) {
-            var value = m_Values[i];
+            var value = values[i];
             GL.Vertex(new Vector3(
                 x: filter(i * k_Delta * texture.width),
                 y: filter(range.InverseLerp(value) * texture.height),
