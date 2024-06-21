@@ -149,6 +149,11 @@ public class Camera: MonoBehaviour, CameraContainer {
         m_State.Override(frame);
     }
 
+    /// toggle the virtual camera for this character
+    public void Toggle(bool isEnabled) {
+        gameObject.SetActive(isEnabled);
+    }
+
     // -- queries --
     public void SetInvertX(bool value) {
         m_Tuning.IsInvertedX = value;

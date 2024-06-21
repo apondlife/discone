@@ -95,7 +95,7 @@ public class AtomGen: ISourceGenerator {
 
             namespace Discone {{
 
-            static class AtomExt {{
+            static partial class AtomExt {{
                 {addImpl}
                 {getComponentImpl}
                 {debugImpl}

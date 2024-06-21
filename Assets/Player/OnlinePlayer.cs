@@ -260,14 +260,14 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     void Target_SwitchCharacter(NetworkConnection _, GameObject dst) {
         // if the player exists
         var player = m_LocalPlayer.GetComponent<Player>();
-        if (player == null || !player.enabled) {
+        if (!player || !player.enabled) {
             Log.Player.Fatal($"missing player!");
             return;
         }
 
         // and the character exists
         var character = dst.GetComponent<Character>();
-        if (character == null || !character.enabled) {
+        if (!character || !character.enabled) {
             Log.Player.Fatal($"missing character!");
             return;
         }

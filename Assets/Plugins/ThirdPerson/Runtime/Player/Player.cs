@@ -1,3 +1,4 @@
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,6 +21,11 @@ public class Player: Player<CharacterInputFrame.Default> {
 /// the player
 public abstract class Player<InputFrame>: MonoBehaviour, PlayerContainer
     where InputFrame: CharacterInputFrame {
+
+    // -- cfg --
+    [Header("cfg")]
+    [Tooltip("if this player toggles its camera on drive")]
+    [SerializeField] bool m_IsCameraOwner = true;
 
     // -- state --
     [Header("state")]
@@ -66,13 +72,21 @@ public abstract class Player<InputFrame>: MonoBehaviour, PlayerContainer
     public void Drive(Character<InputFrame> character) {
         var src = m_Character;
         if (src) {
-            src.Drive(null);
+            src.Release();
+            if (m_IsCameraOwner) {
+                src.Camera.Toggle(false);
+            }
+
             m_OnDriveStop?.Invoke(src);
         }
 
         var dst = character;
         if (dst) {
             dst.Drive(InputSource);
+            if (m_IsCameraOwner) {
+                dst.Camera.Toggle(true);
+            }
+
             m_OnDriveStart?.Invoke(dst);
         }
 

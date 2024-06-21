@@ -35,6 +35,9 @@ public sealed class Player: Player<InputFrame> {
     [Tooltip("if the player is closing their eyes (aspirational)")]
     [SerializeField] BoolVariable m_IsClosingEyes;
 
+    [Tooltip("the player camera, if this player has the camera")]
+    [SerializeField] GameObject m_PlayerCamera;
+
     // -- input --
     [Header("input")]
     [Tooltip("the currently controlled character")]
@@ -98,6 +101,12 @@ public sealed class Player: Player<InputFrame> {
         m_InputSource.Init(inputActionAsset, look);
     }
 
+    /// give the camera to another player
+    public void GiveCamera(Player player) {
+        m_PlayerCamera = player.m_PlayerCamera;
+        player.m_PlayerCamera = null;
+    }
+
     // -- queries --
     /// the character
     public Character Character {
@@ -120,6 +129,19 @@ public sealed class Player: Player<InputFrame> {
         // set ready on first drive
         if (!m_IsReady.Value) {
             m_IsReady.Value = true;
+        }
+
+        // if we own the camera, toggle the character's virtual camera
+        if (m_PlayerCamera) {
+            var prev = characters.Next();
+            if (prev) {
+                prev.Camera.Toggle(false);
+            }
+
+            var next = characters.Prev();
+            if (next) {
+                next.Camera.Toggle(true);
+            }
         }
     }
 

@@ -178,7 +178,11 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     /// drive the character with a new input source
     public void Drive(CharacterInputSource<InputFrame> source) {
         m_Input.Drive(source);
-        m_Camera.gameObject.SetActive(source != null);
+    }
+
+    /// release the current input source, if any
+    public void Release() {
+        m_Input.Drive(null);
     }
 
     /// force the current frame's state
