@@ -261,8 +261,8 @@ MonoBehaviour:
   - {x: 0, y: 1}
   - {x: 1, y: 1}
   - {x: 1, y: 0}
-  - {x: -0.67552054, y: 0}
-  - {x: -0.67552054, y: 1}
+  - {x: -0.6755204, y: 0}
+  - {x: -0.6755204, y: 1}
   - {x: 1.7738925, y: 1.000007}
   - {x: 1.7738925, y: 0.0000069737434}
   m_Textures2: []
@@ -288,10 +288,10 @@ MonoBehaviour:
   - {x: -0.09866805, y: -0.0000028468644, z: -0.9951204, w: -1}
   - {x: -0.09866805, y: -0.0000028468644, z: -0.9951204, w: -1}
   - {x: -0.09866805, y: -0.0000028468644, z: -0.9951204, w: -1}
-  - {x: 0.09878941, y: 0, z: 0.99510837, w: -1}
-  - {x: 0.098789416, y: 0, z: 0.99510837, w: -1}
-  - {x: 0.09878941, y: 0, z: 0.99510837, w: -1}
-  - {x: 0.09878941, y: 0, z: 0.9951084, w: -1}
+  - {x: 0.098789416, y: 0, z: 0.9951084, w: -1}
+  - {x: 0.098789416, y: 0, z: 0.9951084, w: -1}
+  - {x: 0.098789416, y: 0, z: 0.9951084, w: -1}
+  - {x: 0.098789416, y: 0, z: 0.9951084, w: -1}
   m_Colors: []
   m_UnwrapParameters:
     m_HardAngle: 88
@@ -1008,22 +1008,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28ab1b0a05e14b55a55aa3179227fbdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Region:
-    Name: 
-    IsSignSkippedOnFirstEnter: 0
-    MusicString: 
-    Sky:
-      Foreground: {r: 0, g: 0, b: 0, a: 1}
-      ForegroundExposure: 0
-      Background: {r: 0, g: 0, b: 0, a: 1}
-      BackgroundExposure: 0
-    Fog:
-      Color: {r: 0, g: 0, b: 0, a: 0}
-      StartDistance: 0
-      EndDistance: 0
-      HeightColor: {r: 0, g: 0, b: 0, a: 0}
-      HeightMin: 0
-      HeightDensity: 0
   m_StartFlowerPos: {fileID: 1823493061}
   m_StartCamera: {fileID: 7228041983209929687}
   m_Steps:
@@ -1079,8 +1063,8 @@ MonoBehaviour:
   m_Mechanic_StartNode: Intro_Skip
   m_Mechanic_Switch: {fileID: 11400000, guid: 1b187946f60fc4bd99cf87869a65fbac, type: 2}
   m_Mechanic_Jump: {fileID: 11400000, guid: 24238e53c72c14c908cd529b69ca0357, type: 2}
-  m_GameStep_Started: {fileID: 11400000, guid: 3760c6febd3544659a8cb4427e49df07, type: 2}
   m_DreamEnded: {fileID: 11400000, guid: a74cf379fa3594ddba7c29efb14fd39c, type: 2}
+  m_GameStep_Started: {fileID: 11400000, guid: 3760c6febd3544659a8cb4427e49df07, type: 2}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
   m_IsEyelidClosed:
     _usage: 2
@@ -1088,7 +1072,6 @@ MonoBehaviour:
     _constant: {fileID: 0}
     _variable: {fileID: 11400000, guid: ee522cff7af66406baf56773c7733591, type: 2}
     _variableInstancer: {fileID: 0}
-  m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
 --- !u!1 &6257572251386793448
 GameObject:
   m_ObjectHideFlags: 0
@@ -1531,7 +1514,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7283865308737548265}
   m_LocalRotation: {x: 0, y: -0.0021118436, z: 0, w: 0.9999978}
-  m_LocalPosition: {x: -2.07, y: 4.4, z: 27.48}
+  m_LocalPosition: {x: -2.07, y: 3, z: 26.33}
   m_LocalScale: {x: 3, y: 3, z: 3.9369}
   m_ConstrainProportionsScale: 0
   m_Children:

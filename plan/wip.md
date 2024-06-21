@@ -26,7 +26,9 @@ what is projected
 
 # crouch
 - tilt character when crouched
-  e- fix camera dutch angle
+  - extract dynamic ease tuning
+  - fix camera dutch angle
+  - share state interpolation
 - aerial crouch rotation
 - interpolate between crouch & ik legs
 - crouch ik slide
@@ -36,6 +38,9 @@ what is projected
 
 # pivot
 - make pivot faster (or at least be able to do so)
+
+# dream 
+- platform to jump through (for max jump)
 
 # flower
 - flower disabling zones
