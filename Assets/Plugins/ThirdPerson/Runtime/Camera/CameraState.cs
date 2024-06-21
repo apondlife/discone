@@ -215,14 +215,17 @@ public sealed partial class CameraState {
         /// the camera's field of view
         public float Fov;
 
-        /// the camera's dutch angle
-        public float Dutch;
-
         /// if the camera is in free look mode
         public bool IsFreeLook;
 
         /// if the camera is colliding with something
         public bool IsColliding;
+
+        /// the tilt (dutch) angle
+        public float Tilt;
+
+        /// the tilt (dutch) angle speed
+        public float TiltSpeed;
 
         // -- lifetime --
         /// create an empty frame

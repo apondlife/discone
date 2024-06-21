@@ -96,7 +96,7 @@ public class Camera: MonoBehaviour, CameraContainer {
 
         // set camera lens props
         m_Camera.m_Lens.FieldOfView = m_State.Next.Fov;
-        m_Camera.m_Lens.Dutch = m_State.Next.Dutch;
+        m_Camera.m_Lens.Dutch = m_State.Next.Tilt;
 
         // set camera clip shader props
         Shader.SetGlobalVector(
@@ -127,7 +127,7 @@ public class Camera: MonoBehaviour, CameraContainer {
 
         // set camera lens properties
         m_Camera.m_Lens.FieldOfView = m_State.Next.Fov;
-        m_Camera.m_Lens.Dutch = m_State.Next.Dutch;
+        m_Camera.m_Lens.Dutch = m_State.Next.Tilt;
 
         // set camera clip shader props
         Shader.SetGlobalVector(

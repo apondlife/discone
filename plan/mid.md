@@ -18,6 +18,8 @@ mired in debt
 - teleport shortcut is inconsistent
 - visuals for adsr
 - if you stop on static friction, decreasing the friction doesn't start moving the character
+- should forcestate set curr?
+- model should always use Next (or some interpolated version)
 
 # debt
 - need to manually enable input actions
@@ -27,3 +29,4 @@ mired in debt
 - rename character* to model* (generally reconsider 3p namespaces)
 - compiling stuff out in debug/development (but still want it for testing maybe)
 - add code generation for equatable (jumpid, charactercollision)
+- share state interpolation

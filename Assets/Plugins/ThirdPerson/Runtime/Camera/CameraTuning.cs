@@ -146,12 +146,12 @@ public sealed class CameraTuning: ScriptableObject {
     public AnimationCurve Recenter_YawCurve;
 
     // -- tilt/dutch --
-    [Header("tilt/dutch")]
-    [Tooltip("the camera dutch angle (around z-axis) scale applied to the camera's target's rotation")]
-    public float DutchScale;
-
+    [Header("tilt (dutch)")]
     [Tooltip("the smoothing on the camera dutch angle (around z-axis)")]
-    public float DutchSmoothing;
+    public float Tilt_Duration;
+
+    [Tooltip("the camera dutch angle as a fn of acceleration")]
+    public MapCurve Tilt_AccelerationAngle;
 
     // -- lifecycle --
     void OnValidate() {

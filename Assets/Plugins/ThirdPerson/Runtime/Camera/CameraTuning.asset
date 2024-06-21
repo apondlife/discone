@@ -138,7 +138,7 @@ MonoBehaviour:
   DollyTargetMaxSpeed: 40
   MaxRadius: 18
   Fov:
-    m_Curve:
+    Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -180,9 +180,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 69
-    m_Max: 75
-    m_Dst:
+    Dst:
       Min: 69
       Max: 75
   FovTargetMinSpeed: 5
@@ -237,7 +235,7 @@ MonoBehaviour:
     m_Bits: 385
   Collision_ClipTolerance: 4
   Collision_ClipToleranceByNormal:
-    m_Curve:
+    Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -270,14 +268,13 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Min: 0
-    m_Max: 1000
-    m_Dst:
+    Dst:
       Min: 0
       Max: 1000
   Collision_ClipCooldown: 0.1
   Collision_ClipDamping:
-    m_Sustain: 0.9
+    m_Delay: 0
+    m_AttackValue: 0
     m_Attack:
       m_Curve:
         serializedVersion: 2
@@ -286,6 +283,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       m_Duration: 0
+    m_HoldDuration: 0
     m_Decay:
       m_Curve:
         serializedVersion: 2
@@ -303,6 +301,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       m_Duration: 0
+    m_SustainValue: 0
     m_Release:
       m_Curve:
         serializedVersion: 2
@@ -366,5 +365,17 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  DutchScale: 0.2
-  DutchSmoothing: 0.2
+  Tilt_Duration: 0.2
+  Tilt_AccelerationAngle:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Src:
+      Min: 0
+      Max: 20
+    Dst:
+      Min: 0
+      Max: 10

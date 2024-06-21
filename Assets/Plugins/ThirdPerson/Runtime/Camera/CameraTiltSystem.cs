@@ -13,28 +13,24 @@ sealed class CameraTiltSystem: SimpleSystem<CameraContainer> {
 
     // -- Tracking --
     static readonly Phase<CameraContainer> Tilting = new("Tilting",
-        update: (delta, _, c) => {
-            // // get angle between tilt up and camera up
-            // var tilt = Vector3.SignedAngle(
-            //     c.State.Next.Up,
-            //     Vector3.ProjectOnPlane(c.State.Character.Next.Tilt * Vector3.up, c.State.Next.Forward),
-            //     c.State.Next.Forward
-            // );
-            //
-            // // map angle from [0, 360] to [-180, 180]
-            // if (tilt > 180.0f) {
-            //     tilt -= 360.0f;
-            // }
-            //
-            // // TODO: smoothing with a finite end time (tween)
-            // c.State.Next.Dutch = Mathf.LerpAngle(
-            //     c.State.Next.Dutch,
-            //     tilt * c.Tuning.DutchScale,
-            //     c.Tuning.DutchSmoothing
-            // );
-        }
+        update: Tilting_Update
     );
 
+    static void Tilting_Update(float delta, System<CameraContainer> _, CameraContainer c) {
+        var cameraRight = Vector3.Cross(c.State.Next.Forward, c.State.Next.Up);
+
+        var acceleration = c.State.Character.Next.Acceleration;
+        var accelerationCross = Vector3.Dot(acceleration, cameraRight);
+        var accelerationAngle = Mathf.Sign(accelerationCross) * c.Tuning.Tilt_AccelerationAngle.Evaluate(Mathf.Abs(accelerationCross));
+
+        // TODO: DynamicEase?
+        c.State.Next.Tilt = Mathf.SmoothDampAngle(
+            c.State.Curr.Tilt,
+            accelerationAngle,
+            ref c.State.Curr.TiltSpeed,
+            c.Tuning.Tilt_Duration
+        );
+    }
 }
 
 }

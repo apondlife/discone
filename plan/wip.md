@@ -25,10 +25,8 @@ what is projected
 - cooldown on surfaces (?)
 
 # crouch
-- tilt character when crouched
+- crouch dynamic ease
   - extract dynamic ease tuning
-  - fix camera dutch angle
-  - share state interpolation
 - aerial crouch rotation
 - interpolate between crouch & ik legs
 - crouch ik slide
@@ -57,9 +55,6 @@ what is projected
 - make fields readonly
 
 # others
-- wall gravity doesn't take yoshiing/regrabbing into account
-- falling while holding jump (no jump squat) doesn't trigger fall gravity
-
 - checkpoint system and state overhaul
 - disable all colliders in character on load (how to do this in a nice way)
   - hairbones: since they get detached from the the body, they need to respond to some sort of event (the hair container could listen to)
