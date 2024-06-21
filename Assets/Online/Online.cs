@@ -132,7 +132,7 @@ public class Online: NetworkManager {
             Log.Online.I($"connected as host client");
         }
 
-        CreatePlayer();
+        CreatePlayer(isFirst: true);
     }
 
     /// [Client]
@@ -296,8 +296,11 @@ public class Online: NetworkManager {
     }
 
     // create player
-    void CreatePlayer() {
-        var message = new CreatePlayerMessage();
+    void CreatePlayer(bool isFirst) {
+        var message = new CreatePlayerMessage() {
+            IsFirst = isFirst
+        };
+
         NetworkClient.Send(message);
     }
 
@@ -335,14 +338,18 @@ public class Online: NetworkManager {
     [Server]
     void Server_OnCreatePlayer(
         NetworkConnectionToClient conn,
-        CreatePlayerMessage _,
+        CreatePlayerMessage msg,
         int channelId
     ) {
         var t = GetStartPosition();
         Log.Online.I($"on create player @ {t.name} <id={conn.connectionId} addr={conn.address} ch={channelId}>");
 
         var player = Instantiate(playerPrefab, t.position, t.rotation);
-        NetworkServer.AddPlayerForConnection(conn, player);
+        if (msg.IsFirst) {
+            NetworkServer.AddPlayerForConnection(conn, player);
+        } else {
+            NetworkServer.Spawn(player, conn);
+        }
     }
 
     /// when the player presses "connect"
@@ -387,11 +394,12 @@ public class Online: NetworkManager {
     /// creates a new player from the client
     [Client]
     void Client_OnCreatePlayer() {
-        CreatePlayer();
+        CreatePlayer(isFirst: false);
     }
 }
 
 public struct CreatePlayerMessage: NetworkMessage {
+    public bool IsFirst;
 }
 
 }

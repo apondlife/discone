@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Mirror;
 using UnityAtoms;
@@ -80,6 +81,9 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         #endif
 
         m_PlayerCount.Value += 1;
+    }
+
+    public void Start() {
         m_Connected.Raise(this);
     }
 
@@ -94,6 +98,20 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         m_Disconnected.Raise(this);
 
         m_Subscriptions.Dispose();
+    }
+
+    // -- commands --
+    /// spawn a character for this player
+    public void Spawn(bool isInitial = false) {
+        var onLoadFinished = (Action)(isInitial ? OnInitialLoadFinished : OnLoadFinished);
+
+        // TODO: loading screen?
+        if (m_IsHost) {
+            // replay buffer should make sure this gets called again every time
+            m_Subscriptions.Add(m_Store.LoadFinished, onLoadFinished);
+        } else {
+            onLoadFinished();
+        }
     }
 
     // -- l/mirror
@@ -111,13 +129,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             Destroy(target);
         }
 
-        // TODO: loading screen?
-        if (m_IsHost) {
-            // replay buffer should make sure this gets called again every time
-            m_Subscriptions.Add(m_Store.LoadFinished, OnLoadFinished);
-        } else {
-            OnLoadFinished();
-        }
+        // spawn the initial character
+        Spawn(isInitial: true);
 
         // dispatch events
         m_CurrentStarted.Raise(this);
@@ -142,12 +155,12 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         );
 
         // spawn a new character
-        Command_DriveSpawnedCharacter(character);
+        Command_SpawnCharacter(character);
     }
 
     /// when the requests to instantiate its previous character
     [Command]
-    void Command_DriveSpawnedCharacter(CharacterRec record) {
+    void Command_SpawnCharacter(CharacterRec record) {
         var newCharacter = Character_Spawn.Server_Create(
             record,
             connectionToClient.connectionId.ToString()
@@ -306,20 +319,26 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         Command_DriveCharacter(character);
     }
 
-    void OnLoadFinished() {
+    /// spawn initial player when store finishes loading
+    void OnInitialLoadFinished() {
         // get the stored charater
         var character = m_Store.PlayerCharacter;
 
         // spawn the character, if any
         if (character != null) {
             Log.Player.I($"spawn character {character.Key.Name()} @ {character.Pos}");
-            Command_DriveSpawnedCharacter(character);
+            Command_SpawnCharacter(character);
         }
         // if there's no record, drive an initial character
         else {
-            Log.Player.I($"drive random character");
-            SpawnCharacterAtPoint(m_InitialCharacterKey, transform);
+            OnLoadFinished();
         }
+    }
+
+    /// spawn player when store finishes loading
+    void OnLoadFinished() {
+        Log.Player.I($"drive random character");
+        SpawnCharacterAtPoint(m_InitialCharacterKey, transform);
     }
 
     // -- e/server
