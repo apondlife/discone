@@ -2,7 +2,6 @@ mired in debt
 ---
 
 # bugs/problems
-- going back to bubble offsets model position
 - **ICE CREAMS HEAD IS FUCKEE+D***=
 - icecream can stand on the curve of the capsule
 - inertia sometimes explodes when character is stuck

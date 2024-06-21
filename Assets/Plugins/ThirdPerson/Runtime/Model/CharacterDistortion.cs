@@ -114,7 +114,7 @@ sealed class CharacterDistortion: MonoBehaviour {
         foreach (var material in m_Materials) {
             material.SetVector(
                 ShaderProps.Character_Pos,
-                c.State.Curr.Position
+                c.State.Next.Position
             );
 
             material.SetVector(
