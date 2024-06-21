@@ -48,7 +48,7 @@ class DisconeOverlay : IMGUIOverlay
 
         // find current character
         var character = entities?
-            .Players
+            .OnlinePlayers
             .Current?
             .Character;
 

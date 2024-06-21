@@ -67,7 +67,7 @@ public sealed class WorldChunks: MonoBehaviour {
     #endif
 
     void FixedUpdate() {
-        var players = m_Entities.Value.Players
+        var players = m_Entities.Value.OnlinePlayers
             .FindCullers();
 
         foreach (var player in players) {

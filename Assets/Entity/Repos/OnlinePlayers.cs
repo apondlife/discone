@@ -1,3 +1,4 @@
+using System;
 using Mirror;
 using System.Collections.Generic;
 using UnityAtoms;
@@ -6,12 +7,12 @@ using UnityEngine;
 
 namespace Discone {
 
-/// a repository of players
-public sealed class Players: MonoBehaviour {
+/// a repository of online players
+public sealed class OnlinePlayers: MonoBehaviour {
     // -- state --
     [Header("state")]
     [Tooltip("the map of players keyed by net id")]
-    [SerializeField] List<OnlinePlayer> m_All = new List<OnlinePlayer>();
+    [SerializeField] List<OnlinePlayer> m_All = new();
 
     // -- subscribed --
     [Header("subscribed")]
@@ -31,10 +32,10 @@ public sealed class Players: MonoBehaviour {
 
     // -- props --
     /// the current (local) player
-    OnlinePlayer[] m_Current = new OnlinePlayer[0];
+    OnlinePlayer[] m_Current = Array.Empty<OnlinePlayer>();
 
     /// the subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Start() {

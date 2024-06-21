@@ -15,6 +15,8 @@ public class AiInputSource: PlayerInputSource<InputFrame> {
     [SerializeField] float m_JumpProbability = 0.001f;
 
     // -- CharacterInputSource --
+    protected override Transform Look { get; }
+
     public override bool IsEnabled {
         get => true;
     }

@@ -3,7 +3,7 @@ using UnityEngine;
 using Discone;
 
 /// the entities in the world
-[RequireComponent(typeof(Players))]
+[RequireComponent(typeof(OnlinePlayers))]
 [RequireComponent(typeof(Characters))]
 [RequireComponent(typeof(Flowers))]
 [RequireComponent(typeof(EntityPerception))]
@@ -19,7 +19,7 @@ public sealed class Entities: MonoBehaviour {
 
     // -- p/repos
     /// the players repo
-    Players m_Players;
+    OnlinePlayers m_OnlinePlayers;
 
     /// the characters repo
     Characters m_Characters;
@@ -31,7 +31,7 @@ public sealed class Entities: MonoBehaviour {
     void Awake() {
         // set props
         m_Perception = GetComponent<EntityPerception>();
-        m_Players = GetComponent<Players>();
+        m_OnlinePlayers = GetComponent<OnlinePlayers>();
         m_Characters = GetComponent<Characters>();
         m_Flowers = GetComponent<Flowers>();
 
@@ -46,8 +46,8 @@ public sealed class Entities: MonoBehaviour {
 
     // -- queries --
     /// the players repo
-    public Players Players {
-        get => m_Players;
+    public OnlinePlayers OnlinePlayers {
+        get => m_OnlinePlayers;
     }
 
     /// the characters repo

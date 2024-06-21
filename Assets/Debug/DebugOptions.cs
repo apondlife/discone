@@ -103,7 +103,7 @@ public class DebugOptions: MonoBehaviour {
     void SpawnCharacterAtTransform(Transform t) {
         // find the current player
         var player = m_Entities.Value
-            .Players
+            .OnlinePlayers
             .Current;
 
         if (player == null) {

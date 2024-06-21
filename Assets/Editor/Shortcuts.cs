@@ -53,7 +53,7 @@ public sealed class Shortcuts: EditorWindow {
 
         // find current character
         var character = entities?
-            .Players
+            .OnlinePlayers
             .Current?
             .Character;
 

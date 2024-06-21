@@ -16,7 +16,7 @@ sealed class PlayerCamera: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         c = GetComponentInParent<PlayerContainer>();
-        m_Brain.m_CameraActivatedEvent.AddListener(OnCameraActivated);
+        // m_Brain.m_CameraActivatedEvent.AddListener(OnCameraActivated);
     }
 
     // Update is called once per frame
@@ -34,6 +34,7 @@ sealed class PlayerCamera: MonoBehaviour {
 
         // if switching to the source camera, move camera to position of the
         // previous virtual camera
+        // AAA: figure this out
         var pos = m_Brain.OutputCamera.transform.position;
         cam.MoveTo(pos);
     }

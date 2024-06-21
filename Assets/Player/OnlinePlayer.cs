@@ -76,7 +76,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         m_Coord = GetComponent<WorldCoord>();
 
         #if UNITY_EDITOR
-        Dbg.AddToParent("Players", this);
+        Dbg.AddToParent("Players_Online", this);
         #endif
 
         m_PlayerCount.Value += 1;
@@ -147,7 +147,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     /// when the requests to instantiate its previous character
     [Command]
-    public void Command_DriveSpawnedCharacter(CharacterRec record) {
+    void Command_DriveSpawnedCharacter(CharacterRec record) {
         var newCharacter = Character_Spawn.Server_Create(
             record,
             connectionToClient.connectionId.ToString()

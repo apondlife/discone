@@ -2,7 +2,6 @@ using kcp2k;
 using Mirror;
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
-using UnityEngine.Serialization;
 
 namespace Discone {
 
@@ -20,12 +19,9 @@ public class Online: NetworkManager {
     // -- state --
     [Header("state")]
     [Tooltip("the server address to connect to")]
-    [FormerlySerializedAs("m_ServerAddres")]
-    [FormerlySerializedAs("m_HostAddress")]
     [SerializeField] StringReference m_ServerAddress;
 
     [Tooltip("if this is running as server")]
-    [FormerlySerializedAs("m_IsHost")]
     [SerializeField] BoolVariable m_IsServer;
 
     // -- config --
@@ -42,17 +38,17 @@ public class Online: NetworkManager {
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("a message to start the client")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_StartClient")]
     [SerializeField] VoidEvent m_StartClient;
 
     [Tooltip("a message to disconnect the client")]
-    [UnityEngine.Serialization.FormerlySerializedAs("m_DisconnectEvent")]
     [SerializeField] VoidEvent m_DisconnectClient;
+
+    [Tooltip("creates a new online player")]
+    [SerializeField] VoidEvent m_Online_CreatePlayer;
 
     // -- published --
     [Header("published")]
     [Tooltip("a message to show an error")]
-    [FormerlySerializedAs("m_ErrorEvent")]
     [SerializeField] StringEvent m_ShowError;
 
     [Tooltip("an event after the server starts")]
@@ -86,7 +82,8 @@ public class Online: NetworkManager {
         // bind atom events
         m_Subscriptions
             .Add(m_StartClient, OnTryStartClient)
-            .Add(m_DisconnectClient, OnTryDisconnect);
+            .Add(m_DisconnectClient, OnTryDisconnect)
+            .Add(m_Online_CreatePlayer, Client_OnCreatePlayer);
 
         // feedback when you do things you don't want to
         #if UNITY_EDITOR && UNITY_SERVER
@@ -135,9 +132,7 @@ public class Online: NetworkManager {
             Log.Online.I($"connected as host client");
         }
 
-        // create player
-        var message = new CreatePlayerMessage();
-        NetworkClient.Send(message);
+        CreatePlayer();
     }
 
     /// [Client]
@@ -300,6 +295,12 @@ public class Online: NetworkManager {
         ResetStatics();
     }
 
+    // create player
+    void CreatePlayer() {
+        var message = new CreatePlayerMessage();
+        NetworkClient.Send(message);
+    }
+
     // -- queries --
     /// .
     bool IsServerActive {
@@ -381,6 +382,12 @@ public class Online: NetworkManager {
 
         // stop client, which should start up a new host
         StopClient();
+    }
+
+    /// creates a new player from the client
+    [Client]
+    void Client_OnCreatePlayer() {
+        CreatePlayer();
     }
 }
 

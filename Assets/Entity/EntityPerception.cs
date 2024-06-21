@@ -36,7 +36,7 @@ sealed class EntityPerception: MonoBehaviour {
     /// recalculate and cull out-of-range entities
     public void Run(Entities entities) {
         // get repos
-        var players = entities.Players;
+        var players = entities.OnlinePlayers;
         var characters = entities.Characters;
 
         // if we don't have a player character, there's nothing to perceive

@@ -33,6 +33,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Load",
+                    "type": "Button",
+                    "id": "391ae238-b7ec-4c46-b125-b2734b10d182",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Restart",
                     "type": "Button",
                     "id": "673093c8-f4a0-4ee8-b93a-a6492b4d08f0",
@@ -54,15 +63,6 @@
                     "name": "ToggleMenu",
                     "type": "Button",
                     "id": "f278d584-2daf-4e29-8a22-84608a1e1e96",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "LoadCheckpoint",
-                    "type": "Button",
-                    "id": "391ae238-b7ec-4c46-b125-b2734b10d182",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -605,7 +605,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "LoadCheckpoint",
+                    "action": "Load",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -616,7 +616,7 @@
                     "interactions": "Hold",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "LoadCheckpoint",
+                    "action": "Load",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -627,7 +627,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "LoadCheckpoint",
+                    "action": "Load",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -638,7 +638,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "LoadCheckpoint",
+                    "action": "Load",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -649,7 +649,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "LoadCheckpoint",
+                    "action": "Load",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

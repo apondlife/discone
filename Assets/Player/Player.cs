@@ -2,6 +2,7 @@ using ThirdPerson;
 using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
+using UnityEngine.InputSystem;
 
 namespace Discone {
 
@@ -59,8 +60,10 @@ public sealed class Player: Player<InputFrame> {
         // bind events
         m_Subscriptions
             .Add(m_CurrentCharacter.ChangedWithHistory, OnDriveCharacter)
-            .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged)
-            .Add(m_Store.LoadFinished, OnStoreLoadFinished);
+            .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
+
+        // AAA: don't do this, create an input actions type of some kind
+        m_InputSource.Bind(m_InputSource);
     }
 
     protected override void Update() {
@@ -90,6 +93,11 @@ public sealed class Player: Player<InputFrame> {
         m_Subscriptions.Dispose();
     }
 
+    // -- commands --
+    public void Bind(InputActionAsset inputActionAsset, Transform look) {
+        m_InputSource.Init(inputActionAsset, look);
+    }
+
     // -- queries --
     /// the character
     public Character Character {
@@ -107,15 +115,6 @@ public sealed class Player: Player<InputFrame> {
     }
 
     // -- events --
-    /// when the store loads
-    void OnStoreLoadFinished() {
-        // TODO: implement this
-        // if the store has a player & character, spawn that character remotely
-        // --> drive that character
-        // otherwise, find the first available character (OnlinePlayer.DriveInitialCharacter)
-        // --> drive that character
-    }
-
     /// when the player starts driving a character
     void OnDriveCharacter(DisconeCharacterPair characters) {
         // set ready on first drive
@@ -144,11 +143,6 @@ public sealed class Player: Player<InputFrame> {
 }
 
 static class PlayerExt {
-    /// if this game object is the current player
-    public static bool IsLocalPlayer(this GameObject component) {
-        return component.CompareTag("PlayerDialogueTarget");
-    }
-
     /// if this component is the current player
     public static bool IsLocalPlayer(this Component component) {
         return component.CompareTag("PlayerDialogueTarget");
