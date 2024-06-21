@@ -9,21 +9,14 @@ namespace Soil {
 public struct DynamicEase {
     // -- cfg --
     [Header("cfg")]
-    [Tooltip("the frequency")]
-    public float F;
+    [Tooltip("the ease configuration")]
+    [SerializeField] Config m_Config;
 
-    [Tooltip("the damping")]
-    public float Z;
-
-    [Tooltip("the responsiveness")]
-    public float R;
+    [Tooltip("the configuration source")]
+    [SerializeField] ConfigSource m_ConfigSource;
 
     [Tooltip("if the ease curve is disabled")]
     [SerializeField] bool m_IsDisabled;
-
-    /// difficult math to describe, watch the video
-    [HideInInspector]
-    [SerializeField] float m_K1, m_K2, m_K3;
 
     // -- props --
     /// the previous target value
@@ -36,13 +29,10 @@ public struct DynamicEase {
     Vector3 m_Velocity;
 
     // -- lifetime --
+    /// create a new dynamic ease w/ a config
     public DynamicEase(Config config) {
-        F = config.F;
-        Z = config.Z;
-        R = config.R;
-        m_K1 = config.K1;
-        m_K2 = config.K2;
-        m_K3 = config.K3;
+        m_Config = config;
+        m_ConfigSource = ConfigSource.Local;
         m_IsDisabled = false;
         m_Target = Vector3.zero;
         m_Value = Vector3.zero;
@@ -55,6 +45,12 @@ public struct DynamicEase {
         m_Target = initial;
         m_Value = initial;
         m_Velocity = Vector3.zero;
+    }
+
+    /// setup with an initial value and config
+    public void Init(Vector3 initial, Config config) {
+        m_Config = config;
+        Init(initial);
     }
 
     /// move towards the target with an estimated target velocity
@@ -77,13 +73,13 @@ public struct DynamicEase {
             return;
         }
 
-        var k2 = Mathf.Max(m_K2, 1.1f * (delta * delta / 4f + delta * m_K1 / 2f));
+        var k2 = Mathf.Max(m_Config.K2, 1.1f * (delta * delta / 4f + delta * m_Config.K1 / 2f));
 
         var pos = m_Value;
         var velocity = m_Velocity;
 
         pos += delta * velocity;
-        velocity += delta * (target + m_K3 * targetVelocity - pos - m_K1 * velocity) / k2;
+        velocity += delta * (target + m_Config.K3 * targetVelocity - pos - m_Config.K1 * velocity) / k2;
 
         m_Value = pos;
         m_Velocity = velocity;
@@ -100,32 +96,12 @@ public struct DynamicEase {
         get => m_Value;
     }
 
-    /// compute the eigenvalue (or w/e) terms given f, z, r
-    public static (float, float, float) ComputeTerms(float f, float z, float r) {
-        var pif1 = Mathf.PI * f;
-        var pif2 = pif1 * 2f;
-
-        var k1 = z / pif1;
-        var k2 = 1f / (pif2 * pif2);
-        var k3 = r * z / pif2;
-
-        return (k1, k2, k3);
-    }
-
-    // -- factories --
-    public DynamicEase Clone() {
-        return new DynamicEase() {
-            F = F,
-            Z = Z,
-            R = R,
-            m_K1 = m_K1,
-            m_K2 = m_K2,
-            m_K3 = m_K3,
-            m_IsDisabled = false,
-        };
-    }
-
     // -- Config --
+    public enum ConfigSource {
+        Local,
+        External
+    }
+
     [Serializable]
     public struct Config {
         [Tooltip("the frequency")]
@@ -147,16 +123,12 @@ public struct DynamicEase {
             var pif1 = Mathf.PI * f;
             var pif2 = pif1 * 2f;
 
-            var k1 = z / pif1;
-            var k2 = 1f / (pif2 * pif2);
-            var k3 = r * z / pif2;
-
             F = f;
             Z = z;
             R = r;
-            K1 = k1;
-            K2 = k2;
-            K3 = k3;
+            K1 = z / pif1;
+            K2 = 1f / (pif2 * pif2);
+            K3 = r * z / pif2;
         }
     }
 }
