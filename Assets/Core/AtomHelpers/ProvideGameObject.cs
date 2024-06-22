@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
 
+namespace Discone {
+
 /// provides a game object as an atom variable
 sealed class ProvideGameObject: MonoBehaviour {
     // -- fields --
@@ -12,8 +14,10 @@ sealed class ProvideGameObject: MonoBehaviour {
 
     // -- lifecycle --
     void Awake() {
-        if (m_IsTransient || m_Variable.Value == null) {
+        if (m_IsTransient || !m_Variable.Value) {
             m_Variable.Value = gameObject;
         }
     }
+}
+
 }

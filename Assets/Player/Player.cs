@@ -60,8 +60,14 @@ public sealed class Player: Player<InputFrame> {
     protected override void Awake() {
         base.Awake();
 
+        // destroy any unowned player cameras
+        if (m_PlayerCamera && !m_PlayerCamera.activeSelf) {
+            Destroy(m_PlayerCamera.gameObject);
+            m_PlayerCamera = null;
+        }
+
         // this is the current player
-        if (m_PlayerCamera && m_PlayerCamera.gameObject.activeSelf) {
+        if (m_PlayerCamera) {
             m_Current.Value = this;
         }
 
@@ -105,8 +111,8 @@ public sealed class Player: Player<InputFrame> {
     }
 
     // -- commands --
-    public void Bind(InputActionAsset inputActionAsset, Transform look) {
-        m_InputSource.Init(inputActionAsset, look);
+    public void Bind(InputActionAsset inputActionAsset) {
+        m_InputSource.Init(inputActionAsset);
     }
 
     /// give the camera to another player

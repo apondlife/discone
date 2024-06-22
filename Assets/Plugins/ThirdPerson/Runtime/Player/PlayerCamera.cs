@@ -22,7 +22,7 @@ sealed class PlayerCamera: MonoBehaviour {
 
     void OnCameraActivated(ICinemachineCamera dst, ICinemachineCamera src) {
         // if we're not the active camera, ignore any changes
-        if (!c.Camera.IsActive) {
+        if (!c.Camera || !c.Camera.IsActive) {
             return;
         }
 

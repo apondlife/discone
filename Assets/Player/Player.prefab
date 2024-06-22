@@ -289,7 +289,7 @@ MonoBehaviour:
   m_IsReady: {fileID: 11400000, guid: 107b7f76817760b45bf4d4762e76b6a4, type: 2}
   m_PlayerCamera: {fileID: 3056622516152279952}
   m_IsDialogueActiveChanged: {fileID: 11400000, guid: e9934c9706c7948238d271c8498ab275, type: 2}
-  m_SwitchCharacter: {fileID: 6316990293218576967}
+  m_DriveCharacter: {fileID: 6316990293218576967}
   m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
   m_FarClipPlane:
     _usage: 1
@@ -300,6 +300,7 @@ MonoBehaviour:
   m_IsClosingEyes: {fileID: 11400000, guid: d62bdd20844ff42d3b5aeb3242568c15, type: 2}
   m_InputSource:
     m_IsEnabled: 1
+    m_PlayerCamera: {fileID: 11400000, guid: deedd14cb762f4a47bd2baaf71cbbb9d, type: 2}
     m_JumpName: Jump
     m_MoveName: Move
     m_LoadName: Load
@@ -340,7 +341,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1517367552312262664, guid: 83734fff2913a0d4184e65bb2e715b51, type: 3}
       propertyPath: m_Name
-      value: Player_Camera
+      value: PlayerCamera
       objectReference: {fileID: 0}
     - target: {fileID: 1517367552312262665, guid: 83734fff2913a0d4184e65bb2e715b51, type: 3}
       propertyPath: m_RootOrder

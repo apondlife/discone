@@ -1,0 +1,15 @@
+#if UNITY_2019_1_OR_NEWER
+using UnityEditor;
+using UnityEngine.UIElements;
+using UnityAtoms.Editor;
+using Discone;
+
+namespace UnityAtoms.Editor
+{
+    /// <summary>
+    /// Event property drawer of type `PlayerCameraPair`. Inherits from `AtomEventEditor&lt;PlayerCameraPair, PlayerCameraPairEvent&gt;`. Only availble in `UNITY_2019_1_OR_NEWER`.
+    /// </summary>
+    [CustomEditor(typeof(PlayerCameraPairEvent))]
+    public sealed class PlayerCameraPairEventEditor : AtomEventEditor<PlayerCameraPair, PlayerCameraPairEvent> { }
+}
+#endif

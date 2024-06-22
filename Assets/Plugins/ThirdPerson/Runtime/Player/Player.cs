@@ -113,7 +113,7 @@ public abstract class Player<InputFrame>: MonoBehaviour, PlayerContainer
 
     // -- PlayerContainer --
     public Camera Camera {
-        get => m_Character.Camera;
+        get => m_Character ? m_Character.Camera : null;
     }
 }
 

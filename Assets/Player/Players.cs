@@ -22,10 +22,6 @@ public class Players: MonoBehaviour {
     [Tooltip("the entities repository")]
     [SerializeField] EntitiesVariable m_Entities;
 
-    // TODO: should this be gameobjectvariable / cameravariable
-    [Tooltip("the transform for the player's look viewpoint")]
-    [SerializeField] Transform m_Look;
-
     // -- dispatched --
     [Header("dispatched")]
     [Tooltip("create an online player")]
@@ -78,7 +74,7 @@ public class Players: MonoBehaviour {
 
     /// bind the input to the player
     void FinishCreatingPlayer(Player player, PlayerInput input) {
-        player.Bind(input.actions, m_Look);
+        player.Bind(input.actions);
 
         #if UNITY_EDITOR
         var t = player.transform;
