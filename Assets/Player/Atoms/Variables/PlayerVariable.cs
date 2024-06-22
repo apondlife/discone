@@ -4,7 +4,7 @@ using Discone;
 namespace UnityAtoms
 {
     /// <summary>
-    /// Variable of type `Player`. Inherits from `AtomVariable&lt;Player, PlayerPair, PlayerEvent, PlayerPairEvent, PlayerFunction&gt;`.
+    /// Variable of type `Player`. Inherits from `AtomVariable&lt;Player, PlayerPair, PlayerEvent, PlayerPairEvent, PlayerPlayerFunction&gt;`.
     /// </summary>
     [EditorIcon("atom-icon-lush")]
     [CreateAssetMenu(menuName = "Unity Atoms/Variables/Player", fileName = "PlayerVariable")]
