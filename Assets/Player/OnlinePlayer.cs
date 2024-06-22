@@ -71,6 +71,9 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     /// the world coordinate
     WorldCoord m_Coord;
 
+    /// drives the linked player's character
+    CharacterEvent m_DriveCharacter;
+
     // -- lifecycle --
     void Awake() {
         // set props
@@ -112,6 +115,11 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         } else {
             onLoadFinished();
         }
+    }
+
+    /// link this online player to a local player
+    public void Link(Player player) {
+        m_DriveCharacter = player.DriveCharacter;
     }
 
     // -- l/mirror
@@ -261,8 +269,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     [TargetRpc]
     void Target_SwitchCharacter(NetworkConnection _, GameObject dst) {
         // if the player exists
-        var player = m_LocalPlayer.GetComponent<Player>();
-        if (!player || !player.enabled) {
+        if (!m_DriveCharacter) {
             Log.Player.Fatal($"missing player!");
             return;
         }
@@ -274,9 +281,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
             return;
         }
 
-        // drive the new character character
-        m_LocalCharacter.Value = character;
-        player.Drive(character);
+        m_DriveCharacter.Raise(character);
     }
 
     /// try to switch to a new character

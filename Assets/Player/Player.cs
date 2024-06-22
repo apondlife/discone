@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+using CharacterEvent = UnityAtoms.CharacterEvent;
 
 namespace Discone {
 
@@ -26,6 +28,10 @@ public sealed class Player: Player<InputFrame> {
     [Header("subscribed")]
     [Tooltip("if the dialogue is active")]
     [SerializeField] BoolEvent m_IsDialogueActiveChanged;
+
+    [FormerlySerializedAs("m_SwitchCharacter")]
+    [Tooltip("drive this player's character")]
+    [SerializeField] CharacterEventInstancer m_DriveCharacter;
 
     // -- refs --
     [Header("refs")]
@@ -55,14 +61,16 @@ public sealed class Player: Player<InputFrame> {
         base.Awake();
 
         // this is the current player
-        m_Current.Value = this;
+        if (m_PlayerCamera && m_PlayerCamera.gameObject.activeSelf) {
+            m_Current.Value = this;
+        }
 
         // set deps
         m_Checkpoint = GetComponent<PlayerCheckpoint>();
 
         // bind events
         m_Subscriptions
-            .Add(m_CurrentCharacter.ChangedWithHistory, OnDriveCharacter)
+            .Add(m_DriveCharacter.Event, OnDriveCharacter)
             .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
 
         // AAA: don't do this, create an input actions type of some kind
@@ -103,8 +111,20 @@ public sealed class Player: Player<InputFrame> {
 
     /// give the camera to another player
     public void GiveCamera(Player player) {
-        m_PlayerCamera = player.m_PlayerCamera;
-        player.m_PlayerCamera = null;
+        if (!m_PlayerCamera) {
+            Log.Player.E($"tried to give camera, but didn't own the camera");
+        }
+
+        var playerCamera = m_PlayerCamera;
+
+        // swap camera control
+        player.m_PlayerCamera = playerCamera;
+        m_PlayerCamera = null;
+        playerCamera.transform.parent = player.transform;
+
+        // update the current player/character
+        m_Current.Value = player;
+        m_CurrentCharacter.Value = player.Character;
     }
 
     // -- queries --
@@ -123,28 +143,34 @@ public sealed class Player: Player<InputFrame> {
         get => m_IsReady.Changed;
     }
 
+    /// an event to switch this player's character
+    public CharacterEvent DriveCharacter {
+        get => m_DriveCharacter.Event;
+    }
+
     // -- events --
-    /// when the player starts driving a character
-    void OnDriveCharacter(CharacterPair characters) {
-        var prev = characters.Prev();
+    /// when the player should drive a new character
+    void OnDriveCharacter(Character next) {
+        var prev = Character;
 
-        // AAA: isReady standing in for the first player receiving the first character
-        if (m_IsReady.Value && prev == Character) {
-            return;
-        }
+        // drive the new character
+        Drive(next);
 
-        // set ready on first drive
-        if (!m_IsReady.Value) {
-            m_IsReady.Value = true;
-        }
+        // if we're the current player
+        if (m_Current.Value == this) {
+            // set ready on first drive
+            if (!m_IsReady.Value) {
+                m_IsReady.Value = true;
+            }
 
-        // if we own the camera, toggle the character's virtual camera
-        if (m_PlayerCamera) {
+            // update the current character
+            m_CurrentCharacter.Value = next;
+
+            // toggle the character's virtual camera
             if (prev) {
                 prev.Camera.Toggle(false);
             }
 
-            var next = characters.Next();
             if (next) {
                 next.Camera.Toggle(true);
             }

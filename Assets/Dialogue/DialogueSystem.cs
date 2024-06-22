@@ -110,6 +110,7 @@ public class DialogueSystem: MonoBehaviour {
         Log.Dialog.I($"complete dialogue <{m_ActiveDialogue.NodeTitle}>");
 
         // complete the active dialgoue
+        // TODO: make this a CharacterEvent
         m_SwitchCharacter.Raise(m_ActiveDialogue.Character);
         m_IsActive.Value = false;
         m_ActiveDialogue = null;

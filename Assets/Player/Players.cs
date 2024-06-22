@@ -19,6 +19,9 @@ public class Players: MonoBehaviour {
     [Tooltip("the initial player")]
     [SerializeField] PlayerVariable m_InitialPlayer;
 
+    [Tooltip("the entities repository")]
+    [SerializeField] EntitiesVariable m_Entities;
+
     // TODO: should this be gameobjectvariable / cameravariable
     [Tooltip("the transform for the player's look viewpoint")]
     [SerializeField] Transform m_Look;
@@ -41,8 +44,16 @@ public class Players: MonoBehaviour {
     OnlinePlayer m_InitialOnlinePlayer;
 
     // -- lifecycle --
-    // Start is called before the first frame update
     void Awake() {
+        // listen until the initial online player connects
+        m_OnlinePlayer_Connected.Register(OnOnlinePlayerConnected);
+
+        // when the online player is created, create the discone player
+        void OnOnlinePlayerConnected(OnlinePlayer onlinePlayer) {
+            m_OnlinePlayer_Connected.Unregister(OnOnlinePlayerConnected);
+            onlinePlayer.Link(m_InitialPlayer.Value);
+        }
+
         // bind events
         m_Subscriptions
             .Add(m_InputManager.playerJoinedEvent, OnPlayerJoined)
@@ -58,7 +69,10 @@ public class Players: MonoBehaviour {
     void CreatePlayer(OnlinePlayer onlinePlayer, PlayerInput input) {
         var t = onlinePlayer.transform;
         onlinePlayer.Spawn();
+
         var player = Instantiate(m_PlayerPrefab, t.position, t.rotation);
+        onlinePlayer.Link(player);
+
         FinishCreatingPlayer(player, input);
     }
 

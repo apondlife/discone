@@ -286,15 +286,10 @@ MonoBehaviour:
       m_Calls: []
   m_Current: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
-  m_ThisPlayer:
-    _usage: 2
-    _value: 0
-    _constant: {fileID: 0}
-    _variable: {fileID: 0}
-    _variableInstancer: {fileID: 0}
   m_IsReady: {fileID: 11400000, guid: 107b7f76817760b45bf4d4762e76b6a4, type: 2}
   m_PlayerCamera: {fileID: 3056622516152279952}
   m_IsDialogueActiveChanged: {fileID: 11400000, guid: e9934c9706c7948238d271c8498ab275, type: 2}
+  m_SwitchCharacter: {fileID: 6316990293218576967}
   m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
   m_FarClipPlane:
     _usage: 1
@@ -321,6 +316,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attenuationObject: {fileID: 2221735472310936065}
+--- !u!114 &6316990293218576967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2221735472310936065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dccb0e7a0e65b9b458678cdb219a7d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _inMemoryCopy: {fileID: 0}
+  _base: {fileID: 0}
+  _inspectorRaiseValue: {fileID: 0}
 --- !u!1001 &4568207222859981720
 PrefabInstance:
   m_ObjectHideFlags: 0
