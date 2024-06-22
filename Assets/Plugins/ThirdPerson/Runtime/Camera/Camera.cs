@@ -217,6 +217,11 @@ public class Camera: MonoBehaviour, CameraContainer {
         get => m_CharacterInput;
     }
 
+    /// if the camera is active
+    public bool IsActive {
+        get => gameObject.activeSelf;
+    }
+
     // -- debug --
     void OnDrawGizmos() {
         var ideal = m_State.IntoIdealPosition();

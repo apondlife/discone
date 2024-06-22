@@ -19,6 +19,9 @@ public sealed class Player: Player<InputFrame> {
     [Tooltip("if this player is ready with a character")]
     [SerializeField] BoolVariable m_IsReady;
 
+    [Tooltip("the player's camera, if this player is the camera owner")]
+    [SerializeField] GameObject m_PlayerCamera;
+
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("if the dialogue is active")]
@@ -34,9 +37,6 @@ public sealed class Player: Player<InputFrame> {
 
     [Tooltip("if the player is closing their eyes (aspirational)")]
     [SerializeField] BoolVariable m_IsClosingEyes;
-
-    [Tooltip("the player camera, if this player has the camera")]
-    [SerializeField] GameObject m_PlayerCamera;
 
     // -- input --
     [Header("input")]
@@ -109,8 +109,8 @@ public sealed class Player: Player<InputFrame> {
 
     // -- queries --
     /// the character
-    public Character Character {
-        get => m_CurrentCharacter.Value;
+    public new Character Character {
+        get => base.Character as Character;
     }
 
     /// the checkpoint
@@ -126,6 +126,13 @@ public sealed class Player: Player<InputFrame> {
     // -- events --
     /// when the player starts driving a character
     void OnDriveCharacter(DisconeCharacterPair characters) {
+        var prev = characters.Prev();
+
+        // AAA: isReady standing in for the first player receiving the first character
+        if (m_IsReady.Value && prev == Character) {
+            return;
+        }
+
         // set ready on first drive
         if (!m_IsReady.Value) {
             m_IsReady.Value = true;
@@ -133,12 +140,11 @@ public sealed class Player: Player<InputFrame> {
 
         // if we own the camera, toggle the character's virtual camera
         if (m_PlayerCamera) {
-            var prev = characters.Next();
             if (prev) {
                 prev.Camera.Toggle(false);
             }
 
-            var next = characters.Prev();
+            var next = characters.Next();
             if (next) {
                 next.Camera.Toggle(true);
             }

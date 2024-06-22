@@ -286,7 +286,14 @@ MonoBehaviour:
       m_Calls: []
   m_Current: {fileID: 11400000, guid: 80c6007b7ea2c164086898d502624e65, type: 2}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
+  m_ThisPlayer:
+    _usage: 2
+    _value: 0
+    _constant: {fileID: 0}
+    _variable: {fileID: 0}
+    _variableInstancer: {fileID: 0}
   m_IsReady: {fileID: 11400000, guid: 107b7f76817760b45bf4d4762e76b6a4, type: 2}
+  m_PlayerCamera: {fileID: 3056622516152279952}
   m_IsDialogueActiveChanged: {fileID: 11400000, guid: e9934c9706c7948238d271c8498ab275, type: 2}
   m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
   m_FarClipPlane:
@@ -296,7 +303,6 @@ MonoBehaviour:
     _variable: {fileID: 0}
     _variableInstancer: {fileID: 0}
   m_IsClosingEyes: {fileID: 11400000, guid: d62bdd20844ff42d3b5aeb3242568c15, type: 2}
-  m_PlayerCamera: {fileID: 0}
   m_InputSource:
     m_IsEnabled: 1
     m_JumpName: Jump
@@ -372,3 +378,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83734fff2913a0d4184e65bb2e715b51, type: 3}
+--- !u!1 &3056622516152279952 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1517367552312262664, guid: 83734fff2913a0d4184e65bb2e715b51, type: 3}
+  m_PrefabInstance: {fileID: 4568207222859981720}
+  m_PrefabAsset: {fileID: 0}

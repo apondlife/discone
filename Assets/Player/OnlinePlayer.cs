@@ -255,6 +255,8 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         Client_ChangeOwnership(dstCharacter.gameObject);
     }
 
+    // TODO: this should dispatch an event for the local player to listen to rather
+    // than reference it directly
     /// switch to the character
     [TargetRpc]
     void Target_SwitchCharacter(NetworkConnection _, GameObject dst) {
