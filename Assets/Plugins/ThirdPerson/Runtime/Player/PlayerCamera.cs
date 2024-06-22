@@ -39,7 +39,6 @@ sealed class PlayerCamera: MonoBehaviour {
 
         // if switching to the source camera, move camera to position of the
         // previous virtual camera
-        // AAA: figure this out
         var pos = m_Brain.OutputCamera.transform.position;
         cam.MoveTo(pos);
     }

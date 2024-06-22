@@ -210,7 +210,7 @@ public class OnlineInterest: InterestManagement {
         }
         // if the player has no character, it might be looking for an initial one
         else if (player.Object.Character == null) {
-            // AAA: stale?
+            // TODO: stale?
             isInteresting = character.Online.IsInitial;
         }
         // if the character is visible

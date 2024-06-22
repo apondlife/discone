@@ -242,7 +242,6 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
         // of the limb to the collision in the search dir
         var normDotSearch = Vector3.Dot(placement.Normal, c.SearchDir);
 
-        // AAA: finish or unroll hips changes
         // if the cast is outside the limb, and the search is opposed to the normal, there's held distance
         if (normDotSearch < 0) {
             // https://miro.com/app/board/uXjVM8nwDIU=/?moveToWidget=3458764587553685421&cot=14
@@ -260,7 +259,7 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
         }
 
         goalPos = placement.Pos;
-        // AAA: why do we do this?
+        // TODO: why do we do this?
         if (Vector3.SqrMagnitude(goalPos - c.State.GoalPos) > c.Tuning.MinMove * c.Tuning.MinMove) {
             c.State.GoalPos = goalPos;
         }

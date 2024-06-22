@@ -313,7 +313,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
 
     /// the direction towards the surface
     public Vector3 SearchDir {
-        // AAA: make sure SearchDir is always normalized
+        // TODO: make sure SearchDir is always normalized
         // TODO: we just want to remove tilt from the limb, could probably invert it somewhere
         get => Quaternion.LookRotation(c.State.Curr.Forward, Vector3.up) * m_SearchDir;
     }

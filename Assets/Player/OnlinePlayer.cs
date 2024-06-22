@@ -242,7 +242,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // if the server doesn't have authority over this character, another player
         // already does
         if (!dstCharacter.IsAvailable) {
-            /// AAA: stale?
+            /// TODO: stale?
             Target_RetrySwitchCharacter(connectionToClient, isInitial: src == null);
             return;
         }

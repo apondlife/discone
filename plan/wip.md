@@ -55,7 +55,6 @@ what is projected
 - make fields readonly
 
 # local multiplayer
-- AAA
 - connect at current player (current player flower?)
 - teleporting characters teleports your friends
 - disconnect?

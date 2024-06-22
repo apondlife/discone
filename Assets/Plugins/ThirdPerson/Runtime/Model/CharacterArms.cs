@@ -52,7 +52,7 @@ class CharacterArms: MonoBehaviour {
         var currDist = Vector3.Dot(currDir, c.State.Curr.Direction);
 
         // if far enough away, look for an anchor position
-        // AAA: this dist is projected into the surface
+        // TODO: this dist is projected into the surface
         // should probably just be doing the whole move method to prevent clipping
         var maxStride = Mathf.Max(arm.Tuning.MaxLength.Max, arm.Tuning.MaxLength.Min);
         maxStride = Mathf.Max(maxStride, maxStride * arm.Tuning.MaxLength_CrossScale);
