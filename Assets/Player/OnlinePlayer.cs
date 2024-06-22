@@ -42,7 +42,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     [SerializeField] OnlinePlayerEvent m_CurrentStarted;
 
     [Tooltip("when a player switches character")]
-    [SerializeField] DisconeCharacterPairEvent m_CharacterSwitched;
+    [SerializeField] CharacterPairEvent m_CharacterSwitched;
 
     // -- refs --
     [Header("refs")]
@@ -50,7 +50,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     [SerializeField] PlayerVariable m_LocalPlayer;
 
     [Tooltip("the local player's character")]
-    [SerializeField] DisconeCharacterVariable m_LocalCharacter;
+    [SerializeField] CharacterVariable m_LocalCharacter;
 
     [Tooltip("is this the hosts player")]
     [SerializeField] BoolReference m_IsHost;
@@ -297,7 +297,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         m_Character = next;
 
         // publish event
-        var pair = new DisconeCharacterPair();
+        var pair = new CharacterPair();
         pair.Item1 = next;
         pair.Item2 = prev;
         m_CharacterSwitched.Raise(pair);

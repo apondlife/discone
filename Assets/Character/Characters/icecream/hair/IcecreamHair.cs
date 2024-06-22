@@ -16,7 +16,7 @@ public class IcecreamHair: MonoBehaviour {
 
     [Header("refs")]
     [Tooltip("the current player's character (for toggling physics)")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+    [SerializeField] CharacterVariable m_CurrentCharacter;
 
     [Tooltip("the unrigged version of the hair")]
     [SerializeField] GameObject m_NoRig;
@@ -125,7 +125,7 @@ public class IcecreamHair: MonoBehaviour {
     }
 
     /// -- events --
-    void OnCharacterChanged(DisconeCharacterPair characters) {
+    void OnCharacterChanged(CharacterPair characters) {
         var prev = characters.Item2;
         var curr = characters.Item1;
 

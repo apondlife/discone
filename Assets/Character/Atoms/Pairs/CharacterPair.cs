@@ -5,10 +5,11 @@ using UnityEngine;
 namespace UnityAtoms
 {
     /// <summary>
-    /// IPair of type `&lt;DisconeCharacter&gt;`. Inherits from `IPair&lt;DisconeCharacter&gt;`.
+    /// IPair of type `&lt;Character&gt;`. Inherits from `IPair&lt;Character&gt;`.
     /// </summary>
     [Serializable]
-    public struct DisconeCharacterPair : IPair<Character>
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "UnityAtoms", "DisconeCharacterPair")]
+    public struct CharacterPair : IPair<Character>
     {
         public Character Item1 { get => _item1; set => _item1 = value; }
         public Character Item2 { get => _item2; set => _item2 = value; }

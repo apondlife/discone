@@ -9,7 +9,7 @@ public sealed class PlayerCheckpoint: MonoBehaviour {
     // -- atoms --
     [Header("atoms")]
     [Tooltip("the progress of the checkpoint save")]
-    [SerializeField] DisconeCharacterVariable m_Character;
+    [SerializeField] CharacterVariable m_Character;
 
     // -- props --
     /// if the checkpoint was saving previously

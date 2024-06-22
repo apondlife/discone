@@ -45,7 +45,7 @@ sealed class IntroSequence: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the player's character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+    [SerializeField] CharacterVariable m_CurrentCharacter;
 
     // -- props --
     /// if the input was performed

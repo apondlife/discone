@@ -11,13 +11,13 @@ public sealed class Characters: MonoBehaviour {
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("when a character spawns")]
-    [SerializeField] DisconeCharacterEvent m_SpawnedCharacter;
+    [SerializeField] CharacterEvent m_SpawnedCharacter;
 
     [Tooltip("when a character is destroyed")]
-    [SerializeField] DisconeCharacterEvent m_DestroyedCharacter;
+    [SerializeField] CharacterEvent m_DestroyedCharacter;
 
     [Tooltip("when a player switches character")]
-    [SerializeField] DisconeCharacterPairEvent m_SwitchedCharacter;
+    [SerializeField] CharacterPairEvent m_SwitchedCharacter;
 
     // -- props --
     /// the list of characters
@@ -93,7 +93,7 @@ public sealed class Characters: MonoBehaviour {
     }
 
     /// when a player switches character
-    void OnSwitchedCharacter(DisconeCharacterPair characters) {
+    void OnSwitchedCharacter(CharacterPair characters) {
         var curr = characters.Item1;
         var prev = characters.Item2;
 

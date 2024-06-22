@@ -36,7 +36,7 @@ sealed class DebugWarp: MonoBehaviour {
     [SerializeField] DebugCamera m_Camera;
 
     [Tooltip("the current character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+    [SerializeField] CharacterVariable m_CurrentCharacter;
 
     [Tooltip("the search query for the initial warp point")]
     [SerializeField] StringVariable m_StartQuery;
@@ -170,7 +170,7 @@ sealed class DebugWarp: MonoBehaviour {
     #if UNITY_EDITOR
     // TODO: an event when the game is initialized (the first character exists)
     /// when the initial character is set
-    void OnCharacterChanged(DisconeCharacterPair characters) {
+    void OnCharacterChanged(CharacterPair characters) {
         if (characters.Item2) {
             return;
         }

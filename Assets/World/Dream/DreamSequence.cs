@@ -65,7 +65,7 @@ sealed class DreamSequence: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("a reference to the current character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+    [SerializeField] CharacterVariable m_CurrentCharacter;
 
     [Tooltip("if the player's eyes are closed")]
     [SerializeField] BoolReference m_IsEyelidClosed;

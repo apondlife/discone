@@ -2,6 +2,7 @@
 using UnityAtoms;
 using UnityEngine;
 using UnityEngine.Serialization;
+using CharacterEvent = UnityAtoms.CharacterEvent;
 
 namespace Discone {
 
@@ -19,11 +20,11 @@ public sealed class Character: Character<InputFrame> {
     [Header("published")]
     [Tooltip("the character spawning event")]
     [FormerlySerializedAs("m_Spawned")]
-    [SerializeField] DisconeCharacterEvent m_SpawnedCharacter;
+    [SerializeField] CharacterEvent m_SpawnedCharacter;
 
     [Tooltip("the character being destroyed event")]
     [FormerlySerializedAs("m_Destroyed")]
-    [SerializeField] DisconeCharacterEvent m_DestroyedCharacter;
+    [SerializeField] CharacterEvent m_DestroyedCharacter;
 
     // -- props --
     /// the music

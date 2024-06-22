@@ -29,7 +29,7 @@ public sealed class CharacterDialogue: MonoBehaviour {
     [SerializeField] InputActionReference m_TalkInput;
 
     [Tooltip("a reference to the current character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+    [SerializeField] CharacterVariable m_CurrentCharacter;
 
     // -- props --
     // the parent character

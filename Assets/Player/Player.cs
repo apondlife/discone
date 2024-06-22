@@ -14,7 +14,7 @@ public sealed class Player: Player<InputFrame> {
     [SerializeField] PlayerVariable m_Current;
 
     [Tooltip("the current player's character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+    [SerializeField] CharacterVariable m_CurrentCharacter;
 
     [Tooltip("if this player is ready with a character")]
     [SerializeField] BoolVariable m_IsReady;
@@ -125,7 +125,7 @@ public sealed class Player: Player<InputFrame> {
 
     // -- events --
     /// when the player starts driving a character
-    void OnDriveCharacter(DisconeCharacterPair characters) {
+    void OnDriveCharacter(CharacterPair characters) {
         var prev = characters.Prev();
 
         // AAA: isReady standing in for the first player receiving the first character

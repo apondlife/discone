@@ -5,6 +5,7 @@ using ThirdPerson;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
 using UnityEngine;
+using CharacterEvent = ThirdPerson.CharacterEvent;
 
 namespace Discone {
 
@@ -23,7 +24,7 @@ sealed class PlayerButterflies: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the current character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+    [SerializeField] CharacterVariable m_CurrentCharacter;
 
     [Tooltip("the ambient butterfly system")]
     [SerializeField] ParticleSystem m_AmbientSystem;
@@ -75,7 +76,7 @@ sealed class PlayerButterflies: MonoBehaviour {
 
     // -- events --
     /// when the current character changes
-    void OnCharacterChanged(DisconeCharacterPair characters) {
+    void OnCharacterChanged(CharacterPair characters) {
         var curr = characters.Item1;
         var prev = characters.Item2;
 

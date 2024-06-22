@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityAtoms;
 using ThirdPerson;
 using UnityEngine.Events;
+using CharacterEvent = ThirdPerson.CharacterEvent;
 
 namespace Discone {
 

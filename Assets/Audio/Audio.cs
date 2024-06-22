@@ -40,7 +40,7 @@ public class Audio: MonoBehaviour {
     [SerializeField] StudioEventEmitter m_Music;
 
     [Tooltip("when the local character changes")]
-    [SerializeField] DisconeCharacterPairEvent m_CharacterChangedWithHistory;
+    [SerializeField] CharacterPairEvent m_CharacterChangedWithHistory;
 
     [Tooltip("if running as a standalone server")]
     [SerializeField] BoolReference m_IsStandalone;
@@ -115,7 +115,7 @@ public class Audio: MonoBehaviour {
     }
 
     /// when the local character changes
-    void OnCharacterChanged(DisconeCharacterPair change) {
+    void OnCharacterChanged(CharacterPair change) {
         var curr = change.Item1;
 
         // the first time the player changes to a character

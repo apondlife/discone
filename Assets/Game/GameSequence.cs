@@ -21,7 +21,7 @@ sealed class GameSequence: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the current character")]
-    [SerializeField] DisconeCharacterVariable m_CurrentCharacter;
+    [SerializeField] CharacterVariable m_CurrentCharacter;
 
     [Tooltip("the shared data store")]
     [SerializeField] Store m_Store;
@@ -103,7 +103,7 @@ sealed class GameSequence: MonoBehaviour {
     }
 
     /// when the store finishes loading data
-    void OnCharacterChanged(DisconeCharacterPair character) {
+    void OnCharacterChanged(CharacterPair character) {
         if (!character.Item2) {
             m_GameStep_Started.Raise(m_Step);
         }
