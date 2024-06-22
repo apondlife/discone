@@ -1,19 +1,12 @@
-using System;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Discone {
 
 public class Players: MonoBehaviour {
-    [Flags]
-    enum InitialPlayerConfig {
-        Link = 1 << 0,
-        Bind = 1 << 1
-    }
-
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the player prefab")]
@@ -24,8 +17,9 @@ public class Players: MonoBehaviour {
     [Tooltip("the input manager")]
     [SerializeField] PlayerInputManager m_InputManager;
 
-    [Tooltip("the initial player")]
-    [SerializeField] PlayerVariable m_InitialPlayer;
+    [FormerlySerializedAs("m_InitialPlayer")]
+    [Tooltip("the current player")]
+    [SerializeField] PlayerVariable m_CurrentPlayer;
 
     [Tooltip("the entities repository")]
     [SerializeField] EntitiesVariable m_Entities;
@@ -44,8 +38,8 @@ public class Players: MonoBehaviour {
     /// the subscriptions
     DisposeBag m_Subscriptions = new();
 
-    /// the configuration state of the initial player
-    InitialPlayerConfig m_InitialPlayerConfig;
+    /// if the initial player has their input bound
+    bool m_IsInitialPlayerBound;
 
     // -- lifecycle --
     void Awake() {
@@ -55,8 +49,7 @@ public class Players: MonoBehaviour {
         // when the online player is created, create the discone player
         void OnOnlinePlayerConnected(OnlinePlayer onlinePlayer) {
             m_OnlinePlayer_Connected.Unregister(OnOnlinePlayerConnected);
-            onlinePlayer.Link(m_InitialPlayer.Value);
-            SetInitialPlayerFlag(InitialPlayerConfig.Link);
+            onlinePlayer.Link(m_CurrentPlayer.Value);
         }
 
         // bind events
@@ -73,6 +66,7 @@ public class Players: MonoBehaviour {
     /// create a player from the online player
     void CreatePlayer(OnlinePlayer onlinePlayer, Input input) {
         var t = onlinePlayer.transform;
+        onlinePlayer.transform.position = m_CurrentPlayer.Value.transform.position;
         onlinePlayer.Spawn();
 
         var player = Instantiate(m_PlayerPrefab, t.position, t.rotation);
@@ -92,24 +86,16 @@ public class Players: MonoBehaviour {
         #endif
     }
 
-    void SetInitialPlayerFlag(InitialPlayerConfig flag) {
-        m_InitialPlayerConfig |= flag;
-
-        if (m_InitialPlayerConfig == (InitialPlayerConfig.Bind | InitialPlayerConfig.Link)) {
-            m_InitialPlayer = null;
-        }
-    }
-
     // -- events --
     void OnPlayerJoined(PlayerInput playerInput) {
-        Log.Player.I($"new player joined {playerInput.playerIndex} with {playerInput.currentControlScheme}");
+        Log.Player.I($"player joined - {playerInput.playerIndex} [scheme: {playerInput.currentControlScheme}]");
 
         var input = playerInput.GetComponent<Input>();
 
         // TODO: don't spawn the online player on client connect?
-        if (!m_InitialPlayerConfig.HasFlag(InitialPlayerConfig.Bind)) {
-            FinishCreatingPlayer(m_InitialPlayer.Value, input);
-            SetInitialPlayerFlag(InitialPlayerConfig.Bind);
+        if (!m_IsInitialPlayerBound) {
+            FinishCreatingPlayer(m_CurrentPlayer.Value, input);
+            m_IsInitialPlayerBound = true;
             return;
         }
 
@@ -126,7 +112,7 @@ public class Players: MonoBehaviour {
     }
 
     void OnPlayerLeft(PlayerInput input) {
-        Log.Player.I($"player left {input.playerIndex}");
+        Log.Player.I($"player left - {input.playerIndex}");
     }
 }
 

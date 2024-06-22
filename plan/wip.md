@@ -55,12 +55,11 @@ what is projected
 - make fields readonly
 
 # local multiplayer
-- connect at current player (current player flower?)
+- dialogue? (only talk to characters you are looking at)
+- new flower on spawn? give dream flower to every icecream at start
 - teleporting characters teleports your friends
 - disconnect?
-- give dream flower to every icecream at start
 - steal camera
-- dialogue?
 
 # others
 - checkpoint system and state overhaul
