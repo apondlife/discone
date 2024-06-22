@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Discone {
 
 [Serializable]
-public class AiInputSource: PlayerInputSource<InputFrame> {
+public class AiInputSource: CharacterInputSource<InputFrame> {
     // -- fields --
     [Tooltip("the move direction")]
     [SerializeField] Vector2 m_Move = new Vector2(0.7f, 0.7f);
@@ -15,13 +15,11 @@ public class AiInputSource: PlayerInputSource<InputFrame> {
     [SerializeField] float m_JumpProbability = 0.001f;
 
     // -- CharacterInputSource --
-    protected override Transform Look { get; }
-
-    public override bool IsEnabled {
+    public bool IsEnabled {
         get => true;
     }
 
-    public override InputFrame Read() {
+    public InputFrame Read() {
         return new InputFrame(
             new CharacterInputMain(
                 m_Move,

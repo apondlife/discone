@@ -54,6 +54,15 @@ what is projected
 - make fields toggleable
 - make fields readonly
 
+# local multiplayer
+- AAA
+- connect at current player (current player flower?)
+- teleporting characters teleports your friends
+- disconnect?
+- give dream flower to every icecream at start
+- steal camera
+- dialogue?
+
 # others
 - checkpoint system and state overhaul
 - disable all colliders in character on load (how to do this in a nice way)

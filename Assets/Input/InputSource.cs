@@ -1,55 +1,43 @@
 using System;
 using ThirdPerson;
 using UnityAtoms;
-using UnityAtoms.BaseAtoms;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Discone {
 
 [Serializable]
-public sealed class InputSource: PlayerInputSource<InputFrame>, PlayerInputActions {
+public sealed class InputSource: PlayerInputSource<InputFrame> {
+    // -- cfg --
+    [Header("cfg")]
     [Tooltip("the player's main camera")]
     [SerializeField] PlayerCameraVariable m_PlayerCamera;
 
-    /// AAA
-    public string m_JumpName;
-    public string m_MoveName;
-    public string m_LoadName;
-
-    InputAction m_JumpAction;
-    InputAction m_MoveAction;
-    InputAction m_LoadAction;
+    // -- props --
+    /// the player input
+    Input m_Input;
 
     // -- commands --
     /// bind the input to an input system action asset
-    public void Init(InputActionAsset asset) {
-        m_JumpAction = asset.FindAction(m_JumpName);
-        m_MoveAction = asset.FindAction(m_MoveName);
-        m_LoadAction = asset.FindAction(m_LoadName);
+    public void Bind(Input input) {
+        m_Input = input;
     }
 
     // -- PlayerInputSource --
-    public override InputFrame Read() {
-        return new(
-            ReadMain(),
-            isLoadPressed: m_LoadAction.IsPressed()
-        );
+    protected override PlayerInputActions Actions {
+        get => m_Input;
     }
 
     protected override Transform Look {
         get => m_PlayerCamera.Value.Look;
     }
 
-    // -- PlayerInputActions --
-    public Vector2 Move {
-        get => m_MoveAction.ReadValue<Vector2>();
+    protected override InputFrame ReadNext() {
+        return new(
+            ReadMain(),
+            isLoadPressed: m_Input.IsLoadPressed
+        );
     }
 
-    public bool IsJumpPressed {
-        get => m_JumpAction.IsPressed();
-    }
 }
 
 }

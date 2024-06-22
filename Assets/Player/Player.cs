@@ -78,9 +78,6 @@ public sealed class Player: Player<InputFrame> {
         m_Subscriptions
             .Add(m_DriveCharacter.Event, OnDriveCharacter)
             .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
-
-        // AAA: don't do this, create an input actions type of some kind
-        m_InputSource.Bind(m_InputSource);
     }
 
     protected override void Update() {
@@ -111,8 +108,9 @@ public sealed class Player: Player<InputFrame> {
     }
 
     // -- commands --
-    public void Bind(InputActionAsset inputActionAsset) {
-        m_InputSource.Init(inputActionAsset);
+    /// bind the input to the player
+    public void Bind(Input input) {
+        m_InputSource.Bind(input);
     }
 
     /// give the camera to another player

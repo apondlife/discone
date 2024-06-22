@@ -1,11 +1,19 @@
+using System;
 using UnityAtoms;
 using UnityAtoms.BaseAtoms;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Discone {
 
 public class Players: MonoBehaviour {
+    [Flags]
+    enum InitialPlayerConfig {
+        Link = 1 << 0,
+        Bind = 1 << 1
+    }
+
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the player prefab")]
@@ -36,8 +44,8 @@ public class Players: MonoBehaviour {
     /// the subscriptions
     DisposeBag m_Subscriptions = new();
 
-    /// the initial online player
-    OnlinePlayer m_InitialOnlinePlayer;
+    /// the configuration state of the initial player
+    InitialPlayerConfig m_InitialPlayerConfig;
 
     // -- lifecycle --
     void Awake() {
@@ -48,6 +56,7 @@ public class Players: MonoBehaviour {
         void OnOnlinePlayerConnected(OnlinePlayer onlinePlayer) {
             m_OnlinePlayer_Connected.Unregister(OnOnlinePlayerConnected);
             onlinePlayer.Link(m_InitialPlayer.Value);
+            SetInitialPlayerFlag(InitialPlayerConfig.Link);
         }
 
         // bind events
@@ -62,7 +71,7 @@ public class Players: MonoBehaviour {
 
     // -- commands --
     /// create a player from the online player
-    void CreatePlayer(OnlinePlayer onlinePlayer, PlayerInput input) {
+    void CreatePlayer(OnlinePlayer onlinePlayer, Input input) {
         var t = onlinePlayer.transform;
         onlinePlayer.Spawn();
 
@@ -73,8 +82,8 @@ public class Players: MonoBehaviour {
     }
 
     /// bind the input to the player
-    void FinishCreatingPlayer(Player player, PlayerInput input) {
-        player.Bind(input.actions);
+    void FinishCreatingPlayer(Player player, Input input) {
+        player.Bind(input);
 
         #if UNITY_EDITOR
         var t = player.transform;
@@ -83,14 +92,24 @@ public class Players: MonoBehaviour {
         #endif
     }
 
+    void SetInitialPlayerFlag(InitialPlayerConfig flag) {
+        m_InitialPlayerConfig |= flag;
+
+        if (m_InitialPlayerConfig == (InitialPlayerConfig.Bind | InitialPlayerConfig.Link)) {
+            m_InitialPlayer = null;
+        }
+    }
+
     // -- events --
-    void OnPlayerJoined(PlayerInput input) {
-        Log.Player.I($"new player joined {input.playerIndex}");
+    void OnPlayerJoined(PlayerInput playerInput) {
+        Log.Player.I($"new player joined {playerInput.playerIndex} with {playerInput.currentControlScheme}");
+
+        var input = playerInput.GetComponent<Input>();
 
         // TODO: don't spawn the online player on client connect?
-        if (m_InitialPlayer) {
+        if (!m_InitialPlayerConfig.HasFlag(InitialPlayerConfig.Bind)) {
             FinishCreatingPlayer(m_InitialPlayer.Value, input);
-            m_InitialPlayer = null;
+            SetInitialPlayerFlag(InitialPlayerConfig.Bind);
             return;
         }
 
