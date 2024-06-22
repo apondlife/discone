@@ -37,7 +37,7 @@ sealed class DebugCamera: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the current character")]
-    [SerializeField] DisconePlayerVariable m_Player;
+    [SerializeField] PlayerVariable m_Player;
 
     // -- props --
     /// the debug flying camera

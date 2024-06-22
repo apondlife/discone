@@ -11,7 +11,7 @@ public sealed class Player: Player<InputFrame> {
     // -- state --
     [Header("state")]
     [Tooltip("the current player")]
-    [SerializeField] DisconePlayerVariable m_Current;
+    [SerializeField] PlayerVariable m_Current;
 
     [Tooltip("the current player's character")]
     [SerializeField] DisconeCharacterVariable m_CurrentCharacter;

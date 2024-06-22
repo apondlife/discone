@@ -17,7 +17,7 @@ public class Players: MonoBehaviour {
     [SerializeField] PlayerInputManager m_InputManager;
 
     [Tooltip("the initial player")]
-    [SerializeField] DisconePlayerVariable m_InitialPlayer;
+    [SerializeField] PlayerVariable m_InitialPlayer;
 
     // TODO: should this be gameobjectvariable / cameravariable
     [Tooltip("the transform for the player's look viewpoint")]

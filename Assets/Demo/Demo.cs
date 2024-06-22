@@ -21,7 +21,7 @@ public class Demo: MonoBehaviour {
     [SerializeField] InputActionReference m_Start;
 
     [Tooltip("the player")]
-    [SerializeField] DisconePlayerVariable m_Player;
+    [SerializeField] PlayerVariable m_Player;
 
     [Tooltip("if the demo is recording")]
     [SerializeField] BoolReference m_IsRecording;

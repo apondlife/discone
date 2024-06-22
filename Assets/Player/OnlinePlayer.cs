@@ -47,7 +47,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the current player")]
-    [SerializeField] DisconePlayerVariable m_LocalPlayer;
+    [SerializeField] PlayerVariable m_LocalPlayer;
 
     [Tooltip("the local player's character")]
     [SerializeField] DisconeCharacterVariable m_LocalCharacter;

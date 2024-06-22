@@ -5,10 +5,11 @@ using Discone;
 namespace UnityAtoms
 {
     /// <summary>
-    /// IPair of type `&lt;DisconePlayer&gt;`. Inherits from `IPair&lt;DisconePlayer&gt;`.
+    /// IPair of type `&lt;Player&gt;`. Inherits from `IPair&lt;Player&gt;`.
     /// </summary>
     [Serializable]
-    public struct DisconePlayerPair : IPair<Player>
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "UnityAtoms", "DisconePlayerPair")]
+    public struct PlayerPair : IPair<Player>
     {
         public Player Item1 { get => _item1; set => _item1 = value; }
         public Player Item2 { get => _item2; set => _item2 = value; }

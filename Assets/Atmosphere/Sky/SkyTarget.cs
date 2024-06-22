@@ -32,7 +32,7 @@ class SkyTarget: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the current player")]
-    [SerializeField] DisconePlayerVariable m_Player;
+    [SerializeField] PlayerVariable m_Player;
 
     [Tooltip("the parent for sky chart bodies")]
     [SerializeField] GameObjectVariable m_Bodies;
