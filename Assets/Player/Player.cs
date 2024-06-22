@@ -53,6 +53,9 @@ public sealed class Player: Player<InputFrame> {
     /// the checkpoint
     PlayerCheckpoint m_Checkpoint;
 
+    /// the initial checkpoint to use, if any
+    Checkpoint m_InitialCheckpoint;
+
     /// a set of event subscriptions
     DisposeBag m_Subscriptions = new();
 
@@ -113,6 +116,11 @@ public sealed class Player: Player<InputFrame> {
         m_InputSource.Bind(input);
     }
 
+    /// start the character at the given checkpoint
+    public void StartFromCheckpoint(Checkpoint checkpoint) {
+        m_InitialCheckpoint = checkpoint;
+    }
+
     /// give the camera to another player
     public void GiveCamera(Player player) {
         if (!m_PlayerCamera) {
@@ -159,6 +167,12 @@ public sealed class Player: Player<InputFrame> {
 
         // drive the new character
         Drive(next);
+
+        // if we have an initial checkpoint, try to plant (or smell) a flower there
+        if (!prev && m_InitialCheckpoint != null) {
+            next.PlantFlower(m_InitialCheckpoint);
+            m_InitialCheckpoint = null;
+        }
 
         // if we're the current player
         if (m_Current.Value == this) {

@@ -1,14 +1,13 @@
 using UnityEngine;
 using Mirror;
 using System.Collections.Generic;
-using ThirdPerson;
 using UnityAtoms;
 using FMODUnity;
 using Soil;
 
 namespace Discone {
 
-// TODO: rename to flower
+// TODO: rename to `Flower`
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(StudioEventEmitter))]

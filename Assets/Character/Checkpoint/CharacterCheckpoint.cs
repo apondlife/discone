@@ -1,14 +1,13 @@
-using System;
 using Mirror;
 using Soil;
 using UnityEngine;
 using UnityAtoms;
-using ThirdPerson;
 using UnityEngine.Events;
 using CharacterEvent = ThirdPerson.CharacterEvent;
 
 namespace Discone {
 
+// TODO: rename this to `CharacterFlower`
 /// the character's ability to save and reload to a particular state in
 /// the world, like planting a flag.
 [RequireComponent(typeof(Character))]
@@ -109,14 +108,8 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
         get => m_State.IsSaving;
     }
 
-    /// grab the nearby checkpoint
-    public void GrabCheckpoint() {
-        // grab an existing flower
-        Command_GrabCheckpoint(Character.State.Next.Position);
-    }
-
     /// create the checkpoint
-    public void CreateCheckpoint(Checkpoint checkpoint) {
+    public void Create(Checkpoint checkpoint) {
         if (!m_IsBlocked) {
             // spawn a new flower
             Command_CreateCheckpoint(
@@ -127,6 +120,17 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
 
         // fire event for create checkpoint
         m_OnCreate?.Invoke(m_IsBlocked ? checkpoint : null);
+    }
+
+    /// grab the nearby checkpoint
+    public void Grab() {
+        // grab an existing flower
+        Grab(Character.State.Next.Position);
+    }
+
+    /// grab the checkpoint near a position
+    public void Grab(Vector3 pos) {
+        Command_GrabCheckpoint(pos);
     }
 
     // -- c/s/server
@@ -204,6 +208,9 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
 
         // maybe there's an AI
         m_Character.Events.Once(CharacterEvent.Idle, () => {
+            // TODO: bug, i suspect this misses when we try to reuse an existing checkpoint
+            // on spawn (dream, local multiplayer) and plants a flower underneath the player
+            // anyways. maybe should rely on a more deterministic way to plant initial flowers.
             if (m_Flower != null) {
                 return;
             }

@@ -29,7 +29,7 @@ public sealed class Flowers: MonoBehaviour {
 
     // -- props --
     /// a map of all flowers
-    Dictionary<Vector3, CharacterFlower> m_All = new Dictionary<Vector3, CharacterFlower>();
+    Dictionary<Vector3, CharacterFlower> m_All = new();
 
     /// a bag of subscriptions
     DisposeBag m_Subscriptions = new DisposeBag();

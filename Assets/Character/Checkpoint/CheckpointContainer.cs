@@ -16,10 +16,10 @@ interface CheckpointContainer {
 
     // TODO: checkpoint and systems are too entangled; checkpoint should read system state (events)
     /// grab the nearby checkpoint
-    public void GrabCheckpoint();
+    public void Grab();
 
     /// create the checkpoint
-    public void CreateCheckpoint(Checkpoint checkpoint);
+    public void Create(Checkpoint checkpoint);
 }
 
 }

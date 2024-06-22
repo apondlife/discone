@@ -55,7 +55,6 @@ what is projected
 - make fields readonly
 
 # local multiplayer
-- new flower on spawn? give dream flower to every icecream at start
 - teleporting characters teleports your friends
 - disconnect?
 - steal camera

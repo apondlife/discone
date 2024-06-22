@@ -65,12 +65,19 @@ public class Players: MonoBehaviour {
     // -- commands --
     /// create a player from the online player
     void CreatePlayer(OnlinePlayer onlinePlayer, Input input) {
-        var t = onlinePlayer.transform;
-        onlinePlayer.transform.position = m_CurrentPlayer.Value.transform.position;
-        onlinePlayer.Spawn();
+        var currentCharacter = m_CurrentPlayer.Value.Character;
 
+        // spawn the character near the current player
+        var t = onlinePlayer.transform;
+        onlinePlayer.transform.position = currentCharacter.State.Curr.Position;
+
+        // create the player
         var player = Instantiate(m_PlayerPrefab, t.position, t.rotation);
+        player.StartFromCheckpoint(currentCharacter.Checkpoint.Checkpoint);
+
+        // link it to the online player and spawn the character
         onlinePlayer.Link(player);
+        onlinePlayer.Spawn();
 
         FinishCreatingPlayer(player, input);
     }

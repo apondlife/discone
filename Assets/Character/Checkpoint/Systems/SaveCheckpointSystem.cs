@@ -65,7 +65,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<CheckpointContainer > {
     // -- Planting --
     static readonly Phase<CheckpointContainer> Planting = new("Planting",
         enter: (s, c) => {
-            c.GrabCheckpoint();
+            c.Grab();
         },
         update: (delta, s, c) => {
             if (!CanSave(c)) {
@@ -83,7 +83,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<CheckpointContainer > {
     // -- Being --
     static readonly Phase<CheckpointContainer> Being = new("Being",
         enter: (s, c) => {
-            c.CreateCheckpoint(c.State.Save_PendingCheckpoint);
+            c.Create(c.State.Save_PendingCheckpoint);
         },
         update: (delta, s, c) => {
             if (!CanSave(c)) {
