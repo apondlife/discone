@@ -29,6 +29,7 @@ what is projected
 - crouch dynamic ease
   - extract dynamic ease tuning
 - aerial crouch rotation
+- better grounded look direction
 - interpolate between crouch & ik legs
 - crouch ik slide
 - look into crouching sliding down ramps
@@ -42,7 +43,12 @@ what is projected
 - platform to jump through (for max jump)
 
 # flower
+- bee that indicates flower ownership
 - flower disabling zones
+
+# ice cream
+- drop shadow (ice creams shape & draws on other shadows)
+- hair variants
 
 # particles
 - wall particle proportional to wall influence
