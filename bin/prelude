@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# -- commands --
+# load the dotenv
+LoadEnv() {
+  . ./.env
+}
+
+# -- queries --
+# find the current os
+FindOs() {
+  case "$OSTYPE" in
+    darwin*) OS="mac" ;;
+    *)       OS="win" ;;
+  esac
+}
+
+# -- includes --
+. ./bin/core/ui.sh
+. ./bin/core/parse.sh
+. ./bin/core/builds.sh

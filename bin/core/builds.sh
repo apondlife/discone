@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # -- constants --
 # the directory containing build variants
 BUILDS_DIR="./Artifacts/Builds"
@@ -11,27 +13,25 @@ VARIANT_PLAYTEST="playtest"
 # -- queries --
 # find the most recent build for the variant; sets $build
 FindBuild() {
-  local variant_dir="$BUILDS_DIR/$1"
+  variant_dir="$BUILDS_DIR/$1"
 
   # validate variant dir
   if [ ! -d "$variant_dir" ]; then
-    echo "✘ no variant dir @ '$variant_dir'"
-    exit 100
+    pf 100 "no variant dir @ '$variant_dir'"
   fi
 
   # find most recent build for the variant
-  local build_dir=$(\
-    ls -A $variant_dir \
+  build_dir=$(\
+    find Artifacts/Builds/release -depth 1 -name '*discone*' \
       | sort -r \
       | head -1
   )
 
   # if missing, the variant dir was empty
   if [ -z "$build_dir" ]; then
-    echo "✘ no builds @ '$variant_dir'"
-    exit 101
+    pf "no builds @ '$variant_dir'"
   fi
 
   # return the build
-  build="$variant_dir/$build_dir"
+  BUILD="$build_dir"
 }

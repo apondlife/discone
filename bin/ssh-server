@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# -- includes --
+. ./bin/prelude
+
 # -- constants --
 # local ip for the server
 LOCAL_IP="192.168.1.158"
@@ -13,8 +16,7 @@ LOCAL=""
 
 # -- parsing --
 Usage() {
-  echo "usage: ./bin/ssh-server [-hl]"
-  exit -1
+  pu "[-hl]"
 }
 
 while getopts ":hl" option; do
@@ -27,7 +29,7 @@ done
 # -- main --
 Main() {
   # use public ip by default
-  local ip="$PUBLIC_IP"
+  ip="$PUBLIC_IP"
 
   # unless the local flag is passed
   if [ -n "$LOCAL" ]; then

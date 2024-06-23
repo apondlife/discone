@@ -5,7 +5,7 @@ set -x
 # a script's path is hard to come by, so we assume .env is in the cwd
 
 # -- includes --
-. ./bin/core/builds.sh
+. bin/prelude
 
 # -- constants --
 # the path of the game on itch (sans target)
@@ -17,21 +17,7 @@ VARIANT=""
 
 # -- parsing --
 Usage() {
-  echo "usage: ./bin/build [-h] [-v <variant>]"
-  exit -1
-}
-
-while getopts ":hv:" option; do
-  case "${option}" in
-    h*) Usage ;;
-    v*) VARIANT="$OPTARG" ;;
-  esac
-done
-
-# -- parsing --
-Usage() {
-  echo "usage: ./bin/deploy [-h] [-v <variant>]"
-  exit -1
+  pu "[-h] [-v <variant>]"
 }
 
 while getopts ":h" option; do
@@ -44,37 +30,35 @@ done
 # deploy each build in the dir at path; assumes the child name is the butler
 # target name
 Deploy() {
-  VERSION_FILE=$(realpath VERSION)
-  cd "$build"
+  # validate version
+  version_file=$(realpath VERSION)
+
+  # switch to the build dir
+  cd "$BUILD" || exit 99
 
   # tag channel with variant, unless release
-  local tag=""
+  tag=""
   if [ "$VARIANT" != "$VARIANT_RELEASE" ]; then
     tag="-$VARIANT"
   fi
 
-  ls 
-
+  # push butler build
   for target in *; do
     "$BUTLER_PATH" push \
       "$target" \
       "$ITCH_PATH$tag:$target" \
-      "--userversion-file=$VERSION_FILE"
-
+      "--userversion-file=$version_file"
   done
 }
 
 # -- main --
 Main() {
   # load env
-  . ./.env
-
-  echo "$BUTLER_PATH"
+  LoadEnv
 
   # validate env
   if [ ! -f "$BUTLER_PATH" ]; then
-    echo "✘ butler (.env->BUTLER_PATH) does not exist at '$BUTLER_PATH'"
-    exit 1
+    pf 2 "butler (.env->BUTLER_PATH) does not exist at '$BUTLER_PATH'"
   fi
 
   # validate args

@@ -3,6 +3,9 @@
 # run this script from the project root; a portable way of getting
 # a script's path is hard to come by, so we assume .env is in the cwd
 
+# -- includes --
+. bin/prelude
+
 # -- props --
 # the variant (e.g. playtest, release) if any; defaults to release
 VARIANT=""
@@ -12,8 +15,7 @@ TARGET=""
 
 # -- parsing --
 Usage() {
-  echo "usage: ./bin/build [-h] [-v <variant>] [-t <target>]"
-  exit -1
+  pu "[-h] [-v <variant>] [-t <target>]"
 }
 
 while getopts ":hv:t:" option; do
@@ -27,51 +29,63 @@ done
 # -- commands --
 # build the targets
 Build() {
-  # run the build script; find it in Assets/Editor/Builds/BuildAll.cs
+  pl "starting build (see: Assets/Editor/Builds/BuildAll.cs)"
+  pl "~*~ ~*~ ~*~"
+
+  # os-specific options
+  case "$OS" in
+    mac) opts="-logFile - " ;;
+    win) opts="-logFile - stdout" ;;
+  esac
+
+  # run the build script
   "$UNITY_PATH" \
-    -quit -batchmode \
+    -quit \
+    -batchmode \
     -projectPath . \
-    -logfile - \
+    $opts \
     -executeMethod Builds.BuildAll.Main \
     -- \
     --variant "$VARIANT" \
     --target "$TARGET"
+
+  ps "build complete"
 }
 
-# load the environment
+# create .env in missing
 CheckEnv() {
-  # create .env if missing
   if [ ! -f .env ]; then
     if [ ! -f .env.sample ]; then
-      echo "✘ you need a .env (and a .env.sample to create it from)"
-      echo "- run this script from the project root, e.g."
-      echo "> ./bin/build"
-      exit 1
+      pe "you need a .env (and a .env.sample to create it from)"
+      pi "run this script from the project root, e.g."
+      pl "> ./bin/build"
+      exit 2
     fi
 
-    echo "- creating .env from .env.sample; fill it out and try again"
+    pi "creating .env from .env.sample; fill it out and try again"
     cp .env.sample .env
 
-    exit 2
+    exit 3
   fi
 }
 
 # -- main --
 Main() {
+  FindOs
+
+  # create .env file is missing
   CheckEnv
 
   # load env
-  . ./.env
+  LoadEnv
 
   # validate env
   if [ ! -f "$UNITY_PATH" ]; then
-    echo "✘ unity (.env->UNITY_PATH) does not exist at '$UNITY_PATH'"
-    exit 3
+    pf 4 "unity (.env->UNITY_PATH) does not exist at '$UNITY_PATH'"
   fi
 
-  if ps x | grep -qG "$UNITY_PATH -projectpath .*[d]iscone"; then
-    echo "✘ unity is running! the build script can't run when unity is open"
-    exit 4
+  if pgrep -f "$UNITY_PATH -projectpath .*discone" > /dev/null; then
+    pf 5 "unity is running! the build script can't run when unity is open"
   fi
 
   # run build

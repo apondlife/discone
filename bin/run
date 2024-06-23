@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # -- includes --
-. ./bin/core/builds.sh
+. ./bin/prelude
 
 # -- constants --
 # subpath to the mac binary
@@ -16,8 +16,7 @@ VARIANT="$VARIANT_RELEASE"
 
 # -- parsing --
 Usage() {
-  echo "usage: ./bin/run [-h] [-v <variant>]"
-  exit -1
+  pu "[-h] [-v <variant>]"
 }
 
 while getopts ":hv:" option; do
@@ -30,37 +29,26 @@ done
 # -- commands --
 # run the playtest build
 RunBuild() {
-  echo "- running build '$build'"
+  pi "running build '$BUILD'"
 
   # get target path
-  case "$os" in
+  case "$OS" in
     mac) target="$TARGET_PATH_MAC" ;;
     win) target="$TARGET_PATH_WIN" ;;
   esac
 
   # make binary path
-  binary="$build/$target"
+  binary="$BUILD/$target"
   if [ -z "$target" ] || [ -z "$binary" ]; then
-    echo "✘ missing $os binary: $target"
-    exit 3
+    pf 3 "missing binary for $OS: $target"
   fi
 
   # run the build
   open "$binary"
 }
 
-# -- queries --
-# find the current os
-FindOs() {
-  case "$OSTYPE" in
-    darwin*) os="mac" ;;
-    *)       os="win" ;;
-  esac
-}
-
 # -- main --
 Main() {
-  # TODO: don't hardcode this
   FindOs
 
   # find the most recent build
