@@ -84,7 +84,7 @@ Main() {
     pf 4 "unity (.env->UNITY_PATH) does not exist at '$UNITY_PATH'"
   fi
 
-  if pgrep -f "$UNITY_PATH -projectpath .*discone" > /dev/null; then
+  if ps x | grep -v grep | grep "$UNITY_PATH -projectpath .*discone" > /dev/null; then
     pf 5 "unity is running! the build script can't run when unity is open"
   fi
 
