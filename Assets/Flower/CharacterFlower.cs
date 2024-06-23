@@ -90,7 +90,7 @@ public class CharacterFlower: NetworkBehaviour {
 
     // the checkpoint this flower represents
     [SyncVar(hook = nameof(Client_OnCheckpointReceived))]
-    Checkpoint m_Checkpoint;
+    Placement m_Checkpoint;
 
     /// how many player's have grabbed this flower
     [SyncVar(hook = nameof(Client_OnGrabbingReceived))]
@@ -275,7 +275,7 @@ public class CharacterFlower: NetworkBehaviour {
     }
 
     /// the flower's checkpoint
-    public Checkpoint Checkpoint {
+    public Placement Checkpoint {
         get => m_Checkpoint;
     }
 
@@ -303,7 +303,7 @@ public class CharacterFlower: NetworkBehaviour {
 
     // -- events --
     /// when the client receives the checkpoint
-    void Client_OnCheckpointReceived(Checkpoint _p, Checkpoint _n) {
+    void Client_OnCheckpointReceived(Placement _p, Placement _n) {
         // try and plant the flower
         TryPlant();
     }
@@ -344,7 +344,7 @@ public class CharacterFlower: NetworkBehaviour {
 
         // store checkpoint info
         flower.m_Key = key;
-        flower.m_Checkpoint = new Checkpoint(pos, fwd);
+        flower.m_Checkpoint = new Placement(pos, fwd);
 
         // set initial state
         flower.m_Grabbing = 0;

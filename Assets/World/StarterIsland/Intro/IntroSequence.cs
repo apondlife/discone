@@ -34,6 +34,11 @@ sealed class IntroSequence: MonoBehaviour {
     [Tooltip("jump to a new mechanic node")]
     [SerializeField] StringEvent m_Mechanic_Jump;
 
+    // -- dispatched --
+    [Header("dispatched")]
+    [Tooltip("warps any local player to a location")]
+    [SerializeField] PlacementEvent m_Player_Warp;
+
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("when the dream is over")]
@@ -67,16 +72,10 @@ sealed class IntroSequence: MonoBehaviour {
     }
 
     // -- commands --
-    /// warp to the intro
+    /// warp all local players to the intro
     void Warp() {
-        // towards a different direction then ice creams orientation
-        var character = m_CurrentCharacter.Value;
-
-        // set initial character state
-        var nextState = character.State.Curr.Copy();
-        nextState.Position = m_StartTransform.position;
-        nextState.Forward = m_StartTransform.forward;
-        character.ForceState(nextState);
+        var placement = Placement.FromTransform(m_StartTransform);
+        m_Player_Warp.Raise(placement);
     }
 
     /// start the sequence
@@ -87,7 +86,7 @@ sealed class IntroSequence: MonoBehaviour {
         // plant the birthplace flower
         // TODO: plant flower somewhere in the initial shot
         var character = m_CurrentCharacter.Value;
-        character.PlantFlower(Checkpoint.FromState(character.CurrentState));
+        character.PlantFlower(Placement.FromState(character.CurrentState));
     }
 
     /// finish the sequence and destroy it

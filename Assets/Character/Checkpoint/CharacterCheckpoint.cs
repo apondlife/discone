@@ -48,7 +48,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
     System<CheckpointContainer>[] m_Systems;
 
     /// an event when the checkpoint is created
-    UnityEvent<Checkpoint> m_OnCreate = new();
+    UnityEvent<Placement> m_OnCreate = new();
 
     // -- lifecycle --
     void Awake() {
@@ -109,7 +109,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
     }
 
     /// create the checkpoint
-    public void Create(Checkpoint checkpoint) {
+    public void Create(Placement checkpoint) {
         if (!m_IsBlocked) {
             // spawn a new flower
             Command_CreateCheckpoint(
@@ -218,7 +218,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
             // if this character has no checkpoints yet, spawn a new one
             // TODO: try sniffing first,
             // TODO: maybesniff move to "bot" character behaviour instead of here
-            var checkpoint = Checkpoint.FromState(Character.CurrentState);
+            var checkpoint = Placement.FromState(Character.CurrentState);
             Server_CreateCheckpoint(checkpoint.Position, checkpoint.Forward);
         });
     }
@@ -235,7 +235,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
     }
 
     /// an event when the checkpoint is created
-    public UnityEvent<Checkpoint> OnCreate {
+    public UnityEvent<Placement> OnCreate {
         get => m_OnCreate;
     }
 
@@ -251,7 +251,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
     }
 
     /// the current flower's checkpoint
-    public Checkpoint Checkpoint {
+    public Placement Checkpoint {
         get => m_Flower ? m_Flower.Checkpoint : null;
     }
 

@@ -12,14 +12,14 @@ interface CheckpointContainer {
     Character Character { get; }
 
     /// the checkpoint
-    Checkpoint Checkpoint { get; }
+    Placement Checkpoint { get; }
 
     // TODO: checkpoint and systems are too entangled; checkpoint should read system state (events)
     /// grab the nearby checkpoint
     public void Grab();
 
     /// create the checkpoint
-    public void Create(Checkpoint checkpoint);
+    public void Create(Placement checkpoint);
 }
 
 }

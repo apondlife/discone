@@ -312,41 +312,13 @@ MonoBehaviour:
   m_StartTransform: {fileID: 997830661818433050}
   m_LetterCamera: {fileID: 3093085863227724897}
   m_LetterCameraRevisit: {fileID: 3196646265627599344}
-  m_FinishDelay:
-    m_Duration: 1
-    m_Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 1
-        outSlope: 1
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 1
-        outSlope: 1
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
   m_Mechanic: {fileID: 7545569452688597077, guid: b2916276469f3434fbfd12489a5d0307, type: 3}
   m_Mechanic_EndNode: Intro_End
-  m_Mechanic_JumpToNode: {fileID: 11400000, guid: 24238e53c72c14c908cd529b69ca0357, type: 2}
+  m_Mechanic_Jump: {fileID: 11400000, guid: 24238e53c72c14c908cd529b69ca0357, type: 2}
+  m_Player_Warp: {fileID: 11400000, guid: 41b96b655f18206428efd68aa597a3a2, type: 2}
   m_DreamEnded: {fileID: 11400000, guid: a74cf379fa3594ddba7c29efb14fd39c, type: 2}
   m_GameStep_Started: {fileID: 11400000, guid: 3760c6febd3544659a8cb4427e49df07, type: 2}
-  m_IntroEnded: {fileID: 11400000, guid: 45e1e53611781437c92c6d5390d24c88, type: 2}
   m_CurrentCharacter: {fileID: 11400000, guid: bae15b4b912f1409080da0bc3aa9a5f8, type: 2}
-  m_IsClosingEyes: {fileID: 11400000, guid: d62bdd20844ff42d3b5aeb3242568c15, type: 2}
-  m_Store: {fileID: 11400000, guid: f46ec6bd3c68a40f19357a14468d6730, type: 2}
 --- !u!1 &7442422665961965610
 GameObject:
   m_ObjectHideFlags: 0

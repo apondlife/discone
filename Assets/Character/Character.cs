@@ -76,7 +76,7 @@ public sealed class Character: Character<InputFrame> {
 
     // -- commands --
     /// plant a flower at a checkpoint
-    public void PlantFlower(Checkpoint checkpoint) {
+    public void PlantFlower(Placement checkpoint) {
         m_Checkpoint.Create(checkpoint);
     }
 

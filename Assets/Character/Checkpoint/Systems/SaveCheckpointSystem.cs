@@ -23,7 +23,7 @@ sealed class SaveCheckpointSystem: SimpleSystem<CheckpointContainer > {
             }
         },
         exit: (_, c) => {
-            c.State.Save_PendingCheckpoint = Checkpoint.FromState(c.Character.State.Next);
+            c.State.Save_PendingCheckpoint = Placement.FromState(c.Character.State.Next);
         }
     );
 

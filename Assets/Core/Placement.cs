@@ -2,41 +2,45 @@ using System;
 using ThirdPerson;
 using UnityEngine;
 
-/// a checkpoint position
+namespace Discone {
+
+/// an object placement
 [Serializable]
-public record Checkpoint {
+public record Placement {
     // -- props --
     /// the position
     public Vector3 Position;
 
-    /// the character's facing direction
+    /// the facing direction
     public Vector3 Forward;
 
     // -- lifetime --
     [Obsolete]
-    public Checkpoint() {
+    public Placement() {
     }
 
     /// create a pending checkpoint
-    public Checkpoint(Vector3 position, Vector3 forward) {
+    public Placement(Vector3 position, Vector3 forward) {
         Position = position;
         Forward = forward;
     }
 
     // -- factories --
     /// create checkpoint from the current state frame
-    public static Checkpoint FromState(CharacterState.Frame frame) {
-        return new Checkpoint(
+    public static Placement FromState(CharacterState.Frame frame) {
+        return new Placement(
             frame.Position,
             frame.Forward
         );
     }
 
     /// create checkpoint from a transform
-    public static Checkpoint FromTransform(Transform transform) {
-        return new Checkpoint(
+    public static Placement FromTransform(Transform transform) {
+        return new Placement(
             transform.position,
             transform.forward
         );
     }
+}
+
 }

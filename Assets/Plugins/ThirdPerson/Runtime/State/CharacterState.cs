@@ -327,6 +327,7 @@ public sealed partial class CharacterState {
         }
 
         // -- factories --
+        // TODO: this makes garbage, frames should be pooled
         /// create a copy of this frame
         public Frame Copy() {
             return new Frame(this);

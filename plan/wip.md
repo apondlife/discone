@@ -55,7 +55,6 @@ what is projected
 - make fields readonly
 
 # local multiplayer
-- teleporting characters teleports your friends
 - disconnect?
 - steal camera
 - hold hands (or just other icecreams)

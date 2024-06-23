@@ -17,7 +17,7 @@ public record CheckpointState {
 
     // -- save --
     /// the checkpoint being saved
-    public Checkpoint Save_PendingCheckpoint;
+    public Placement Save_PendingCheckpoint;
 
     // -- load --
     /// the elapsed time

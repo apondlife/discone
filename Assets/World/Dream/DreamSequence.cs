@@ -120,7 +120,7 @@ sealed class DreamSequence: MonoBehaviour {
     void Init() {
         // plant initial flower
         var character = m_CurrentCharacter.Value;
-        character.PlantFlower(Checkpoint.FromTransform(m_StartFlowerPos));
+        character.PlantFlower(Placement.FromTransform(m_StartFlowerPos));
 
         // block subsequent flowers
         var checkpoint = character.Checkpoint;
@@ -202,7 +202,7 @@ sealed class DreamSequence: MonoBehaviour {
     }
 
     /// when the final checkpoint is created
-    void OnCreateCheckpoint(Checkpoint _) {
+    void OnCreateCheckpoint(Placement _) {
         m_DreamEnded.Raise();
         Finish();
     }

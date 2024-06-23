@@ -1,3 +1,4 @@
+using System;
 using ThirdPerson;
 using UnityEngine;
 using UnityAtoms;
@@ -33,6 +34,9 @@ public sealed class Player: Player<InputFrame> {
     [Tooltip("drive this player's character")]
     [SerializeField] CharacterEventInstancer m_DriveCharacter;
 
+    [Tooltip("warps the local player to a location")]
+    [SerializeField] PlacementEvent m_Player_Warp;
+
     // -- refs --
     [Header("refs")]
     [Tooltip("the persistence store")]
@@ -54,7 +58,7 @@ public sealed class Player: Player<InputFrame> {
     PlayerCheckpoint m_Checkpoint;
 
     /// the initial checkpoint to use, if any
-    Checkpoint m_InitialCheckpoint;
+    Placement m_InitialCheckpoint;
 
     /// a set of event subscriptions
     DisposeBag m_Subscriptions = new();
@@ -80,7 +84,8 @@ public sealed class Player: Player<InputFrame> {
         // bind events
         m_Subscriptions
             .Add(m_DriveCharacter.Event, OnDriveCharacter)
-            .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged);
+            .Add(m_IsDialogueActiveChanged, OnIsDialogueActiveChanged)
+            .Add(m_Player_Warp, OnWarp);
     }
 
     protected override void Update() {
@@ -117,7 +122,7 @@ public sealed class Player: Player<InputFrame> {
     }
 
     /// start the character at the given checkpoint
-    public void StartFromCheckpoint(Checkpoint checkpoint) {
+    public void StartFromCheckpoint(Placement checkpoint) {
         m_InitialCheckpoint = checkpoint;
     }
 
@@ -198,6 +203,17 @@ public sealed class Player: Player<InputFrame> {
     /// when the dialog becomes in/active
     void OnIsDialogueActiveChanged(bool isDialogueActive) {
         InputSource.IsEnabled = !isDialogueActive;
+    }
+
+    /// warps the local player to a location
+    void OnWarp(Placement placement) {
+        var character = Character;
+
+        var nextState = character.State.Curr.Copy();
+        nextState.Position = placement.Position;
+        nextState.Forward = placement.Forward;
+
+        character.ForceState(nextState);
     }
 
     // -- props/hot --
