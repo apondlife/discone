@@ -1,9 +1,23 @@
 Shader "ThirdPerson/Character" {
     Properties {
         _MainTex ("Texture", 2D) = "white" {}
+
+        [Header(Sprite)]
+        [Space(5)]
         // TODO: split this into multiple variants
         [ShowAsVector2] _SpriteSheet ("Sprite Rows & Columns", Vector) = (1, 1, 0, 0)
         _CurrentSprite ("Current Sprite Index", Integer) = 0
+
+        [Header(Colors)]
+        [Space(5)]
+        [Toggle] _IsIndexed ("Is Indexed?", Float) = 0
+        _Color0 ("Color 0", Color) = (1, 1, 1, 1)
+        _Color1 ("Color 1", Color) = (1, 1, 1, 1)
+        _Color2 ("Color 2", Color) = (1, 1, 1, 1)
+        _Color3 ("Color 3", Color) = (1, 1, 1, 1)
+        _Color4 ("Color 4", Color) = (1, 1, 1, 1)
+        _Color5 ("Color 5", Color) = (1, 1, 1, 1)
+        _Color6 ("Color 6", Color) = (1, 1, 1, 1)
     }
 
     SubShader {
@@ -71,6 +85,18 @@ Shader "ThirdPerson/Character" {
             // the relative intensity of the ambient light
             float1 _AmbientLightIntensity;
 
+            // if the colors are indexed
+            float1 _IsIndexed;
+
+            // indexed colors
+            fixed4 _Color0;
+            fixed4 _Color1;
+            fixed4 _Color2;
+            fixed4 _Color3;
+            fixed4 _Color4;
+            fixed4 _Color5;
+            fixed4 _Color6;
+
             // -- program --
             FragIn DrawVert(VertIn v) {
                 FragIn o;
@@ -118,7 +144,20 @@ Shader "ThirdPerson/Character" {
             }
 
             fixed4 DrawFrag(FragIn IN) : SV_Target {
-                fixed4 c = tex2D(_MainTex, IN.uv);
+                fixed4 tex = tex2D(_MainTex, IN.uv);
+
+                fixed1 index = tex.r * 7;
+                fixed4 indexed = ceil(tex.g) * (
+                    step(index, 1) * _Color0 +
+                    step(index, 2) * step(1, index) * _Color1 +
+                    step(index, 3) * step(2, index) * _Color2 +
+                    step(index, 4) * step(3, index) * _Color3 +
+                    step(index, 5) * step(4, index) * _Color4 +
+                    step(index, 6) * step(5, index) * _Color5 +
+                    step(index, 7) * step(6, index) * _Color6
+                );
+
+                fixed4 c = lerp(tex, indexed, _IsIndexed);
                 clip(c.a - _Epsilon);
 
                 // lighting (shading + shadows)

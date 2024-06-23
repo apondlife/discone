@@ -8,6 +8,7 @@ what is projected
 
 # ik arms
 - move search dir according to...velocity? input?
+- search for camera and icecreams
 
 # surface
 - unrealized motion (minmove) be converted into inertia?
@@ -57,6 +58,7 @@ what is projected
 # local multiplayer
 - disconnect?
 - steal camera
+- some free camera mode
 - hold hands (or just other icecreams)
 
 # others

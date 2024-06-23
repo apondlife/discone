@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289189455}
-  m_LocalRotation: {x: -0.017977966, y: -0.0000000010752251, z: -1.9333484e-11, w: 0.9998384}
+  m_LocalRotation: {x: -0.01797797, y: 0.0000000010752251, z: 1.933349e-11, w: 0.9998384}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -319,9 +319,15 @@ MonoBehaviour:
       Min: 0
       Max: 0
   m_Hips_Ease:
-    F: 0
-    Z: 0
-    R: 0
+    m_Config:
+      F: 0
+      Z: 0
+      R: 0
+      K1: 0
+      K2: 0
+      K3: 0
+    m_ConfigSource: 0
+    m_IsDisabled: 0
   m_Model: {fileID: 1061133086809451152}
 --- !u!1 &1114928914988804812
 GameObject:
@@ -674,45 +680,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_MoveTilt_Speed: 10
-  m_SurfaceTilt_Speed: 180
-  m_SurfaceTilt_Range:
-    Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 90
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 180
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Dst:
-      Min: 0
-      Max: 40
   m_AnimatorController: {fileID: 9100000, guid: 597f755a64b35974b963a44170d24fb5, type: 2}
 --- !u!1 &7614967429340073447
 GameObject:
@@ -836,16 +803,6 @@ MonoBehaviour:
       Name: NotMoving
     m_IsDisabled: 0
     m_IsLogging: 0
-  m_Crouch:
-    m_Phase:
-      Name: 
-    m_IsDisabled: 0
-    m_IsLogging: 0
-  m_Tilt:
-    m_Phase:
-      Name: NotTilting
-    m_IsDisabled: 0
-    m_IsLogging: 0
   m_Friction:
     m_Phase:
       Name: 
@@ -959,6 +916,18 @@ PrefabInstance:
     - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1224,6 +1193,18 @@ PrefabInstance:
     - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
       propertyPath: m_RootOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7144283029714121346, guid: 481bda897726dce47973bf3fed84e710, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

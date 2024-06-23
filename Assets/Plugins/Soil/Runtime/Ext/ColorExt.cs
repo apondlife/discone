@@ -695,4 +695,12 @@ public static class Color {
     }
 }
 
+public static class ColorExt {
+    /// shift the hue of a unity color
+    public static UnityEngine.Color ShiftHue(this UnityEngine.Color color, float shift) {
+        UnityEngine.Color.RGBToHSV(color, out var h, out var s, out var v);
+        return UnityEngine.Color.HSVToRGB((h + shift) % 1f, s, v);
+    }
+}
+
 }

@@ -1,5 +1,4 @@
 ﻿using ThirdPerson;
-using UnityAtoms;
 using UnityEngine;
 using UnityEngine.Serialization;
 using CharacterEvent = UnityAtoms.CharacterEvent;
@@ -39,6 +38,9 @@ public sealed class Character: Character<InputFrame> {
     /// the online character
     Character_Online m_Online;
 
+    /// the character palette
+    CharacterPalette m_Palette;
+
     /// the trigger collider
     Collider m_Collider;
 
@@ -51,8 +53,9 @@ public sealed class Character: Character<InputFrame> {
         m_Music = GetComponentInChildren<CharacterMusicBase>(true);
         m_Dialogue = GetComponentInChildren<CharacterDialogue>(true);
         m_Checkpoint = GetComponent<CharacterCheckpoint>();
-        m_Collider = GetComponent<Collider>();
         m_Online = GetComponent<Character_Online>();
+        m_Palette = GetComponentInChildren<CharacterPalette>();
+        m_Collider = GetComponent<Collider>();
 
         // debug
         #if UNITY_EDITOR
@@ -119,6 +122,11 @@ public sealed class Character: Character<InputFrame> {
     /// the character's trigger collider
     public Collider Collider {
         get => m_Collider;
+    }
+
+    /// the character's palette
+    public CharacterPalette Palette {
+        get => m_Palette;
     }
 
     // -- factories --

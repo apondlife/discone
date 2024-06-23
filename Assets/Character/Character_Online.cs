@@ -25,9 +25,9 @@ namespace Discone {
 
 /// an online character
 [RequireComponent(typeof(Character))]
-public sealed class Character_Online: NetworkBehaviour {
+public sealed partial class Character_Online: NetworkBehaviour {
     // -- state --
-    [Header("state")]
+    [Header("main")]
     [Tooltip("where the simulation for this character takes place")]
     [SerializeField] CharacterSimulation m_Simulation = CharacterSimulation.None;
 

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -41,24 +39,9 @@ sealed class CharacterDistortion: MonoBehaviour {
     /// .
     CharacterContainer c;
 
-    // the list of distorted materials
-    Material[] m_Materials;
-
-    // -- lifetime --
+    // -- lifecycle --
     void Start() {
-        // set deps
         c = GetComponentInParent<CharacterContainer>();
-
-        // aggregate a list of materials
-        var materials = new HashSet<Material>();
-        var renderers = c.Model
-            .GetComponentsInChildren<Renderer>(true);
-
-        foreach (var renderer in renderers) {
-            materials.UnionWith(renderer.materials);
-        }
-
-        m_Materials = materials.ToArray();
 
         // initialize ease
         m_Ease.Init(Vector3.up);
@@ -111,7 +94,7 @@ sealed class CharacterDistortion: MonoBehaviour {
     void Distort() {
         var plane = new Plane(transform.up, transform.position).AsVector4();
 
-        foreach (var material in m_Materials) {
+        foreach (var material in c.Model.Materials.All) {
             material.SetVector(
                 ShaderProps.Character_Pos,
                 c.State.Next.Position

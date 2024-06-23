@@ -1,4 +1,5 @@
-﻿using Soil;
+﻿using System;
+using Soil;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -71,13 +72,21 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the current jumping leg (0-left, 1-right)
     int m_JumpLeg = 0;
 
+    /// the character's materials
+    CharacterMaterials m_Materials;
+
     // -- deps --
     /// the containing character
     CharacterContainer c;
 
     // -- lifecycle --
+    void Awake() {
+        // init materials collection
+        m_Materials = new CharacterMaterials(this);
+    }
+
     void Start() {
-        // set dependencies
+         // set dependencies
         c = GetComponentInParent<CharacterContainer>();
 
         // init animator
@@ -220,7 +229,6 @@ public sealed class CharacterModel: MonoBehaviour {
         );
     }
 
-
     static void SetDefaultLayersRecursively(GameObject parent, int layer) {
         if (parent.layer == 0) {
             parent.layer = layer;
@@ -229,6 +237,11 @@ public sealed class CharacterModel: MonoBehaviour {
         foreach(Transform child in parent.transform) {
             SetDefaultLayersRecursively(child.gameObject, layer);
         }
+    }
+
+    // -- queries --
+    public CharacterMaterials Materials {
+        get => m_Materials;
     }
 }
 

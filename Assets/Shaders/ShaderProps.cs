@@ -69,6 +69,17 @@ static class ShaderProps {
 
     /// the spritesheet current sprite
     public static readonly int CurrentSprite = Shader.PropertyToID("_CurrentSprite");
+
+    /// the palette colors
+    public static readonly ShaderProp[] Colors = new ShaderProp[] {
+        new("Color0"),
+        new("Color1"),
+        new("Color2"),
+        new("Color3"),
+        new("Color4"),
+        new("Color5"),
+        new("Color6"),
+    };
 }
 
 }

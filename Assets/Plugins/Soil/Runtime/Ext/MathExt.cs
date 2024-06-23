@@ -10,6 +10,7 @@ public static class Mathx {
     public const float TAU = Mathf.PI * 2f;
     public const float PI_2 = Mathf.PI / 2f;
     public const float TINY = 1e-6f;
+    public const float PHI = 1.6180339f;
 
     // -- queries --
     /// zeroes a float near zero

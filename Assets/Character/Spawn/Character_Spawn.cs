@@ -6,6 +6,10 @@ namespace Discone {
 
 /// spawns the character at a particular position on start
 sealed class Character_Spawn: NetworkBehaviour {
+    /// -- statics --
+    /// the amount to hue shift the next character by
+    static float s_NextShift = 0f;
+
     // -- fields --
     [Header("fields")]
     [Tooltip("the character to spawn")]
@@ -50,6 +54,10 @@ sealed class Character_Spawn: NetworkBehaviour {
             record.Pos + offset * Vector3.up,
             record.Rot
         );
+
+        // shift the hue of the characters in fibonnacci
+        newCharacter.Online.ShiftHue(s_NextShift);
+        s_NextShift += Soil.Mathx.PHI;
 
         #if UNITY_EDITOR
         var name = $"{record.Key.Name()} <spawned@{srcNetId}>";

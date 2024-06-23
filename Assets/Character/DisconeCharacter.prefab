@@ -97,10 +97,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Top: {x: 0, y: 3.5, z: 0}
-  m_Intensity: 1
-  m_NegativeScale: 1
-  m_PositiveScale: 1
-  m_JumpSquat_Intensity:
+  m_AxialScale: 1
+  m_RadialScale: 1
+  m_Intensity_JumpSquat:
     Curve:
       serializedVersion: 2
       m_Curve:
@@ -128,12 +127,23 @@ MonoBehaviour:
     Dst:
       Min: 1
       Max: 0.1
-  m_VerticalAcceleration_StretchIntensity: 0.0069
-  m_VerticalAcceleration_SquashIntensity: 1.5
-  m_VerticalAcceleration_IntensitySpeed: 1020
-  m_VerticalAcceleration_IntensityDamp: 0.64
-  m_IntensitySpeed: 1.6302729e-16
-  destIntensity: 1
+  m_Intensity_Acceleration:
+    Min: 0
+    Max: 0
+  m_Intensity_Velocity:
+    Min: 0
+    Max: 0
+  m_Responsiveness: 0
+  m_Ease:
+    m_Config:
+      F: 0
+      Z: 0
+      R: 0
+      K1: 0
+      K2: 0
+      K3: 0
+    m_ConfigSource: 0
+    m_IsDisabled: 0
 --- !u!1 &6559145621683823563
 GameObject:
   m_ObjectHideFlags: 0
@@ -165,7 +175,7 @@ Transform:
   m_Children:
   - {fileID: 676918594969115258}
   m_Father: {fileID: 3345656352466467715}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5285072794697494767
 MonoBehaviour:
@@ -492,7 +502,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2658272896437064793, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3032161264613087381, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
       propertyPath: m_GroundLayers.m_Bits
@@ -732,7 +742,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7250430580801210356, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
   m_PrefabInstance: {fileID: 5171227752169666152}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 3400361651850103159}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b04aa04aaec9e841bd620ab61ec9231, type: 3}
@@ -825,6 +835,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  m_Presentation: {fileID: 5372904203460535452}
   m_Simulation: 2
   m_IsInitial: 0
   m_IsAvailable: 1
@@ -836,10 +847,7 @@ MonoBehaviour:
     Force: {x: 0, y: 0, z: 0}
     Acceleration: {x: 0, y: 0, z: 0}
     Forward: {x: 0, y: 0, z: 1}
-    IsLanding: 0
     IsInJumpSquat: 0
-    IsCrouching: 0
-    Tilt: {x: 0, y: 0, z: 0, w: 1}
     Surfaces: []
     MainSurface:
       Normal: {x: 0, y: 0, z: 0}
@@ -856,27 +864,26 @@ MonoBehaviour:
     Surface_Drag: 0
     Surface_KineticFriction: 0
     Surface_StaticFriction: 0
-    PivotFrame: -1
     PivotDirection: {x: 0, y: 0, z: 0}
-    CrouchDirection: {x: 0, y: 0, z: 0}
-    Jumps: 0
+    NextJump:
+      Index: 0
+      Count: 0
+    ActiveJump:
+      Index: 0
+      Count: 0
     JumpSurface:
       Normal: {x: 0, y: 0, z: 0}
       Point: {x: 0, y: 0, z: 0}
       Source: 0
       Angle: 0
     CoyoteTime: 0
+    Jump_Elapsed: 0
+    Jump_ReleasedAt: 0
     Jump_CooldownElapsed: 0
     Jump_CooldownDuration: 0
-    JumpTuningIndex: 0
-    JumpTuningJumpIndex: 0
     Events:
       Mask: 0
     CollisionState:
-      PhaseName: 
-      PhaseStart: 0
-      PhaseElapsed: 0
-    CrouchState:
       PhaseName: 
       PhaseStart: 0
       PhaseElapsed: 0
@@ -897,10 +904,6 @@ MonoBehaviour:
       PhaseStart: 0
       PhaseElapsed: 0
     SurfaceState:
-      PhaseName: 
-      PhaseStart: 0
-      PhaseElapsed: 0
-    TiltState:
       PhaseName: 
       PhaseStart: 0
       PhaseElapsed: 0
@@ -952,16 +955,6 @@ MonoBehaviour:
     m_IsDisabled: 0
     m_IsLogging: 0
   m_Movement:
-    m_Phase:
-      Name: 
-    m_IsDisabled: 0
-    m_IsLogging: 0
-  m_Crouch:
-    m_Phase:
-      Name: 
-    m_IsDisabled: 0
-    m_IsLogging: 0
-  m_Tilt:
     m_Phase:
       Name: 
     m_IsDisabled: 0
@@ -1025,6 +1018,24 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_CurrentHat: none
+--- !u!1 &3400361651850103159 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7562501268775911199, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
+  m_PrefabInstance: {fileID: 5171227752169666152}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5372904203460535452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3400361651850103159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8da7cb79c43c14f45bbb017fd264bd23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShiftedColors: 0
 --- !u!136 &5171227753990201921 stripped
 CapsuleCollider:
   m_CorrespondingSourceObject: {fileID: 1972163625, guid: 6ac263661e4cf8c48947fd3159a3ba58, type: 3}
