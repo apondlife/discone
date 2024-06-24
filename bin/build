@@ -44,7 +44,7 @@ CheckEnv() {
   fi
 }
 
-# ensure a clean status
+# ensure a clean git state
 CheckStatus() {
   if [ -n "$(git status --porcelain)" ]; then
     pf 3 "there are uncommitted changes! this could lead to an unstable build: please commit, stash, &c."
