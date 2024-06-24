@@ -8,6 +8,7 @@ wh="\033[1;37m"
 ge="\033[0;32m"
 rd="\033[0;31m"
 ga="\033[0;90m"
+bd="\033[0;1m"
 
 # -- styles --
 uga="\033[90;4m"
@@ -36,7 +37,7 @@ pu() {
 
 # print info
 pi() {
-  printf "${wh}- ${nc}%b${nc}\n" "$1"
+  printf "${ga}- ${nc}%b${nc}\n" "$1"
 }
 
 # print error

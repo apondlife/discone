@@ -28,7 +28,7 @@ done
 
 # -- commands --
 # create .env in missing
-CheckEnv() {
+CreateEnv() {
   if [ ! -f .env ]; then
     if [ ! -f .env.sample ]; then
       pe "you need a .env (and a .env.sample to create it from)"
@@ -41,13 +41,6 @@ CheckEnv() {
     cp .env.sample .env
 
     exit 3
-  fi
-}
-
-# ensure a clean git state
-CheckStatus() {
-  if [ -n "$(git status --porcelain)" ]; then
-    pf 3 "there are uncommitted changes! this could lead to an unstable build: please commit, stash, &c."
   fi
 }
 
@@ -80,11 +73,8 @@ Build() {
 Main() {
   FindOs
 
-  # validate environment
-  CheckEnv
-  CheckStatus
-
-  # load env
+  # create or load env
+  CreateEnv
   LoadEnv
 
   # validate env
@@ -94,6 +84,10 @@ Main() {
 
   if ps x | grep -v grep | grep "$UNITY_PATH -projectpath .*discone" > /dev/null; then
     pf 5 "unity is running! the build script can't run when unity is open"
+  fi
+
+  if [ -n "$(git status --porcelain)" ]; then
+    pf 6 "there are uncommitted changes! this could lead to an unstable build: please commit, stash, &c."
   fi
 
   # run build

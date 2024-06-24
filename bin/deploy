@@ -7,7 +7,7 @@
 
 # -- constants --
 # the path of the game on itch (sans target)
-ITCH_PATH="withpondlife/discone"
+ITCH_PROJECT="withpondlife/discone"
 
 # the path to the version file
 VERSION_PATH="VERSION"
@@ -41,6 +41,8 @@ Tag() {
   # create the tag
   git tag "$tag_name"
   git push origin "$tag_name"
+
+  pi "tag  ${bd}$tag_name${nc}"
 }
 
 # deploy each build in the dir at path; assumes the child name is the butler
@@ -52,19 +54,23 @@ Deploy() {
   # switch to the build dir
   cd "$BUILD" || exit 99
 
-  # tag channel with variant, unless release
-  tag=""
+  # tag project with variant, unless release
+  project="$ITCH_PROJECT"
   if [ "$VARIANT" != "$VARIANT_RELEASE" ]; then
-    tag="-$VARIANT"
+    project="-$VARIANT"
   fi
 
   # push butler build
   for target in *; do
+    pi "push $target -> itch [$project:$target]"
+
     "$BUTLER_PATH" push \
       "$target" \
-      "$ITCH_PATH$tag:$target" \
+      "$project:$target" \
       "--userversion-file=$version_path"
   done
+
+  ps "deployed"
 }
 
 # -- main --
@@ -75,6 +81,10 @@ Main() {
   # validate env
   if [ ! -f "$BUTLER_PATH" ]; then
     pf 2 "butler (.env->BUTLER_PATH) does not exist at '$BUTLER_PATH'"
+  fi
+
+  if [ -n "$(git status --porcelain)" ]; then
+    pf 3 "there are uncommitted changes! this could lead to an unstable deploy: please commit, stash, &c."
   fi
 
   # validate args
