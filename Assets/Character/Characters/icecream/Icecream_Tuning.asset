@@ -60,14 +60,16 @@ MonoBehaviour:
     Dst:
       Min: 10
       Max: 35
+  Aerial_Acceleration: 10
   TurnSpeed: 360
+  TurnSpeed_Aerial: 60
+  TurnSpeed_Crouch: 0
+  TurnSpeed_AerialCrouch: 0
   PivotSpeed: 1080
   TimeToPivot: 0.6
   PivotStartThreshold: 240
   PivotEndThreshold: 10
   PivotSpeedThreshold: 10
-  Air_TurnSpeed: 330
-  AerialDriftAcceleration: 10
   Crouch_Power:
     m_Delay: 0.7
     m_AttackValue: 1
@@ -116,7 +118,6 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_Duration: 0
   Crouch_StaticFriction: 60
-  Crouch_TurnSpeed: 0
   Crouch_InlineScale:
     Curve:
       serializedVersion: 2

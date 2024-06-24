@@ -20,6 +20,7 @@ mired in debt
 - if you stop on static friction, decreasing the friction doesn't start moving the character
 - should forcestate set curr?
 - model should always use Next (or some interpolated version)
+- aspect ratio stretches the game
 
 # debt
 - need to manually enable input actions

@@ -27,9 +27,28 @@ public sealed partial class CharacterTuning: ScriptableObject {
     [Tooltip("the movement acceleration as a fn of surface angle")]
     public MapOutCurve Surface_Acceleration;
 
+    [FormerlySerializedAs("AerialDriftAcceleration")]
+    [Tooltip("the planar acceleration while floating")]
+    public float Aerial_Acceleration;
+
+    // -- turn speed --
+    [Header("turn speed")]
     [Tooltip("the turn speed in degrees")]
     public float TurnSpeed;
 
+    [FormerlySerializedAs("Air_TurnSpeed")]
+    [Tooltip("the turn speed while airborne")]
+    public float TurnSpeed_Aerial;
+
+    [FormerlySerializedAs("Crouch_TurnSpeed")]
+    [Tooltip("the turn speed while crouching")]
+    public float TurnSpeed_Crouch;
+
+    [Tooltip("the turn speed while crouching in the air")]
+    public float TurnSpeed_AerialCrouch;
+
+    // -- pivot --
+    [Header("pivot")]
     [Tooltip("the pivot speed in degrees")]
     public float PivotSpeed;
 
@@ -54,12 +73,6 @@ public sealed partial class CharacterTuning: ScriptableObject {
         get => PivotSpeedThreshold * PivotSpeedThreshold;
     }
 
-    [Tooltip("the turn speed while airborne")]
-    public float Air_TurnSpeed;
-
-    [Tooltip("the planar acceleration while floating")]
-    public float AerialDriftAcceleration;
-
     // -- crouch --
     [Foldout("crouch")]
     [Tooltip("the crouch power as a fn of time crouching")]
@@ -67,9 +80,6 @@ public sealed partial class CharacterTuning: ScriptableObject {
 
     [Tooltip("the static friction value when crouching")]
     public float Crouch_StaticFriction;
-
-    [Tooltip("the turn speed while crouching")]
-    public float Crouch_TurnSpeed;
 
     [Tooltip("the inline inpucharacter model when crouching/sliding")]
     public MapOutCurve Crouch_InlineScale;

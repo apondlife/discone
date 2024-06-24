@@ -198,7 +198,7 @@ sealed class MovementSystem: CharacterSystem {
         c.State.Next.Surface_KineticFriction = nextKineticFriction;
 
         // turn towards input direction
-        TurnTowards(c.Inputs.Move, c.Tuning.Crouch_TurnSpeed, delta, c);
+        TurnTowards(c.Inputs.Move, c.Tuning.TurnSpeed_Crouch, delta, c);
     }
 
     static void Sliding_Exit(System<CharacterContainer> s, CharacterContainer c) {
@@ -261,15 +261,11 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // rotate towards input direction
-        // TODO: this should be a discone feature, not a third person one
-        // the ability to modify tuning at run time
-        // TODO: reevaluate
-        if (c.Inputs.IsJumpPressed) {
-            TurnTowards(c.Inputs.Move, c.Tuning.Air_TurnSpeed, delta, c);
-        }
+        var turnSpeed = c.Inputs.IsJumpPressed ? c.Tuning.TurnSpeed_AerialCrouch : c.Tuning.TurnSpeed_Aerial;
+        TurnTowards(c.Inputs.Move, turnSpeed, delta, c);
 
         // add aerial drift
-        var a = c.Inputs.Move * c.Tuning.AerialDriftAcceleration;
+        var a = c.Inputs.Move * c.Tuning.Aerial_Acceleration;
         c.State.Next.Force += a;
     }
 
