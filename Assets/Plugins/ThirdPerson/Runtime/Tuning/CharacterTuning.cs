@@ -34,18 +34,18 @@ public sealed partial class CharacterTuning: ScriptableObject {
     // -- turn speed --
     [Header("turn speed")]
     [Tooltip("the turn speed in degrees")]
-    public float TurnSpeed;
+    public MapOutCurve TurnSpeed;
 
     [FormerlySerializedAs("Air_TurnSpeed")]
     [Tooltip("the turn speed while airborne")]
-    public float TurnSpeed_Aerial;
+    public MapOutCurve TurnSpeed_Aerial;
 
     [FormerlySerializedAs("Crouch_TurnSpeed")]
     [Tooltip("the turn speed while crouching")]
-    public float TurnSpeed_Crouch;
+    public MapOutCurve TurnSpeed_Crouch;
 
     [Tooltip("the turn speed while crouching in the air")]
-    public float TurnSpeed_AerialCrouch;
+    public MapOutCurve TurnSpeed_AerialCrouch;
 
     // -- pivot --
     [Header("pivot")]

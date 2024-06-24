@@ -61,10 +61,64 @@ MonoBehaviour:
       Min: 10
       Max: 35
   Aerial_Acceleration: 10
-  TurnSpeed: 360
-  TurnSpeed_Aerial: 60
-  TurnSpeed_Crouch: 0
-  TurnSpeed_AerialCrouch: 0
+  TurnSpeed:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 360
+      Max: 360
+  TurnSpeed_Aerial:
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: -0.0000000010167132
+        outSlope: -0.0000000010167132
+        tangentMode: 0
+        weightedMode: 2
+        inWeight: 0
+        outWeight: 0.6977201
+      - serializedVersion: 3
+        time: 179.64624
+        value: 1
+        inSlope: -0
+        outSlope: -0
+        tangentMode: 0
+        weightedMode: 1
+        inWeight: 0.33832222
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 60
+      Max: 360
+  TurnSpeed_Crouch:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  TurnSpeed_AerialCrouch:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
   PivotSpeed: 1080
   TimeToPivot: 0.6
   PivotStartThreshold: 240

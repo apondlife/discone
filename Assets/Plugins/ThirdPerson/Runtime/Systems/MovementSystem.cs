@@ -271,6 +271,16 @@ sealed class MovementSystem: CharacterSystem {
 
     // -- commands --
     /// turn the character towards the direction by turn speed; impure command
+    static void TurnTowards(Vector3 direction, MapOutCurve turnSpeed, float delta, CharacterContainer c) {
+        var angle = Vector3.Angle(
+            c.State.Curr.Forward,
+            c.Inputs.Move
+        );
+
+        TurnTowards(direction, turnSpeed.Evaluate(angle), delta, c);
+    }
+
+    /// turn the character towards the direction by turn speed; impure command
     static void TurnTowards(Vector3 direction, float turnSpeed, float delta, CharacterContainer c) {
         // if no direction, do nothing
         if (direction.sqrMagnitude <= 0.0f) {
