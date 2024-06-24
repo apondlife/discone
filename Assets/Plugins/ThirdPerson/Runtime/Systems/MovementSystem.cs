@@ -148,7 +148,6 @@ sealed class MovementSystem: CharacterSystem {
         // check alignment between input and crouch
         var inputAngle = Vector3.Angle(inputDir, moveDir);
         var inputDotCrouch = Mathf.Cos(inputAngle * Mathf.Deg2Rad);
-        var inputMag = Mathf.Abs(inputDotCrouch);
 
         // if the input is not in the direction of the crouch, we're braking,
         // otherwise, slide.
@@ -158,7 +157,7 @@ sealed class MovementSystem: CharacterSystem {
 
         var nextDrag = Mathf.LerpUnclamped(
             c.Tuning.Friction_SurfaceDrag,
-            drag.Evaluate(inputMag),
+            drag.Evaluate(inputAngle),
             power
         );
 
@@ -168,7 +167,7 @@ sealed class MovementSystem: CharacterSystem {
 
         var nextKineticFriction = Mathf.LerpUnclamped(
             c.Tuning.Friction_Kinetic,
-            kineticFriction.Evaluate(inputMag),
+            kineticFriction.Evaluate(inputAngle),
             power
         );
 
@@ -180,11 +179,12 @@ sealed class MovementSystem: CharacterSystem {
         // scale input inline & cross as a fn of input x move angle
         var inputInline = c.Tuning.Crouch_InlineScale.Evaluate(inputAngle) * inputDirInline;
         var inputCross = c.Tuning.Crouch_CrossScale.Evaluate(inputAngle) * inputDirCross;
+        var inputSlide = inputInline + inputCross;
 
-        // NOTE: should this be lerped?
-        var inputSlide = Vector3.LerpUnclamped(
-            c.Inputs.Move,
-            inputInline + inputCross,
+        // lerp input based on power
+        inputSlide = Vector3.LerpUnclamped(
+            inputDirInline + inputDirCross,
+            inputSlide,
             power
         );
 

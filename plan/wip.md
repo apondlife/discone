@@ -26,9 +26,7 @@ what is projected
 - cooldown on surfaces (?)
 
 # crouch
-- crouch dynamic ease
-  - extract dynamic ease tuning
-- aerial crouch rotation
+- extract dynamic ease tuning
 - better grounded look direction
 - interpolate between crouch & ik legs
 - crouch ik slide

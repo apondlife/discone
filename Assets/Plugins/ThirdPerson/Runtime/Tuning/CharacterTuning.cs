@@ -94,16 +94,16 @@ public sealed partial class CharacterTuning: ScriptableObject {
         get => Crouch_Gravity - Gravity;
     }
 
-    [Tooltip("the kinetic friction when crouching towards movement")]
+    [Tooltip("the kinetic friction when crouching towards movement as a fn of input angle")]
     public MapOutCurve Crouch_PositiveKineticFriction;
 
-    [Tooltip("the kinetic friction when crouching against movement")]
+    [Tooltip("the kinetic friction when crouching against movement as a fn of input angle")]
     public MapOutCurve Crouch_NegativeKineticFriction;
 
-    [Tooltip("the drag when crouching towards movement")]
+    [Tooltip("the drag when crouching towards movement as a fn of input angle")]
     public MapOutCurve Crouch_PositiveDrag;
 
-    [Tooltip("the drag when crouching against movement")]
+    [Tooltip("the drag when crouching against movement as a fn of input angle")]
     public MapOutCurve Crouch_NegativeDrag;
 
     // -- jump --

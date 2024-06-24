@@ -125,7 +125,7 @@ MonoBehaviour:
   PivotEndThreshold: 10
   PivotSpeedThreshold: 10
   Crouch_Power:
-    m_Delay: 0.7
+    m_Delay: 0
     m_AttackValue: 1
     m_Attack:
       m_Curve:
@@ -152,7 +152,7 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      m_Duration: 0
+      m_Duration: 0.7
     m_HoldDuration: 0
     m_Decay:
       m_Curve:
@@ -217,7 +217,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     Dst:
       Min: 0
-      Max: 1
+      Max: 0
   Crouch_CrossScale:
     Curve:
       serializedVersion: 2
@@ -244,8 +244,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     Dst:
-      Min: 1
-      Max: 1
+      Min: 0.2
+      Max: 0.2
   Crouch_Gravity: -150
   Crouch_PositiveKineticFriction:
     Curve:
@@ -253,52 +253,24 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
-        inSlope: 1
-        outSlope: 1
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
         value: 1
-        inSlope: 1
-        outSlope: 1
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Dst:
-      Min: 40
-      Max: 40
-  Crouch_NegativeKineticFriction:
-    Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: -1
-        value: 1
-        inSlope: -1
-        outSlope: -1
+        inSlope: -0.011111111
+        outSlope: -0.011111111
         tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0
+        time: 90
         value: 0
-        inSlope: -1
+        inSlope: -0.011111111
         outSlope: Infinity
         tangentMode: 101
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1
+        time: 180
         value: 0
         inSlope: 0
         outSlope: 0
@@ -310,7 +282,44 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     Dst:
-      Min: 40
+      Min: 4
+      Max: 8
+  Crouch_NegativeKineticFriction:
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 90
+        value: 0
+        inSlope: Infinity
+        outSlope: 0.011111111
+        tangentMode: 71
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 180
+        value: 1
+        inSlope: 0.011111111
+        outSlope: 0.011111111
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 8
       Max: 50
   Crouch_PositiveDrag:
     Curve:
@@ -318,21 +327,30 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
-        inSlope: 1
-        outSlope: 1
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
         value: 1
-        inSlope: 1
-        outSlope: 1
+        inSlope: -0.011111111
+        outSlope: -0.011111111
         tangentMode: 34
         weightedMode: 0
         inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 90
+        value: 0
+        inSlope: -0.011111111
+        outSlope: Infinity
+        tangentMode: 101
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 180
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -349,19 +367,28 @@ MonoBehaviour:
         value: 0
         inSlope: 0
         outSlope: 0
-        tangentMode: 136
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 90
+        value: 0
+        inSlope: Infinity
+        outSlope: 0.011111111
+        tangentMode: 71
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
+        time: 180
+        value: 1
+        inSlope: 0.011111111
+        outSlope: 0.011111111
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
