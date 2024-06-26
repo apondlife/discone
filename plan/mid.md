@@ -3,7 +3,8 @@ mired in debt
 
 # bugs/problems
 - aspect ratio stretches the game
-- **ICE CREAMS HEAD IS FUCKEE+D***=
+- head is looking down when idle
+- head gets distorted over time by the hair
 - flowers spawn from center
 - icecream can stand on the curve of the capsule
 - inertia sometimes explodes when character is stuck

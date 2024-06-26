@@ -11,6 +11,9 @@ public struct AdsrCurve {
     public const float NotReleased = float.MaxValue;
 
     // -- fields --
+    [Tooltip("the initial value")]
+    [SerializeField] float m_InitialValue;
+
     [Tooltip("the time it takes for the curve to start")]
     [SerializeField] float m_Delay;
 
@@ -46,8 +49,9 @@ public struct AdsrCurve {
         // calculate progress through the adsr pre-release
         elapsed -= releaseElapsed;
 
+        // delay
         if (elapsed > 0f && elapsed <= m_Delay) {
-            value = 0f;
+            value = m_InitialValue;
         }
 
         // move past delay
@@ -55,7 +59,11 @@ public struct AdsrCurve {
 
         // if we're in attack, attack towards the attack value
         if (elapsed > 0f && elapsed <= m_Attack.Duration) {
-            value = m_Attack.Evaluate(elapsed) * m_AttackValue;
+            value = Mathf.Lerp(
+                m_InitialValue,
+                m_AttackValue,
+                m_Attack.Evaluate(elapsed)
+            );
         }
 
         // move past attack

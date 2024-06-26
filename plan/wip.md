@@ -18,7 +18,7 @@ what is projected
 - indication of change in perception (particle effect), to help with knowing that you missed a wall
 
 # jump
-- jump ik legs 
+- jump ik legs
 - jump di? (input direction)
 - canceling some proportion of momentum in input opposing velocity (di?)
 - jump leniency on surface transfer (perception?)
@@ -32,7 +32,6 @@ what is projected
 - crouch ik slide
 - look into crouching sliding down ramps
 - crouch gravity (previously, fastfall, fastslide)? (per jump)
-- tuning
 
 # pivot
 - make pivot faster (or at least be able to do so)

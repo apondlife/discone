@@ -18,10 +18,6 @@ sealed class CharacterDistortion: MonoBehaviour {
     [Tooltip("a scale on intensity around the plane's axis (inversely proportional to axial)")]
     [SerializeField] float m_RadialScale;
 
-    [FormerlySerializedAs("m_JumpSquat_Intensity")]
-    [Tooltip("the intensity of the jump squat stretch & squash, 0 full squash, 1 no distortion, infinity infinitely stretched")]
-    [SerializeField] MapOutCurve m_Intensity_JumpSquat;
-
     [Tooltip("the stretch and squash intensity acceleration scale, 0 full squash, 1 no distortion, infinity infinitely stretched")]
     [SerializeField] FloatRange m_Intensity_Acceleration;
 
@@ -63,10 +59,22 @@ sealed class CharacterDistortion: MonoBehaviour {
 
         // if in jump squat, add jump squash
         if (c.State.Next.IsInJumpSquat) {
-            var jumpTuning = c.Tuning.NextJump(c.State);
-            var jumpPower = jumpTuning.Power(c.State.Next.JumpState.PhaseElapsed);
+            var jumpId = c.State.Next.NextJump;
+            var jumpSquatElapsed = c.State.Next.JumpState.PhaseElapsed;
 
-            destIntensity = m_Intensity_JumpSquat.Evaluate(jumpPower);
+            var jumpSquashIntensity = 0f;
+
+            // use the squash curve if available
+            var jumpTuning = c.Tuning.Model.JumpById(jumpId);
+            if (jumpTuning != null) {
+                jumpSquashIntensity = jumpTuning.Squash.Evaluate(jumpSquatElapsed);
+            }
+            // otherwise, just use raw power
+            else {
+                jumpSquashIntensity = c.Tuning.JumpById(jumpId).Power(jumpSquatElapsed);
+            }
+
+            destIntensity = jumpSquashIntensity;
         }
         // otherwise, stretch/squash based on vertical the acceleration/velocity relationship
         else {

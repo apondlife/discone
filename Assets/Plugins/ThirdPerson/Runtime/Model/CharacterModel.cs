@@ -1,5 +1,4 @@
-﻿using System;
-using Soil;
+﻿using Soil;
 using UnityEngine;
 
 namespace ThirdPerson {
