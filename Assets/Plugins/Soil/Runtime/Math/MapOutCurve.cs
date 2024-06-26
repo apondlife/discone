@@ -7,7 +7,7 @@ namespace Soil {
 /// a normalized curve with a min & max value
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "MapOutCurve")]
 [Serializable]
-public struct MapOutCurve {
+public struct MapOutCurve: FloatTransform {
     // -- fields --
     [FormerlySerializedAs("m_Curve")]
     [Tooltip("the curve")]
@@ -17,12 +17,12 @@ public struct MapOutCurve {
     [Tooltip("the destination range")]
     public FloatRange Dst;
 
-    // -- queries --
-    /// evaluate the curve in the range
+    // -- FloatTransform --
     public float Evaluate(float input) {
         return Evaluate(Curve, Dst, input);
     }
 
+    // -- queries --
     /// evaluate the curve in the range
     public static float Evaluate(
         AnimationCurve curve,

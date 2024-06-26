@@ -15,6 +15,15 @@ public static class SerializedPropertyExt {
     }
 
     // -- queries --
+    /// find the relative property by path; prefixes the name of private props
+    public static SerializedProperty FindProp(
+        this SerializedProperty prop,
+        string path,
+        bool isPrivate = false
+    ) {
+        return prop.FindPropertyRelative(isPrivate ? $"m_{path}" : path);
+    }
+
     /// find the associated value-typed property for a serialized property
     public static bool FindValue<T>(
         this SerializedProperty prop,

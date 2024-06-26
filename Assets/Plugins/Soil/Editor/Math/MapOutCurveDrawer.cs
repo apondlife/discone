@@ -17,8 +17,8 @@ public sealed class MapOutCurveDrawer: PropertyDrawer {
         E.BeginProperty(r, label, prop);
 
         // get attrs
-        var curve = prop.FindPropertyRelative(nameof(MapOutCurve.Curve));
-        var range = prop.FindPropertyRelative(nameof(MapOutCurve.Dst));
+        var dst = prop.FindProp(nameof(MapOutCurve.Dst));
+        var curve = prop.FindProp(nameof(MapOutCurve.Curve));
 
         // draw label w/ indent
         E.LabelField(r, label);
@@ -32,6 +32,34 @@ public sealed class MapOutCurveDrawer: PropertyDrawer {
         r.x += lw;
         r.width -= lw;
 
+        // draw the input
+        DrawInput(r, dst, curve);
+
+        // reset indent level
+        E.indentLevel = indent;
+
+        E.EndProperty();
+    }
+
+    // -- commands --
+    /// draw the input for a map out curve
+    public static void DrawInput(
+        Rect r,
+        SerializedProperty dst,
+        SerializedProperty curve
+    ) {
+        var dstMin = dst.FindProp(nameof(FloatRange.Min));
+        var dstMax = dst.FindProp(nameof(FloatRange.Max));
+        DrawInput(r, dstMin, dstMax, curve);
+    }
+
+    /// draw the input for a map out curve
+    public static void DrawInput(
+        Rect r,
+        SerializedProperty dstMin,
+        SerializedProperty dstMax,
+        SerializedProperty curve
+    ) {
         // draw the curve
         var rc = r;
         rc.width = k_CurveWidth;
@@ -43,12 +71,7 @@ public sealed class MapOutCurveDrawer: PropertyDrawer {
         var delta = rc.width + Theme.Gap3;
         r.x += delta;
         r.width -= delta;
-        FloatRangeDrawer.DrawInput(r, range);
-
-        // reset indent level
-        E.indentLevel = indent;
-
-        E.EndProperty();
+        FloatRangeDrawer.DrawInput(r, dstMin, dstMax);
     }
 }
 

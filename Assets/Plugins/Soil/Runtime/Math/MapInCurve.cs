@@ -7,7 +7,7 @@ namespace Soil {
 /// a normalized curve with a source range
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "MapInCurve")]
 [Serializable]
-public struct MapInCurve {
+public struct MapInCurve: FloatTransform {
     // -- fields --
     [FormerlySerializedAs("m_Curve")]
     [Tooltip("the curve")]
@@ -17,8 +17,7 @@ public struct MapInCurve {
     [Tooltip("the source range")]
     public FloatRange Src;
 
-    // -- queries --
-    /// evaluate the value along the curve
+    // -- FloatTransform --
     public float Evaluate(float input) {
         var k = Src.InverseLerp(input);
 

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Soil {
 
+// TODO: extract timer config similar to DynamicEase
 /// a timer that curves its progress
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "EaseTimer")]
 [Serializable]
@@ -32,7 +33,7 @@ public record EaseTimer {
     public EaseTimer(): this(0.0f) {}
     public EaseTimer(
         float duration,
-        AnimationCurve curve = null
+        UnityEngine.AnimationCurve curve = null
     ) {
         m_Elapsed = k_Inactive;
         m_Duration = duration;
