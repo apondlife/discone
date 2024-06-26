@@ -92,7 +92,7 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
 
         // if no head bone, this character has no head, destroy self
         if (m_HeadBone == null) {
-            Log.Model.W($"destroying head for character: {m_Animator.transform.parent.name}");
+            Log.Model.W($"destroying head for character: {c.Name}");
             // TODO: how to remove this from the m_Limbs array (maybe the rig can take care of that)
             Destroy(gameObject);
             return;
@@ -117,7 +117,6 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
         );
 
         if (m_Weight != 0.0f) {
-            var t = transform;
             m_Animator.SetLookAtPosition(RotToPos(m_CurrRotation));
         }
     }

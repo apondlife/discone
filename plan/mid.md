@@ -2,12 +2,13 @@ mired in debt
 ---
 
 # bugs/problems
+- aspect ratio stretches the game
 - **ICE CREAMS HEAD IS FUCKEE+D***=
+- flowers spawn from center
 - icecream can stand on the curve of the capsule
 - inertia sometimes explodes when character is stuck
 - make log.i go to correct place in code (dll with log & code excluded from project)
 - grip (or something) pulls you over corners weirdly (on the frame collision misses; should it pull you towards the hit point?)
-- can't get into jumpsquat after first aerial jump (if there's not infinite air jumps)
 - jumping in a tight corner (wall & ground) sometimes has no effect (happens in birthplace)
 - transfer in a vpipe doesn't work nicely
 - recover broken overworld terrain (git history)
@@ -20,12 +21,11 @@ mired in debt
 - if you stop on static friction, decreasing the friction doesn't start moving the character
 - should forcestate set curr?
 - model should always use Next (or some interpolated version)
-- aspect ratio stretches the game
+- can't get into jumpsquat after first aerial jump (if there's not infinite air jumps)
+- head ik rotates too far
 
 # debt
 - need to manually enable input actions
-- head ik direction only works for some models
-- default speed of head ik is poorly tuned
 - having zero jumps is not considered
 - rename character* to model* (generally reconsider 3p namespaces)
 - compiling stuff out in debug/development (but still want it for testing maybe)
