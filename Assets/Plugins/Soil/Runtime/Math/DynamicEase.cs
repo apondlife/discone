@@ -12,10 +12,12 @@ public struct DynamicEase {
     [Tooltip("the ease configuration")]
     [SerializeField] Config m_Config;
 
+    #pragma warning disable CS0414
     [Tooltip("the configuration source")]
     [SerializeField] ConfigSource m_ConfigSource;
+    #pragma warning restore CS0414
 
-    [Tooltip("if the ease curve is disabled")]
+    [Tooltip("if the ease is disabled")]
     [SerializeField] bool m_IsDisabled;
 
     // -- props --

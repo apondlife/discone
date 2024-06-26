@@ -35,9 +35,9 @@ public class DynamicEaseDrawer: PropertyDrawer {
         rl.height = U.singleLineHeight;
 
         // get attrs
-        var pConfig = prop.FindPropertyRelative("m_Config");
-        var pConfigSource = prop.FindPropertyRelative("m_ConfigSource");
-        var pIsDisabled = prop.FindPropertyRelative("m_IsDisabled");
+        var config = prop.FindProp("Config", isPrivate: true);
+        var configSource = prop.FindProp("ConfigSource", isPrivate: true);
+        var isDisabled = prop.FindProp("IsDisabled", isPrivate: true);
 
         // draw label w/ indent
         r = rl;
@@ -49,11 +49,10 @@ public class DynamicEaseDrawer: PropertyDrawer {
         r.width -= lw;
 
         // disable fields if external
-        var configSource = (DynamicEase.ConfigSource)pConfigSource.intValue;
-        E.BeginDisabledGroup(configSource == DynamicEase.ConfigSource.External);
+        E.BeginDisabledGroup(configSource.intValue == (int)DynamicEase.ConfigSource.External);
 
         // draw fzr fields
-        var config = DynamicEaseConfigDrawer.DrawFzr(r, pConfig);
+        var newConfig = DynamicEaseConfigDrawer.DrawFzr(r, config);
 
         E.EndDisabledGroup();
 
@@ -68,7 +67,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
 
             // draw config source
             r.height = rl.height;
-            E.PropertyField(r, pConfigSource, new GUIContent("Config"));
+            E.PropertyField(r, configSource, new GUIContent("Config"));
 
             // move to beginning of line
             r.y = r.yMax + U.standardVerticalSpacing;
@@ -77,7 +76,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
 
             // draw toggle
             r.height = rl.height;
-            E.PropertyField(r, pIsDisabled);
+            E.PropertyField(r, isDisabled);
 
             // move to beginning of line
             r.y = r.yMax + Theme.Gap3;
@@ -85,7 +84,7 @@ public class DynamicEaseDrawer: PropertyDrawer {
             r.width = rl.width;
 
             // draw graph
-            DynamicEaseConfigDrawer.DrawGraph(r, config, m_Values);
+            DynamicEaseConfigDrawer.DrawGraph(r, newConfig, m_Values);
 
             E.indentLevel -= 1;
         }

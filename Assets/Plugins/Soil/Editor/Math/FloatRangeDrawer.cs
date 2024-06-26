@@ -43,9 +43,17 @@ public sealed class FloatRangeDrawer: PropertyDrawer {
     // -- commands --
     /// draw the range input
     public static void DrawInput(Rect r, SerializedProperty prop) {
-        var min = prop.FindPropertyRelative("Min");
-        var max = prop.FindPropertyRelative("Max");
+        var min = prop.FindProp(nameof(FloatRange.Min));
+        var max = prop.FindProp(nameof(FloatRange.Max));
+        DrawInput(r, min, max);
+    }
 
+    /// draw the range input
+    public static void DrawInput(
+        Rect r,
+        SerializedProperty min,
+        SerializedProperty max
+    ) {
         // calc width of each field from remaining space
         var fw = (r.width - k_SeparatorWidth - Theme.Gap1 * 2f) / 2f;
 

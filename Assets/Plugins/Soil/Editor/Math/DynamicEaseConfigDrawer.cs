@@ -73,7 +73,7 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
         r.width -= lw;
 
         // draw fzr fields
-        var config = DrawFzr(r, prop);
+        var newConfig = DrawFzr(r, prop);
 
         // draw graph on foldout
         if (prop.isExpanded) {
@@ -85,7 +85,7 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
             r.width = rl.width;
 
             // draw graph
-            DrawGraph(r, config, m_Values);
+            DrawGraph(r, newConfig, m_Values);
 
             E.indentLevel -= 1;
         }
@@ -103,18 +103,14 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
     /// draw the fzr fields
     public static DynamicEase.Config DrawFzr(Rect r, SerializedProperty prop) {
         // get attrs
-        var pF = prop.FindPropertyRelative("F");
-        var pZ = prop.FindPropertyRelative("Z");
-        var pR = prop.FindPropertyRelative("R");
+        var pF = prop.FindProp(nameof(DynamicEase.Config.F));
+        var pZ = prop.FindProp(nameof(DynamicEase.Config.Z));
+        var pR = prop.FindProp(nameof(DynamicEase.Config.R));
 
         // draw fzr fields
         var labels = new GUIContent[] { new(pF.name), new(pZ.name), new(pR.name) };
         var values = new[] { pF.floatValue, pZ.floatValue, pR.floatValue };
         E.MultiFloatField(r, labels, values);
-
-        pF.floatValue = values[0];
-        pZ.floatValue = values[1];
-        pR.floatValue = values[2];
 
         // recalculate config
         var config = new DynamicEase.Config(f: values[0], z: values[1], r: values[2]);
@@ -124,9 +120,9 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
         pZ.floatValue = config.Z;
         pR.floatValue = config.R;
 
-        prop.SetValue("K1", config.K1);
-        prop.SetValue("K2", config.K2);
-        prop.SetValue("K3", config.K3);
+        prop.SetValue(nameof(DynamicEase.Config.K1), config.K1);
+        prop.SetValue(nameof(DynamicEase.Config.K2), config.K2);
+        prop.SetValue(nameof(DynamicEase.Config.K3), config.K3);
 
         return config;
     }
