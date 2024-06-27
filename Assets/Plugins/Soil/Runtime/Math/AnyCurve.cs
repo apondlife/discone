@@ -53,23 +53,23 @@ public struct AnyCurve: ISerializationCallbackReceiver {
 
     public void OnAfterDeserialize() {
         Curve = Type switch {
-            Variant.Map => new MapCurve() {
-                Src = m_Serialized.Src,
-                Dst = m_Serialized.Dst,
-                Curve = m_Serialized.Curve,
-            },
-            Variant.MapIn => new MapInCurve() {
-                Src = m_Serialized.Src,
-                Curve = m_Serialized.Curve,
-            },
-            Variant.MapOut => new MapOutCurve() {
-                Dst = m_Serialized.Dst,
-                Curve = m_Serialized.Curve,
-            },
-            Variant.Animation => new AnimationCurveBox() {
-                Inner = m_Serialized.Curve,
-            },
-            _ => Unsupported()
+        Variant.Map => new MapCurve() {
+            Src = m_Serialized.Src,
+            Dst = m_Serialized.Dst,
+            Curve = m_Serialized.Curve,
+        },
+        Variant.MapIn => new MapInCurve() {
+            Src = m_Serialized.Src,
+            Curve = m_Serialized.Curve,
+        },
+        Variant.MapOut => new MapOutCurve() {
+            Dst = m_Serialized.Dst,
+            Curve = m_Serialized.Curve,
+        },
+        Variant.Animation => new AnimationCurveBox() {
+            Inner = m_Serialized.Curve,
+        },
+        _ => Unsupported()
         };
     }
 

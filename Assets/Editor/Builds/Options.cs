@@ -12,6 +12,11 @@ struct Options {
     // -- queries --
     /// if the build includes the target
     public bool IncludeTarget(string target) {
+        /// TODO: re-enable windows server in the future
+        if (Target == Builds.Target.WindowsServer) {
+            return false;
+        }
+
         if (Target == Builds.Target.All) {
             return true;
         }

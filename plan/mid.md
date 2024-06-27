@@ -8,7 +8,6 @@ mired in debt
 - flowers spawn from center
 - icecream can stand on the curve of the capsule
 - inertia sometimes explodes when character is stuck
-- make log.i go to correct place in code (dll with log & code excluded from project)
 - grip (or something) pulls you over corners weirdly (on the frame collision misses; should it pull you towards the hit point?)
 - jumping in a tight corner (wall & ground) sometimes has no effect (happens in birthplace)
 - transfer in a vpipe doesn't work nicely
@@ -24,11 +23,16 @@ mired in debt
 - model should always use Next (or some interpolated version)
 - can't get into jumpsquat after first aerial jump (if there's not infinite air jumps)
 - head ik rotates too far
-
-# debt
 - need to manually enable input actions
 - having zero jumps is not considered
+- default speed of head ik is poorly tuned
+- head ik direction only works for some models
+
+# debt
+- remove frame copy constructor in favor of assign fn (reuse frames)
 - rename character* to model* (generally reconsider 3p namespaces)
+- make log.i go to correct place in code (dll with log & code excluded from project)
 - compiling stuff out in debug/development (but still want it for testing maybe)
+- need to manually enable input actions
 - add code generation for equatable (jumpid, charactercollision)
 - share state interpolation

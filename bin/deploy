@@ -36,30 +36,31 @@ while getopts ":hsd" option; do
 done
 
 # -- commands --
-# validate and tag the current commit
-Tag() {
-  tag_name="v$(cat $VERSION_PATH)"
+# check if the tag already exists
+CheckTag() {
+  TAG_NAME="v$(cat $VERSION_PATH)"
 
-  # ensure this tag doesn't exist
-  tag_remote=$(git ls-remote origin refs/tags/"$tag_name")
+  tag_remote=$(git ls-remote origin refs/tags/"$TAG_NAME")
   if [ -n "$tag_remote" ]; then
-    pf 3 "remote tag ($tag_name) already exists. did you bump the version @ $VERSION_PATH?"
+    pf 3 "remote tag ($TAG_NAME) already exists. did you bump the version @ $VERSION_PATH?"
   fi
+}
 
+# tag the current commit
+Tag() {
   # unless dry run...
   if [ -n "$DEBUG" ]; then
     pd "dry run, skip tag"
   # create the tag
   else
-    git tag "$tag_name"
-    git push origin "$tag_name"
+    git tag "$TAG_NAME"
+    git push origin "$TAG_NAME"
   fi
 
-  pi "tag  ${bd}$tag_name${nc}"
+  pi "tag  ${bd}$TAG_NAME${nc}"
 }
 
-# deploy each build in the dir at path; assumes the child name is the butler
-# target name
+# deploy each build in the dir at path; assumes the child name is the butler target name
 Deploy() {
   # the absolute path to the version file
   version_path=$(realpath $VERSION_PATH)
@@ -114,8 +115,9 @@ Main() {
   FindBuild "$VARIANT"
 
   # run deploy
-  Tag
+  CheckTag
   Deploy
+  Tag
 }
 
 Main "$*"
