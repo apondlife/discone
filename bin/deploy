@@ -16,13 +16,21 @@ VERSION_PATH="VERSION"
 # the variant (e.g. playtest, release) if any; defaults to release
 VARIANT=""
 
+# if this should skip the git status check
+SKIPS_STATUS_CHECK=""
+
+# if this is a dry run
+DEBUG=""
+
 # -- parsing --
 Usage() {
-  pu "[-h] [-v <variant>]"
+  pu "[-hsd] [-v <variant>]"
 }
 
-while getopts ":h" option; do
+while getopts ":hsd" option; do
   case "${option}" in
+    s*) SKIPS_STATUS_CHECK="1" ;;
+    d*) DEBUG="1" ;;
     h*) Usage ;;
   esac
 done
@@ -38,9 +46,14 @@ Tag() {
     pf 3 "remote tag ($tag_name) already exists. did you bump the version @ $VERSION_PATH?"
   fi
 
+  # unless dry run...
+  if [ -n "$DEBUG" ]; then
+    pd "dry run, skip tag"
   # create the tag
-  git tag "$tag_name"
-  git push origin "$tag_name"
+  else
+    git tag "$tag_name"
+    git push origin "$tag_name"
+  fi
 
   pi "tag  ${bd}$tag_name${nc}"
 }
@@ -60,14 +73,19 @@ Deploy() {
     project="-$VARIANT"
   fi
 
-  # push butler build
+  # for each target
   for target in *; do
     pi "push $target -> itch [$project:$target]"
 
-    "$BUTLER_PATH" push \
-      "$target" \
-      "$project:$target" \
-      "--userversion-file=$version_path"
+    # push the build, unless dry run
+    if [ -n "$DEBUG" ]; then
+      pd "dry run, skip deploy"
+    else
+      "$BUTLER_PATH" push \
+        "$target" \
+        "$project:$target" \
+        "--userversion-file=$version_path"
+    fi
   done
 
   ps "deployed"
@@ -83,7 +101,7 @@ Main() {
     pf 2 "butler (.env->BUTLER_PATH) does not exist at '$BUTLER_PATH'"
   fi
 
-  if [ -n "$(git status --porcelain)" ]; then
+  if [ -z "$SKIPS_STATUS_CHECK" ] && [ -n "$(git status --porcelain)" ]; then
     pf 3 "there are uncommitted changes! this could lead to an unstable deploy: please commit, stash, &c."
   fi
 

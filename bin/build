@@ -13,14 +13,22 @@ VARIANT=""
 # the target (e.g. mac, win, win-server) if any; defaults to all
 TARGET=""
 
+# if this should skip the git status check
+SKIPS_STATUS_CHECK=""
+
+# if this is a dry run
+DEBUG=""
+
 # -- parsing --
 Usage() {
-  pu "[-h] [-v <variant>] [-t <target>]"
+  pu "[-hsd] [-v <variant>] [-t <target>]"
 }
 
-while getopts ":hv:t:" option; do
+while getopts ":hsdv:t:" option; do
   case "${option}" in
     h*) Usage ;;
+    s*) SKIPS_STATUS_CHECK="1" ;;
+    d*) DEBUG="1" ;;
     v*) VARIANT="$OPTARG" ;;
     t*) TARGET="$OPTARG" ;;
   esac
@@ -55,16 +63,21 @@ Build() {
     win) opts="-logFile - stdout" ;;
   esac
 
+  # unless dry run...
+  if [ -n "$DEBUG" ]; then
+    pd "dry run, skip build"
   # run the build script
-  "$UNITY_PATH" \
-    -quit \
-    -batchmode \
-    -projectPath . \
-    $opts \
-    -executeMethod Builds.BuildAll.Main \
-    -- \
-    --variant "$VARIANT" \
-    --target "$TARGET"
+  else
+    "$UNITY_PATH" \
+      -quit \
+      -batchmode \
+      -projectPath . \
+      $opts \
+      -executeMethod Builds.BuildAll.Main \
+      -- \
+      --variant "$VARIANT" \
+      --target "$TARGET"
+  fi
 
   ps "build complete"
 }
@@ -86,7 +99,7 @@ Main() {
     pf 5 "unity is running! the build script can't run when unity is open"
   fi
 
-  if [ -n "$(git status --porcelain)" ]; then
+  if [ -z "$SKIPS_STATUS_CHECK" ] && [ -n "$(git status --porcelain)" ]; then
     pf 6 "there are uncommitted changes! this could lead to an unstable build: please commit, stash, &c."
   fi
 

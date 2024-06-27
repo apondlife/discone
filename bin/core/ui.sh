@@ -40,6 +40,11 @@ pi() {
   printf "${ga}- ${nc}%b${nc}\n" "$1"
 }
 
+# print debug
+pd() {
+  printf "${ga}* ${nc}%b${nc}\n" "$1"
+}
+
 # print error
 pe() {
   printf "${rd}✗ ${nc}%b${nc}\n" "$1"

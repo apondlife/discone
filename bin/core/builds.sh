@@ -22,14 +22,14 @@ FindBuild() {
 
   # find most recent build for the variant
   build_dir=$(\
-    find Artifacts/Builds/release -depth 1 -name '*discone*' \
+    find "$variant_dir" -mindepth 1 -maxdepth 1 -name '*discone*' \
       | sort -r \
       | head -1
   )
 
   # if missing, the variant dir was empty
   if [ -z "$build_dir" ]; then
-    pf "no builds @ '$variant_dir'"
+    pf 101 "no builds @ '$variant_dir'"
   fi
 
   # return the build
