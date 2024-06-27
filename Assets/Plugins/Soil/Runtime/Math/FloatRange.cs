@@ -52,6 +52,12 @@ public struct FloatRange {
         get => Mathf.Abs(Max - Min);
     }
 
+    /// checks if a value is within the range
+    public bool Contains(float value) {
+        return (value >= Min && value < Max)
+            || (value >= Max && value < Min);
+    }
+
     // -- operators --
     public static FloatRange operator *(FloatRange range, float scale) {
         return new FloatRange(range.Min * scale, range.Max * scale);

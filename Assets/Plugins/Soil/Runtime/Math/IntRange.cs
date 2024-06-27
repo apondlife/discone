@@ -30,6 +30,17 @@ public struct IntRange {
         return Mathf.InverseLerp(Min, Max, val);
     }
 
+    /// the length of the range
+    public float Length {
+        get => Mathf.Abs(Max - Min);
+    }
+
+    /// checks if a value is within the range
+    public bool Contains(float value) {
+        return (value >= Min && value < Max)
+            || (value >= Max && value < Min);
+    }
+
     // -- aliases --
     /// the source value
     public int Src {
