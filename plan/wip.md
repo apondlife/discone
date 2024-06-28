@@ -69,5 +69,6 @@ what is projected
 - disable all colliders in character on load (how to do this in a nice way)
   - hairbones: since they get detached from the the body, they need to respond to some sort of event (the hair container could listen to)
 - intermediary fun, make it possible to rotate ice cream around in the bubble
+- trellis normal map
 
 ~ ui save paths are not accurate
