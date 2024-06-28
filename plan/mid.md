@@ -30,6 +30,7 @@ mired in debt
 
 # debt
 - remove frame copy constructor in favor of assign fn (reuse frames)
+- float dynamic ease (replace camera tilt system smoothdamp)
 - rename character* to model* (generally reconsider 3p namespaces)
 - make log.i go to correct place in code (dll with log & code excluded from project)
 - compiling stuff out in debug/development (but still want it for testing maybe)

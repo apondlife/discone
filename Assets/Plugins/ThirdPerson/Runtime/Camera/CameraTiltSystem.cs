@@ -27,7 +27,7 @@ sealed class CameraTiltSystem: SimpleSystem<CameraContainer> {
         c.State.Next.Tilt = Mathf.SmoothDampAngle(
             c.State.Curr.Tilt,
             accelerationAngle,
-            ref c.State.Curr.TiltSpeed,
+            ref c.State.Next.TiltSpeed,
             c.Tuning.Tilt_Duration
         );
     }

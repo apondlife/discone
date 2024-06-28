@@ -8,6 +8,7 @@ public static class Log {
     public static readonly Tag Controller = new("cntrlr", "#ff00ff");
     public static readonly Tag Model      = new("cmodel", "#fabada");
     public static readonly Tag Player     = new("player", "#ff00aa");
+    public static readonly Tag Camera     = new("camera", "#ca3e8a");
 }
 
 }
