@@ -2,7 +2,6 @@ mired in debt
 ---
 
 # bugs/problems
-- head is looking down when idle
 - flowers spawn from center
 - aspect ratio stretches the game
 - head gets distorted over time by the hair
@@ -29,7 +28,6 @@ mired in debt
 - need to manually enable input actions
 - having zero jumps is not considered
 - default speed of head ik is poorly tuned
-- head ik direction only works for some models
 
 # debt
 - remove frame copy constructor in favor of assign fn (reuse frames)

@@ -58,10 +58,10 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
         // destination rotation follows input
         var destFwd = c.Inputs.Move;
         if (destFwd == Vector3.zero) {
-            destFwd = m_NeckBone.forward;
+            destFwd = transform.forward;
         }
 
-        m_DestRotation = Quaternion.LookRotation(destFwd, m_NeckBone.up);
+        m_DestRotation = Quaternion.LookRotation(destFwd, transform.up);
 
         // lerp the weight
         var isBlendingIn = m_IsActive;
@@ -91,15 +91,14 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
         m_HeadBone = m_Animator.GetBoneTransform(HumanBodyBones.Head);
 
         // if no head bone, this character has no head, destroy self
-        if (m_HeadBone == null) {
+        if (!m_HeadBone) {
             Log.Model.W($"destroying head for character: {c.Name}");
             // TODO: how to remove this from the m_Limbs array (maybe the rig can take care of that)
             Destroy(gameObject);
             return;
         }
 
-        m_NeckBone = m_HeadBone.parent;
-        m_CurrRotation = m_HeadBone.rotation;
+        m_CurrRotation = transform.rotation;
     }
 
     /// .
