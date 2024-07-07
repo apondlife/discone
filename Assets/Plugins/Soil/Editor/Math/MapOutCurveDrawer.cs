@@ -8,10 +8,6 @@ namespace Soil.Editor {
 
 [CustomPropertyDrawer(typeof(MapOutCurve))]
 public sealed class MapOutCurveDrawer: PropertyDrawer {
-    // -- constants --
-    /// the width of the curve
-    const float k_CurveWidth = 40f;
-
     // -- commands --
     public override void OnGUI(Rect r, SerializedProperty prop, GUIContent label) {
         E.BeginProperty(r, label, prop);
@@ -33,7 +29,8 @@ public sealed class MapOutCurveDrawer: PropertyDrawer {
         r.width -= lw;
 
         // draw the input
-        DrawInput(r, dst, curve);
+        var dstUnits = dst.FindAttribute<UnitsAttribute>();
+        DrawInput(r, dst, dstUnits, curve);
 
         // reset indent level
         E.indentLevel = indent;
@@ -46,11 +43,12 @@ public sealed class MapOutCurveDrawer: PropertyDrawer {
     public static void DrawInput(
         Rect r,
         SerializedProperty dst,
+        UnitsAttribute dstUnits,
         SerializedProperty curve
     ) {
         var dstMin = dst.FindProp(nameof(FloatRange.Min));
         var dstMax = dst.FindProp(nameof(FloatRange.Max));
-        DrawInput(r, dstMin, dstMax, curve);
+        DrawInput(r, dstMin, dstMax, dstUnits, curve);
     }
 
     /// draw the input for a map out curve
@@ -58,20 +56,14 @@ public sealed class MapOutCurveDrawer: PropertyDrawer {
         Rect r,
         SerializedProperty dstMin,
         SerializedProperty dstMax,
+        UnitsAttribute dstUnits,
         SerializedProperty curve
     ) {
         // draw the curve
-        var rc = r;
-        rc.width = k_CurveWidth;
-        rc.y -= 1;
-        rc.height += 1;
-        curve.animationCurveValue = E.CurveField(rc, curve.animationCurveValue);
+        Draw.CurveField(ref r, curve);
 
         // draw the range
-        var delta = rc.width + Theme.Gap3;
-        r.x += delta;
-        r.width -= delta;
-        FloatRangeDrawer.DrawInput(r, dstMin, dstMax);
+        Draw.FloatRangeField(r, dstMin, dstMax, dstUnits);
     }
 }
 

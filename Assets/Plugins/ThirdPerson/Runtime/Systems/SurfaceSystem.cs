@@ -183,7 +183,7 @@ sealed class SurfaceSystem: CharacterSystem {
             _   => c.Tuning.Surface_VerticalGrip_Up
         };
 
-        var grip = MapOutCurve.Evaluate(gripCurve, gripRange, currAngle);
+        var grip = MapCurve.Evaluate(gripCurve, gripRange, currAngle);
 
         // project grip into surface
         force += grip * Vector3.ProjectOnPlane(Vector3.up, currNormal);

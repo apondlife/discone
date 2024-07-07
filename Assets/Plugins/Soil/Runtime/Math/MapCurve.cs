@@ -1,35 +1,65 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Soil {
 
 /// a normalized curve with source and destination ranges
-[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "MapCurve")]
 [Serializable]
 public struct MapCurve: FloatTransform {
     // -- fields --
-    [FormerlySerializedAs("m_Curve")]
     [Tooltip("the curve")]
     public AnimationCurve Curve;
 
-    [FormerlySerializedAs("m_Src")]
     [Tooltip("the source range")]
     public FloatRange Src;
 
-    [FormerlySerializedAs("m_Dst")]
     [Tooltip("the destination range")]
     public FloatRange Dst;
 
     // -- FloatTransform --
     public float Evaluate(float input) {
-        var k = Src.InverseLerp(input);
+        return Evaluate(Src, Curve, Dst, input);
+    }
 
-        if (Curve != null && Curve.length != 0) {
-            k = Curve.Evaluate(k);
+    // -- queries --
+    /// evaluate the curve in the src range
+    public static float Evaluate(
+        FloatRange src,
+        AnimationCurve curve,
+        float input
+    ) {
+        return Evaluate(curve, src.InverseLerp(input));
+    }
+
+    /// evaluate the curve in the dst range
+    public static float Evaluate(
+        AnimationCurve curve,
+        FloatRange dst,
+        float input
+    ) {
+        return dst.Lerp(Evaluate(curve, input));
+    }
+
+    /// evaluate the curve in the src & dst range
+    public static float Evaluate(
+        FloatRange src,
+        AnimationCurve curve,
+        FloatRange dst,
+        float input
+    ) {
+        return dst.Lerp(Evaluate(src, curve, input));
+    }
+
+    /// evaluate the curve
+    public static float Evaluate(
+        AnimationCurve curve,
+        float k
+    ) {
+        if (curve != null && curve.length != 0) {
+            k = curve.Evaluate(k);
         }
 
-        return Dst.Lerp(k);
+        return k;
     }
 
     // -- debug --

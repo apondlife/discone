@@ -21,19 +21,19 @@ public struct AdsrCurve {
     [SerializeField] float m_AttackValue;
 
     [Tooltip("the attack curve")]
-    [SerializeField] DurationCurve m_Attack;
+    [SerializeField] MaxInCurve m_Attack;
 
     [Tooltip("the hold duration between attack & decay")]
     [SerializeField] float m_HoldDuration;
 
     [Tooltip("the decay curve after attack curve towards sustain")]
-    [SerializeField] DurationCurve m_Decay;
+    [SerializeField] MaxInCurve m_Decay;
 
     [Tooltip("the sustained value after decay")]
     [SerializeField] float m_SustainValue;
 
     [Tooltip("the release curve towards zero")]
-    [SerializeField] DurationCurve m_Release;
+    [SerializeField] MaxInCurve m_Release;
 
     // -- queries --
     /// evaluate the curve in the range

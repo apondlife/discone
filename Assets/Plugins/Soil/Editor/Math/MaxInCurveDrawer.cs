@@ -6,11 +6,15 @@ using U = UnityEditor.EditorGUIUtility;
 
 namespace Soil.Editor {
 
-[CustomPropertyDrawer(typeof(FloatRange))]
-public sealed class FloatRangeDrawer: PropertyDrawer {
-    // -- lifecycle --
+[CustomPropertyDrawer(typeof(MaxInCurve))]
+sealed class MaxInCurveDrawer: PropertyDrawer {
+    // -- commands --
     public override void OnGUI(Rect r, SerializedProperty prop, GUIContent label) {
         E.BeginProperty(r, label, prop);
+
+        // get attrs
+        var src = prop.FindProp(nameof(MapInCurve.Src));
+        var curve = prop.FindProp(nameof(MapInCurve.Curve));
 
         // draw label w/ indent
         E.LabelField(r, label);
@@ -24,9 +28,9 @@ public sealed class FloatRangeDrawer: PropertyDrawer {
         r.x += lw;
         r.width -= lw;
 
-        // draw the range input
-        var units = prop.FindAttribute<UnitsAttribute>();
-        DrawInput(r, prop, units);
+        // draw the input
+        var srcUnits = src.FindAttribute<UnitsAttribute>();
+        DrawInput(r, src, srcUnits, curve);
 
         // reset indent level
         E.indentLevel = indent;
@@ -35,15 +39,18 @@ public sealed class FloatRangeDrawer: PropertyDrawer {
     }
 
     // -- commands --
-    /// draw the range input
+    /// draw the input for a map in max curve
     public static void DrawInput(
         Rect r,
-        SerializedProperty prop,
-        UnitsAttribute units = null
+        SerializedProperty srcMax,
+        UnitsAttribute srcUnits,
+        SerializedProperty curve
     ) {
-        var min = prop.FindProp(nameof(FloatRange.Min));
-        var max = prop.FindProp(nameof(FloatRange.Max));
-        Draw.FloatRangeField(r, min, max, units);
+        // draw the curve
+        Draw.CurveField(ref r, curve);
+
+        // draw the max input
+        Draw.FloatRangeField(r, null, max: srcMax, srcUnits);
     }
 }
 

@@ -1,5 +1,4 @@
-﻿using Soil.Editor;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 using E = UnityEditor.EditorGUI;
@@ -9,10 +8,6 @@ namespace Soil.Editor {
 
 [CustomPropertyDrawer(typeof(MapInCurve))]
 sealed class MapInCurveDrawer: PropertyDrawer {
-    // -- constants --
-    /// the width of the curve
-    const float k_CurveWidth = 40f;
-
     // -- commands --
     public override void OnGUI(Rect r, SerializedProperty prop, GUIContent label) {
         E.BeginProperty(r, label, prop);
@@ -34,7 +29,8 @@ sealed class MapInCurveDrawer: PropertyDrawer {
         r.width -= lw;
 
         // draw the input
-        DrawInput(r, src, curve);
+        var srcUnits = src.FindAttribute<UnitsAttribute>();
+        DrawInput(r, src, srcUnits, curve);
 
         // reset indent level
         E.indentLevel = indent;
@@ -47,11 +43,12 @@ sealed class MapInCurveDrawer: PropertyDrawer {
     public static void DrawInput(
         Rect r,
         SerializedProperty src,
+        UnitsAttribute srcUnits,
         SerializedProperty curve
     ) {
         var srcMin = src.FindProp(nameof(FloatRange.Min));
         var srcMax = src.FindProp(nameof(FloatRange.Max));
-        DrawInput(r, srcMin, srcMax, curve);
+        DrawInput(r, srcMin, srcMax, srcUnits, curve);
     }
 
     /// draw the input for a map in curve
@@ -59,20 +56,14 @@ sealed class MapInCurveDrawer: PropertyDrawer {
         Rect r,
         SerializedProperty srcMin,
         SerializedProperty srcMax,
+        UnitsAttribute srcUnits,
         SerializedProperty curve
     ) {
-        // draw the curve
-        var rc = r;
-        rc.width = k_CurveWidth;
-        rc.y -= 1;
-        rc.height += 1;
-        curve.animationCurveValue = E.CurveField(rc, curve.animationCurveValue);
+        // draw curve
+        Draw.CurveField(ref r, curve);
 
         // draw the range
-        var delta = rc.width + Theme.Gap3;
-        r.x += delta;
-        r.width -= delta;
-        FloatRangeDrawer.DrawInput(r, srcMin, srcMax);
+        Draw.FloatRangeField(r, srcMin, srcMax, srcUnits);
     }
 }
 

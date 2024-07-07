@@ -19,10 +19,6 @@ public sealed class AnyCurveDrawer: PropertyDrawer {
 
         // get attrs
         var type = prop.FindProp(nameof(AnyCurve.Type));
-        var serialized = prop.FindProp(nameof(AnyCurve.Serialized), isPrivate: true);
-        var src = serialized.FindProp(nameof(AnyCurve.Serialized.Src));
-        var dst = serialized.FindProp(nameof(AnyCurve.Serialized.Dst));
-        var curve = serialized.FindProp(nameof(AnyCurve.Serialized.Curve));
 
         // draw label w/ indent
         E.LabelField(r, label);
@@ -46,17 +42,26 @@ public sealed class AnyCurveDrawer: PropertyDrawer {
         r.x += delta;
         r.width -= delta;
 
+        // get field attrs
+        var serialized = prop.FindProp(nameof(AnyCurve.Serialized), isPrivate: true);
+        var src = serialized.FindProp(nameof(AnyCurve.Serialized.Src));
+        var dst = serialized.FindProp(nameof(AnyCurve.Serialized.Dst));
+        var curve = serialized.FindProp(nameof(AnyCurve.Serialized.Curve));
+
+        // find the units
+        var (srcUnits, dstUnits) = MapCurveDrawer.FindUnits(prop);
+
         // draw the curve input
         var curveType = (AnyCurve.Variant)type.intValue;
         switch (curveType) {
         case AnyCurve.Variant.Map:
-            MapCurveDrawer.DrawInput(r, src, dst, curve);
+            MapCurveDrawer.DrawInput(r, src, srcUnits, dst, dstUnits, curve);
             break;
         case AnyCurve.Variant.MapIn:
-            MapInCurveDrawer.DrawInput(r, src, curve);
+            MapInCurveDrawer.DrawInput(r, src, srcUnits, curve);
             break;
         case AnyCurve.Variant.MapOut:
-            MapOutCurveDrawer.DrawInput(r, src, curve);
+            MapOutCurveDrawer.DrawInput(r, dst, dstUnits, curve);
             break;
         case AnyCurve.Variant.Animation:
             curve.animationCurveValue = E.CurveField(r, curve.animationCurveValue);

@@ -129,7 +129,7 @@ MonoBehaviour:
     m_Delay: 0
     m_AttackValue: 1
     m_Attack:
-      m_Curve:
+      Curve:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
@@ -153,25 +153,25 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      m_Duration: 0.7
+      Src: 0.7
     m_HoldDuration: 0
     m_Decay:
-      m_Curve:
+      Curve:
         serializedVersion: 2
         m_Curve: []
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      m_Duration: 0
+      Src: 0
     m_SustainValue: 1
     m_Release:
-      m_Curve:
+      Curve:
         serializedVersion: 2
         m_Curve: []
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      m_Duration: 0
+      Src: 0
   Crouch_StaticFriction: 60
   Crouch_InlineScale:
     Curve:
@@ -528,7 +528,7 @@ MonoBehaviour:
       m_Delay: 0
       m_AttackValue: 1
       m_Attack:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
@@ -552,10 +552,10 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.5
+        Src: 0.5
       m_HoldDuration: 0.3
       m_Decay:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
@@ -579,40 +579,40 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.5
+        Src: 0.5
       m_SustainValue: 0.3
       m_Release:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve: []
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 1
+        Src: 1
     Lift:
       m_InitialValue: 0
       m_Delay: 0
       m_AttackValue: 0
       m_Attack:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve: []
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
+        Src: 0
       m_HoldDuration: 0
       m_Decay:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve: []
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
+        Src: 0
       m_SustainValue: 20
       m_Release:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
@@ -636,7 +636,7 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.4
+        Src: 0.4
     CooldownDuration:
       Curve:
         serializedVersion: 2
@@ -688,55 +688,55 @@ MonoBehaviour:
       m_Delay: 0
       m_AttackValue: 1
       m_Attack:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve: []
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.5
+        Src: 0.5
       m_HoldDuration: 0
       m_Decay:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve: []
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.1
+        Src: 0.1
       m_SustainValue: 0.3
       m_Release:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve: []
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
+        Src: 0
     Lift:
       m_InitialValue: 0
       m_Delay: 0
       m_AttackValue: 0
       m_Attack:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve: []
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
+        Src: 0
       m_HoldDuration: 0
       m_Decay:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve: []
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0
+        Src: 0
       m_SustainValue: 20
       m_Release:
-        m_Curve:
+        Curve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
@@ -760,7 +760,7 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        m_Duration: 0.2
+        Src: 0.2
     CooldownDuration:
       Curve:
         serializedVersion: 2
@@ -1417,7 +1417,7 @@ MonoBehaviour:
         m_Delay: 0
         m_AttackValue: 0.3
         m_Attack:
-          m_Curve:
+          Curve:
             serializedVersion: 2
             m_Curve:
             - serializedVersion: 3
@@ -1441,10 +1441,10 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 0
-          m_Duration: 0.5
+          Src: 0.5
         m_HoldDuration: 0.3
         m_Decay:
-          m_Curve:
+          Curve:
             serializedVersion: 2
             m_Curve:
             - serializedVersion: 3
@@ -1468,13 +1468,13 @@ MonoBehaviour:
             m_PreInfinity: 2
             m_PostInfinity: 2
             m_RotationOrder: 0
-          m_Duration: 2
+          Src: 2
         m_SustainValue: 0.8
         m_Release:
-          m_Curve:
+          Curve:
             serializedVersion: 2
             m_Curve: []
             m_PreInfinity: 0
             m_PostInfinity: 0
             m_RotationOrder: 0
-          m_Duration: 0.3
+          Src: 0.3
