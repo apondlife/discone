@@ -122,15 +122,21 @@ public struct DynamicEase {
         // -- lifetime --
         /// compute the eigenvalue (or w/e) terms given f, z, r
         public Config(float f, float z, float r) {
-            var pif1 = Mathf.PI * f;
-            var pif2 = pif1 * 2f;
-
             F = f;
             Z = z;
             R = r;
-            K1 = z / pif1;
-            K2 = 1f / (pif2 * pif2);
-            K3 = r * z / pif2;
+
+            if (f == 0f) {
+                K1 = 0f;
+                K2 = 0f;
+                K3 = 0f;
+            } else {
+                var pif1 = Mathf.PI * f;
+                var pif2 = pif1 * 2f;
+                K1 = z / pif1;
+                K2 = 1f / (pif2 * pif2);
+                K3 = r * z / pif2;
+            }
         }
     }
 }

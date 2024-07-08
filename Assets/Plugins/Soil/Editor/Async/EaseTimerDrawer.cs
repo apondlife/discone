@@ -9,17 +9,13 @@ namespace Soil.Editor {
 // TODO: show the current time when the game is playing
 [CustomPropertyDrawer(typeof(EaseTimer))]
 sealed class EaseTimerDrawer: PropertyDrawer {
-    // -- constants --
-    /// the width of the curve
-    const float k_CurveWidth = 40f;
-
     // -- commands --
     public override void OnGUI(Rect r, SerializedProperty prop, GUIContent label) {
         E.BeginProperty(r, label, prop);
 
         // get attrs
-        var curve = prop.FindPropertyRelative("m_Curve");
-        var value = prop.FindPropertyRelative("m_Duration");
+        var config = prop.FindProp("Config", isPrivate: true);
+        var configSource = prop.FindProp("ConfigSource", isPrivate: true);
 
         // draw label w/ indent
         E.LabelField(r, label);
@@ -33,18 +29,13 @@ sealed class EaseTimerDrawer: PropertyDrawer {
         r.x += lw;
         r.width -= lw;
 
-        // draw the curve
-        var rc = r;
-        rc.width = k_CurveWidth;
-        rc.y -= 1;
-        rc.height += 1;
-        curve.animationCurveValue = E.CurveField(rc, curve.animationCurveValue);
+        // draw the config source
+        E.PropertyField(r, configSource, new GUIContent("Config"));
 
-        // draw the duration
-        var delta = rc.width + Theme.Gap3;
-        r.x += delta;
-        r.width -= delta;
-        value.floatValue = E.FloatField(r, value.floatValue);
+        // draw config fields (disabled if external)
+        E.BeginDisabledGroup(configSource.intValue == (int)EaseTimer.ConfigSource.External);
+        EaseTimerConfigDrawer.DrawInput(r, config);
+        E.EndDisabledGroup();
 
         // reset indent level
         E.indentLevel = indent;

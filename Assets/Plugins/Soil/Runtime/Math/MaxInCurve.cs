@@ -23,7 +23,7 @@ public struct MaxInCurve: FloatTransform {
             return 1f;
         }
 
-        return MapCurve.Evaluate(Curve, input / Src);
+        return Mathx.Evaluate(Curve, input / Src);
     }
 
     // -- queries --

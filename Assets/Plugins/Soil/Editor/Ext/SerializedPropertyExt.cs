@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 namespace Soil.Editor {
 
@@ -11,9 +12,20 @@ public static class SerializedPropertyExt {
     public static void SetValue(
         this SerializedProperty prop,
         string path,
-        float value
+        float value,
+        bool isPrivate = false
     ) {
-        prop.FindPropertyRelative(path).floatValue = value;
+        prop.FindProp(path, isPrivate).floatValue = value;
+    }
+
+    /// set the animation curve value for the relative property
+    public static void SetValue(
+        this SerializedProperty prop,
+        string path,
+        AnimationCurve value,
+        bool isPrivate = false
+    ) {
+        prop.FindProp(path, isPrivate).animationCurveValue = value;
     }
 
     // -- queries --

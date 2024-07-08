@@ -28,7 +28,7 @@ public struct MapCurve: FloatTransform {
         AnimationCurve curve,
         float input
     ) {
-        return Evaluate(curve, src.InverseLerp(input));
+        return Mathx.Evaluate(curve, src.InverseLerp(input));
     }
 
     /// evaluate the curve in the dst range
@@ -37,7 +37,7 @@ public struct MapCurve: FloatTransform {
         FloatRange dst,
         float input
     ) {
-        return dst.Lerp(Evaluate(curve, input));
+        return dst.Lerp(Mathx.Evaluate(curve, input));
     }
 
     /// evaluate the curve in the src & dst range
@@ -48,18 +48,6 @@ public struct MapCurve: FloatTransform {
         float input
     ) {
         return dst.Lerp(Evaluate(src, curve, input));
-    }
-
-    /// evaluate the curve
-    public static float Evaluate(
-        AnimationCurve curve,
-        float k
-    ) {
-        if (curve != null && curve.length != 0) {
-            k = curve.Evaluate(k);
-        }
-
-        return k;
     }
 
     // -- debug --

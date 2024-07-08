@@ -57,6 +57,18 @@ public static class Mathx {
         return Mathf.Lerp(min1, max1, Mathf.InverseLerp(min0, max0, value));
     }
 
+    /// evaluate the curve
+    public static float Evaluate(
+        AnimationCurve curve,
+        float k
+    ) {
+        if (curve == null || curve.length == 0) {
+            return k;
+        }
+
+        return curve.Evaluate(k);
+    }
+
     /// integrate a vector smoothing out the derivative over time
     public static Vector3 Integrate_Heun<T>(
         Func<Vector3, T, Vector3> derivative,

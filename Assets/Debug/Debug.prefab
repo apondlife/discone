@@ -121,13 +121,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Tag: Debug_WarpPoint
   m_Repeat:
-    m_Duration: 3
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
+    m_Config:
+      Duration: 3
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    m_ConfigSource: 0
   m_Warp: {fileID: -7314266968180294713, guid: a41a769db5f0442d4a59a9ae705458b1, type: 3}
   m_WarpIndex: {fileID: 7043134893465917437, guid: a41a769db5f0442d4a59a9ae705458b1, type: 3}
   m_Camera: {fileID: 817346737246290631}

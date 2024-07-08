@@ -32,7 +32,7 @@ public sealed class Shortcuts: EditorWindow {
     Character m_Character;
 
     /// the repaint timer
-    EaseTimer m_Repaint = new(1f / 60f);
+    EaseTimer m_Repaint = new(new(1f / 60f));
 
     // -- lifecycle --
     /// show the window

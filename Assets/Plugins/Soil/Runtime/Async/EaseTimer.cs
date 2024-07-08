@@ -3,9 +3,7 @@ using UnityEngine;
 
 namespace Soil {
 
-// TODO: extract timer config similar to DynamicEase
 /// a timer that curves its progress
-[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ThirdPerson", "ThirdPerson", "EaseTimer")]
 [Serializable]
 public record EaseTimer {
     // -- constants --
@@ -13,11 +11,13 @@ public record EaseTimer {
     const float k_Inactive = -1.0f;
 
     // -- cfg --
-    [Tooltip("the timer duration")]
-    [SerializeField] float m_Duration;
+    [Tooltip("the ease config")]
+    [SerializeField] Config m_Config;
 
-    [Tooltip("the timer curve")]
-    [SerializeField] AnimationCurve m_Curve;
+    #pragma warning disable CS0414
+    [Tooltip("the config source")]
+    [SerializeField] ConfigSource m_ConfigSource;
+    #pragma warning restore CS0414
 
     // -- props --
     /// the time elapsed through the timer
@@ -30,21 +30,20 @@ public record EaseTimer {
     bool m_IsReversed;
 
     // -- lifetime --
-    public EaseTimer(): this(0.0f) {}
-    public EaseTimer(
-        float duration,
-        UnityEngine.AnimationCurve curve = null
-    ) {
+    /// create a timer with an empty config
+    public EaseTimer() : this(new Config()) {}
+
+    /// create a timer from a config
+    public EaseTimer(Config config) {
+        m_Config = config;
         m_Elapsed = k_Inactive;
-        m_Duration = duration;
-        m_Curve = curve;
     }
 
     // -- commands --
     /// start the timer (optionally, at a particular raw percent)
     public void Start(float pct = 0.0f, bool isReversed = false) {
         m_RawPct = pct;
-        m_Elapsed = pct * m_Duration;
+        m_Elapsed = pct * m_Config.Duration;
         m_IsReversed = isReversed;
     }
 
@@ -60,11 +59,13 @@ public record EaseTimer {
             return;
         }
 
+        var delta = Time.deltaTime;
+
         // check progress
         // TODO: do unscaled time?
         // TODO: do negative time?
-        m_Elapsed += Time.deltaTime;
-        var k = m_Elapsed / m_Duration;
+        m_Elapsed += delta;
+        var k = m_Elapsed / m_Config.Duration;
 
         // if complete, clamp and stop the timer
         if (k >= 1.0f) {
@@ -96,6 +97,17 @@ public record EaseTimer {
         return IsComplete;
     }
 
+    /// reconfigure the timer
+    public void Configure(Config config) {
+        Configure(config.Duration, config.Curve);
+    }
+
+    /// reconfigure the timer
+    public void Configure(float duration, AnimationCurve curve) {
+        m_Config.Duration = duration;
+        m_Config.Curve = curve;
+    }
+
     // -- queries --
     /// the curved progress
     public float Pct {
@@ -104,11 +116,7 @@ public record EaseTimer {
 
     /// curve an arbitrary progress pct
     public float PctFrom(float value) {
-        if (m_Curve == null || m_Curve.length == 0) {
-             return value;
-        }
-
-        return m_Curve.Evaluate(value);
+        return Mathx.Evaluate(m_Config.Curve, value);
     }
 
     /// the uncurved progress
@@ -116,19 +124,30 @@ public record EaseTimer {
         get => m_RawPct;
     }
 
+    /// the elapsed time
+    public float Elapsed {
+        get => m_Elapsed;
+    }
+
     /// the total duration
     public float Duration {
-        get => m_Duration;
+        get => m_Config.Duration;
+        set => m_Config.Duration = value;
     }
 
     /// if the timer is zero-duration
     public bool IsZero {
-        get => m_Duration == 0f;
+        get => m_Config.Duration == 0f;
     }
 
     /// if the timer is active
     public bool IsActive {
         get => m_Elapsed != k_Inactive;
+    }
+
+    /// if the timer is inactive
+    public bool IsInactive {
+        get => !IsActive;
     }
 
     /// if the timer is running in reverse
@@ -141,6 +160,30 @@ public record EaseTimer {
         get => m_RawPct == (m_IsReversed ? 0f : 1f);
     }
 
+    // -- config --
+    /// the source of the ease timer config
+    public enum ConfigSource {
+        Local,
+        External
+    }
+
+    /// the config for an ease timer
+    [Serializable]
+    public struct Config {
+        // -- cfg --
+        [Units("s")]
+        [Tooltip("the timer duration")]
+        public float Duration;
+
+        [Tooltip("the timer curve")]
+        public AnimationCurve Curve;
+
+        // -- lifetime --
+        public Config(float duration = 0f, AnimationCurve curve = null) {
+            Duration = duration;
+            Curve = curve;
+        }
+    }
 }
 
 }

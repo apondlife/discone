@@ -174,13 +174,15 @@ MonoBehaviour:
       HeightMin: 0
       HeightDensity: 0
   m_Timer:
-    m_Duration: 6.9
-    m_Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
+    m_Config:
+      Duration: 6.9
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    m_ConfigSource: 0
   m_RegionEntered: {fileID: 11400000, guid: 2e7aa35edf29f6c418f1cf45dd2488c9, type: 2}
   m_Editing: {fileID: 0}
   m_IsEditing: 0
