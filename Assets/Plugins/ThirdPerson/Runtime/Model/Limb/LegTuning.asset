@@ -98,7 +98,7 @@ MonoBehaviour:
       Max: 0.3
   InputScale_ReleaseSpeed: 1
   SpeedScale:
-    m_Curve:
+    Curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -122,10 +122,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_Src:
+    Src:
       Min: 0
       Max: 20
-    m_Dst:
+    Dst:
       Min: 0.2
       Max: 1
   SearchRange_OnSurface: 2.5
