@@ -6,51 +6,65 @@ namespace Soil {
 /// a dynamic pid controller for a moving target value
 /// see: https://www.youtube.com/watch?v=KPoeNZZ6H4s
 [Serializable]
-public struct DynamicEase {
+public struct DynamicEase<T>: DynamicEase {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the ease configuration")]
-    [SerializeField] Config m_Config;
+    [SerializeField] DynamicEase.Config m_Config;
 
     #pragma warning disable CS0414
     [Tooltip("the configuration source")]
-    [SerializeField] ConfigSource m_ConfigSource;
+    [SerializeField] DynamicEase.ConfigSource m_ConfigSource;
     #pragma warning restore CS0414
 
     [Tooltip("if the ease is disabled")]
     [SerializeField] bool m_IsDisabled;
 
+    // -- deps --
+    /// the arithmetic operators for the parameterized type
+    DynamicEase.Arithmetic<T> a;
+
     // -- props --
     /// the previous target value
-    Vector3 m_Target;
+    T m_Target;
 
     /// the current position
-    Vector3 m_Value;
+    T m_Value;
 
     /// the current velocity
-    Vector3 m_Velocity;
+    T m_Velocity;
 
     // -- lifetime --
     /// create a new dynamic ease w/ a config
-    public DynamicEase(Config config) {
+    public DynamicEase(DynamicEase.Config config) {
+        // set deps (placeholder until Init)
+        a = null;
+
+        // set config
         m_Config = config;
-        m_ConfigSource = ConfigSource.Local;
+        m_ConfigSource = DynamicEase.ConfigSource.Local;
+
+        // set defaults
         m_IsDisabled = false;
-        m_Target = Vector3.zero;
-        m_Value = Vector3.zero;
-        m_Velocity = Vector3.zero;
+        m_Target = default;
+        m_Value = default;
+        m_Velocity = default;
     }
 
     // -- commands --
     /// setup with an initial value
-    public void Init(Vector3 initial) {
+    public void Init(T initial) {
+        // set deps
+        a = DynamicEase.Arithmetic<T>.Instance;
+
+        // set props
         m_Target = initial;
         m_Value = initial;
-        m_Velocity = Vector3.zero;
+        m_Velocity = default;
     }
 
     /// setup with an initial value and config
-    public void Init(Vector3 initial, Config config) {
+    public void Init(T initial, DynamicEase.Config config) {
         m_Config = config;
         Init(initial);
     }
@@ -58,16 +72,19 @@ public struct DynamicEase {
     /// move towards the target with an estimated target velocity
     public void Update(
         float delta,
-        Vector3 target
+        T target
     ) {
-        Update(delta, target, targetVelocity: (target - m_Target) / delta);
+        // estimate target velocity:
+        //   targetVelocity = (target - m_Target) / delta
+        var targetVelocity = a.Div(a.Sub(target, m_Target), delta);
+        Update(delta, target, targetVelocity: targetVelocity);
     }
 
     /// move towards the target
     public void Update(
         float delta,
-        Vector3 target,
-        Vector3 targetVelocity
+        T target,
+        T targetVelocity
     ) {
         m_Target = target;
         if (m_IsDisabled) {
@@ -75,13 +92,23 @@ public struct DynamicEase {
             return;
         }
 
-        var k2 = Mathf.Max(m_Config.K2, 1.1f * (delta * delta / 4f + delta * m_Config.K1 / 2f));
-
         var pos = m_Value;
         var velocity = m_Velocity;
 
-        pos += delta * velocity;
-        velocity += delta * (target + m_Config.K3 * targetVelocity - pos - m_Config.K1 * velocity) / k2;
+        // integrate position by current velocity
+        pos = a.Add(pos, a.Mul(velocity, delta));
+
+        // clamp k2 to guarantee stability
+        var k1 = m_Config.K1;
+        var k2 = Mathf.Max(m_Config.K2, 1.1f * (delta * delta / 4 + delta * m_Config.K1 / 2));
+        var k3 = m_Config.K3;
+
+        // integrate velocity by weird fzr acceleration:
+        //   velocity += delta / k2_stabilized * (target + targetVelocity * k3 - pos - velocity * k1);
+        var aK1 = a.Mul(velocity, k1);
+        var aK2 = a.Mul(targetVelocity, k3);
+        var acc = a.Div(a.Sub(a.Sub(a.Add(target, aK2), pos), aK1), k2);
+        velocity = a.Add(velocity, a.Mul(acc, delta));
 
         m_Value = pos;
         m_Velocity = velocity;
@@ -89,21 +116,25 @@ public struct DynamicEase {
 
     // -- queries --
     /// the current target
-    public Vector3 Target {
+    public T Target {
         get => m_Target;
     }
 
     /// the current value
-    public Vector3 Value {
+    public T Value {
         get => m_Value;
     }
+}
 
-    // -- Config --
+public interface DynamicEase {
+    // -- config --
+    /// the config source for the ease
     public enum ConfigSource {
         Local,
         External
     }
 
+    /// the config for the ease
     [Serializable]
     public struct Config {
         [Tooltip("the frequency")]
@@ -139,6 +170,52 @@ public struct DynamicEase {
             }
         }
     }
+
+    // -- type support --
+    /// provides arithmetic operations for a generic value type
+    interface Arithmetic<T> {
+        /// add the right-hand operand to the left
+        T Add(T lhs, T rhs);
+
+        /// subtract the right-hand operand from the left
+        T Sub(T lhs, T rhs);
+
+        /// multiply the left-hand operand by a scalar
+        T Mul(T lhs, float rhs);
+
+        /// divide the left-hand operand by a scalar
+        T Div(T lhs, float rhs);
+
+        /// get the instance for type T
+        static Arithmetic<T> Instance {
+            get => typeof(T) switch {
+                { } t when t == typeof(float)   => (Arithmetic<T>)FloatArithmetic.Instance,
+                { } t when t == typeof(Vector3) => (Arithmetic<T>)VectorArithmetic.Instance,
+                _ => throw new NotImplementedException($"Arithmetic<T> not implemented for type {typeof(T)}")
+            };
+        }
+    }
+
+    /// provides arithmetic operations for floats
+    record FloatArithmetic: Arithmetic<float> {
+        public float Add(float lhs, float rhs) => lhs + rhs;
+        public float Sub(float lhs, float rhs) => lhs - rhs;
+        public float Mul(float lhs, float rhs) => lhs * rhs;
+        public float Div(float lhs, float rhs) => lhs / rhs;
+
+        public static FloatArithmetic Instance = new();
+    }
+
+    /// provides arithmetic operations for vectors
+    record VectorArithmetic: Arithmetic<Vector3> {
+        public Vector3 Add(Vector3 lhs, Vector3 rhs) => lhs + rhs;
+        public Vector3 Sub(Vector3 lhs, Vector3 rhs) => lhs - rhs;
+        public Vector3 Mul(Vector3 lhs, float rhs) => lhs * rhs;
+        public Vector3 Div(Vector3 lhs, float rhs) => lhs / rhs;
+
+        public static VectorArithmetic Instance = new();
+    }
+
 }
 
 }

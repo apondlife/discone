@@ -29,7 +29,7 @@ sealed class CharacterDistortion: MonoBehaviour {
     [SerializeField] float m_Responsiveness;
 
     [Tooltip("the intensity ease on acceleration based stretch & squash")]
-    [SerializeField] DynamicEase m_Ease;
+    [SerializeField] DynamicEase<float> m_Ease;
 
     // -- props --
     /// .
@@ -40,7 +40,7 @@ sealed class CharacterDistortion: MonoBehaviour {
         c = GetComponentInParent<CharacterContainer>();
 
         // initialize ease
-        m_Ease.Init(Vector3.up);
+        m_Ease.Init(1f);
     }
 
     void FixedUpdate() {
@@ -95,7 +95,7 @@ sealed class CharacterDistortion: MonoBehaviour {
             );
         }
 
-        m_Ease.Update(delta, destIntensity * Vector3.up);
+        m_Ease.Update(delta, destIntensity);
     }
 
     // -- commands --
@@ -115,7 +115,7 @@ sealed class CharacterDistortion: MonoBehaviour {
 
             material.SetFloat(
                 ShaderProps.Distortion_Intensity,
-                Mathf.Max(m_Ease.Value.y, 0f)
+                Mathf.Max(m_Ease.Value, 0f)
             );
 
             material.SetFloat(

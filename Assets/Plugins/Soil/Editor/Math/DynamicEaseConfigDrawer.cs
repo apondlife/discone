@@ -135,7 +135,7 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
         r.height = k_GraphHeight;
 
         // work with a copy of the ease to avoid changing game state
-        var ease = new DynamicEase(config);
+        var ease = new DynamicEase<float>(config);
 
         // keep track of extents of the graph
         var range = new FloatRange(
@@ -144,11 +144,11 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
         );
 
         // sample values from the ease
-        ease.Init(Vector3.zero);
+        ease.Init(0f);
         for (var i = 0; i < k_Count; i++) {
-            ease.Update(k_Delta, Vector3.up);
+            ease.Update(k_Delta, 1f);
 
-            var value = ease.Value.y;
+            var value = ease.Value;
             if (value < range.Min) {
                 range.Min = value;
             }
@@ -157,7 +157,7 @@ public class DynamicEaseConfigDrawer: PropertyDrawer {
                 range.Max = value;
             }
 
-            values[i] = ease.Value.y;
+            values[i] = ease.Value;
         }
 
         // start drawing into a render texture

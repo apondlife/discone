@@ -32,7 +32,7 @@ class CharacterLegs: MonoBehaviour {
     [SerializeField] MapInCurve m_Hips_SkipOffset;
 
     [Tooltip("the hips offset ease")]
-    [SerializeField] DynamicEase m_Hips_Ease;
+    [SerializeField] DynamicEase<Vector3> m_Hips_Ease;
 
     // -- refs --
     [Header("refs")]
