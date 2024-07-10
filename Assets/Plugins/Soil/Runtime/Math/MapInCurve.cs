@@ -15,7 +15,7 @@ public struct MapInCurve: FloatTransform {
 
     // -- FloatTransform --
     public float Evaluate(float input) {
-        return MapCurve.Evaluate(Curve, Src, input);
+        return MapCurve.Evaluate(Src, Curve, input);
     }
 
     // -- debug --

@@ -65,13 +65,18 @@ sealed class PlayerButterflies: MonoBehaviour {
 
     /// release the butterflies
     void Release(float pct) {
-        if (m_Collected.Value == 0) {
+        var current = m_Collected.Value;
+        if (current == 0) {
             return;
         }
 
-        var released = Mathf.FloorToInt(m_Collected.Value * pct);
+        var released = Mathf.FloorToInt(current * pct);
+        if (released == 0) {
+            return;
+        }
+
         m_ReleaseSystem.Emit(released);
-        m_Collected.Value = released;
+        m_Collected.Value -= released;
     }
 
     // -- events --
