@@ -39,7 +39,7 @@ public sealed partial class CharacterState {
 
     // -- commands --
     /// initialize a frame from a forward and position
-    public void Init(
+    public void InitFrame(
         Frame frame,
         Vector3 position,
         Vector3 forward
@@ -54,6 +54,11 @@ public sealed partial class CharacterState {
         frame.Forward = forward;
 
         // init any properties from tuning
+        InitFrame(frame);
+    }
+
+    /// initialize a frame from the tuning
+    public void InitFrame(Frame frame) {
         frame.Surface_Drag = m_Tuning.Friction_SurfaceDrag;
         frame.Surface_KineticFriction = m_Tuning.Friction_Kinetic;
         frame.Surface_StaticFriction = m_Tuning.Friction_Static;
@@ -83,7 +88,7 @@ public sealed partial class CharacterState {
         Vector3 forward
     ) {
         var frame = new Frame();
-        Init(frame, position, forward);
+        InitFrame(frame, position, forward);
         return frame;
     }
 

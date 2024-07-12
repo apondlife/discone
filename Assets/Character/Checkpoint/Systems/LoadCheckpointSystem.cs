@@ -13,6 +13,11 @@ sealed class LoadCheckpointSystem: SimpleSystem<CheckpointContainer> {
         return NotLoading;
     }
 
+    public override void Init(CheckpointContainer c) {
+        base.Init(c);
+        c.Character.State.InitFrame(c.State.Load_DstState);
+    }
+
     // -- NotLoading --
     static readonly Phase<CheckpointContainer> NotLoading = new("NotLoading",
         enter: NotLoading_Enter,
