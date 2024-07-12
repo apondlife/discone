@@ -60,23 +60,25 @@ sealed class InputRecording: CharacterInputSource<InputFrame> {
         get => m_IsPlaying;
     }
 
-    public InputFrame Read() {
+    public void Read(ref InputFrame frame) {
         if (m_Frames.Count == 0) {
-            return new();
+            return;
         }
 
         if (IsFinished) {
             if (!m_IsLooping) {
-                return new();
+                return;
             }
 
             m_Head = 0;
         }
 
-        var frame = m_Frames[m_Head];
+
+        var recorded = m_Frames[m_Head];
         m_Head += 1;
 
-        return frame;
+        frame.Main = recorded.Main;
+        frame.IsLoadPressed = recorded.IsLoadPressed;
     }
 }
 

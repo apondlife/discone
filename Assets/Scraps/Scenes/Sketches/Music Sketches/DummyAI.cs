@@ -19,13 +19,11 @@ public class AiInputSource: CharacterInputSource<InputFrame> {
         get => true;
     }
 
-    public InputFrame Read() {
-        return new InputFrame(
-            new CharacterInputMain(
-                m_Move,
-                UnityEngine.Random.value < m_JumpProbability
-            ),
-            isLoadPressed: false
+    public void Read(ref InputFrame frame) {
+        frame.IsLoadPressed = false;
+        frame.Main = new CharacterInputMain(
+            m_Move,
+            UnityEngine.Random.value < m_JumpProbability
         );
     }
 }

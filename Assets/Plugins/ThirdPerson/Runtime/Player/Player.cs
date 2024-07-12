@@ -20,7 +20,7 @@ public class Player: Player<CharacterInputFrame.Default> {
 
 /// the player
 public abstract class Player<InputFrame>: MonoBehaviour, PlayerContainer
-    where InputFrame: CharacterInputFrame {
+    where InputFrame: CharacterInputFrame, new() {
 
     // -- cfg --
     [Header("cfg")]

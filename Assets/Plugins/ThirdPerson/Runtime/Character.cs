@@ -11,7 +11,7 @@ public class Character: Character<CharacterInputFrame.Default> {
 
 /// the main third person controller
 public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
-    where InputFrame: CharacterInputFrame {
+    where InputFrame: CharacterInputFrame, new() {
 
     // -- data --
     [Header("data")]

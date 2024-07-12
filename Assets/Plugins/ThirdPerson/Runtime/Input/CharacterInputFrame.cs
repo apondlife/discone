@@ -5,7 +5,7 @@ namespace ThirdPerson {
 /// the minimal frame of input for third person to work
 public interface CharacterInputFrame {
     /// the input frame's main module
-    CharacterInputMain Main { get; }
+    CharacterInputMain Main { get; set; }
 
     // -- queries --
     /// the projected position of the move analog stick
@@ -20,12 +20,8 @@ public interface CharacterInputFrame {
 
     // -- default --
     /// the default input frame
-    public readonly struct Default: CharacterInputFrame {
-        public CharacterInputMain Main { get; }
-
-        public Default(CharacterInputMain main) {
-            Main = main;
-        }
+    public struct Default: CharacterInputFrame {
+        public CharacterInputMain Main { get; set; }
     }
 }
 
@@ -51,7 +47,12 @@ public readonly struct CharacterInputMain {
     // -- queries --
     /// if there is any input
     public bool Any {
-        get => IsJumpPressed || Move != Vector3.zero;
+        get => IsJumpPressed || AnyMove;
+    }
+
+    /// if there is any move input
+    public bool AnyMove {
+        get => Move != Vector3.zero;
     }
 }
 

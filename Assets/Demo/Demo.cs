@@ -59,14 +59,13 @@ public class Demo: MonoBehaviour {
     }
 
     void FixedUpdate() {
+        var frame = m_Player.Value.Character.Input.Curr;
         if (m_State == State.Recording) {
-            var frame = m_Player.Value.Character.Input.Curr;
             m_Recording.Record(frame);
         }
 
         if (m_IsRunning.Value) {
-            var inputSource = m_Player.Value.InputSource;
-            var hasAnyInput = inputSource.Read().Any;
+            var hasAnyInput = frame.Any;
 
             // once the input is released
             if (!hasAnyInput) {

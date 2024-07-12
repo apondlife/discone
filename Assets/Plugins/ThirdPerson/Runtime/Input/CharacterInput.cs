@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the character's input facade
-public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame {
+public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame, new() {
     // -- constants --
     #if UNITY_EDITOR
     const float k_BufferDuration = 5f;
@@ -14,17 +14,27 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
 
     // -- props --
     /// the source of input frames
-    CharacterInputSource<F> m_Source = null;
+    CharacterInputSource<F> m_Source;
 
     // TODO: read input in update
     /// a queue of the most recent input frames
-    readonly Ring<F> m_Frames = new((uint)(k_BufferDuration / Time.fixedDeltaTime));
+    readonly Ring<F> m_Frames;
 
     /// the time since the last jump press
     float m_TimeSinceJumpPress;
 
     /// the time the last jump press was released
     float m_JumpPressReleasedAt = CharacterInputQuery.NotReleased;
+
+    // -- lifetime --
+    public CharacterInput() {
+        var frames = new Ring<F>((uint)(k_BufferDuration / Time.fixedDeltaTime));
+        for (var i = 0; i < frames.Length; i++) {
+            frames.Add(new F());
+        }
+
+        m_Frames = frames;
+    }
 
     // -- commands --
     /// drive the input with a source
@@ -40,8 +50,12 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
 
         // add a new input frame
         var curr = m_Frames[0];
-        var next = m_Source.Read();
-        m_Frames.Add(next);
+        m_Frames.Offset();
+
+        // read the next frame
+        var next = m_Frames[0];
+        m_Source.Read(ref next);
+        m_Frames[0] = next;
 
         // if the jump was just pressed
         if (!curr.IsJumpPressed && next.IsJumpPressed) {
@@ -71,7 +85,7 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
     }
 
     public Vector3 Move {
-        get => m_Frames[0]?.Move ?? Vector3.zero;
+        get => m_Frames[0].Move;
     }
 
     public float MoveMagnitude {
@@ -79,7 +93,7 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
     }
 
     public bool IsJumpPressed {
-        get => m_Frames[0]?.IsJumpPressed ?? false;
+        get => m_Frames[0].IsJumpPressed;
     }
 
     public float TimeSinceJumpPress {
@@ -92,7 +106,7 @@ public class CharacterInput<F>: CharacterInputQuery where F: CharacterInputFrame
 
     public bool IsMoveIdle(int past = 1) {
         for (var i = 0; i < past; i++) {
-            if (m_Frames[i]?.Move != Vector3.zero) {
+            if (m_Frames[i].Move != Vector3.zero) {
                 return false;
             }
         }

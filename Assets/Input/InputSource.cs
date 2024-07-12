@@ -31,11 +31,9 @@ public sealed class InputSource: PlayerInputSource<InputFrame> {
         get => m_PlayerCamera.Value.Look;
     }
 
-    protected override InputFrame ReadNext() {
-        return new(
-            ReadMain(),
-            isLoadPressed: m_Input.IsLoadPressed
-        );
+    protected override void ReadNext(ref InputFrame frame) {
+        frame.IsLoadPressed = m_Input.IsLoadPressed;
+        ReadMain(ref frame);
     }
 
 }

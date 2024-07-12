@@ -30,15 +30,15 @@ public sealed class Ring<T>: IEnumerable<T> {
 
     // -- commands --
     /// adds a new element to the buffer, removing the oldest one.
-    public void Add(T snapshot) {
+    public void Add(T element) {
         m_Head = GetIndex(-1);
-        m_Queue[m_Head] = snapshot;
+        m_Queue[m_Head] = element;
     }
 
     /// fills the buffer with a given value
-    public void Fill(T snapshot) {
+    public void Fill(T element) {
         for (var i = 0; i < m_Queue.Length; i++) {
-            m_Queue[i] = snapshot;
+            m_Queue[i] = element;
         }
     }
 

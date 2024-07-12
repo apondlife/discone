@@ -4,19 +4,10 @@ using UnityEngine;
 namespace Discone {
 
 /// the discone input frame
-public readonly struct InputFrame: CharacterInputFrame {
+public struct InputFrame: CharacterInputFrame {
     // -- props --
     /// if the loading input is active
-    public readonly bool IsLoadPressed;
-
-    // -- lifetime --
-    public InputFrame(
-        CharacterInputMain main,
-        bool isLoadPressed
-    ) {
-        Main = main;
-        IsLoadPressed = isLoadPressed;
-    }
+    public bool IsLoadPressed;
 
     // -- queries --
     /// if there is any input
@@ -26,11 +17,11 @@ public readonly struct InputFrame: CharacterInputFrame {
 
     /// if there is any move input
     public bool AnyMove {
-        get => Main.Move != Vector3.zero;
+        get => Main.AnyMove;
     }
 
     // -- CharacterInputFrame --
-    public CharacterInputMain Main { get; }
+    public CharacterInputMain Main { get; set; }
 }
 
 }

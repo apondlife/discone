@@ -29,10 +29,8 @@ public sealed class PlayerInputSource: PlayerInputSource<CharacterInputFrame.Def
         get => m_Look;
     }
 
-    protected override CharacterInputFrame.Default ReadNext() {
-        return new(
-            main: ReadMain()
-        );
+    protected override void ReadNext(ref CharacterInputFrame.Default frame) {
+        ReadMain(ref frame);
     }
 }
 
@@ -61,13 +59,13 @@ public abstract class PlayerInputSource<F>: CharacterInputSource<F> where F: Cha
     protected abstract Transform Look { get; }
 
     /// reads the next frame of input
-    protected abstract F ReadNext();
+    protected abstract void ReadNext(ref F frame);
 
     /// reads the next frame of third person input
-    protected CharacterInputMain ReadMain() {
+    protected void ReadMain(ref F frame) {
         if (!Look) {
             Log.Player.E($"input source has no look transform");
-            return new();
+            return;
         }
 
         var forward = Vector3.Normalize(Vector3.ProjectOnPlane(
@@ -83,19 +81,17 @@ public abstract class PlayerInputSource<F>: CharacterInputSource<F> where F: Cha
         var input = Vector3.ClampMagnitude(Actions.Move, 1f);
 
         // produce a new frame
-        return new CharacterInputMain(
+        frame.Main = new(
             move: Vector3.ClampMagnitude(input.y * forward + input.x * right, 1f),
             isJumpPressed: Actions.IsJumpPressed
         );
     }
 
     // -- CharacterInputSource --
-    public F Read() {
-         if (Actions == null) {
-             return default;
+    public void Read(ref F frame) {
+         if (Actions != null) {
+             ReadNext(ref frame);
          }
-
-         return ReadNext();
     }
 
     public virtual bool IsEnabled {
