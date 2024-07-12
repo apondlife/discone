@@ -72,11 +72,16 @@ public class CharacterDust: MonoBehaviour {
         }
 
         // if just landed
-        if (m_State.Next.IsOnGround) {
-            m_LandingPuff.transform.up = m_State.Next.MainSurface.Normal;
-            m_LandingPuff.transform.position = m_State.Next.MainSurface.Point;
-            var groundForce = Vector3.Project(m_State.Next.Acceleration, m_State.Next.MainSurface.Normal).magnitude;
+        if (m_State.Curr.Events.Contains(CharacterEvent.Land)) {
+            var surface = m_State.Prev.MainSurface;
+
+            var trs = m_LandingPuff.transform;
+            trs.up = surface.Normal;
+            trs.position = surface.Point;
+
+            var groundForce = Vector3.Project(m_State.Prev.Acceleration, surface.Normal).magnitude;
             var particles = Mathf.FloorToInt(m_LandingAccelerationToDust * groundForce);
+
             m_LandingPuff.Emit(particles);
             m_LandingStamp.Emit(particles);
         }
