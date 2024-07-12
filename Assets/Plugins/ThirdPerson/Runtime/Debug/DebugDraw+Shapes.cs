@@ -19,7 +19,7 @@ public partial class DebugDraw {
         base.DrawShapes(cam);
 
         // only draw when enabled
-        if (!m_IsEnabled) {
+        if (!m_IsDrawing) {
             return;
         }
 

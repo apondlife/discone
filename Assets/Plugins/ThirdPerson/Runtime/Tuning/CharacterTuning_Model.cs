@@ -60,6 +60,32 @@ partial class CharacterTuning {
         public JumpTuning NextJump(CharacterState state) {
             return JumpById(state.Next.NextJump);
         }
+
+        // -- distortion --
+        [Header("distortion")]
+        [Tooltip("a scale on intensity along the plane's axis")]
+        public float Distortion_AxialScale;
+
+        [Tooltip("a scale on intensity around the plane's axis (inversely proportional to axial)")]
+        public float Distortion_RadialScale;
+
+        [Tooltip("the stretch and squash intensity acceleration scale, 0 full squash, 1 no distortion, infinity infinitely stretched")]
+        public FloatRange Distortion_Intensity_Acceleration;
+
+        [Tooltip("the stretch and squash intensity velocity scale, 0 full squash, 1 no distortion, infinity infinitely stretched")]
+        public FloatRange Distortion_Intensity_Velocity;
+
+        [Tooltip("the movement distortion scale")]
+        public float Distortion_Movement_A;
+
+        [Tooltip("the exponentiated movement distortion scale")]
+        public float Distortion_Movement_B;
+
+        [Tooltip("the movement distortion exponent")]
+        public float Distortion_Movement_K;
+
+        [Tooltip("the intensity ease on acceleration based stretch & squash")]
+        public DynamicEase.Config Distortion_Ease;
     }
 }
 

@@ -209,7 +209,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         // blend yoshiing
         // TODO: lerp
-        var surface = frame.MainSurface;
+        var surface = frame.PerceivedSurface;
         var yoshiing = (c.Inputs.IsJumpPressed ? 1.0f : 0.0f);
 
         if (surface.IsSome) {

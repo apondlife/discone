@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Shapes;
 using Soil;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Color = UnityEngine.Color;
 
 namespace ThirdPerson {
@@ -68,8 +69,8 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     [Tooltip("the set of tags to show")]
     [SerializeField] Tag m_Tags = Tag.Default;
 
-    [Tooltip("if drawing is enabled")]
-    [SerializeField] bool m_IsEnabled;
+    [Tooltip("if drawing is on")]
+    [SerializeField] bool m_IsDrawing;
 
     [Tooltip("if value collection is paused")]
     [SerializeField] bool m_IsPaused;
@@ -93,7 +94,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     void Update() {
         // toggle drawing on press
         if (Input.GetKeyDown(k_ToggleKey)) {
-            m_IsEnabled = !m_IsEnabled;
+            m_IsDrawing = !m_IsDrawing;
         }
 
         // toggle value collection on press
@@ -185,7 +186,7 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     /// push the drawing's current value
     void PushNext(string name, Vector3 pos, Vector3 dir, Config cfg) {
         // don't push when not enabled
-        if (!m_IsEnabled || m_IsPaused) {
+        if (!m_IsDrawing || m_IsPaused) {
             return;
         }
 
@@ -222,6 +223,16 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     }
 
     // -- queries --
+    /// if drawing is enabled
+    public bool IsEnabled {
+        get => m_IsDrawing;
+    }
+
+    /// the current tags
+    public Tag Tags {
+        get => m_Tags;
+    }
+
     /// get the current color
     Color CurrColor() {
         return Color.HSVToRGB(m_Hue, 1f, 1f);

@@ -1,46 +1,27 @@
 using Soil;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
 sealed class CharacterDistortion: MonoBehaviour {
-    // -- config --
+    // -- cfg --
+    [Header("cfg")]
     [Tooltip("the position for distorting from above the character")]
     [SerializeField] Vector3 m_Top;
-
-    [Header("tuning")]
-    [FormerlySerializedAs("m_PositiveScale")]
-    [Tooltip("a scale on intensity along the plane's axis")]
-    [SerializeField] float m_AxialScale;
-
-    [FormerlySerializedAs("m_NegativeScale")]
-    [Tooltip("a scale on intensity around the plane's axis (inversely proportional to axial)")]
-    [SerializeField] float m_RadialScale;
-
-    [Tooltip("the stretch and squash intensity acceleration scale, 0 full squash, 1 no distortion, infinity infinitely stretched")]
-    [SerializeField] FloatRange m_Intensity_Acceleration;
-
-    [Tooltip("the stretch and squash intensity velocity scale, 0 full squash, 1 no distortion, infinity infinitely stretched")]
-    [SerializeField] FloatRange m_Intensity_Velocity;
-
-    [FormerlySerializedAs("m_Steepness")]
-    [Tooltip("the responsiveness of the movement based intensity")]
-    [SerializeField] float m_Responsiveness;
-
-    [Tooltip("the intensity ease on acceleration based stretch & squash")]
-    [SerializeField] DynamicEase<float> m_Ease;
 
     // -- props --
     /// .
     CharacterContainer c;
+
+    /// the intensity ease on acceleration based stretch & squash
+    DynamicEase<float> m_Ease;
 
     // -- lifecycle --
     void Start() {
         c = GetComponentInParent<CharacterContainer>();
 
         // initialize ease
-        m_Ease.Init(1f);
+        m_Ease.Init(1f, c.Tuning.Model.Distortion_Ease);
     }
 
     void FixedUpdate() {
@@ -51,6 +32,8 @@ sealed class CharacterDistortion: MonoBehaviour {
 
     /// change character scale according to acceleration
     void StretchAndSquash(float delta) {
+        var tuning = c.Tuning.Model;
+
         var v = c.State.Prev.Velocity.y;
         var a = c.State.Curr.Acceleration.y * delta;
 
@@ -65,7 +48,7 @@ sealed class CharacterDistortion: MonoBehaviour {
             var jumpSquashIntensity = 0f;
 
             // use the squash curve if available
-            var jumpTuning = c.Tuning.Model.JumpById(jumpId);
+            var jumpTuning = tuning.JumpById(jumpId);
             if (jumpTuning != null) {
                 jumpSquashIntensity = jumpTuning.Squash.Evaluate(jumpSquatElapsed);
             }
@@ -78,19 +61,20 @@ sealed class CharacterDistortion: MonoBehaviour {
         }
         // otherwise, stretch/squash based on vertical the acceleration/velocity relationship
         else {
-            // if accelerating against velocity, sign should squash (negative sign), otherwise, stretch
-            var ia = m_Intensity_Acceleration.Evaluate(Mathf.Sign(v * a) * 0.5f + 0.5f) * Mathf.Abs(a);
-            var iv = m_Intensity_Velocity.Evaluate(Mathf.Sign(v) * 0.5f + 0.5f) * Mathf.Abs(v);
 
+            // if accelerating against velocity, sign should squash (negative sign), otherwise, stretch
             // TODO: maybe spring this instead of the sigmoid?
-            var intensityRaw = ia + iv;
+            var ia = tuning.Distortion_Intensity_Acceleration.Evaluate(Mathf.Sign(v * a) * 0.5f + 0.5f) * Mathf.Abs(a);
+            var iv = tuning.Distortion_Intensity_Velocity.Evaluate(Mathf.Sign(v) * 0.5f + 0.5f) * Mathf.Abs(v);
+            var intensity = ia + iv;
 
             // sigmoid (thanks paradise)
-            // https://www.desmos.com/calculator/stfjbdj5lh
+            // https://www.desmos.com/calculator/vrdxqcihwl
             destIntensity = 1f + (2f / Mathf.PI) * Mathf.Atan(
-                intensityRaw * Mathf.Pow(
-                    Mathf.Abs(intensityRaw),
-                    m_Responsiveness
+                tuning.Distortion_Movement_A * intensity *
+                Mathf.Pow(
+                    Mathf.Abs(tuning.Distortion_Movement_A * tuning.Distortion_Movement_B * intensity),
+                    tuning.Distortion_Movement_K
                 )
             );
         }
@@ -100,7 +84,8 @@ sealed class CharacterDistortion: MonoBehaviour {
 
     // -- commands --
     void Distort() {
-        var plane = new Plane(transform.up, transform.position).AsVector4();
+        var trs = transform;
+        var plane = new Plane(trs.up, trs.position).AsVector4();
 
         foreach (var material in c.Model.Materials.All) {
             material.SetVector(
@@ -120,12 +105,12 @@ sealed class CharacterDistortion: MonoBehaviour {
 
             material.SetFloat(
                 ShaderProps.Distortion_AxialScale,
-                m_AxialScale
+                c.Tuning.Model.Distortion_AxialScale
             );
 
             material.SetFloat(
                 ShaderProps.Distortion_RadialScale,
-                m_RadialScale
+                c.Tuning.Model.Distortion_RadialScale
             );
         }
     }

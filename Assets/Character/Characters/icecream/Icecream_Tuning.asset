@@ -1231,7 +1231,7 @@ MonoBehaviour:
     Dst:
       Min: 0
       Max: 80
-  Surface_PerceptionDuration: 0
+  Surface_PerceptionDuration: 0.1
   Surface_PerceptionAngularSpeed: 270
   Friction_AerialDrag: 0.004
   Friction_SurfaceDrag: 0.066
@@ -1478,3 +1478,21 @@ MonoBehaviour:
             m_PostInfinity: 0
             m_RotationOrder: 0
           Src: 0.3
+    Distortion_AxialScale: 1
+    Distortion_RadialScale: 0.3
+    Distortion_Intensity_Acceleration:
+      Min: -0.414
+      Max: 0.414
+    Distortion_Intensity_Velocity:
+      Min: 0.02
+      Max: 0.1
+    Distortion_Movement_A: 0.2222
+    Distortion_Movement_B: 0.0018
+    Distortion_Movement_K: 4
+    Distortion_Ease:
+      F: 4.39
+      Z: 0.49
+      R: 1.65
+      K1: 0.035528895
+      K2: 0.0013143506
+      K3: 0.029311338

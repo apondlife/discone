@@ -215,10 +215,10 @@ sealed class SurfaceSystem: CharacterSystem {
         float delta,
         CharacterContainer c
     ) {
-        var nextSurface = c.State.Curr.PerceivedSurface;
+        var nextPerceived = c.State.Curr.PerceivedSurface;
 
         // move the perceived surface towards the current surface
-        var normal = nextSurface.Normal;
+        var normal = nextPerceived.Normal;
 
         // rotate towards current surface
         var rotationSpeed = 0f;
@@ -244,9 +244,10 @@ sealed class SurfaceSystem: CharacterSystem {
         );
 
         // update next surface
-        nextSurface.Point = pos;
-        nextSurface.SetNormal(normal);
-        c.State.Next.PerceivedSurface = nextSurface;
+        nextPerceived.Point = pos;
+        nextPerceived.SetNormal(normal);
+
+        c.State.Next.PerceivedSurface = nextPerceived;
     }
 }
 
