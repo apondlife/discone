@@ -12,8 +12,13 @@ bin/data
 mono_crash*
 
 # packages
-/[Aa]ssets/[Pp]lugins/FMOD
 /[Aa]ssets/[Pp]lugins/[Ee]xternal/**/*
+!/[Aa]ssets/[Pp]lugins/[Ee]xternal/[Mm]irror
+!/[Aa]ssets/[Pp]lugins/[Ee]xternal/[Mm]irror/**/*
+!/[Aa]ssets/[Pp]lugins/[Ee]xternal/[Tt]ext[Mm]esh [Pp]ro
+!/[Aa]ssets/[Pp]lugins/[Ee]xternal/[Tt]ext[Mm]esh [Pp]ro/**/*
+!/[Aa]ssets/[Pp]lugins/[Ee]xternal/[Ss]tandard [Aa]ssets
+!/[Aa]ssets/[Pp]lugins/[Ee]xternal/[Ss]tandard [Aa]ssets/**/*
 
 # thrashing settings
 /[Pp]rojectSettings/[Pp]ackages/com.unity.probuilder/[Ss]ettings.json
