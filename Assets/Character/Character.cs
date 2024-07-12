@@ -59,7 +59,7 @@ public sealed class Character: Character<InputFrame> {
 
         // debug
         #if UNITY_EDITOR
-        Dbg.AddToParent("Characters", this);
+        Soil.Debug.Group("Characters", this);
         #endif
     }
 

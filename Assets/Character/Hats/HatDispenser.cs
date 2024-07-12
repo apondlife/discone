@@ -2,13 +2,11 @@ using Soil;
 using UnityEngine;
 using UnityAtoms.BaseAtoms;
 
-public class HatDispenser : MonoBehaviour
-{
-    [SerializeField] private LayerMask m_CharacterLayer;
-    [SerializeField] private StringReference m_HatName;
+public class HatDispenser : MonoBehaviour {
+    [SerializeField] LayerMask m_CharacterLayer;
+    [SerializeField] StringReference m_HatName;
 
-    private void OnTriggerEnter(Collider other) {
-        Debug.Log("ENTER" + other.name);
+    void OnTriggerEnter(Collider other) {
         if(!m_CharacterLayer.Contains(other.gameObject.layer)) {
             return;
         }

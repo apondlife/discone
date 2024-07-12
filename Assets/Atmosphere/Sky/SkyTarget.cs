@@ -42,13 +42,13 @@ class SkyTarget: MonoBehaviour {
     SkyBody m_Body;
 
     /// a set of event subscriptions
-    DisposeBag m_Subscriptions = new DisposeBag();
+    DisposeBag m_Subscriptions = new();
 
     // -- lifeycle --
     void Awake() {
         // if there is nowhere to place the star, quit
         if (m_Bodies?.Value == null) {
-           Debug.LogWarning("[sky] no sky bodies container in this scene, ignoring targets");
+           Log.Sky.W("no sky bodies container in this scene, ignoring targets");
            return;
         }
 

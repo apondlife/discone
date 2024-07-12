@@ -79,7 +79,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         m_Coord = GetComponent<WorldCoord>();
 
         #if UNITY_EDITOR
-        Dbg.AddToParent("Players_Online", this);
+        Soil.Debug.Group("Players_Online", this);
         #endif
 
         m_PlayerCount.Value += 1;

@@ -123,7 +123,7 @@ public class CharacterFlower: NetworkBehaviour {
 
         // debug helpers
         #if UNITY_EDITOR
-        Dbg.AddToParent("Flowers", this);
+        Soil.Debug.Group("Flowers", this);
         #endif
     }
 
