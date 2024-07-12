@@ -130,8 +130,10 @@ Audio/.unsaved
 !/[Aa]ssets/Gizmos/FMOD/*
 !/[Aa]ssets/Editor Default Resources/FMOD/*
 
-# Ignore the Cache folder since it is updated locally.
-/[Aa]ssets/Plugins/FMOD/Cache/*
+# move these to Assets/Plugins/External
+/[Aa]ssets/[Pp]lugins/FMOD
+/[Aa]ssets/[Pp]lugins/FMOD/Cache/*
+/[Aa]ssets/[Pp]lugins/FMOD.meta
 
 # Ignore bank files in the StreamingAssets folder.
 /[Aa]ssets/StreamingAssets/**/*.bank
