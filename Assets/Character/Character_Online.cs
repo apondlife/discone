@@ -64,7 +64,7 @@ public sealed partial class Character_Online: NetworkBehaviour {
     double m_LastSync;
 
     /// the interpolated character state frame;
-    CharacterState.Frame m_InterpolatedState;
+    CharacterState.Frame m_Frame;
 
     public Action<CharacterSimulation> OnSimulationChanged;
 
@@ -89,9 +89,9 @@ public sealed partial class Character_Online: NetworkBehaviour {
         if (m_Simulation == CharacterSimulation.Local) {
             SendState();
         }
-        // otherwise, if the simulation is remote and we're a client, interpolate
-        // state to smooth out gaps
-        else if (isClient && m_InterpolatedState != null) {
+        // otherwise, if the simulation is remote and we're a client, interpolate state to
+        // smooth out gaps
+        else if (m_Simulation == CharacterSimulation.Remote && m_InterpolationTime > 0f && isClient) {
             var src = m_Character.State.Next;
             var dst = m_RemoteState;
 
@@ -101,14 +101,9 @@ public sealed partial class Character_Online: NetworkBehaviour {
             // TODO: attempt to also extrapolate...
             // target.Velocity += m_CurrentState.Acceleration * delta;
             // target.Position += target.Velocity * delta;
-            CharacterState.Frame.Interpolate(
-                src,
-                dst,
-                ref m_InterpolatedState,
-                k
-            );
+            m_Frame.Interpolate(src, dst, k);
 
-            m_Character.ForceState(m_InterpolatedState);
+            m_Character.ForceState(m_Frame);
         }
     }
 
@@ -213,11 +208,6 @@ public sealed partial class Character_Online: NetworkBehaviour {
             c.SetActive(isSimulated);
         }
 
-        // if not remote any more, clear interpolated state
-        if (simulation != CharacterSimulation.Remote) {
-            m_InterpolatedState = null;
-        }
-
         OnSimulationChanged?.Invoke(simulation);
     }
 
@@ -255,14 +245,14 @@ public sealed partial class Character_Online: NetworkBehaviour {
     // -- events --
     /// when the client receives new state from the server
     [Client]
-    void Client_OnStateReceived(CharacterState.Frame prev, CharacterState.Frame next) {
+    void Client_OnStateReceived(CharacterState.Frame _, CharacterState.Frame next) {
         if (m_Simulation != CharacterSimulation.Remote) {
             return;
         }
 
         // if interpolating, save the a copy of the target state
-        if (m_InterpolationTime > 0.0f) {
-            m_InterpolatedState = next.Copy();
+        if (m_InterpolationTime > 0f) {
+            m_Frame.Assign(next);
         }
         // otherwise, just update to whatever the server sends
         else {

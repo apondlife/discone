@@ -136,7 +136,8 @@ sealed class DebugWarp: MonoBehaviour {
         var character = m_CurrentCharacter.Value;
 
         // build frame at position
-        var nextFrame = character.State.Curr.Copy();
+        var nextFrame = character.State.Next;
+        nextFrame.Assign(character.State.Curr);
         nextFrame.Position = position;
         nextFrame.Velocity = Vector3.zero;
 

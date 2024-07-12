@@ -10,6 +10,7 @@ public struct SystemState: IEquatable<SystemState> {
     [Tooltip("the current phase")]
     public string PhaseName;
 
+    // TODO: don't use total time
     [Tooltip("the current phase start time")]
     public float PhaseStart;
 

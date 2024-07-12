@@ -209,11 +209,11 @@ public sealed class Player: Player<InputFrame> {
     void OnWarp(Placement placement) {
         var character = Character;
 
-        var nextState = character.State.Curr.Copy();
-        nextState.Position = placement.Position;
-        nextState.Forward = placement.Forward;
+        var nextFrame = character.State.Next;
+        nextFrame.Assign(character.State.Curr);
+        nextFrame.Assign(placement.Position, placement.Forward);
 
-        character.ForceState(nextState);
+        character.ForceState(nextFrame);
     }
 
     // -- props/hot --

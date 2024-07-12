@@ -67,7 +67,6 @@ public class Camera: MonoBehaviour, CameraContainer {
         // set deps
         var c = GetComponentInParent<CharacterContainer>();
         m_State = new CameraState(
-            new CameraState.Frame(),
             m_Follow.localPosition,
             c.State
         );
@@ -144,9 +143,10 @@ public class Camera: MonoBehaviour, CameraContainer {
     // -- commands --
     /// move the camera into a new external position
     public void MoveTo(Vector3 pos) {
-        var frame = m_State.Curr.Copy();
-        frame.Spherical = m_State.WorldIntoSpherical(pos);
-        m_State.Override(frame);
+        var nextFrame = m_State.Next;
+        nextFrame.Assign(m_State.Curr);
+        nextFrame.Spherical = m_State.WorldIntoSpherical(pos);
+        m_State.Override(nextFrame);
     }
 
     /// toggle the virtual camera for this character

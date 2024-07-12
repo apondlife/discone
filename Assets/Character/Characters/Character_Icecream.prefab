@@ -197,6 +197,10 @@ PrefabInstance:
       propertyPath: m_StrideLength.Dst.Min
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 327298194215011574, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
+      propertyPath: m_Animator
+      value: 
+      objectReference: {fileID: 5126978185678924075}
     - target: {fileID: 351973787110621403, guid: 5af35ff3d33824a088c62a008a1f654d, type: 3}
       propertyPath: m_Tuning
       value: 
@@ -1829,6 +1833,11 @@ Transform:
 --- !u!4 &4508689363695872900 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -6278528321999487170, guid: e01809663f419c24888bb8ef0d8617d0, type: 3}
+  m_PrefabInstance: {fileID: 1606723862212449466}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &5126978185678924075 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: e01809663f419c24888bb8ef0d8617d0, type: 3}
   m_PrefabInstance: {fileID: 1606723862212449466}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &5649799333723186730 stripped

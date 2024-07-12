@@ -37,10 +37,10 @@ namespace ThirdPerson.Codegen {
                     )
                     .ToArray();
 
-                // frame constructor
-                var frameCtorImpl = IntoLines(
+                // frame assign
+                var frameCopyImpl = IntoLines(
                     frameFields,
-                    "{0} = f.{0};",
+                    "{0} = o.{0};",
                     (f) => f.name
                 );
 
@@ -61,9 +61,10 @@ namespace ThirdPerson.Codegen {
 
                     public partial class {className} {{
                         public partial class Frame {{
-                            /// create a copy of an existing frame
-                            public Frame({className}.Frame f) {{
-                                {frameCtorImpl}
+                            // -- commands --
+                            /// re-assign properties from an existing frame
+                            public void Assign(Frame o) {{
+                                {frameCopyImpl}
                             }}
 
                             // -- IEquatable --

@@ -30,10 +30,10 @@ public record CheckpointState {
     public CharacterState.Frame Load_SrcState;
 
     /// the final state when the load completes
-    public CharacterState.Frame Load_DstState;
+    public CharacterState.Frame Load_DstState = new();
 
-    /// the current state while loading
-    public CharacterState.Frame Load_CurState;
+    /// the interpolated state while loading
+    public CharacterState.Frame Load_CurState = new();
 
     // -- load/commands
     /// reset the elapsed load time

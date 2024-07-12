@@ -1,21 +1,31 @@
-using System;
 using UnityEngine;
 
 namespace ThirdPerson {
 
 /// a container for the character's model and animations
-public class CharacterRig: MonoBehaviour {
+public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the rotation speed in degrees towards look direction")]
     [SerializeField] float m_LookRotation_Speed;
 
+    // -- refs --
+    [Header("refs")]
+    [Tooltip("the character's head")]
+    [SerializeField] CharacterHead m_Head;
+
+    [Tooltip("the character's legs")]
+    [SerializeField] CharacterLegs m_Legs;
+
+    [Tooltip("the character's arms")]
+    [SerializeField] CharacterArms m_Arms;
+
+    [Tooltip("the character's animator")]
+    [SerializeField] Animator m_Animator;
+
     // -- props --
     /// the containing character
     CharacterContainer c;
-
-    /// the character's animator
-    Animator m_Animator;
 
     /// the list of ik limbs
     CharacterPart[] m_Limbs;
@@ -29,6 +39,10 @@ public class CharacterRig: MonoBehaviour {
     /// the current wall tilt rotation
     Quaternion m_SurfaceTilt = Quaternion.identity;
 
+    /// the interpolated state frame
+    CharacterState.Frame m_Frame = new();
+
+    // TODO: don't use total time
     /// the stored last time of fixed update (for interpolation)
     float m_LastFixedUpdate = 0.0f;
 
@@ -37,49 +51,45 @@ public class CharacterRig: MonoBehaviour {
         // set dependencies
         c = GetComponentInParent<CharacterContainer>();
 
+        // if this character is not animated, destroy all limbs and procedural animations
+        if (!m_Animator) {
+            Log.Model.E($"character {c.Name} has no animator, destroying limbs");
+            Destroy(m_Head.gameObject);
+            Destroy(m_Legs.gameObject);
+            Destroy(m_Arms.gameObject);
+            return;
+        }
+
         // set props
         m_Limbs = GetComponentsInChildren<CharacterPart>();
 
-        // init animator
-        m_Animator = GetComponentInChildren<Animator>();
-        if (m_Animator != null) {
-            // init ik limbs
-            foreach (var limb in m_Limbs) {
-                limb.Init(m_Animator);
-            }
-
-            // proxy animator callbacks
-            var proxy = m_Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
-            if (proxy == null) {
-                proxy = m_Animator.gameObject.AddComponent<CharacterAnimatorProxy>();
-            }
-
-            proxy.Bind(OnAnimatorIK);
-        } else {
-            // destroy ik limbs
-            Log.Model.W($"character {c.Name} has no animator, destroying limbs");
-            foreach (var limb in m_Limbs) {
-                Destroy(limb.gameObject);
-            }
-
-            m_Limbs = Array.Empty<CharacterPart>();
+        // init ik limbs
+        foreach (var limb in m_Limbs) {
+            limb.Init(m_Animator);
         }
+
+        // proxy animator callbacks
+        var proxy = m_Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
+        if (proxy == null) {
+            proxy = m_Animator.gameObject.AddComponent<CharacterAnimatorProxy>();
+        }
+
+        proxy.Bind(this);
     }
 
     void FixedUpdate() {
-        // TODO: don't use wall time
         m_LastFixedUpdate = Time.time;
     }
 
     void Update() {
         var delta = Time.time - m_LastFixedUpdate;
-        var state = CharacterState.Frame.Interpolate(
+        m_Frame.Interpolate(
             c.State.Curr,
             c.State.Next,
             delta / Time.fixedDeltaTime
         );
 
-        Tilt(state, Time.deltaTime);
+        Tilt(m_Frame, Time.deltaTime);
 
         m_LookRotation = Quaternion.RotateTowards(
             m_LookRotation,
@@ -91,8 +101,8 @@ public class CharacterRig: MonoBehaviour {
         transform.localRotation =  tilt * m_LookRotation;
     }
 
-    /// a callback for calculating IK
-    void OnAnimatorIK(int layer) {
+    // -- CharacterAnimatorProxy.Target --
+    public void OnAnimatorIk(int layer) {
         foreach (var limb in m_Limbs) {
             limb.ApplyIk();
         }

@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Soil {
 
+// TODO: consider some math optimizations: https://stackoverflow.com/questions/53785910/avoiding-the-overhead-of-c-sharp-virtual-calls
+// everything becomes structs, arithmetic explicitly passed in, this type no serializable
+
 /// a dynamic pid controller for a moving target value
 /// see: https://www.youtube.com/watch?v=KPoeNZZ6H4s
 [Serializable]

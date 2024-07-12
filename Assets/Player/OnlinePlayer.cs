@@ -7,7 +7,6 @@ using UnityAtoms.BaseAtoms;
 namespace Discone {
 
 // TODO: swap (drive) characters by setting m_LocalCharacter
-// TODO: what to do for multiple players? variable instancer?
 // TODO: rename to something like player sync?
 /// an online player
 [RequireComponent(typeof(WorldCoord))]
@@ -65,14 +64,14 @@ public sealed class OnlinePlayer: NetworkBehaviour {
     [SerializeField] Store m_Store;
 
     // -- props --
-    /// a set of event subscriptions
-    DisposeBag m_Subscriptions = new();
-
     /// the world coordinate
     WorldCoord m_Coord;
 
     /// drives the linked player's character
     CharacterEvent m_DriveCharacter;
+
+    /// a set of event subscriptions
+    DisposeBag m_Subscriptions = new();
 
     // -- lifecycle --
     void Awake() {
@@ -178,7 +177,11 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // uses the player position (which is dependent on the characters).
         // TODO: if this weren't true, then we could use Server_DriveCharacter instead of Server_SwitchCharacter and
         // have fewer code paths
-        var src = m_Character?.gameObject;
+        var src = (GameObject)null;
+        if (m_Character) {
+            src = m_Character.gameObject;
+        }
+
         m_Character = newCharacter;
 
         // spawn the character
@@ -242,7 +245,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
         // if the server doesn't have authority over this character, another player
         // already does
         if (!dstCharacter.IsAvailable) {
-            /// TODO: stale?
+            // TODO: stale?
             Target_RetrySwitchCharacter(connectionToClient, isInitial: src == null);
             return;
         }
@@ -328,7 +331,7 @@ public sealed class OnlinePlayer: NetworkBehaviour {
 
     /// spawn initial player when store finishes loading
     void OnInitialLoadFinished() {
-        // get the stored charater
+        // get the stored character
         var character = m_Store.PlayerCharacter;
 
         // spawn the character, if any

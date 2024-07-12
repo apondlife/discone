@@ -181,7 +181,7 @@ public class OnlineInterest: InterestManagement {
         return interest switch {
             PlayerInterest p => IsInteresting(p, player),
             CharacterInterest c => IsInteresting(c, player),
-            FlowerInterest f => IsInteresting(f, player),
+            _ when interest.IsStatic => IsVisible(interest, player),
             _ => true,
         };
     }
@@ -240,15 +240,6 @@ public class OnlineInterest: InterestManagement {
         return true;
     }
 
-    /// if the flower is interesting to the player
-    [Server]
-    bool IsInteresting(
-        FlowerInterest interest,
-        PlayerInterest player
-    ) {
-        return IsVisible(interest, player);
-    }
-
     /// if the interest is visible to the player
     bool IsVisible(
         Interest interest,
@@ -302,11 +293,13 @@ public class OnlineInterest: InterestManagement {
         // get the cached interest by id
         if (!m_Interests.TryGetValue(id, out var interest)) {
             // create the interest
-            if (identity.GetComponent<OnlinePlayer>() is OnlinePlayer p) {
+            if (identity.GetComponent<OnlinePlayer>() is {} p) {
                 interest = new PlayerInterest(p);
-            } else if (identity.GetComponent<Character_Online>() is Character_Online c) {
+            } else if (identity.GetComponent<Character_Online>() is {} c) {
                 interest = new CharacterInterest(c);
-            } else if (identity.GetComponent<CharacterFlower>() is CharacterFlower f) {
+            } else if (identity.GetComponent<Character_Spawn>() is {} s) {
+                interest = new CharacterSpawnInterest(s);
+            } else if (identity.GetComponent<CharacterFlower>() is {} f) {
                 interest = new FlowerInterest(f);
             } else {
                 #if UNITY_EDITOR
@@ -323,6 +316,11 @@ public class OnlineInterest: InterestManagement {
                 SyncCoord(interest);
             }
         }
+        // if this was destroyed, remove it
+        else if (interest.IsDestroyed) {
+            m_Interests.Remove(id);
+            return null;
+        }
 
         return interest;
     }
@@ -335,6 +333,9 @@ public class OnlineInterest: InterestManagement {
         public Vector2Int Coord;
 
         // -- queries --
+        /// if this object is destroyed
+        public abstract bool IsDestroyed { get; }
+
         /// if this object is static
         public abstract bool IsStatic { get; }
 
@@ -350,11 +351,15 @@ public class OnlineInterest: InterestManagement {
 
         // -- lifetime --
         /// create a new interest
-        public Interest(T obj) {
+        protected Interest(T obj) {
             Object = obj;
         }
 
         // -- queries --
+        public override bool IsDestroyed {
+            get => !Object;
+        }
+
         /// the object's current position
         public override Vector3 Position {
             get => Object.transform.position;
@@ -375,6 +380,13 @@ public class OnlineInterest: InterestManagement {
         public CharacterInterest(Character_Online c) : base(c) {}
     }
 
+    /// a character of interest
+    sealed class CharacterSpawnInterest: Interest<Character_Spawn> {
+        // -- Interest --
+        public override bool IsStatic => true;
+        public CharacterSpawnInterest(Character_Spawn c) : base(c) {}
+    }
+
     /// a flower of interest
     sealed class FlowerInterest: Interest<CharacterFlower> {
         // -- Interest --
@@ -385,10 +397,14 @@ public class OnlineInterest: InterestManagement {
     // -- debugging --
     #if DEBUG
     /// the set of types without managed interest
-    HashSet<System.Type> m_UninterestingTypes = new HashSet<System.Type>();
+    HashSet<System.Type> m_UninterestingTypes = new();
 
     /// warn on the first instance of an uninteresting type
     void FoundUninterestingType(NetworkBehaviour c) {
+        if (!c) {
+            return;
+        }
+
         var type = c.GetType();
         if (!m_UninterestingTypes.Contains(type)) {
             m_UninterestingTypes.Add(type);

@@ -19,7 +19,7 @@ public sealed partial class CharacterState {
 
     // -- props --
     /// the queue of frames
-    Ring<Frame> m_Frames = new(k_BufferSize);
+    readonly Ring<Frame> m_Frames = new(k_BufferSize);
 
     // -- lifetime --
     /// create state from initial frame and dependencies
@@ -31,35 +31,60 @@ public sealed partial class CharacterState {
         // set deps
         m_Tuning = tuning;
 
-        // fill with the initial frame
-        var initial = Create(position, forward);
-        Fill(initial);
+        // fill with copies of the initial frame
+        for (var i = 0; i < m_Frames.Length; i++) {
+            m_Frames[i] = Create(position, forward);
+        }
     }
 
     // -- commands --
-    /// create the next frame from the current frame
+    /// initialize a frame from a forward and position
+    public void Init(
+        Frame frame,
+        Vector3 position,
+        Vector3 forward
+    ) {
+        if (forward == Vector3.zero) {
+            Log.Character.W($"can't set a zero forward vector, ignoring");
+            return;
+        }
+
+        // create a minimal frame
+        frame.Position = position;
+        frame.Forward = forward;
+
+        // init any properties from tuning
+        frame.Surface_Drag = m_Tuning.Friction_SurfaceDrag;
+        frame.Surface_KineticFriction = m_Tuning.Friction_Kinetic;
+        frame.Surface_StaticFriction = m_Tuning.Friction_Static;
+    }
+
+    /// push the next frame from the current state
     public void Advance() {
-        // create a new frame w/ no forces or events
-        var next = m_Frames[0].Copy();
+        // advance the frame
+        m_Frames.Offset();
+
+        // update it to match the current frame w/ no forces or events
+        var next = m_Frames[0];
+        next.Assign(m_Frames[1]);
         next.Force = Vector3.zero;
         next.Events.Clear();
-
-        // add the frame
-        m_Frames.Add(next);
     }
 
     /// override the current frame
     public void Override(Frame frame) {
-        if (m_Frames.IsEmpty) {
-            Fill(frame);
-        } else {
-            m_Frames[0] = frame;
-        }
+        m_Frames[0] = frame;
     }
 
-    /// fill the queue with the frame
-    public void Fill(Frame frame) {
-        m_Frames.Fill(frame);
+    // -- factories --
+    /// create a new frame with a forward and position
+    Frame Create(
+        Vector3 position,
+        Vector3 forward
+    ) {
+        var frame = new Frame();
+        Init(frame, position, forward);
+        return frame;
     }
 
     // -- queries --
@@ -101,30 +126,6 @@ public sealed partial class CharacterState {
     /// gets the frame at offset
     public Frame this[int offset] {
         get => m_Frames[offset];
-    }
-
-    // -- factories --
-    /// create a frame from forward and position
-    public Frame Create(
-        Vector3 position,
-        Vector3 forward
-    ) {
-        if (forward == Vector3.zero) {
-            Log.Character.W($"can't set a zero forward vector, ignoring");
-            return new Frame();
-        }
-
-        // create a minimal frame
-        var frame = new Frame();
-        frame.Position = position;
-        frame.Forward = forward;
-
-        // init any properties from tuning
-        frame.Surface_Drag = m_Tuning.Friction_SurfaceDrag;
-        frame.Surface_KineticFriction = m_Tuning.Friction_Kinetic;
-        frame.Surface_StaticFriction = m_Tuning.Friction_Static;
-
-        return frame;
     }
 
     // -- types --
@@ -211,6 +212,37 @@ public sealed partial class CharacterState {
         // -- lifetime --
         /// create an empty frame
         public Frame() {
+        }
+
+        // -- commands --
+        // TODO: extract placement into thirdperson?
+        /// assign the frame from the placement
+        public void Assign(
+            Vector3 position,
+            Vector3 forward
+        ) {
+            Position = position;
+            Forward = forward;
+        }
+
+        /// assign this frame to an interpolation of src and dst
+        public void Interpolate(
+            Frame start,
+            Frame end,
+            float k
+        ) {
+            k = Mathf.Clamp01(k);
+
+            // by default, the values are just taken from the end
+            Assign(end);
+
+            // interpolate relevant values
+            // TODO: should bool do something different? past 50%?
+            Position = Vector3.Lerp(start.Position, end.Position, k);
+            Velocity = Vector3.Lerp(start.Velocity, end.Velocity, k);
+            Force = Vector3.Lerp(start.Force, end.Force, k);
+            Acceleration = Vector3.Lerp(start.Acceleration, end.Acceleration, k);
+            Forward = Vector3.Slerp(start.Forward, end.Forward, k);
         }
 
         /// sets the forward direction on the xz plane
@@ -324,44 +356,6 @@ public sealed partial class CharacterState {
             }
 
             return sourceDir.normalized;
-        }
-
-        // -- factories --
-        // TODO: this makes garbage, frames should be pooled
-        /// create a copy of this frame
-        public Frame Copy() {
-            return new Frame(this);
-        }
-
-        // -- factories --
-        /// interpolate a src and dst frame by some interpolant k
-        public static Frame Interpolate(
-            Frame start,
-            Frame end,
-            float k
-        ) {
-            var res = end.Copy();
-            Interpolate(start, end, ref res, k);
-            return res;
-        }
-
-        /// interpolate a src and dst frame into a result frame by some interpolant k
-        [Obsolete("not osbolete, but don't call this before making sure you copied the Frame data the interpolation ends on")]
-        public static void Interpolate(
-            Frame start,
-            Frame end,
-            ref Frame res,
-            float k
-        ) {
-            k = Mathf.Clamp01(k);
-
-            // by default, the values are just taken from the end
-            // TODO: should bools be doing something different? past 50%?
-            res.Position = Vector3.Lerp(start.Position, end.Position, k);
-            res.Velocity = Vector3.Lerp(start.Velocity, end.Velocity, k);
-            res.Force = Vector3.Lerp(start.Force, end.Force, k);
-            res.Acceleration = Vector3.Lerp(start.Acceleration, end.Acceleration, k);
-            res.Forward = Vector3.Slerp(start.Forward, end.Forward, k);
         }
     }
 

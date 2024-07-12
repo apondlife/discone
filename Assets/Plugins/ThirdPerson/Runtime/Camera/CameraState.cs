@@ -19,7 +19,7 @@ public sealed partial class CameraState {
 
     // -- props --
     /// the queue of frames
-    Ring<Frame> m_Frames = new(k_BufferSize);
+    readonly Ring<Frame> m_Frames = new(k_BufferSize);
 
     /// an offset from the character pos to follow
     Vector3 m_FollowOffset;
@@ -36,7 +36,6 @@ public sealed partial class CameraState {
     // -- lifetime --
     /// create state from intial frame
     public CameraState(
-        Frame initial,
         Vector3 followOffset,
         CharacterState characterState
     ) {
@@ -44,32 +43,31 @@ public sealed partial class CameraState {
         m_CharacterState = characterState;
 
         // set props
-        Fill(initial);
         m_FollowOffset = followOffset;
+
+        // fill with copies of the initial frame
+        for (var i = 0; i < m_Frames.Length; i++) {
+            m_Frames[i] = new Frame();
+        }
 
         // set zero values
         m_FollowYawZeroDir = Vector3.ProjectOnPlane(-FollowForward, Vector3.up).normalized;
     }
 
     // -- commands --
-    /// snapshot the current state
+    /// push the next frame from the current state
     public void Advance() {
-        var next = m_Frames[0].Copy();
-        m_Frames.Add(next);
+        // advance to the next frame
+        m_Frames.Offset();
+
+        // and update it to match the current frame
+        var next = m_Frames[0];
+        next.Assign(m_Frames[1]);
     }
 
     /// override the current frame
     public void Override(Frame frame) {
-        if (m_Frames.IsEmpty) {
-            Fill(frame);
-        } else {
-            m_Frames[0] = frame;
-        }
-    }
-
-    /// fill the queue with the frame
-    public void Fill(Frame frame) {
-        m_Frames.Fill(frame);
+        m_Frames[0] = frame;
     }
 
     // -- queries --
@@ -230,13 +228,6 @@ public sealed partial class CameraState {
         // -- lifetime --
         /// create an empty frame
         public Frame() {
-        }
-
-        // -- factories --
-        /// create a copy of this frame
-        public Frame Copy() {
-            var copy = new Frame(this);
-            return copy;
         }
     }
 

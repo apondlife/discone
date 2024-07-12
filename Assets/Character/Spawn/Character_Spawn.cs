@@ -33,7 +33,7 @@ sealed class Character_Spawn: NetworkBehaviour {
             srcName: name
         );
 
-        Destroy(this);
+        Destroy(gameObject);
     }
 
     // -- factories --
@@ -55,7 +55,7 @@ sealed class Character_Spawn: NetworkBehaviour {
             record.Rot
         );
 
-        // shift the hue of the characters in fibonnacci
+        // shift the hue of the characters
         newCharacter.Online.ShiftHue(s_NextShift);
         s_NextShift += Soil.Mathx.PHI;
 

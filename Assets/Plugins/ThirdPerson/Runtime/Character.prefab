@@ -603,6 +603,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_LookRotation_Speed: 420
+  m_Head: {fileID: 5548610953491594583}
+  m_Legs: {fileID: 1537064876290817564}
+  m_Arms: {fileID: 4366274820163353446}
+  m_Animator: {fileID: 0}
 --- !u!1 &7562501268775911199
 GameObject:
   m_ObjectHideFlags: 0
@@ -897,6 +901,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13ae7d49f8d7c47b79ed29124f06d0f6, type: 3}
+--- !u!114 &5548610953491594583 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5979630286135884467, guid: 13ae7d49f8d7c47b79ed29124f06d0f6, type: 3}
+  m_PrefabInstance: {fileID: 2304517358883882980}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e1447bb829004160a6c9ff9677f5146, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &7507087150555394593 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8635034010986100165, guid: 13ae7d49f8d7c47b79ed29124f06d0f6, type: 3}

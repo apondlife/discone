@@ -29,7 +29,10 @@ partial class Character<InputFrame> {
     int m_Debug_FrameOffset = k_Debug_FrameNone;
 
     /// the debug state frame
-    CharacterState.Frame m_Debug_StateFrame = null;
+    CharacterState.Frame m_Debug_StateFrame = new();
+
+    /// if the debug state frame is dirty
+    bool m_Debug_StateFrame_IsDirty = false;
 
     /// the current pressed key
     KeyCode m_CurrentKey = KeyCode.None;
@@ -95,7 +98,8 @@ partial class Character<InputFrame> {
             }
 
             // copy the current state
-            m_Debug_StateFrame = m_State.Next.Copy();
+            m_Debug_StateFrame.Assign(m_State.Next);
+            m_Debug_StateFrame_IsDirty = true;
 
             // step from a clean copy of the previous state
             m_State.Override(m_State.Curr);
@@ -105,11 +109,10 @@ partial class Character<InputFrame> {
         Step();
 
         // ignore any mutations from the step
-        if (m_Debug_StateFrame != null) {
+        if (m_Debug_StateFrame_IsDirty) {
             m_State.Override(m_Debug_StateFrame);
+            m_Debug_StateFrame_IsDirty = false;
         }
-
-        m_Debug_StateFrame = null;
     }
 
     // -- events --

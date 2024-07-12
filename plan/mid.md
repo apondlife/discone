@@ -2,16 +2,17 @@ mired in debt
 ---
 
 # bugs/problems
+- materials memory leak
 - flowers spawn from center
 - aspect ratio stretches the game
 - head gets distorted over time by the hair
 - clipping happens on bad normal surfaces
 - jumping in a tight corner (wall & ground) sometimes has no effect (happens in birthplace)
-- flowers on teleport don't work for other players 
+- flowers on teleport don't work for other players
 - inertia sometimes explodes when character is stuck
 - icecream can stand on the curve of the capsule
 - transition from fixed cameras to character camera has bad rotation in in-between state
-- start camera is only triggered by the last player 
+- start camera is only triggered by the last player
 - grip (or something) pulls you over corners weirdly (on the frame collision misses; should it pull you towards the hit point?)
 - clipping happens on regular cubes
 - transfer in a vpipe doesn't work nicely

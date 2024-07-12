@@ -185,9 +185,9 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         m_Input.Drive(null);
     }
 
+    // TODO: should we fill the full list of frames on connect?
     /// force the current frame's state
     public void ForceState(CharacterState.Frame frame) {
-        // HACK: we should sync the full list of frames on connect
         m_State.Override(frame);
     }
 

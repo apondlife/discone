@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7065b8d57d14c246abb76b131857be5, type: 3}
-  m_Name: Businessman_Tuning
+  m_Name: BusinessMan_Tuning
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMoveTunables
-  m_Description: high friction, pretty good
+  m_Description: business man
   Surface_MinSpeed: 0.85
   Surface_Acceleration:
     Curve:
@@ -24,16 +24,103 @@ MonoBehaviour:
     Dst:
       Min: 60
       Max: 60
-  TurnSpeed: 360
+  Aerial_Acceleration: 10
+  TurnSpeed:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  TurnSpeed_Aerial:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  TurnSpeed_Crouch:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  TurnSpeed_AerialCrouch:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
   PivotSpeed: 1080
   TimeToPivot: 0.6
   PivotStartThreshold: -0.5
+  PivotEndThreshold: 0
   PivotSpeedThreshold: 0
-  Air_TurnSpeed: 0
-  AerialDriftAcceleration: 10
+  Crouch_Power:
+    m_InitialValue: 0
+    m_Delay: 0
+    m_AttackValue: 0
+    m_Attack:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Src: 0
+    m_HoldDuration: 0
+    m_Decay:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Src: 0
+    m_SustainValue: 0
+    m_Release:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Src: 0
   Crouch_StaticFriction: 0
-  Crouch_TurnSpeed: 0
-  Crouch_LateralMaxSpeed: 0
+  Crouch_InlineScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Crouch_CrossScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
   Crouch_Gravity: 0
   Crouch_PositiveKineticFriction:
     Curve:
@@ -157,8 +244,7 @@ MonoBehaviour:
       Min: 0.1
       Max: 0.1
   Gravity: 0
-  JumpGravity: 0
-  FallGravity: 0
+  Gravity_Jump: 0
   Jump_BufferDuration: 0
   CoyoteDuration: 0
   LandingDuration: 0
@@ -590,12 +676,6 @@ MonoBehaviour:
   Surface_VerticalGrip_Down:
     Min: 0
     Max: 12
-  Surface_VerticalGrip_UpHold:
-    Min: 0
-    Max: 47
-  Surface_VerticalGrip_DownHold:
-    Min: 0
-    Max: 40
   Surface_UpwardsVelocityBias:
     Curve:
       serializedVersion: 2
@@ -731,6 +811,41 @@ MonoBehaviour:
     Dst:
       Min: 0.05
       Max: 1
-  TiltForBaseAcceleration: 30
-  MaxTilt: 69
-  TiltSmoothing: 0.1
+  Idle_SqrSpeedThreshold: 0
+  Model:
+    Tilt_AccelerationAngle:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Src:
+        Min: 0
+        Max: 0
+      Dst:
+        Min: 0
+        Max: 0
+    Tilt_InputAngle:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Dst:
+        Min: 0
+        Max: 0
+    Tilt_MoveSpeed: 100
+    Tilt_SurfaceAngle:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Dst:
+        Min: 0
+        Max: 0
+    Tilt_SurfaceSpeed: 100
+    Jumps: []

@@ -6,6 +6,7 @@ using System;
 
 namespace Discone {
 
+// TODO: once / release create capturing lambdas; thus garbage. use attribute based binding & codegen?
 // TODO: add once subscriptions
 /// a collection of event subscriptions
 public record DisposeBag: IDisposable {
@@ -15,30 +16,30 @@ public record DisposeBag: IDisposable {
 
     // -- commands --
     /// add a release action to the bag
-    public void Add(Action a) {
+    void Add(Action a) {
         m_Release += a;
     }
 
     // -- c/subscriptions
     /// add a subscription for an event/action pair
     public DisposeBag Add(VoidEvent e, Action a) {
-        if (e == null) {
+        if (!e) {
             return this;
         }
 
-        Add(e, (_) => a.Invoke());
-        return this;
+        // it's important this use the Register(Action<T> a) and _not_ Register(Action a),
+        // because the zero-arg version does not run the replay buffer.
+        return Add(e, (_) => a.Invoke());
     }
 
     /// add a subscription for an event/action pair
     public DisposeBag Add<T>(AtomEvent<T> e, Action<T> a) {
-        if (e == null) {
+        if (!e) {
             return this;
         }
 
         e.Register(a);
         Add(() => e.Unregister(a));
-
         return this;
     }
 

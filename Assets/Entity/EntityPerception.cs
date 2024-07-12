@@ -2,7 +2,7 @@
 
 namespace Discone {
 
-/// toggles perceivability of entities sound effects, dialogue, etc.
+/// toggles perceptibility of entities sound effects, dialogue, etc.
 sealed class EntityPerception: MonoBehaviour {
     // -- config --
     [Header("config")]
@@ -45,11 +45,16 @@ sealed class EntityPerception: MonoBehaviour {
             return;
         }
 
-        // get player character details
         var playerCharacter = player.Character;
-        var playerState = playerCharacter.State.Curr;
-        var pos = playerState.Position;
-        var fwd = playerState.Forward;
+        if (!playerCharacter) {
+            Log.Player.E($"no player character during perception");
+            return;
+        }
+
+        // get player character details
+        var frame = playerCharacter.State.Curr;
+        var pos = frame.Position;
+        var fwd = frame.Forward;
 
         // set initial prev character once
         if (!m_PrevCharacter) {

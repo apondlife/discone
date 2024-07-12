@@ -24,16 +24,103 @@ MonoBehaviour:
     Dst:
       Min: 500
       Max: 500
-  TurnSpeed: 2000
+  Aerial_Acceleration: 5
+  TurnSpeed:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  TurnSpeed_Aerial:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  TurnSpeed_Crouch:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  TurnSpeed_AerialCrouch:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
   PivotSpeed: 1080
   TimeToPivot: 0.6
   PivotStartThreshold: -0.5
+  PivotEndThreshold: 0
   PivotSpeedThreshold: 0
-  Air_TurnSpeed: 0
-  AerialDriftAcceleration: 5
+  Crouch_Power:
+    m_InitialValue: 0
+    m_Delay: 0
+    m_AttackValue: 0
+    m_Attack:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Src: 0
+    m_HoldDuration: 0
+    m_Decay:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Src: 0
+    m_SustainValue: 0
+    m_Release:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Src: 0
   Crouch_StaticFriction: 0
-  Crouch_TurnSpeed: 0
-  Crouch_LateralMaxSpeed: 0
+  Crouch_InlineScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
+  Crouch_CrossScale:
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Dst:
+      Min: 0
+      Max: 0
   Crouch_Gravity: 0
   Crouch_PositiveKineticFriction:
     Curve:
@@ -157,8 +244,7 @@ MonoBehaviour:
       Min: 0.1
       Max: 0.1
   Gravity: -130
-  JumpGravity: -130
-  FallGravity: -130
+  Gravity_Jump: 0
   Jump_BufferDuration: 0
   CoyoteDuration: 0.16
   LandingDuration: 0
@@ -275,9 +361,66 @@ MonoBehaviour:
       Max: 1
   Jumps:
   - Count: 2
-    JumpSquatDuration:
-      Min: 0
-      Max: 0
+    m_Power:
+      m_InitialValue: 0
+      m_Delay: 0
+      m_AttackValue: 0
+      m_Attack:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src: 0
+      m_HoldDuration: 0
+      m_Decay:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src: 0
+      m_SustainValue: 0
+      m_Release:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src: 0
+    Lift:
+      m_InitialValue: 0
+      m_Delay: 0
+      m_AttackValue: 0
+      m_Attack:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src: 0
+      m_HoldDuration: 0
+      m_Decay:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src: 0
+      m_SustainValue: 0
+      m_Release:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src: 0
     CooldownDuration:
       Curve:
         serializedVersion: 2
@@ -318,6 +461,11 @@ MonoBehaviour:
         Max: 40
     Upwards_MomentumLoss: 1
     Horizontal_MomentumLoss: 0
+    Charge_ShouldAutoJump: 0
+    Charge_Duration:
+      Min: 0
+      Max: 0
+    Charge_Lift: 0
   Surface_InertiaDecayTime:
     Curve:
       serializedVersion: 2
@@ -634,12 +782,6 @@ MonoBehaviour:
   Surface_VerticalGrip_Down:
     Min: 0
     Max: 12
-  Surface_VerticalGrip_UpHold:
-    Min: 0
-    Max: 47
-  Surface_VerticalGrip_DownHold:
-    Min: 0
-    Max: 40
   Surface_UpwardsVelocityBias:
     Curve:
       serializedVersion: 2
@@ -775,6 +917,41 @@ MonoBehaviour:
     Dst:
       Min: 0.05
       Max: 1
-  TiltForBaseAcceleration: 30
-  MaxTilt: 69
-  TiltSmoothing: 0.1
+  Idle_SqrSpeedThreshold: 0
+  Model:
+    Tilt_AccelerationAngle:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Src:
+        Min: 0
+        Max: 0
+      Dst:
+        Min: 0
+        Max: 0
+    Tilt_InputAngle:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Dst:
+        Min: 0
+        Max: 0
+    Tilt_MoveSpeed: 100
+    Tilt_SurfaceAngle:
+      Curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      Dst:
+        Min: 0
+        Max: 0
+    Tilt_SurfaceSpeed: 100
+    Jumps: []

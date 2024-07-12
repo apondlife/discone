@@ -65,6 +65,10 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the arms layer index
     int m_LayerArms;
 
+    /// the interpolated state frame
+    CharacterState.Frame m_Frame = new();
+
+    // TODO: don't use total time
     /// the stored last time of fixed update (for interpolation)
     float m_LastFixedUpdate = 0.0f;
 
@@ -120,21 +124,22 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     void Update() {
+        // TODO: don't use total time
         // interpolate frame based on time since last update
         var delta = Time.time - m_LastFixedUpdate;
-        var state = CharacterState.Frame.Interpolate(
+        m_Frame.Interpolate(
             c.State.Curr,
             c.State.Next,
             delta / Time.fixedDeltaTime
         );
 
         // update animator & model
-        SyncAnimator(state);
+        SyncAnimator(m_Frame);
     }
 
     // -- commands --
     /// sync the animator's params
-    void SyncAnimator(CharacterState.Frame state) {
+    void SyncAnimator(CharacterState.Frame frame) {
         var anim = m_Animator;
         if (!anim || !anim.runtimeAnimatorController) {
             return;
@@ -146,7 +151,7 @@ public sealed class CharacterModel: MonoBehaviour {
             Mathx.InverseLerpUnclamped(
                 0.0f,
                 c.Tuning.Surface_MaxSpeed,
-                state.SurfaceVelocity.magnitude
+                frame.SurfaceVelocity.magnitude
             )
         );
 
@@ -156,19 +161,19 @@ public sealed class CharacterModel: MonoBehaviour {
         );
 
         // set jump animation params
-        var isJump = state.Events.Contains(CharacterEvent.Jump);
+        var isJump = frame.Events.Contains(CharacterEvent.Jump);
         if (isJump) {
             anim.SetTrigger(s_Jump);
         }
 
         anim.SetBool(
             s_IsAirborne,
-            state.MainSurface.IsNone || isJump
+            frame.MainSurface.IsNone || isJump
         );
 
-        if (state.IsInJumpSquat) {
+        if (frame.IsInJumpSquat) {
             var jumpTuning = c.Tuning.NextJump(c.State);
-            var jumpPower = jumpTuning.Power(state.JumpState.PhaseElapsed);
+            var jumpPower = jumpTuning.Power(frame.JumpState.PhaseElapsed);
 
             anim.SetFloat(
                 s_JumpLeg,
@@ -183,28 +188,28 @@ public sealed class CharacterModel: MonoBehaviour {
 
         anim.SetBool(
             s_IsCrouching,
-            state.IsInJumpSquat || state.IsCrouching
+            frame.IsInJumpSquat || frame.IsCrouching
         );
 
         anim.SetFloat(
             s_VerticalSpeed,
-            state.Velocity.y
+            frame.Velocity.y
         );
 
         // TODO: fix rolling
         anim.SetFloat(
             s_LandingSpeed,
-            state.IsColliding ? state.Inertia : 0f
+            frame.IsColliding ? frame.Inertia : 0f
         );
 
         anim.SetFloat(
             s_MoveVelocityDotFacing,
-            Vector3.Dot(state.SurfaceVelocity, state.Forward)
+            Vector3.Dot(frame.SurfaceVelocity, frame.Forward)
         );
 
         // blend yoshiing
         // TODO: lerp
-        var surface = state.MainSurface;
+        var surface = frame.MainSurface;
         var yoshiing = (c.Inputs.IsJumpPressed ? 1.0f : 0.0f);
 
         if (surface.IsSome) {
