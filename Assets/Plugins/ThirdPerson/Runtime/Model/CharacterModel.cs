@@ -168,7 +168,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         anim.SetBool(
             s_IsAirborne,
-            frame.MainSurface.IsNone || isJump
+            frame.PerceivedSurface.IsNone || isJump
         );
 
         if (frame.IsInJumpSquat) {
