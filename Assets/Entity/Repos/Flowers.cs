@@ -17,7 +17,7 @@ public sealed class Flowers: MonoBehaviour {
     // -- subscribed --
     [Header("subscribed")]
     [Tooltip("when a flower is planted")]
-    [SerializeField] CharacterFlowerEvent m_FlowerPlanted;
+    [SerializeField] FlowerEvent m_FlowerPlanted;
 
     [Tooltip("when the server starts")]
     [SerializeField] VoidEvent m_ServerStarted;
@@ -29,7 +29,7 @@ public sealed class Flowers: MonoBehaviour {
 
     // -- props --
     /// a map of all flowers
-    Dictionary<Vector3, CharacterFlower> m_All = new();
+    Dictionary<Vector3, Flower> m_All = new();
 
     /// a bag of subscriptions
     DisposeBag m_Subscriptions = new DisposeBag();
@@ -60,21 +60,21 @@ public sealed class Flowers: MonoBehaviour {
         // spawn all flowers
         Log.Flower.I($"loaded {flowers.Length}, spawning...");
         foreach (var rec in flowers) {
-            CharacterFlower.Server_Spawn(rec);
+            Flower.Server_Spawn(rec);
         }
     }
 
     // -- queries --
     /// the list of all flowers
-    public IEnumerable<CharacterFlower> All {
+    public IEnumerable<Flower> All {
         get => m_All.Values;
     }
 
     /// find the closest flower
-    public CharacterFlower FindClosest(Vector3 pos) {
-        var distCache = new Dictionary<CharacterFlower, float>();
+    public Flower FindClosest(Vector3 pos) {
+        var distCache = new Dictionary<Flower, float>();
 
-        float Distance(CharacterFlower f) {
+        float Distance(Flower f) {
             if(!distCache.TryGetValue(f, out var dist)) {
                 dist = Vector3.Distance(f.transform.position, pos);
                 distCache.Add(f, dist);
@@ -93,7 +93,7 @@ public sealed class Flowers: MonoBehaviour {
     }
 
     /// find a flower that overlaps this one
-    public CharacterFlower FindOverlap(Vector3 pos) {
+    public Flower FindOverlap(Vector3 pos) {
         if (!m_All.TryGetValue(pos, out var flower)) {
             return null;
         }
@@ -103,7 +103,7 @@ public sealed class Flowers: MonoBehaviour {
 
     // -- events --
     /// when a flower is planted
-    void OnFlowerPlanted(CharacterFlower flower) {
+    void OnFlowerPlanted(Flower flower) {
         var key = flower.Checkpoint.Position;
         if (!m_All.TryAdd(key, flower)) {
             Log.Flower.W($"tried to plant at a duplicate position");

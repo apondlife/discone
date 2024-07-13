@@ -39,7 +39,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
 
     /// the flower at the current checkpoint, if any
     [SyncVar]
-    CharacterFlower m_Flower;
+    Flower m_Flower;
 
     // if this can't create checkpoints
     bool m_IsBlocked;
@@ -171,7 +171,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
 
         // if none, spawn a new one
         if (flower == null) {
-            flower = CharacterFlower.Server_Spawn(
+            flower = Flower.Server_Spawn(
                 m_Character.Key,
                 pos,
                 fwd
@@ -184,7 +184,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
 
     /// grab a nearby flower
     [Server]
-    void Server_GrabCheckpoint(CharacterFlower flower) {
+    void Server_GrabCheckpoint(Flower flower) {
         // if we had a flower, let it go
         m_Flower?.Server_Release();
 
@@ -225,7 +225,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
 
     // -- queries --
     /// the character's current flower
-    public CharacterFlower Flower {
+    public Flower Flower {
         get => m_Flower;
     }
 

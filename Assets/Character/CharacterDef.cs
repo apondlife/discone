@@ -10,7 +10,7 @@ namespace Discone {
         [SerializeField] Character m_Character;
 
         [Tooltip("the character flower prefab")]
-        [SerializeField] CharacterFlower m_Flower;
+        [SerializeField] Flower m_Flower;
 
         // -- placeholder --
         [Header("placeholder")]
@@ -27,7 +27,7 @@ namespace Discone {
         }
 
         // the character flower prefab
-        public CharacterFlower Flower {
+        public Flower Flower {
             get => m_Flower;
         }
 

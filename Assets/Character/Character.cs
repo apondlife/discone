@@ -115,7 +115,7 @@ public sealed class Character: Character<InputFrame> {
     }
 
     /// the character's flower
-    public CharacterFlower Flower {
+    public Flower Flower {
         get => m_Checkpoint.Flower;
     }
 

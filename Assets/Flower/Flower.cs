@@ -7,11 +7,11 @@ using Soil;
 
 namespace Discone {
 
-// TODO: rename to `Flower`
 /// a flower that a character leaves behind as its checkpoint
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(StudioEventEmitter))]
-public class CharacterFlower: NetworkBehaviour {
+[UnityEngine.Scripting.APIUpdating.MovedFrom(true, "Discone", "Assembly-CSharp", "CharacterFlower")]
+public class Flower: NetworkBehaviour {
     // -- types --
     /// the flower's planting state
     enum Planting {
@@ -70,7 +70,7 @@ public class CharacterFlower: NetworkBehaviour {
     // -- published --
     [Header("published")]
     [Tooltip("the event called when a flower gets planted")]
-    [SerializeField] CharacterFlowerEvent m_FlowerPlanted;
+    [SerializeField] FlowerEvent m_FlowerPlanted;
 
     // -- refs --
     [Header("refs")]
@@ -311,7 +311,7 @@ public class CharacterFlower: NetworkBehaviour {
     // -- factories --
     /// spawn a flower from a record
     [Server]
-    public static CharacterFlower Server_Spawn(FlowerRec rec) {
+    public static Flower Server_Spawn(FlowerRec rec) {
         return Server_Spawn(
             rec.Key,
             rec.Pos,
@@ -321,7 +321,7 @@ public class CharacterFlower: NetworkBehaviour {
 
     /// spawn a flower from key and transform
     [Server]
-    public static CharacterFlower Server_Spawn(
+    public static Flower Server_Spawn(
         CharacterKey key,
         Vector3 pos,
         Vector3 fwd

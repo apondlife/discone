@@ -299,7 +299,7 @@ public class OnlineInterest: InterestManagement {
                 interest = new CharacterInterest(c);
             } else if (identity.GetComponent<Character_Spawn>() is {} s) {
                 interest = new CharacterSpawnInterest(s);
-            } else if (identity.GetComponent<CharacterFlower>() is {} f) {
+            } else if (identity.GetComponent<Flower>() is {} f) {
                 interest = new FlowerInterest(f);
             } else {
                 #if UNITY_EDITOR
@@ -388,10 +388,10 @@ public class OnlineInterest: InterestManagement {
     }
 
     /// a flower of interest
-    sealed class FlowerInterest: Interest<CharacterFlower> {
+    sealed class FlowerInterest: Interest<Flower> {
         // -- Interest --
         public override bool IsStatic => true;
-        public FlowerInterest(CharacterFlower f): base(f) {}
+        public FlowerInterest(Flower f): base(f) {}
     }
 
     // -- debugging --
