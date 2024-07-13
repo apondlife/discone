@@ -65,10 +65,11 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the arms layer index
     int m_LayerArms;
 
+    // TODO: share this with other scripts that need the interpolated frame
     /// the interpolated state frame
     CharacterState.Frame m_Frame = new();
 
-    // TODO: don't use total time
+    // TODO: we should use a double total time here
     /// the stored last time of fixed update (for interpolation)
     float m_LastFixedUpdate = 0.0f;
 

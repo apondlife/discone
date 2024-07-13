@@ -134,19 +134,14 @@ public abstract class System<Container> {
 
         var state = State;
         state.PhaseName = m_Phase.Name;
-        state.PhaseStart = Time.time;
         state.PhaseElapsed = 0f;
+
         State = state;
     }
 
     // -- queries --
     /// the system's current state
     protected abstract SystemState State { get; set; }
-
-    /// .
-    public float PhaseStart {
-        get => State.PhaseStart;
-    }
 
     /// .
     public float PhaseElapsed {

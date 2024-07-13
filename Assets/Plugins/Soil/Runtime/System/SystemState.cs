@@ -10,10 +10,6 @@ public struct SystemState: IEquatable<SystemState> {
     [Tooltip("the current phase")]
     public string PhaseName;
 
-    // TODO: don't use total time
-    [Tooltip("the current phase start time")]
-    public float PhaseStart;
-
     [Tooltip("the time in the current phase")]
     public float PhaseElapsed;
 
@@ -29,13 +25,12 @@ public struct SystemState: IEquatable<SystemState> {
     public bool Equals(SystemState o) {
         return (
             PhaseName == o.PhaseName &&
-            PhaseStart == o.PhaseStart &&
             PhaseElapsed == o.PhaseElapsed
         );
     }
 
     public override int GetHashCode() {
-        return HashCode.Combine(PhaseName, PhaseStart, PhaseElapsed);
+        return HashCode.Combine(PhaseName, PhaseElapsed);
     }
 
     public static bool operator ==(
