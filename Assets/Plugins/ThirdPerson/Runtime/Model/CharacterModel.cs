@@ -24,6 +24,9 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the move input animator prop
     static readonly AnimatorProp s_SurfaceScale = new("SurfaceScale");
 
+    /// when the character is landing
+    static readonly AnimatorProp s_IsLanding = new("IsLanding");
+
     /// the landing speed animator prop
     static readonly AnimatorProp s_LandingSpeed = new("LandingSpeed");
 
@@ -76,6 +79,9 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the current jumping leg (0-left, 1-right)
     int m_JumpLeg = 0;
 
+    /// the landing timer
+    EaseTimer m_IsLanding = new();
+
     /// the character's materials
     CharacterMaterials m_Materials;
 
@@ -125,16 +131,15 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     void Update() {
-        // TODO: don't use total time
         // interpolate frame based on time since last update
-        var delta = Time.time - m_LastFixedUpdate;
+        var k = (Time.time - m_LastFixedUpdate) / Time.fixedDeltaTime;
         m_Frame.Interpolate(
             c.State.Curr,
             c.State.Next,
-            delta / Time.fixedDeltaTime
+            k
         );
 
-        // update animator & model
+        // sync animator params
         SyncAnimator(m_Frame);
     }
 
@@ -161,6 +166,11 @@ public sealed class CharacterModel: MonoBehaviour {
             c.Inputs.Move.magnitude
         );
 
+        anim.SetFloat(
+            s_MoveVelocityDotFacing,
+            Vector3.Dot(frame.SurfaceVelocity, frame.Forward)
+        );
+
         // set jump animation params
         var isJump = frame.Events.Contains(CharacterEvent.Jump);
         if (isJump) {
@@ -169,7 +179,7 @@ public sealed class CharacterModel: MonoBehaviour {
 
         anim.SetBool(
             s_IsAirborne,
-            frame.PerceivedSurface.IsNone || isJump
+            frame.CoyoteTime <= 0
         );
 
         if (frame.IsInJumpSquat) {
@@ -197,15 +207,21 @@ public sealed class CharacterModel: MonoBehaviour {
             frame.Velocity.y
         );
 
-        // TODO: fix rolling
-        anim.SetFloat(
-            s_LandingSpeed,
-            frame.IsColliding ? frame.Inertia : 0f
-        );
+        if (c.State.Next.Events.Contains(CharacterEvent.Land)) {
+            m_IsLanding.Duration = c.Tuning.Model.Animation_LandingDuration.Evaluate(c.State.Curr.Inertia);
+            m_IsLanding.Start();
 
-        anim.SetFloat(
-            s_MoveVelocityDotFacing,
-            Vector3.Dot(frame.SurfaceVelocity, frame.Forward)
+            // set landing props
+            // TODO: fix rolling, fix pose blend-in
+            anim.SetFloat(
+                s_LandingSpeed,
+                c.State.Curr.Inertia
+            );
+        }
+
+        anim.SetBool(
+            s_IsLanding,
+            m_IsLanding.TryTick()
         );
 
         // blend yoshiing

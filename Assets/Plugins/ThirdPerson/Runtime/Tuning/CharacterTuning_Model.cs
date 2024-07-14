@@ -86,6 +86,11 @@ partial class CharacterTuning {
 
         [Tooltip("the intensity ease on acceleration based stretch & squash")]
         public DynamicEase.Config Distortion_Ease;
+
+        // -- animation --
+        [Header("animation")]
+        [Tooltip("the duration of the default landing animation as a fn of inertia")]
+        public MapCurve Animation_LandingDuration;
     }
 }
 

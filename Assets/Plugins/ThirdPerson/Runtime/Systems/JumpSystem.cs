@@ -127,6 +127,8 @@ sealed class JumpSystem: CharacterSystem {
 
     static void Landing_Enter(System<CharacterContainer> _, CharacterContainer c) {
         ResetJumps(c);
+        ResetJumpSurface(c);
+
         c.Events.Schedule(CharacterEvent.Land);
     }
 
