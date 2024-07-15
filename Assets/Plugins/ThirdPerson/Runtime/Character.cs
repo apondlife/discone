@@ -122,6 +122,10 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         #if UNITY_EDITOR
         Debug_Update();
         #endif
+
+        // interpolate frame based on time since last update
+        var k = (float)(Time.timeAsDouble - m_FixedUpdateTime) / Time.fixedDeltaTime;
+        m_State.Interpolate(k);
     }
 
     protected virtual void FixedUpdate() {
@@ -142,11 +146,13 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
             m_Events.DispatchAll();
         }
 
+        // TODO: move this into `Update` after we interpolate; need to re-evaluate a bunch
+        // of other uses of FixedUpdate vs. Update if we do.
         // update external state
         transform.position = m_State.Next.Position;
 
         // set shader uniforms
-        // TODO: re-evaluate this when using it
+        // TODO: re-evaluate this when using it (what does this mean?)
         var surface = m_State.Next.MainSurface;
         var plane = new Plane(
             surface.IsSome ? surface.Normal : m_State.Next.Up,

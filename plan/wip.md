@@ -10,10 +10,17 @@ what is projected
 - move search dir according to...velocity? input?
 - search for camera and icecreams
 
+# conveyance
+- plume on hitting surface
+- little bits (surface trail)
+- blob shadow
+- takeoff plume
+- takeoff impulse trail
+- crater on hitting surface
+
 # surface
 - unrealized motion (minmove) be converted into inertia?
   - set velocity to zero on min_move?
-
 - maybe? move off wall on jump?
 - indication of change in perception (particle effect), to help with knowing that you missed a wall
 

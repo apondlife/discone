@@ -15,11 +15,14 @@ public sealed partial class CharacterState {
 
     // -- deps --
     /// the tuning
-    CharacterTuning m_Tuning;
+    readonly CharacterTuning m_Tuning;
 
     // -- props --
     /// the queue of frames
     readonly Ring<Frame> m_Frames = new(k_BufferSize);
+
+    /// the interpolated frame
+    readonly Frame m_Interpolated = new();
 
     // -- lifetime --
     /// create state from initial frame and dependencies
@@ -81,6 +84,15 @@ public sealed partial class CharacterState {
         m_Frames[0] = frame;
     }
 
+    /// interpolates the frame between Curr and Next, by factor of k
+    public void Interpolate(float k) {
+        m_Interpolated.Interpolate(
+            Curr,
+            Next,
+            k
+        );
+    }
+
     // -- factories --
     /// create a new frame with a forward and position
     Frame Create(
@@ -106,6 +118,11 @@ public sealed partial class CharacterState {
     /// the previous frame
     public Frame Prev {
         get => m_Frames[2];
+    }
+
+    /// the interpolated frame
+    public Frame Interpolated {
+        get => m_Interpolated;
     }
 
     /// if the state has no frames

@@ -35,15 +35,15 @@ public class Demo: MonoBehaviour {
     [SerializeField] VoidEvent m_Reset;
 
     // -- props --
-    /// the list of subscriptions
-    DisposeBag m_Subscriptions = new();
-
     /// the current state
     [NaughtyAttributes.ReadOnly]
     State m_State;
 
     /// the input recording
-    InputRecording m_Recording = new(isLooping: true);
+    readonly InputRecording m_Recording = new(isLooping: true);
+
+    /// the list of subscriptions
+    readonly DisposeBag m_Subscriptions = new();
 
     /// if the player is idle after start
     bool m_IsIdle;
@@ -59,7 +59,12 @@ public class Demo: MonoBehaviour {
     }
 
     void FixedUpdate() {
-        var frame = m_Player.Value.Character.Input.Curr;
+        var character = m_Player.Value.Character;
+        if (!character) {
+            return;
+        }
+
+        var frame = character.Input.Curr;
         if (m_State == State.Recording) {
             m_Recording.Record(frame);
         }

@@ -77,13 +77,6 @@ public sealed class CharacterModel: MonoBehaviour {
     /// the arms layer index
     int m_LayerArms;
 
-    // TODO: share this with other scripts that need the interpolated frame
-    /// the interpolated state frame
-    CharacterState.Frame m_Frame = new();
-
-    /// the stored last time of fixed update (for interpolation)
-    double m_FixedUpdateTime;
-
     /// the current jumping leg (0-left, 1-right)
     int m_JumpLeg;
 
@@ -91,7 +84,7 @@ public sealed class CharacterModel: MonoBehaviour {
     Vector3 m_JumpStartPos;
 
     /// the landing timer
-    EaseTimer m_IsLanding = new();
+    readonly EaseTimer m_IsLanding = new();
 
     /// if the character is currently in the landing pose
     bool m_IsPosing;
@@ -133,8 +126,6 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     void FixedUpdate() {
-        m_FixedUpdateTime = Time.timeAsDouble;
-
         // if the character jumped
         if (c.State.Next.Events.Contains(CharacterEvent.Jump)) {
             // alternate legs
@@ -146,25 +137,13 @@ public sealed class CharacterModel: MonoBehaviour {
     }
 
     void Update() {
-        // interpolate frame based on time since last update
-        var k = (float)(Time.timeAsDouble - m_FixedUpdateTime) / Time.fixedDeltaTime;
-        m_Frame.Interpolate(
-            c.State.Curr,
-            c.State.Next,
-            k
-        );
-
-        // sync animator params
-        SyncAnimator(m_Frame);
-    }
-
-    // -- commands --
-    /// sync the animator's params
-    void SyncAnimator(CharacterState.Frame frame) {
         var anim = m_Animator;
         if (!anim || !anim.runtimeAnimatorController) {
             return;
         }
+
+        // use the interpolated frame
+        var frame = c.State.Interpolated;
 
         // set move animation params
         var moveSpeed = Mathx.InverseLerpUnclamped(

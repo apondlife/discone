@@ -39,13 +39,6 @@ public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
     /// the current wall tilt rotation
     Quaternion m_SurfaceTilt = Quaternion.identity;
 
-    /// the interpolated state frame
-    CharacterState.Frame m_Frame = new();
-
-    // TODO: don't use total time
-    /// the stored last time of fixed update (for interpolation)
-    float m_LastFixedUpdate = 0.0f;
-
     // -- lifecycle --
     void Awake() {
         // set dependencies
@@ -77,20 +70,13 @@ public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
         proxy.Bind(this);
     }
 
-    void FixedUpdate() {
-        m_LastFixedUpdate = Time.time;
-    }
-
     void Update() {
-        var delta = Time.time - m_LastFixedUpdate;
-        m_Frame.Interpolate(
-            c.State.Curr,
-            c.State.Next,
-            delta / Time.fixedDeltaTime
-        );
+        var delta = Time.deltaTime;
+        var frame = c.State.Interpolated;
 
-        Tilt(m_Frame, Time.deltaTime);
+        Tilt(frame, delta);
 
+        // TODO: should this be using the interpolated frame? or next?
         m_LookRotation = Quaternion.RotateTowards(
             m_LookRotation,
             c.State.Curr.LookRotation,
