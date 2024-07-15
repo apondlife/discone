@@ -91,6 +91,12 @@ partial class CharacterTuning {
         [Header("animation")]
         [Tooltip("the duration of the default landing animation as a fn of inertia")]
         public MapCurve Animation_LandingDuration;
+
+        [Tooltip("the vertical distance threshold to pose")]
+        public float Animation_Pose_MinVerticalDistance;
+
+        [Tooltip("the normalized max move speed to pose")]
+        public float Animation_Pose_MaxMoveSpeed;
     }
 }
 
