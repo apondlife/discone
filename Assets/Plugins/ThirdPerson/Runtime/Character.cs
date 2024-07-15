@@ -124,7 +124,7 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         #endif
 
         // interpolate frame based on time since last update
-        var k = (float)(Time.timeAsDouble - m_FixedUpdateTime) / Time.fixedDeltaTime;
+        var k = (float)(Time.timeAsDouble - Time.fixedTimeAsDouble) / Time.fixedDeltaTime;
         m_State.Interpolate(k);
     }
 
