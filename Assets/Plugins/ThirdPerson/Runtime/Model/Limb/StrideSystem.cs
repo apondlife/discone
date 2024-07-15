@@ -250,6 +250,18 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
             heldDistance = heldDotNormal / normDotSearch;
         }
 
+        // if we're placing a foot this frame
+        if (heldDistance < c.Tuning.HeldDistance_OnSurface && c.State.HeldDistance >= c.Tuning.HeldDistance_OnSurface) {
+            var evt = c.Goal switch {
+                AvatarIKGoal.LeftFoot => CharacterEvent.Step_LeftFoot,
+                AvatarIKGoal.RightFoot => CharacterEvent.Step_RightFoot,
+                AvatarIKGoal.LeftHand => CharacterEvent.Step_LeftHand,
+                _ => CharacterEvent.Step_RightHand,
+            };
+
+            c.Character.State.Next.Events.Add(evt);
+        }
+
         c.State.Placement = placement;
         c.State.HeldDistance = heldDistance;
 

@@ -71,9 +71,6 @@ public class LandingPlume: MonoBehaviour {
                 main.startSpeed = startSpeed;
 
                 m_Particles.Emit(count);
-                DebugDraw.Push("inertia_plume", c.State.Curr.Position, Vector3.up * m_Inertia, new DebugDraw.Config(Soil.Color.OrangeRed));
-
-                Log.Model.I($"inertia: {inertia} -> {inertiaDecay}");
             }
         }
 

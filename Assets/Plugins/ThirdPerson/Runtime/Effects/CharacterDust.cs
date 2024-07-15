@@ -43,9 +43,9 @@ public class CharacterDust: MonoBehaviour {
             var isDecelerating = Vector3.Dot(m_State.Next.Velocity.normalized, groundAcceleration) < m_SkidDeceleration;
 
             // check for character deceleration
-            if (m_State.Next.IsCrouching || isDecelerating) {
+            var c = m_State.Next.MainSurface;
+            if (c.IsSome && (m_State.Next.IsCrouching || isDecelerating)) {
                 m_FloorSkid.Play();
-                var c = m_State.Next.MainSurface;
                 var t = m_FloorSkid.transform;
                 t.position = c.Point;
                 t.forward = -c.Normal;

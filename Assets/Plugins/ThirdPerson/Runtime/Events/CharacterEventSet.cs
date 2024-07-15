@@ -9,6 +9,10 @@ public enum CharacterEvent {
     Land = 1 << 1,
     Idle = 1 << 2,
     Move = 1 << 3,
+    Step_LeftFoot = 1 << 4,
+    Step_RightFoot = 1 << 5,
+    Step_LeftHand = 1 << 6,
+    Step_RightHand = 1 << 7,
 }
 
 // -- impl --
