@@ -11,12 +11,12 @@ what is projected
 - search for camera and icecreams
 
 # conveyance
-- plume on hitting surface
 - little bits (surface trail)
 - blob shadow
 - takeoff plume
 - takeoff impulse trail
 - crater on hitting surface
+- plume on hitting surface
 
 # surface
 - unrealized motion (minmove) be converted into inertia?

@@ -1495,7 +1495,7 @@ MonoBehaviour:
       R: 1.65
       K1: 0.035528895
       K2: 0.0013143506
-      K3: 0.029311337
+      K3: 0.029311338
     Animation_LandingDuration:
       Curve:
         serializedVersion: 2
@@ -1511,3 +1511,183 @@ MonoBehaviour:
         Max: 0.6
     Animation_Pose_MinVerticalDistance: 2
     Animation_Pose_MaxMoveSpeed: 0.1
+    JumpPlume:
+      SqrSpeedToEmission:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 180
+          Max: 300
+        Dst:
+          Min: 4
+          Max: 10
+      SqrSpeedToSize:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 180
+          Max: 300
+        Dst:
+          Min: 0.5
+          Max: 1
+      SqrSpeedToLifetime:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 180
+          Max: 300
+        Dst:
+          Min: 0.3
+          Max: 1
+      SqrSpeedToStartSpeedScale:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 180
+          Max: 300
+        Dst:
+          Min: 0.5
+          Max: 0.9
+    LandingPlume:
+      MinInertia: 0.01
+      InertiaDecay: 36
+      InertiaToEmission:
+        Curve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 1.7255538
+            outSlope: 1.7255538
+            tangentMode: 0
+            weightedMode: 3
+            inWeight: 0
+            outWeight: 0.37457046
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0.3916447
+            outSlope: 0.3916447
+            tangentMode: 0
+            weightedMode: 1
+            inWeight: 0.50859106
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 0
+          Max: 40
+        Dst:
+          Min: 1
+          Max: 3
+      InertiaToSize:
+        Curve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0.091635175
+            outSlope: 0.091635175
+            tangentMode: 0
+            weightedMode: 2
+            inWeight: 0
+            outWeight: 0.4879725
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0.1487958
+            outSlope: 0.1487958
+            tangentMode: 0
+            weightedMode: 1
+            inWeight: 0.5463917
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 0
+          Max: 40
+        Dst:
+          Min: 0.35
+          Max: 2
+      InertiaToLifetime:
+        Curve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 2
+            outSlope: 2
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 0
+          Max: 40
+        Dst:
+          Min: 1
+          Max: 1
+      InertiaToStartSpeedScale:
+        Curve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0.27833572
+            outSlope: 0.27833572
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.17525773
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 0
+          Max: 40
+        Dst:
+          Min: 0.5
+          Max: 4

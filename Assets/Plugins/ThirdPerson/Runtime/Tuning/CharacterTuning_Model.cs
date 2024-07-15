@@ -97,6 +97,52 @@ partial class CharacterTuning {
 
         [Tooltip("the normalized max move speed to pose")]
         public float Animation_Pose_MaxMoveSpeed;
+
+        // -- jump plume --
+        [Tooltip("the tuning for the jump plume effect")]
+        public JumpPlumeTuning JumpPlume;
+
+        /// the tuning for the jump plume effect
+        [Serializable]
+        public class JumpPlumeTuning {
+            [Tooltip("emission count as a fn of sqr speed delta")]
+            public MapCurve SqrSpeedToEmission;
+
+            [Tooltip("particle size as a fn of sqr speed delta")]
+            public MapCurve SqrSpeedToSize;
+
+            [Tooltip("lifetime as a fn of sqr speed delta")]
+            public MapCurve SqrSpeedToLifetime;
+
+            [Tooltip("start speed as a fn of sqr speed delta")]
+            public MapCurve SqrSpeedToStartSpeedScale;
+        }
+
+        // -- landing plume --
+        [Tooltip("the tuning for the landing plume effect")]
+        public LandingPlumeTuning LandingPlume;
+
+        /// the tuning for the landing plume effect
+        [Serializable]
+        public class LandingPlumeTuning {
+            [Tooltip("the minimum inertia to activate the effect")]
+            public float MinInertia;
+
+            [Tooltip("the amount inertia decays per second")]
+            public float InertiaDecay;
+
+            [Tooltip("emission count as a fn of inertia")]
+            public MapCurve InertiaToEmission;
+
+            [Tooltip("particle size as a fn of inertia")]
+            public MapCurve InertiaToSize;
+
+            [Tooltip("lifetime as a fn of inertia")]
+            public MapCurve InertiaToLifetime;
+
+            [Tooltip("start speed as a fn of inertia")]
+            public MapCurve InertiaToStartSpeedScale;
+        }
     }
 }
 

@@ -23,12 +23,6 @@ public class CharacterDust: MonoBehaviour {
     [Tooltip("the floor skid lines particle (negative acceleration)")]
     [SerializeField] ParticleSystem m_FloorSkid;
 
-    [Tooltip("the particle puff when landing")]
-    [SerializeField] ParticleSystem m_LandingPuff;
-
-    [Tooltip("the particle stamp (on the ground) when landing")]
-    [SerializeField] ParticleSystem m_LandingStamp;
-
     [Tooltip("the pivot particle emitter")]
     [SerializeField] ParticleSystem m_PivotParticles;
 
@@ -69,21 +63,6 @@ public class CharacterDust: MonoBehaviour {
             if (m_FloorSkid.isPlaying) {
                 m_FloorSkid.Stop();
             }
-        }
-
-        // if just landed
-        if (m_State.Curr.Events.Contains(CharacterEvent.Land)) {
-            var surface = m_State.Prev.MainSurface;
-
-            var trs = m_LandingPuff.transform;
-            trs.up = surface.Normal;
-            trs.position = surface.Point;
-
-            var groundForce = Vector3.Project(m_State.Prev.Acceleration, surface.Normal).magnitude;
-            var particles = Mathf.FloorToInt(m_LandingAccelerationToDust * groundForce);
-
-            m_LandingPuff.Emit(particles);
-            m_LandingStamp.Emit(particles);
         }
     }
 }
