@@ -5,20 +5,6 @@ namespace ThirdPerson {
 
 /// the cloud of dust when the character jumps
 public class JumpPlume: MonoBehaviour {
-    // -- cfg --
-    [Header("cfg")]
-    [Tooltip("emission count as a fn of sqr speed delta")]
-    [SerializeField] MapCurve m_SqrSpeedToEmission;
-
-    [Tooltip("particle size as a fn of sqr speed delta")]
-    [SerializeField] MapCurve m_SqrSpeedToSize;
-
-    [Tooltip("lifetime as a fn of sqr speed delta")]
-    [SerializeField] MapCurve m_SqrSpeedToLifetime;
-
-    [Tooltip("start speed as a fn of sqr speed delta")]
-    [SerializeField] MapCurve m_SqrSpeedToStartSpeedScale;
-
     // -- refs --
     [Header("refs")]
     [Tooltip("the particle system")]
@@ -46,18 +32,20 @@ public class JumpPlume: MonoBehaviour {
             return;
         }
 
+        var tuning = c.Tuning.Model.JumpPlume;
+
         var dv = next.Velocity - c.State.Curr.Velocity;
         m_Particles.transform.up = c.State.Next.PerceivedSurface.Normal;
 
         // TODO: get actual jump speed
         var sqrSpeed = Vector3.SqrMagnitude(dv);
-        var count = (int)m_SqrSpeedToEmission.Evaluate(sqrSpeed);
+        var count = (int)tuning.SqrSpeedToEmission.Evaluate(sqrSpeed);
 
         var main = m_Particles.main;
-        main.startLifetime = m_SqrSpeedToLifetime.Evaluate(sqrSpeed);
-        main.startSize = m_SqrSpeedToSize.Evaluate(sqrSpeed);
+        main.startLifetime = tuning.SqrSpeedToLifetime.Evaluate(sqrSpeed);
+        main.startSize = tuning.SqrSpeedToSize.Evaluate(sqrSpeed);
 
-        var startSpeedScale = m_SqrSpeedToStartSpeedScale.Evaluate(sqrSpeed);
+        var startSpeedScale = tuning.SqrSpeedToStartSpeedScale.Evaluate(sqrSpeed);
         var startSpeed = m_StartSpeed;
         startSpeed.constantMin *= startSpeedScale;
         startSpeed.constantMax *= startSpeedScale;
@@ -66,4 +54,5 @@ public class JumpPlume: MonoBehaviour {
         m_Particles.Emit(count);
     }
 }
+
 }
