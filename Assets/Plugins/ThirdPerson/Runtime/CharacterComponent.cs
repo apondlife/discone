@@ -13,6 +13,17 @@ public interface CharacterComponent {
 
     /// FixedUpdate. step the fixed update loop by `delta`
     void Step_Fixed_I(float delta);
+
+    // -- implementations --
+    /// Update. step the update loop by `delta`
+    void Step(float delta) {
+        Step_I(delta);
+    }
+
+    /// FixedUpdate. step the fixed update loop by `delta`
+    void Step_Fixed(float delta) {
+        Step_Fixed_I(delta);
+    }
 }
 
 }

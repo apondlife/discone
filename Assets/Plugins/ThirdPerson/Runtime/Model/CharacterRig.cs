@@ -33,10 +33,16 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
     /// the current wall tilt rotation
     Quaternion m_SurfaceTilt = Quaternion.identity;
 
-    // -- lifecycle --
-    public override void Init(CharacterContainer c) {
-        base.Init(c);
+    // -- CharacterComponent --
+    protected override CharacterComponent[] InitChildren() {
+        return new CharacterComponent[] {
+            m_Head,
+            m_Legs,
+            m_Arms,
+        };
+    }
 
+    public override void Init(CharacterContainer c) {
         // if this character is not animated, destroy all limbs and procedural animations
         if (!m_Animator) {
             Log.Model.W($"character {c.Name} has no animator, disabling limbs");
@@ -47,9 +53,7 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
         }
 
         // init ik limbs
-        m_Legs.Init(c);
-        m_Arms.Init(c);
-        m_Head.Init(c);
+        base.Init(c);
 
         // proxy animator callbacks
         var proxy = m_Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
@@ -64,10 +68,9 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
         var frame = c.State.Interpolated;
 
         // step ik limbs
-        m_Head.Step(delta);
-        m_Legs.Step(delta);
-        m_Arms.Step(delta);
+        base.Step_I(delta);
 
+        // add tilt
         Tilt(frame, delta);
 
         // TODO: should this be using the interpolated frame? or next?
@@ -79,13 +82,6 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
 
         var tilt = m_MoveTilt * m_SurfaceTilt;
         transform.localRotation =  tilt * m_LookRotation;
-    }
-
-    public override void Step_Fixed_I(float delta) {
-        // step ik limbs
-        m_Head.Step_Fixed(delta);
-        m_Legs.Step_Fixed(delta);
-        m_Arms.Step_Fixed(delta);
     }
 
     // -- CharacterAnimatorProxy.Target --

@@ -10,7 +10,7 @@ public class Character: Character<CharacterInputFrame.Default> {
 }
 
 /// the main third person controller
-public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
+public partial class Character<InputFrame>: CharacterBehaviour, CharacterContainer
     where InputFrame: CharacterInputFrame, new() {
 
     // -- data --
@@ -118,8 +118,7 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         }
 
         // init (awake) children
-        m_Rig.Init(this);
-        m_Model.Init(this);
+        Init(this);
     }
 
     protected virtual void Start() {
@@ -132,41 +131,13 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         Debug_Update();
         #endif
 
-        // interpolate frame based on time since last update
-        var k = (float)(Time.timeAsDouble - Time.fixedTimeAsDouble) / Time.fixedDeltaTime;
-        m_State.Interpolate(k);
-
-        // update children
-        m_Rig.Step(delta);
-        m_Model.Step(delta);
+        Step(delta);
     }
 
     protected virtual void FixedUpdate() {
         var delta = Time.deltaTime;
 
-        // read input
-        m_Input.Read(delta);
-
-        // run simulation
-        if (!m_IsPaused) {
-            // store the previous frame
-            m_State.Advance();
-
-            // step systems
-            Step_Fixed();
-
-            // dispatch events
-            m_Events.DispatchAll();
-        }
-
-        // update children
-        m_Rig.Step_Fixed(delta);
-        m_Model.Step_Fixed(delta);
-
-        // TODO: move this into `Update` after we interpolate; need to re-evaluate a bunch
-        // of other uses of FixedUpdate vs. Update if we do.
-        // update external state
-        transform.position = m_State.Next.Position;
+        Step_Fixed(delta);
 
         // set shader uniforms
         // TODO: re-evaluate this when using it (what does this mean?)
@@ -189,11 +160,50 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     protected virtual void OnDestroy() {
     }
 
+    // -- CharacterComponent --
+    protected override CharacterComponent[] InitChildren() {
+        return new CharacterComponent[] {
+            m_Rig,
+            m_Model
+        };
+    }
+
+    public override void Step_I(float delta) {
+        // interpolate frame based on time since last update
+        var k = (float)(Time.timeAsDouble - Time.fixedTimeAsDouble) / Time.fixedDeltaTime;
+        m_State.Interpolate(k);
+
+        base.Step_I(delta);
+    }
+
+    public override void Step_Fixed_I(float delta) {
+        // read input
+        m_Input.Read(delta);
+
+        // run simulation
+        if (!m_IsPaused) {
+            // store the previous frame
+            m_State.Advance();
+
+            // step systems
+            Step_Fixed_Systems(delta);
+
+            // dispatch events
+            m_Events.DispatchAll();
+        }
+
+        base.Step_Fixed_I(delta);
+
+        // TODO: move this into `Update` after we interpolate; need to re-evaluate a bunch
+        // of other uses of FixedUpdate vs. Update if we do.
+        // update external state
+        transform.position = m_State.Next.Position;
+    }
+
     /// run the character systems
-    void Step_Fixed() {
-        var delta = Time.deltaTime;
+    void Step_Fixed_Systems(float delta) {
         foreach (var system in m_Systems) {
-            system.Update(delta);
+            system.Step(delta);
         }
     }
 

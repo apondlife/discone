@@ -80,7 +80,7 @@ public class CharacterCheckpoint: NetworkBehaviour, CheckpointContainer {
         // update the systems
         var delta = Time.deltaTime;
         foreach (var system in m_Systems) {
-            system.Update(delta);
+            system.Step(delta);
         }
     }
 
