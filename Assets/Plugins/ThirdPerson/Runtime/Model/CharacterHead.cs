@@ -82,7 +82,15 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
     }
 
     // -- commands --
-    /// initialize this limb w/ an animator
+    /// .
+    public void LookAt(Vector3 target) {
+        m_DestRotation = Quaternion.LookRotation(
+            Vector3.Normalize(target - m_HeadBone.position),
+            m_HeadBone.up
+        );
+    }
+
+    // -- CharacterPart --
     public void Init(Animator animator) {
         // set deps
         m_Animator = animator;
@@ -101,15 +109,6 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
         m_CurrRotation = transform.rotation;
     }
 
-    /// .
-    public void LookAt(Vector3 target) {
-        m_DestRotation = Quaternion.LookRotation(
-            Vector3.Normalize(target - m_HeadBone.position),
-            m_HeadBone.up
-        );
-    }
-
-    /// applies the limb ik
     public void ApplyIk() {
         m_Animator.SetLookAtWeight(
             m_Weight
@@ -118,6 +117,14 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
         if (m_Weight != 0.0f) {
             m_Animator.SetLookAtPosition(RotToPos(m_CurrRotation));
         }
+    }
+
+    public bool MatchesStep(CharacterEvent mask) {
+        return false;
+    }
+
+    public LimbPlacement Placement {
+        get => LimbPlacement.Miss;
     }
 
     // -- queries --

@@ -46,6 +46,9 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
 
     // -- children --
     [Header("children")]
+    [Tooltip("the character rig")]
+    [SerializeField] CharacterRig m_Rig;
+
     [Tooltip("the character model")]
     [SerializeField] CharacterModel m_Model;
 
@@ -245,38 +248,35 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     }
 
     // -- CharacterContainer --
-    /// .
     public string Name {
         get => name;
     }
 
-    /// .
     public CharacterTuning Tuning {
         get => m_Tuning;
     }
 
     // TODO: how should we make state immutable outside the class
-    /// .
     public CharacterState State {
         get => m_State;
     }
 
-    /// .
     public CharacterInputQuery Inputs {
         get => m_Input;
     }
 
-    /// .
     public CharacterEvents Events {
         get => m_Events;
     }
 
-    /// .
+    public CharacterRig Rig {
+        get => m_Rig;
+    }
+
     public CharacterModel Model {
         get => m_Model;
     }
 
-    /// .
     public CharacterController Controller {
         get => m_Controller;
     }

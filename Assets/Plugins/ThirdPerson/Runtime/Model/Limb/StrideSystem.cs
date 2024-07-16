@@ -252,18 +252,11 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
 
         // if we're placing a foot this frame
         if (heldDistance < c.Tuning.HeldDistance_OnSurface && c.State.HeldDistance >= c.Tuning.HeldDistance_OnSurface) {
-            var evt = c.Goal switch {
-                AvatarIKGoal.LeftFoot => CharacterEvent.Step_LeftFoot,
-                AvatarIKGoal.RightFoot => CharacterEvent.Step_RightFoot,
-                AvatarIKGoal.LeftHand => CharacterEvent.Step_LeftHand,
-                _ => CharacterEvent.Step_RightHand,
-            };
-
-            c.Character.State.Next.Events.Add(evt);
+            c.Character.State.Next.Events.Add(c.Goal.AsStepEvent());
         }
 
-        c.State.Placement = placement;
         c.State.HeldDistance = heldDistance;
+        c.State.Placement = placement;
 
         if (!didHit) {
             s.ChangeTo(Free);
@@ -271,6 +264,7 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
         }
 
         goalPos = placement.Pos;
+
         // TODO: why do we do this?
         if (Vector3.SqrMagnitude(goalPos - c.State.GoalPos) > c.Tuning.MinMove * c.Tuning.MinMove) {
             c.State.GoalPos = goalPos;

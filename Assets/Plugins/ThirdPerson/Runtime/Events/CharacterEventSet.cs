@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace ThirdPerson {
 
@@ -13,6 +14,9 @@ public enum CharacterEvent {
     Step_RightFoot = 1 << 5,
     Step_LeftHand = 1 << 6,
     Step_RightHand = 1 << 7,
+
+    // -- aggregates --
+    Step = Step_LeftFoot | Step_RightFoot | Step_LeftHand | Step_RightHand
 }
 
 // -- impl --
@@ -75,9 +79,22 @@ public struct CharacterEventSet: IEquatable<CharacterEventSet> {
         return !(a == b);
     }
 
-    // -- Debug --
+    // -- debug --
     public override string ToString() {
         return Mask.ToString();
+    }
+}
+
+// -- extensions --
+static class CharacterEventExt {
+    /// map the goal into the matching `Step_` character event
+    public static CharacterEvent AsStepEvent(this AvatarIKGoal goal) {
+        return goal switch {
+            AvatarIKGoal.LeftFoot => CharacterEvent.Step_LeftFoot,
+            AvatarIKGoal.RightFoot => CharacterEvent.Step_RightFoot,
+            AvatarIKGoal.LeftHand => CharacterEvent.Step_LeftHand,
+            _ => CharacterEvent.Step_RightHand,
+        };
     }
 }
 

@@ -25,6 +25,9 @@ public interface CharacterContainer {
     /// the controller
     CharacterController Controller { get; }
 
+    /// the rig
+    CharacterRig Rig { get; }
+
     /// the model
     CharacterModel Model { get; }
 }

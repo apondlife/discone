@@ -12,8 +12,11 @@ public interface CharacterPart {
     void ApplyIk();
 
     // -- queries --
-    /// the attached game object
-    GameObject gameObject { get; }
+    /// if the part matches a certain step event
+    bool MatchesStep(CharacterEvent mask);
+
+    /// the current placement of the limb (must match step first!)
+    LimbPlacement Placement { get; }
 }
 
 }

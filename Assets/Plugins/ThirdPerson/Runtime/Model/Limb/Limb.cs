@@ -63,7 +63,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
     CharacterContainer c;
 
     // -- lifecycle --
-    void Update() {
+    void FixedUpdate() {
         if (!IsValid) {
             return;
         }
@@ -164,35 +164,6 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
     #endif
 
     // -- commands --
-    /// initialize this limb w/ an animator
-    public void Init(Animator animator) {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
-
-        // set props
-        m_State = new LimbState();
-        m_Animator = animator;
-
-        // get default limb lengths
-        var rootPos = Vector3.zero;
-        var goalPos = m_InitialGoalPos;
-        var endPos = m_InitialEndPos;
-
-        var limb = goalPos - rootPos;
-        var limbDir = limb.normalized;
-
-        var end = endPos - goalPos;
-        var endLength = Vector3.Dot(end, limbDir);
-
-        m_LimbLen = limb.magnitude;
-        m_EndLen = endLength;
-
-        // init system
-        m_System.Init(this);
-    }
-
-
-    // -- commands --
     /// set if the limb is striding
     public void SetIsStriding(bool isStriding) {
         if (m_State.IsNotStriding != isStriding) {
@@ -230,7 +201,33 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
         m_State.SlideOffset = offset;
     }
 
-    /// applies the limb ik
+    // -- CharacterPart --
+    public void Init(Animator animator) {
+        // set deps
+        c = GetComponentInParent<CharacterContainer>();
+
+        // set props
+        m_State = new LimbState();
+        m_Animator = animator;
+
+        // get default limb lengths
+        var rootPos = Vector3.zero;
+        var goalPos = m_InitialGoalPos;
+        var endPos = m_InitialEndPos;
+
+        var limb = goalPos - rootPos;
+        var limbDir = limb.normalized;
+
+        var end = endPos - goalPos;
+        var endLength = Vector3.Dot(end, limbDir);
+
+        m_LimbLen = limb.magnitude;
+        m_EndLen = endLength;
+
+        // init system
+        m_System.Init(this);
+    }
+
     public void ApplyIk() {
         if (!IsValid) {
             return;
@@ -259,6 +256,14 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
         }
 
         Debug_ApplyIk();
+    }
+
+    public bool MatchesStep(CharacterEvent mask) {
+        return (mask & Goal.AsStepEvent()) != 0;
+    }
+
+    public LimbPlacement Placement {
+        get => State.Placement;
     }
 
     // -- queries --

@@ -152,6 +152,13 @@ public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
         m_MoveTilt = nextMoveTilt;
         m_SurfaceTilt = nextSurfaceTilt;
     }
+
+    // -- queries --
+    // TODO: exclude head from this and actually return `Limb`?
+    /// the list of limbs (arms, legs, & head)
+    public CharacterPart[] Limbs {
+        get => m_Limbs;
+    }
 }
 
 }
