@@ -5,7 +5,7 @@ namespace ThirdPerson {
 
 public partial class Limb {
     // -- lifecycle --
-    void Debug_Update() {
+    void Debug_Step_Fixed() {
         Debug_Draw("limb", width: 1f);
     }
 

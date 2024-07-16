@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// a container for the character's model and animations
-public sealed class CharacterModel: MonoBehaviour {
+public sealed class CharacterModel: CharacterBehaviour {
     // -- constants --
     /// the legs animator layer (for yoshiing animation)
     const string k_LayerLegs = "Legs";
@@ -65,17 +65,14 @@ public sealed class CharacterModel: MonoBehaviour {
     [SerializeField] RuntimeAnimatorController m_AnimatorController;
 
     // -- props --
-    /// the character's animator
-    Animator m_Animator;
-
     /// the character's materials
     CharacterMaterials m_Materials;
 
     /// the legs layer index
-    int m_LayerLegs;
+    int m_LayerLegs = -1;
 
     /// the arms layer index
-    int m_LayerArms;
+    int m_LayerArms = -1;
 
     /// the current jumping leg (0-left, 1-right)
     int m_JumpLeg;
@@ -89,43 +86,41 @@ public sealed class CharacterModel: MonoBehaviour {
     /// if the character is currently in the landing pose
     bool m_IsPosing;
 
-    // -- deps --
-    /// the containing character
-    CharacterContainer c;
+    // -- CharacterComponent --
+    public bool Enabled {
+        get => enabled;
+    }
 
-    // -- lifecycle --
-    void Awake() {
+    public override void Init(CharacterContainer c) {
+        base.Init(c);
+
         // init materials collection
         m_Materials = new CharacterMaterials(this);
     }
 
     void Start() {
-         // set dependencies
-        c = GetComponentInParent<CharacterContainer>();
-
-        // init animator
-        m_Animator = GetComponentInChildren<Animator>();
-        if (m_Animator) {
-            if (!m_Animator.runtimeAnimatorController) {
-                m_Animator.runtimeAnimatorController = m_AnimatorController;
+        var anim = c.Rig.Animator;
+        if (anim) {
+            if (!anim.runtimeAnimatorController) {
+                anim.runtimeAnimatorController = m_AnimatorController;
             }
 
             // disable root motion
-            if (m_Animator.applyRootMotion) {
+            if (anim.applyRootMotion) {
                 Log.Model.W($"disabled animator root motion, make sure to uncheck this in animator");
-                m_Animator.applyRootMotion = false;
+                anim.applyRootMotion = false;
             }
 
             // set layers indices
-            m_LayerLegs = m_Animator.GetLayerIndex(k_LayerLegs);
-            m_LayerArms = m_Animator.GetLayerIndex(k_LayerArms);
+            m_LayerLegs = anim.GetLayerIndex(k_LayerLegs);
+            m_LayerArms = anim.GetLayerIndex(k_LayerArms);
         }
 
         // make sure complex model trees have the correct layer
         SetDefaultLayersRecursively(gameObject, gameObject.layer);
     }
 
-    void FixedUpdate() {
+    public override void Step_Fixed_I(float delta) {
         // if the character jumped
         if (c.State.Next.Events.Contains(CharacterEvent.Jump)) {
             // alternate legs
@@ -136,8 +131,8 @@ public sealed class CharacterModel: MonoBehaviour {
         }
     }
 
-    void Update() {
-        var anim = m_Animator;
+    public override void Step_I(float delta) {
+        var anim = c.Rig.Animator;
         if (!anim || !anim.runtimeAnimatorController) {
             return;
         }

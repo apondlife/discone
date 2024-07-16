@@ -23,14 +23,15 @@ public class LimbPrints: MonoBehaviour {
         // TODO: for some reason this script runs before the character
         // so we use Curr here instead of Next
         var evts = c.State.Curr.Events;
-        if (!evts.Contains(CharacterEvent.Step)) {
-            return;
-        }
+        var rig = c.Rig;
 
-        foreach (var limb in c.Rig.Limbs) {
-            if (!limb.MatchesStep(evts.Mask)) {
+        for (var goal = AvatarIKGoal.LeftFoot; goal <= AvatarIKGoal.RightHand; goal += 1) {
+            var evt = goal.AsStepEvent();
+            if (!evts.Contains(evt)) {
                 continue;
             }
+
+            var limb = rig.FindLimb(goal);
 
             var placement = limb.Placement;
 

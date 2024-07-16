@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// a container for the character's model and animations
-public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
+public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the rotation speed in degrees towards look direction")]
@@ -24,12 +24,6 @@ public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
     [SerializeField] Animator m_Animator;
 
     // -- props --
-    /// the containing character
-    CharacterContainer c;
-
-    /// the list of ik limbs
-    CharacterPart[] m_Limbs;
-
     /// the stored look rotation
     Quaternion m_LookRotation = Quaternion.identity;
 
@@ -40,26 +34,22 @@ public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
     Quaternion m_SurfaceTilt = Quaternion.identity;
 
     // -- lifecycle --
-    void Awake() {
-        // set dependencies
-        c = GetComponentInParent<CharacterContainer>();
+    public override void Init(CharacterContainer c) {
+        base.Init(c);
 
         // if this character is not animated, destroy all limbs and procedural animations
         if (!m_Animator) {
-            Log.Model.E($"character {c.Name} has no animator, destroying limbs");
-            Destroy(m_Head.gameObject);
-            Destroy(m_Legs.gameObject);
-            Destroy(m_Arms.gameObject);
+            Log.Model.W($"character {c.Name} has no animator, disabling limbs");
+            m_Head.gameObject.SetActive(false);
+            m_Legs.gameObject.SetActive(false);
+            m_Arms.gameObject.SetActive(false);
             return;
         }
 
-        // set props
-        m_Limbs = GetComponentsInChildren<CharacterPart>();
-
         // init ik limbs
-        foreach (var limb in m_Limbs) {
-            limb.Init(m_Animator);
-        }
+        m_Legs.Init(c);
+        m_Arms.Init(c);
+        m_Head.Init(c);
 
         // proxy animator callbacks
         var proxy = m_Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
@@ -70,9 +60,13 @@ public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
         proxy.Bind(this);
     }
 
-    void Update() {
-        var delta = Time.deltaTime;
+    public override void Step_I(float delta) {
         var frame = c.State.Interpolated;
+
+        // step ik limbs
+        m_Head.Step(delta);
+        m_Legs.Step(delta);
+        m_Arms.Step(delta);
 
         Tilt(frame, delta);
 
@@ -87,11 +81,18 @@ public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
         transform.localRotation =  tilt * m_LookRotation;
     }
 
+    public override void Step_Fixed_I(float delta) {
+        // step ik limbs
+        m_Head.Step_Fixed(delta);
+        m_Legs.Step_Fixed(delta);
+        m_Arms.Step_Fixed(delta);
+    }
+
     // -- CharacterAnimatorProxy.Target --
     public void OnAnimatorIk(int layer) {
-        foreach (var limb in m_Limbs) {
-            limb.ApplyIk();
-        }
+        m_Head.ApplyIk();
+        m_Legs.ApplyIk();
+        m_Arms.ApplyIk();
     }
 
     // -- commands --
@@ -154,10 +155,19 @@ public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
     }
 
     // -- queries --
-    // TODO: exclude head from this and actually return `Limb`?
-    /// the list of limbs (arms, legs, & head)
-    public CharacterPart[] Limbs {
-        get => m_Limbs;
+    /// the animator
+    public Animator Animator {
+        get => m_Animator;
+    }
+
+    /// finds a limb based on ik goal
+    public Limb FindLimb(AvatarIKGoal goal) {
+        return goal switch {
+            AvatarIKGoal.LeftFoot => m_Legs.Left,
+            AvatarIKGoal.RightFoot => m_Legs.Right,
+            AvatarIKGoal.LeftHand => m_Arms.Left,
+            _ /*AvatarIKGoal.RightHand*/ => m_Arms.Right,
+        };
     }
 }
 

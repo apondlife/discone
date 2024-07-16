@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// a pair of legs working in unison
-class CharacterArms: MonoBehaviour {
+class CharacterArms: CharacterBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the left arm")]
@@ -17,22 +17,28 @@ class CharacterArms: MonoBehaviour {
     [Tooltip("the attached model")]
     [SerializeField] Transform m_Model;
 
-    // -- props --
-    /// the character's dependency container
-    CharacterContainer c;
-
     // -- lifecycle --
-    void Awake() {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
+    public override void Init(CharacterContainer c) {
+        base.Init(c);
+
+        m_Left.Init(c);
+        m_Right.Init(c);
 
         // TODO: move arms
         enabled = false;
     }
 
-    void Update() {
+    public override void Step_I(float delta) {
         MoveArm(m_Left);
         MoveArm(m_Right);
+
+        m_Left.Step(delta);
+        m_Right.Step(delta);
+    }
+
+    public override void Step_Fixed_I(float delta) {
+        m_Left.Step_Fixed(delta);
+        m_Right.Step_Fixed(delta);
     }
 
     // -- commands --
@@ -93,6 +99,23 @@ class CharacterArms: MonoBehaviour {
         );
 
         arm.Move();
+    }
+
+    /// applies the ik for the parts
+    public void ApplyIk() {
+        m_Left.ApplyIk();
+        m_Right.ApplyIk();
+    }
+
+    // -- queries --
+    /// .
+    public Limb Left {
+        get => m_Left;
+    }
+
+    /// .
+    public Limb Right {
+        get => m_Right;
     }
 }
 

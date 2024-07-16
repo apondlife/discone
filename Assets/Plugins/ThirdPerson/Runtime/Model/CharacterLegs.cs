@@ -6,7 +6,7 @@ using Color = UnityEngine.Color;
 namespace ThirdPerson {
 
 /// a pair of legs working in unison
-class CharacterLegs: MonoBehaviour {
+public class CharacterLegs: CharacterBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the left leg")]
@@ -40,9 +40,6 @@ class CharacterLegs: MonoBehaviour {
     [SerializeField] Transform m_Model;
 
     // -- props --
-    /// the character's dependency container
-    CharacterContainer c;
-
     /// the initial position of the leg
     Vector3 m_InitialPos;
 
@@ -53,20 +50,18 @@ class CharacterLegs: MonoBehaviour {
     Vector3 m_Debug_PrevInitialPos;
 
     // -- lifecycle --
-    void Awake() {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
-    }
+    public override void Init(CharacterContainer c) {
+        base.Init(c);
 
-    void Start() {
+        m_Left.Init(c);
+        m_Right.Init(c);
+
         m_InitialPos = transform.localPosition;
         m_InitialModelPos = m_Model.transform.localPosition;
         m_Hips_Ease.Init(Vector3.zero);
     }
 
-    void Update() {
-        var delta = Time.deltaTime;
-
+    public override void Step_I(float delta) {
         // anchor the legs to one another
         m_Left.State.Anchor = m_Right.IntoAnchor();
         m_Right.State.Anchor = m_Left.IntoAnchor();
@@ -90,13 +85,17 @@ class CharacterLegs: MonoBehaviour {
 
         // slide the held leg if necessary
         Slide(delta);
+
+        m_Left.Step(delta);
+        m_Right.Step(delta);
     }
 
-    void FixedUpdate() {
-        var delta = Time.deltaTime;
-
+    public override void Step_Fixed_I(float delta) {
         // add an offset to move the hips to match the character's stance
         OffsetHips(delta);
+
+        m_Left.Step_Fixed(delta);
+        m_Right.Step_Fixed(delta);
     }
 
     // -- commands --
@@ -229,12 +228,29 @@ class CharacterLegs: MonoBehaviour {
     }
 
     // -- queries --
+
+    ///.
+    public Limb Left {
+        get => m_Left;
+    }
+
+    ///.
+    public Limb Right {
+        get => m_Right;
+    }
+
     /// the displacement of the leg projected along the move dir
     float GetExtension(Limb limb) {
         return Vector3.Dot(
             limb.RootPos - limb.GoalPos,
             c.State.Curr.PlanarDirection
         );
+    }
+
+    /// applies the ik for the parts
+    public void ApplyIk() {
+        m_Left.ApplyIk();
+        m_Right.ApplyIk();
     }
 }
 

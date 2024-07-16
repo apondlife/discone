@@ -3,14 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// an ik limb for the character model
-public sealed class CharacterHead: MonoBehaviour, CharacterPart {
-    // -- deps --
-    /// the containing character
-    CharacterContainer c;
-
-    /// the animator for this limb
-    Animator m_Animator;
-
+public sealed class CharacterHead: CharacterBehaviour, CharacterPart {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the rotation speed of the ik position")]
@@ -45,14 +38,24 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
     Quaternion m_DestRotation;
 
     // -- lifecycle --
-    void Awake() {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
+    public override void Init(CharacterContainer c) {
+        base.Init(c);
+
+        // set props
+        m_HeadBone = c.Rig.Animator.GetBoneTransform(HumanBodyBones.Head);
+
+        // if no head bone, this character has no head, destroy self
+        if (!m_HeadBone) {
+            Log.Model.W($"disabling head for character: {c.Name}");
+            // TODO: how to remove this from the m_Limbs array (maybe the rig can take care of that)
+            gameObject.SetActive(false);
+            return;
+        }
+
+        m_CurrRotation = transform.rotation;
     }
 
-    void Update() {
-        var delta = Time.deltaTime;
-
+    public override void Step_I(float delta) {
         m_IsActive = c.State.Next.IsOnGround;
 
         // destination rotation follows input
@@ -91,31 +94,15 @@ public sealed class CharacterHead: MonoBehaviour, CharacterPart {
     }
 
     // -- CharacterPart --
-    public void Init(Animator animator) {
-        // set deps
-        m_Animator = animator;
-
-        // set props
-        m_HeadBone = m_Animator.GetBoneTransform(HumanBodyBones.Head);
-
-        // if no head bone, this character has no head, destroy self
-        if (!m_HeadBone) {
-            Log.Model.W($"destroying head for character: {c.Name}");
-            // TODO: how to remove this from the m_Limbs array (maybe the rig can take care of that)
-            Destroy(gameObject);
-            return;
-        }
-
-        m_CurrRotation = transform.rotation;
-    }
-
     public void ApplyIk() {
-        m_Animator.SetLookAtWeight(
+        var anim = c.Rig.Animator;
+
+        anim.SetLookAtWeight(
             m_Weight
         );
 
         if (m_Weight != 0.0f) {
-            m_Animator.SetLookAtPosition(RotToPos(m_CurrRotation));
+            anim.SetLookAtPosition(RotToPos(m_CurrRotation));
         }
     }
 

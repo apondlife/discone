@@ -5,7 +5,7 @@ namespace ThirdPerson {
 
 // TODO: center of mass? move character down?
 /// an ik limb for the character model
-public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
+public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the type of goal of this limb")]
@@ -41,9 +41,6 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
     /// the limb state
     LimbState m_State;
 
-    /// the animator
-    Animator m_Animator;
-
     /// the current blend weight
     float m_Weight;
 
@@ -59,16 +56,36 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
     /// the rotation of the ik goal
     Quaternion m_GoalRot;
 
-    /// the containing character
-    CharacterContainer c;
-
     // -- lifecycle --
-    void FixedUpdate() {
+    public override void Init(CharacterContainer c) {
+        base.Init(c);
+
+        // set props
+        m_State = new LimbState();
+
+        // get default limb lengths
+        var rootPos = Vector3.zero;
+        var goalPos = m_InitialGoalPos;
+        var endPos = m_InitialEndPos;
+
+        var limb = goalPos - rootPos;
+        var limbDir = limb.normalized;
+
+        var end = endPos - goalPos;
+        var endLength = Vector3.Dot(end, limbDir);
+
+        m_LimbLen = limb.magnitude;
+        m_EndLen = endLength;
+
+        // init system
+        m_System.Init(this);
+    }
+
+    public override void Step_Fixed_I(float delta) {
         if (!IsValid) {
             return;
         }
 
-        var delta = Time.deltaTime;
         m_System.Update(delta);
 
         // set target ik weight if limb is active
@@ -135,7 +152,7 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
         m_GoalRot = goalRot;
 
         // TODO: consider how to compile out debug utils; DEVELOPMENT_BUILD, DEBUG?
-        Debug_Update();
+        Debug_Step_Fixed();
     }
 
     #if UNITY_EDITOR
@@ -202,54 +219,30 @@ public partial class Limb: MonoBehaviour, CharacterPart, LimbContainer {
     }
 
     // -- CharacterPart --
-    public void Init(Animator animator) {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
-
-        // set props
-        m_State = new LimbState();
-        m_Animator = animator;
-
-        // get default limb lengths
-        var rootPos = Vector3.zero;
-        var goalPos = m_InitialGoalPos;
-        var endPos = m_InitialEndPos;
-
-        var limb = goalPos - rootPos;
-        var limbDir = limb.normalized;
-
-        var end = endPos - goalPos;
-        var endLength = Vector3.Dot(end, limbDir);
-
-        m_LimbLen = limb.magnitude;
-        m_EndLen = endLength;
-
-        // init system
-        m_System.Init(this);
-    }
-
     public void ApplyIk() {
         if (!IsValid) {
             return;
         }
 
-        m_Animator.SetIKPositionWeight(
+        var anim = c.Rig.Animator;
+
+        anim.SetIKPositionWeight(
             m_Goal,
             m_Weight
         );
 
-        m_Animator.SetIKRotationWeight(
+        anim.SetIKRotationWeight(
             m_Goal,
             m_Weight
         );
 
         if (m_Weight != 0.0f) {
-            m_Animator.SetIKPosition(
+            anim.SetIKPosition(
                 m_Goal,
                 m_GoalPos
             );
 
-            m_Animator.SetIKRotation(
+            anim.SetIKRotation(
                 m_Goal,
                 m_GoalRot
             );
