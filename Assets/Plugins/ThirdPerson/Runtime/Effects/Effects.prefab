@@ -9967,37 +9967,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7367711423575962010}
     m_Modifications:
-    - target: {fileID: 1653260233760511427, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
-      propertyPath: m_Particles
-      value: 
-      objectReference: {fileID: 1498224369925729539}
     - target: {fileID: 3676842138139652890, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
       propertyPath: m_Name
       value: LimbPrints
-      objectReference: {fileID: 0}
-    - target: {fileID: 4037217518434281482, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
-      propertyPath: looping
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4037217518434281482, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
-      propertyPath: ShapeModule.type
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4037217518434281482, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
-      propertyPath: EmissionModule.enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4037217518434281482, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
-      propertyPath: ShapeModule.radiusThickness
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4037217518434281482, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
-      propertyPath: InitialModule.startSpeed.scalar
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4037217518434281482, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
-      propertyPath: InitialModule.startLifetime.scalar
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8773149410889008704, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
       propertyPath: m_RootOrder
@@ -10045,11 +10017,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
---- !u!198 &1498224369925729539 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 4037217518434281482, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
-  m_PrefabInstance: {fileID: 3228466103961502985}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6128744029631038281 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8773149410889008704, guid: 3f9b3e198b5f51d4d8683888cc1cac7c, type: 3}
