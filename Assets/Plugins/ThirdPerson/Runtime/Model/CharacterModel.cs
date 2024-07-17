@@ -87,6 +87,10 @@ public sealed class CharacterModel: CharacterBehaviour {
     bool m_IsPosing;
 
     // -- CharacterComponent --
+    public bool Enabled {
+        get => enabled;
+    }
+
     public override void Init(CharacterContainer c) {
         base.Init(c);
 
@@ -125,8 +129,6 @@ public sealed class CharacterModel: CharacterBehaviour {
             // and cache the initial y-position
             m_JumpStartPos = c.State.Next.Position;
         }
-
-        base.Step_Fixed_I(delta);
     }
 
     public override void Step_I(float delta) {
@@ -265,8 +267,6 @@ public sealed class CharacterModel: CharacterBehaviour {
             m_LayerArms,
             yoshiing
         );
-
-        base.Step_I(delta);
     }
 
     static void SetDefaultLayersRecursively(GameObject parent, int layer) {

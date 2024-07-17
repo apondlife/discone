@@ -86,7 +86,7 @@ public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
             return;
         }
 
-        m_System.Step(delta);
+        m_System.Update(delta);
 
         // set target ik weight if limb is active
         var weight = m_State.IsActive ? 1f : 0f;
@@ -150,8 +150,6 @@ public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
         m_Weight = weight;
         m_GoalPos = goalPos;
         m_GoalRot = goalRot;
-
-        base.Step_Fixed_I(delta);
 
         // TODO: consider how to compile out debug utils; DEVELOPMENT_BUILD, DEBUG?
         Debug_Step_Fixed();

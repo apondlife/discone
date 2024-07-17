@@ -49,20 +49,16 @@ public class CharacterLegs: CharacterBehaviour {
     /// the previous world position
     Vector3 m_Debug_PrevInitialPos;
 
-    // -- CharacterComponent --
-    protected override CharacterComponent[] InitChildren() {
-        return new[] {
-            m_Left,
-            m_Right
-        };
-    }
-
+    // -- lifecycle --
     public override void Init(CharacterContainer c) {
+        base.Init(c);
+
+        m_Left.Init(c);
+        m_Right.Init(c);
+
         m_InitialPos = transform.localPosition;
         m_InitialModelPos = m_Model.transform.localPosition;
         m_Hips_Ease.Init(Vector3.zero);
-
-        base.Init(c);
     }
 
     public override void Step_I(float delta) {
@@ -90,23 +86,19 @@ public class CharacterLegs: CharacterBehaviour {
         // slide the held leg if necessary
         Slide(delta);
 
-        base.Step_I(delta);
+        m_Left.Step(delta);
+        m_Right.Step(delta);
     }
 
     public override void Step_Fixed_I(float delta) {
         // add an offset to move the hips to match the character's stance
         OffsetHips(delta);
 
-        base.Step_Fixed_I(delta);
+        m_Left.Step_Fixed(delta);
+        m_Right.Step_Fixed(delta);
     }
 
     // -- commands --
-    /// applies the ik for the parts
-    public void ApplyIk() {
-        m_Left.ApplyIk();
-        m_Right.ApplyIk();
-    }
-
     /// update if the limbs are currently striding
     void SetIsStriding(bool isStriding) {
         m_Left.SetIsStriding(isStriding);
@@ -236,6 +228,7 @@ public class CharacterLegs: CharacterBehaviour {
     }
 
     // -- queries --
+
     ///.
     public Limb Left {
         get => m_Left;
@@ -252,6 +245,12 @@ public class CharacterLegs: CharacterBehaviour {
             limb.RootPos - limb.GoalPos,
             c.State.Curr.PlanarDirection
         );
+    }
+
+    /// applies the ik for the parts
+    public void ApplyIk() {
+        m_Left.ApplyIk();
+        m_Right.ApplyIk();
     }
 }
 

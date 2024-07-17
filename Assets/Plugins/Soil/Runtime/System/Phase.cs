@@ -2,7 +2,7 @@ using System;
 
 namespace Soil {
 
-/// a character phase, a composition of an enter, step, and exit action
+/// a character phase, a composition of an enter, update, and exit action
 [Serializable]
 public struct Phase<Container>: IEquatable<Phase<Container>> {
     // -- props --
@@ -13,7 +13,7 @@ public struct Phase<Container>: IEquatable<Phase<Container>> {
     public readonly Action<System<Container>, Container> Enter;
 
     /// the action to call every frame the phase is active
-    public readonly Action<float, System<Container>, Container> Step;
+    public readonly Action<float, System<Container>, Container> Update;
 
     /// the action to call the frame the phase ends
     public readonly Action<System<Container>, Container> Exit;
@@ -27,7 +27,7 @@ public struct Phase<Container>: IEquatable<Phase<Container>> {
     ) {
         Name = name;
         Enter = enter ?? NoOp;
-        Step = update ?? NoOp;
+        Update = update ?? NoOp;
         Exit = exit ?? NoOp;
     }
 

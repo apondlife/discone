@@ -118,7 +118,7 @@ public class Camera: MonoBehaviour, CameraContainer {
 
         // run systems
         foreach (var system in m_Systems) {
-            system.Step(delta);
+            system.Update(delta);
         }
 
         // update camera coords

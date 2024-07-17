@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// a pair of legs working in unison
-public class CharacterArms: CharacterBehaviour {
+class CharacterArms: CharacterBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the left arm")]
@@ -18,34 +18,30 @@ public class CharacterArms: CharacterBehaviour {
     [SerializeField] Transform m_Model;
 
     // -- lifecycle --
-    protected override CharacterComponent[] InitChildren() {
-        return new[] {
-            m_Left,
-            m_Right
-        };
-    }
-
     public override void Init(CharacterContainer c) {
+        base.Init(c);
+
+        m_Left.Init(c);
+        m_Right.Init(c);
+
         // TODO: move arms
         enabled = false;
-
-        base.Init(c);
     }
 
     public override void Step_I(float delta) {
         MoveArm(m_Left);
         MoveArm(m_Right);
 
-        base.Step_I(delta);
+        m_Left.Step(delta);
+        m_Right.Step(delta);
+    }
+
+    public override void Step_Fixed_I(float delta) {
+        m_Left.Step_Fixed(delta);
+        m_Right.Step_Fixed(delta);
     }
 
     // -- commands --
-    /// applies the ik for the parts
-    public void ApplyIk() {
-        m_Left.ApplyIk();
-        m_Right.ApplyIk();
-    }
-
     void MoveArm(Limb arm) {
         if (c.State.Curr.IsIdle) {
             return;
@@ -103,6 +99,12 @@ public class CharacterArms: CharacterBehaviour {
         );
 
         arm.Move();
+    }
+
+    /// applies the ik for the parts
+    public void ApplyIk() {
+        m_Left.ApplyIk();
+        m_Right.ApplyIk();
     }
 
     // -- queries --

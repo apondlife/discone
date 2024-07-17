@@ -46,7 +46,8 @@ public sealed class CharacterHead: CharacterBehaviour, CharacterPart {
 
         // if no head bone, this character has no head, destroy self
         if (!m_HeadBone) {
-            Log.Model.W($"destroying head for character: {c.Name}");
+            Log.Model.W($"disabling head for character: {c.Name}");
+            // TODO: how to remove this from the m_Limbs array (maybe the rig can take care of that)
             gameObject.SetActive(false);
             return;
         }

@@ -58,7 +58,7 @@ public abstract class System<Container> {
 
     // -- commands --
     /// update the system's current phase
-    public virtual void Step(float delta) {
+    public virtual void Update(float delta) {
         #if UNITY_EDITOR
         // clear debug phases
         m_Debug_Phases.Clear();
@@ -69,7 +69,7 @@ public abstract class System<Container> {
         }
 
         // ensure a phase!
-        if (m_Phase.Step == null) {
+        if (m_Phase.Update == null) {
             Log.System.E($"must call init! {this}!");
             return;
         }
@@ -79,7 +79,7 @@ public abstract class System<Container> {
         state.PhaseElapsed += delta;
         State = state;
 
-        m_Phase.Step(delta, this, c);
+        m_Phase.Update(delta, this, c);
     }
 
     /// switch to a new phase and run the phase change lifecycle
@@ -125,7 +125,7 @@ public abstract class System<Container> {
         ChangeTo(next);
 
         // and run the update immediately
-        m_Phase.Step(delta, this, c);
+        m_Phase.Update(delta, this, c);
     }
 
     /// set the current phase & initialize its state w/o calling events

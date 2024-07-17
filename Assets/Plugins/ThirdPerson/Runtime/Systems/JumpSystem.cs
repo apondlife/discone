@@ -31,12 +31,12 @@ sealed class JumpSystem: CharacterSystem {
         ResetJumps(c);
     }
 
-    public override void Step(float delta) {
+    public override void Update(float delta) {
         // advance the cooldown timer
         Cooldown(delta, c);
 
         // jumping updates state that is used below
-        base.Step(delta);
+        base.Update(delta);
 
         // aggregate gravity
         var gravity = 0f;

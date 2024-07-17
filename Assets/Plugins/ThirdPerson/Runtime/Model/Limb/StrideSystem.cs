@@ -12,9 +12,9 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
         return Free;
     }
 
-    public override void Step(float delta) {
+    public override void Update(float delta) {
         UpdateInputScale(delta, c);
-        base.Step(delta);
+        base.Update(delta);
     }
 
     // -- NotStriding --
