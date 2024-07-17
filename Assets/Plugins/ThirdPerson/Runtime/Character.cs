@@ -52,8 +52,11 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     [Tooltip("the character model")]
     [SerializeField] CharacterModel m_Model;
 
-    [Tooltip("the underlying character controller")]
+    [Tooltip("the character controller")]
     [SerializeField] CharacterController m_Controller;
+
+    [Tooltip("the character animator")]
+    [SerializeField] Animator m_Animator;
 
     // -- props --
     /// the list of systems acting on this character
@@ -116,18 +119,12 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         foreach (var system in m_Systems) {
             system.Init(this);
         }
-
-        // init (awake) children
-        m_Rig.Init(this);
-        m_Model.Init(this);
     }
 
     protected virtual void Start() {
     }
 
     protected virtual void Update() {
-        var delta = Time.deltaTime;
-
         #if UNITY_EDITOR
         Debug_Update();
         #endif
@@ -135,10 +132,6 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
         // interpolate frame based on time since last update
         var k = (float)(Time.timeAsDouble - Time.fixedTimeAsDouble) / Time.fixedDeltaTime;
         m_State.Interpolate(k);
-
-        // update children
-        m_Rig.Step(delta);
-        m_Model.Step(delta);
     }
 
     protected virtual void FixedUpdate() {
@@ -153,15 +146,11 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
             m_State.Advance();
 
             // step systems
-            Step_Fixed();
+            Step();
 
             // dispatch events
             m_Events.DispatchAll();
         }
-
-        // update children
-        m_Rig.Step_Fixed(delta);
-        m_Model.Step_Fixed(delta);
 
         // TODO: move this into `Update` after we interpolate; need to re-evaluate a bunch
         // of other uses of FixedUpdate vs. Update if we do.
@@ -190,7 +179,7 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     }
 
     /// run the character systems
-    void Step_Fixed() {
+    void Step() {
         var delta = Time.deltaTime;
         foreach (var system in m_Systems) {
             system.Update(delta);
@@ -293,6 +282,10 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
 
     public CharacterController Controller {
         get => m_Controller;
+    }
+
+    public Animator Animator {
+        get => m_Animator;
     }
 
     // -- events --

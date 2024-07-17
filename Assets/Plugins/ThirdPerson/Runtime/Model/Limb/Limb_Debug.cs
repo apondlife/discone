@@ -5,11 +5,11 @@ namespace ThirdPerson {
 
 public partial class Limb {
     // -- lifecycle --
-    void Debug_Step_Fixed() {
+    void Debug_Update() {
         Debug_Draw("limb", width: 1f);
     }
 
-    void Debug_ApplyIk() {
+    void Debug_UpdateIk() {
     }
 
     void OnDrawGizmosSelected() {

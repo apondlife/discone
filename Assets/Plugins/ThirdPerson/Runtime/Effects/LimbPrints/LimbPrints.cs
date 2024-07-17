@@ -3,22 +3,26 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// marks left by the characters hands, feet, &c
-public class LimbPrints: CharacterBehaviour {
+public class LimbPrints: MonoBehaviour {
     // -- refs --
     [Header("refs")]
     [Tooltip("the particle system")]
     [SerializeField] ParticleSystem m_Particles;
 
-    // -- lifecycle --
-    public override void Step_Fixed_I(float delta) {
-        base.Step_Fixed_I(delta);
+    // -- props --
+    /// the containing character
+    CharacterContainer c;
 
-        var next = c.State.Next;
-        var evts = next.Events;
+    // -- lifecycle --
+    public void Awake() {
+        c = GetComponentInParent<CharacterContainer>();
+    }
+
+    public void FixedUpdate() {
+        var state = c.State.Curr;
 
         for (var goal = AvatarIKGoal.LeftFoot; goal <= AvatarIKGoal.RightHand; goal += 1) {
-            var evt = goal.AsStepEvent();
-            if (!evts.Contains(evt) ) {
+            if (!state.Events.Contains(goal.AsStepEvent()) ) {
                 continue;
             }
 
@@ -30,7 +34,7 @@ public class LimbPrints: CharacterBehaviour {
 
             // point towards the current surface
             // TODO: placement.Forward
-            var rot = Quaternion.LookRotation(-placement.Normal, next.Forward);
+            var rot = Quaternion.LookRotation(-placement.Normal, state.Forward);
 
             // update the start rotation
             var main = m_Particles.main;

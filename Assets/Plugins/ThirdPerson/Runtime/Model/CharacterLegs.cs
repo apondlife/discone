@@ -6,7 +6,7 @@ using Color = UnityEngine.Color;
 namespace ThirdPerson {
 
 /// a pair of legs working in unison
-public class CharacterLegs: CharacterBehaviour {
+public class CharacterLegs: MonoBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the left leg")]
@@ -40,6 +40,9 @@ public class CharacterLegs: CharacterBehaviour {
     [SerializeField] Transform m_Model;
 
     // -- props --
+    /// the character's dependency container
+    CharacterContainer c;
+
     /// the initial position of the leg
     Vector3 m_InitialPos;
 
@@ -50,18 +53,20 @@ public class CharacterLegs: CharacterBehaviour {
     Vector3 m_Debug_PrevInitialPos;
 
     // -- lifecycle --
-    public override void Init(CharacterContainer c) {
-        base.Init(c);
+    void Awake() {
+        // set deps
+        c = GetComponentInParent<CharacterContainer>();
+    }
 
-        m_Left.Init(c);
-        m_Right.Init(c);
-
+    void Start() {
         m_InitialPos = transform.localPosition;
         m_InitialModelPos = m_Model.transform.localPosition;
         m_Hips_Ease.Init(Vector3.zero);
     }
 
-    public override void Step_I(float delta) {
+    void Update() {
+        var delta = Time.deltaTime;
+
         // anchor the legs to one another
         m_Left.State.Anchor = m_Right.IntoAnchor();
         m_Right.State.Anchor = m_Left.IntoAnchor();
@@ -85,20 +90,22 @@ public class CharacterLegs: CharacterBehaviour {
 
         // slide the held leg if necessary
         Slide(delta);
-
-        m_Left.Step(delta);
-        m_Right.Step(delta);
     }
 
-    public override void Step_Fixed_I(float delta) {
+    void FixedUpdate() {
+        var delta = Time.deltaTime;
+
         // add an offset to move the hips to match the character's stance
         OffsetHips(delta);
-
-        m_Left.Step_Fixed(delta);
-        m_Right.Step_Fixed(delta);
     }
 
     // -- commands --
+    /// update ik from the legs' current state
+    public void UpdateIk() {
+        m_Left.UpdateIk();
+        m_Right.UpdateIk();
+    }
+
     /// update if the limbs are currently striding
     void SetIsStriding(bool isStriding) {
         m_Left.SetIsStriding(isStriding);
@@ -228,13 +235,12 @@ public class CharacterLegs: CharacterBehaviour {
     }
 
     // -- queries --
-
-    ///.
+    /// .
     public Limb Left {
         get => m_Left;
     }
 
-    ///.
+    /// .
     public Limb Right {
         get => m_Right;
     }
@@ -245,12 +251,6 @@ public class CharacterLegs: CharacterBehaviour {
             limb.RootPos - limb.GoalPos,
             c.State.Curr.PlanarDirection
         );
-    }
-
-    /// applies the ik for the parts
-    public void ApplyIk() {
-        m_Left.ApplyIk();
-        m_Right.ApplyIk();
     }
 }
 

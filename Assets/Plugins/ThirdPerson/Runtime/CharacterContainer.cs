@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 namespace ThirdPerson {
 
 /// a dependency container for character components
@@ -30,6 +32,9 @@ public interface CharacterContainer {
 
     /// the model
     CharacterModel Model { get; }
+
+    /// the character's animator
+    Animator Animator { get; }
 }
 
 }

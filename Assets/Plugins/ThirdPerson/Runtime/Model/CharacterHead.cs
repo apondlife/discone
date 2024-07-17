@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// an ik limb for the character model
-public sealed class CharacterHead: CharacterBehaviour, CharacterPart {
+public sealed class CharacterHead: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the rotation speed of the ik position")]
@@ -19,6 +19,9 @@ public sealed class CharacterHead: CharacterBehaviour, CharacterPart {
     [SerializeField] float m_BlendOutDuration;
 
     // -- props --
+    /// the containing character
+    CharacterContainer c;
+
     /// if the head is looking towards something
     bool m_IsActive;
 
@@ -38,16 +41,16 @@ public sealed class CharacterHead: CharacterBehaviour, CharacterPart {
     Quaternion m_DestRotation;
 
     // -- lifecycle --
-    public override void Init(CharacterContainer c) {
-        base.Init(c);
+    void Awake() {
+        // set deps
+        c = GetComponentInParent<CharacterContainer>();
 
         // set props
-        m_HeadBone = c.Rig.Animator.GetBoneTransform(HumanBodyBones.Head);
+        m_HeadBone = c.Animator.GetBoneTransform(HumanBodyBones.Head);
 
         // if no head bone, this character has no head, destroy self
         if (!m_HeadBone) {
             Log.Model.W($"disabling head for character: {c.Name}");
-            // TODO: how to remove this from the m_Limbs array (maybe the rig can take care of that)
             gameObject.SetActive(false);
             return;
         }
@@ -55,7 +58,9 @@ public sealed class CharacterHead: CharacterBehaviour, CharacterPart {
         m_CurrRotation = transform.rotation;
     }
 
-    public override void Step_I(float delta) {
+    void Update() {
+        var delta = Time.deltaTime;
+
         m_IsActive = c.State.Next.IsOnGround;
 
         // destination rotation follows input
@@ -93,25 +98,15 @@ public sealed class CharacterHead: CharacterBehaviour, CharacterPart {
         );
     }
 
-    // -- CharacterPart --
-    public void ApplyIk() {
-        var anim = c.Rig.Animator;
-
-        anim.SetLookAtWeight(
+    /// update ik from the head's current state
+    public void UpdateIk() {
+        c.Animator.SetLookAtWeight(
             m_Weight
         );
 
         if (m_Weight != 0.0f) {
-            anim.SetLookAtPosition(RotToPos(m_CurrRotation));
+            c.Animator.SetLookAtPosition(RotToPos(m_CurrRotation));
         }
-    }
-
-    public bool MatchesStep(CharacterEvent mask) {
-        return false;
-    }
-
-    public LimbPlacement Placement {
-        get => LimbPlacement.Miss;
     }
 
     // -- queries --

@@ -5,7 +5,7 @@ namespace ThirdPerson {
 
 // TODO: center of mass? move character down?
 /// an ik limb for the character model
-public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
+public partial class Limb: MonoBehaviour, LimbContainer {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the type of goal of this limb")]
@@ -38,6 +38,9 @@ public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
     [SerializeField] StrideSystem m_System;
 
     // -- props --
+    /// the containing character
+    CharacterContainer c;
+
     /// the limb state
     LimbState m_State;
 
@@ -57,8 +60,9 @@ public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
     Quaternion m_GoalRot;
 
     // -- lifecycle --
-    public override void Init(CharacterContainer c) {
-        base.Init(c);
+    void Awake() {
+        // set deps
+        c = GetComponentInParent<CharacterContainer>();
 
         // set props
         m_State = new LimbState();
@@ -81,11 +85,12 @@ public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
         m_System.Init(this);
     }
 
-    public override void Step_Fixed_I(float delta) {
+    void FixedUpdate() {
         if (!IsValid) {
             return;
         }
 
+        var delta = Time.deltaTime;
         m_System.Update(delta);
 
         // set target ik weight if limb is active
@@ -152,7 +157,7 @@ public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
         m_GoalRot = goalRot;
 
         // TODO: consider how to compile out debug utils; DEVELOPMENT_BUILD, DEBUG?
-        Debug_Step_Fixed();
+        Debug_Update();
     }
 
     #if UNITY_EDITOR
@@ -218,45 +223,35 @@ public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
         m_State.SlideOffset = offset;
     }
 
-    // -- CharacterPart --
-    public void ApplyIk() {
+    /// update ik from the limb's current state
+    public void UpdateIk() {
         if (!IsValid) {
             return;
         }
 
-        var anim = c.Rig.Animator;
-
-        anim.SetIKPositionWeight(
+        c.Animator.SetIKPositionWeight(
             m_Goal,
             m_Weight
         );
 
-        anim.SetIKRotationWeight(
+        c.Animator.SetIKRotationWeight(
             m_Goal,
             m_Weight
         );
 
         if (m_Weight != 0.0f) {
-            anim.SetIKPosition(
+            c.Animator.SetIKPosition(
                 m_Goal,
                 m_GoalPos
             );
 
-            anim.SetIKRotation(
+            c.Animator.SetIKRotation(
                 m_Goal,
                 m_GoalRot
             );
         }
 
-        Debug_ApplyIk();
-    }
-
-    public bool MatchesStep(CharacterEvent mask) {
-        return (mask & Goal.AsStepEvent()) != 0;
-    }
-
-    public LimbPlacement Placement {
-        get => State.Placement;
+        Debug_UpdateIk();
     }
 
     // -- queries --
@@ -268,6 +263,11 @@ public partial class Limb: CharacterBehaviour, CharacterPart, LimbContainer {
     /// the current goal bone position
     public Vector3 GoalPos {
         get => m_State.GoalPos;
+    }
+
+    /// the current limb placement
+    public LimbPlacement Placement {
+        get => m_State.Placement;
     }
 
     /// create an anchor from the current state of this limb

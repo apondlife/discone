@@ -29,6 +29,7 @@ public readonly struct LimbPlacement {
         Result = result;
     }
 
+    /// a placement from a raycast hit
     public static LimbPlacement Hit(
         RaycastHit hit,
         float offset,
@@ -42,6 +43,7 @@ public readonly struct LimbPlacement {
         );
     }
 
+    /// a placement that is a miss
     public static LimbPlacement Miss {
         get => new(
             Vector3.zero,

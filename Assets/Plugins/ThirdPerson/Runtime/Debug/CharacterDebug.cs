@@ -106,7 +106,7 @@ partial class Character<InputFrame> {
         }
 
         // run the systems for the debug state/input
-        Step_Fixed();
+        Step();
 
         // ignore any mutations from the step
         if (m_Debug_StateFrame_IsDirty) {

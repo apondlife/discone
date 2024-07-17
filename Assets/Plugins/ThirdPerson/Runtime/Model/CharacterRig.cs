@@ -1,10 +1,9 @@
-using Soil;
 using UnityEngine;
 
 namespace ThirdPerson {
 
-/// a container for the character's model and animations
-public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
+/// a container for the character's model and procedural animations
+public class CharacterRig: MonoBehaviour, CharacterAnimatorProxy.Target {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the rotation speed in degrees towards look direction")]
@@ -21,13 +20,11 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
     [Tooltip("the character's arms")]
     [SerializeField] CharacterArms m_Arms;
 
-    [Tooltip("the character's animator")]
-    [SerializeField] Animator m_Animator;
-
-    [Tooltip("the character's effects")]
-    [SerializeField] CharacterBehaviour[] m_Effects;
 
     // -- props --
+    /// the containing character
+    CharacterContainer c;
+
     /// the stored look rotation
     Quaternion m_LookRotation = Quaternion.identity;
 
@@ -38,11 +35,12 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
     Quaternion m_SurfaceTilt = Quaternion.identity;
 
     // -- lifecycle --
-    public override void Init(CharacterContainer c) {
-        base.Init(c);
+    void Awake() {
+        // set dependencies
+        c = GetComponentInParent<CharacterContainer>();
 
         // if this character is not animated, destroy all limbs and procedural animations
-        if (!m_Animator) {
+        if (!c.Animator) {
             Log.Model.W($"character {c.Name} has no animator, disabling limbs");
             m_Head.gameObject.SetActive(false);
             m_Legs.gameObject.SetActive(false);
@@ -50,31 +48,20 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
             return;
         }
 
-        // init ik limbs
-        m_Legs.Init(c);
-        m_Arms.Init(c);
-        m_Head.Init(c);
-
-        // release the effects list
-        // m_Effects = null;
-
         // proxy animator callbacks
-        var proxy = m_Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
-        if (proxy == null) {
-            proxy = m_Animator.gameObject.AddComponent<CharacterAnimatorProxy>();
+        var proxy = c.Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
+        if (!proxy) {
+            proxy = c.Animator.gameObject.AddComponent<CharacterAnimatorProxy>();
         }
 
         proxy.Bind(this);
     }
 
-    public override void Step_I(float delta) {
+    void Update() {
+        var delta = Time.deltaTime;
         var frame = c.State.Interpolated;
 
-        // step ik limbs
-        m_Head.Step(delta);
-        m_Legs.Step(delta);
-        m_Arms.Step(delta);
-
+        // apply tilt
         Tilt(frame, delta);
 
         // TODO: should this be using the interpolated frame? or next?
@@ -86,20 +73,6 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
 
         var tilt = m_MoveTilt * m_SurfaceTilt;
         transform.localRotation =  tilt * m_LookRotation;
-    }
-
-    public override void Step_Fixed_I(float delta) {
-        // step ik limbs
-        m_Head.Step_Fixed(delta);
-        m_Legs.Step_Fixed(delta);
-        m_Arms.Step_Fixed(delta);
-    }
-
-    // -- CharacterAnimatorProxy.Target --
-    public void OnAnimatorIk(int layer) {
-        m_Head.ApplyIk();
-        m_Legs.ApplyIk();
-        m_Arms.ApplyIk();
     }
 
     // -- commands --
@@ -162,19 +135,21 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
     }
 
     // -- queries --
-    /// the animator
-    public Animator Animator {
-        get => m_Animator;
-    }
-
     /// finds a limb based on ik goal
     public Limb FindLimb(AvatarIKGoal goal) {
         return goal switch {
             AvatarIKGoal.LeftFoot => m_Legs.Left,
             AvatarIKGoal.RightFoot => m_Legs.Right,
             AvatarIKGoal.LeftHand => m_Arms.Left,
-            _ /*AvatarIKGoal.RightHand*/ => m_Arms.Right,
+            _ /* AvatarIKGoal.RightHand */ => m_Arms.Right,
         };
+    }
+
+    // -- CharacterAnimatorProxy.Target --
+    public void OnAnimatorIk(int layer) {
+        m_Head.UpdateIk();
+        m_Legs.UpdateIk();
+        m_Arms.UpdateIk();
     }
 }
 

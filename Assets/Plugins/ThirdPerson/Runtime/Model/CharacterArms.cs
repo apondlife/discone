@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// a pair of legs working in unison
-class CharacterArms: CharacterBehaviour {
+public class CharacterArms: MonoBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the left arm")]
@@ -17,31 +17,31 @@ class CharacterArms: CharacterBehaviour {
     [Tooltip("the attached model")]
     [SerializeField] Transform m_Model;
 
-    // -- lifecycle --
-    public override void Init(CharacterContainer c) {
-        base.Init(c);
+    // -- props --
+    /// the containing character
+    CharacterContainer c;
 
-        m_Left.Init(c);
-        m_Right.Init(c);
+    // -- lifecycle --
+    void Awake() {
+        // set deps
+        c = GetComponentInParent<CharacterContainer>();
 
         // TODO: move arms
         enabled = false;
     }
 
-    public override void Step_I(float delta) {
+    void Update() {
         MoveArm(m_Left);
         MoveArm(m_Right);
-
-        m_Left.Step(delta);
-        m_Right.Step(delta);
-    }
-
-    public override void Step_Fixed_I(float delta) {
-        m_Left.Step_Fixed(delta);
-        m_Right.Step_Fixed(delta);
     }
 
     // -- commands --
+    /// update ik from the arms' current state
+    public void UpdateIk() {
+        m_Left.UpdateIk();
+        m_Right.UpdateIk();
+    }
+
     void MoveArm(Limb arm) {
         if (c.State.Curr.IsIdle) {
             return;
@@ -99,12 +99,6 @@ class CharacterArms: CharacterBehaviour {
         );
 
         arm.Move();
-    }
-
-    /// applies the ik for the parts
-    public void ApplyIk() {
-        m_Left.ApplyIk();
-        m_Right.ApplyIk();
     }
 
     // -- queries --
