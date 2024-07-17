@@ -703,9 +703,6 @@ MonoBehaviour:
   m_Head: {fileID: 5548610953491594583}
   m_Legs: {fileID: 1537064876290817564}
   m_Arms: {fileID: 4366274820163353446}
-  m_Animator: {fileID: 0}
-  m_Effects:
-  - {fileID: 6630144434376723936}
 --- !u!1 &7562501268775911199
 GameObject:
   m_ObjectHideFlags: 0
@@ -931,6 +928,7 @@ MonoBehaviour:
     m_ContactEpsilon: 0.001
     m_ContactSearch: 1
     m_Capsule: {fileID: 1972163625}
+  m_Animator: {fileID: 0}
 --- !u!136 &1972163625
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1280,17 +1278,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7367711423575962010, guid: d9e453f6707a7a249ab2d84a06302965, type: 3}
   m_PrefabInstance: {fileID: 7367711425526897962}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6630144434376723936 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4196334219675357386, guid: d9e453f6707a7a249ab2d84a06302965, type: 3}
-  m_PrefabInstance: {fileID: 7367711425526897962}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b3ec382f1885ba47ae0b217bf5def77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &9066652418919474415
 PrefabInstance:
   m_ObjectHideFlags: 0

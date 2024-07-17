@@ -59,7 +59,7 @@ ParticleSystem:
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
-  ringBufferMode: 0
+  ringBufferMode: 1
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
   looping: 0
@@ -299,7 +299,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.5
+      scalar: 0.3
       minScalar: 1
       maxCurve:
         serializedVersion: 2
