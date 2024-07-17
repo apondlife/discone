@@ -1,3 +1,4 @@
+using Soil;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -23,6 +24,9 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
     [Tooltip("the character's animator")]
     [SerializeField] Animator m_Animator;
 
+    [Tooltip("the character's effects")]
+    [SerializeField] CharacterBehaviour[] m_Effects;
+
     // -- props --
     /// the stored look rotation
     Quaternion m_LookRotation = Quaternion.identity;
@@ -35,11 +39,14 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
 
     // -- CharacterComponent --
     protected override CharacterComponent[] InitChildren() {
-        return new CharacterComponent[] {
-            m_Head,
-            m_Legs,
-            m_Arms,
-        };
+        return ArrayExt.Concat(
+            new CharacterComponent[] {
+                m_Head,
+                m_Legs,
+                m_Arms,
+            },
+            m_Effects
+        );
     }
 
     public override void Init(CharacterContainer c) {
@@ -54,6 +61,9 @@ public class CharacterRig: CharacterBehaviour, CharacterAnimatorProxy.Target {
 
         // init ik limbs
         base.Init(c);
+
+        // release the effects list
+        // m_Effects = null;
 
         // proxy animator callbacks
         var proxy = m_Animator.gameObject.GetComponent<CharacterAnimatorProxy>();
