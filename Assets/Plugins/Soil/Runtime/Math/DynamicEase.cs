@@ -9,7 +9,7 @@ namespace Soil {
 /// a dynamic pid controller for a moving target value
 /// see: https://www.youtube.com/watch?v=KPoeNZZ6H4s
 [Serializable]
-public struct DynamicEase<T>: DynamicEase {
+public sealed class DynamicEase<T>: DynamicEase {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("the ease configuration")]
@@ -56,20 +56,14 @@ public struct DynamicEase<T>: DynamicEase {
 
     // -- commands --
     /// setup with an initial value
-    public void Init(T initial) {
+    public void Init(T initial, T initialVelocity = default) {
         // set deps
         a = DynamicEase.Arithmetic<T>.Instance;
 
         // set props
         m_Target = initial;
         m_Value = initial;
-        m_Velocity = default;
-    }
-
-    /// setup with an initial value and config
-    public void Init(T initial, DynamicEase.Config config) {
-        m_Config = config;
-        Init(initial);
+        m_Velocity = initialVelocity;
     }
 
     /// move towards the target with an estimated target velocity
@@ -127,6 +121,11 @@ public struct DynamicEase<T>: DynamicEase {
     public T Value {
         get => m_Value;
     }
+
+    /// the current value
+    public T Velocity {
+        get => m_Velocity;
+    }
 }
 
 public interface DynamicEase {
@@ -139,7 +138,7 @@ public interface DynamicEase {
 
     /// the config for the ease
     [Serializable]
-    public struct Config {
+    public sealed class Config {
         [Tooltip("the frequency")]
         public float F;
 

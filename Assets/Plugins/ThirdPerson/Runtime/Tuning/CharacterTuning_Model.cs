@@ -118,6 +118,23 @@ partial class CharacterTuning {
             public MapCurve SqrSpeedToStartSpeedScale;
         }
 
+        // -- jump trail --
+        [Tooltip("the tuning for the jump trail effect")]
+        public JumpTrailTuning JumpTrail;
+
+        /// the tuning for the jump trail effect
+        [Serializable]
+        public class JumpTrailTuning {
+            /// the lifetime of the particle
+            public float Lifetime;
+
+            /// the amount of time the position tracks the character
+            public float FollowDuration;
+
+            /// the trail position ease config
+            public DynamicEase.Config Position;
+        }
+
         // -- landing plume --
         [Tooltip("the tuning for the landing plume effect")]
         public LandingPlumeTuning LandingPlume;

@@ -1564,6 +1564,16 @@ MonoBehaviour:
         Dst:
           Min: 0.5
           Max: 0.9
+    JumpTrail:
+      Lifetime: 1
+      FollowDuration: 0.5
+      Position:
+        F: 0.42
+        Z: 4.04
+        R: 1.7
+        K1: 3.0618382
+        K2: 0.1435958
+        K3: 2.6025624
     LandingPlume:
       MinInertia: 0.01
       InertiaDecay: 36

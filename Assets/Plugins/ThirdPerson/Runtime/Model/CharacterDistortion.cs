@@ -21,7 +21,8 @@ sealed class CharacterDistortion: MonoBehaviour {
         c = GetComponentInParent<CharacterContainer>();
 
         // initialize ease
-        m_Ease.Init(1f, c.Tuning.Model.Distortion_Ease);
+        m_Ease = new DynamicEase<float>(c.Tuning.Model.Distortion_Ease);
+        m_Ease.Init(1f);
     }
 
     void FixedUpdate() {

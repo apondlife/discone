@@ -43,9 +43,9 @@ sealed class CharacterSpeedLines: MonoBehaviour {
     ParticleSystem.Particle[] m_Particles;
 
     // -- lifecycle --
-    void Start() {
+    void Awake() {
         // set deps
-        this.c = GetComponentInParent<CharacterContainer>();
+        c = GetComponentInParent<CharacterContainer>();
 
         // set props
         m_Particles = new ParticleSystem.Particle[m_System.main.maxParticles];

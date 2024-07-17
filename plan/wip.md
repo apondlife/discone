@@ -12,8 +12,9 @@ what is projected
 
 # conveyance
 - little bits (surface trail)
-- blob shadow
 - takeoff plume
+- blob shadow
+- better footsteps (proportional to speed &c)
 - takeoff impulse trail
 - crater on hitting surface
 - plume on hitting surface
