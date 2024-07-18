@@ -23,12 +23,26 @@ class Hair: MonoBehaviour {
     [Tooltip("the boingkit bones")]
     [SerializeField] BoingBones m_Bones;
 
+    [Tooltip("the left hair root")]
+    [SerializeField] Transform m_Left;
+
+    [Tooltip("the right hair root")]
+    [SerializeField] Transform m_Right;
+
     // -- props --
     readonly Collider[] m_Colliders = new Collider[k_MaxColliders];
 
     // -- lifecycle --
     void Awake() {
         m_Bones.UnityColliders = m_Colliders;
+
+        if (!m_Bones.BoneChains[0].Root) {
+            m_Bones.BoneChains[0].Root = m_Left;
+        }
+
+        if (!m_Bones.BoneChains[1].Root) {
+            m_Bones.BoneChains[1].Root = m_Right;
+        }
     }
 
     void FixedUpdate() {

@@ -111,23 +111,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c5c0266886deff94b9ecdafaaed96b98, type: 3}
   m_PrefabInstance: {fileID: 1641349781997766483}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6191867036886449326
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1875282226433325570}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41dfbae0c20a15b43a344f1e6e2a8344, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SearchRadius: 4
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 385
-  m_Bones: {fileID: 2070590554842649462}
 --- !u!114 &2070590554842649462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2880a4508a3ffde40b68c339503404a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateMode: 2
+  UpdateMode: 0
   TwoDDistanceCheck: 0
   TwoDPositionInfluence: 0
   TwoDRotationInfluence: 0
@@ -148,37 +131,37 @@ MonoBehaviour:
   EnableRotationEffect: 1
   EnableScaleEffect: 0
   GlobalReactionUpVector: 0
-  TranslationLockSpace: 0
+  TranslationLockSpace: 1
   LockTranslationX: 0
   LockTranslationY: 0
   LockTranslationZ: 0
-  RotationLockSpace: 0
+  RotationLockSpace: 1
   LockRotationX: 0
   LockRotationY: 0
   LockRotationZ: 0
   Params:
-    InstanceID: -910380
+    InstanceID: -1284462
     Bits:
-      m_bits: 2056
+      m_bits: 520
     TwoDPlane: 1
     PositionParameterMode: 1
     RotationParameterMode: 1
     ScaleParameterMode: 1
-    PositionExponentialHalfLife: 0.02
-    PositionOscillationHalfLife: 0.1
-    PositionOscillationFrequency: 5
+    PositionExponentialHalfLife: 0.07
+    PositionOscillationHalfLife: 2.72
+    PositionOscillationFrequency: 1.49
     PositionOscillationDampingRatio: 0.5
-    MoveReactionMultiplier: 1
-    LinearImpulseMultiplier: 1
+    MoveReactionMultiplier: 1.15
+    LinearImpulseMultiplier: 2.07
     RotationExponentialHalfLife: 0.02
-    RotationOscillationHalfLife: 0.1
-    RotationOscillationFrequency: 5
+    RotationOscillationHalfLife: 3.27
+    RotationOscillationFrequency: 5.38
     RotationOscillationDampingRatio: 0.5
-    RotationReactionMultiplier: 1
-    AngularImpulseMultiplier: 1
+    RotationReactionMultiplier: 2.84
+    AngularImpulseMultiplier: 3.41
     ScaleExponentialHalfLife: 0.02
-    ScaleOscillationHalfLife: 0.1
-    ScaleOscillationFrequency: 5
+    ScaleOscillationHalfLife: 0
+    ScaleOscillationFrequency: 0
     ScaleOscillationDampingRatio: 0.5
     RotationReactionUp: {x: 0, y: 0, z: 0}
   SharedParams: {fileID: 11400000, guid: e6fa6fd442236464cb393a15ed165317, type: 2}
@@ -188,32 +171,23 @@ MonoBehaviour:
     EffectorReaction: 1
     LooseRoot: 0
     ParamsOverride: {fileID: 0}
-    AnimationBlendCurveType: 4
+    AnimationBlendCurveType: 1
     AnimationBlendCustomCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.7
         inSlope: 0
-        outSlope: -1
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: -1
         outSlope: 0
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    LengthStiffnessCurveType: 0
+    LengthStiffnessCurveType: 1
     LengthStiffnessCustomCurve:
       serializedVersion: 2
       m_Curve:
@@ -238,7 +212,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    PoseStiffnessCurveType: 0
+    PoseStiffnessCurveType: 1
     PoseStiffnessCustomCurve:
       serializedVersion: 2
       m_Curve:
@@ -263,8 +237,8 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    MaxBendAngleCap: 180
-    BendAngleCapCurveType: 0
+    MaxBendAngleCap: 21.7
+    BendAngleCapCurveType: 5
     BendAngleCapCustomCurve:
       serializedVersion: 2
       m_Curve:
@@ -344,39 +318,30 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    MaxSquash: 1.42
-    MaxStretch: 2
+    MaxSquash: 1
+    MaxStretch: 1
   - Root: {fileID: 4479519436597380598}
     Exclusion: []
     EffectorReaction: 1
     LooseRoot: 0
     ParamsOverride: {fileID: 0}
-    AnimationBlendCurveType: 4
+    AnimationBlendCurveType: 7
     AnimationBlendCustomCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.8
         inSlope: 0
-        outSlope: -1
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: -1
         outSlope: 0
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    LengthStiffnessCurveType: 0
+    LengthStiffnessCurveType: 1
     LengthStiffnessCustomCurve:
       serializedVersion: 2
       m_Curve:
@@ -390,8 +355,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
-        value: 1
+        time: 0.9519043
+        value: 0.9564972
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -401,7 +366,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    PoseStiffnessCurveType: 0
+    PoseStiffnessCurveType: 1
     PoseStiffnessCustomCurve:
       serializedVersion: 2
       m_Curve:
@@ -426,8 +391,8 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    MaxBendAngleCap: 119.4
-    BendAngleCapCurveType: 0
+    MaxBendAngleCap: 49.4
+    BendAngleCapCurveType: 5
     BendAngleCapCustomCurve:
       serializedVersion: 2
       m_Curve:
@@ -490,7 +455,7 @@ MonoBehaviour:
     EnableBoingKitCollision: 0
     EnableUnityCollision: 1
     EnableInterChainCollision: 0
-    Gravity: {x: 0, y: -50, z: 0}
+    Gravity: {x: 0, y: 0, z: 0}
     SquashAndStretchCurveType: 0
     SquashAndStretchCustomCurve:
       serializedVersion: 2
@@ -516,12 +481,22 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    MaxSquash: 1.1
-    MaxStretch: 2
+    MaxSquash: 1
+    MaxStretch: 1
   TwistPropagation: 1
   MaxCollisionResolutionSpeed: 15.1
   BoingColliders: []
-  UnityColliders: []
+  UnityColliders:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   DebugDrawRawBones: 0
   DebugDrawTargetBones: 0
   DebugDrawBoingBones: 0
@@ -530,6 +505,25 @@ MonoBehaviour:
   DebugDrawChainBounds: 0
   DebugDrawBoneNames: 0
   DebugDrawLengthFromRoot: 0
+--- !u!114 &6191867036886449326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875282226433325570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41dfbae0c20a15b43a344f1e6e2a8344, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SearchRadius: 4
+  m_SearchMask:
+    serializedVersion: 2
+    m_Bits: 385
+  m_Bones: {fileID: 2070590554842649462}
+  m_Left: {fileID: 5813868629091256101}
+  m_Right: {fileID: 4479519436597380598}
 --- !u!1 &3638514806832350463 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -6577042031911533652, guid: c5c0266886deff94b9ecdafaaed96b98, type: 3}
