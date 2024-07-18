@@ -131,6 +131,9 @@ partial class CharacterTuning {
             /// the amount of time the position tracks the character
             public float FollowDuration;
 
+            /// the scale on the lifetime as a fn of the magnitude of the force opposing velocity
+            public MapCurve ForceDotSpeedToLifetimeScale;
+
             /// the trail position ease config
             public DynamicEase.Config Position;
         }

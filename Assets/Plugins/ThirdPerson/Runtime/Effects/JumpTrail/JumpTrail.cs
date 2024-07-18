@@ -1,3 +1,4 @@
+using System;
 using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -39,7 +40,9 @@ sealed class JumpTrail: MonoBehaviour {
 
     void FixedUpdate() {
         var delta = Time.deltaTime;
-        var state = c.State.Next;
+        var tuning = c.Tuning.Model.JumpTrail;
+
+        var next = c.State.Next;
 
         // update existing particles to the eased position
         var count = m_Particles.GetParticles(m_Buffer);
@@ -56,9 +59,9 @@ sealed class JumpTrail: MonoBehaviour {
             var isPlaying = i == count - 1 && m_IsPlaying;
             if (isPlaying) {
                 var shouldStop = (
-                    elapsed > c.Tuning.Model.JumpTrail.FollowDuration ||
-                    state.Velocity.y <= Mathx.TINY ||
-                    state.MainSurface.IsSome
+                    elapsed > tuning.FollowDuration ||
+                    next.Velocity.y <= Mathx.TINY ||
+                    next.MainSurface.IsSome
                 );
 
                 if (shouldStop) {
@@ -71,9 +74,35 @@ sealed class JumpTrail: MonoBehaviour {
             if (!isPlaying) {
                 particle.velocity = Vector3.zero;
             }
-            // otherwise, ease towards the current position
+            // otherwise, update this particle given current position
             else {
+                // scale down lifetime if force opposes velocity in the horizontal plane
+                var nextForce = next.PlanarForce;
+                var nextForceMag = nextForce.magnitude;
+
+                // if there's no force, we want to use
+                var nextVelocity = nextForceMag == 0f ? next.Velocity : next.PlanarVelocity;
+                var nextVelocityMag = nextVelocity.magnitude;
+
+                var forceDotSpeed = 1f;
+                if (nextForceMag == 0f && Vector3.Dot(next.Velocity.normalized, Vector3.up) == -1f) {
+                    forceDotSpeed = -1f;
+                    nextVelocityMag = next.Velocity.magnitude;
+                }
+
+                forceDotSpeed = Vector3.Dot(nextForce / nextForceMag, nextVelocity / nextVelocityMag);
+                Log.Temp.I($"fds {forceDotSpeed} nfm {nextForce} nvm {nextVelocityMag}");
+                if (forceDotSpeed <= 0f) {
+                    forceDotSpeed = (1f + forceDotSpeed) * (nextForceMag + nextVelocityMag);
+
+                    var totalLifetime = tuning.Lifetime * tuning.ForceDotSpeedToLifetimeScale.Evaluate(forceDotSpeed);
+                    particle.remainingLifetime = totalLifetime - elapsed;
+                    Log.Temp.I($"lifetime :: {forceDotSpeed} -> {totalLifetime} ({particle.startLifetime}) ... {particle.remainingLifetime}");
+                }
+
+                // ease towards current position
                 m_Position.Update(delta, transform.position);
+
                 particle.position = m_Position.Value;
                 particle.velocity = m_Position.Velocity;
             }
@@ -85,13 +114,15 @@ sealed class JumpTrail: MonoBehaviour {
         m_Particles.SetParticles(m_Buffer, count);
 
         // emit new particles on jump
-        if (state.Events.Contains(CharacterEvent.Jump)) {
-            Emit(state);
+        if (next.Events.Contains(CharacterEvent.Jump)) {
+            Emit(next);
         }
     }
 
     // -- commands --
     void Emit(CharacterState.Frame next) {
+        var tuning = c.Tuning.Model.JumpTrail;
+
         var dv = next.Velocity - c.State.Curr.Velocity;
         m_Particles.transform.up = c.State.Next.PerceivedSurface.Normal;
 
@@ -99,7 +130,7 @@ sealed class JumpTrail: MonoBehaviour {
         transform.forward = -next.Direction;
 
         var main = m_Particles.main;
-        main.startLifetime = c.Tuning.Model.JumpTrail.Lifetime;
+        main.startLifetime = tuning.Lifetime;
         main.startSpeed = dv.magnitude;
 
         m_IsPlaying = true;
@@ -112,6 +143,8 @@ sealed class JumpTrail: MonoBehaviour {
             return;
         }
 
+        // initial velocity is impulse dir, unless we're jumping straight up, in which
+        // case we don't want the trail to overshoot us (looks bad)
         m_Position.Init(m_Buffer[count - 1].position, dv);
     }
 }
