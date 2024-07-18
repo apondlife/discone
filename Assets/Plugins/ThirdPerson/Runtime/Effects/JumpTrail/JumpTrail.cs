@@ -5,6 +5,11 @@ using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
+// TODO: try to figure out a way to decay the trail when the particle stops
+// TODO: may want to curve initial particle speed based on planar / surface speed
+// TODO: the model is often lower than the bottom of the capsule, which causes the trail
+// to clip through the model especially on short jumps
+
 /// the character's speed lines effect
 sealed class JumpTrail: MonoBehaviour {
     // -- refs --
@@ -24,7 +29,7 @@ sealed class JumpTrail: MonoBehaviour {
     DynamicEase<Vector3> m_Position;
 
     /// if the particle is playing
-    bool m_IsPlaying = false;
+    bool m_IsPlaying;
 
     // -- lifecycle --
     void Awake() {
@@ -76,33 +81,7 @@ sealed class JumpTrail: MonoBehaviour {
             }
             // otherwise, update this particle given current position
             else {
-                // scale down lifetime if force opposes velocity in the horizontal plane
-                var nextForce = next.PlanarForce;
-                var nextForceMag = nextForce.magnitude;
-
-                // if there's no force, we want to use
-                var nextVelocity = nextForceMag == 0f ? next.Velocity : next.PlanarVelocity;
-                var nextVelocityMag = nextVelocity.magnitude;
-
-                var forceDotSpeed = 1f;
-                if (nextForceMag == 0f && Vector3.Dot(next.Velocity.normalized, Vector3.up) == -1f) {
-                    forceDotSpeed = -1f;
-                    nextVelocityMag = next.Velocity.magnitude;
-                }
-
-                forceDotSpeed = Vector3.Dot(nextForce / nextForceMag, nextVelocity / nextVelocityMag);
-                Log.Temp.I($"fds {forceDotSpeed} nfm {nextForce} nvm {nextVelocityMag}");
-                if (forceDotSpeed <= 0f) {
-                    forceDotSpeed = (1f + forceDotSpeed) * (nextForceMag + nextVelocityMag);
-
-                    var totalLifetime = tuning.Lifetime * tuning.ForceDotSpeedToLifetimeScale.Evaluate(forceDotSpeed);
-                    particle.remainingLifetime = totalLifetime - elapsed;
-                    Log.Temp.I($"lifetime :: {forceDotSpeed} -> {totalLifetime} ({particle.startLifetime}) ... {particle.remainingLifetime}");
-                }
-
-                // ease towards current position
                 m_Position.Update(delta, transform.position);
-
                 particle.position = m_Position.Value;
                 particle.velocity = m_Position.Velocity;
             }
@@ -123,28 +102,28 @@ sealed class JumpTrail: MonoBehaviour {
     void Emit(CharacterState.Frame next) {
         var tuning = c.Tuning.Model.JumpTrail;
 
-        var dv = next.Velocity - c.State.Curr.Velocity;
-        m_Particles.transform.up = c.State.Next.PerceivedSurface.Normal;
-
         // rotate emitter to oppose movement
         transform.forward = -next.Direction;
+
+        // TODO: get real jump velocity
+        // update initial speed
+        var dv = next.Velocity - c.State.Curr.Velocity;
 
         var main = m_Particles.main;
         main.startLifetime = tuning.Lifetime;
         main.startSpeed = dv.magnitude;
 
+        // emit one particle
         m_IsPlaying = true;
         m_Particles.Emit(1);
 
-        // initialize the position ease from the initial particle pos
+        // initialize the position ease w/ the initial particle pos and start speed
         var count = m_Particles.GetParticles(m_Buffer);
         if (count <= 0) {
             Log.Model.E($"no initial particle for jump trail");
             return;
         }
 
-        // initial velocity is impulse dir, unless we're jumping straight up, in which
-        // case we don't want the trail to overshoot us (looks bad)
         m_Position.Init(m_Buffer[count - 1].position, dv);
     }
 }

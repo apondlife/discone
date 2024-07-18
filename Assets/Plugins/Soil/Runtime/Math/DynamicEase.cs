@@ -38,11 +38,12 @@ public sealed class DynamicEase<T>: DynamicEase {
     T m_Velocity;
 
     // -- lifetime --
-    /// create a new dynamic ease w/ a config
-    public DynamicEase(DynamicEase.Config config) {
-        // set deps (placeholder until Init)
-        a = null;
+    DynamicEase() {
+        a = DynamicEase.Arithmetic<T>.Instance;
+    }
 
+    /// create a new dynamic ease w/ a config
+    public DynamicEase(DynamicEase.Config config): this() {
         // set config
         m_Config = config;
         m_ConfigSource = DynamicEase.ConfigSource.Local;
@@ -55,13 +56,15 @@ public sealed class DynamicEase<T>: DynamicEase {
     }
 
     // -- commands --
-    /// setup with an initial value
+    /// setup with an initial value and an optional initial velocity
     public void Init(T initial, T initialVelocity = default) {
-        // set deps
-        a = DynamicEase.Arithmetic<T>.Instance;
+        Init(initial, initial, initialVelocity);
+    }
 
+    /// setup with an initial value, target, and velocity
+    public void Init(T initial, T target, T initialVelocity) {
         // set props
-        m_Target = initial;
+        m_Target = target;
         m_Value = initial;
         m_Velocity = initialVelocity;
     }
@@ -122,7 +125,7 @@ public sealed class DynamicEase<T>: DynamicEase {
         get => m_Value;
     }
 
-    /// the current value
+    /// the current velocity
     public T Velocity {
         get => m_Velocity;
     }

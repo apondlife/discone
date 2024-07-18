@@ -10,14 +10,18 @@ what is projected
 - move search dir according to...velocity? input?
 - search for camera and icecreams
 
-# conveyance
-- little bits (surface trail)
-- takeoff plume
+# conveyance (world)
+- hair (charge effect, boingkit)
+- burn on momentum transfer
 - blob shadow
-- better footsteps (proportional to speed &c)
-- takeoff impulse trail
-- crater on hitting surface
-- plume on hitting surface
+- surface trail / little bits @ 45%
+- takeoff plume @ 60% (texture, second plume)
+- better footsteps (proportional to speed &c) @ 75%
+- air footsteps / better yoshiing?
+- hair (no clipping)
+- landing plume @ 75%
+- takeoff impulse trail @ 80%
+- crater on hitting surface 
 
 # surface
 - unrealized motion (minmove) be converted into inertia?
