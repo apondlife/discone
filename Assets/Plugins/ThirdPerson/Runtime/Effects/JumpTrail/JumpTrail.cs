@@ -22,6 +22,9 @@ sealed class JumpTrail: MonoBehaviour {
     /// the eased position
     DynamicEase<Vector3> m_Position;
 
+    /// if the particle is playing
+    bool m_IsPlaying = false;
+
     // -- lifecycle --
     void Awake() {
         // set deps
@@ -36,43 +39,54 @@ sealed class JumpTrail: MonoBehaviour {
 
     void FixedUpdate() {
         var delta = Time.deltaTime;
-
-        // emit particles on jump
-        var next = c.State.Next;
-        if (next.Events.Contains(CharacterEvent.Jump)) {
-            Emit(next);
-        }
+        var state = c.State.Next;
 
         // update existing particles to the eased position
-        var count = m_Particles.GetParticles(m_Buffer, 1);
-        Log.Temp.I($"got {count}");
-        if (count > 0) {
-            var i = count - 1;
+        var count = m_Particles.GetParticles(m_Buffer);
+        for (var i = 0; i < count; i++) {
             var particle = m_Buffer[i];
 
             // stop if the elapsed time exceeds follow duration or if falling
             var elapsed = particle.startLifetime - particle.remainingLifetime;
-            var shouldStop = (
-                elapsed > c.Tuning.Model.JumpTrail.FollowDuration ||
-                next.Velocity.y <= 0f
-            );
+            if (elapsed >= particle.startLifetime) {
+                continue;
+            }
 
-            Log.Temp.I($"should stop {elapsed} & {next.Velocity.y}");
+            // is this particle is still playing?
+            var isPlaying = i == count - 1 && m_IsPlaying;
+            if (isPlaying) {
+                var shouldStop = (
+                    elapsed > c.Tuning.Model.JumpTrail.FollowDuration ||
+                    state.Velocity.y <= Mathx.TINY ||
+                    state.MainSurface.IsSome
+                );
 
-            // if time to stop, stop the particle
-            if (shouldStop) {
+                if (shouldStop) {
+                    isPlaying = false;
+                    m_IsPlaying = false;
+                }
+            }
+
+            // if not, zero the velocity (TODO: lerp?)
+            if (!isPlaying) {
                 particle.velocity = Vector3.zero;
             }
             // otherwise, ease towards the current position
             else {
                 m_Position.Update(delta, transform.position);
-                Log.Temp.I($"update pos to {m_Position.Value}");
                 particle.position = m_Position.Value;
                 particle.velocity = m_Position.Velocity;
             }
 
+            // update the particle
             m_Buffer[i] = particle;
-            m_Particles.SetParticles(m_Buffer);
+        }
+
+        m_Particles.SetParticles(m_Buffer, count);
+
+        // emit new particles on jump
+        if (state.Events.Contains(CharacterEvent.Jump)) {
+            Emit(state);
         }
     }
 
@@ -81,9 +95,6 @@ sealed class JumpTrail: MonoBehaviour {
         var dv = next.Velocity - c.State.Curr.Velocity;
         m_Particles.transform.up = c.State.Next.PerceivedSurface.Normal;
 
-        // TODO: get actual jump speed
-        var sqrSpeed = Vector3.SqrMagnitude(dv);
-
         // rotate emitter to oppose movement
         transform.forward = -next.Direction;
 
@@ -91,11 +102,11 @@ sealed class JumpTrail: MonoBehaviour {
         main.startLifetime = c.Tuning.Model.JumpTrail.Lifetime;
         main.startSpeed = dv.magnitude;
 
-        // main.duration = sqrSpeed / 1000;
+        m_IsPlaying = true;
         m_Particles.Emit(1);
 
         // initialize the position ease from the initial particle pos
-        var count = m_Particles.GetParticles(m_Buffer, 1);
+        var count = m_Particles.GetParticles(m_Buffer);
         if (count <= 0) {
             Log.Model.E($"no initial particle for jump trail");
             return;
