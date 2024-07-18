@@ -46,58 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82b8d2fbb83b445ea48ab0b8f3a2ad35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SqrSpeedToEmission:
-    Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Src:
-      Min: 180
-      Max: 300
-    Dst:
-      Min: 4
-      Max: 10
-  m_SqrSpeedToSize:
-    Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Src:
-      Min: 180
-      Max: 300
-    Dst:
-      Min: 0.5
-      Max: 1
-  m_SqrSpeedToLifetime:
-    Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Src:
-      Min: 180
-      Max: 300
-    Dst:
-      Min: 0.3
-      Max: 1
-  m_SqrSpeedToStartSpeedScale:
-    Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Src:
-      Min: 180
-      Max: 300
-    Dst:
-      Min: 0.5
-      Max: 0.9
   m_Particles: {fileID: 2617727799574329463}
 --- !u!198 &2617727799574329463
 ParticleSystem:
@@ -1496,9 +1444,9 @@ ParticleSystem:
         m_NumAlphaKeys: 2
   UVModule:
     serializedVersion: 2
-    enabled: 0
+    enabled: 1
     mode: 0
-    timeMode: 0
+    timeMode: 1
     fps: 30
     frameOverTime:
       serializedVersion: 2
@@ -1555,8 +1503,8 @@ ParticleSystem:
         m_RotationOrder: 4
     startFrame:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 0
+      minMaxState: 3
+      scalar: 0.9999
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1606,9 +1554,9 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    speedRange: {x: 0, y: 1}
-    tilesX: 1
-    tilesY: 1
+    speedRange: {x: 0, y: 0}
+    tilesX: 4
+    tilesY: 4
     animationType: 0
     rowIndex: 0
     cycles: 1
@@ -4894,7 +4842,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 64b258a9072b3ce478f10faccb1bd7db, type: 2}
+  - {fileID: 2100000, guid: 3921d1cdc44befa428a82166e105105e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
