@@ -11,13 +11,13 @@ what is projected
 - search for camera and icecreams
 
 # conveyance (world)
-- hair (charge effect) 
+- surface particles color sampling
 - burn on momentum transfer
 - blob shadow
-- surface trail / little bits @ 45%
 - takeoff plume @ 60% (texture, second plume)
 - better footsteps (proportional to speed &c) @ 75%
 - air footsteps / better yoshiing?
+- surface trail / little bits @ 70%
 - hair (no clipping)
 - landing plume @ 75%
 - takeoff impulse trail @ 80%

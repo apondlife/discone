@@ -85,7 +85,7 @@ sealed class DebugWarp: MonoBehaviour {
         }
 
         Warp(m_WarpPoints.Head);
-        m_Repeat.Start();
+        m_Repeat.Play();
     }
 
     /// move to the warp point (or move the camera if in noclip)

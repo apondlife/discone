@@ -68,7 +68,7 @@ public class CheckpointLoadBubble: MonoBehaviour {
         switch (m_State) {
             case State.Disabled:
                 if (m_Character.Checkpoint.IsLoading) {
-                    m_EaseIn.Start();
+                    m_EaseIn.Play();
                     m_Renderer.enabled = true;
                     m_State = State.EaseIn;
                 }
@@ -82,7 +82,7 @@ public class CheckpointLoadBubble: MonoBehaviour {
                 break;
             case State.Hold:
                 if (!m_Character.Checkpoint.IsLoading) {
-                    m_EaseOut.Start();
+                    m_EaseOut.Play();
                     m_State = State.EaseOut;
                 }
                 break;

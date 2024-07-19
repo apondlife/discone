@@ -2,9 +2,12 @@ mired in debt
 ---
 
 # bugs/problems
+- syncing player position doesn't work (has to skip intro camera stuff)
 - materials memory leak
 - flowers spawn from center
+- flowers retrigger the sample if you stand on them
 - aspect ratio stretches the game
+- head facing direction is bad
 - head gets distorted over time by the hair
 - clipping happens on bad normal surfaces
 - jumping in a tight corner (wall & ground) sometimes has no effect (happens in birthplace)

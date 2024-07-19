@@ -63,7 +63,7 @@ public sealed class Shortcuts: EditorWindow {
 
     void Start() {
         if (EditorApplication.isPlaying && !EditorApplication.isPaused) {
-            m_Repaint.Start();
+            m_Repaint.Play();
         }
     }
 

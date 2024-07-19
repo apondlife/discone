@@ -150,7 +150,7 @@ sealed class DreamSequence: MonoBehaviour {
 
         // start the timeout, if any
         if (!curr.Timeout.IsZero) {
-            curr.Timeout.Start();
+            curr.Timeout.Play();
         }
     }
 

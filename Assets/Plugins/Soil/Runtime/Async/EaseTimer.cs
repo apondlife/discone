@@ -41,14 +41,14 @@ public record EaseTimer {
 
     // -- commands --
     /// start the timer (optionally, at a particular raw percent)
-    public void Start(float pct = 0.0f, bool isReversed = false) {
+    public void Play(float pct = 0.0f, bool isReversed = false) {
         m_RawPct = pct;
         m_Elapsed = pct * m_Config.Duration;
         m_IsReversed = isReversed;
     }
 
     /// cancel the timer
-    public void Cancel() {
+    public void Stop() {
         m_Elapsed = k_Inactive;
     }
 

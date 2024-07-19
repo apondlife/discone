@@ -102,7 +102,7 @@ public class PlayerEyelid: UIBehaviour {
         // if our eyes are at all closed
         if (pct > 0f) {
             // keep debouncing the hide
-            m_HideDelay.Start();
+            m_HideDelay.Play();
 
             // and show the butterflies, if necessary
             if (!m_Butterflies.isPlaying) {

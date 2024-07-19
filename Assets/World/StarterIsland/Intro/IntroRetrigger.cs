@@ -37,7 +37,7 @@ public class IntroRetrigger: MonoBehaviour {
         }
 
         m_EnableCamera = true;
-        m_RetriggerDelay.Start();
+        m_RetriggerDelay.Play();
     }
 
     void OnTriggerExit(Collider other) {
@@ -52,7 +52,7 @@ public class IntroRetrigger: MonoBehaviour {
         }
 
         m_EnableCamera = false;
-        m_RetriggerDelay.Start();
+        m_RetriggerDelay.Play();
     }
 }
 

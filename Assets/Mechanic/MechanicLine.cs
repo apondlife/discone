@@ -108,7 +108,7 @@ sealed class MechanicLine: UIBehaviour {
     public void Show(string text) {
         // TODO: figure out what to do an active move timer
         if (m_Move.IsActive) {
-            m_Move.Cancel();
+            m_Move.Stop();
             Log.Mechanic.E($"tried to show a new line on one currently moving");
         }
 
@@ -139,7 +139,7 @@ sealed class MechanicLine: UIBehaviour {
         if (animated) {
             Fade(0f);
         } else {
-            m_Fade.Cancel();
+            m_Fade.Stop();
             m_Group.alpha = 0f;
         }
     }
@@ -149,7 +149,7 @@ sealed class MechanicLine: UIBehaviour {
         m_Fade_Alpha.Src = m_Group.alpha;
         m_Fade_Alpha.Dst = m_Fade.IsActive ? m_Fade_Alpha.Dst * alpha : alpha;
 
-        m_Fade.Start();
+        m_Fade.Play();
     }
 
     /// move to an offset from center
@@ -162,7 +162,7 @@ sealed class MechanicLine: UIBehaviour {
         m_Move_Rotation.Src = angle <= 180f ? angle : angle - 360f;
         m_Move_Rotation.Dst = m_Move_Angle.Evaluate(Random.value);
 
-        m_Move.Start();
+        m_Move.Play();
     }
 
     /// scatter the text in
@@ -178,7 +178,7 @@ sealed class MechanicLine: UIBehaviour {
         }
 
         // start animations
-        m_Scatter.Start();
+        m_Scatter.Play();
     }
 
     // -- queries --

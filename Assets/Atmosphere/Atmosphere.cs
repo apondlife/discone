@@ -111,7 +111,7 @@ public partial class Atmosphere: MonoBehaviour {
             m_SrcRegion = m_CurrRegion.Copy();
             m_DstRegion = region;
 
-            m_Timer.Start();
+            m_Timer.Play();
         }
     }
 }

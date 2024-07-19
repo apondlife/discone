@@ -140,6 +140,11 @@ public sealed partial class CharacterState {
         get => Curr.SurfaceVelocity.magnitude < m_Tuning.Surface_MinSpeed;
     }
 
+    /// the power of the currently charging jump
+    public float NextJumpPower {
+        get => Next.IsInJumpSquat ? m_Tuning.JumpById(Next.NextJump).Power(Next.JumpState.PhaseElapsed) : 0f;
+    }
+
     /// the buffer size
     public uint BufferSize {
         get => k_BufferSize;

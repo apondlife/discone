@@ -42,20 +42,18 @@ sealed class CharacterDistortion: MonoBehaviour {
         var destIntensity = 1f;
 
         // if in jump squat, add jump squash
-        if (c.State.Next.IsInJumpSquat) {
-            var jumpId = c.State.Next.NextJump;
-            var jumpSquatElapsed = c.State.Next.JumpState.PhaseElapsed;
-
+        var next = c.State.Next;
+        if (next.IsInJumpSquat) {
             var jumpSquashIntensity = 0f;
 
             // use the squash curve if available
-            var jumpTuning = tuning.JumpById(jumpId);
+            var jumpTuning = tuning.JumpById(next.NextJump);
             if (jumpTuning != null) {
-                jumpSquashIntensity = jumpTuning.Squash.Evaluate(jumpSquatElapsed);
+                jumpSquashIntensity = jumpTuning.Squash.Evaluate(next.JumpState.PhaseElapsed);
             }
             // otherwise, just use raw power
             else {
-                jumpSquashIntensity = c.Tuning.JumpById(jumpId).Power(jumpSquatElapsed);
+                jumpSquashIntensity = c.State.NextJumpPower;
             }
 
             destIntensity = jumpSquashIntensity;

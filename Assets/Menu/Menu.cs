@@ -207,7 +207,7 @@ public sealed class Menu: UIBehaviour {
         CurrPage?.OnBeforeTransition(enter: true);
 
         // init the transition
-        m_Transition.Start();
+        m_Transition.Play();
     }
 
     /// change to the dialog page w/ the dialog

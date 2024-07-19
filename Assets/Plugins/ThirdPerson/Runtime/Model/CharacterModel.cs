@@ -179,8 +179,7 @@ public sealed class CharacterModel: MonoBehaviour {
         );
 
         if (frame.IsInJumpSquat) {
-            var jumpTuning = c.Tuning.NextJump(c.State);
-            var jumpPower = jumpTuning.Power(frame.JumpState.PhaseElapsed);
+            var jumpPower = c.State.NextJumpPower;
 
             anim.SetFloat(
                 s_JumpCharge,
@@ -219,7 +218,7 @@ public sealed class CharacterModel: MonoBehaviour {
         if (c.State.Next.Events.Contains(CharacterEvent.Land)) {
             // start the timer
             m_IsLanding.Duration = c.Tuning.Model.Animation_LandingDuration.Evaluate(c.State.Curr.Inertia);
-            m_IsLanding.Start();
+            m_IsLanding.Play();
 
             // see if we should pose
             m_IsPosing = (
