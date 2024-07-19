@@ -30,9 +30,6 @@ public class PlayerEyelid: UIBehaviour {
     [Tooltip("the debounce to before stopping the particle system")]
     [SerializeField] EaseTimer m_HideDelay;
 
-    [Tooltip("if the eyelids start closed")]
-    [SerializeField] bool m_IsClosedOnStart;
-
     // -- refs --
     [Header("refs")]
     [Tooltip("if the player is closing their eyes")]
@@ -49,14 +46,6 @@ public class PlayerEyelid: UIBehaviour {
     float m_Elapsed;
 
     // -- lifecycle --
-    protected override void Start() {
-        base.Start();
-
-        if (m_IsClosedOnStart) {
-            UpdateElapsed(m_Duration);
-        }
-    }
-
     void Update() {
         var delta = Time.deltaTime;
 
@@ -95,6 +84,8 @@ public class PlayerEyelid: UIBehaviour {
             m_Duration,
             m_Elapsed
         );
+
+        pct = m_Curve.Evaluate(pct);
 
         m_ClosePct.Value = pct;
         m_IsClosed.Value = pct == 1f;
