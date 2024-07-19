@@ -1,3 +1,4 @@
+using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -27,36 +28,39 @@ public class CharacterDust: MonoBehaviour {
     [SerializeField] ParticleSystem m_PivotParticles;
 
     // -- props --
-    /// the character's state
-    CharacterState m_State;
+    /// the containing character
+    CharacterContainer c;
 
     // -- lifecycle --
     void Start() {
-        var character = GetComponentInParent<CharacterContainer>();
-        m_State = character.State;
+        c = GetComponentInParent<CharacterContainer>();
     }
 
     void FixedUpdate() {
-        if (m_State.Next.IsOnGround) {
+        var next = c.State.Next;
+        if (next.IsOnGround) {
             // check for deceleration, used for both skid and pivot dust
-            var groundAcceleration = Vector3.ProjectOnPlane(m_State.Next.Acceleration, m_State.Next.MainSurface.Normal);
-            var isDecelerating = Vector3.Dot(m_State.Next.Velocity.normalized, groundAcceleration) < m_SkidDeceleration;
+            var groundAcceleration = Vector3.ProjectOnPlane(next.Acceleration, next.MainSurface.Normal);
+            var isDecelerating = Vector3.Dot(next.Velocity.normalized, groundAcceleration) < m_SkidDeceleration;
+
+            // get the current surface
+            var nextSurface = next.MainSurface;
+            var surfaceScale = Mathx.Evaluate(c.Tuning.Surface_AngleScale.Curve, nextSurface.Angle);
 
             // check for character deceleration
-            var c = m_State.Next.MainSurface;
-            if (c.IsSome && (m_State.Next.IsCrouching || isDecelerating)) {
+            if (nextSurface.IsSome && (next.IsCrouching || isDecelerating)) {
                 m_FloorSkid.Play();
                 var t = m_FloorSkid.transform;
-                t.position = c.Point;
-                t.forward = -c.Normal;
+                t.position = nextSurface.Point;
+                t.forward = -nextSurface.Normal;
             } else {
                 m_FloorSkid.Stop();
             }
 
             // pivot effects
             if (isDecelerating) {
-                m_PivotParticles.transform.forward = -m_State.Next.Acceleration.normalized;
-                var dustCount = Mathf.FloorToInt(m_AccelerationToDust * m_State.Next.Acceleration.magnitude);
+                m_PivotParticles.transform.forward = -next.Acceleration.normalized;
+                var dustCount = Mathf.FloorToInt(1f - surfaceScale * m_AccelerationToDust * next.Acceleration.magnitude);
                 m_PivotParticles.Emit(dustCount);
             }
         } else {
