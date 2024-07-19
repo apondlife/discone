@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// the character's wall skid effect
-sealed class CharacterWallSkid: MonoBehaviour {
+/// the character's surface skid effect
+public class SurfaceSkid: MonoBehaviour {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the number of particles per frame")]
