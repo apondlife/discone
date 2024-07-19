@@ -26,35 +26,47 @@ sealed class CharacterWallSkid: MonoBehaviour {
     }
 
     void FixedUpdate() {
+        var next = c.State.Next;
+
         // only play particles when wall & not idle
-        if (!c.State.Next.IsOnWall || c.State.Next.IsIdle) {
+        if (!next.IsOnWall || next.IsIdle) {
             return;
         }
 
+        // get surface
+        var surface = next.MainSurface;
+
         // spawn at collision
-        var s = c.State.Next.MainSurface;
-        var t = m_Particles.transform;
-        t.position = s.Point;
+        var trs = m_Particles.transform;
+        trs.position = surface.Point;
 
-        // use inverted z-axis bc particle systems want that
-        var n = s.Normal;
-        n.z = -n.z;
-
-        // point towards the current surface
-        var rot = Quaternion.LookRotation(n);
-
-        // and rotate along the normal axis
+        // point away from the current surface and rotate a bit around its normal
+        var rot = Quaternion.LookRotation(-surface.Normal, next.Forward);
         rot *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward);
 
-        // update the start rotation
+        // shape/particle needs euler in degrees/radians respectively
+        var euler = rot.eulerAngles;
+
+        // rotate the emission shapes
+        var shape = m_Particles.shape;
+        shape.rotation = euler;
+
+        var subShape = m_Particles.subEmitters.GetSubEmitterSystem(0).shape;
+        subShape.rotation = euler;
+
+        // rotate the particle
         var main = m_Particles.main;
-        var a = rot.eulerAngles * Mathf.Deg2Rad;
-        main.startRotationX = a.x;
-        main.startRotationY = a.y;
-        main.startRotationZ = a.z;
+
+        // face +z, instead of the -z (the particle system default)
+        main.flipRotation = 1f;
+
+        euler *= Mathf.Deg2Rad;
+        main.startRotationX = euler.x;
+        main.startRotationY = euler.y;
+        main.startRotationZ = euler.z;
 
         // emit particles
-        var count = (int)m_Count.Evaluate(c.State.Curr.SurfaceVelocity.sqrMagnitude);
+        var count = (int)m_Count.Evaluate(next.SurfaceVelocity.sqrMagnitude);
         m_Particles.Emit(count);
     }
 }
