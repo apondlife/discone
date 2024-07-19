@@ -11,7 +11,7 @@ what is projected
 - search for camera and icecreams
 
 # conveyance (world)
-- hair (charge effect, boingkit)
+- hair (charge effect) 
 - burn on momentum transfer
 - blob shadow
 - surface trail / little bits @ 45%
