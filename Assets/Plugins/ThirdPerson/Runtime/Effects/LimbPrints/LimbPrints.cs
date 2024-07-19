@@ -36,6 +36,13 @@ public class LimbPrints: MonoBehaviour {
             // TODO: placement.Forward
             var rot = Quaternion.LookRotation(-placement.Normal, state.Forward);
 
+            // shape/particle needs euler in degrees/radians respectively
+            var euler = rot.eulerAngles;
+
+            // rotate the emission shapes
+            var shape = m_Particles.shape;
+            shape.rotation = euler;
+
             // update the start rotation
             var main = m_Particles.main;
 
@@ -43,10 +50,10 @@ public class LimbPrints: MonoBehaviour {
             main.flipRotation = 1f;
 
             // apply the rotation
-            var a = rot.eulerAngles * Mathf.Deg2Rad;
-            main.startRotationX = a.x;
-            main.startRotationY = a.y;
-            main.startRotationZ = a.z;
+            euler *= Mathf.Deg2Rad;
+            main.startRotationX = euler.x;
+            main.startRotationY = euler.y;
+            main.startRotationZ = euler.z;
 
             m_Particles.Emit(1);
         }
