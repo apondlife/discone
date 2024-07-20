@@ -15,8 +15,11 @@ static class ShaderProps {
     /// the intensity of the character distortion
     public static readonly ShaderProp Distortion_Intensity = new(nameof(Distortion_Intensity));
 
-    /// the plane the character distorts around
-    public static readonly ShaderProp Distortion_Plane = new(nameof(Distortion_Plane));
+    /// the plane the character distorts above
+    public static readonly ShaderProp Distortion_BotPlane = new(nameof(Distortion_BotPlane));
+
+    /// the plane the character distorts below
+    public static readonly ShaderProp Distortion_TopPlane = new(nameof(Distortion_TopPlane));
 
     /// a scale on intensity along the plane's axis
     public static readonly ShaderProp Distortion_AxialScale = new(nameof(Distortion_AxialScale));

@@ -6,8 +6,8 @@ namespace ThirdPerson {
 sealed class CharacterDistortion: MonoBehaviour {
     // -- cfg --
     [Header("cfg")]
-    [Tooltip("the position for distorting from above the character")]
-    [SerializeField] Vector3 m_Top;
+    [Tooltip("the top of the distortion field (e.g. the character's neck)")]
+    [SerializeField] Transform m_Top;
 
     // -- props --
     /// .
@@ -60,7 +60,6 @@ sealed class CharacterDistortion: MonoBehaviour {
         }
         // otherwise, stretch/squash based on vertical the acceleration/velocity relationship
         else {
-
             // if accelerating against velocity, sign should squash (negative sign), otherwise, stretch
             // TODO: maybe spring this instead of the sigmoid?
             var ia = tuning.Distortion_Intensity_Acceleration.Evaluate(Mathf.Sign(v * a) * 0.5f + 0.5f) * Mathf.Abs(a);
@@ -84,7 +83,10 @@ sealed class CharacterDistortion: MonoBehaviour {
     // -- commands --
     void Distort() {
         var trs = transform;
-        var plane = new Plane(trs.up, trs.position).AsVector4();
+        var up = trs.up;
+
+        var botPlane = new Plane(up, trs.position).AsVector4();
+        var topPlane = new Plane(up, m_Top.position).AsVector4();
 
         foreach (var material in c.Model.Materials.All) {
             material.SetVector(
@@ -93,8 +95,13 @@ sealed class CharacterDistortion: MonoBehaviour {
             );
 
             material.SetVector(
-                ShaderProps.Distortion_Plane,
-                plane
+                ShaderProps.Distortion_BotPlane,
+                botPlane
+            );
+
+            material.SetVector(
+                ShaderProps.Distortion_TopPlane,
+                topPlane
             );
 
             material.SetFloat(
