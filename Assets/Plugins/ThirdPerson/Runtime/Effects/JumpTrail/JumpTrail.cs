@@ -13,17 +13,24 @@ namespace ThirdPerson {
 /// the character's speed lines effect
 sealed class JumpTrail: MonoBehaviour {
     // -- refs --
-    [FormerlySerializedAs("m_System")]
     [Header("refs")]
-    [Tooltip("the particle that shows horizontal speed")]
-    [SerializeField] ParticleSystem m_Particles;
+    [FormerlySerializedAs("m_Particles")]
+    [FormerlySerializedAs("m_System")]
+    [Tooltip("the trail particle system")]
+    [SerializeField] ParticleSystem m_TrailParticles;
+
+    [Tooltip("the burst particle system")]
+    [SerializeField] ParticleSystem m_BurstParticles;
 
     // -- props --
     /// the character container
     CharacterContainer c;
 
-    /// a buffer for particles
-    ParticleSystem.Particle[] m_Buffer;
+    /// a buffer for trail particles
+    ParticleSystem.Particle[] m_TrailBuffer;
+
+    /// a buffer for burst particles
+    ParticleSystem.Particle[] m_BurstBuffer;
 
     /// the eased position
     DynamicEase<Vector3> m_Position;
@@ -37,7 +44,8 @@ sealed class JumpTrail: MonoBehaviour {
         c = GetComponentInParent<CharacterContainer>();
 
         // allocate a buffer for the trail particles
-        m_Buffer = new ParticleSystem.Particle[m_Particles.main.maxParticles];
+        m_TrailBuffer = new ParticleSystem.Particle[m_TrailParticles.main.maxParticles];
+        m_BurstBuffer = new ParticleSystem.Particle[m_BurstParticles.main.maxParticles];
 
         // capture the offset relative to the model
         m_Position = new DynamicEase<Vector3>(c.Tuning.Model.JumpTrail.Position);
@@ -50,18 +58,21 @@ sealed class JumpTrail: MonoBehaviour {
         var next = c.State.Next;
 
         // update existing particles to the eased position
-        var count = m_Particles.GetParticles(m_Buffer);
-        for (var i = 0; i < count; i++) {
-            var particle = m_Buffer[i];
+        var trailCount = m_TrailParticles.GetParticles(m_TrailBuffer);
+        var burstCount = m_BurstParticles.GetParticles(m_BurstBuffer);
+
+        for (var i = 0; i < trailCount; i++) {
+            var trailParticle = m_TrailBuffer[i];
+            var burstParticle = m_BurstBuffer[i];
 
             // stop if the elapsed time exceeds follow duration or if falling
-            var elapsed = particle.startLifetime - particle.remainingLifetime;
-            if (elapsed >= particle.startLifetime) {
+            var elapsed = trailParticle.startLifetime - trailParticle.remainingLifetime;
+            if (elapsed >= trailParticle.startLifetime) {
                 continue;
             }
 
             // is this particle is still playing?
-            var isPlaying = i == count - 1 && m_IsPlaying;
+            var isPlaying = i == trailCount - 1 && m_IsPlaying;
             if (isPlaying) {
                 var shouldStop = (
                     elapsed > tuning.FollowDuration ||
@@ -77,20 +88,33 @@ sealed class JumpTrail: MonoBehaviour {
 
             // if not, zero the velocity (TODO: lerp?)
             if (!isPlaying) {
-                particle.velocity = Vector3.zero;
+                trailParticle.velocity = Vector3.zero;
+                // burstParticle.velocity = Vector3.zero;
             }
             // otherwise, update this particle given current position
             else {
                 m_Position.Update(delta, transform.position);
-                particle.position = m_Position.Value;
-                particle.velocity = m_Position.Velocity;
+
+                var pos = m_Position.Value;
+                var vel = m_Position.Velocity;
+
+                trailParticle.position = pos;
+                trailParticle.velocity = vel;
+
+                // Log.Temp.I($"bp {burstParticle.startLifetime}");
+                // if (burstParticle.remainingLifetime > 0f) {
+                //     burstParticle.position = pos;
+                //     burstParticle.velocity = vel;
+                // }
             }
 
             // update the particle
-            m_Buffer[i] = particle;
+            m_TrailBuffer[i] = trailParticle;
+            m_BurstBuffer[i] = burstParticle;
         }
 
-        m_Particles.SetParticles(m_Buffer, count);
+        m_TrailParticles.SetParticles(m_TrailBuffer, trailCount);
+        m_BurstParticles.SetParticles(m_BurstBuffer, burstCount);
 
         // emit new particles on jump
         if (next.Events.Contains(CharacterEvent.Jump)) {
@@ -108,23 +132,27 @@ sealed class JumpTrail: MonoBehaviour {
         // TODO: get real jump velocity
         // update initial speed
         var dv = next.Velocity - c.State.Curr.Velocity;
+        var jumpSpeed = dv.magnitude;
 
-        var main = m_Particles.main;
-        main.startLifetime = tuning.Lifetime;
-        main.startSpeed = dv.magnitude;
+        var trailMain = m_TrailParticles.main;
+        trailMain.startLifetime = tuning.Lifetime;
+        trailMain.startSpeed = jumpSpeed;
+
+        // var burstMain = m_BurstParticles.main;
+        // burstMain.startSpeed = jumpSpeed;
 
         // emit one particle
         m_IsPlaying = true;
-        m_Particles.Emit(1);
+        m_TrailParticles.Emit(1);
 
         // initialize the position ease w/ the initial particle pos and start speed
-        var count = m_Particles.GetParticles(m_Buffer);
+        var count = m_TrailParticles.GetParticles(m_TrailBuffer);
         if (count <= 0) {
             Log.Model.E($"no initial particle for jump trail");
             return;
         }
 
-        m_Position.Init(m_Buffer[count - 1].position, dv);
+        m_Position.Init(m_TrailBuffer[count - 1].position, dv);
     }
 }
 
