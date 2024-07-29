@@ -47,8 +47,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     FMODParams _fmodParams;
 
     // these should probably all just be somewhere shared (charactermusicbase?)
-    const string k_ParamSpeed = "Speed";  // float, 0 to ~50 (~15 for running on flat surface)
+    const string k_ParamSpeedSquared = "Speed";  // float, 0 to ~2500 (~225 for running on flat surface)
     // const string k_ParamSlope = "Slope"; // float, -1 to 1
+
+    const string k_ParamDeltaSpeedSquared = "DeltaSpeed"; // float, 0 to ? (~360 for a big jump)
+
     const string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
     const string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
     const string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
@@ -110,7 +113,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             // TODO: what kind of guitar sound can work for crouching..?
         }
         
-        if (IsJumping && IsOnGround) { // Don't play sound for midair jumps
+        if (IsJumping && State.Curr.IsOnGround) { // Don't play sound for midair jumps
             PlayJump();
         }
 
@@ -128,6 +131,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         UpdatePositionHash();
 
         UpdateFmodParams();
+        // Debug.Log($"Jump: dv = {DeltaSpeedSquared}");
         _fmodParams[k_ParamPitch] = 0f;
         _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, m_NJumpSamples);
         // TODO this should probably use the jump impulse, not the overall character velocity
@@ -173,12 +177,13 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     void UpdateFmodParams() {
         // _fmodParams[k_ParamSlope]           = Slope;
-        _fmodParams[k_ParamSpeed]           = Speed;
-        _fmodParams[k_ParamIsOnGround]      = IsOnGround      ? 1f : 0f;
-        _fmodParams[k_ParamIsOnWall]        = IsOnWall        ? 1f : 0f;
-        _fmodParams[k_ParamIsHittingWall]   = IsHittingWall   ? 1f : 0f;
-        _fmodParams[k_ParamIsHittingGround] = IsHittingGround ? 1f : 0f;
-        _fmodParams[k_ParamIsLeavingGround] = IsLeavingGround ? 1f : 0f;
+        _fmodParams[k_ParamSpeedSquared]      = SpeedSquared;
+        _fmodParams[k_ParamDeltaSpeedSquared] = DeltaSpeedSquared;
+        _fmodParams[k_ParamIsOnGround]        = IsOnGround      ? 1f : 0f;
+        _fmodParams[k_ParamIsOnWall]          = IsOnWall        ? 1f : 0f;
+        _fmodParams[k_ParamIsHittingWall]     = IsHittingWall   ? 1f : 0f;
+        _fmodParams[k_ParamIsHittingGround]   = IsHittingGround ? 1f : 0f;
+        _fmodParams[k_ParamIsLeavingGround]   = IsLeavingGround ? 1f : 0f;
     }
 
     int MakeIndex(int subIndex, int sampleCount) {
@@ -239,27 +244,31 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     [ShowNativeProperty]
     float VelocitySlope {
-        get => State.Curr.Velocity.normalized.y; // -1 to 1
+        get => State.Next.Velocity.normalized.y; // -1 to 1
     }
 
     [ShowNativeProperty]
     float SurfaceSlope {
-        get => State.Curr.MainSurface.Angle/180f; // 0 to 1?
+        get => State.Next.MainSurface.Angle/180f; // 0 to 1?
     }
 
     [ShowNativeProperty]
-    float Speed {
-        get => State.Curr.Velocity.magnitude;
+    float SpeedSquared {
+        get => State.Next.Velocity.sqrMagnitude;
+    }
+
+    float DeltaSpeedSquared {
+        get => (State.Next.Velocity - State.Curr.Velocity).sqrMagnitude;
     }
 
     [ShowNativeProperty]
     bool IsOnGround {
-        get => State.Curr.IsOnGround;
+        get => State.Next.IsOnGround;
     }
 
     [ShowNativeProperty]
     bool IsOnWall {
-        get => State.Curr.IsOnWall;
+        get => State.Next.IsOnWall;
     }
 
     [ShowNativeProperty]
