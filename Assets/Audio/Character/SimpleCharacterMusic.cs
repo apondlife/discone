@@ -34,8 +34,10 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // A 'Shuffle' mode like FMOD has might be useful too
     }
     [SerializeField] SequenceMode sequenceMode;
-    [Tooltip("Whether or not to stop aerial sounds (jump, walk off ledge) when landing")]
-    [SerializeField] bool chokeOnLanding;
+    [Tooltip("Whether or not to stop jump sound when landing")]
+    [SerializeField] bool chokeJump;
+    [Tooltip("Whether or not to stop walk-off-ledge sound when landing")]
+    [SerializeField] bool chokeWalkOffLedge;
 
     StudioEventEmitter m_ContinuousEmitter;
     StudioEventEmitter m_JumpEmitter;
@@ -55,23 +57,14 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     const string k_ParamIsLeavingGround = "IsLeavingGround";   // bool (0 or 1)
     const string k_ParamIndex = "Index";   // int (0 to 100)
 
-
     int stepIndex = 0;
     int jumpIndex = 0;
     int previousPositionHash = 0;
-
-    bool _stepThisFrame = false;
-    bool _jumpThisFrame = false;
-
-    FMODEvent prevJumpEvent;
 
     // -- lifecycle --
     #if !UNITY_SERVER
     protected override void Start() {
         base.Start();
-
-        //  set events
-        m_Container.Events.Subscribe(CharacterEvent.Jump, OnJump);
 
         // add emitters
         m_StepEmitter = gameObject.AddComponent<StudioEventEmitter>();
@@ -92,24 +85,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         _fmodParams = new();
     }
 
-    public override void OnStep(int foot, bool isRunning) {
-        if (State == null) {
-            return;
-        }
-
-        if (Speed < 0.01f) {
-            // we get ghostly step events from the animator even when idle
-            // since the walk animation is blended in at some epsilon amount
-            return;
-        }
-
-        _stepThisFrame = true; // do it this way to avoid duplicating sounds for walk and run animations
-    }
-
-    public void OnJump() {
-        _jumpThisFrame = true;
-    }
-
     // Must run in fixed update for state checks to make sense!
     void FixedUpdate() {
         if (State == null) {
@@ -120,25 +95,27 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             // [idk why this doesn't seem to work when called in Start()]
             m_ContinuousEmitter.Play();
         }
-        if (_stepThisFrame) {
-            // doing it this way might cause a single frame of latency, not sure, doesn't really matter i guess
-            if (IsOnGround || IsOnWall) {
-                PlayStep();
-            }
-            _stepThisFrame = false;
+
+        if (IsLanding) {
+            PlayLand();
         }
 
-        if ((IsHittingWall || IsHittingGround) && !_jumpThisFrame) {
-            PlayStep(); // TODO should distinguish from step sound [maybe a muted or percussive pluck (or chord?)]
+        if (IsStepping && !IsLanding) {
+            PlayStep();
         }
 
-        if (IsLeavingGround && !_jumpThisFrame) {
-            PlayWalkOffLedge();
+        if (IsCrouched) {
+            PlayStep(); // This happened by accident before but sounds kind of cool like tremolo picking
+            // Leaving it in for a little while
+            // TODO: what kind of guitar sound can work for crouching..?
         }
-
-        if (_jumpThisFrame) {
+        
+        if (IsJumping && IsOnGround) { // Don't play sound for midair jumps
             PlayJump();
-            _jumpThisFrame = false;
+        }
+
+        if (IsLeavingGround && !IsJumping) {
+            PlayWalkOffLedge();
         }
 
         // Update params for continuous emitter
@@ -153,9 +130,23 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         UpdateFmodParams();
         _fmodParams[k_ParamPitch] = 0f;
         _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, m_NJumpSamples);
+        // TODO this should probably use the jump impulse, not the overall character velocity
 
         FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, _fmodParams));
         jumpIndex++;
+    }
+
+    void PlayLand() {
+        // Fadeout/release times are set in AHDSR modulator in FMOD
+        if (chokeJump) {
+            // TODO: some kind of choke sound here would be good probably
+            m_JumpEmitter.Stop();
+        }
+        if (chokeWalkOffLedge) {
+            m_WalkOffLedgeEmitter.Stop();
+        }
+
+        PlayStep(); // TODO some different sound here [maybe a muted or percussive pluck, or slap strings?]
     }
 
     void PlayStep() {
@@ -164,13 +155,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         UpdateFmodParams();
         _fmodParams[k_ParamPitch] = SlopeToPitch(VelocitySlope);
         _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, m_NStepSamples);
-        
-        if (chokeOnLanding) {
-            // Fadeout/release time is set in AHDSR modulator in FMOD
-            // TODO: some kind of choke sound here would be good probably
-            m_WalkOffLedgeEmitter.Stop();
-            m_JumpEmitter.Stop();
-        }
 
         FMODPlayer.PlayEvent(new FMODEvent(m_StepEmitter, _fmodParams));
         stepIndex++;
@@ -231,6 +215,28 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
 
     // -- queries --
+    
+    [ShowNativeProperty]
+    bool IsStepping {
+        get => State.Next.Events.Contains(CharacterEvent.Step);
+    }
+
+    [ShowNativeProperty]
+    bool IsLanding {
+        get => State.Next.Events.Contains(CharacterEvent.Land);
+    }
+    
+    [ShowNativeProperty]
+    bool IsJumping {
+        get => State.Next.Events.Contains(CharacterEvent.Jump);
+    }
+        
+    [ShowNativeProperty]
+    bool IsCrouched {
+        get => State.Next.IsCrouching;
+    }
+
+
     [ShowNativeProperty]
     float VelocitySlope {
         get => State.Curr.Velocity.normalized.y; // -1 to 1

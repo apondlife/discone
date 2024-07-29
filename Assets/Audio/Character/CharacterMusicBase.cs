@@ -19,8 +19,6 @@ public abstract class CharacterMusicBase: MonoBehaviour {
     }
     #endif
 
-    public virtual void OnStep(int foot, bool isRunning) {}
-
     // -- c/audibility
     /// toggles the music
     public void SetIsAudible(bool isAudible) {
