@@ -16,12 +16,15 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     [Tooltip("the fmod event for jumps")]
     [SerializeField] EventReference m_Jump;
+    [SerializeField] int m_NJumpSamples; // Really annoying having to set these manually - would be great if we could get these from FMOD somehow
 
     [Tooltip("the fmod event for steps")]
     [SerializeField] EventReference m_Step;
+    [SerializeField] int m_NStepSamples;
 
     [Tooltip("the fmod event for walking off ledge")]
     [SerializeField] EventReference m_WalkOffLedge;
+    [SerializeField] int m_NWalkOffLedgeSamples;
 
     [Header("params")]
     [SerializeField] float cellSize = 1f;
@@ -31,6 +34,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         // A 'Shuffle' mode like FMOD has might be useful too
     }
     [SerializeField] SequenceMode sequenceMode;
+    [Tooltip("Whether or not to stop aerial sounds (jump, walk off ledge) when landing")]
+    [SerializeField] bool chokeOnLanding;
 
     StudioEventEmitter m_ContinuousEmitter;
     StudioEventEmitter m_JumpEmitter;
@@ -50,11 +55,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     const string k_ParamIsLeavingGround = "IsLeavingGround";   // bool (0 or 1)
     const string k_ParamIndex = "Index";   // int (0 to 100)
 
-    // (This sucks, would be nice if we could get these from fmod somehow, or else figure out a different architecture)
-    const int k_NStepSamples = 45;
-    const int k_NJumpSamples = 52;
-    const int k_NWalkOffLedgeSamples = 6;
-
 
     int stepIndex = 0;
     int jumpIndex = 0;
@@ -62,6 +62,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     bool _stepThisFrame = false;
     bool _jumpThisFrame = false;
+
+    FMODEvent prevJumpEvent;
 
     // -- lifecycle --
     #if !UNITY_SERVER
@@ -81,6 +83,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         m_JumpEmitter.EventReference = m_Jump;
         m_WalkOffLedgeEmitter.EventReference = m_WalkOffLedge;
         m_ContinuousEmitter.EventReference = m_Continuous;
+
+        // Preload samples so that there's less delay when playing them
+        foreach(var emitter in new [] {m_StepEmitter, m_JumpEmitter, m_WalkOffLedgeEmitter, m_ContinuousEmitter} ) {
+            emitter.Preload = true;
+        }
 
         _fmodParams = new();
     }
@@ -145,7 +152,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
         UpdateFmodParams();
         _fmodParams[k_ParamPitch] = 0f;
-        _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, k_NJumpSamples);
+        _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, m_NJumpSamples);
+
         FMODPlayer.PlayEvent(new FMODEvent(m_JumpEmitter, _fmodParams));
         jumpIndex++;
     }
@@ -155,7 +163,15 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
         UpdateFmodParams();
         _fmodParams[k_ParamPitch] = SlopeToPitch(VelocitySlope);
-        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, k_NStepSamples);
+        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, m_NStepSamples);
+        
+        if (chokeOnLanding) {
+            // Fadeout/release time is set in AHDSR modulator in FMOD
+            // TODO: some kind of choke sound here would be good probably
+            m_WalkOffLedgeEmitter.Stop();
+            m_JumpEmitter.Stop();
+        }
+
         FMODPlayer.PlayEvent(new FMODEvent(m_StepEmitter, _fmodParams));
         stepIndex++;
     }
@@ -165,7 +181,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
         UpdateFmodParams();
         _fmodParams[k_ParamPitch] = SlopeToPitch(SurfaceSlope);
-        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, k_NWalkOffLedgeSamples);
+        _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, m_NWalkOffLedgeSamples);
 
         FMODPlayer.PlayEvent(new FMODEvent(m_WalkOffLedgeEmitter, _fmodParams));
         stepIndex++;

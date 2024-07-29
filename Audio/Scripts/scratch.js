@@ -14,6 +14,7 @@ function paramSearch(paramName) {
 }
 
 // explode currently selected multi-instrument into multiple single instruments along the 'Index' parameter sheet
+// Event must be currently selected in Events tab as well
 function scratch() {
     // var path = "event:/Character/icecream/Step";
     // var ev = studio.project.lookup(path);
