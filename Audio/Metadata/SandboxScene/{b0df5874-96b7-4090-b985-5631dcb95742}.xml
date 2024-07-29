@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="SandboxScene" id="{b0df5874-96b7-4090-b985-5631dcb95742}">
+		<property name="name">
+			<value>New Scene</value>
+		</property>
+		<relationship name="folder">
+			<destination>{dd06a847-9142-4164-aa04-19b560c13233}</destination>
+		</relationship>
+		<relationship name="markerTracks">
+			<destination>{1c42b1a5-49a0-42a9-b946-44f805c48851}</destination>
+		</relationship>
+		<relationship name="timeline">
+			<destination>{472825e8-864f-490e-9a90-f98fcdc66e29}</destination>
+		</relationship>
+		<relationship name="listeners">
+			<destination>{0af53572-3d35-4685-a8eb-8a347e86578b}</destination>
+		</relationship>
+		<relationship name="emitters">
+			<destination>{af4489ef-7116-48e8-8c0e-87131f3370c5}</destination>
+			<destination>{1ce4a799-a08d-4224-93a6-66c06f517a98}</destination>
+			<destination>{8c38e1e8-aa3d-4af3-a4f0-c12c028b891b}</destination>
+			<destination>{052a3a32-ce9d-416f-9dd8-7bf58001b6b4}</destination>
+			<destination>{15252f2f-00a1-40b7-988e-664efb7b1bac}</destination>
+		</relationship>
+	</object>
+	<object class="MarkerTrack" id="{1c42b1a5-49a0-42a9-b946-44f805c48851}" />
+	<object class="Timeline" id="{472825e8-864f-490e-9a90-f98fcdc66e29}" />
+	<object class="SandboxListener" id="{0af53572-3d35-4685-a8eb-8a347e86578b}">
+		<property name="positionX">
+			<value>1.67499971</value>
+		</property>
+		<property name="positionZ">
+			<value>-0.174999923</value>
+		</property>
+		<property name="rotationY">
+			<value>62.6860313</value>
+		</property>
+	</object>
+	<object class="SandboxEmitter" id="{af4489ef-7116-48e8-8c0e-87131f3370c5}">
+		<property name="positionX">
+			<value>0.650000036</value>
+		</property>
+		<property name="positionZ">
+			<value>1.05000007</value>
+		</property>
+		<property name="loopPlayback">
+			<value>true</value>
+		</property>
+		<relationship name="sandboxParameters">
+			<destination>{ae8dc6e2-f6df-4244-ae97-2f8a40d1923b}</destination>
+		</relationship>
+		<relationship name="event">
+			<destination>{de641ffe-bd98-428c-873a-822aa7d7d1a7}</destination>
+		</relationship>
+	</object>
+	<object class="SandboxEmitter" id="{1ce4a799-a08d-4224-93a6-66c06f517a98}">
+		<property name="positionX">
+			<value>0.700000048</value>
+		</property>
+		<property name="positionZ">
+			<value>1.8499999</value>
+		</property>
+		<property name="rotationY">
+			<value>34.9936523</value>
+		</property>
+		<property name="loopPlayback">
+			<value>true</value>
+		</property>
+		<relationship name="event">
+			<destination>{de641ffe-bd98-428c-873a-822aa7d7d1a7}</destination>
+		</relationship>
+	</object>
+	<object class="SandboxEmitter" id="{8c38e1e8-aa3d-4af3-a4f0-c12c028b891b}">
+		<property name="positionX">
+			<value>-1.89999998</value>
+		</property>
+		<property name="positionZ">
+			<value>7.7750001</value>
+		</property>
+		<property name="loopPlayback">
+			<value>true</value>
+		</property>
+		<relationship name="event">
+			<destination>{16ad97b3-0ba8-40a7-9018-a194b4cf427e}</destination>
+		</relationship>
+	</object>
+	<object class="SandboxEmitter" id="{052a3a32-ce9d-416f-9dd8-7bf58001b6b4}">
+		<property name="positionX">
+			<value>9.67500019</value>
+		</property>
+		<property name="positionZ">
+			<value>2.72500014</value>
+		</property>
+		<property name="loopPlayback">
+			<value>true</value>
+		</property>
+		<relationship name="event">
+			<destination>{7b66699f-777d-454a-b718-93f048433ced}</destination>
+		</relationship>
+	</object>
+	<object class="SandboxEmitter" id="{15252f2f-00a1-40b7-988e-664efb7b1bac}">
+		<property name="positionX">
+			<value>-2.10000014</value>
+		</property>
+		<property name="positionZ">
+			<value>0.675000012</value>
+		</property>
+		<property name="loopPlayback">
+			<value>true</value>
+		</property>
+		<relationship name="event">
+			<destination>{c695e4a2-d874-41bd-b363-a98d7f19d7c1}</destination>
+		</relationship>
+	</object>
+	<object class="SandboxParameter" id="{ae8dc6e2-f6df-4244-ae97-2f8a40d1923b}">
+		<property name="parameterValue">
+			<value>3</value>
+		</property>
+		<relationship name="parameter">
+			<destination>{b696ec80-463e-4249-9fe6-62e2f4439803}</destination>
+		</relationship>
+	</object>
+</objects>

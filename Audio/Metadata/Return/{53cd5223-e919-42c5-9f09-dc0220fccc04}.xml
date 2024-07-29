@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="MixerReturn" id="{53cd5223-e919-42c5-9f09-dc0220fccc04}">
+		<property name="name">
+			<value>Reverb</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{4e810db7-8d8a-4d03-b293-7a233c52eb6c}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{e1c83e6c-d2bb-4617-8b44-34f187604d1f}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{bcc3ac55-ff29-4dfe-a4ec-f009ab70d198}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{4e810db7-8d8a-4d03-b293-7a233c52eb6c}">
+		<relationship name="effects">
+			<destination>{3291ac02-ed08-44ab-9b97-12949f4acba9}</destination>
+			<destination>{ade1378b-1a44-4754-b635-29d08163f2f1}</destination>
+			<destination>{5ebf4772-952a-412d-871b-97a5af3447db}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{e1c83e6c-d2bb-4617-8b44-34f187604d1f}" />
+	<object class="MixerBusFader" id="{3291ac02-ed08-44ab-9b97-12949f4acba9}" />
+	<object class="SFXReverbEffect" id="{ade1378b-1a44-4754-b635-29d08163f2f1}">
+		<property name="decayTime">
+			<value>20000</value>
+		</property>
+		<property name="wetLevel">
+			<value>-19.5</value>
+		</property>
+	</object>
+	<object class="CompressorEffect" id="{5ebf4772-952a-412d-871b-97a5af3447db}">
+		<property name="threshold">
+			<value>-11</value>
+		</property>
+		<property name="ratio">
+			<value>1.75</value>
+		</property>
+	</object>
+</objects>
