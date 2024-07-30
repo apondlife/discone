@@ -1,6 +1,7 @@
 ﻿using ThirdPerson;
 using UnityEngine;
 using FMODUnity;
+using System.Linq;
 using NaughtyAttributes;
 #if UNITY_EDITOR
 using NaughtyAttributes.Editor;
@@ -46,6 +47,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     FMODParams _fmodParams;
 
+    const float k_RecentlyLandedLookbackSecs = 0.05f;
+
     // these should probably all just be somewhere shared (charactermusicbase?)
     const string k_ParamSpeedSquared = "Speed";  // float, 0 to ~2500 (~225 for running on flat surface)
     // const string k_ParamSlope = "Slope"; // float, -1 to 1
@@ -63,6 +66,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     int stepIndex = 0;
     int jumpIndex = 0;
     int previousPositionHash = 0;
+
+    float mostRecentLandedTime = float.MinValue;
 
     // -- lifecycle --
     #if !UNITY_SERVER
@@ -100,15 +105,17 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         }
 
         if (IsLanding) {
+            Debug.Log("Land");
+            mostRecentLandedTime = Time.time;
             PlayLand();
         }
 
-        if (IsStepping && !IsLanding) {
+        if (IsStepping && !RecentlyLanded) { // Try to avoid cluster of footstep sounds after landing
             PlayStep();
         }
 
         if (IsCrouched) {
-            PlayStep(); // This happened by accident before but sounds kind of cool like tremolo picking
+            // PlayStep(); // This happened by accident before but sounds kind of cool like tremolo picking
             // Leaving it in for a little while
             // TODO: what kind of guitar sound can work for crouching..?
         }
@@ -150,7 +157,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             m_WalkOffLedgeEmitter.Stop();
         }
 
-        PlayStep(); // TODO some different sound here [maybe a muted or percussive pluck, or slap strings?]
+        // PlayStep(); // TODO some different sound here [maybe a muted or percussive pluck, or slap strings?]
     }
 
     void PlayStep() {
@@ -222,35 +229,25 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // -- queries --
     
     [ShowNativeProperty]
-    bool IsStepping {
-        get => State.Next.Events.Contains(CharacterEvent.Step);
-    }
+    bool IsStepping => State.Next.Events.Contains(CharacterEvent.Step);
 
     [ShowNativeProperty]
-    bool IsLanding {
-        get => State.Next.Events.Contains(CharacterEvent.Land);
-    }
-    
+    bool IsLanding => State.Next.Events.Contains(CharacterEvent.Land);
+
     [ShowNativeProperty]
-    bool IsJumping {
-        get => State.Next.Events.Contains(CharacterEvent.Jump);
-    }
+    bool RecentlyLanded => Time.time - mostRecentLandedTime < k_RecentlyLandedLookbackSecs;
+
+    [ShowNativeProperty]
+    bool IsJumping => State.Next.Events.Contains(CharacterEvent.Jump);
         
     [ShowNativeProperty]
-    bool IsCrouched {
-        get => State.Next.IsCrouching;
-    }
-
+    bool IsCrouched => State.Next.IsCrouching;
 
     [ShowNativeProperty]
-    float VelocitySlope {
-        get => State.Next.Velocity.normalized.y; // -1 to 1
-    }
+    float VelocitySlope => State.Next.Velocity.normalized.y; // -1 to 1
 
     [ShowNativeProperty]
-    float SurfaceSlope {
-        get => State.Next.MainSurface.Angle/180f; // 0 to 1?
-    }
+    float SurfaceSlope => State.Next.MainSurface.Angle/180f; // 0 to 1?
 
     [ShowNativeProperty]
     float SpeedSquared {
