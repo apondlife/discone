@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Incline_Main
   m_Shader: {fileID: 4800000, guid: 17eaea66943ecc94b932acb7ffade775, type: 3}
-  m_ShaderKeywords: _BLEND_GRADIENT
+  m_ShaderKeywords: _BLEND_GRADIENT _SHADOWS_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -148,6 +148,7 @@ Material:
     - _RampTexAlpha: 1
     - _ReflectedLightIntensity: 0.2
     - _Saturation: 0
+    - _Shadows: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

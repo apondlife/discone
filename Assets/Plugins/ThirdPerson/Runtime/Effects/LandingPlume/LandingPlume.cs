@@ -30,6 +30,13 @@ public class LandingPlume: MonoBehaviour {
 
         // set props
         m_StartSpeed = m_Particles.main.startSpeed;
+        var shape = m_Particles.shape;
+        shape.texture = c.Effects.ColorTexture;
+        shape.textureBilinearFiltering = false;
+        shape.textureAlphaAffectsParticles = false;
+        shape.textureColorAffectsParticles = true;
+        shape.textureClipChannel = ParticleSystemShapeTextureChannel.Alpha;
+        shape.textureClipThreshold = 0f;
     }
 
     public void FixedUpdate() {
@@ -53,6 +60,11 @@ public class LandingPlume: MonoBehaviour {
 
         // emit particles
         if (surface.IsSome) {
+            var shape = m_Particles.shape;
+            // for some reason you have to re set the textures here when you call apply
+            // https://discussions.unity.com/t/procedural-particlesystem-shape-texture-not-working/890524/8
+            shape.texture = c.Effects.ColorTexture;
+
             var trs = m_Particles.transform;
             trs.position = surface.Point;
             trs.rotation = Quaternion.LookRotation(next.SurfaceDirection, surface.Normal);

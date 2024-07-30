@@ -43,3 +43,6 @@ mired in debt
 - need to manually enable input actions
 - add code generation for equatable (jumpid, charactercollision)
 - share state interpolation
+
+# perf
+- limit surface color sampling cameras for only active players arounModeld

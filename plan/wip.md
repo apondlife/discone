@@ -17,10 +17,11 @@ what is projected
 - takeoff plume @ 60% (texture, second plume)
 - better footsteps (proportional to speed &c) @ 75%
 - air footsteps / better yoshiing?
+- speed lines (disable & make better)
 - surface trail / little bits @ 70%
 - hair (no clipping)
 - landing plume @ 75%
-- takeoff impulse trail @ 80%
+- takeoff impulse trail @ 80% (bulb shape?)
 - crater on hitting surface 
 
 # surface

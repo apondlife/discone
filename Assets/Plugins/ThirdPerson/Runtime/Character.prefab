@@ -916,6 +916,7 @@ MonoBehaviour:
     m_IsLogging: 0
   m_Rig: {fileID: 4848459006616203934}
   m_Model: {fileID: 7250430580801210356}
+  m_Effects: {fileID: 2009803953}
   m_Controller:
     m_CollisionMask:
       serializedVersion: 2
@@ -1278,6 +1279,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7367711423575962010, guid: d9e453f6707a7a249ab2d84a06302965, type: 3}
   m_PrefabInstance: {fileID: 7367711425526897962}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2009803953 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7367711423575962011, guid: d9e453f6707a7a249ab2d84a06302965, type: 3}
+  m_PrefabInstance: {fileID: 7367711425526897962}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b8caf1437dfd1545a9456404a5582bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &9066652418919474415
 PrefabInstance:
   m_ObjectHideFlags: 0

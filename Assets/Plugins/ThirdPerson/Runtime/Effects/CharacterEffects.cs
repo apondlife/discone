@@ -4,9 +4,16 @@ using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
-// TODO: rename me to CharacterEffects & break me up into multiple prefabs & scripts
-/// the character's dust effect
-public class CharacterDust: MonoBehaviour {
+// TODO: move into discone
+// TODO: break the remaining effects out into their own children / scripts
+
+/// the character effects
+public class CharacterEffects: MonoBehaviour {
+    // -- cfg --
+    [Header("cfg")]
+    [Tooltip("a texture to sample effect colors from")]
+    [SerializeField] Texture2D m_ColorTexture;
+
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the minimum negative acceleration to start skidding")]
@@ -69,6 +76,14 @@ public class CharacterDust: MonoBehaviour {
             }
         }
     }
+
+    // -- props/hot --
+    /// a texture to sample effect colors from
+    public Texture2D ColorTexture {
+        get => m_ColorTexture;
+        set => m_ColorTexture = value;
+    }
+
 }
 
 }

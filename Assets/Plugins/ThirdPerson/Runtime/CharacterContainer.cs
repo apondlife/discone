@@ -33,6 +33,9 @@ public interface CharacterContainer {
     /// the model
     CharacterModel Model { get; }
 
+    /// the effects
+    CharacterEffects Effects { get; }
+
     /// the character's animator
     Animator Animator { get; }
 }

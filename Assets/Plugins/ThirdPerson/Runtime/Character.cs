@@ -52,6 +52,9 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
     [Tooltip("the character model")]
     [SerializeField] CharacterModel m_Model;
 
+    [Tooltip("the character effects")]
+    [SerializeField] CharacterEffects m_Effects;
+
     [Tooltip("the character controller")]
     [SerializeField] CharacterController m_Controller;
 
@@ -278,6 +281,10 @@ public partial class Character<InputFrame>: MonoBehaviour, CharacterContainer
 
     public CharacterModel Model {
         get => m_Model;
+    }
+
+    public CharacterEffects Effects {
+        get => m_Effects;
     }
 
     public CharacterController Controller {

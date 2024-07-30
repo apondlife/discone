@@ -70,6 +70,11 @@ Shader "Custom/Incline" {
         [Toggle] _Bump_Map ("Enable", Float) = 0
 
         [Space]
+        [Header(Shadows)]
+        [Space(5)]
+        [Toggle] _Shadows ("Enable", Float) = 1
+
+        [Space]
         [Header(Back Face Vines)]
         [Space(5)]
         _BackfaceVineTex ("Texture", 2D) = "gray" {}
@@ -182,8 +187,13 @@ Shader "Custom/Incline" {
     ENDCG
 
     SubShader {
+        Tags {
+            "Surface" = "True"
+        }
+
         Pass {
             // -- options --
+            Name "Surface"
             Tags {
                 "RenderType" = "Opaque"
                 "LightMode" = "ForwardBase"
@@ -210,6 +220,9 @@ Shader "Custom/Incline" {
             // bump map
             #pragma multi_compile __ _BUMP_MAP_ON
 
+            // shadows
+            #pragma multi_compile __ _SHADOWS_ON
+
             // -- includes --
             #include "UnityStandardUtils.cginc"
             #include "AutoLight.cginc"
@@ -235,9 +248,11 @@ Shader "Custom/Incline" {
                 fixed3 diffuse : COLOR0;
                 fixed3 ambient : COLOR1;
                 float4 vertexColor : COLOR2;
+                #if _SHADOWS_ON
                 SHADOW_COORDS(4)
                 UNITY_FOG_COORDS(5)
                 HEIGHT_FOG_COORDS(6)
+                #endif
             };
 
             // -- props --
@@ -395,9 +410,11 @@ Shader "Custom/Incline" {
                 o.ambient = ShadeSH9(half4(o.worldNormal, 1));
 
                 // add shadow and fog
+                #if _SHADOWS_ON
                 TRANSFER_SHADOW_WPOS(o, worldPos);
                 UNITY_TRANSFER_FOG(o, o.pos);
                 TRANSFER_HEIGHT_FOG(o, wpos);
+                #endif
 
                 return o;
             }
@@ -561,12 +578,18 @@ Shader "Custom/Incline" {
                 fixed3 ambient = _LightColor0.rgb * lerp(0, _AmbientLightIntensity, 1 - lightDotNormalMag);
 
                 // lighting (shading + shadows)
+                #if _SHADOWS_ON
                 fixed3 lighting = diffuse * SHADOW_ATTENUATION(IN) + ambient;
+                #else
+                fixed3 lighting = diffuse + ambient;
+                #endif
                 c.rgb *= lighting;
 
                 // add fog
+                #if _SHADOWS_ON
                 UNITY_APPLY_FOG(IN.fogCoord, c);
                 APPLY_HEIGHT_FOG(IN.heightFogCoord, c);
+                #endif
 
                 // output color
                 return c;
