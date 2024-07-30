@@ -24,8 +24,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     [SerializeField] int m_NStepSamples;
 
     [Tooltip("the fmod event for walking off ledge")]
-    [SerializeField] EventReference m_WalkOffLedge;
+    [SerializeField] EventReference m_WalkOffLedge; // TODO: Why does this one have such huge delay?? So weird
     [SerializeField] int m_NWalkOffLedgeSamples;
+    
+    [Tooltip("the fmod event for crouching")]
+    [SerializeField] EventReference m_Crouch;
 
     [Header("params")]
     [SerializeField] float cellSize = 1f;
@@ -44,6 +47,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     StudioEventEmitter m_JumpEmitter;
     StudioEventEmitter m_StepEmitter;
     StudioEventEmitter m_WalkOffLedgeEmitter;
+    StudioEventEmitter m_CrouchEmitter;
 
     FMODParams _fmodParams;
 
@@ -79,14 +83,16 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         m_JumpEmitter = gameObject.AddComponent<StudioEventEmitter>();
         m_WalkOffLedgeEmitter = gameObject.AddComponent<StudioEventEmitter>();
         m_ContinuousEmitter = gameObject.AddComponent<StudioEventEmitter>();
+        m_CrouchEmitter = gameObject.AddComponent<StudioEventEmitter>();
 
         m_StepEmitter.EventReference = m_Step;
         m_JumpEmitter.EventReference = m_Jump;
         m_WalkOffLedgeEmitter.EventReference = m_WalkOffLedge;
         m_ContinuousEmitter.EventReference = m_Continuous;
+        m_CrouchEmitter.EventReference = m_Crouch;
 
         // Preload samples so that there's less delay when playing them
-        foreach(var emitter in new [] {m_StepEmitter, m_JumpEmitter, m_WalkOffLedgeEmitter, m_ContinuousEmitter} ) {
+        foreach(var emitter in new [] {m_StepEmitter, m_JumpEmitter, m_WalkOffLedgeEmitter, m_CrouchEmitter, m_ContinuousEmitter} ) {
             emitter.Preload = true;
         }
 
@@ -114,10 +120,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             PlayStep();
         }
 
-        if (IsCrouched) {
-            // PlayStep(); // This happened by accident before but sounds kind of cool like tremolo picking
-            // Leaving it in for a little while
-            // TODO: what kind of guitar sound can work for crouching..?
+        if (IsCrouching && IsOnGround) { // as in, is going into a crouch this frame (and not midair)
+            PlayCrouch();
+        }
+        if (IsStoppingCrouch) {
+            StopCrouch();
         }
         
         if (IsJumping && State.Curr.IsOnGround) { // Don't play sound for midair jumps
@@ -182,6 +189,16 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         stepIndex++;
     }
 
+    void PlayCrouch() {
+        UpdateFmodParams();
+        _fmodParams[k_ParamPitch] = 7;
+        FMODPlayer.PlayEvent(new FMODEvent(m_CrouchEmitter, _fmodParams));
+    }
+
+    void StopCrouch() {
+        m_CrouchEmitter.Stop();
+    }
+
     void UpdateFmodParams() {
         // _fmodParams[k_ParamSlope]           = Slope;
         _fmodParams[k_ParamSpeedSquared]      = SpeedSquared;
@@ -239,9 +256,14 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     [ShowNativeProperty]
     bool IsJumping => State.Next.Events.Contains(CharacterEvent.Jump);
-        
+
     [ShowNativeProperty]
-    bool IsCrouched => State.Next.IsCrouching;
+    // as in, is going into a crouch this frame
+    bool IsCrouching => !State.Curr.IsCrouching && State.Next.IsCrouching;
+    
+    [ShowNativeProperty]
+    // as in, is going into a crouch this frame
+    bool IsStoppingCrouch => State.Curr.IsCrouching && !State.Next.IsCrouching;
 
     [ShowNativeProperty]
     float VelocitySlope => State.Next.Velocity.normalized.y; // -1 to 1
@@ -250,38 +272,24 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     float SurfaceSlope => State.Next.MainSurface.Angle/180f; // 0 to 1?
 
     [ShowNativeProperty]
-    float SpeedSquared {
-        get => State.Next.Velocity.sqrMagnitude;
-    }
+    float SpeedSquared => State.Next.Velocity.sqrMagnitude;
 
-    float DeltaSpeedSquared {
-        get => (State.Next.Velocity - State.Curr.Velocity).sqrMagnitude;
-    }
+    float DeltaSpeedSquared => (State.Next.Velocity - State.Curr.Velocity).sqrMagnitude;
 
     [ShowNativeProperty]
-    bool IsOnGround {
-        get => State.Next.IsOnGround;
-    }
+    bool IsOnGround => State.Next.IsOnGround;
 
     [ShowNativeProperty]
-    bool IsOnWall {
-        get => State.Next.IsOnWall;
-    }
+    bool IsOnWall => State.Next.IsOnWall;
 
     [ShowNativeProperty]
-    bool IsHittingWall {
-        get => !State.Curr.IsOnWall && State.Next.IsOnWall;
-    }
+    bool IsHittingWall => !State.Curr.IsOnWall && State.Next.IsOnWall;
 
     [ShowNativeProperty]
-    bool IsHittingGround {
-        get => !State.Curr.IsOnGround && State.Next.IsOnGround;
-    }
+    bool IsHittingGround => !State.Curr.IsOnGround && State.Next.IsOnGround;
 
     [ShowNativeProperty]
-    bool IsLeavingGround {
-        get => State.Curr.IsOnGround && !State.Next.IsOnGround;
-    }
+    bool IsLeavingGround => State.Curr.IsOnGround && !State.Next.IsOnGround;
 }
 
 // Force redraw of exposed native properties in inspector every frame
