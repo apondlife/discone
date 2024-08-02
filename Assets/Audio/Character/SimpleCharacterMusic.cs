@@ -52,6 +52,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     FMODParams _fmodParams;
 
     const float k_RecentlyLandedLookbackSecs = 0.05f;
+    const float k_StarterIslandBaseY = -1783f; // Should probably be configured elsewhere but whatever
 
     // these should probably all just be somewhere shared (charactermusicbase?)
     const string k_ParamSpeedSquared = "Speed";  // float, 0 to ~2500 (~225 for running on flat surface)
@@ -59,6 +60,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     const string k_ParamDeltaSpeedSquared = "DeltaSpeed"; // float, 0 to ? (~360 for a big jump)
 
+    const string k_ParamGain = "Gain";   // float 0 to 1, maps to +0 to +10dB
     const string k_ParamPitch = "Pitch";   // float (semitones) -24 to 24
     const string k_ParamIsOnWall = "IsOnWall";   // bool (0 or 1)
     const string k_ParamIsOnGround = "IsOnGround";   // bool (0 or 1)
@@ -111,7 +113,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         }
 
         if (IsLanding && !IsOnWall) {
-            Debug.Log("Land");
             mostRecentLandedTime = Time.time;
             PlayLand();
         }
@@ -148,7 +149,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
         UpdateFmodParams();
         // Debug.Log($"Jump: dv = {DeltaSpeedSquared}");
-        _fmodParams[k_ParamPitch] = MakePitch() % 12 - 5; // Wrap to center octave and shift down a fourth
+        _fmodParams[k_ParamPitch] = MakePitch() % 7; // Wrap to center fifth (?)
         _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, m_NJumpSamples);
         // TODO this should probably use the jump impulse, not the overall character velocity
 
@@ -168,8 +169,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
 
     int i = 6;
-    int[] pent = {-5, -3, -1, 0, 2, 4, 7, 9, 11, 12, 14, 16, 194};
-    int MakePitch() {
+    int[] pent = {-5, -3, -1, 0, 2, 4, 7, 9, 11, 12, 14, 16, 19};
+    int MakePitch1() {
         int s = Random.Range(0, 2)*2 -1; // step up or down
 
         i += s;
@@ -178,6 +179,20 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         int k = i + (int)SlopeToPitch(VelocitySlope);
         k = Mathf.Clamp(k, 0, pent.Length-1);
         return pent[k];
+    }
+
+    // Prewritten looping melody sequenced with y position
+    int[] melody = {-8, -3, -5, -3, -1, 0, -1, -3, -5, -8, -3, -8, -12, -8 -10, -10, -10};
+    float melodyStepHeight = 0.5f;
+    int MakePitch2() {
+        i = (int)(Height/melodyStepHeight);
+        i = i%melody.Length;
+
+        return melody[i] + 12;
+    }
+
+    int MakePitch() {
+        return MakePitch1();
     }
 
     void PlayStep() {
@@ -202,9 +217,12 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         stepIndex++;
     }
 
+    int crouch_i = 0;
+    int[] crouch_seq = {0, -7};
     void PlayCrouch() {
         UpdateFmodParams();
-        _fmodParams[k_ParamPitch] = 0f;
+        _fmodParams[k_ParamPitch] = crouch_seq[crouch_i++%2];
+        // _fmodParams[k_ParamGain] = 5f;
         FMODPlayer.PlayEvent(new FMODEvent(m_CrouchEmitter, _fmodParams));
     }
 
@@ -214,6 +232,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     void UpdateFmodParams() {
         // _fmodParams[k_ParamSlope]           = Slope;
+        _fmodParams[k_ParamGain] = 0f;
         _fmodParams[k_ParamSpeedSquared]      = SpeedSquared;
         _fmodParams[k_ParamDeltaSpeedSquared] = DeltaSpeedSquared;
         _fmodParams[k_ParamIsOnGround]        = IsOnGround      ? 1f : 0f;
@@ -251,11 +270,14 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     float SlopeToPitch(float slope) {
         int[] pitches = { -7, -7, -7, -7, -5, -5, 0, 2, 4, 5, 7, 7, 7 };
-        int i = (int)(Mathf.InverseLerp(-1f, 1f, slope) * pitches.Length);
+        int i = (int)(Mathf.InverseLerp(-1.05f, 1.05f, slope) * pitches.Length);
         return (float)pitches[i];
     }
 
     // -- queries --
+
+    [ShowNativeProperty]
+    float Height => State.Next.Position.y - k_StarterIslandBaseY; // ~0f at base to 
 
     [ShowNativeProperty]
     float NextJumpPower => State.NextJumpPower;

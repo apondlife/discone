@@ -212,6 +212,7 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{f3326c84-a5ab-485e-87c7-2d04c73fad98}">
 		<relationship name="effects">
+			<destination>{d7f7b855-2b12-42e4-a4e7-ffc38bef1a5f}</destination>
 			<destination>{79b7d258-0087-42cc-9502-666f028ede18}</destination>
 			<destination>{8bec10b0-e613-4030-acf2-5ef81adbdf8a}</destination>
 		</relationship>
@@ -345,6 +346,11 @@
 			<destination>{ae7c2585-167a-4b91-af17-f99caa3f8835}</destination>
 		</relationship>
 	</object>
+	<object class="GainEffect" id="{d7f7b855-2b12-42e4-a4e7-ffc38bef1a5f}">
+		<relationship name="automators">
+			<destination>{878bc5ca-0506-48f2-b276-d98e329c69af}</destination>
+		</relationship>
+	</object>
 	<object class="MixerBusFader" id="{79b7d258-0087-42cc-9502-666f028ede18}" />
 	<object class="MixerSend" id="{8bec10b0-e613-4030-acf2-5ef81adbdf8a}">
 		<property name="level">
@@ -408,6 +414,39 @@
 		</property>
 		<property name="value">
 			<value>-5</value>
+		</property>
+	</object>
+	<object class="Automator" id="{878bc5ca-0506-48f2-b276-d98e329c69af}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>gain</value>
+		</property>
+		<relationship name="automationCurves">
+			<destination>{c924ad21-75f5-4dfa-be5d-fe3cb59c808f}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationCurve" id="{c924ad21-75f5-4dfa-be5d-fe3cb59c808f}">
+		<relationship name="parameter">
+			<destination>{d46cdf17-11b0-43e0-a3f0-dca4df14e095}</destination>
+		</relationship>
+		<relationship name="automationPoints">
+			<destination>{6867c2cb-4fc0-47a3-b335-da0e81c539aa}</destination>
+			<destination>{1b6e2ed1-f30d-4208-b7d7-d01228e28ec1}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationPoint" id="{6867c2cb-4fc0-47a3-b335-da0e81c539aa}">
+		<property name="position">
+			<value>1</value>
+		</property>
+		<property name="value">
+			<value>10</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{1b6e2ed1-f30d-4208-b7d7-d01228e28ec1}">
+		<property name="position">
+			<value>0</value>
+		</property>
+		<property name="value">
+			<value>0</value>
 		</property>
 	</object>
 </objects>
