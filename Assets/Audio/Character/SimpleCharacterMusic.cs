@@ -3,6 +3,8 @@ using UnityEngine;
 using FMODUnity;
 using System.Linq;
 using NaughtyAttributes;
+using System;
+
 #if UNITY_EDITOR
 using NaughtyAttributes.Editor;
 #endif
@@ -168,10 +170,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         }
     }
 
+    // random noodling up and down pentatonic scale each step
     int i = 6;
     int[] pent = {-5, -3, -1, 0, 2, 4, 7, 9, 11, 12, 14, 16, 19};
     int MakePitch1() {
-        int s = Random.Range(0, 2)*2 -1; // step up or down
+        int s = UnityEngine.Random.Range(0, 2)*2 -1; // step up or down
 
         i += s;
         i = Mathf.Clamp(i, 0, pent.Length-1);
@@ -181,7 +184,21 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         return pent[k];
     }
 
-    // Prewritten looping melody sequenced with y position
+    [SerializeField] float scaleStepsPerAcceleration = 0.4f;
+    // noodling up and down pentatonic scale based on accel/decel
+    int MakePitch3() {
+        int s = (int)(SpeedSquaredDelta*scaleStepsPerAcceleration);
+        Debug.Log($"s = {s}");
+
+        i += s;
+        i = Mathf.Clamp(i, 0, pent.Length-1);
+
+        int k = i + (int)SlopeToPitch(VelocitySlope);
+        k = Mathf.Clamp(k, 0, pent.Length-1);
+        return pent[k];
+    }
+
+    // Prewritten looping melody (keith jarrett koeln concert haha) sequenced with y position
     int[] melody = {-8, -3, -5, -3, -1, 0, -1, -3, -5, -8, -3, -8, -12, -8 -10, -10, -10};
     float melodyStepHeight = 0.5f;
     int MakePitch2() {
@@ -313,6 +330,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     [ShowNativeProperty]
     float DeltaSpeedSquared => (State.Next.Velocity - State.Curr.Velocity).sqrMagnitude;
+    
+    [ShowNativeProperty]
+    float SpeedSquaredDelta => State.Next.Velocity.sqrMagnitude - State.Curr.Velocity.sqrMagnitude;
 
     [ShowNativeProperty]
     bool IsOnGround => State.Next.IsOnGround;
