@@ -53,11 +53,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     FMODParams _fmodParams;
 
-    const float k_RecentlyLandedLookbackSecs = 0.05f;
+    const float k_RecentlyLandedLookbackSecs = 0.01f;
     const float k_StarterIslandBaseY = -1783f; // Should probably be configured elsewhere but whatever
 
     // these should probably all just be somewhere shared (charactermusicbase?)
-    const string k_ParamSpeedSquared = "Speed";  // float, 0 to ~2500 (~225 for running on flat surface)
+    const string k_ParamSpeedSquared = "Speed";  // float, 0 to ~2500 (~300 for running on flat surface)
     // const string k_ParamSlope = "Slope"; // float, -1 to 1
 
     const string k_ParamDeltaSpeedSquared = "DeltaSpeed"; // float, 0 to ? (~360 for a big jump)
@@ -188,15 +188,26 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // noodling up and down pentatonic scale based on accel/decel
     int MakePitch3() {
         int s = (int)(SpeedSquaredDelta*scaleStepsPerAcceleration);
-        Debug.Log($"s = {s}");
+        // Debug.Log($"s = {s}");
 
         i += s;
         i = Mathf.Clamp(i, 0, pent.Length-1);
 
-        int k = i + (int)SlopeToPitch(VelocitySlope);
-        k = Mathf.Clamp(k, 0, pent.Length-1);
-        return pent[k];
+        // int k = i + (int)SlopeToPitch(VelocitySlope);
+        // k = Mathf.Clamp(k, 0, pent.Length-1);
+        return pent[i];
     }
+
+    [SerializeField] float scaleStepsPerVelocity = 0.4f;
+    // play fixed tone in pent scale based on velocity
+    int MakePitch4() {
+        int i = (int)(SpeedSquared*scaleStepsPerVelocity);
+        Debug.Log($"i = {i}");
+
+        i = Mathf.Clamp(i, 0, pent.Length-1);
+        return pent[i];
+    }
+
 
     // Prewritten looping melody (keith jarrett koeln concert haha) sequenced with y position
     int[] melody = {-8, -3, -5, -3, -1, 0, -1, -3, -5, -8, -3, -8, -12, -8 -10, -10, -10};
@@ -209,7 +220,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
 
     int MakePitch() {
-        return MakePitch1();
+        return MakePitch4();
     }
 
     void PlayStep() {
@@ -333,6 +344,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     
     [ShowNativeProperty]
     float SpeedSquaredDelta => State.Next.Velocity.sqrMagnitude - State.Curr.Velocity.sqrMagnitude;
+
+    [ShowNativeProperty]
+    float Inertia => State.Next.Inertia;
 
     [ShowNativeProperty]
     bool IsOnGround => State.Next.IsOnGround;
