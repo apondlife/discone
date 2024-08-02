@@ -1,6 +1,8 @@
 using ThirdPerson;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering;
 using Camera = UnityEngine.Camera;
 
 namespace Discone {
@@ -20,7 +22,13 @@ sealed class SurfaceColor: MonoBehaviour {
     CharacterContainer c;
 
     /// the texture 2d mapping the render texture
-    Texture2D m_SampleTexture;
+    Texture2D m_ColorTexture;
+
+    /// a buffer for gpu texture data
+    NativeArray<float> m_Buffer;
+
+    /// the current request to read gpu texture data
+    AsyncGPUReadbackRequest m_ReadReq;
 
     // -- lifecycle --
     void Awake() {
@@ -29,31 +37,43 @@ sealed class SurfaceColor: MonoBehaviour {
 
         // instance a new texture
         var renderTexture = new RenderTexture(m_RenderTexture);
-        var sampleTexture = new Texture2D(
+
+        // allocate a buffer for reading off the gpu
+        var bufferSize = (
+            renderTexture.width *
+            renderTexture.height *
+            (int)GraphicsFormatUtility.GetBlockSize(renderTexture.graphicsFormat) /
+            sizeof(float)
+        );
+
+        var buffer = new NativeArray<float>(bufferSize, Allocator.Persistent);
+
+        // create a texture that we can sample colors from
+        var colorTexture = new Texture2D(
             renderTexture.width,
             renderTexture.height,
             renderTexture.graphicsFormat,
             TextureCreationFlags.None
         );
-        sampleTexture.filterMode = FilterMode.Point;
 
-        m_SampleTexture = sampleTexture;
+        colorTexture.filterMode = FilterMode.Point;
+
+        // set texture props
+        m_Buffer = buffer;
+        m_ColorTexture = colorTexture;
         m_Camera.targetTexture = renderTexture;
-        c.Effects.ColorTexture = sampleTexture;
+        c.Effects.ColorTexture = colorTexture;
 
         // set replacement shader
         var shader = Shader.Find("Discone/SurfaceColor");
         m_Camera.SetReplacementShader(shader, "Surface");
     }
 
-    void FixedUpdate() {
-        var _renderTexture = m_Camera.targetTexture;
-        var prev = RenderTexture.active;
-        RenderTexture.active = _renderTexture;
-        m_SampleTexture.ReadPixels(new Rect(0, 0, _renderTexture.width, _renderTexture.height), 0, 0);
-        m_SampleTexture.Apply();
-        RenderTexture.active = prev;
+    void Update() {
+        ReadTexture();
+    }
 
+    void FixedUpdate() {
         var next = c.State.Next;
         var surface = next.MainSurface;
 
@@ -63,6 +83,32 @@ sealed class SurfaceColor: MonoBehaviour {
             : next.Velocity;
 
         m_Camera.transform.forward = direction;
+    }
+
+    // -- commands --
+    /// reads the render texture into the color texture asynchronously
+    void ReadTexture() {
+        var req = m_ReadReq;
+        if (!req.done) {
+            return;
+        }
+
+        if (!req.hasError) {
+            m_ColorTexture.SetPixelData(m_Buffer, 0);
+        }
+
+        m_ReadReq = AsyncGPUReadback.RequestIntoNativeArray(ref m_Buffer, m_Camera.targetTexture);
+    }
+
+    /// reads the render texture into the color texture synchronously
+    void ReadTextureSync() {
+        var activeTexture = RenderTexture.active;
+        var renderTexture = m_Camera.targetTexture;
+
+        RenderTexture.active = renderTexture;
+        m_ColorTexture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+        m_ColorTexture.Apply();
+        RenderTexture.active = activeTexture;
     }
 }
 
