@@ -110,7 +110,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             m_ContinuousEmitter.Play();
         }
 
-        if (IsLanding) {
+        if (IsLanding && !IsOnWall) {
             Debug.Log("Land");
             mostRecentLandedTime = Time.time;
             PlayLand();
@@ -120,7 +120,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             PlayStep();
         }
 
-        if (IsCrouching && IsOnGround) { // as in, is going into a crouch this frame (and not midair)
+        if (IsCrouching) { // as in, is going into a crouch this frame
             PlayCrouch();
         }
         if (IsStoppingCrouch) {
@@ -135,6 +135,8 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
             PlayWalkOffLedge();
         }
 
+        // PlayStep();
+
         // Update params for continuous emitter
         UpdateFmodParams();
         m_ContinuousEmitter.SetParameters(_fmodParams);
@@ -146,7 +148,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
         UpdateFmodParams();
         // Debug.Log($"Jump: dv = {DeltaSpeedSquared}");
-        _fmodParams[k_ParamPitch] = 0f;
+        _fmodParams[k_ParamPitch] = MakePitch() % 12 - 5; // Wrap to center octave and shift down a fourth
         _fmodParams[k_ParamIndex] = MakeIndex(jumpIndex, m_NJumpSamples);
         // TODO this should probably use the jump impulse, not the overall character velocity
 
@@ -157,21 +159,32 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     void PlayLand() {
         // Fadeout/release times are set in AHDSR modulator in FMOD
         if (chokeJump) {
-            // TODO: some kind of choke sound here would be good probably
+            // Jump event plays its own choke sound
             m_JumpEmitter.Stop();
         }
         if (chokeWalkOffLedge) {
             m_WalkOffLedgeEmitter.Stop();
         }
+    }
 
-        // PlayStep(); // TODO some different sound here [maybe a muted or percussive pluck, or slap strings?]
+    int i = 6;
+    int[] pent = {-5, -3, -1, 0, 2, 4, 7, 9, 11, 12, 14, 16, 194};
+    int MakePitch() {
+        int s = Random.Range(0, 2)*2 -1; // step up or down
+
+        i += s;
+        i = Mathf.Clamp(i, 0, pent.Length-1);
+
+        int k = i + (int)SlopeToPitch(VelocitySlope);
+        k = Mathf.Clamp(k, 0, pent.Length-1);
+        return pent[k];
     }
 
     void PlayStep() {
         UpdatePositionHash();
 
         UpdateFmodParams();
-        _fmodParams[k_ParamPitch] = SlopeToPitch(VelocitySlope);
+        _fmodParams[k_ParamPitch] = MakePitch();
         _fmodParams[k_ParamIndex] = MakeIndex(stepIndex, m_NStepSamples);
 
         FMODPlayer.PlayEvent(new FMODEvent(m_StepEmitter, _fmodParams));
@@ -191,7 +204,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     void PlayCrouch() {
         UpdateFmodParams();
-        _fmodParams[k_ParamPitch] = 7;
+        _fmodParams[k_ParamPitch] = 0f;
         FMODPlayer.PlayEvent(new FMODEvent(m_CrouchEmitter, _fmodParams));
     }
 
@@ -205,7 +218,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         _fmodParams[k_ParamDeltaSpeedSquared] = DeltaSpeedSquared;
         _fmodParams[k_ParamIsOnGround]        = IsOnGround      ? 1f : 0f;
         _fmodParams[k_ParamIsOnWall]          = IsOnWall        ? 1f : 0f;
-        _fmodParams[k_ParamIsHittingWall]     = IsHittingWall   ? 1f : 0f;
         _fmodParams[k_ParamIsHittingGround]   = IsHittingGround ? 1f : 0f;
         _fmodParams[k_ParamIsLeavingGround]   = IsLeavingGround ? 1f : 0f;
     }
@@ -244,6 +256,9 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     }
 
     // -- queries --
+
+    [ShowNativeProperty]
+    float NextJumpPower => State.NextJumpPower;
     
     [ShowNativeProperty]
     bool IsStepping => State.Next.Events.Contains(CharacterEvent.Step);
@@ -274,16 +289,14 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     [ShowNativeProperty]
     float SpeedSquared => State.Next.Velocity.sqrMagnitude;
 
+    [ShowNativeProperty]
     float DeltaSpeedSquared => (State.Next.Velocity - State.Curr.Velocity).sqrMagnitude;
 
     [ShowNativeProperty]
     bool IsOnGround => State.Next.IsOnGround;
 
     [ShowNativeProperty]
-    bool IsOnWall => State.Next.IsOnWall;
-
-    [ShowNativeProperty]
-    bool IsHittingWall => !State.Curr.IsOnWall && State.Next.IsOnWall;
+    bool IsOnWall => State.Next.MainSurface.Angle > 30f;
 
     [ShowNativeProperty]
     bool IsHittingGround => !State.Curr.IsOnGround && State.Next.IsOnGround;
