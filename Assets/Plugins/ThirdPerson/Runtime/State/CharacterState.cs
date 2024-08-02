@@ -75,7 +75,7 @@ public sealed partial class CharacterState {
         // update it to match the current frame w/ no forces or events
         var next = m_Frames[0];
         next.Assign(m_Frames[1]);
-        next.Force = Vector3.zero;
+        next.Force.Clear();
         next.Events.Clear();
     }
 
@@ -164,19 +164,19 @@ public sealed partial class CharacterState {
         public Vector3 Position;
 
         /// the character's velocity
-        public Vector3 Velocity = Vector3.zero;
+        public Vector3 Velocity;
 
         /// the conserved speed into the main surface
-        public float Inertia = 0f;
+        public float Inertia;
 
         /// the input force this frame
-        public Vector3 Force = Vector3.zero;
+        public CharacterForce Force;
 
         /// how much the velocity changed since last frame
-        public Vector3 Acceleration = Vector3.zero;
+        public Vector3 Acceleration;
 
         /// the facing direction
-        public Vector3 Forward = Vector3.forward;
+        public Vector3 Forward;
 
         /// if the character is in jump squat
         public bool IsInJumpSquat = false;
@@ -195,19 +195,19 @@ public sealed partial class CharacterState {
         public Vector3 SurfaceTangent;
 
         /// the time the character hasn't moved
-        public float IdleTime = 0f;
+        public float IdleTime;
 
         /// the drag for surface movement
-        public float Surface_Drag = 0f;
+        public float Surface_Drag;
 
         /// the kinetic friction for surface movement
-        public float Surface_KineticFriction = 0f;
+        public float Surface_KineticFriction;
 
         /// the static friction for surface movement
-        public float Surface_StaticFriction = 0f;
+        public float Surface_StaticFriction;
 
         /// the direction of the current pivot
-        public Vector3 PivotDirection = Vector3.zero;
+        public Vector3 PivotDirection;
 
         /// the id of the next (to-execute) jump
         public JumpId NextJump;
@@ -228,10 +228,10 @@ public sealed partial class CharacterState {
         public float Jump_ReleasedAt;
 
         /// the cooldown time remaining
-        public float Jump_CooldownElapsed = 0f;
+        public float Jump_CooldownElapsed;
 
         /// the cooldown time duration
-        public float Jump_CooldownDuration = 0f;
+        public float Jump_CooldownDuration;
 
         /// the container of events that happened this frame
         public CharacterEventSet Events;
@@ -254,22 +254,22 @@ public sealed partial class CharacterState {
 
         /// assign this frame to an interpolation of src and dst
         public void Interpolate(
-            Frame start,
-            Frame end,
+            Frame src,
+            Frame dst,
             float k
         ) {
             k = Mathf.Clamp01(k);
 
             // by default, the values are just taken from the end
-            Assign(end);
+            Assign(dst);
 
             // interpolate relevant values
             // TODO: should bool do something different? past 50%?
-            Position = Vector3.Lerp(start.Position, end.Position, k);
-            Velocity = Vector3.Lerp(start.Velocity, end.Velocity, k);
-            Force = Vector3.Lerp(start.Force, end.Force, k);
-            Acceleration = Vector3.Lerp(start.Acceleration, end.Acceleration, k);
-            Forward = Vector3.Slerp(start.Forward, end.Forward, k);
+            Position = Vector3.Lerp(src.Position, dst.Position, k);
+            Velocity = Vector3.Lerp(src.Velocity, dst.Velocity, k);
+            Force.Interpolate(src.Force, dst.Force, k);
+            Acceleration = Vector3.Lerp(src.Acceleration, dst.Acceleration, k);
+            Forward = Vector3.Slerp(src.Forward, dst.Forward, k);
         }
 
         /// sets the forward direction on the xz plane
@@ -341,7 +341,7 @@ public sealed partial class CharacterState {
 
         /// the velocity on the xz-plane
         public Vector3 PlanarForce {
-            get => Force.XNZ();
+            get => Force.All.XNZ();
         }
 
         /// the velocity direction along the xz-plane
@@ -364,9 +364,9 @@ public sealed partial class CharacterState {
         public Vector3 SurfaceForce {
             get {
                 if (MainSurface.IsNone) {
-                    return Force;
+                    return Force.All;
                 } else {
-                    return Vector3.ProjectOnPlane(Force, MainSurface.Normal);
+                    return Vector3.ProjectOnPlane(Force.All, MainSurface.Normal);
                 }
             }
         }

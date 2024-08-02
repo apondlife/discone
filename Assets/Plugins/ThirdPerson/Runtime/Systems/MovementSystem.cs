@@ -110,7 +110,7 @@ sealed class MovementSystem: CharacterSystem {
         // add movement force
         var direction = Vector3.Project(inputDir, c.State.Next.Forward);
         var acceleration = c.Tuning.Surface_Acceleration.Evaluate(c.State.Curr.MainSurface.Angle);
-        c.State.Next.Force += acceleration * direction;
+        c.State.Next.Force.Input += acceleration * direction;
     }
 
     // -- Sliding --
@@ -193,7 +193,7 @@ sealed class MovementSystem: CharacterSystem {
         var force = acceleration * inputSlide;
 
         // update state
-        c.State.Next.Force += force;
+        c.State.Next.Force.Input += force;
         c.State.Next.Surface_Drag = nextDrag;
         c.State.Next.Surface_KineticFriction = nextKineticFriction;
 
@@ -238,7 +238,7 @@ sealed class MovementSystem: CharacterSystem {
         var a = Mathf.Min(v0.magnitude / delta, c.Tuning.PivotDeceleration) * v0.normalized;
 
         // update velocity
-        c.State.Next.Force -= a;
+        c.State.Next.Force.Input -= a;
 
         // once speed is zero or the forward and pivot are aligned, transition to next state
         var angle = Vector3.Angle(c.State.Next.Forward, c.State.Curr.PivotDirection);
@@ -266,7 +266,7 @@ sealed class MovementSystem: CharacterSystem {
 
         // add aerial drift
         var a = c.Inputs.Move * c.Tuning.Aerial_Acceleration;
-        c.State.Next.Force += a;
+        c.State.Next.Force.Input += a;
     }
 
     // -- commands --
