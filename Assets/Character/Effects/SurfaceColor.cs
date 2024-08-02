@@ -85,6 +85,16 @@ sealed class SurfaceColor: MonoBehaviour {
         m_Camera.transform.forward = direction;
     }
 
+    void OnDestroy() {
+        // wait for the read to complete or dispose will fail and leak
+        m_ReadReq.WaitForCompletion();
+        m_Buffer.Dispose();
+    }
+
+    void OnApplicationQuit() {
+        DestroyImmediate(this);
+    }
+
     // -- commands --
     /// reads the render texture into the color texture asynchronously
     void ReadTexture() {

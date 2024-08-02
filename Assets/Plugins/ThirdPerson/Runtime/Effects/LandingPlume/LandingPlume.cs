@@ -1,5 +1,4 @@
 using System;
-using Soil;
 using UnityEngine;
 
 namespace ThirdPerson {
@@ -7,16 +6,13 @@ namespace ThirdPerson {
 /// the character landing plume effect
 /// -> character, world, once, change, ephemeral
 [Serializable]
-public class LandingPlume: MonoBehaviour {
+public class LandingPlume: CharacterEffect {
     // -- refs --
     [Header("refs")]
     [Tooltip("the particle system")]
     [SerializeField] ParticleSystem m_Particles;
 
     // -- props --
-    /// the character container
-    CharacterContainer c;
-
     /// the world's accumulated inertia
     float m_Inertia;
 
@@ -24,22 +20,17 @@ public class LandingPlume: MonoBehaviour {
     ParticleSystem.MinMaxCurve m_StartSpeed;
 
     // -- lifecycle --
-    public void Start() {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
+    protected override void Awake() {
+        base.Awake();
 
         // set props
         m_StartSpeed = m_Particles.main.startSpeed;
-        var shape = m_Particles.shape;
-        shape.texture = c.Effects.ColorTexture;
-        shape.textureBilinearFiltering = false;
-        shape.textureAlphaAffectsParticles = false;
-        shape.textureColorAffectsParticles = true;
-        shape.textureClipChannel = ParticleSystemShapeTextureChannel.Alpha;
-        shape.textureClipThreshold = 0f;
+
+        // setup color texture
+        InitColorTexture(m_Particles);
     }
 
-    public void FixedUpdate() {
+    void FixedUpdate() {
         var delta = Time.deltaTime;
 
         var next = c.State.Next;
@@ -60,11 +51,6 @@ public class LandingPlume: MonoBehaviour {
 
         // emit particles
         if (surface.IsSome) {
-            var shape = m_Particles.shape;
-            // for some reason you have to re set the textures here when you call apply
-            // https://discussions.unity.com/t/procedural-particlesystem-shape-texture-not-working/890524/8
-            shape.texture = c.Effects.ColorTexture;
-
             var trs = m_Particles.transform;
             trs.position = surface.Point;
             trs.rotation = Quaternion.LookRotation(next.SurfaceDirection, surface.Normal);
@@ -82,6 +68,10 @@ public class LandingPlume: MonoBehaviour {
                 startSpeed.constantMax *= startSpeedScale;
                 main.startSpeed = startSpeed;
 
+                // sync texture before emitting
+                SyncColorTexture(m_Particles);
+
+                // and emit
                 m_Particles.Emit(count);
             }
         }
