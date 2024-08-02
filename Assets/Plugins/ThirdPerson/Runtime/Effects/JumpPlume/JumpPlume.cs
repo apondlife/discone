@@ -4,26 +4,25 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// the cloud of dust when the character jumps
-public class JumpPlume: MonoBehaviour {
+public class JumpPlume: CharacterEffect {
     // -- refs --
     [Header("refs")]
     [Tooltip("the particle system")]
     [SerializeField] ParticleSystem m_Particles;
 
     // -- props --
-    /// the character container
-    CharacterContainer c;
-
     /// the particle system start speed range
     ParticleSystem.MinMaxCurve m_StartSpeed;
 
     // -- lifecycle --
-    void Start() {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
+    protected override void Awake() {
+        base.Awake();
 
         // set props
         m_StartSpeed = m_Particles.main.startSpeed;
+
+        // setup color texture
+        InitColorTexture(m_Particles);
     }
 
     void FixedUpdate() {
@@ -51,6 +50,10 @@ public class JumpPlume: MonoBehaviour {
         startSpeed.constantMax *= startSpeedScale;
         main.startSpeed = startSpeed;
 
+        // update color
+        SyncColorTexture(m_Particles);
+
+        // emit particles
         m_Particles.Emit(count);
     }
 }

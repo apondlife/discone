@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace ThirdPerson {
 
-/// the character's surface skid effect
-public class SurfaceSkid: MonoBehaviour {
+/// the skid effect when sliding along wall-like surfaces
+sealed class SurfaceSkid: CharacterEffect {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the number of particles per frame")]
@@ -15,14 +15,12 @@ public class SurfaceSkid: MonoBehaviour {
     [Tooltip("the wall particle emitter")]
     [SerializeField] ParticleSystem m_Particles;
 
-    // -- props --
-    /// the character container
-    CharacterContainer c;
-
     // -- lifecycle --
-    void Start() {
-        // set container
-        c = GetComponentInParent<CharacterContainer>();
+    protected override void Awake() {
+        base.Awake();
+
+        // setup color texture
+        InitColorTexture(m_Particles);
     }
 
     void FixedUpdate() {
@@ -64,6 +62,9 @@ public class SurfaceSkid: MonoBehaviour {
         main.startRotationX = euler.x;
         main.startRotationY = euler.y;
         main.startRotationZ = euler.z;
+
+        // sync color texture
+        SyncColorTexture(m_Particles);
 
         // emit particles
         var count = (int)m_Count.Evaluate(next.SurfaceVelocity.sqrMagnitude);

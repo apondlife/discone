@@ -1,4 +1,3 @@
-using System;
 using Soil;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -10,7 +9,7 @@ namespace ThirdPerson {
 // TODO: the model is often lower than the bottom of the capsule, which causes the trail
 // to clip through the model especially on short jumps
 
-/// the character's speed lines effect
+/// the impulse trail as jump starts
 sealed class JumpTrail: MonoBehaviour {
     // -- refs --
     [FormerlySerializedAs("m_System")]
