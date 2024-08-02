@@ -91,11 +91,11 @@ sealed class FrictionSystem: CharacterSystem {
         // current velocity instead
         var dv = deceleration * delta;
         if (dv.sqrMagnitude >= va.sqrMagnitude) {
-            c.State.Next.Force -= a0 + v0 / delta;
+            c.State.Next.Force.Friction -= a0 + v0 / delta;
         }
-        // otherwise, apply the Friction acceleration
+        // otherwise, apply the friction acceleration
         else {
-            c.State.Next.Force -= deceleration;
+            c.State.Next.Force.Friction -= deceleration;
         }
 
         // debug drawings

@@ -13,7 +13,7 @@ public partial class Character<InputFrame> {
         var pos = m_State.Curr.Position;
         DebugDraw.Push("~position", pos, s_Position);
         DebugDraw.Push("~velocity", pos, m_State.Curr.Velocity, s_Velocity);
-        DebugDraw.Push("~force", pos, m_State.Curr.Force - m_Tuning.Gravity * Vector3.up, s_Force);
+        DebugDraw.Push("~force", pos, m_State.Curr.Force.WithoutGravity, s_Force);
         DebugDraw.Push("~inertia", pos, m_State.Curr.Inertia * -m_State.Curr.MainSurface.Normal, s_Inertia);
     }
 

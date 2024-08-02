@@ -38,7 +38,7 @@ sealed class CollisionSystem: CharacterSystem {
         var next = c.State.Next;
 
         // integrate acceleration (forces)
-        var a0 = next.Force * delta;
+        var a0 = next.Force.All * delta;
 
         // reapply any accumulated inertia
         var i0 = next.Inertia * -curr.MainSurface.Normal;
