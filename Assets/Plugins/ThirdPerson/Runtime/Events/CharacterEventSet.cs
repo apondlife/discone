@@ -90,10 +90,10 @@ static class CharacterEventExt {
     /// map the goal into the matching `Step_` character event
     public static CharacterEvent AsStepEvent(this AvatarIKGoal goal) {
         return goal switch {
-            AvatarIKGoal.LeftFoot => CharacterEvent.Step_LeftFoot,
+            AvatarIKGoal.LeftFoot  => CharacterEvent.Step_LeftFoot,
             AvatarIKGoal.RightFoot => CharacterEvent.Step_RightFoot,
-            AvatarIKGoal.LeftHand => CharacterEvent.Step_LeftHand,
-            _ => CharacterEvent.Step_RightHand,
+            AvatarIKGoal.LeftHand  => CharacterEvent.Step_LeftHand,
+            _                      => CharacterEvent.Step_RightHand,
         };
     }
 }

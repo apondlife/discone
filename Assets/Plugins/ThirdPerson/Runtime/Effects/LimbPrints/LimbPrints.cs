@@ -3,24 +3,24 @@ using UnityEngine;
 namespace ThirdPerson {
 
 /// marks left by the characters hands, feet, &c
-public class LimbPrints: MonoBehaviour {
+public class LimbPrints: CharacterEffect {
     // -- refs --
     [Header("refs")]
     [Tooltip("the particle system")]
     [SerializeField] ParticleSystem m_Particles;
 
-    // -- props --
-    /// the containing character
-    CharacterContainer c;
-
     // -- lifecycle --
-    public void Awake() {
-        c = GetComponentInParent<CharacterContainer>();
+    protected override void Awake() {
+        base.Awake();
+
+        // setup color texture
+        InitColorTexture(m_Particles);
     }
 
     public void FixedUpdate() {
         var state = c.State.Curr;
 
+        var isColorSynced = false;
         for (var goal = AvatarIKGoal.LeftFoot; goal <= AvatarIKGoal.RightHand; goal += 1) {
             if (!state.Events.Contains(goal.AsStepEvent()) ) {
                 continue;
@@ -55,6 +55,13 @@ public class LimbPrints: MonoBehaviour {
             main.startRotationY = euler.y;
             main.startRotationZ = euler.z;
 
+            // sync current color
+            if (!isColorSynced) {
+                SyncColorTexture(m_Particles);
+                isColorSynced = true;
+            }
+
+            // and emit
             m_Particles.Emit(1);
         }
     }
