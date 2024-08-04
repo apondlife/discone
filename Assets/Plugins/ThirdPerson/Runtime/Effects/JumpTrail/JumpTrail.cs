@@ -1,4 +1,5 @@
 using Soil;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -10,35 +11,29 @@ namespace ThirdPerson {
 // to clip through the model especially on short jumps
 
 /// the impulse trail as jump starts
-sealed class JumpTrail: MonoBehaviour {
+sealed class JumpTrail: CharacterEffect {
     // -- refs --
-    [FormerlySerializedAs("m_System")]
     [Header("refs")]
+    [FormerlySerializedAs("m_System")]
     [Tooltip("the particle that shows horizontal speed")]
     [SerializeField] ParticleSystem m_Particles;
 
     // -- props --
-    /// the character container
-    CharacterContainer c;
-
     /// a buffer for particles
-    ParticleSystem.Particle[] m_Buffer;
+    NativeArray<ParticleSystem.Particle> m_Buffer;
 
-    /// the eased position
+    /// the eased particle position
     DynamicEase<Vector3> m_Position;
 
     /// if the particle is playing
     bool m_IsPlaying;
 
     // -- lifecycle --
-    void Awake() {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
+    protected override void Awake() {
+        base.Awake();
 
-        // allocate a buffer for the trail particles
-        m_Buffer = new ParticleSystem.Particle[m_Particles.main.maxParticles];
-
-        // capture the offset relative to the model
+        // set props
+        m_Buffer = new NativeArray<ParticleSystem.Particle>(m_Particles.main.maxParticles, Allocator.Persistent);
         m_Position = new DynamicEase<Vector3>(c.Tuning.Model.JumpTrail.Position);
     }
 
@@ -95,6 +90,10 @@ sealed class JumpTrail: MonoBehaviour {
         if (next.Events.Contains(CharacterEvent.Jump)) {
             Emit(next);
         }
+    }
+
+    void OnDestroy() {
+        m_Buffer.Dispose();
     }
 
     // -- commands --

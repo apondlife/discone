@@ -91,10 +91,6 @@ sealed class SurfaceColor: MonoBehaviour {
         m_Buffer.Dispose();
     }
 
-    void OnApplicationQuit() {
-        DestroyImmediate(this);
-    }
-
     // -- commands --
     /// reads the render texture into the color texture asynchronously
     void ReadTexture() {

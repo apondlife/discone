@@ -1,11 +1,12 @@
 using Soil;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
 /// the character's speed lines effect
-sealed class CharacterSpeedLines: MonoBehaviour {
+sealed class SpeedLines: CharacterEffect {
     // -- tuning --
     [Header("tuning")]
     [Tooltip("the scale for start speed as a fn of sqr velocity")]
@@ -31,29 +32,25 @@ sealed class CharacterSpeedLines: MonoBehaviour {
     [Tooltip("the anchor transform")]
     [SerializeField] Transform m_Anchor;
 
-    [FormerlySerializedAs("m_Particles")]
+    [FormerlySerializedAs("m_System")]
     [Tooltip("the particle that shows horizontal speed")]
-    [SerializeField] ParticleSystem m_System;
+    [SerializeField] ParticleSystem m_Particles;
 
     // -- props --
-    /// the character container
-    CharacterContainer c;
-
     /// a buffer for particles
-    ParticleSystem.Particle[] m_Particles;
+    NativeArray<ParticleSystem.Particle> m_Buffer;
 
     // -- lifecycle --
-    void Awake() {
-        // set deps
-        c = GetComponentInParent<CharacterContainer>();
+    protected override void Awake() {
+        base.Awake();
 
         // set props
-        m_Particles = new ParticleSystem.Particle[m_System.main.maxParticles];
+        m_Buffer = new NativeArray<ParticleSystem.Particle>(m_Particles.main.maxParticles, Allocator.Persistent);
     }
 
     void FixedUpdate() {
         // attach to the anchor
-        if (m_Anchor != null) {
+        if (m_Anchor) {
             transform.position = m_Anchor.position;
         }
 
@@ -61,7 +58,7 @@ sealed class CharacterSpeedLines: MonoBehaviour {
         var dir = v.normalized;
 
         // scale speed line based on ground speed
-        var main = m_System.main;
+        var main = m_Particles.main;
 
         var destSpeed = v.sqrMagnitude * m_SpeedScale;
         var nextSpeed = Mathf.MoveTowards(
@@ -83,7 +80,7 @@ sealed class CharacterSpeedLines: MonoBehaviour {
         }
 
         // rotate lines as character accelerates
-        var vol = m_System.velocityOverLifetime;
+        var vol = m_Particles.velocityOverLifetime;
 
         var a = transform.InverseTransformVector(c.State.Curr.Acceleration);
         var destOrbital = new Vector2(a.y, -a.x) * m_RotationScale * m_SpeedScale;
@@ -101,10 +98,10 @@ sealed class CharacterSpeedLines: MonoBehaviour {
         vol.orbitalZ = 1f;
 
         // reduce the lifetime of particles on direction change
-        var n = m_System.GetParticles(m_Particles, m_Particles.Length);
+        var n = m_Particles.GetParticles(m_Buffer);
         if (n != 0) {
             for (var i = 0; i < n; i++) {
-                var particle = m_Particles[i];
+                var particle = m_Buffer[i];
 
                 var dirAlignment = Mathf.Max(0f, -Vector3.Dot(
                     dir,
@@ -114,11 +111,15 @@ sealed class CharacterSpeedLines: MonoBehaviour {
                 var dirScale = m_DirectionScale.Evaluate(dirAlignment);
                 particle.remainingLifetime *= dirScale;
 
-                m_Particles[i] = particle;
+                m_Buffer[i] = particle;
             }
 
-            m_System.SetParticles(m_Particles, n);
+            m_Particles.SetParticles(m_Buffer, n);
         }
+    }
+
+    void OnDestroy() {
+        m_Buffer.Dispose();
     }
 }
 
