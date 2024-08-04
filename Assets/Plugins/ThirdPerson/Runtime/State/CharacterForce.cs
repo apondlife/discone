@@ -7,11 +7,8 @@ namespace ThirdPerson {
 [Serializable]
 public struct CharacterForce: IEquatable<CharacterForce> {
     // -- props --
-    /// the input force
-    public Vector3 Input;
-
-    /// the force applied by gravity
-    public Vector3 Gravity;
+    /// the accumulated, uncategorized force
+    public Vector3 Other;
 
     /// the force applied by friction
     public Vector3 Friction;
@@ -19,20 +16,14 @@ public struct CharacterForce: IEquatable<CharacterForce> {
     // -- commands --
     /// clear all the forces on the character
     public void Clear() {
-        Input = Vector3.zero;
-        Gravity = Vector3.zero;
+        Other = Vector3.zero;
         Friction = Vector3.zero;
     }
 
     // -- queries --
     /// the accumulated force
     public Vector3 All {
-        get => Input + Gravity + Friction;
-    }
-
-    /// the accumulated force without gravity
-    public Vector3 WithoutGravity {
-        get => Input + Friction;
+        get => Other + Friction;
     }
 
     /// interpolate between the lhs & rhs forces into this value
@@ -41,8 +32,7 @@ public struct CharacterForce: IEquatable<CharacterForce> {
         CharacterForce dst,
         float k
     ) {
-        Input = Vector3.Lerp(src.Input, dst.Input, k);
-        Gravity = Vector3.Lerp(src.Gravity, dst.Gravity, k);
+        Other = Vector3.Lerp(src.Other, dst.Other, k);
         Friction = Vector3.Lerp(src.Friction, dst.Friction, k);
     }
 
@@ -57,29 +47,46 @@ public struct CharacterForce: IEquatable<CharacterForce> {
 
     public bool Equals(CharacterForce o) {
         return (
-            Input == o.Input &&
-            Gravity == o.Gravity &&
+            Other == o.Other &&
             Friction == o.Friction
         );
     }
 
     public override int GetHashCode() {
-        return HashCode.Combine(Input, Gravity, Friction);
+        return HashCode.Combine(Other, Friction);
     }
 
     // -- operators --
     public static bool operator ==(
-        CharacterForce a,
-        CharacterForce b
+        CharacterForce lhs,
+        CharacterForce rhs
     ) {
-        return a.Equals(b);
+        return lhs.Equals(rhs);
     }
 
     public static bool operator !=(
-        CharacterForce a,
-        CharacterForce b
+        CharacterForce lhs,
+        CharacterForce rhs
     ) {
-        return !(a == b);
+        return !(lhs == rhs);
+    }
+
+    public static CharacterForce operator +(
+        CharacterForce lhs,
+        Vector3 rhs
+    ) {
+        var result = lhs;
+        result.Other += rhs;
+        return result;
+    }
+
+    public static CharacterForce operator -(
+        CharacterForce lhs,
+        Vector3 rhs
+    ) {
+        var result = lhs;
+        result.Other -= rhs;
+        return result;
     }
 }
 

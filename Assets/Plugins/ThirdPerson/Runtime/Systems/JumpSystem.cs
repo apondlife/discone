@@ -86,7 +86,7 @@ sealed class JumpSystem: CharacterSystem {
 
         // apply gravity, update state
         // TODO: curve gravity on jumpsquat elapsed?
-        c.State.Next.Force.Gravity += gravity * Vector3.up;
+        c.State.Next.Force += gravity * Vector3.up;
         c.State.Next.Jump_Elapsed = jumpElapsed;
         c.State.Next.Jump_ReleasedAt = jumpReleasedAt;
     }

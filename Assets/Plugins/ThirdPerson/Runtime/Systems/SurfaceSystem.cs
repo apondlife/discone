@@ -192,7 +192,7 @@ sealed class SurfaceSystem: CharacterSystem {
         var impulse = transferImpulse;
 
         // update frame
-        c.State.Next.Force.Input += force;
+        c.State.Next.Force += force;
         c.State.Next.Velocity += impulse;
         c.State.Next.Inertia -= inertiaDecayMag;
 

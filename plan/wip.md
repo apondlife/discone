@@ -11,7 +11,6 @@ what is projected
 - search for camera and icecreams
 
 # conveyance (world)
-- surface particles color sampling
 - burn on momentum transfer
 - blob shadow
 - takeoff plume @ 60% (texture, second plume)
@@ -22,7 +21,7 @@ what is projected
 - hair (no clipping)
 - landing plume @ 75%
 - takeoff impulse trail @ 80% (bulb shape?)
-- crater on hitting surface 
+- crater on hitting surface
 
 # surface
 - unrealized motion (minmove) be converted into inertia?
@@ -49,7 +48,7 @@ what is projected
 # pivot
 - make pivot faster (or at least be able to do so)
 
-# dream 
+# dream
 - platform to jump through (for max jump)
 
 # flower
