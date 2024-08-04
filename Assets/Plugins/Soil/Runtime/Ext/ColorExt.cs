@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace Soil {
 
@@ -696,10 +697,28 @@ public static class Color {
 }
 
 public static class ColorExt {
-    /// shift the hue of a unity color
-    public static UnityEngine.Color ShiftHue(this UnityEngine.Color color, float shift) {
+    /// rotate the hue of a unity color
+    public static UnityEngine.Color RotateHue(this UnityEngine.Color color, float delta) {
         UnityEngine.Color.RGBToHSV(color, out var h, out var s, out var v);
-        return UnityEngine.Color.HSVToRGB((h + shift) % 1f, s, v);
+        var res = UnityEngine.Color.HSVToRGB((h + delta) % 1f, s, v);
+        res.a = color.a;
+        return res;
+    }
+
+    /// add to the saturation of a unity color
+    public static UnityEngine.Color AddSaturation(this UnityEngine.Color color, float delta) {
+        UnityEngine.Color.RGBToHSV(color, out var h, out var s, out var v);
+        var res = UnityEngine.Color.HSVToRGB(h, Mathf.Clamp01(s + delta), v);
+        res.a = color.a;
+        return res;
+    }
+
+    /// add to the value of a unity color
+    public static UnityEngine.Color AddValue(this UnityEngine.Color color, float delta) {
+        UnityEngine.Color.RGBToHSV(color, out var h, out var s, out var v);
+        var res = UnityEngine.Color.HSVToRGB(h, s, Mathf.Clamp01(v + delta));
+        res.a = color.a;
+        return res;
     }
 }
 

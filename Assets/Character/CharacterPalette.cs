@@ -96,7 +96,7 @@ public sealed class CharacterPalette: MonoBehaviour {
                 }
 
                 var prevColor = material.GetColor(prop);
-                var nextColor = prevColor.ShiftHue(c.Online.NextShift);
+                var nextColor = prevColor.RotateHue(c.Online.NextShift);
                 material.SetColor(prop, nextColor);
             }
         }

@@ -28,7 +28,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     [Tooltip("the fmod event for walking off ledge")]
     [SerializeField] EventReference m_WalkOffLedge; // TODO: Why does this one have such huge delay?? So weird
     [SerializeField] int m_NWalkOffLedgeSamples;
-    
+
     [Tooltip("the fmod event for crouching")]
     [SerializeField] EventReference m_Crouch;
 
@@ -129,7 +129,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
         if (IsStoppingCrouch) {
             StopCrouch();
         }
-        
+
         if (IsJumping && State.Curr.IsOnGround) { // Don't play sound for midair jumps
             PlayJump();
         }
@@ -202,8 +202,6 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // play fixed tone in pent scale based on velocity
     int MakePitch4() {
         int i = (int)(SpeedSquared*scaleStepsPerVelocity);
-        Debug.Log($"i = {i}");
-
         i = Mathf.Clamp(i, 0, pent.Length-1);
         return pent[i];
     }
@@ -305,11 +303,11 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     // -- queries --
 
     [ShowNativeProperty]
-    float Height => State.Next.Position.y - k_StarterIslandBaseY; // ~0f at base to 
+    float Height => State.Next.Position.y - k_StarterIslandBaseY; // ~0f at base to
 
     [ShowNativeProperty]
     float NextJumpPower => State.NextJumpPower;
-    
+
     [ShowNativeProperty]
     bool IsStepping => State.Next.Events.Contains(CharacterEvent.Step);
 
@@ -325,7 +323,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
     [ShowNativeProperty]
     // as in, is going into a crouch this frame
     bool IsCrouching => !State.Curr.IsCrouching && State.Next.IsCrouching;
-    
+
     [ShowNativeProperty]
     // as in, is going into a crouch this frame
     bool IsStoppingCrouch => State.Curr.IsCrouching && !State.Next.IsCrouching;
@@ -341,7 +339,7 @@ public sealed class SimpleCharacterMusic: CharacterMusicBase {
 
     [ShowNativeProperty]
     float DeltaSpeedSquared => (State.Next.Velocity - State.Curr.Velocity).sqrMagnitude;
-    
+
     [ShowNativeProperty]
     float SpeedSquaredDelta => State.Next.Velocity.sqrMagnitude - State.Curr.Velocity.sqrMagnitude;
 
