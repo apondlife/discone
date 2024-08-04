@@ -97,25 +97,24 @@ sealed class SpeedLines: CharacterEffect {
         vol.orbitalY = nextOrbital.y;
         vol.orbitalZ = 1f;
 
-        // reduce the lifetime of particles on direction change
-        var n = m_Particles.GetParticles(m_Buffer);
-        if (n != 0) {
-            for (var i = 0; i < n; i++) {
-                var particle = m_Buffer[i];
+        // update existing particles
+        var count = m_Particles.GetParticles(m_Buffer);
+        for (var i = 0; i < count; i++) {
+            var particle = m_Buffer[i];
 
-                var dirAlignment = Mathf.Max(0f, -Vector3.Dot(
-                    dir,
-                    particle.totalVelocity.normalized
-                ));
+            // reduce the lifetime of particles on direction change
+            var dirAlignment = Mathf.Max(0f, -Vector3.Dot(
+                dir,
+                particle.totalVelocity.normalized
+            ));
 
-                var dirScale = m_DirectionScale.Evaluate(dirAlignment);
-                particle.remainingLifetime *= dirScale;
+            var dirScale = m_DirectionScale.Evaluate(dirAlignment);
+            particle.remainingLifetime *= dirScale;
 
-                m_Buffer[i] = particle;
-            }
-
-            m_Particles.SetParticles(m_Buffer, n);
+            m_Buffer[i] = particle;
         }
+
+        m_Particles.SetParticles(m_Buffer, count);
     }
 
     void OnDestroy() {

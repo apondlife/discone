@@ -8,7 +8,7 @@ namespace ThirdPerson {
 // TODO: break the remaining effects out into their own children / scripts
 
 /// the character effects
-public class CharacterEffects: MonoBehaviour {
+public sealed class CharacterEffects: MonoBehaviour {
     // -- cfg --
     [Header("cfg")]
     [Tooltip("a texture to sample effect colors from")]
