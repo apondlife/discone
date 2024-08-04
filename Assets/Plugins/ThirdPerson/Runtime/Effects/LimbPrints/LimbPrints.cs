@@ -10,17 +10,9 @@ public class LimbPrints: CharacterEffect {
     [SerializeField] ParticleSystem m_Particles;
 
     // -- lifecycle --
-    protected override void Awake() {
-        base.Awake();
-
-        // setup color texture
-        InitColorTexture(m_Particles);
-    }
-
     public void FixedUpdate() {
         var state = c.State.Curr;
 
-        var isColorSynced = false;
         for (var goal = AvatarIKGoal.LeftFoot; goal <= AvatarIKGoal.RightHand; goal += 1) {
             if (!state.Events.Contains(goal.AsStepEvent()) ) {
                 continue;
@@ -54,12 +46,6 @@ public class LimbPrints: CharacterEffect {
             main.startRotationX = euler.x;
             main.startRotationY = euler.y;
             main.startRotationZ = euler.z;
-
-            // sync current color
-            if (!isColorSynced) {
-                SyncColorTexture(m_Particles);
-                isColorSynced = true;
-            }
 
             // and emit
             m_Particles.Emit(1);

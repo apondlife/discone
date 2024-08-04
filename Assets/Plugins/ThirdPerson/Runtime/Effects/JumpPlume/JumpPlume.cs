@@ -20,9 +20,6 @@ public class JumpPlume: CharacterEffect {
 
         // set props
         m_StartSpeed = m_Particles.main.startSpeed;
-
-        // setup color texture
-        InitColorTexture(m_Particles);
     }
 
     void FixedUpdate() {
@@ -49,9 +46,6 @@ public class JumpPlume: CharacterEffect {
         startSpeed.constantMin *= startSpeedScale;
         startSpeed.constantMax *= startSpeedScale;
         main.startSpeed = startSpeed;
-
-        // update color
-        SyncColorTexture(m_Particles);
 
         // emit particles
         m_Particles.Emit(count);
