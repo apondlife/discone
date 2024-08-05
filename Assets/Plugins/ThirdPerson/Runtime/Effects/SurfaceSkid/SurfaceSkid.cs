@@ -1,28 +1,30 @@
+using System;
 using Soil;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ThirdPerson {
 
-// AAA: fix this next
-
 /// the skid effect when sliding along wall-like surfaces
 sealed class SurfaceSkid: CharacterEffect {
-    // -- tuning --
-    [Header("tuning")]
-    [Tooltip("the number of particles per frame")]
-    [SerializeField] MapCurve m_Count;
+    // -- constants --
+    /// the bits sub-emitter index
+    const int k_Bits = 0;
+
+    /// the burn sub-emitter index
+    const int k_Burn = 1;
 
     // -- refs --
     [Header("refs")]
-    [Tooltip("the wall particle emitter")]
-    [SerializeField] ParticleSystem m_Particles;
+    [Tooltip("the particle emitter")]
+    [SerializeField] ParticleSystem m_SkidParticles;
 
     // -- lifecycle --
     protected override void Awake() {
         base.Awake();
 
         // setup color texture
-        InitColorTexture(m_Particles);
+        InitColorTexture(m_SkidParticles);
     }
 
     void FixedUpdate() {
@@ -34,87 +36,82 @@ sealed class SurfaceSkid: CharacterEffect {
             return;
         }
 
+        // get tuning
+        var tuning = c.Tuning.Model.SurfaceSkid;
+
         // get surface
         var surface = next.MainSurface;
 
-        // get subemitters
-        var bits = m_Particles.subEmitters.GetSubEmitterSystem(0);
-        var burn = m_Particles.subEmitters.GetSubEmitterSystem(1);
+        // get emitters
+        var skid = m_SkidParticles;
+        var bits = skid.subEmitters.GetSubEmitterSystem(k_Bits);
+        var burn = skid.subEmitters.GetSubEmitterSystem(k_Burn);
 
         // spawn at collision
-        var trs = m_Particles.transform;
+        var trs = skid.transform;
         trs.position = surface.Point;
 
         // point away from the current surface and rotate a bit around its normal
         var rot = Quaternion.LookRotation(-surface.Normal, next.Forward);
         rot *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward);
 
-        // shape/particle needs euler in degrees/radians respectively
+        // shape needs euler in degrees
         var euler = rot.eulerAngles;
+        var shapeFwd = rot * Vector3.forward;
 
         // rotate the emission shapes
-        var offset = -0.01f;
-        var shape = m_Particles.shape;
-        shape.position = offset * (rot * Vector3.forward);
+        var shape = skid.shape;
+        shape.position = -tuning.Offset * 1 * shapeFwd;
         shape.rotation = euler;
 
-        var bitsShape = bits.shape;
-        bitsShape.position = shape.position;
-        bitsShape.rotation = euler;
+        shape = bits.shape;
+        shape.position = shape.position;
+        shape.rotation = euler;
 
-        offset += -0.01f;
-        var burnShape = burn.shape;
-        burnShape.position = offset * (rot * Vector3.forward);
-        burnShape.rotation = euler;
+        shape = burn.shape;
+        shape.position = -tuning.Offset * 2 * shapeFwd;
+        shape.rotation = euler;
 
-        // rotate the particle
-        var main = m_Particles.main;
+        // particles need euler in radians
+        var minEuler = euler * Mathf.Deg2Rad;
+        var maxEuler = (rot * Quaternion.AngleAxis(180f, Vector3.forward)).eulerAngles * Mathf.Deg2Rad;
+
+        var rotX = new ParticleSystem.MinMaxCurve(minEuler.x, maxEuler.x);
+        var rotY = new ParticleSystem.MinMaxCurve(minEuler.y, maxEuler.y);
+        var rotZ = new ParticleSystem.MinMaxCurve(minEuler.z, maxEuler.z);
+
+        // rotate the skid particle
+        var main = skid.main;
 
         // face +z, instead of the -z (the particle system default)
         main.flipRotation = 1f;
-
-        euler *= Mathf.Deg2Rad;
-        main.startRotationX = euler.x;
-        main.startRotationY = euler.y;
-        main.startRotationZ = euler.z;
+        main.startRotationX = rotX;
+        main.startRotationY = rotY;
+        main.startRotationZ = rotZ;
 
         // sync color texture
-        SyncColorTexture(m_Particles);
+        SyncColorTexture(skid);
 
-        // emit burn
-        // TODO: not a subemitter?
+        // emit
+        var count = tuning.SqrSpeedToCount.Evaluate(next.SurfaceVelocity.sqrMagnitude);
+        skid.Emit((int)count);
+
+        // configure burn
         var inertiaDecay = Mathf.Max(curr.Inertia - next.Inertia, 0f);
 
-        var inertiaDecayToSizeScale = new MapCurve();
-        var minBurnDecay = 0.05f;
-        inertiaDecayToSizeScale.Src = new(minBurnDecay, 2f);
-        inertiaDecayToSizeScale.Dst = new(0.15f, 2.4f);
+        main = burn.main;
+        main.startSizeMultiplier = tuning.Burn_InertiaDecayToSize.Evaluate(inertiaDecay);
+        main.startLifetimeMultiplier = tuning.Burn_InertiaDecayToLifetime.Evaluate(inertiaDecay);
 
-        var inertiaDecayToLifetimeScale = new MapCurve();
-        inertiaDecayToLifetimeScale.Src = new(1f, 2f);
-        inertiaDecayToLifetimeScale.Dst = inertiaDecayToLifetimeScale.Src;
-        inertiaDecayToLifetimeScale.Dst *= 4f;
+        // face +z, instead of the -z (the particle system default)
+        main.flipRotation = 1f;
+        main.startRotationX = rotX;
+        main.startRotationY = rotY;
+        main.startRotationZ = rotZ;
 
-        var inertiaDecayToValue = new MapCurve();
-        inertiaDecayToValue.Src = new(minBurnDecay, 2f);
-        inertiaDecayToValue.Dst = new(0f, -1f);
-
-        var burnMain = burn.main;
-        burnMain.startSizeMultiplier = inertiaDecayToSizeScale.Evaluate(inertiaDecay);
-
-        var m_StartLifetime = 1f;
-        burnMain.startLifetimeMultiplier = m_StartLifetime * inertiaDecayToLifetimeScale.Evaluate(inertiaDecay);
-
-        euler *= Mathf.Deg2Rad;
-        burnMain.startRotationX = euler.x;
-        burnMain.startRotationY = euler.y;
-        burnMain.startRotationZ = euler.z;
-
-        // var m_StartColor = new Color(1f, 1f, 1f, 0.13f);
-        // burn.startColor = m_StartColor.AddValue(inertiaDecayToValue.Evaluate(inertiaDecay));
-        var count = (int)m_Count.Evaluate(next.SurfaceVelocity.sqrMagnitude);
-        burn.Emit(count * (inertiaDecay > minBurnDecay ? 1 : 0));
-        m_Particles.Emit(count);
+        // emit burn
+        count = tuning.Burn_InertiaDecayToCount.Evaluate(inertiaDecay);
+        burn.Emit((int)count);
     }
 }
 

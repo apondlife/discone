@@ -295,7 +295,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0, b: 0, a: 0.019607844}
+      maxColor: {r: 0, g: 0, b: 0, a: 0.050980393}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -516,7 +516,7 @@ ParticleSystem:
     startRotationX:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 6.282891
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -569,7 +569,7 @@ ParticleSystem:
     startRotationY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2.3092499
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -622,7 +622,7 @@ ParticleSystem:
     startRotation:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.38369414
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1504,7 +1504,7 @@ ParticleSystem:
     startFrame:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.9375
+      scalar: 0.99875
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -4864,20 +4864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9d799762a24e4f13adae0ff1674bea5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Count:
-    Curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Src:
-      Min: 0
-      Max: 100
-    Dst:
-      Min: 0
-      Max: 5
-  m_Particles: {fileID: 6099288131266184032}
+  m_SkidParticles: {fileID: 6099288131266184032}
 --- !u!199 &6099288131266184063
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -4900,7 +4887,6 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 0295ac13366b434489697d9ccf834bd8, type: 2}
-  - {fileID: 2100000, guid: b10b90f8dd0a9794b889b30d12fcc886, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5203,7 +5189,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.3
+      scalar: 0.6
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -5362,7 +5348,7 @@ ParticleSystem:
     startRotationX:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 6.282891
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -5415,7 +5401,7 @@ ParticleSystem:
     startRotationY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2.3092499
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -5468,7 +5454,7 @@ ParticleSystem:
     startRotation:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.13967064
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -6350,7 +6336,7 @@ ParticleSystem:
     startFrame:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.9375
+      scalar: 0.99875
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -8742,7 +8728,7 @@ ParticleSystem:
       emitter: {fileID: 4826397640524974510}
       type: 4
       properties: 0
-      emitProbability: 1
+      emitProbability: 0
   LightsModule:
     enabled: 0
     ratio: 0
@@ -8859,7 +8845,7 @@ ParticleSystem:
         m_RotationOrder: 4
     maxLights: 20
   TrailModule:
-    enabled: 1
+    enabled: 0
     mode: 0
     ratio: 1
     lifetime:

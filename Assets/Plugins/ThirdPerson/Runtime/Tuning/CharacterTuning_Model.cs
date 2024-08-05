@@ -98,6 +98,22 @@ partial class CharacterTuning {
         [Tooltip("the normalized max move speed to pose")]
         public float Animation_Pose_MaxMoveSpeed;
 
+        [Tooltip("the tuning for the animation controller")]
+        public AnimationTuning Animation;
+
+        /// the tuning for the animation controller
+        [Serializable]
+        public class AnimationTuning {
+            [Tooltip("the duration of the default landing animation as a fn of inertia")]
+            public MapCurve LandingDuration;
+
+            [Tooltip("the vertical distance threshold to pose")]
+            public float Pose_MinVerticalDistance;
+
+            [Tooltip("the normalized max move speed to pose")]
+            public float Pose_MaxMoveSpeed;
+        }
+
         // -- jump plume --
         [Tooltip("the tuning for the jump plume effect")]
         public JumpPlumeTuning JumpPlume;
@@ -159,6 +175,29 @@ partial class CharacterTuning {
 
             [Tooltip("start speed as a fn of inertia")]
             public MapCurve InertiaToStartSpeedScale;
+        }
+
+        // -- surface skid --
+        [Tooltip("the tuning for the surface skid effects")]
+        public SurfaceSkidTuning SurfaceSkid;
+
+        /// the tuning for the surface skid effects
+        [Serializable]
+        public class SurfaceSkidTuning {
+            [Tooltip("the z-offset for emitter layering")]
+            public float Offset;
+
+            [Tooltip("the emission count as a fn of square surface speed")]
+            public MapCurve SqrSpeedToCount;
+
+            [Tooltip("the burn emission count as a fn of inertia decay")]
+            public MapCurve Burn_InertiaDecayToCount;
+
+            [Tooltip("the burn size as a fn of inertia decay")]
+            public MapCurve Burn_InertiaDecayToSize;
+
+            [Tooltip("the burn lifetime as a fn of inertia decay")]
+            public MapCurve Burn_InertiaDecayToLifetime;
         }
     }
 }

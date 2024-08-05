@@ -1495,7 +1495,7 @@ MonoBehaviour:
       R: 1.65
       K1: 0.035528895
       K2: 0.0013143506
-      K3: 0.029311337
+      K3: 0.029311338
     Animation_LandingDuration:
       Curve:
         serializedVersion: 2
@@ -1511,6 +1511,22 @@ MonoBehaviour:
         Max: 0.6
     Animation_Pose_MinVerticalDistance: 2
     Animation_Pose_MaxMoveSpeed: 0.1
+    Animation:
+      LandingDuration:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 0
+          Max: 0
+        Dst:
+          Min: 0
+          Max: 0
+      Pose_MinVerticalDistance: 0
+      Pose_MaxMoveSpeed: 0
     JumpPlume:
       SqrSpeedToEmission:
         Curve:
@@ -1701,3 +1717,57 @@ MonoBehaviour:
         Dst:
           Min: 0.5
           Max: 4
+    SurfaceSkid:
+      Offset: 0.1
+      SqrSpeedToCount:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 0
+          Max: 100
+        Dst:
+          Min: 0
+          Max: 5
+      Burn_InertiaDecayToCount:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 0.05
+          Max: 2
+        Dst:
+          Min: 0
+          Max: 5
+      Burn_InertiaDecayToSize:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 0.05
+          Max: 2
+        Dst:
+          Min: 0.15
+          Max: 1.8
+      Burn_InertiaDecayToLifetime:
+        Curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        Src:
+          Min: 1
+          Max: 2
+        Dst:
+          Min: 4
+          Max: 8
