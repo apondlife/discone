@@ -101,21 +101,21 @@ sealed class CollisionSystem: CharacterSystem {
             "surface-main",
             next.MainSurface.IsSome ? next.MainSurface.Point : next.Position,
             next.MainSurface.Normal,
-            new DebugDraw.Config(Color.blue, tags: DebugDraw.Tag.Collision)
+            new(Color.blue, tags: DebugDraw.Tag.Collision)
         );
 
         DebugDraw.Push(
             "collision-v0",
             curr.Position,
             v0,
-            new DebugDraw.Config(tags: DebugDraw.Tag.Collision)
+            new(tags: DebugDraw.Tag.Collision)
         );
 
         DebugDraw.Push(
             "collision-i0",
             curr.Position,
             i0,
-            new DebugDraw.Config(tags: DebugDraw.Tag.Collision)
+            new(tags: DebugDraw.Tag.Collision)
         );
     }
 }

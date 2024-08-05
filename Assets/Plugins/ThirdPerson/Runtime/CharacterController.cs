@@ -302,7 +302,7 @@ public sealed class CharacterController {
             "collision-velocity-post-move",
             moveDst,
             nextFrame.Velocity,
-            new DebugDraw.Config(tags: DebugDraw.Tag.Collision)
+            new(tags: DebugDraw.Tag.Collision)
         );
 
         //
@@ -364,7 +364,7 @@ public sealed class CharacterController {
                     DebugDraw.Push(
                         $"collision-overlap/{i}/{castRes}",
                         hit.point,
-                        new DebugDraw.Config(GetDebugColor(castRes, CollisionSource.Overlap), width: 3f, tags: DebugDraw.Tag.Collision)
+                        new(GetDebugColor(castRes, CollisionSource.Overlap), width: 3f, tags: DebugDraw.Tag.Collision)
                     );
                 }
             }
@@ -453,7 +453,7 @@ public sealed class CharacterController {
                 $"collision-surface/{numCasts}/{surface.Source}",
                 surface.Point,
                 surface.Normal,
-                new DebugDraw.Config(GetDebugColor(CastResult.Hit, surface.Source), width: 3f, tags: DebugDraw.Tag.Collision)
+                new(GetDebugColor(CastResult.Hit, surface.Source), width: 3f, tags: DebugDraw.Tag.Collision)
             );
         }
 

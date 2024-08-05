@@ -75,10 +75,14 @@ public class CharacterArms: MonoBehaviour {
         var currProjSearch = Vector3.Project(currDir, arm.SearchDir);
         var castDir = (currDir - 2f * currProjSearch).normalized;
         var castSrc = arm.RootPos;
-
         var castLen = arm.InitialLen + arm.Tuning.SearchRange_OnSurface / Vector3.Dot(castDir, arm.SearchDir);
 
-        DebugDraw.Push(arm.Goal.Debug_Name("phantom-cast"), castSrc, castDir * castLen, new DebugDraw.Config(arm.Goal.Debug_Color(), count: 1));
+        DebugDraw.Push(
+            arm.Goal.Debug_Name("phantom-cast"),
+            castSrc,
+            castDir * castLen,
+            new(arm.Goal.Debug_Color(), count: 1)
+        );
 
         var didHit = Physics.Raycast(
             castSrc,

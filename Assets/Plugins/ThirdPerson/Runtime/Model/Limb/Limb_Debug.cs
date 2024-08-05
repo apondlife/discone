@@ -28,7 +28,7 @@ public partial class Limb {
             m_Goal.Debug_Name($"{name}-bone"),
             rootPos,
             goalPos,
-            new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width, count: count)
+            new(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width, count: count)
         );
 
         var endPos = rootPos + goalDir * InitialLen;
@@ -36,14 +36,14 @@ public partial class Limb {
         DebugDraw.Push(
             m_Goal.Debug_Name($"{name}-bone-end-{Debug_PhaseName()}"),
             endPos,
-            new DebugDraw.Config(Debug_PhaseColor(alpha), tags: m_Goal.Debug_Tag(), width: width + 3f, count: count)
+            new(Debug_PhaseColor(alpha), tags: m_Goal.Debug_Tag(), width: width + 3f, count: count)
         );
 
         DebugDraw.Push(
             m_Goal.Debug_Name($"{name}-held-dist"),
             endPos,
             SearchDir * m_State.HeldDistance,
-            new DebugDraw.Config(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width - 0.5f, count: count)
+            new(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width - 0.5f, count: count)
         );
     }
 
@@ -57,9 +57,11 @@ public partial class Limb {
         var color = Color.green;
         if (m_State.IsHeld) {
             color = Color.black;
-        } else if (m_State.IsFree) {
+        }
+        else if (m_State.IsFree) {
             color = Color.white;
-        } else if (!m_State.IsActive) {
+        }
+        else if (!m_State.IsActive) {
             color = Color.red;
         }
 
@@ -95,18 +97,20 @@ static class Limb_Debug {
     }
 
     /// the debug color for a limb with given alpha (red is right)
-    internal static Color Debug_Color(this AvatarIKGoal goal, float alpha = 1f) {
-        var color = goal switch {
+    internal static Color Debug_Color(this AvatarIKGoal goal, float alpha) {
+        var color = goal.Debug_Color();
+        color.a = alpha;
+        return color;
+    }
+
+    internal static Color Debug_Color(this AvatarIKGoal goal) {
+        return goal switch {
             AvatarIKGoal.LeftFoot => Color.blue,
             AvatarIKGoal.RightFoot => Color.red,
             AvatarIKGoal.LeftHand => Color.cyan,
             AvatarIKGoal.RightHand => Color.magenta,
             _ => throw new ArgumentOutOfRangeException()
         };
-
-        color.a = alpha;
-
-        return color;
     }
 }
 

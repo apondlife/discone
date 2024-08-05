@@ -153,25 +153,14 @@ public partial class DebugDraw: ImmediateModeShapeDrawer {
     }
 
     // -- commands --
-    /// push the drawing's next point
-    public static void Push(string name, Vector3 pos) {
-        Push(name, pos, Vector3.zero);
-    }
-
     /// push the drawing's next line
     public static void PushLine(string name, Vector3 src, Vector3 dst, Config cfg) {
-        Push(name, src, dst-src, cfg);
+        Push(name, src, dst - src, cfg);
     }
 
     /// push the drawing's next point
     public static void Push(string name, Vector3 pos, Config cfg) {
         Push(name, pos, Vector3.zero, cfg);
-    }
-
-    /// push the drawing's next ray
-    public static void Push(string name, Vector3 pos, Vector3 dir) {
-        var cfg = new Config(Color.clear);
-        Push(name, pos, dir, cfg);
     }
 
     /// push the drawing's next ray

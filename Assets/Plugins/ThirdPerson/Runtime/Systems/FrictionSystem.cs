@@ -104,7 +104,7 @@ sealed class FrictionSystem: CharacterSystem {
                 "Friction-stop",
                 c.State.Curr.Position,
                 a0 + v0 / delta,
-                new DebugDraw.Config(Color.black, DebugDraw.Tag.Friction, width: 3f)
+                new(Color.black, DebugDraw.Tag.Friction, width: 3f)
             );
         }
 
@@ -112,14 +112,14 @@ sealed class FrictionSystem: CharacterSystem {
             "Friction-va",
             c.State.Curr.Position,
             va,
-            new DebugDraw.Config(Color.green, DebugDraw.Tag.Friction)
+            new(Color.green, DebugDraw.Tag.Friction)
         );
 
         DebugDraw.Push(
             "Friction-dv",
             c.State.Curr.Position,
             -dv,
-            new DebugDraw.Config(Color.red, DebugDraw.Tag.Friction)
+            new(Color.red, DebugDraw.Tag.Friction)
         );
     }
 }
