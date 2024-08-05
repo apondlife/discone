@@ -79,9 +79,11 @@ sealed class FrictionSystem: CharacterSystem {
         float delta,
         CharacterContainer c
     ) {
+        var next = c.State.Next;
+
         // integrate accelerated velocity
-        var v0 = c.State.Next.SurfaceVelocity;
-        var a0 = c.State.Next.SurfaceForce;
+        var v0 = next.OnSurface(next.Velocity + next.Force.Impulse);
+        var a0 = next.OnSurface(next.Force.Continuous);
         var va = v0 + a0 * delta;
 
         // integrated deceleration opposing va
@@ -91,11 +93,11 @@ sealed class FrictionSystem: CharacterSystem {
         // current velocity instead
         var dv = deceleration * delta;
         if (dv.sqrMagnitude >= va.sqrMagnitude) {
-            c.State.Next.Force.Friction -= a0 + v0 / delta;
+            next.Force.Friction -= a0 + v0 / delta;
         }
         // otherwise, apply the friction acceleration
         else {
-            c.State.Next.Force.Friction -= deceleration;
+            next.Force.Friction -= deceleration;
         }
 
         // debug drawings

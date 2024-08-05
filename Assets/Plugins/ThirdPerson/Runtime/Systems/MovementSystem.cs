@@ -87,7 +87,7 @@ sealed class MovementSystem: CharacterSystem {
         }
 
         // the current ground velocity
-        var v = c.State.Next.SurfaceVelocity;
+        var v = c.State.Curr.SurfaceVelocity;
 
         // the current forward & input direction
         var inputDir = c.Inputs.Move;

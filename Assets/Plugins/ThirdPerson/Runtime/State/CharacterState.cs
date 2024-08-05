@@ -339,11 +339,6 @@ public sealed partial class CharacterState {
             get => Acceleration.XNZ();
         }
 
-        /// the velocity on the xz-plane
-        public Vector3 PlanarForce {
-            get => Force.All.XNZ();
-        }
-
         /// the velocity direction along the xz-plane
         public Vector3 PlanarDirection {
             get => AsDirection(PlanarVelocity);
@@ -351,29 +346,32 @@ public sealed partial class CharacterState {
 
         /// the velocity in the main surface plane, or raw velocity if none
         public Vector3 SurfaceVelocity {
-            get {
-                if (MainSurface.IsNone) {
-                    return Velocity;
-                } else {
-                    return Vector3.ProjectOnPlane(Velocity, MainSurface.Normal);
-                }
-            }
+            get => OnSurface(Velocity);
         }
 
         /// the force in the main surface plane, or raw force if none
+        [Obsolete("don't use this; always consider if impulse is relevant and use OnSurface")]
         public Vector3 SurfaceForce {
-            get {
-                if (MainSurface.IsNone) {
-                    return Force.All;
-                } else {
-                    return Vector3.ProjectOnPlane(Force.All, MainSurface.Normal);
-                }
-            }
+            get => OnSurface(Force.Continuous);
+        }
+
+        /// the force in the main surface plane, or raw force if none
+        public Vector3 SurfaceAcceleration {
+            get => OnSurface(Acceleration);
         }
 
         /// the velocity direction along the surface
         public Vector3 SurfaceDirection {
             get => AsDirection(SurfaceVelocity);
+        }
+
+        /// get the vector projected into the surface, if any
+        public Vector3 OnSurface(Vector3 vector) {
+            if (MainSurface.IsNone) {
+                return vector;
+            }
+
+            return Vector3.ProjectOnPlane(vector, MainSurface.Normal);
         }
 
         /// treat the vector as a direction, falling back to forward

@@ -13,16 +13,20 @@ public struct CharacterForce: IEquatable<CharacterForce> {
     /// the force applied by friction
     public Vector3 Friction;
 
+    /// the accumulated impulse
+    public Vector3 Impulse;
+
     // -- commands --
     /// clear all the forces on the character
     public void Clear() {
         Other = Vector3.zero;
         Friction = Vector3.zero;
+        Impulse = Vector3.zero;
     }
 
     // -- queries --
-    /// the accumulated force
-    public Vector3 All {
+    /// the accumulated continuous force
+    public Vector3 Continuous {
         get => Other + Friction;
     }
 
@@ -34,6 +38,7 @@ public struct CharacterForce: IEquatable<CharacterForce> {
     ) {
         Other = Vector3.Lerp(src.Other, dst.Other, k);
         Friction = Vector3.Lerp(src.Friction, dst.Friction, k);
+        Impulse = Vector3.Lerp(src.Impulse, dst.Impulse, k);
     }
 
     // -- IEquatable --
@@ -48,7 +53,8 @@ public struct CharacterForce: IEquatable<CharacterForce> {
     public bool Equals(CharacterForce o) {
         return (
             Other == o.Other &&
-            Friction == o.Friction
+            Friction == o.Friction &&
+            Impulse == o.Impulse
         );
     }
 
@@ -87,6 +93,13 @@ public struct CharacterForce: IEquatable<CharacterForce> {
         var result = lhs;
         result.Other -= rhs;
         return result;
+    }
+
+    public static Vector3 operator *(
+        CharacterForce lhs,
+        float delta
+    ) {
+        return lhs.Continuous * delta + lhs.Impulse;
     }
 }
 

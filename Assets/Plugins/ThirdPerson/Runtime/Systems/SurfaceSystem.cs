@@ -193,7 +193,7 @@ sealed class SurfaceSystem: CharacterSystem {
 
         // update frame
         c.State.Next.Force += force;
-        c.State.Next.Velocity += impulse;
+        c.State.Next.Force.Impulse += impulse;
         c.State.Next.Inertia -= inertiaDecayMag;
 
         // rotate perceived towards the current surface
