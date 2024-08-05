@@ -365,7 +365,7 @@ public sealed partial class CharacterState {
             get => AsDirection(SurfaceVelocity);
         }
 
-        /// get the vector projected into the surface, if any
+        /// the vector projected into the main surface plane, or the input if none
         public Vector3 OnSurface(Vector3 vector) {
             if (MainSurface.IsNone) {
                 return vector;
