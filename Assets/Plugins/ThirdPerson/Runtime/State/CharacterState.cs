@@ -344,18 +344,18 @@ public sealed partial class CharacterState {
             get => AsDirection(PlanarVelocity);
         }
 
-        /// the velocity in the main surface plane, or raw velocity if none
+        /// the velocity in the main surface plane, or total velocity if none
         public Vector3 SurfaceVelocity {
             get => OnSurface(Velocity);
         }
 
-        /// the force in the main surface plane, or raw force if none
+        /// the force in the main surface plane, or total force if none
         [Obsolete("don't use this; always consider if impulse is relevant and use OnSurface")]
         public Vector3 SurfaceForce {
             get => OnSurface(Force.Continuous);
         }
 
-        /// the force in the main surface plane, or raw force if none
+        /// the acceleration in the main surface plane, or total acceleration if none
         public Vector3 SurfaceAcceleration {
             get => OnSurface(Acceleration);
         }
