@@ -42,7 +42,7 @@ sealed class JumpSystem: CharacterSystem {
         var gravity = 0f;
 
         // add base gravity
-        if (c.State.Next.Velocity.y > 0f) {
+        if (c.State.Curr.Velocity.y > 0f) {
             gravity += c.Tuning.Gravity_Jump;
         } else {
             gravity += c.Tuning.Gravity;
@@ -298,8 +298,8 @@ sealed class JumpSystem: CharacterSystem {
         }
 
         // update state
+        c.State.Next.Force.Impulse += dv;
         c.State.Next.Inertia = 0f;
-        c.State.Next.Velocity += dv;
         c.State.Next.CoyoteTime = 0f;
 
         c.State.Next.ActiveJump = jumpId;
