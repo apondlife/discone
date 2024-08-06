@@ -1,3 +1,4 @@
+using System.Linq;
 using ThirdPerson;
 using UnityEngine;
 using TMPro;
@@ -20,7 +21,7 @@ sealed class Debug_Ui: MonoBehaviour {
     void Update() {
         // draw the tags
         m_TagLabel.gameObject.SetActive(m_DebugDraw.IsEnabled);
-        m_TagLabel.text = $"drawing: {m_DebugDraw.Tags.ToString().ToLower()}";
+        m_TagLabel.text = $"drawing: {Soil.Debug.Dump(m_DebugDraw.Tags.Where((t) => t.IsEnabled)).ToLower()}";
     }
 }
 

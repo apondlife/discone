@@ -200,11 +200,25 @@ sealed class SurfaceSystem: CharacterSystem {
         RotatePerceptionTowards(currNormal, currSurface.Point, delta, c);
 
         // debug drawing
-        DebugDraw.Push("surface-normal", currSurface.Point, currNormal, new(new Color(0.0f, 0.4f, 1.0f), tags: DebugDraw.Tag.Surface));
-        DebugDraw.Push("surface-tangent", currSurface.Point, surfaceTg, new(new Color(0.9f, 0.6f, 0.2f), tags: DebugDraw.Tag.Surface));
-        DebugDraw.Push("surface-transfer", c.State.Curr.Position, transferImpulse, new(new Color(1f, 1f, 0f), tags: DebugDraw.Tag.Surface));
-        DebugDraw.Push("surface-inertia-pre", c.State.Curr.Position, c.State.Curr.Inertia * -currNormal, new(new Color(0.1f, 0.8f, 0.5f), tags: DebugDraw.Tag.Surface, width: 2f));
-        DebugDraw.Push("surface-inertia-post", c.State.Curr.Position, c.State.Next.Inertia * -currNormal, new(new Color(0f, 1f, 0f), tags: DebugDraw.Tag.Surface));
+        DebugDraw.Surface
+            .Push("surface-normal", color: Soil.Color.CornflowerBlue)
+            .Ray(currSurface.Point, currNormal);
+
+        DebugDraw.Surface
+            .Push("surface-tangent", color: Soil.Color.DarkOrange)
+            .Ray(currSurface.Point, surfaceTg);
+
+        DebugDraw.Surface
+            .Push("surface-transfer", color: Soil.Color.Yellow)
+            .Ray(c.State.Curr.Position, transferImpulse);
+
+        DebugDraw.Surface
+            .Push("surface-inertia-pre", color: Soil.Color.LimeGreen, width: 2f)
+            .Ray(c.State.Curr.Position, c.State.Curr.Inertia * -currNormal);
+
+        DebugDraw.Surface
+            .Push("surface-inertia-post", color: Soil.Color.Lime)
+            .Ray(c.State.Curr.Position, c.State.Next.Inertia * -currNormal);
     }
 
     // -- commands --
@@ -236,12 +250,9 @@ sealed class SurfaceSystem: CharacterSystem {
             delta / c.Tuning.Surface_PerceptionDuration
         );
 
-        DebugDraw.Push(
-            "surface-perception",
-            c.State.Curr.MainSurface.Point,
-            normal,
-            new DebugDraw.Config(new Color(0.3f, 0.8f, 1f), tags: DebugDraw.Tag.Surface)
-        );
+        DebugDraw.Surface
+            .Push("surface-perception", color: Soil.Color.LightSkyBlue)
+            .Ray(c.State.Curr.MainSurface.Point, normal);
 
         // update next surface
         nextPerceived.Point = pos;

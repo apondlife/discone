@@ -20,31 +20,25 @@ public partial class Limb {
     // -- debug --
     /// draw the debug line of this bone
     internal void Debug_Draw(string name, float alpha = 1f, float width = 1f, int count = 1) {
+        var goalColor = m_Goal.Debug_Color(alpha);
+
         var goalPos = GoalPos;
         var rootPos = RootPos;
+
+        m_Goal.Debug_Tag()
+            .Push(m_Goal.Debug_Name($"{name}-bone"), color: goalColor, width: width, count: count)
+            .Line(rootPos, goalPos);
+
         var goalDir = Vector3.Normalize(goalPos - rootPos);
-
-        DebugDraw.PushLine(
-            m_Goal.Debug_Name($"{name}-bone"),
-            rootPos,
-            goalPos,
-            new(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width, count: count)
-        );
-
         var endPos = rootPos + goalDir * InitialLen;
 
-        DebugDraw.Push(
-            m_Goal.Debug_Name($"{name}-bone-end-{Debug_PhaseName()}"),
-            endPos,
-            new(Debug_PhaseColor(alpha), tags: m_Goal.Debug_Tag(), width: width + 3f, count: count)
-        );
+        m_Goal.Debug_Tag()
+            .Push(m_Goal.Debug_Name($"{name}-bone-end-{Debug_PhaseName()}"), color: Debug_PhaseColor(alpha), width: width + 3f, count: count)
+            .Point(endPos);
 
-        DebugDraw.Push(
-            m_Goal.Debug_Name($"{name}-held-dist"),
-            endPos,
-            SearchDir * m_State.HeldDistance,
-            new(m_Goal.Debug_Color(alpha), tags: m_Goal.Debug_Tag(), width: width - 0.5f, count: count)
-        );
+        m_Goal.Debug_Tag()
+            .Push(m_Goal.Debug_Name($"{name}-held-dist"), color: goalColor, width: width - 0.5f, count: count)
+            .Ray(endPos, SearchDir * m_State.HeldDistance);
     }
 
     /// the debug color for a limb with given alpha (red is right)
@@ -88,29 +82,27 @@ static class Limb_Debug {
     /// the debug tag for a limb
     internal static DebugDraw.Tag Debug_Tag(this AvatarIKGoal goal) {
         return goal switch {
-            AvatarIKGoal.LeftFoot => DebugDraw.Tag.Walk,
-            AvatarIKGoal.RightFoot => DebugDraw.Tag.Walk,
-            AvatarIKGoal.LeftHand => DebugDraw.Tag.None,
-            AvatarIKGoal.RightHand => DebugDraw.Tag.None,
+            AvatarIKGoal.LeftFoot => DebugDraw.Walk,
+            AvatarIKGoal.RightFoot => DebugDraw.Walk,
+            AvatarIKGoal.LeftHand => DebugDraw.None,
+            AvatarIKGoal.RightHand => DebugDraw.None,
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
     /// the debug color for a limb with given alpha (red is right)
-    internal static Color Debug_Color(this AvatarIKGoal goal, float alpha) {
-        var color = goal.Debug_Color();
-        color.a = alpha;
-        return color;
-    }
-
-    internal static Color Debug_Color(this AvatarIKGoal goal) {
-        return goal switch {
+    internal static Color Debug_Color(this AvatarIKGoal goal, float alpha = 1f) {
+        var color = goal switch {
             AvatarIKGoal.LeftFoot => Color.blue,
             AvatarIKGoal.RightFoot => Color.red,
             AvatarIKGoal.LeftHand => Color.cyan,
             AvatarIKGoal.RightHand => Color.magenta,
             _ => throw new ArgumentOutOfRangeException()
         };
+
+        color.a = alpha;
+
+        return color;
     }
 }
 

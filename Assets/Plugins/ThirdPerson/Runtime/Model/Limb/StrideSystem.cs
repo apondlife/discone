@@ -390,27 +390,19 @@ sealed class StrideSystem: SimpleSystem<LimbContainer> {
 
     // -- debug --
     static void Debug_DrawMove(LimbContainer c) {
-        DebugDraw.PushLine(
-            c.Goal.Debug_Name("stride-curr"),
-            c.State.Anchor.GoalPos,
-            c.State.GoalPos,
-            new DebugDraw.Config(c.Goal.Debug_Color(), tags: c.Goal.Debug_Tag(), count: 1, width: 0.03f)
-        );
+        c.Goal.Debug_Tag()
+            .Push(c.Goal.Debug_Name("stride-curr"), color: c.Goal.Debug_Color(), count: 1, width: 0.03f)
+            .Line(c.State.Anchor.GoalPos, c.State.GoalPos);
     }
 
     static void Debug_DrawHold(LimbContainer c) {
-        DebugDraw.Push(
-            c.Goal.Debug_Name("stride-hold"),
-            c.State.GoalPos,
-            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: c.Goal.Debug_Tag(), width: 2f)
-        );
+        c.Goal.Debug_Tag()
+            .Push(c.Goal.Debug_Name("stride-hold"), color: c.Goal.Debug_Color(0.5f), width: 2f)
+            .Point(c.State.GoalPos);
 
-        DebugDraw.PushLine(
-            c.Goal.Debug_Name("stride"),
-            c.State.Anchor.GoalPos,
-            c.State.GoalPos,
-            new DebugDraw.Config(c.Goal.Debug_Color(0.5f), tags: c.Goal.Debug_Tag(), width: 0.5f)
-        );
+        c.Goal.Debug_Tag()
+            .Push(c.Goal.Debug_Name("stride"), color: c.Goal.Debug_Color(0.5f), width: 0.5f)
+            .Line(c.State.Anchor.GoalPos, c.State.GoalPos);
     }
 }
 

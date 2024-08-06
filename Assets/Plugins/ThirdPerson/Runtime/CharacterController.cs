@@ -298,12 +298,9 @@ public sealed class CharacterController {
         // update frame velocity for overlap pass
         nextFrame.Velocity = nextVelocity;
 
-        DebugDraw.Push(
-            "collision-velocity-post-move",
-            moveDst,
-            nextFrame.Velocity,
-            new(tags: DebugDraw.Tag.Collision)
-        );
+        DebugDraw.Collision
+            .Push("collision-velocity-post-move")
+            .Ray(moveDst, nextFrame.Velocity);
 
         //
         // overlap pass
@@ -360,12 +357,10 @@ public sealed class CharacterController {
                 }
 
                 if (castRes != CastResult.Hit) {
-                    // TODO: we should be able to parameterize a value w/ i, castRes, &c
-                    DebugDraw.Push(
-                        $"collision-overlap/{i}/{castRes}",
-                        hit.point,
-                        new(GetDebugColor(castRes, CollisionSource.Overlap), width: 3f, tags: DebugDraw.Tag.Collision)
-                    );
+                    // TODO: could we parameterize a value w/ i, castRes, &c?
+                    DebugDraw.Collision
+                        .Push($"collision-overlap/{i}/{castRes}", color: GetDebugColor(castRes, CollisionSource.Overlap), width: 3f)
+                        .Point(hit.point);
                 }
             }
             // otherwise, depenetrate from concave mesh to find dir
@@ -449,12 +444,10 @@ public sealed class CharacterController {
         // debug drawings
         for (var i = 0; i < nextFrame.Surfaces.Count; i++) {
             var surface = nextFrame.Surfaces[i];
-            DebugDraw.Push(
-                $"collision-surface/{numCasts}/{surface.Source}",
-                surface.Point,
-                surface.Normal,
-                new(GetDebugColor(CastResult.Hit, surface.Source), width: 3f, tags: DebugDraw.Tag.Collision)
-            );
+
+            DebugDraw.Collision
+                .Push($"collision-surface/{numCasts}/{surface.Source}", color: GetDebugColor(CastResult.Hit, surface.Source), width: 3f)
+                .Ray(surface.Point, surface.Normal);
         }
 
         return nextFrame;

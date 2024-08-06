@@ -77,12 +77,9 @@ public class CharacterArms: MonoBehaviour {
         var castSrc = arm.RootPos;
         var castLen = arm.InitialLen + arm.Tuning.SearchRange_OnSurface / Vector3.Dot(castDir, arm.SearchDir);
 
-        DebugDraw.Push(
-            arm.Goal.Debug_Name("phantom-cast"),
-            castSrc,
-            castDir * castLen,
-            new(arm.Goal.Debug_Color(), count: 1)
-        );
+        DebugDraw.Arms
+            .Push(arm.Goal.Debug_Name("phantom-cast"), color: arm.Goal.Debug_Color(), count: 1)
+            .Ray(castSrc, castDir * castLen);
 
         var didHit = Physics.Raycast(
             castSrc,

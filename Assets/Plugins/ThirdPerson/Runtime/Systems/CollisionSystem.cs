@@ -97,26 +97,17 @@ sealed class CollisionSystem: CharacterSystem {
         next.Inertia = Mathf.Sqrt(energy);
 
         // debug drawings
-        DebugDraw.Push(
-            "surface-main",
-            next.MainSurface.IsSome ? next.MainSurface.Point : next.Position,
-            next.MainSurface.Normal,
-            new(Color.blue, tags: DebugDraw.Tag.Collision)
-        );
+        DebugDraw.Collision
+            .Push("surface-main", color: Soil.Color.Blue)
+            .Ray(next.MainSurface.IsSome ? next.MainSurface.Point : next.Position, next.MainSurface.Normal);
 
-        DebugDraw.Push(
-            "collision-v0",
-            curr.Position,
-            v0,
-            new(tags: DebugDraw.Tag.Collision)
-        );
+        DebugDraw.Collision
+            .Push("collision-v0", color: Soil.Color.Pink)
+            .Ray(curr.Position, v0);
 
-        DebugDraw.Push(
-            "collision-i0",
-            curr.Position,
-            i0,
-            new(tags: DebugDraw.Tag.Collision)
-        );
+        DebugDraw.Collision
+            .Push("collision-i0", color: Soil.Color.Lime)
+            .Ray(curr.Position, i0);
     }
 }
 

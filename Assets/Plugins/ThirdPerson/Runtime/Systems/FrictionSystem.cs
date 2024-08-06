@@ -102,27 +102,18 @@ sealed class FrictionSystem: CharacterSystem {
 
         // debug drawings
         if (dv.sqrMagnitude >= va.sqrMagnitude) {
-            DebugDraw.Push(
-                "Friction-stop",
-                c.State.Curr.Position,
-                a0 + v0 / delta,
-                new(Color.black, DebugDraw.Tag.Friction, width: 3f)
-            );
+            DebugDraw.Friction
+                .Push("Friction-stop", color: Color.black, width: 3f)
+                .Ray(c.State.Curr.Position, a0 + v0 / delta);
         }
 
-        DebugDraw.Push(
-            "Friction-va",
-            c.State.Curr.Position,
-            va,
-            new(Color.green, DebugDraw.Tag.Friction)
-        );
+        DebugDraw.Friction
+            .Push("Friction-va", color: Color.green)
+            .Ray(c.State.Curr.Position, va);
 
-        DebugDraw.Push(
-            "Friction-dv",
-            c.State.Curr.Position,
-            -dv,
-            new(Color.red, DebugDraw.Tag.Friction)
-        );
+        DebugDraw.Friction
+            .Push("Friction-dv", color: Color.red)
+            .Ray(c.State.Curr.Position, -dv);
     }
 }
 
