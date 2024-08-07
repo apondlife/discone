@@ -1,6 +1,7 @@
 using System;
 using Soil;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ThirdPerson {
 
@@ -193,11 +194,11 @@ partial class CharacterTuning {
             [Tooltip("the burn emission count as a fn of inertia decay")]
             public MapCurve Burn_InertiaDecayToCount;
 
-            [Tooltip("the burn size as a fn of inertia decay")]
-            public MapCurve Burn_InertiaDecayToSize;
+            [FormerlySerializedAs("Burn_InertiaDecayToSize")] [Tooltip("the burn size as a fn of inertia decay")]
+            public MapCurve Burn_TransferToSize;
 
-            [Tooltip("the burn lifetime as a fn of inertia decay")]
-            public MapCurve Burn_InertiaDecayToLifetime;
+            [FormerlySerializedAs("Burn_InertiaDecayToLifetime")] [Tooltip("the burn lifetime as a fn of inertia decay")]
+            public MapCurve Burn_TransferToLifetime;
         }
     }
 }

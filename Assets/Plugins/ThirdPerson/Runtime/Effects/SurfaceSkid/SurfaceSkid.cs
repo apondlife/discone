@@ -28,11 +28,11 @@ sealed class SurfaceSkid: CharacterEffect {
     }
 
     void FixedUpdate() {
-        var next = c.State.Next;
         var curr = c.State.Curr;
+        var prev = c.State.Prev;
 
         // only play particles when wall & not idle
-        if (!next.IsOnWall || next.IsIdle) {
+        if (!curr.IsOnWall || curr.IsIdle) {
             return;
         }
 
@@ -40,7 +40,7 @@ sealed class SurfaceSkid: CharacterEffect {
         var tuning = c.Tuning.Model.SurfaceSkid;
 
         // get surface
-        var surface = next.MainSurface;
+        var surface = curr.MainSurface;
 
         // get emitters
         var skid = m_SkidParticles;
@@ -52,7 +52,7 @@ sealed class SurfaceSkid: CharacterEffect {
         trs.position = surface.Point;
 
         // point away from the current surface and rotate a bit around its normal
-        var rot = Quaternion.LookRotation(-surface.Normal, next.Forward);
+        var rot = Quaternion.LookRotation(-surface.Normal, curr.Forward);
         rot *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward);
 
         // shape needs euler in degrees
@@ -93,15 +93,16 @@ sealed class SurfaceSkid: CharacterEffect {
         SyncColorTexture(skid);
 
         // emit
-        var count = tuning.SqrSpeedToCount.Evaluate(next.SurfaceVelocity.sqrMagnitude);
+        // TODO: count as threshold, change color with alpha
+        var count = tuning.SqrSpeedToCount.Evaluate(curr.SurfaceVelocity.sqrMagnitude);
         skid.Emit((int)count);
 
         // configure burn
-        var inertiaDecay = Mathf.Max(curr.Inertia - next.Inertia, 0f);
+        var transfer = curr.Force.Impulse.magnitude;
 
         main = burn.main;
-        main.startSizeMultiplier = tuning.Burn_InertiaDecayToSize.Evaluate(inertiaDecay);
-        main.startLifetimeMultiplier = tuning.Burn_InertiaDecayToLifetime.Evaluate(inertiaDecay);
+        main.startSizeMultiplier = tuning.Burn_TransferToSize.Evaluate(transfer);
+        main.startLifetimeMultiplier = tuning.Burn_TransferToLifetime.Evaluate(transfer);
 
         // face +z, instead of the -z (the particle system default)
         main.flipRotation = 1f;
@@ -110,7 +111,8 @@ sealed class SurfaceSkid: CharacterEffect {
         main.startRotationZ = rotZ;
 
         // emit burn
-        count = tuning.Burn_InertiaDecayToCount.Evaluate(inertiaDecay);
+        // TODO: count as threshold, change color with alpha
+        count = tuning.Burn_InertiaDecayToCount.Evaluate(transfer);
         burn.Emit((int)count);
     }
 }
